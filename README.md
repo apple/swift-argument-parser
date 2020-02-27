@@ -79,8 +79,8 @@ This repository includes a few examples of using the library:
 
 You can also see examples of `ArgumentParser` adoption among Swift project tools:
 
-- [`indexstore-db`](https://github.com/apple/indexstore-db/pulls) is a simple utility with two commands.
-- [`swift-format`](https://github.com/apple/swift-format/pulls) uses some advanced features, like custom option values and hidden flags. 
+- [`indexstore-db`](https://github.com/apple/indexstore-db/pull/72) is a simple utility with two commands.
+- [`swift-format`](https://github.com/apple/swift-format/pull/154) uses some advanced features, like custom option values and hidden flags.
 
 ## Adding `ArgumentParser` as a Dependency
 
