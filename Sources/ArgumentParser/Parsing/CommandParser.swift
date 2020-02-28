@@ -78,6 +78,13 @@ extension CommandParser {
     
     // We should have used up all arguments at this point:
     guard split.isEmpty else {
+      // Check if one of the arguments is an unknown option
+      for (index, element) in split.elements {
+        if case .option(let argument) = element {
+          throw ParserError.unknownOption(InputOrigin.Element.argumentIndex(index), argument.name)
+        }
+      }
+       
       let extra = split.coalescedExtraElements()
       throw ParserError.unexpectedExtraValues(extra)
     }
