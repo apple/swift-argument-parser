@@ -108,7 +108,7 @@ struct Example: ParsableCommand {
   % example --input-file file1.swift
   ```
 
-> **Note:** You can also pass `withSingleDash: true` to `.customLong` to create a single-dash flag or option, such as `-verbose`. Use this name specification only when necessary, such as when migrating a legacy command line interface. Using long names with a single-dash prefix can lead to ambiguity with combined short names: it may not be obvious whether `-file` is a single option or the combination of the four short options `-f`, `-i`, `-l`, and `-e`.
+> **Note:** You can also pass `withSingleDash: true` to `.customLong` to create a single-dash flag or option, such as `-verbose`. Use this name specification only when necessary, such as when migrating a legacy command line interface. Using long names with a single-dash prefix can lead to ambiguity with combined short names: it may not be obvious whether `-file` is a single option or the combination of the four short flags `-f`, `-i`, `-l`, and `-e`.
 
 ## Parsing custom types
 

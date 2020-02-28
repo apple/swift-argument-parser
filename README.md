@@ -18,6 +18,8 @@ struct Repeat: ParsableCommand {
 
     @Argument(help: "The phrase to repeat.")
     var phrase: String
+
+    // continued below…
 }
 ```
 
@@ -28,7 +30,10 @@ instantiates your command type, and then either executes your custom `run()` met
 or exits with useful a message.
 
 ```swift
-extension Repeat {
+struct Repeat: ParsableCommand {
+
+    // continued from above…
+
     func run() throws {
         let repeatCount = count ?? .max
 
@@ -68,6 +73,8 @@ OPTIONS:
   -c, --count <count>     The number of times to repeat 'phrase'.
   -h, --help              Show help for this command.
 ```
+
+For more information and documentation about all supported options, see [the `Documentation` folder at the root of the repository](https://github.com/apple/swift-argument-parser/tree/master/Documentation).
 
 ## Examples
 
