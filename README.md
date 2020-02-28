@@ -3,12 +3,13 @@
 ## Usage
 
 Begin by declaring a type that defines the information you need to collect from the command line.
-Decorate each stored property with one of `ArgumentParser`'s property wrappers.
+Decorate each stored property with one of `ArgumentParser`'s property wrappers,
+and declare conformance to `ParsableCommand`.
 
 ```swift
 import ArgumentParser
 
-struct Repeat {
+struct Repeat: ParsableCommand {
     @Flag(help: "Include a counter with each repetition.")
     var includeCounter: Bool
 
@@ -20,14 +21,14 @@ struct Repeat {
 }
 ```
 
-Next, declare conformance to `ParsableCommand` and implement the `run()` method on your type, 
+Next, implement the `run()` method on your type, 
 and kick off execution by calling the type's static `main()` method.  
 The `ArgumentParser` library parses the command-line arguments,
 instantiates your command type, and then either executes your custom `run()` method 
 or exits with useful a message.
 
 ```swift
-extension Repeat: ParsableCommand {
+extension Repeat {
     func run() throws {
         let repeatCount = count ?? .max
 
