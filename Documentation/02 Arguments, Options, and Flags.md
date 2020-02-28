@@ -197,7 +197,7 @@ struct Example: ParsableCommand {
 }
 ```
 
-Since these flags are non-optional and don't have default values, they are now required when calling the command. The specified prefixes are prepended to the long names for the flags:
+Since these flags are non-optional and don't have default values, they're now required when calling the command. The specified prefixes are prepended to the long names for the flags:
 
 ```
 % example --index --enable-required-element
