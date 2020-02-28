@@ -343,7 +343,7 @@ The `.unconditionalSingleValue` parsing strategy uses whatever input follows the
 Verbose: false, files: ["file1.swift", "--verbose"]
 ```
 
-The `.upToNextOption` parsing strategy uses the inputs that follow the option key until reaching a dash-prefixed input. If `file` were defined as `@Option(parsing: . upToNextOption) var file: [String]`, then the user could specify multiple files without repeating `--file`:
+The `.upToNextOption` parsing strategy uses the inputs that follow the option key until reaching a dash-prefixed input. If `file` were defined as `@Option(parsing: .upToNextOption) var file: [String]`, then the user could specify multiple files without repeating `--file`:
 
 ```
 % example --file file1.swift file2.swift
