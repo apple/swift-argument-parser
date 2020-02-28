@@ -248,14 +248,7 @@ extension ErrorMessageGenerator {
   }
   
   func unknownOptionMessage(origin: InputOrigin.Element, name: Name) -> String {
-    switch name {
-    case .long(let n):
-      return "Unknown option '--\(n)'"
-    case .short(let n):
-      return "Unknown option '-\(n)'"
-    case .longWithSingleDash(let n):
-      return "Unknown option '-\(n)'"
-    }
+    return "Unknown option '\(name.synopsisString)'."
   }
   
   func missingValueForOptionMessage(origin: InputOrigin, name: Name) -> String {
