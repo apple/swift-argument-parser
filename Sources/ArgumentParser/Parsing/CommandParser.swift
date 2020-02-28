@@ -71,7 +71,7 @@ extension CommandParser {
   
   /// Returns the last parsed value if there are no remaining unused arguments.
   ///
-  /// If there are remaining arguments, or if no commands have been parsed,
+  /// If there are remaining arguments or if no commands have been parsed,
   /// this throws an error.
   fileprivate func extractLastParsedValue(_ split: SplitArguments) throws -> ParsableCommand {
     try checkForHelpFlag(split)
@@ -130,7 +130,7 @@ extension CommandParser {
   }
   
   /// Starting with the current node, extracts commands out of `split` and
-  /// descends into sub-commands as far as possible.
+  /// descends into subcommands as far as possible.
   internal mutating func descendingParse(_ split: inout SplitArguments) throws {
     while true {
       try parseCurrent(&split)
@@ -199,7 +199,7 @@ extension CommandParser {
 extension CommandParser {
   /// Builds an array of commands that matches the given command names.
   ///
-  /// This stops building the stack if it encounters any "command names" that
+  /// This stops building the stack if it encounters any command names that
   /// aren't in the command tree, so it's okay to pass a list of arbitrary
   /// commands. Will always return at least the root of the command tree.
   func commandStack(for commandNames: [String]) -> [ParsableCommand.Type] {

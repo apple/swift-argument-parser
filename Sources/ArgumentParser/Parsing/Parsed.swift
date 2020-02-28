@@ -10,7 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 enum Parsed<Value> {
-  /// The definition of how this value is to be parsed from command line arguments.
+  /// The definition of how this value is to be parsed from command-line arguments.
   ///
   /// Internally, this wraps an `ArgumentSet`, but that’s not `public` since it’s
   /// an implementation detail.

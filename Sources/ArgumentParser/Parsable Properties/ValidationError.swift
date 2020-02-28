@@ -28,7 +28,7 @@ public struct ValidationError: Error, CustomStringConvertible {
 /// utility.
 ///
 /// Throwing a `CleanExit` instance from a `validate` or `run` method, or
-/// passing it to `exit(with:)`, exits a program with exit code `0`.
+/// passing it to `exit(with:)`, exits the program with exit code `0`.
 public enum CleanExit: Error, CustomStringConvertible {
   /// Treat this error as a help request and display the full help message.
   ///

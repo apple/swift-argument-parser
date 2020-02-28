@@ -241,10 +241,10 @@ extension ErrorMessageGenerator {
 
 extension ErrorMessageGenerator {
   var notImplementedMessage: String {
-    return "Internal error. Parsing command line arguments hit unimplemented code path."
+    return "Internal error. Parsing command-line arguments hit unimplemented code path."
   }
   var invalidState: String {
-    return "Internal error. Invalid state while parsing command line arguments."
+    return "Internal error. Invalid state while parsing command-line arguments."
   }
   
   func unknownOptionMessage(origin: InputOrigin.Element, name: Name) -> String {

@@ -12,7 +12,7 @@
 /// A wrapper that represents a command-line flag.
 ///
 /// A flag is a defaulted Boolean or integer value that can be changed by
-/// specifying the flag at the command line. For example:
+/// specifying the flag on the command line. For example:
 ///
 ///     struct Options: ParsableArguments {
 ///         @Flag var verbose: Bool
@@ -157,7 +157,7 @@ extension Flag where Value == Bool {
   /// - Parameters:
   ///   - name: A specification for what names are allowed for this flag.
   ///   - initial: The default value for this flag.
-  ///   - inversion: The method for converting this flags name into an on/off
+  ///   - inversion: The method for converting this flag's name into an on/off
   ///     pair.
   ///   - help: Information about how to use this flag.
   public init(
@@ -173,7 +173,7 @@ extension Flag where Value == Bool {
 }
 
 extension Flag where Value == Int {
-  /// Creates a integer property that gets its value from the number of times
+  /// Creates an integer property that gets its value from the number of times
   /// a flag appears.
   ///
   /// This property defaults to a value of zero.
@@ -193,7 +193,7 @@ extension Flag where Value == Int {
 
 extension Flag where Value: CaseIterable, Value: RawRepresentable, Value.RawValue == String {
   /// Creates a property that gets its value from the presence of a flag,
-  /// where the allowed flags are defined by a case-iterable type.
+  /// where the allowed flags are defined by a `CaseIterable` type.
   ///
   /// - Parameters:
   ///   - name: A specification for what names are allowed for this flag.
@@ -240,7 +240,7 @@ extension Flag where Value: CaseIterable, Value: RawRepresentable, Value.RawValu
 
 extension Flag {
   /// Creates a property that gets its value from the presence of a flag,
-  /// where the allowed flags are defined by a case-iterable type.
+  /// where the allowed flags are defined by a `CaseIterable` type.
   ///
   /// This property has a default value of `nil`; specifying the flag in the
   /// command-line arguments is not required.
@@ -280,7 +280,7 @@ extension Flag {
   
   /// Creates an array property that gets its values from the presence of
   /// zero or more flags, where the allowed flags are defined by a
-  /// case-iterable type.
+  /// `CaseIterable` type.
   ///
   /// This property has an empty array as its default value.
   ///

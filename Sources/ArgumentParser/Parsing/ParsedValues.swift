@@ -23,7 +23,7 @@ struct InputKey: RawRepresentable, Equatable {
   static let terminator = InputKey(rawValue: "__terminator")
 }
 
-/// The resulting values after parsing the command line arguments.
+/// The resulting values after parsing the command-line arguments.
 ///
 /// This is a flat key-value list of values.
 struct ParsedValues {

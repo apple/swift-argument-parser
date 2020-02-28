@@ -34,7 +34,7 @@ struct ArgumentSet {
     case additive
     /// Mutually exclusive
     case exclusive
-    /// Several ways of achieving the same behaviour. Should only display one.
+    /// Several ways of achieving the same behavior. Should only display one.
     case alternatives
   }
   
@@ -221,13 +221,13 @@ extension ArgumentSet {
 extension ArgumentDefinition {
   /// Create a unary / argument that parses using the given closure.
   fileprivate init<A>(key: InputKey, kind: ArgumentDefinition.Kind, parsingStrategy: ParsingStrategy = .nextAsValue, parser: @escaping (String) -> A?, parseType type: A.Type = A.self, default initial: A?) {
-    let initalValueCreator: (InputOrigin, inout ParsedValues) throws -> Void
+    let initialValueCreator: (InputOrigin, inout ParsedValues) throws -> Void
     if let initialValue = initial {
-      initalValueCreator = { origin, values in
+      initialValueCreator = { origin, values in
         values.set(initialValue, forKey: key, inputOrigin: origin)
       }
     } else {
-      initalValueCreator = { _, _ in }
+      initialValueCreator = { _, _ in }
     }
     
     self.init(kind: kind, help: ArgumentDefinition.Help(key: key), parsingStrategy: parsingStrategy, update: .unary({ (origin, name, value, values) in
@@ -235,7 +235,7 @@ extension ArgumentDefinition {
         throw ParserError.unableToParseValue(origin, name, value, forKey: key)
       }
       values.set(v, forKey: key, inputOrigin: origin)
-    }), initial: initalValueCreator)
+    }), initial: initialValueCreator)
     
     help.options.formUnion(ArgumentDefinition.Help.Options(type: type))
     help.defaultValue = initial.map { "\($0)" }
@@ -247,7 +247,7 @@ extension ArgumentDefinition {
 
 // MARK: - Parsing from SplitArguments
 extension ArgumentSet {
-  /// Parse the given input (`SplitArguments`) for the given `commandStack` of previously parsed sommands.
+  /// Parse the given input (`SplitArguments`) for the given `commandStack` of previously parsed commands.
   ///
   /// This method will gracefully fail if there are extra arguments that it doesn’t understand. Hence the
   /// *lenient* name. If so, it will return `.partial`.
@@ -399,7 +399,7 @@ extension ArgumentSet {
       switch error {
       case ParserError.unexpectedExtraValues:
         // There were more positional values than we could parse.
-        // If we‘re using sub-commands, that could be expected.
+        // If we‘re using subcommands, that could be expected.
         return .partial(result, error)
       default:
         throw error
@@ -426,7 +426,7 @@ extension ArgumentSet {
   /// definition that matches the particular element.
   /// - Parameters:
   ///   - parsed: The argument from the command line
-  ///   - origin: The where `parsed` came from.
+  ///   - origin: Where `parsed` came from.
   /// - Returns: The matching definition.
   func first(
     matching parsed: ParsedArgument,

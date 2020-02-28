@@ -11,7 +11,7 @@
 
 /// A single `-f`, `--foo`, or `--foo=bar`.
 ///
-/// When parsing, we might see "--foo" or "--foo=bar".
+/// When parsing, we might see `"--foo"` or `"--foo=bar"`.
 enum ParsedArgument: Equatable, CustomStringConvertible {
   /// `--foo` or `-f`
   case name(Name)
@@ -32,7 +32,7 @@ enum ParsedArgument: Equatable, CustomStringConvertible {
   ///
   /// For `subarguments` to be non-empty:
   ///
-  /// 1) This must have a single dash prefix (not `--foo`)
+  /// 1) This must have a single-dash prefix (not `--foo`)
   /// 2) This must not have an attached value (not `-foo=bar`)
   var subarguments: [(Int, ParsedArgument)] {
     switch self {
@@ -73,7 +73,7 @@ enum ParsedArgument: Equatable, CustomStringConvertible {
   }
 }
 
-/// A parsed version of command line arguments.
+/// A parsed version of command-line arguments.
 ///
 /// This is a flat list of *values* and *options*. E.g. the
 /// arguments `["--foo", "bar"]` would be parsed into
@@ -82,14 +82,14 @@ struct SplitArguments {
   enum Element: Equatable {
     case option(ParsedArgument)
     case value(String)
-    /// The "--" marker
+    /// The `--` marker
     case terminator
   }
   
   /// The index into the (original) input.
   ///
   /// E.g. for `["--foo", "-vh"]` there are index positions 0 (`--foo`) and
-  /// index position 1 (`-vh`).
+  /// 1 (`-vh`).
   struct InputIndex: RawRepresentable, Hashable, Comparable {
     var rawValue: Int
     
@@ -220,8 +220,8 @@ extension SplitArguments {
   /// Pops the element immediately after the given index, if it is a `.value`.
   ///
   /// This is used to get the next value in `-fb name` where `name` is the
-  /// value for `-f` or `--foo name` where `name` is the value for `--foo`.
-  /// If `--foo` expects a value, input of `--foo --bar name` will return
+  /// value for `-f`, or `--foo name` where `name` is the value for `--foo`.
+  /// If `--foo` expects a value, an input of `--foo --bar name` will return
   /// `nil`, since the option `--bar` comes before the value `name`.
   mutating func popNextElementIfValue(after origin: InputOrigin.Element) -> (InputOrigin.Element, String)? {
     // Look for the index of the input that comes from immediately after
@@ -355,7 +355,7 @@ extension SplitArguments {
   
   /// Removes the element(s) at the given position.
   ///
-  /// Note that this may remove multiple elements.
+  /// - Note: This may remove multiple elements.
   mutating func remove(at origin: InputOrigin.Element) {
     guard case .argumentIndex(let i) = origin else { return }
     remove(at: i)

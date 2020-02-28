@@ -9,7 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-/// Allows iteration over arguments in an `ArgumentSet`
+/// Allows iteration over arguments in an `ArgumentSet`.
 extension ArgumentSet: Sequence {
   func makeIterator() -> Iterator {
     return Iterator(set: self)

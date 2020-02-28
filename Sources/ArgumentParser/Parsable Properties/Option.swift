@@ -13,7 +13,7 @@
 ///
 /// An option is a value that can be specified as a named value on the command
 /// line. An option can have a default values specified as part of its
-/// declaration; options with optional `Value` types impicitly have `nil` as
+/// declaration; options with optional `Value` types implicitly have `nil` as
 /// their default value.
 ///
 ///     struct Options: ParsableArguments {
@@ -70,7 +70,7 @@ extension Option: DecodableParsedWrapper where Value: Decodable {}
 // MARK: Property Wrapper Initializers
 
 extension Option where Value: ExpressibleByArgument {
-  /// Creates a property that reads its value from an labeled option.
+  /// Creates a property that reads its value from a labeled option.
   ///
   /// If the property has an `Optional` type, or you provide a non-`nil`
   /// value for the `initial` parameter, specifying this option is not
@@ -104,10 +104,10 @@ extension Option where Value: ExpressibleByArgument {
 public enum SingleValueParsingStrategy {
   /// Parse the input after the option. Expect it to be a value.
   ///
-  /// For input such as `--foo foo` this would parse `foo` as the
-  /// value. However, for the input `--foo --bar foo bar` would
-  /// result in a error. Even though two values are provided, they don’t
-  /// succeed each option. Parsing would result in an error such as
+  /// For inputs such as `--foo foo`, this would parse `foo` as the
+  /// value. However, the input `--foo --bar foo bar` would
+  /// result in an error. Even though two values are provided, they don’t
+  /// succeed each option. Parsing would result in an error such as the following.
   ///
   ///     Error: Missing value for '--foo <foo>'
   ///     Usage: command [--foo <foo>]
@@ -118,12 +118,12 @@ public enum SingleValueParsingStrategy {
   /// Parse the next input, even if it could be interpreted as an option or
   /// flag.
   ///
-  /// For input such as `--foo --bar baz`, if `.unconditional` is used for `foo`,
+  /// For inputs such as `--foo --bar baz`, if `.unconditional` is used for `foo`,
   /// this would read `--bar` as the value for `foo` and would use `baz` as
   /// the next positional argument.
   ///
-  /// This allows reading negative numeric values, or capturing flags to be
-  /// passed through to another program, since the leading hyphen is normally
+  /// This allows reading negative numeric values or capturing flags to be
+  /// passed through to another program since the leading hyphen is normally
   /// interpreted as the start of another option.
   ///
   /// - Note: This is usually *not* what users would expect. Use with caution.
@@ -136,7 +136,7 @@ public enum SingleValueParsingStrategy {
   /// to find the next available value. This may be *unexpected* for users.
   /// Use with caution.
   ///
-  /// For example, if `--foo` takes an values, then the input `--foo --bar bar`
+  /// For example, if `--foo` takes a value, then the input `--foo --bar bar`
   /// would be parsed such that the value `bar` is used for `--foo`.
   case scanningForValue
 }
@@ -147,24 +147,24 @@ public enum ArrayParsingStrategy {
   /// Parse one value per option, joining multiple into an array.
   ///
   /// For example, for a parsable type with a property defined as
-  /// `@Option(parsing: .singleValue) var read: [String]`
+  /// `@Option(parsing: .singleValue) var read: [String]`,
   /// the input `--read foo --read bar` would result in the array
   /// `["foo", "bar"]`. The same would be true for the input
   /// `--read=foo --read=bar`.
   ///
   /// - Note: This follows the default behavior of differentiating between values and options. As
-  ///     such the value for this option will be the next value (non-option) in the input. For the
+  ///     such, the value for this option will be the next value (non-option) in the input. For the
   ///     above example, the input `--read --name Foo Bar` would parse `Foo` into
   ///     `read` (and `Bar` into `name`).
   case singleValue
   
-  /// Parse the value immediatly after the option while allowing repeating options, joining multiple into an array.
+  /// Parse the value immediately after the option while allowing repeating options, joining multiple into an array.
   ///
   /// This is identical to `.singleValue` except that the value will be read
-  /// from the input immediatly after the option even it it could be interpreted as an option.
+  /// from the input immediately after the option, even if it could be interpreted as an option.
   ///
   /// For example, for a parsable type with a property defined as
-  /// `@Option(parsing: .unconditionalSingleValue) var read: [String]`
+  /// `@Option(parsing: .unconditionalSingleValue) var read: [String]`,
   /// the input `--read foo --read bar` would result in the array
   /// `["foo", "bar"]` -- just as it would have been the case for `.singleValue`.
   ///
@@ -176,11 +176,11 @@ public enum ArrayParsingStrategy {
   /// Parse all values up to the next option.
   ///
   /// For example, for a parsable type with a property defined as
-  /// `@Option(parsing: .upToNextOption) var files: [String]`
+  /// `@Option(parsing: .upToNextOption) var files: [String]`,
   /// the input `--files foo bar` would result in the array
   /// `["foo", "bar"]`.
   ///
-  /// Parsing stops as soon as there’s another option in the input, such that
+  /// Parsing stops as soon as there’s another option in the input such that
   /// `--files foo bar --verbose` would also set `files` to the array
   /// `["foo", "bar"]`.
   case upToNextOption
@@ -195,10 +195,10 @@ public enum ArrayParsingStrategy {
   ///     ------------
   ///     options.passthrough == ["--foo", "1", "--bar", "2", "-xvf"]
   ///
-  /// - Note: This will read all input following the option, without attempting to do any parsing. This is
+  /// - Note: This will read all inputs following the option without attempting to do any parsing. This is
   /// usually *not* what users would expect. Use with caution.
   ///
-  /// Consider using a trailing `@Argument` instead, and letting users explicitly turn off parsing
+  /// Consider using a trailing `@Argument` instead and letting users explicitly turn off parsing
   /// through the terminator `--`. That is the more common approach. For example:
   /// ```swift
   /// struct Options: ParsableArguments {
@@ -209,13 +209,13 @@ public enum ArrayParsingStrategy {
   ///     var remainder: [String]
   /// }
   /// ```
-  /// would allow to parse the input `--name Foo -- Bar --baz` such that the `remainder`
-  /// would hold the values `["Bar", "--baz"]`.
+  /// would parse the input `--name Foo -- Bar --baz` such that the `remainder`
+  /// would hold the value `["Bar", "--baz"]`.
   case remaining
 }
 
 extension Option {
-  /// Creates a property that reads its value from an labeled option, parsing
+  /// Creates a property that reads its value from a labeled option, parsing
   /// with the given closure.
   ///
   /// If the property has an `Optional` type, or you provide a non-`nil`
