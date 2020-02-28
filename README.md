@@ -3,13 +3,12 @@
 ## Usage
 
 Begin by declaring a type that defines the information you need to collect from the command line.
-Decorate each stored property with one of `ArgumentParser`'s property wrappers,
-and declare conformance to `ParsableCommand`.
+Decorate each stored property with one of `ArgumentParser`'s property wrappers.
 
 ```swift
 import ArgumentParser
 
-struct Repeat: ParsableCommand {
+struct Repeat {
     @Flag(help: "Include a counter with each repetition.")
     var includeCounter: Bool
 
@@ -21,14 +20,14 @@ struct Repeat: ParsableCommand {
 }
 ```
 
-Next, implement the `run()` method on your type, 
+Next, declare conformance to `ParsableCommand` and implement the `run()` method on your type, 
 and kick off execution by calling the type's static `main()` method.  
 The `ArgumentParser` library parses the command-line arguments,
 instantiates your command type, and then either executes your custom `run()` method 
 or exits with useful a message.
 
 ```swift
-extension Repeat {
+extension Repeat: ParsableCommand {
     func run() throws {
         let repeatCount = count ?? .max
 
@@ -68,6 +67,8 @@ OPTIONS:
   -c, --count <count>     The number of times to repeat 'phrase'.
   -h, --help              Show help for this command.
 ```
+
+For more information and documentation about all supported options, see [the `Documentation` folder at the root of the repository](https://github.com/apple/swift-argument-parser/tree/master/Documentation).
 
 ## Examples
 
