@@ -18,6 +18,8 @@ struct Repeat: ParsableCommand {
 
     @Argument(help: "The phrase to repeat.")
     var phrase: String
+
+    // continued below…
 }
 ```
 
@@ -28,7 +30,10 @@ instantiates your command type, and then either executes your custom `run()` met
 or exits with useful a message.
 
 ```swift
-extension Repeat {
+struct Repeat: ParsableCommand {
+
+    // continued from above…
+
     func run() throws {
         let repeatCount = count ?? .max
 
