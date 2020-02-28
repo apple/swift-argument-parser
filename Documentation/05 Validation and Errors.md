@@ -57,7 +57,7 @@ hey
 
 ## Handling Post-Validation Errors
 
-The `ValidationError` type is a special `ArgumentParser` error — a validation error's message is always accompanied by an appropriate usage string. You can throw other errors, from either the `validate()` or `run`()` method to indicate that something has gone wrong that isn't validation-specific.
+The `ValidationError` type is a special `ArgumentParser` error — a validation error's message is always accompanied by an appropriate usage string. You can throw other errors, from either the `validate()` or `run()` method to indicate that something has gone wrong that isn't validation-specific.
 
 ```swift
 struct LineCount: ParsableCommand {
