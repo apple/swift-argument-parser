@@ -18,6 +18,8 @@ struct Repeat: ParsableCommand {
 
     @Argument(help: "The phrase to repeat.")
     var phrase: String
+
+    // continued below…
 }
 ```
 
@@ -28,7 +30,10 @@ instantiates your command type, and then either executes your custom `run()` met
 or exits with useful a message.
 
 ```swift
-extension Repeat {
+struct Repeat: ParsableCommand {
+
+    // continued from above…
+
     func run() throws {
         let repeatCount = count ?? .max
 
@@ -69,6 +74,8 @@ OPTIONS:
   -h, --help              Show help for this command.
 ```
 
+For more information and documentation about all supported options, see [the `Documentation` folder at the root of the repository](https://github.com/apple/swift-argument-parser/tree/master/Documentation).
+
 ## Examples
 
 This repository includes a few examples of using the library:
@@ -99,4 +106,4 @@ Add the following line to the dependencies in your `Package.swift` file:
 > **Note:** Because `ArgumentParser` is under active development,
 source-stability is only guaranteed within minor versions (e.g. between `0.0.3` and `0.0.4`).
 If you don't want potentially source-breaking package updates,
-you can specify your package dependency using `.upToNextMinorVersion(from: "0.0.1")` instead.
+you can specify your package dependency using `.upToNextMinor(from: "0.0.1")` instead.

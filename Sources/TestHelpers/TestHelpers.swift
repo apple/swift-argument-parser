@@ -12,7 +12,7 @@
 import XCTest
 import ArgumentParser
 
-// extentions to the ParsableArguments protocol to facilitate XCTestExpectation support
+// extensions to the ParsableArguments protocol to facilitate XCTestExpectation support
 public protocol TestableParsableArguments: ParsableArguments {
   var didValidateExpectation: XCTestExpectation { get }
 }
@@ -23,7 +23,7 @@ public extension TestableParsableArguments {
   }
 }
 
-// extentions to the ParsableCommand protocol to facilitate XCTestExpectation support
+// extensions to the ParsableCommand protocol to facilitate XCTestExpectation support
 public protocol TestableParsableCommand: ParsableCommand, TestableParsableArguments {
   var didRunExpectation: XCTestExpectation { get }
 }

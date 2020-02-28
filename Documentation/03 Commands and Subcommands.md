@@ -40,7 +40,7 @@ struct Math: ParsableCommand {
 }
 ```
 
-`Math` lists its three subcommands by their types; we'll see the definitions of `Math`, `Multiply`, and `Statistics` below. `Add` is also given as a default subcommand — this means that it is selected if a user leaves out a subcommand name:
+`Math` lists its three subcommands by their types; we'll see the definitions of `Add`, `Multiply`, and `Statistics` below. `Add` is also given as a default subcommand — this means that it is selected if a user leaves out a subcommand name:
 
 ```
 % math 10 15 7

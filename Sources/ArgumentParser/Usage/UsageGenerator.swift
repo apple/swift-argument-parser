@@ -151,7 +151,7 @@ extension ArgumentSet {
   
   /// Will generate a descriptive help message if possible.
   ///
-  /// If no decriptive help message can be generated `nil` will be returned.
+  /// If no descriptive help message can be generated, `nil` will be returned.
   ///
   /// - Parameter error: the parse error that occurred.
   func errorDescription(error: Swift.Error) -> String? {

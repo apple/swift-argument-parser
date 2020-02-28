@@ -38,7 +38,7 @@ enum MessageInfo {
     default:
       commandStack = [type.asCommand]
       // if the error wasn't one of our two Error types, wrap it as a userValidationError
-      // to be handled appropirately below
+      // to be handled appropriately below
       parserError = .userValidationError(error)
     }
     
