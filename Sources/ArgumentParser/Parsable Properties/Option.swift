@@ -13,7 +13,7 @@
 ///
 /// An option is a value that can be specified as a named value on the command
 /// line. An option can have a default values specified as part of its
-/// declaration; options with optional `Value` types impicitly have `nil` as
+/// declaration; options with optional `Value` types implicitly have `nil` as
 /// their default value.
 ///
 ///     struct Options: ParsableArguments {
@@ -158,10 +158,10 @@ public enum ArrayParsingStrategy {
   ///     `read` (and `Bar` into `name`).
   case singleValue
   
-  /// Parse the value immediatly after the option while allowing repeating options, joining multiple into an array.
+  /// Parse the value immediately after the option while allowing repeating options, joining multiple into an array.
   ///
   /// This is identical to `.singleValue` except that the value will be read
-  /// from the input immediatly after the option even it it could be interpreted as an option.
+  /// from the input immediately after the option even it it could be interpreted as an option.
   ///
   /// For example, for a parsable type with a property defined as
   /// `@Option(parsing: .unconditionalSingleValue) var read: [String]`
