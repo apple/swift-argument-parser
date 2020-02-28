@@ -99,4 +99,4 @@ Add the following line to the dependencies in your `Package.swift` file:
 > **Note:** Because `ArgumentParser` is under active development,
 source-stability is only guaranteed within minor versions (e.g. between `0.0.3` and `0.0.4`).
 If you don't want potentially source-breaking package updates,
-you can specify your package dependency using `.upToNextMinorVersion(from: "0.0.1")` instead.
+you can specify your package dependency using `.upToNextMinor(from: "0.0.1")` instead.
