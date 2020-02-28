@@ -65,9 +65,9 @@ Count.main()
 
 In the code above, the `inputFile` and `outputFile` properties use the `@Argument` property wrapper. `ArgumentParser` uses this wrapper to denote a positional command-line input — because `inputFile` is specified first in the `Count` type, it's the first value read from the command-line, and `outputFile` is read second.
 
-We've implemented the command's logic in its `run()` method. Here, we're printing out a message confirming the names of the files the user gave. (You can find a full implementation of the completed command at the end of this guide.)
+We have implemented the command's logic in its `run()` method. Here, we are printing out a message confirming the names of the files the user gave. (You can find a full implementation of the completed command at the end of this guide.)
 
-Finally, you tell the parser to execute the `Count` command by calling its static `main()` method. This method parses the command-line arguments, verifies that they match up with what we've defined in `Count`, and either calls the `run()` method or exits with a helpful message.
+Finally, you tell the parser to execute the `Count` command by calling its static `main()` method. This method parses the command-line arguments, verifies that they match up with what we have defined in `Count`, and either calls the `run()` method or exits with a helpful message.
 
 
 ## Working with Named Options
@@ -179,7 +179,7 @@ struct Count: ParsableCommand {
 }
 ```
 
-The default name specification is `.long`, which uses a property's with a two-dash prefix. `.short` uses only the first letter of a property's name with a single-dash prefix, and allows combining groups of short options. You can specify custom short and long names with the `.customShort(_:)` and `.customLong(_:)` methods, respectively, or use the combined `.shortAndLong` property to specify the common case of both the short and long derived names.
+The default name specification is `.long`, which uses a property's name with a two-dash prefix. `.short` uses only the first letter of a property's name with a single-dash prefix, and allows combining groups of short options. You can specify custom short and long names with the `.customShort(_:)` and `.customLong(_:)` methods, respectively, or use the combined `.shortAndLong` property to specify the common case of both the short and long derived names.
 
 ## Providing Help
 
