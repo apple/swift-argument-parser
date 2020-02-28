@@ -63,7 +63,7 @@ struct Count: ParsableCommand {
 Count.main()
 ```
 
-In the code above, the `inputFile` and `outputFile` properties use the `@Argument` property wrapper. `ArgumentParser` uses this wrapper to denote a positional command-line input — because `inputFile` is specified first in the `Count` type, it's the first value read from the command-line, and `outputFile` is read second.
+In the code above, the `inputFile` and `outputFile` properties use the `@Argument` property wrapper. `ArgumentParser` uses this wrapper to denote a positional command-line input — because `inputFile` is specified first in the `Count` type, it's the first value read from the command line, and `outputFile` is read second.
 
 We've implemented the command's logic in its `run()` method. Here, we're printing out a message confirming the names of the files the user gave. (You can find a full implementation of the completed command at the end of this guide.)
 
@@ -100,9 +100,9 @@ struct Count: ParsableCommand {
 }
 ```
 
-The `@Option` property wrapper denotes a command-line input that looks like `--name value`, deriving its name from the name of your property. 
+The `@Option` property wrapper denotes a command-line input that looks like `--name <value>`, deriving its name from the name of your property. 
 
-This interface has a trade-off for the users of our `count` tool: With `@Argument`, users don't need to type as much, but have to remember whether the input file or the output file needs to be given first. Using `@Option` makes the user type a little more, but the distinction between values is explicit. Options are order-independent, as well, so the user can name the input and output files in either order:
+This interface has a trade-off for the users of our `count` tool: With `@Argument`, users don't need to type as much but have to remember whether the input file or the output file needs to be given first. Using `@Option` makes the user type a little more, but the distinction between values is explicit. Options are order-independent, as well, so the user can name the input and output files in either order:
 
 ```
 % count --output-file readme.counts --input-file readme.md
@@ -151,7 +151,7 @@ The `@Flag` property wrapper denotes a command-line input that looks like `--nam
 
 ## Using Custom Names
 
-We can customize the names of our options and add an alternative to the `verbose` flag, so that users can specify `-v` instead of `--verbose`. The new interface will look like this:
+We can customize the names of our options and add an alternative to the `verbose` flag so that users can specify `-v` instead of `--verbose`. The new interface will look like this:
 
 ```
 % count -v -i readme.md -o readme.counts
@@ -179,7 +179,7 @@ struct Count: ParsableCommand {
 }
 ```
 
-The default name specification is `.long`, which uses a property's with a two-dash prefix. `.short` uses only the first letter of a property's name with a single-dash prefix, and allows combining groups of short options. You can specify custom short and long names with the `.customShort(_:)` and `.customLong(_:)` methods, respectively, or use the combined `.shortAndLong` property to specify the common case of both the short and long derived names.
+The default name specification is `.long`, which uses a property's name with a two-dash prefix. `.short` uses only the first letter of a property's name with a single-dash prefix, and allows combining groups of short options. You can specify custom short and long names with the `.customShort(_:)` and `.customLong(_:)` methods, respectively, or use the combined `.shortAndLong` property to specify the common case of both the short and long derived names.
 
 ## Providing Help
 
@@ -196,7 +196,7 @@ OPTIONS:
   -h, --help              Show help information.
 ```
 
-This is a great start — you can see that all the custom names are visible, and the help shows that values are expected for the `--input` and `--output` options. However, our custom options and flag don't have any descriptive text. Let's add that now, by passing string literals as the `help` parameter:
+This is a great start — you can see that all the custom names are visible, and the help shows that values are expected for the `--input` and `--output` options. However, our custom options and flag don't have any descriptive text. Let's add that now by passing string literals to the `help` parameter:
 
 ```swift
 struct Count: ParsableCommand {

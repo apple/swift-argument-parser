@@ -8,7 +8,7 @@ While `ArgumentParser` validates that the inputs given by your user match the re
 
 To validate your commands properties after parsing, implement the `validate()` method on any `ParsableCommand` or `ParsableArguments` type. Throwing an error from the `validate()` method causes the program to print a message to standard error and exit with an error code, preventing the `run()` method from being called with invalid inputs.
 
-Here's a command that prints out one or more random elements from the list you provide. Its `validate()` method catches three different errors that a user can make, and throws a relevant error for each one. 
+Here's a command that prints out one or more random elements from the list you provide. Its `validate()` method catches three different errors that a user can make and throws a relevant error for each one. 
 
 ```swift
 struct Select: ParsableCommand {

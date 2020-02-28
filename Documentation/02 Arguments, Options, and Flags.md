@@ -4,7 +4,7 @@ Use the `@Argument`, `@Option` and `@Flag` property wrappers to declare the comm
 
 When creating commands, you can define three primary kinds of command-line inputs:
 
-- *Arguments* are values given by a user, and are read in order from first to last. For example, this command is called with three file names as arguments:
+- *Arguments* are values given by a user and are read in order from first to last. For example, this command is called with three file names as arguments:
 
   ```
   % example file1.swift file2.swift file3.swift
@@ -108,7 +108,7 @@ struct Example: ParsableCommand {
   % example --input-file file1.swift
   ```
 
-> **Note:** You can also pass `withSingleDash: true` to `.customLong` to create a single-dash flag or option, such as `-verbose`. Use this name specification only when necessary, such as when migrating a legacy command line interface. Using long names with a single-dash prefix can lead to ambiguity with combined short names: it may not be obvious whether `-file` is a single option or the combination of the four short options `-f`, `-i`, `-l`, and `-e`.
+> **Note:** You can also pass `withSingleDash: true` to `.customLong` to create a single-dash flag or option, such as `-verbose`. Use this name specification only when necessary, such as when migrating a legacy command-line interface. Using long names with a single-dash prefix can lead to ambiguity with combined short names: it may not be obvious whether `-file` is a single option or the combination of the four short options `-f`, `-i`, `-l`, and `-e`.
 
 ## Parsing custom types
 
@@ -253,7 +253,7 @@ struct Example: ParsableCommand {
 }
 ```
 
-`verbose` in this example defaults to zero, and counts the number of times that `-v` or `--verbose` is given.
+In this example, `verbose` defaults to zero, and counts the number of times that `-v` or `--verbose` is given.
 
 ```
 % example --verbose
@@ -303,7 +303,7 @@ The `.unconditional` parsing strategy uses the immediate next input for the valu
 Verbose: false, name: --verbose, file: Tomás
 ```
 
-The `.scanningForValue` strategy, on the other hand, looks ahead in the list of command-line inputs and uses the first un-prefixed value as the input, even if that requires skipping over other flags or options.  If `name` were defined as `@Option(parsing: . scanningForValue) var name: String`, the parser would look ahead to find `Tomás`, then pick up parsing where it left off to get the `--verbose` flag:
+The `.scanningForValue` strategy, on the other hand, looks ahead in the list of command-line inputs and uses the first un-prefixed value as the input, even if that requires skipping over other flags or options.  If `name` were defined as `@Option(parsing: .scanningForValue) var name: String`, the parser would look ahead to find `Tomás`, then pick up parsing where it left off to get the `--verbose` flag:
 
 ```
 % example --name --verbose Tomás

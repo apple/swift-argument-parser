@@ -4,7 +4,7 @@ When command-line programs grow larger, it can be useful to divide them into a g
 
 Generally, these subcommands each have their own configuration options, as well as options that are shared across several or all aspects of the larger program.
 
-You can build a program with commands and subcommands by defining multiple command types and specifying each command's subcommands in its configuration. For example, here's the interface of a `math` utility that performs operations on a series of values given at the command line.
+You can build a program with commands and subcommands by defining multiple command types and specifying each command's subcommands in its configuration. For example, here's the interface of a `math` utility that performs operations on a series of values given on the command line.
 
 ```
 % math add 10 15 7
@@ -49,7 +49,7 @@ struct Math: ParsableCommand {
 
 Next, define a `ParsableArguments` type with properties that will be shared across multiple subcommands. Types that conform to `ParsableArguments` can be parsed from command-line arguments, but don't provide any execution through a `run()` method.
 
-In this case, the `Options` type accepts a `--hexidecimal-output` flag and expects a list of integers.
+In this case, the `Options` type accepts a `--hexadecimal-output` flag and expects a list of integers.
 
 ```swift
 struct Options: ParsableArguments {
@@ -106,7 +106,7 @@ extension Math {
 }
 ```
 
-Let's finish our subcommands with the `Average` and `StandardDeviation` types. Each of them has slightly different arguments, so they don't use the `Options` type defined above. Each subcommand is ultimately independent, and can specify a combination of shared and unique arguments.
+Let's finish our subcommands with the `Average` and `StandardDeviation` types. Each of them has slightly different arguments, so they don't use the `Options` type defined above. Each subcommand is ultimately independent and can specify a combination of shared and unique arguments.
 
 ```swift
 extension Math.Statistics {
