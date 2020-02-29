@@ -29,19 +29,6 @@ enum Name: Equatable {
       self = .longWithSingleDash(String(baseName.dropFirst()))
     }
   }
-  
-  static func == (lhs: Name, rhs: Name) -> Bool {
-    switch (lhs, rhs) {
-    case (.long(let lhs), .long(let rhs)):
-      return lhs == rhs
-    case (.short(let lhs), .short(let rhs)):
-      return lhs == rhs
-    case (.longWithSingleDash(let lhs), .longWithSingleDash(let rhs)):
-      return lhs == rhs
-    default:
-      return false
-    }
-  }
 }
 
 extension Name {
