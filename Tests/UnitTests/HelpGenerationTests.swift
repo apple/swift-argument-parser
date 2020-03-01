@@ -74,4 +74,23 @@ extension HelpGenerationTests {
 
             """)
   }
+
+  struct Issue27: ParsableArguments {
+    @Option(default: "42")
+    var two: String
+    @Option(help: "The third option")
+    var three: String
+  }
+
+  func testHelpWithDefaultValueButNoDiscussion() {
+    AssertHelp(for: Issue27.self, equals: """
+            USAGE: issue27 [--two <two>] --three <three>
+
+            OPTIONS:
+              --two <two>             (default: 42)
+              --three <three>         The third option
+              -h, --help              Show help information.
+
+            """)
+  }
 }
