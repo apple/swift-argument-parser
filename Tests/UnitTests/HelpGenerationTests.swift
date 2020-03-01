@@ -93,4 +93,29 @@ extension HelpGenerationTests {
 
             """)
   }
+
+  struct D: ParsableCommand {
+
+    @Option(default: "John", help: "Your name.")
+    var name: String
+
+    @Option(default: 20, help: "Your age.")
+    var age: Int
+
+    @Option(default: false, help: "Whether logging is enabled.")
+    var logging: Bool
+  }
+
+  func testHelpWithDefaultValues() {
+    AssertHelp(for: D.self, equals: """
+            USAGE: d [--name <name>] [--age <age>] [--logging <logging>]
+
+            OPTIONS:
+              --name <name>           Your name. (default: John)
+              --age <age>             Your age. (default: 20)
+              --logging <logging>     Whether logging is enabled. (default: false)
+              -h, --help              Show help information.
+
+            """)
+  }
 }
