@@ -83,6 +83,42 @@ extension Argument where Value: ExpressibleByArgument {
   }
 }
 
+/// The strategy to use when parsing multiple values from `@Option` arguments
+/// into an array.
+public enum ArgumentArrayParsingStrategy {
+  /// Parse only unprefixed values from the command-line input, ignoring
+  /// any inputs that have a dash prefix.
+  ///
+  /// For example, for a parsable type defined as following:
+  ///
+  ///     struct Options: ParsableArguments {
+  ///         @Flag() var verbose: Bool
+  ///         @Argument(parsing: .remaining) var words: [String]
+  ///     }
+  ///
+  /// Parsing the input `--verbose one two` or `one two --verbose` would result
+  /// in `Options(verbose: true, words: ["one", "two"])`. Parsing the input
+  /// `one two --other` would result in an unknown option error for `--other`.
+  ///
+  /// This is the default strategy for parsing argument arrays.
+  case remaining
+  
+  /// Parse all remaining inputs after parsing any known options or flags,
+  /// including dash-prefixed inputs.
+  ///
+  /// For example, for a parsable type defined as following:
+  ///
+  ///     struct Options: ParsableArguments {
+  ///         @Flag() var verbose: Bool
+  ///         @Argument(parsing: .remainingValues) var words: [String]
+  ///     }
+  ///
+  /// Parsing the input `--verbose one two --other` would include the `--other`
+  /// flag in `words`, resulting in
+  /// `Options(verbose: true, words: ["one", "two", "--other"])`.
+  case unconditionalRemaining
+}
+
 extension Argument {
   /// Creates a property that reads its value from an argument, parsing with
   /// the given closure.
@@ -111,17 +147,23 @@ extension Argument {
   ///
   /// - Parameter help: Information about how to use this argument.
   public init<Element>(
+    parsing parsingStrategy: ArgumentArrayParsingStrategy = .remaining,
     help: ArgumentHelp? = nil
   )
     where Element: ExpressibleByArgument, Value == Array<Element>
   {
     self.init(_parsedValue: .init { key in
       let help = ArgumentDefinition.Help(options: [.isOptional, .isRepeating], help: help, key: key)
-      let arg = ArgumentDefinition(kind: .positional, help: help, update: .appendToArray(forType: Element.self, key: key), initial: { origin, values in
-        values.set([], forKey: key, inputOrigin: origin)
-      })
+      let arg = ArgumentDefinition(
+        kind: .positional,
+        help: help,
+        parsingStrategy: parsingStrategy == .remaining ? .nextAsValue : .allRemainingInput,
+        update: .appendToArray(forType: Element.self, key: key),
+        initial: { origin, values in
+          values.set([], forKey: key, inputOrigin: origin)
+        })
       return ArgumentSet(alternatives: [arg])
-      })
+    })
   }
   
   /// Creates a property that reads an array from zero or more arguments,
@@ -134,6 +176,7 @@ extension Argument {
   ///   - transform: A closure that converts a string into this property's
   ///     element type or throws an error.
   public init<Element>(
+    parsing parsingStrategy: ArgumentArrayParsingStrategy = .remaining,
     help: ArgumentHelp? = nil,
     transform: @escaping (String) throws -> Element
   )
@@ -141,17 +184,21 @@ extension Argument {
   {
     self.init(_parsedValue: .init { key in
       let help = ArgumentDefinition.Help(options: [.isOptional, .isRepeating], help: help, key: key)
-      let arg = ArgumentDefinition(kind: .positional, help: help, update: .unary({
-        (origin, name, valueString, parsedValues) in
-        let element = try transform(valueString)
-        parsedValues.update(forKey: key, inputOrigin: origin, initial: [Element](), closure: {
-          $0.append(element)
+      let arg = ArgumentDefinition(
+        kind: .positional,
+        help: help,
+        parsingStrategy: parsingStrategy == .remaining ? .nextAsValue : .allRemainingInput,
+        update: .unary({
+          (origin, name, valueString, parsedValues) in
+          let element = try transform(valueString)
+          parsedValues.update(forKey: key, inputOrigin: origin, initial: [Element](), closure: {
+            $0.append(element)
+          })
+        }),
+        initial: { origin, values in
+          values.set([], forKey: key, inputOrigin: origin)
         })
-      }),
-                                   initial: { origin, values in
-                                    values.set([], forKey: key, inputOrigin: origin)
-      })
       return ArgumentSet(alternatives: [arg])
-      })
+    })
   }
 }
