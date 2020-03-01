@@ -185,10 +185,10 @@ Flags are most frequently used for `Bool` properties, with a default value of `f
 
 ```swift
 struct Example: ParsableCommand {
-    @Flag(inversion: .prefixedNo)
+    @Flag(default: true, inversion: .prefixedNo)
     var index: Bool
 
-    @Flag(inversion: .prefixedEnableDisable)
+    @Flag(default: nil, inversion: .prefixedEnableDisable)
     var requiredElement: Bool
     
     func run() throws {
@@ -197,13 +197,17 @@ struct Example: ParsableCommand {
 }
 ```
 
-Since these flags are non-optional and don't have default values, they're now required when calling the command. The specified prefixes are prepended to the long names for the flags:
+When providing a flag inversion, you can pass your own default as the `default` parameter. If you want to require that the user specify one of the two inversions, pass `nil` as the `default` parameter.
+
+In the `Example` command defined above, a flag is required for the `requiredElement` property. The specified prefixes are prepended to the long names for the flags:
 
 ```
-% example --index --enable-required-element
+% example --enable-required-element
 true true
 % example --no-index --disable-required-element
 false false
+% example --index
+Error: Missing one of: '--enable-required-element', '--disable-required-element'
 ```
 
 You can also use flags with types that are `CaseIterable` and `RawRepresentable` with a string raw value. This is useful for providing custom names for a Boolean value, for an exclusive choice between more than two names, or for collecting multiple values from a set of defined choices.
