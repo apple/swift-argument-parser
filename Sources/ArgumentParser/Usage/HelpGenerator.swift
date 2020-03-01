@@ -247,7 +247,7 @@ internal extension ParsableCommand {
   }
 }
 
-#if os(Linux)
+#if canImport(Glibc)
 import Glibc
 func ioctl(_ a: Int32, _ b: Int32, _ p: UnsafeMutableRawPointer) -> Int32 {
   ioctl(CInt(a), UInt(b), p)
