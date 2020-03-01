@@ -125,7 +125,7 @@ extension HelpTests {
                   --enable-package-manifest-caching/--disable-package-manifest-caching
                                           Cache Package.swift manifests (default: true)
                   --enable-prefetching/--disable-prefetching
-                                           (default: true)
+                                          (default: true)
                   --enable-sandbox/--disable-sandbox
                                           Use sandbox when executing subprocesses (default:
                                           true)
