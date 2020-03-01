@@ -156,7 +156,8 @@ extension Flag where Value == Bool {
   ///
   /// - Parameters:
   ///   - name: A specification for what names are allowed for this flag.
-  ///   - initial: The default value for this flag.
+  ///   - initial: The default value for this flag. If `initial` is `nil`, one
+  ///     of the two inversions is required.
   ///   - inversion: The method for converting this flags name into an on/off
   ///     pair.
   ///   - help: Information about how to use this flag.
@@ -198,7 +199,7 @@ extension Flag where Value: CaseIterable, Value: RawRepresentable, Value.RawValu
   /// - Parameters:
   ///   - name: A specification for what names are allowed for this flag.
   ///   - initial: A default value to use for this property. If `initial` is
-  ///     non-`nil`, this flag is not required.
+  ///     `nil`, this flag is required.
   ///   - exclusivity: The behavior to use when multiple flags are specified.
   ///   - help: Information about how to use this flag.
   public init(
