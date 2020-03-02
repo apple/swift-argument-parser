@@ -32,19 +32,19 @@ extension ErrorMessageTests {
   }
   
   func testUnknownOption_1() {
-    AssertErrorMessage(Bar.self, ["--name", "a", "--format", "b", "--verbose"], "Unexpected argument '--verbose'")
+    AssertErrorMessage(Bar.self, ["--name", "a", "--format", "b", "--verbose"], "Unknown option '--verbose'")
   }
   
   func testUnknownOption_2() {
-    AssertErrorMessage(Bar.self, ["--name", "a", "--format", "b", "-q"], "Unexpected argument '-q'")
+    AssertErrorMessage(Bar.self, ["--name", "a", "--format", "b", "-q"], "Unknown option '-q'")
   }
   
   func testUnknownOption_3() {
-    AssertErrorMessage(Bar.self, ["--name", "a", "--format", "b", "-bar"], "Unexpected argument '-bar'")
+    AssertErrorMessage(Bar.self, ["--name", "a", "--format", "b", "-bar"], "Unknown option '-bar'")
   }
   
   func testUnknownOption_4() {
-    AssertErrorMessage(Bar.self, ["--name", "a", "-foz", "b"], "2 unexpected arguments: '-o', '-z'")
+    AssertErrorMessage(Bar.self, ["--name", "a", "-foz", "b"], "Unknown option '-o'")
   }
   
   func testMissingValue_1() {
@@ -107,5 +107,30 @@ extension ErrorMessageTests {
   func testInvalidNumber() {
     AssertErrorMessage(Qux.self, ["--number-two", "2", "a"], "The value 'a' is invalid for '<first-number>'")
     AssertErrorMessage(Qux.self, ["--number-two", "a", "1"], "The value 'a' is invalid for '--number-two <number-two>'")
+  }
+}
+
+fileprivate struct Qwz: ParsableArguments {
+  @Option() var name: String?
+  @Option(name: [.customLong("title", withSingleDash: true)]) var title: String?
+}
+
+extension ErrorMessageTests {
+  func testMispelledArgument_1() {
+    AssertErrorMessage(Qwz.self, ["--nme"], "Unknown option '--nme'. Did you mean '--name'?")
+    AssertErrorMessage(Qwz.self, ["-name"], "Unknown option '-name'. Did you mean '--name'?")
+  }
+  
+  func testMispelledArgument_2() {
+    AssertErrorMessage(Qwz.self, ["-ttle"], "Unknown option '-ttle'. Did you mean '-title'?")
+    AssertErrorMessage(Qwz.self, ["--title"], "Unknown option '--title'. Did you mean '-title'?")
+  }
+
+  func testMispelledArgument_3() {
+    AssertErrorMessage(Qwz.self, ["--not-similar"], "Unknown option '--not-similar'")
+  }
+
+  func testMispelledArgument_4() {
+    AssertErrorMessage(Qwz.self, ["-x"], "Unknown option '-x'")
   }
 }

@@ -246,16 +246,35 @@ extension ErrorMessageGenerator {
   var invalidState: String {
     return "Internal error. Invalid state while parsing command-line arguments."
   }
-  
+
+
   func unknownOptionMessage(origin: InputOrigin.Element, name: Name) -> String {
-    switch name {
-    case .long(let n):
-      return "Unknown option '--\(n)'"
-    case .short(let n):
-      return "Unknown option '-\(n)'"
-    case .longWithSingleDash(let n):
-      return "Unknown option '-\(n)'"
+    if case .short = name {
+      return "Unknown option '\(name.synopsisString)'"
     }
+    
+    // An empirically derived magic number
+    let SIMILARITY_FLOOR = 4
+
+    let notShort: (Name) -> Bool = { (name: Name) in
+      switch name {
+      case .short: return false
+      case .long: return true
+      case .longWithSingleDash: return true
+      }
+    }
+    let suggestion = arguments
+      .flatMap({ $0.names })
+      .filter({ $0.synopsisString.editDistance(to: name.synopsisString) < SIMILARITY_FLOOR }) // only include close enough suggestion
+      .filter(notShort) // exclude short option suggestions
+      .min(by: { lhs, rhs in // find the suggestion closest to the argument
+        lhs.synopsisString.editDistance(to: name.synopsisString) < rhs.synopsisString.editDistance(to: name.synopsisString)
+      })
+    
+    if let suggestion = suggestion {
+        return "Unknown option '\(name.synopsisString)'. Did you mean '\(suggestion.synopsisString)'?"
+    }
+    return "Unknown option '\(name.synopsisString)'"
   }
   
   func missingValueForOptionMessage(origin: InputOrigin, name: Name) -> String {
