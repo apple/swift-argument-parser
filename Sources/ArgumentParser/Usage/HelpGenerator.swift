@@ -150,7 +150,7 @@ internal struct HelpGenerator {
           i += 1
           
         } else {
-          let defaultValue = arg.help.defaultValue.flatMap { "(default: \($0))" } ?? ""
+          let defaultValue = arg.help.defaultValue.flatMap { $0.isEmpty ? nil : "(default: \($0))" } ?? ""
           synopsis = arg.synopsisForHelp ?? ""
           description = [arg.help.help?.abstract, defaultValue]
             .compactMap { $0 }
