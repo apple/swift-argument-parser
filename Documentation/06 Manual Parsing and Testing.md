@@ -88,7 +88,7 @@ All of the parsing methods â€” `parse()`, `parseOrExit()`, and `parseAsRoot()` â
 Let's update our `select` script above to strip out any words that contain all capital letters before parsing the inputs.
 
 ```swift
-let noShoutingArguments = CommandLine.arguments.filter { phrase in
+let noShoutingArguments = CommandLine.arguments.dropFirst().filter { phrase in
     phrase.uppercased() != phrase
 }
 let options = SelectOptions.parseOrExit(noShoutingArguments)
