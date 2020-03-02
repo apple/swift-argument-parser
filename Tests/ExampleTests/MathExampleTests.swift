@@ -105,9 +105,28 @@ final class MathExampleTests: XCTestCase {
             Error: Please provide at least one value to calculate the mode.
             Usage: math stats average [--kind <kind>] [<values> ...]
             """,
-      shouldError: true)
+      exitCode: EX_USAGE)
   }
 
+  func testMath_ExitCodes() throws {
+    AssertExecuteCommand(
+      command: "math stats quantiles --test-success-exit-code",
+      expected: "",
+      exitCode: EXIT_SUCCESS)
+    AssertExecuteCommand(
+      command: "math stats quantiles --test-failure-exit-code",
+      expected: "",
+      exitCode: EXIT_FAILURE)
+    AssertExecuteCommand(
+      command: "math stats quantiles --test-validation-exit-code",
+      expected: "",
+      exitCode: EX_USAGE)
+    AssertExecuteCommand(
+      command: "math stats quantiles --test-custom-exit-code 42",
+      expected: "",
+      exitCode: 42)
+  }
+  
   func testMath_Fail() throws {
     AssertExecuteCommand(
       command: "math --foo",
@@ -115,7 +134,7 @@ final class MathExampleTests: XCTestCase {
             Error: Unknown option '--foo'
             Usage: math add [--hex-output] [<values> ...]
             """,
-      shouldError: true)
+      exitCode: EX_USAGE)
     
     AssertExecuteCommand(
       command: "math ZZZ",
@@ -123,6 +142,6 @@ final class MathExampleTests: XCTestCase {
             Error: The value 'ZZZ' is invalid for '<values>'
             Usage: math add [--hex-output] [<values> ...]
             """,
-      shouldError: true)
+      exitCode: EX_USAGE)
   }
 }

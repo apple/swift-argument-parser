@@ -57,7 +57,7 @@ hey
 
 ## Handling Post-Validation Errors
 
-The `ValidationError` type is a special `ArgumentParser` error — a validation error's message is always accompanied by an appropriate usage string. You can throw other errors, from either the `validate()` or `run()` method to indicate that something has gone wrong that isn't validation-specific.
+The `ValidationError` type is a special `ArgumentParser` error — a validation error's message is always accompanied by an appropriate usage string. You can throw other errors, from either the `validate()` or `run()` method to indicate that something has gone wrong that isn't validation-specific. Errors that conform to `CustomStringConvertible` or `LocalizedError` provide the best experience for users.
 
 ```swift
 struct LineCount: ParsableCommand {
@@ -79,4 +79,24 @@ The throwing `String(contentsOfFile:encoding:)` initializer fails when the user 
 % line-count non-existing-file.swift
 Error: The file “non-existing-file.swift” couldn’t be opened because
 there is no such file.
+```
+
+If you print your error output yourself, you still need to throw an error from `validate()` or `run()`, so that your command exits with the appropriate exit code. To avoid printing an extra error message, use the `ExitCode` error, which has static properties for success, failure, and validation errors, or lets you specify a specific exit code.
+
+```swift
+struct RuntimeError: Error, CustomStringConvertible {
+    var description: String
+}
+
+struct Example: ParsableCommand {
+    @Argument() var inputFile: String
+    
+    func run() throws {
+        if !ExampleCore.processFile(inputFile) {
+            // ExampleCore.processFile(_:) prints its own errors
+            // and returns `false` on failure.
+            throw ExitCode.failure
+        }
+    }
+}
 ```

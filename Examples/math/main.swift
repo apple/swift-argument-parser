@@ -186,6 +186,34 @@ extension Math.Statistics {
 
         @Argument(help: "A group of floating-point values to operate on.")
         var values: [Double]
+
+        // These args and the validation method are for testing exit codes:
+        @Flag(help: .hidden)
+        var testSuccessExitCode: Bool
+        @Flag(help: .hidden)
+        var testFailureExitCode: Bool
+        @Flag(help: .hidden)
+        var testValidationExitCode: Bool
+        @Option(help: .hidden)
+        var testCustomExitCode: Int32?
+      
+        func validate() throws {
+            if testSuccessExitCode {
+                throw ExitCode.success
+            }
+            
+            if testFailureExitCode {
+                throw ExitCode.failure
+            }
+            
+            if testValidationExitCode {
+                throw ExitCode.validationFailure
+            }
+            
+            if let exitCode = testCustomExitCode {
+                throw ExitCode(exitCode)
+            }
+        }
     }
 }
 

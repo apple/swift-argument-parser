@@ -14,7 +14,7 @@
 enum MessageInfo {
   case help(text: String)
   case validation(message: String, usage: String)
-  case other(message: String)
+  case other(message: String, exitCode: Int32)
   
   init(error: Error, type: ParsableArguments.Type) {
     var commandStack: [ParsableCommand.Type]
@@ -61,16 +61,18 @@ enum MessageInfo {
         case .message(let message):
           self = .help(text: message)
         }
+      case let error as ExitCode:
+        self = .other(message: "", exitCode: error.code)
       case let error as LocalizedError where error.errorDescription != nil:
-        self = .other(message: error.errorDescription!)
+        self = .other(message: error.errorDescription!, exitCode: EXIT_FAILURE)
       default:
-        self = .other(message: String(describing: error))
+        self = .other(message: String(describing: error), exitCode: EXIT_FAILURE)
       }
     } else if let parserError = parserError {
       let message = ArgumentSet(commandStack.last!).helpMessage(for: parserError)
       self = .validation(message: message, usage: usage)
     } else {
-      self = .other(message: String(describing: error))
+      self = .other(message: String(describing: error), exitCode: EXIT_FAILURE)
     }
   }
   
@@ -80,7 +82,7 @@ enum MessageInfo {
       return text
     case .validation(message: let message, usage: _):
       return message
-    case .other(message: let message):
+    case .other(let message, _):
       return message
     }
   }
@@ -90,9 +92,10 @@ enum MessageInfo {
     case .help(text: let text):
       return text
     case .validation(message: let message, usage: let usage):
-      return "Error: \(message)\n\(usage)"
-    case .other(message: let message):
-      return "Error: \(message)"
+      let errorMessage = message.isEmpty ? "" : "Error: \(message)\n"
+      return errorMessage + usage
+    case .other(let message, _):
+      return message.isEmpty ? "" : "Error: \(message)"
     }
   }
   
@@ -105,9 +108,9 @@ enum MessageInfo {
 
   var exitCode: Int32 {
     switch self {
-    case .help: return EXIT_SUCCESS
-    case .validation: return EX_USAGE
-    case .other: return EXIT_FAILURE
+    case .help: return ExitCode.success.code
+    case .validation: return ExitCode.validationFailure.code
+    case .other(_, let exitCode): return exitCode
     }
   }
 }

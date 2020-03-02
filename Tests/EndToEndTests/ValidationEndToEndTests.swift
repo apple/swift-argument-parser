@@ -28,6 +28,10 @@ fileprivate enum UserValidationError: LocalizedError {
 }
 
 fileprivate struct Foo: ParsableArguments {
+  static var usageString: String = """
+    Usage: foo [--count <count>] [<names> ...] [--version] [--throw]
+    """
+  
   @Option()
   var count: Int?
   
@@ -40,6 +44,15 @@ fileprivate struct Foo: ParsableArguments {
   @Flag(name: [.customLong("throw")])
   var throwCustomError: Bool
   
+  @Flag(help: .hidden)
+  var showUsageOnly: Bool
+  
+  @Flag(help: .hidden)
+  var failValidationSilently: Bool
+
+  @Flag(help: .hidden)
+  var failSilently: Bool
+
   mutating func validate() throws {
     if version {
       throw CleanExit.message("0.0.1")
@@ -55,6 +68,18 @@ fileprivate struct Foo: ParsableArguments {
     
     if throwCustomError {
       throw UserValidationError.userValidationError
+    }
+    
+    if showUsageOnly {
+      throw ValidationError("")
+    }
+    
+    if failValidationSilently {
+      throw ExitCode.validationFailure
+    }
+    
+    if failSilently {
+      throw ExitCode.failure
     }
   }
 }
@@ -81,7 +106,7 @@ extension ValidationEndToEndTests {
     AssertErrorMessage(Foo.self, [], "Must specify at least one name.")
     AssertFullErrorMessage(Foo.self, [], """
             Error: Must specify at least one name.
-            Usage: foo [--count <count>] [<names> ...] [--version] [--throw]
+            \(Foo.usageString)
             """)
     
     AssertErrorMessage(Foo.self, ["--count", "3", "Joe"], """
@@ -89,12 +114,19 @@ extension ValidationEndToEndTests {
             """)
     AssertFullErrorMessage(Foo.self, ["--count", "3", "Joe"], """
             Error: Number of names (1) doesn't match count (3).
-            Usage: foo [--count <count>] [<names> ...] [--version] [--throw]
+            \(Foo.usageString)
             """)
   }
   
   func testCustomErrorValidation() {
     // verify that error description is printed if avaiable via LocalizedError
     AssertErrorMessage(Foo.self, ["--throw", "Joe"], UserValidationError.userValidationError.errorDescription!)
+  }
+  
+  func testEmptyErrorValidation() {
+    AssertErrorMessage(Foo.self, ["--show-usage-only", "Joe"], "")
+    AssertFullErrorMessage(Foo.self, ["--show-usage-only", "Joe"], Foo.usageString)
+    AssertFullErrorMessage(Foo.self, ["--fail-validation-silently", "Joe"], "")
+    AssertFullErrorMessage(Foo.self, ["--fail-silently", "Joe"], "")
   }
 }

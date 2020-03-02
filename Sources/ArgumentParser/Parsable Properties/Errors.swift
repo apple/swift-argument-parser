@@ -9,6 +9,14 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if canImport(Glibc)
+import Glibc
+#elseif canImport(Darwin)
+import Darwin
+#elseif canImport(MSVCRT)
+import MSVCRT
+#endif
+
 /// An error type that is presented to the user as an error with parsing their
 /// command-line input.
 public struct ValidationError: Error, CustomStringConvertible {
@@ -22,6 +30,29 @@ public struct ValidationError: Error, CustomStringConvertible {
   public var description: String {
     message
   }
+}
+
+/// An error type that only includes an exit code.
+///
+/// If you're printing custom errors messages yourself, you can throw this error
+/// to specify the exit code without adding any additional output to standard
+/// out or standard error.
+public struct ExitCode: Error {
+  var code: Int32
+
+  /// Creates a new `ExitCode` with the given code.
+  public init(_ code: Int32) {
+    self.code = code
+  }
+  
+  /// An exit code that indicates successful completion of a command.
+  public static let success = ExitCode(EXIT_SUCCESS)
+  
+  /// An exit code that indicates that the command failed.
+  public static let failure = ExitCode(EXIT_FAILURE)
+  
+  /// An exit code that indicates that the user provided invalid input.
+  public static let validationFailure = ExitCode(EX_USAGE)
 }
 
 /// An error type that represents a clean (i.e. non-error state) exit of the
