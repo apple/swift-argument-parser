@@ -19,11 +19,7 @@ internal struct HelpGenerator {
   internal static var _screenWidthOverride: Int? = nil
   
   struct Usage {
-    public var components: [String]
-    
-    public init(components: [String]) {
-      self.components = components
-    }
+    var components: [String]
     
     var rendered: String {
       components
@@ -33,15 +29,9 @@ internal struct HelpGenerator {
   
   struct Section {
     struct Element {
-      public var label: String
-      public var abstract: String
-      public var discussion: String
-      
-      public init(label: String, abstract: String = "", discussion: String = "") {
-        self.label = label
-        self.abstract = abstract
-        self.discussion = discussion
-      }
+      var label: String
+      var abstract: String = ""
+      var discussion: String = ""
       
       var paddedLabel: String {
         String(repeating: " ", count: HelpGenerator.helpIndent) + label
@@ -86,15 +76,8 @@ internal struct HelpGenerator {
     
     var header: Header
     var elements: [Element]
-    var discussion: String
-    var isSubcommands: Bool
-    
-    init(header: Header, elements: [Element], discussion: String = "", isSubcommands: Bool = false) {
-      self.header = header
-      self.elements = elements
-      self.discussion = discussion
-      self.isSubcommands = isSubcommands
-    }
+    var discussion: String = ""
+    var isSubcommands: Bool = false
     
     var rendered: String {
       guard !elements.isEmpty else { return "" }
@@ -106,13 +89,8 @@ internal struct HelpGenerator {
   }
   
   struct DiscussionSection {
-    var title: String
+    var title: String = ""
     var content: String
-    
-    init(title: String = "", content: String) {
-      self.title = title
-      self.content = content
-    }
   }
   
   var abstract: String

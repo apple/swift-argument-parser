@@ -41,11 +41,6 @@ struct ParsedValues {
   ///
   /// This is used for error output generation.
   var originalInput: [String]
-  
-  public init(elements: [Element] = [], originalInput: [String]) {
-    self.elements = elements
-    self.originalInput = originalInput
-  }
 }
 
 enum LenientParsedValues {
