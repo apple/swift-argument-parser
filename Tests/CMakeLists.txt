@@ -1,0 +1,2 @@
+add_subdirectory(EndToEndTests)
+add_subdirectory(UnitTests)
