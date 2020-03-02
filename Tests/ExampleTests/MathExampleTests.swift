@@ -102,7 +102,7 @@ final class MathExampleTests: XCTestCase {
     AssertExecuteCommand(
       command: "math --foo",
       expected: """
-            Error: Unexpected argument '--foo'
+            Error: Unknown option '--foo'
             Usage: math add [--hex-output] [<values> ...]
             """,
       shouldError: true)
