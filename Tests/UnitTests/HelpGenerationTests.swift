@@ -80,15 +80,21 @@ extension HelpGenerationTests {
     var two: String
     @Option(help: "The third option")
     var three: String
+    @Option(default: nil, help: "A fourth option")
+    var four: String?
+    @Option(default: "", help: "A fifth option")
+    var five: String
   }
 
   func testHelpWithDefaultValueButNoDiscussion() {
     AssertHelp(for: Issue27.self, equals: """
-            USAGE: issue27 [--two <two>] --three <three>
+            USAGE: issue27 [--two <two>] --three <three> [--four <four>] [--five <five>]
 
             OPTIONS:
               --two <two>             (default: 42)
               --three <three>         The third option
+              --four <four>           A fourth option
+              --five <five>           A fifth option
               -h, --help              Show help information.
 
             """)
