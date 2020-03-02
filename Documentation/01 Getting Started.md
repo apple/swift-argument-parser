@@ -102,7 +102,7 @@ struct Count: ParsableCommand {
 
 The `@Option` property wrapper denotes a command-line input that looks like `--name <value>`, deriving its name from the name of your property. 
 
-This interface has a trade-off for the users of our `count` tool: With `@Argument`, users don't need to type as much but have to remember whether the input file or the output file needs to be given first. Using `@Option` makes the user type a little more, but the distinction between values is explicit. Options are order-independent, as well, so the user can name the input and output files in either order:
+This interface has a trade-off for the users of our `count` tool: With `@Argument`, users don't need to type as much, but they have to remember whether to provide the input file or the output file first. Using `@Option` makes the user type a little more, but the distinction between values is explicit. Options are order-independent, as well, so the user can name the input and output files in either order:
 
 ```
 % count --output-file readme.counts --input-file readme.md
@@ -196,7 +196,7 @@ OPTIONS:
   -h, --help              Show help information.
 ```
 
-This is a great start — you can see that all the custom names are visible, and the help shows that values are expected for the `--input` and `--output` options. However, our custom options and flag don't have any descriptive text. Let's add that now by passing string literals to the `help` parameter:
+This is a great start — you can see that all the custom names are visible, and the help shows that values are expected for the `--input` and `--output` options. However, our custom options and flag don't have any descriptive text. Let's add that now by passing string literals as the `help` parameter:
 
 ```swift
 struct Count: ParsableCommand {

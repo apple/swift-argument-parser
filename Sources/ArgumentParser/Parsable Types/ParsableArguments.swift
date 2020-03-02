@@ -9,7 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if os(Linux)
+#if canImport(Glibc)
 import Glibc
 let _exit: (Int32) -> Never = Glibc.exit
 #else

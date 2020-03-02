@@ -166,7 +166,9 @@ internal struct HelpGenerator {
           let nextArg = args[i + 1]
           let defaultValue = arg.help.defaultValue.map { "(default: \($0))" } ?? ""
           synopsis = "\(arg.synopsisForHelp ?? "")/\(nextArg.synopsisForHelp ?? "")"
-          description = [arg.help.help?.abstract ?? nextArg.help.help?.abstract ?? "", defaultValue].joined(separator: " ")
+          description = [arg.help.help?.abstract ?? nextArg.help.help?.abstract, defaultValue]
+            .compactMap { $0 }
+            .joined(separator: " ")
           i += 1
           
         } else {
@@ -176,7 +178,9 @@ internal struct HelpGenerator {
               : "(default: \($0))"
             } ?? ""
           synopsis = arg.synopsisForHelp ?? ""
-          description = [arg.help.help?.abstract ?? "", defaultValue].joined(separator: " ")
+          description = [arg.help.help?.abstract, defaultValue]
+            .compactMap { $0 }
+            .joined(separator: " ")
         }
         
         let element = Section.Element(label: synopsis, abstract: description, discussion: arg.help.help?.discussion ?? "")
@@ -243,7 +247,7 @@ internal extension ParsableCommand {
   }
 }
 
-#if os(Linux)
+#if canImport(Glibc)
 import Glibc
 func ioctl(_ a: Int32, _ b: Int32, _ p: UnsafeMutableRawPointer) -> Int32 {
   ioctl(CInt(a), UInt(b), p)

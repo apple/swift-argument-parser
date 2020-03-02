@@ -107,7 +107,7 @@ public enum SingleValueParsingStrategy {
   /// For inputs such as `--foo foo`, this would parse `foo` as the
   /// value. However, the input `--foo --bar foo bar` would
   /// result in an error. Even though two values are provided, they don’t
-  /// succeed each option. Parsing would result in an error such as the following.
+  /// succeed each option. Parsing would result in an error such as the following:
   ///
   ///     Error: Missing value for '--foo <foo>'
   ///     Usage: command [--foo <foo>]

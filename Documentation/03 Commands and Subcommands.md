@@ -69,7 +69,7 @@ extension Math {
         static var configuration 
             = CommandConfiguration(abstract: "Print the sum of the values.")
 
-        @OptionGroup
+        @OptionGroup()
         var options: Math.Options
         
         func run() {
@@ -82,7 +82,7 @@ extension Math {
         static var configuration 
             = CommandConfiguration(abstract: "Print the product of the values.")
 
-        @OptionGroup
+        @OptionGroup()
         var options: Math.Options
         
         func run() {
