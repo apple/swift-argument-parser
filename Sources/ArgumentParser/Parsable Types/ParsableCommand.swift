@@ -65,7 +65,9 @@ extension ParsableCommand {
     do {
       try result.validate()
     } catch {
-      throw ParserError.userValidationError(error)
+      throw CommandError(
+        commandStack: parser.commandStack,
+        parserError: ParserError.userValidationError(error))
     }
     return result
   }

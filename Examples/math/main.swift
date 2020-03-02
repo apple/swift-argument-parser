@@ -100,7 +100,13 @@ extension Math.Statistics {
         
         @Argument(help: "A group of floating-point values to operate on.")
         var values: [Double]
-        
+
+        func validate() throws {
+            if (kind == .median || kind == .mode) && values.isEmpty {
+                throw ValidationError("Please provide at least one value to calculate the \(kind).")
+            }
+        }
+
         func calculateMean() -> Double {
             guard !values.isEmpty else {
                 return 0

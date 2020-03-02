@@ -98,6 +98,16 @@ final class MathExampleTests: XCTestCase {
     AssertExecuteCommand(command: "math help stats quantiles", expected: helpText)
   }
   
+  func testMath_CustomValidation() throws {
+    AssertExecuteCommand(
+      command: "math stats average --kind mode",
+      expected: """
+            Error: Please provide at least one value to calculate the mode.
+            Usage: math stats average [--kind <kind>] [<values> ...]
+            """,
+      shouldError: true)
+  }
+
   func testMath_Fail() throws {
     AssertExecuteCommand(
       command: "math --foo",
