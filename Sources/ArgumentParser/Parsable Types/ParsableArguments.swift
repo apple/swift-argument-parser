@@ -12,9 +12,12 @@
 #if canImport(Glibc)
 import Glibc
 let _exit: (Int32) -> Never = Glibc.exit
-#else
+#elseif canImport(Darwin)
 import Darwin
 let _exit: (Int32) -> Never = Darwin.exit
+#elseif canImport(MSVCRT)
+import MSVCRT
+let _exit: (Int32) -> Never = ucrt._exit
 #endif
 
 /// A type that can be parsed from a program's command-line arguments.

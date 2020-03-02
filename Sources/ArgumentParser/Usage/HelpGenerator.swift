@@ -13,7 +13,7 @@ internal struct HelpGenerator {
   static var helpIndent = 2
   static var labelColumnWidth = 26
   static var screenWidth: Int {
-    _screenWidthOverride ?? _terminalWidth()
+    _screenWidthOverride ?? _terminalSize().width
   }
   
   internal static var _screenWidthOverride: Int? = nil
@@ -252,20 +252,27 @@ import Glibc
 func ioctl(_ a: Int32, _ b: Int32, _ p: UnsafeMutableRawPointer) -> Int32 {
   ioctl(CInt(a), UInt(b), p)
 }
-#else
+#elseif canImport(Darwin)
 import Darwin
+#elseif canImport(MSVCRT)
+import MSVCRT
+import WinSDK
 #endif
 
-func _terminalWidth() -> Int {
-  var w = winsize()
-  let err = ioctl(STDOUT_FILENO, TIOCGWINSZ, &w)
-  let result = Int(w.ws_col)
-  return err == 0 && result > 0 ? result : 80
-}
+func _terminalSize() -> (width: Int, height: Int) {
+#if os(Windows)
+  var csbi: CONSOLE_SCREEN_BUFFER_INFO = CONSOLE_SCREEN_BUFFER_INFO()
 
-func _terminalHeight() -> Int {
+  GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi)
+  return (width: Int(csbi.srWindow.Right - csbi.srWindow.Left) + 1,
+          height: Int(csbi.srWindow.Bottom - csbi.srWindow.Top) + 1)
+#else
   var w = winsize()
   let err = ioctl(STDOUT_FILENO, TIOCGWINSZ, &w)
-  let result = Int(w.ws_row)
-  return err == 0 && result > 0 ? result : 25
+  let width = Int(w.ws_col)
+  let height = Int(w.ws_row)
+  guard err == 0 else { return (80, 25) }
+  return (width: width > 0 ? width : 80,
+          height: height > 0 ? height : 25)
+#endif
 }
