@@ -34,7 +34,7 @@ struct ArgumentSet {
     case additive
     /// Mutually exclusive
     case exclusive
-    /// Several ways of achieving the same behaviour. Should only display one.
+    /// Several ways of achieving the same behavior. Should only display one.
     case alternatives
   }
   
@@ -399,7 +399,7 @@ extension ArgumentSet {
       switch error {
       case ParserError.unexpectedExtraValues:
         // There were more positional values than we could parse.
-        // If we‘re using sub-commands, that could be expected.
+        // If we‘re using subcommands, that could be expected.
         return .partial(result, error)
       default:
         throw error
@@ -426,7 +426,7 @@ extension ArgumentSet {
   /// definition that matches the particular element.
   /// - Parameters:
   ///   - parsed: The argument from the command line
-  ///   - origin: The where `parsed` came from.
+  ///   - origin: Where `parsed` came from.
   /// - Returns: The matching definition.
   func first(
     matching parsed: ParsedArgument,

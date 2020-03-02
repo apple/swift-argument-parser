@@ -29,7 +29,7 @@ enum ParserError: Error {
   case userValidationError(Error)
 }
 
-/// These are errors used internally to the parsing, and will not be exposed to the help generation
+/// These are errors used internally to the parsing, and will not be exposed to the help generation.
 enum InternalParseError: Error {
   case wrongType(Any, forKey: InputKey)
   case subcommandNameMismatch

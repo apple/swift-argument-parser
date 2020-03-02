@@ -50,7 +50,7 @@ public struct NameSpecification: ExpressibleByArrayLiteral {
 }
 
 extension NameSpecification {
-  /// Use the property's name, converted to lowercase with words separated by
+  /// Use the property's name converted to lowercase with words separated by
   /// hyphens.
   ///
   /// For example, a property named `allowLongNames` would be converted to the

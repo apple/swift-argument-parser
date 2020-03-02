@@ -59,7 +59,7 @@ struct ArgumentDefinition {
     case unconditional
     /// Parse multiple `SplitArguments.Element.value` up to the next non-`.value`
     case upToNextOption
-    /// Parse all remaining `SplitArguments.Element` as a values, regardless of its type.
+    /// Parse all remaining `SplitArguments.Element` as values, regardless of its type.
     case allRemainingInput
   }
   
@@ -188,7 +188,7 @@ extension ArgumentDefinition.Update {
   }
 }
 
-/// MARK: - Help Options
+// MARK: - Help Options
 
 protocol ArgumentHelpOptionProvider {
   static var helpOptions: ArgumentDefinition.Help.Options { get }

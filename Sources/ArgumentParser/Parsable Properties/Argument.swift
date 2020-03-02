@@ -11,8 +11,8 @@
 
 /// A wrapper that represents a positional command-line argument.
 ///
-/// Positional arguments are specified without a label, and must appear in
-/// the command line arguments in declaration order.
+/// Positional arguments are specified without a label and must appear in
+/// the command-line arguments in declaration order.
 ///
 ///     struct Options: ParsableArguments {
 ///         @Argument var name: String
@@ -20,7 +20,7 @@
 ///     }
 ///
 /// This program has two positional arguments; `name` is required, while
-/// `greeting` is optional. It could be evoked as either `command Joseph Hello`
+/// `greeting` is optional. It can be evoked as either `command Joseph Hello`
 /// or simply `command Joseph`.
 @propertyWrapper
 public struct Argument<Value>:

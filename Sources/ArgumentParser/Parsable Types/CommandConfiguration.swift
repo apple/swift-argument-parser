@@ -14,7 +14,7 @@ public struct CommandConfiguration {
   /// The name of the command to use on the command line.
   ///
   /// If `nil`, the command name is derived by converting the name of
-  /// the command type to hyphen-separated lowercase case words.
+  /// the command type to hyphen-separated lowercase words.
   public var commandName: String?
   
   /// A one-line description of this command.
@@ -42,8 +42,7 @@ public struct CommandConfiguration {
   /// - Parameters:
   ///   - commandName: The name of the command to use on the command line. If
   ///     `commandName` is `nil`, the command name is derived by converting
-  ///     the name of the command type to hyphen-separated lowercase case
-  ///     words.
+  ///     the name of the command type to hyphen-separated lowercase words.
   ///   - abstract: A one-line description of the command.
   ///   - discussion: A longer description of the command.
   ///   - shouldDisplay: A Boolean value indicating whether the command
