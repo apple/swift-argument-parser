@@ -129,7 +129,7 @@ extension ParsableArguments {
   /// with code `EXIT_SUCCESS`. If `error` represents a help request or
   /// another `CleanExit` error, this method prints help information and
   /// exits with code `EXIT_SUCCESS`. Otherwise, this method prints a relevant
-  /// error message and exits with code `EXIT_FAILURE`.
+  /// error message and exits with code `EX_USAGE` or `EXIT_FAILURE`.
   ///
   /// - Parameter error: The error to use when exiting, if any.
   public static func exit(
@@ -142,11 +142,10 @@ extension ParsableArguments {
     let messageInfo = MessageInfo(error: error, type: self)
     if messageInfo.shouldExitCleanly {
       print(messageInfo.fullText)
-      _exit(EXIT_SUCCESS)
     } else {
       print(messageInfo.fullText, to: &standardError)
-      _exit(EXIT_FAILURE)
     }
+    _exit(messageInfo.exitCode)
   }
   
   /// Parses a new instance of this type from command-line arguments or exits

@@ -102,4 +102,12 @@ enum MessageInfo {
     case .validation, .other: return false
     }
   }
+
+  var exitCode: Int32 {
+    switch self {
+    case .help: return EXIT_SUCCESS
+    case .validation: return EX_USAGE
+    case .other: return EXIT_FAILURE
+    }
+  }
 }
