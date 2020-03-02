@@ -125,8 +125,8 @@ Users can see the help screen for a command by passing either `-h` or `--help` f
 
 ```swift
 struct Example: ParsableCommand {
-    static let configuration: CommandConfiguration(
-        helpName: [.long, .customShort("?")])
+    static let configuration = CommandConfiguration(
+        helpNames: [.long, .customShort("?")])
         
     @Option(name: .shortAndLong, help: "The number of history entries to show.")
     var historyDepth: Int
