@@ -140,15 +140,31 @@ internal struct HelpGenerator {
         let description: String
         
         if i < args.count - 1 && args[i + 1].help.keys == arg.help.keys {
-          // If the next argument has the same keys as this one, output them together
-          let nextArg = args[i + 1]
+          // If the next argument has the same keys as this one, we have a group of arguments to output together
+          var groupedArgs = [arg]
           let defaultValue = arg.help.defaultValue.map { "(default: \($0))" } ?? ""
-          synopsis = "\(arg.synopsisForHelp ?? "")/\(nextArg.synopsisForHelp ?? "")"
-          description = [arg.help.help?.abstract ?? nextArg.help.help?.abstract, defaultValue]
+          while i < args.count - 1 && args[i + 1].help.keys == arg.help.keys {
+            groupedArgs.append(args[i + 1])
+            i += 1
+          }
+
+          var synopsisString = ""
+          for arg in groupedArgs {
+            if !synopsisString.isEmpty { synopsisString.append("/") }
+            synopsisString.append("\(arg.synopsisForHelp ?? "")")
+          }
+          synopsis = synopsisString
+
+          var descriptionString: String?
+          for arg in groupedArgs {
+            if let desc = arg.help.help?.abstract {
+              descriptionString = desc
+              break
+            }
+          }
+          description = [descriptionString, defaultValue]
             .compactMap { $0 }
             .joined(separator: " ")
-          i += 1
-          
         } else {
           let defaultValue = arg.help.defaultValue.flatMap { $0.isEmpty ? nil : "(default: \($0))" } ?? ""
           synopsis = arg.synopsisForHelp ?? ""

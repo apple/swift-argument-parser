@@ -124,4 +124,48 @@ extension HelpGenerationTests {
 
             """)
   }
+
+  enum OutputBehaviour: String, CaseIterable { case stats, count, list }
+  struct E: ParsableCommand {
+    @Flag(name: .shortAndLong, help: "Change the program output")
+    var behaviour: OutputBehaviour
+  }
+  struct F: ParsableCommand {
+    @Flag(name: .short, default: .list, help: "Change the program output")
+    var behaviour: OutputBehaviour
+  }
+  struct G: ParsableCommand {
+    @Flag(inversion: .prefixedNo, help: "Whether to flag")
+    var flag: Bool
+  }
+
+  func testHelpWithMutuallyExclusiveFlags() {
+    AssertHelp(for: E.self, equals: """
+               USAGE: e --stats --count --list
+
+               OPTIONS:
+                 -s, --stats/-c, --count/-l, --list
+                                         Change the program output
+                 -h, --help              Show help information.
+
+               """)
+
+    AssertHelp(for: F.self, equals: """
+               USAGE: f [-s] [-c] [-l]
+
+               OPTIONS:
+                 -s/-c/-l                Change the program output
+                 -h, --help              Show help information.
+
+               """)
+
+    AssertHelp(for: G.self, equals: """
+               USAGE: g [--flag] [--no-flag]
+
+               OPTIONS:
+                 --flag/--no-flag        Whether to flag (default: false)
+                 -h, --help              Show help information.
+
+               """)
+  }
 }
