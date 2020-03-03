@@ -112,6 +112,50 @@ public enum FlagExclusivity {
   case chooseLast
 }
 
+extension Flag where Value == Optional<Bool> {
+  /// Creates a Boolean property that reads its value from the presence of
+  /// one or more inverted flags.
+  ///
+  /// Use this initializer to create an optional Boolean flag with an on/off
+  /// pair. With the following declaration, for example, the user can specify
+  /// either `--use-https` or `--no-use-https` to set the `useHTTPS` flag to
+  /// `true` or `false`, respectively. If neither is specified, the resulting
+  /// flag value would be `nil`.
+  ///
+  ///     @Flag(inversion: .prefixedNo)
+  ///     var useHTTPS: Bool?
+  ///
+  /// To customize the names of the two states further, define a
+  /// `CaseIterable` enumeration with a case for each state, and use that
+  /// as the type for your flag. In this case, the user can specify either
+  /// `--use-production-server` or `--use-development-server` to set the
+  /// flag's value.
+  ///
+  ///     enum ServerChoice {
+  ///         case useProductionServer
+  ///         case useDevelopmentServer
+  ///     }
+  ///
+  ///     @Flag() var serverChoice: ServerChoice
+  ///
+  /// - Parameters:
+  ///   - name: A specification for what names are allowed for this flag.
+  ///   - initial: The default value for this flag.
+  ///   - inversion: The method for converting this flags name into an on/off
+  ///     pair.
+  ///   - help: Information about how to use this flag.
+  public init(
+    name: NameSpecification = .long,
+    default initial: Bool? = nil,
+    inversion: FlagInversion,
+    help: ArgumentHelp? = nil
+  ) {
+    self.init(_parsedValue: .init { key in
+      .flag(key: key, name: name, default: initial, inversion: inversion, help: help)
+    })
+  }
+}
+
 extension Flag where Value == Bool {
   /// Creates a Boolean property that reads its value from the presence of a
   /// flag.
