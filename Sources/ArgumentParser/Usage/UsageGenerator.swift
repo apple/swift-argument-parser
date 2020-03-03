@@ -188,8 +188,8 @@ extension ErrorMessageGenerator {
       return unexpectedValueForOptionMessage(origin: o, name: n, value: v)
     case .unexpectedExtraValues(let v):
       return unexpectedExtraValuesMessage(values: v)
-    case .duplicateExclusiveValues(previous: let previous, duplicate: let duplicate):
-      return duplicateExclusiveValues(previous: previous, duplicate: duplicate)
+    case .duplicateExclusiveValues(previous: let previous, duplicate: let duplicate, originalInput: let arguments):
+      return duplicateExclusiveValues(previous: previous, duplicate: duplicate, arguments: arguments)
     case .noValue(forKey: let k):
       return noValueMessage(key: k)
     case .unableToParseValue(let o, let n, let v, forKey: let k):
@@ -301,8 +301,23 @@ extension ErrorMessageGenerator {
     }
   }
   
-  func duplicateExclusiveValues(previous: InputOrigin, duplicate: InputOrigin) -> String? {
-    return "Value at position \(duplicate) has already been set from value at position \(previous)."
+  func duplicateExclusiveValues(previous: InputOrigin, duplicate: InputOrigin, arguments: [String]) -> String? {
+    func elementString(_ origin: InputOrigin, _ arguments: [String]) -> String? {
+      guard case .argumentIndex(let split) = origin.elements.first else { return nil }
+      var argument = "\'\(arguments[split.inputIndex.rawValue])\'"
+      if case let .sub(offsetIndex) = split.subIndex {
+        let stringIndex = argument.index(argument.startIndex, offsetBy: offsetIndex+2)
+        argument = "\'\(argument[stringIndex])\' in \(argument)"
+      }
+      return "flag \(argument)"
+    }
+
+    // Note that the RHS of these coalescing operators cannot be reached at this time.
+    let dupeString = elementString(duplicate, arguments) ?? "position \(duplicate)"
+    let origString = elementString(previous, arguments) ?? "position \(previous)"
+
+    //TODO: review this message once environment values are supported.
+    return "Value to be set with \(dupeString) had already been set with \(origString)"
   }
   
   func noValueMessage(key: InputKey) -> String? {
