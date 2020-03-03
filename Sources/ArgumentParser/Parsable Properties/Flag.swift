@@ -226,7 +226,9 @@ extension Flag where Value == Int {
   }
 }
 
-extension Flag where Value: CaseIterable, Value: Equatable, Value: RawRepresentable, Value.RawValue == String {
+// - MARK: EnumerableFlag
+
+extension Flag where Value: EnumerableFlag {
   /// Creates a property that gets its value from the presence of a flag,
   /// where the allowed flags are defined by a `CaseIterable` type.
   ///
@@ -237,7 +239,6 @@ extension Flag where Value: CaseIterable, Value: Equatable, Value: RawRepresenta
   ///   - exclusivity: The behavior to use when multiple flags are specified.
   ///   - help: Information about how to use this flag.
   public init(
-    name: NameSpecification = .long,
     default initial: Value? = nil,
     exclusivity: FlagExclusivity = .exclusive,
     help: ArgumentHelp? = nil
@@ -249,7 +250,8 @@ extension Flag where Value: CaseIterable, Value: Equatable, Value: RawRepresenta
       let defaultValue = initial.map(String.init(describing:))
 
       let args = Value.allCases.map { value -> ArgumentDefinition in
-        let caseKey = InputKey(rawValue: value.rawValue)
+        let caseKey = InputKey(rawValue: String(describing: value))
+        let name = Value.name(for: value)
         let help = ArgumentDefinition.Help(options: initial != nil ? .isOptional : [], help: help, defaultValue: defaultValue, key: key)
         return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .nextAsValue, initialValue: initial, update: .nullary({ (origin, name, values) in
           hasUpdated = try ArgumentSet.updateFlag(key: key, value: value, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
@@ -264,15 +266,118 @@ extension Flag where Value: CaseIterable, Value: Equatable, Value: RawRepresenta
 
 extension Flag {
   /// Creates a property that gets its value from the presence of a flag,
-  /// where the allowed flags are defined by a `CaseIterable` type.
+  /// where the allowed flags are defined by a case-iterable type.
+  public init<Element>(
+    exclusivity: FlagExclusivity = .exclusive,
+    help: ArgumentHelp? = nil
+  ) where Value == Element?, Element: EnumerableFlag {
+    self.init(_parsedValue: .init { key in
+      // This gets flipped to `true` the first time one of these flags is
+      // encountered.
+      var hasUpdated = false
+      
+      let args = Element.allCases.map { value -> ArgumentDefinition in
+        let caseKey = InputKey(rawValue: String(describing: value))
+        let name = Element.name(for: value)
+        let help = ArgumentDefinition.Help(options: .isOptional, help: help, key: key)
+        return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .nextAsValue, initialValue: nil as Element?, update: .nullary({ (origin, name, values) in
+          if hasUpdated && exclusivity == .exclusive {
+            throw ParserError.unexpectedExtraValues([(origin, String(describing: value))])
+          }
+          if !hasUpdated || exclusivity == .chooseLast {
+            values.set(value, forKey: key, inputOrigin: origin)
+          }
+          hasUpdated = true
+        }))
+      }
+      return exclusivity == .exclusive
+        ? ArgumentSet(exclusive: args)
+        : ArgumentSet(additive: args)
+      })
+  }
+  
+  /// Creates an array property that gets its values from the presence of
+  /// zero or more flags, where the allowed flags are defined by a
+  /// case-iterable type.
   ///
-  /// This property has a default value of `nil`; specifying the flag in the
-  /// command-line arguments is not required.
+  /// This property has an empty array as its default value.
   ///
   /// - Parameters:
   ///   - name: A specification for what names are allowed for this flag.
+  ///   - help: Information about how to use this flag.
+  public init<Element>(
+    help: ArgumentHelp? = nil
+  ) where Value == Array<Element>, Element: EnumerableFlag {
+    self.init(_parsedValue: .init { key in
+      let args = Element.allCases.map { value -> ArgumentDefinition in
+        let caseKey = InputKey(rawValue: String(describing: value))
+        let name = Element.name(for: value)
+        let help = ArgumentDefinition.Help(options: .isOptional, help: help, key: key)
+        return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .nextAsValue, initialValue: [Element](), update: .nullary({ (origin, name, values) in
+          values.update(forKey: key, inputOrigin: origin, initial: [Element](), closure: {
+            $0.append(value)
+          })
+        }))
+      }
+      return ArgumentSet(additive: args)
+    })
+  }
+}
+
+// - MARK: Deprecated CaseIterable/RawValue == String
+
+extension Flag where Value: CaseIterable, Value: RawRepresentable, Value: Equatable, Value.RawValue == String {
+  /// Creates a property that gets its value from the presence of a flag,
+  /// where the allowed flags are defined by a case-iterable type.
+  ///
+  /// - Parameters:
+  ///   - name: A specification for what names are allowed for this flag.
+  ///   - initial: A default value to use for this property. If `initial` is
+  ///     `nil`, this flag is required.
   ///   - exclusivity: The behavior to use when multiple flags are specified.
   ///   - help: Information about how to use this flag.
+  @available(*, deprecated, message: "Add 'EnumerableFlag' conformance to your value type.")
+  public init(
+    name: NameSpecification = .long,
+    default initial: Value? = nil,
+    exclusivity: FlagExclusivity = .exclusive,
+    help: ArgumentHelp? = nil
+  ) {
+    self.init(_parsedValue: .init { key in
+      // This gets flipped to `true` the first time one of these flags is
+      // encountered.
+      var hasUpdated = false
+      
+      let args = Value.allCases.map { value -> ArgumentDefinition in
+        let caseKey = InputKey(rawValue: value.rawValue)
+        let help = ArgumentDefinition.Help(options: initial != nil ? .isOptional : [], help: help, key: key)
+        return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .nextAsValue, initialValue: initial, update: .nullary({ (origin, name, values) in
+          // TODO: We should catch duplicate flags that hit a single part of
+          // an exclusive argument set in the value parsing, not here.
+          let previous = values.element(forKey: key)
+          switch (hasUpdated, previous, exclusivity) {
+          case (true, let p?, .exclusive):
+            // This value has already been set.
+            throw ParserError.duplicateExclusiveValues(previous: p.inputOrigin, duplicate: origin, originalInput: values.originalInput)
+          case (false, _, _), (_, _, .chooseLast):
+            values.set(value, forKey: key, inputOrigin: origin)
+          default:
+            break
+          }
+          hasUpdated = true
+        }))
+      }
+      return exclusivity == .exclusive
+        ? ArgumentSet(exclusive: args)
+        : ArgumentSet(additive: args)
+      })
+  }
+}
+
+extension Flag {
+  /// Creates a property that gets its value from the presence of a flag,
+  /// where the allowed flags are defined by a case-iterable type.
+  @available(*, deprecated, message: "Add 'EnumerableFlag' conformance to your value type.")
   public init<Element>(
     name: NameSpecification = .long,
     exclusivity: FlagExclusivity = .exclusive,
@@ -305,6 +410,7 @@ extension Flag {
   /// - Parameters:
   ///   - name: A specification for what names are allowed for this flag.
   ///   - help: Information about how to use this flag.
+  @available(*, deprecated, message: "Add 'EnumerableFlag' conformance to your value type.")
   public init<Element>(
     name: NameSpecification = .long,
     help: ArgumentHelp? = nil
