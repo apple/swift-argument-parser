@@ -16,11 +16,14 @@
 /// This is usually an index into the `SplitArguments`.
 /// In some cases it can be multiple indices.
 struct InputOrigin: Equatable, ExpressibleByArrayLiteral {
-  enum Element: Hashable {
+  enum Element: Comparable, Hashable {
     case argumentIndex(SplitArguments.Index)
   }
   
   private var _elements: Set<Element> = []
+  var elements: [Element] {
+    Array(_elements).sorted()
+  }
   
   init() {
   }
@@ -59,5 +62,14 @@ struct InputOrigin: Equatable, ExpressibleByArrayLiteral {
 
   func forEach(_ closure: (Element) -> Void) {
     _elements.forEach(closure)
+  }
+}
+
+extension InputOrigin.Element {
+  static func < (lhs: Self, rhs: Self) -> Bool {
+    switch (lhs, rhs) {
+    case (.argumentIndex(let l), .argumentIndex(let r)):
+      return l < r
+    }
   }
 }
