@@ -393,7 +393,7 @@ extension SplitArguments {
           input = originalInput[index.inputIndex.rawValue]
         }
       }
-      return (.argumentIndex(index), input)
+      return (.init(argumentIndex: index), input)
     }
   }
 }
