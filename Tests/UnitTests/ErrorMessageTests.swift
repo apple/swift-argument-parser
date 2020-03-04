@@ -137,10 +137,14 @@ extension ErrorMessageTests {
 
 private enum OutputBehaviour: String, CaseIterable { case stats, count, list }
 private struct Options: ParsableArguments {
-  @Flag(name: .shortAndLong, help: "Program output")
+  @Flag(name: .shortAndLong, default: .list, help: "Program output")
   var behaviour: OutputBehaviour
 
-  @Flag() var bool: Bool
+  @Flag(inversion: .prefixedNo, exclusivity: .exclusive) var bool: Bool
+}
+private struct OptOptions: ParsableArguments {
+  @Flag(name: .short, help: "Program output")
+  var behaviour: OutputBehaviour?
 }
 
 extension ErrorMessageTests {
@@ -148,5 +152,9 @@ extension ErrorMessageTests {
     AssertErrorMessage(Options.self, ["--list", "--bool", "-s"], "Value to be set with flag \'-s\' had already been set with flag \'--list\'")
     AssertErrorMessage(Options.self, ["-cbl"], "Value to be set with flag \'l\' in \'-cbl\' had already been set with flag \'c\' in \'-cbl\'")
     AssertErrorMessage(Options.self, ["-bc", "--stats", "-l"], "Value to be set with flag \'--stats\' had already been set with flag \'c\' in \'-bc\'")
+
+    AssertErrorMessage(Options.self, ["--no-bool", "--bool"], "Value to be set with flag \'--bool\' had already been set with flag \'--no-bool\'")
+
+    AssertErrorMessage(OptOptions.self, ["-cbl"], "Value to be set with flag \'l\' in \'-cbl\' had already been set with flag \'c\' in \'-cbl\'")
   }
 }
