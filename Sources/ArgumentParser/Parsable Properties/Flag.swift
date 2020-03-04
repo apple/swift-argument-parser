@@ -222,7 +222,7 @@ extension Flag where Value: CaseIterable, Value: RawRepresentable, Value.RawValu
           switch (hasUpdated, previous, exclusivity) {
           case (true, let p?, .exclusive):
             // This value has already been set.
-            throw ParserError.duplicateExclusiveValues(previous: p.inputOrigin, duplicate: origin)
+            throw ParserError.duplicateExclusiveValues(previous: p.inputOrigin, duplicate: origin, originalInput: values.originalInput)
           case (false, _, _), (_, _, .chooseLast):
             values.set(value, forKey: key, inputOrigin: origin)
           default:

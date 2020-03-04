@@ -21,7 +21,7 @@ enum ParserError: Error {
   case missingValueForOption(InputOrigin, Name)
   case unexpectedValueForOption(InputOrigin.Element, Name, String)
   case unexpectedExtraValues([(InputOrigin, String)])
-  case duplicateExclusiveValues(previous: InputOrigin, duplicate: InputOrigin)
+  case duplicateExclusiveValues(previous: InputOrigin, duplicate: InputOrigin, originalInput: [String])
   /// We need a value for the given key, but it’s not there. Some non-optional option or argument is missing.
   case noValue(forKey: InputKey)
   case unableToParseValue(InputOrigin, Name?, String, forKey: InputKey)

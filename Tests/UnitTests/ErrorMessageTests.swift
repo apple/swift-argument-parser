@@ -134,3 +134,19 @@ extension ErrorMessageTests {
     AssertErrorMessage(Qwz.self, ["-x"], "Unknown option '-x'")
   }
 }
+
+private enum OutputBehaviour: String, CaseIterable { case stats, count, list }
+private struct Options: ParsableArguments {
+  @Flag(name: .shortAndLong, help: "Program output")
+  var behaviour: OutputBehaviour
+
+  @Flag() var bool: Bool
+}
+
+extension ErrorMessageTests {
+  func testDuplicateFlags() {
+    AssertErrorMessage(Options.self, ["--list", "--bool", "-s"], "Value to be set with flag \'-s\' had already been set with flag \'--list\'")
+    AssertErrorMessage(Options.self, ["-cbl"], "Value to be set with flag \'l\' in \'-cbl\' had already been set with flag \'c\' in \'-cbl\'")
+    AssertErrorMessage(Options.self, ["-bc", "--stats", "-l"], "Value to be set with flag \'--stats\' had already been set with flag \'c\' in \'-bc\'")
+  }
+}
