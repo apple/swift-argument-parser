@@ -136,7 +136,7 @@ extension XCTest {
   public func AssertExecuteCommand(
     command: String,
     expected: String? = nil,
-    shouldError: Bool = false,
+    exitCode: Int32 = 0,
     file: StaticString = #file, line: UInt = #line)
   {
     let splitCommand = command.split(separator: " ")
@@ -171,10 +171,7 @@ extension XCTest {
     if let expected = expected {
       AssertEqualStringsIgnoringTrailingWhitespace(expected, errorActual + outputActual, file: file, line: line)
     }
-    if shouldError {
-      XCTAssertNotEqual(process.terminationStatus, 0, file: file, line: line)
-    } else {
-      XCTAssertEqual(process.terminationStatus, 0, file: file, line: line)
-    }
+
+    XCTAssertEqual(process.terminationStatus, exitCode, file: file, line: line)
   }
 }

@@ -139,14 +139,16 @@ extension ParsableArguments {
     withError error: Error? = nil
   ) -> Never {
     guard let error = error else {
-      _exit(EXIT_SUCCESS)
+      _exit(ExitCode.success.code)
     }
     
     let messageInfo = MessageInfo(error: error, type: self)
-    if messageInfo.shouldExitCleanly {
-      print(messageInfo.fullText)
-    } else {
-      print(messageInfo.fullText, to: &standardError)
+    if !messageInfo.fullText.isEmpty {
+      if messageInfo.shouldExitCleanly {
+        print(messageInfo.fullText)
+      } else {
+        print(messageInfo.fullText, to: &standardError)
+      }
     }
     _exit(messageInfo.exitCode)
   }

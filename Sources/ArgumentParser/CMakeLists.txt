@@ -1,11 +1,11 @@
 add_library(ArgumentParser
   "Parsable Properties/Argument.swift"
   "Parsable Properties/ArgumentHelp.swift"
+  "Parsable Properties/Errors.swift"
   "Parsable Properties/Flag.swift"
   "Parsable Properties/NameSpecification.swift"
   "Parsable Properties/Option.swift"
   "Parsable Properties/OptionGroup.swift"
-  "Parsable Properties/ValidationError.swift"
 
   "Parsable Types/CommandConfiguration.swift"
   "Parsable Types/ExpressibleByArgument.swift"
