@@ -116,6 +116,10 @@ public enum ArgumentArrayParsingStrategy {
   /// Parsing the input `--verbose one two --other` would include the `--other`
   /// flag in `words`, resulting in
   /// `Options(verbose: true, words: ["one", "two", "--other"])`.
+  ///
+  /// - Note: This parsing strategy can be surprising for users, particularly
+  ///   when combined with options and flags. Use care when specifying the
+  ///   `unconditionalRemaining` parsing strategy.
   case unconditionalRemaining
 }
 

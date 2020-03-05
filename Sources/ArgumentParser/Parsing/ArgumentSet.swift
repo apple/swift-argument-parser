@@ -378,7 +378,7 @@ extension ArgumentSet {
         guard
           let argument: ArgumentDefinition = try? first(matching: parsed, at: origin)
           else {
-            unusedOptions.append((origin, String(describing: parsed)))
+            unusedOptions.append((origin, all.originalInput(at: origin)))
             continue
           }
         
@@ -453,6 +453,23 @@ extension ArgumentSet {
   ) throws {
     guard !positionalValues.isEmpty || !unusedOptions.isEmpty else { return }
     var positionalValues = positionalValues[...]
+    var unusedOptions = unusedOptions[...]
+    
+    /// Pops the next origin / string pair to use.
+    /// If `unconditional` is false, this always pops from `positionalValues`;
+    /// if true, then it pops from whichever of `positionalValues` or
+    /// `unusedOptions` has the element that came first in the original input.
+    func next(unconditional: Bool) -> (InputOrigin.Element, String)? {
+      guard unconditional, let firstUnusedOption = unusedOptions.first else {
+        return positionalValues.popFirst()
+      }
+      guard let firstPositional = positionalValues.first else {
+        return unusedOptions.popFirst()
+      }
+      return firstPositional.0 < firstUnusedOption.0
+        ? positionalValues.popFirst()
+        : unusedOptions.popFirst()
+    }
     
     ArgumentLoop:
     for argumentDefinition in self {
@@ -460,17 +477,10 @@ extension ArgumentSet {
       guard case let .unary(update) = argumentDefinition.update else {
         preconditionFailure("Shouldn't see a nullary positional argument.")
       }
-
-      // If we've come across a positional argument that's going to absorb the
-      // remaining input, we need to reinterpret the unused option arguments
-      // as values.
-      if argumentDefinition.parsingStrategy == .allRemainingInput {
-        positionalValues.append(contentsOf: unusedOptions)
-        positionalValues.sort(by: { $0.0 < $1.0 })
-      }
+      let allowOptionsAsInput = argumentDefinition.parsingStrategy == .allRemainingInput
       
       repeat {
-        guard let (origin, value) = positionalValues.popFirst() else {
+        guard let (origin, value) = next(unconditional: allowOptionsAsInput) else {
           break ArgumentLoop
         }
         try update([origin], nil, value, &result)
