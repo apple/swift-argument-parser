@@ -1,40 +1,33 @@
 ---
 name: 🐛 Bug Report
-about: If something isn't working as expected
-
+about: Something isn't working as expected
 ---
 
-<!-- Thanks for contributing to Swift Argument Parser! Before you submit your issue, please make sure you followed our checklist and check the appropriate boxes by putting an x in the [ ]: [x] -->
+<!--
+    Thanks for contributing to the Swift Argument Parser!
 
-### New Issue Checklist
+    Before you submit your issue, please replace each paragraph
+    below with the relevant details for your bug, and complete
+    the steps in the checklist by placing an 'x' in each box:
+    
+    - [x] I've completed this task
+    - [ ] This task isn't completed
+-->
 
-- [ ] I'm using the latest version of Swift Argument Parser (master branch)
-- [ ] I read the [Contribution Guidelines](https://github.com/apple/swift-argument-parser/blob/master/CONTRIBUTING.md)
-- [ ] I searched for [existing GitHub issues](https://github.com/apple/swift-argument-parser/issues)
+Replace this paragraph with a short description of the incorrect incorrect behavior. If this is a regression, please note the last version that the behavior was correct in addition to your current version.
+
+**ArgumentParser version:** `0.1.0` or the `master` branch, for example.
+**Swift version:** Paste the output of `swift --version` here.
+
+### Checklist
+- [ ] If possible, I've reproduced the issue using the `master` branch of this package
+- [ ] I've searched for [existing GitHub issues](https://github.com/apple/swift-argument-parser/issues)
+
+### Steps to Reproduce
+Replace this paragraph with an explanation of how to reproduce the incorrect behavior. This could include a code listing for a reduced version of your command, or a link to the code that is exhibiting the issue.
 
 ### Expected behavior
-_[what you expected to happen]_
+Describe what you expect to happen.
 
 ### Actual behavior
-_[what actually happened]_
-
-### Steps to reproduce
-
-1. ...
-2. ...
-
-### If possible, minimal yet complete reproducer code (or URL to code)
-
-_[anything to help us reproducing the issue]_
-
-### Swift Argument Parser version/commit hash
-
-_[the Swift Argument Parser tag/commit hash]_
-
-### Environment
-
-Stand in the root of the repo and run `./Scripts/environments.sh` and paste the output below
-
-<details>
-  <pre>PLEASE_REPLACE_THIS_STIRNG_WITH_OUTPUT_OF_script_environments_THAT_IS_IN_YOUR_PASTEBOARD</pre>
-</details>
+Describe or copy/paste the behavior you observe.
