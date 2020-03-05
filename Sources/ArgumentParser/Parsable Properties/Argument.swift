@@ -149,7 +149,10 @@ extension Argument {
   ///
   /// The property has an empty array as its default value.
   ///
-  /// - Parameter help: Information about how to use this argument.
+  /// - Parameters:
+  ///   - parsingStrategy: The behavior to use when parsing multiple values
+  ///     from the command-line arguments.
+  ///   - help: Information about how to use this argument.
   public init<Element>(
     parsing parsingStrategy: ArgumentArrayParsingStrategy = .remaining,
     help: ArgumentHelp? = nil
@@ -176,6 +179,8 @@ extension Argument {
   /// The property has an empty array as its default value.
   ///
   /// - Parameters:
+  ///   - parsingStrategy: The behavior to use when parsing multiple values
+  ///     from the command-line arguments.
   ///   - help: Information about how to use this argument.
   ///   - transform: A closure that converts a string into this property's
   ///     element type or throws an error.
