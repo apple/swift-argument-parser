@@ -176,12 +176,14 @@ extension ArgumentSet {
     case(true, let previous?, .exclusive):
       // This value has already been set.
       throw ParserError.duplicateExclusiveValues(previous: previous.inputOrigin, duplicate: origin, originalInput: values.originalInput)
+    case (true, _, .chooseFirst):
+      values.update(forKey: key, inputOrigin: origin, initial: value, closure: { _ in })
     case (false, _, _), (_, _, .chooseLast):
       values.set(value, forKey: key, inputOrigin: origin)
-      return true
     default:
-      return hasUpdated
+      break
     }
+    return true
   }
   
   /// Creates an argument set for a pair of inverted Boolean flags.
