@@ -27,6 +27,9 @@ fileprivate struct Bar: ParsableArguments {
 
   @Flag(inversion: .prefixedNo)
   var extattr2: Bool?
+
+  @Flag(inversion: .prefixedEnableDisable, exclusivity: .chooseFirst)
+  var logging: Bool
 }
 
 extension FlagsEndToEndTests {
@@ -74,6 +77,13 @@ extension FlagsEndToEndTests {
     AssertParse(Bar.self, ["--extattr", "--no-extattr", "--extattr"]) { options in
       XCTAssertEqual(options.extattr, true)
     }
+    AssertParse(Bar.self, ["--enable-logging"]) { options in
+      XCTAssertEqual(options.logging, true)
+    }
+// Can't test this yet, because .chooseFirst flags don't work
+//    AssertParse(Bar.self, ["--enable-logging", "--disable-logging"]) { options in
+//      XCTAssertEqual(options.logging, false)
+//    }
   }
 }
 

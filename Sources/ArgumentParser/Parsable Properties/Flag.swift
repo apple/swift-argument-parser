@@ -129,14 +129,17 @@ extension Flag where Value == Optional<Bool> {
   ///   - name: A specification for what names are allowed for this flag.
   ///   - inversion: The method for converting this flags name into an on/off
   ///     pair.
+  ///   - exclusivity: The behavior to use when an on/off pair of flags is
+  ///     specified.
   ///   - help: Information about how to use this flag.
   public init(
     name: NameSpecification = .long,
     inversion: FlagInversion,
+    exclusivity: FlagExclusivity = .chooseLast,
     help: ArgumentHelp? = nil
   ) {
     self.init(_parsedValue: .init { key in
-      .flag(key: key, name: name, default: nil, inversion: inversion, help: help)
+      .flag(key: key, name: name, default: nil, inversion: inversion, exclusivity: exclusivity, help: help)
     })
   }
 }
@@ -188,15 +191,18 @@ extension Flag where Value == Bool {
   ///   - initial: The default value for this flag.
   ///   - inversion: The method for converting this flag's name into an on/off
   ///     pair.
+  ///   - exclusivity: The behavior to use when an on/off pair of flags is
+  ///     specified.
   ///   - help: Information about how to use this flag.
   public init(
     name: NameSpecification = .long,
     default initial: Bool? = false,
     inversion: FlagInversion,
+    exclusivity: FlagExclusivity = .chooseLast,
     help: ArgumentHelp? = nil
   ) {
     self.init(_parsedValue: .init { key in
-      .flag(key: key, name: name, default: initial, inversion: inversion, help: help)
+      .flag(key: key, name: name, default: initial, inversion: inversion, exclusivity: exclusivity, help: help)
       })
   }
 }
@@ -248,17 +254,7 @@ extension Flag where Value: CaseIterable, Value: RawRepresentable, Value.RawValu
         return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .nextAsValue, initialValue: initial, update: .nullary({ (origin, name, values) in
           // TODO: We should catch duplicate flags that hit a single part of
           // an exclusive argument set in the value parsing, not here.
-          let previous = values.element(forKey: key)
-          switch (hasUpdated, previous, exclusivity) {
-          case (true, let p?, .exclusive):
-            // This value has already been set.
-            throw ParserError.duplicateExclusiveValues(previous: p.inputOrigin, duplicate: origin, originalInput: values.originalInput)
-          case (false, _, _), (_, _, .chooseLast):
-            values.set(value, forKey: key, inputOrigin: origin)
-          default:
-            break
-          }
-          hasUpdated = true
+          hasUpdated = try ArgumentSet.updateFlag(key: key, value: value, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
         }))
       }
       return exclusivity == .exclusive
@@ -293,13 +289,9 @@ extension Flag {
         let caseKey = InputKey(rawValue: value.rawValue)
         let help = ArgumentDefinition.Help(options: .isOptional, help: help, key: key)
         return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .nextAsValue, initialValue: nil as Element?, update: .nullary({ (origin, name, values) in
-          if hasUpdated && exclusivity == .exclusive {
-            throw ParserError.unexpectedExtraValues([(origin, String(describing: value))])
-          }
-          if !hasUpdated || exclusivity == .chooseLast {
-            values.set(value, forKey: key, inputOrigin: origin)
-          }
-          hasUpdated = true
+          // TODO: We should catch duplicate flags that hit a single part of
+          // an exclusive argument set in the value parsing, not here.
+          hasUpdated = try ArgumentSet.updateFlag(key: key, value: value, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
         }))
       }
       return exclusivity == .exclusive

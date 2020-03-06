@@ -169,24 +169,39 @@ extension ArgumentSet {
     })
     return ArgumentSet(arg)
   }
+
+  static func updateFlag(key: InputKey, value: Any, origin: InputOrigin, values: inout ParsedValues, hasUpdated: Bool, exclusivity: FlagExclusivity) throws -> Bool {
+    let previous = values.element(forKey: key)
+    switch (hasUpdated, previous, exclusivity) {
+    case(true, let previous?, .exclusive):
+      // This value has already been set.
+      throw ParserError.duplicateExclusiveValues(previous: previous.inputOrigin, duplicate: origin, originalInput: values.originalInput)
+    case (false, _, _), (_, _, .chooseLast):
+      values.set(value, forKey: key, inputOrigin: origin)
+      return true
+    default:
+      return hasUpdated
+    }
+  }
   
   /// Creates an argument set for a pair of inverted Boolean flags.
-  static func flag(key: InputKey, name: NameSpecification, default initialValue: Bool?, inversion: FlagInversion, help: ArgumentHelp?) -> ArgumentSet {
+  static func flag(key: InputKey, name: NameSpecification, default initialValue: Bool?, inversion: FlagInversion, exclusivity: FlagExclusivity, help: ArgumentHelp?) -> ArgumentSet {
     // The flag is required if initialValue is `nil`, otherwise it's optional
     let helpOptions: ArgumentDefinition.Help.Options = initialValue != nil ? .isOptional : []
     
     let help = ArgumentDefinition.Help(options: helpOptions, help: help, defaultValue: initialValue.map(String.init), key: key)
     let (enableNames, disableNames) = inversion.enableDisableNamePair(for: key, name: name)
-    
-    let enableArg = ArgumentDefinition(kind: .named(enableNames), help: help, update: .nullary({ (origin, name, values) in
-      values.set(true, forKey: key, inputOrigin: origin)
+
+    var hasUpdated = false
+    let enableArg = ArgumentDefinition(kind: .named(enableNames),help: help, update: .nullary({ (origin, name, values) in
+        hasUpdated = try ArgumentSet.updateFlag(key: key, value: true, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
     }), initial: { origin, values in
       if let initialValue = initialValue {
         values.set(initialValue, forKey: key, inputOrigin: origin)
       }
     })
     let disableArg = ArgumentDefinition(kind: .named(disableNames), help: ArgumentDefinition.Help(options: [.isOptional], key: key), update: .nullary({ (origin, name, values) in
-      values.set(false, forKey: key, inputOrigin: origin)
+        hasUpdated = try ArgumentSet.updateFlag(key: key, value: false, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
     }), initial: { _, _ in })
     return ArgumentSet(exclusive: [enableArg, disableArg])
   }
