@@ -24,6 +24,9 @@ fileprivate struct Bar: ParsableArguments {
   
   @Flag(inversion: .prefixedNo)
   var extattr: Bool
+
+  @Flag(inversion: .prefixedNo)
+  var extattr2: Bool?
 }
 
 extension FlagsEndToEndTests {
@@ -31,6 +34,7 @@ extension FlagsEndToEndTests {
     AssertParse(Bar.self, []) { options in
       XCTAssertEqual(options.verbose, false)
       XCTAssertEqual(options.extattr, false)
+      XCTAssertEqual(options.extattr2, nil)
     }
   }
   
@@ -38,11 +42,19 @@ extension FlagsEndToEndTests {
     AssertParse(Bar.self, ["--verbose"]) { options in
       XCTAssertEqual(options.verbose, true)
       XCTAssertEqual(options.extattr, false)
+      XCTAssertEqual(options.extattr2, nil)
     }
     
     AssertParse(Bar.self, ["--extattr"]) { options in
       XCTAssertEqual(options.verbose, false)
       XCTAssertEqual(options.extattr, true)
+      XCTAssertEqual(options.extattr2, nil)
+    }
+
+    AssertParse(Bar.self, ["--extattr2"]) { options in
+      XCTAssertEqual(options.verbose, false)
+      XCTAssertEqual(options.extattr, false)
+      XCTAssertEqual(options.extattr2, .some(true))
     }
   }
   
