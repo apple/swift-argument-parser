@@ -12,6 +12,10 @@ package updates, you can specify your package dependency using
 
 ## [Unreleased]
 
+*No changes yet.*
+
+## [0.0.2] - 2020-03-06
+
 ### Additions
 
 - The `EX_USAGE` exit code is now used for validation errors.
@@ -19,6 +23,13 @@ package updates, you can specify your package dependency using
   option.
 - `ArgumentParser` now builds on Windows.
 - You can throw an `ExitCode` error to exit without printing any output.
+- You can now create optional Boolean flags with inversions that default to 
+  `nil`:
+  ```swift
+  @Flag(inversion: .prefixedNo) var takeMyShot: Bool?
+  ```
+- You can now specify exclusivity for case-iterable flags and for Boolean flags
+  with inversions.
 
 ### Fixes
 
@@ -31,14 +42,43 @@ package updates, you can specify your package dependency using
     descriptions.
   - Removed the default value note when the default value is an empty string.
   - Default values are now shown for Boolean options.
+  - Case-iterable flags are now grouped correctly.
+  - Case-iterable flags with default values now show the default value.
+  - Arguments from parent commands that are included via `@OptionGroup` in 
+    subcommands are no longer duplicated.
+- Case-iterable flags created with the `.chooseFirst` exclusivity parameter now 
+  correctly ignore additional flags.
+
+The 0.0.2 release includes contributions from [AliSoftware], [buttaface], 
+[compnerd], [dduan], [glessard], [griffin-stewie], [IngmarStein], 
+[jonathanpenn], [klaaspieter], [natecook1000], [Sajjon], [sjavora], 
+[Wildchild9], and [zntfdr]. Thank you!
 
 ## [0.0.1] - 2020-02-27
 
 - `ArgumentParser` initial release.
 
 
+<!-- Link references for releases -->
 
-
-[Unreleased]: https://github.com/apple/swift-argument-parser/compare/0.0.1...HEAD
+[Unreleased]: https://github.com/apple/swift-argument-parser/compare/0.0.2...HEAD
+[0.0.2]: https://github.com/apple/swift-argument-parser/compare/0.0.1...0.0.2
 [0.0.1]: https://github.com/apple/swift-argument-parser/releases/tag/0.0.1
+
+<!-- Link references for contributors -->
+
+[AliSoftware]: https://github.com/apple/swift-argument-parser/commits?author=AliSoftware
+[buttaface]: https://github.com/apple/swift-argument-parser/commits?author=buttaface
+[compnerd]: https://github.com/apple/swift-argument-parser/commits?author=compnerd
+[dduan]: https://github.com/apple/swift-argument-parser/commits?author=dduan
+[glessard]: https://github.com/apple/swift-argument-parser/commits?author=glessard
+[griffin-stewie]: https://github.com/apple/swift-argument-parser/commits?author=griffin-stewie
+[IngmarStein]: https://github.com/apple/swift-argument-parser/commits?author=IngmarStein
+[jonathanpenn]: https://github.com/apple/swift-argument-parser/commits?author=jonathanpenn
+[klaaspieter]: https://github.com/apple/swift-argument-parser/commits?author=klaaspieter
+[natecook1000]: https://github.com/apple/swift-argument-parser/commits?author=natecook1000
+[Sajjon]: https://github.com/apple/swift-argument-parser/commits?author=Sajjon
+[sjavora]: https://github.com/apple/swift-argument-parser/commits?author=sjavora
+[Wildchild9]: https://github.com/apple/swift-argument-parser/commits?author=Wildchild9
+[zntfdr]: https://github.com/apple/swift-argument-parser/commits?author=zntfdr
 
