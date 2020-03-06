@@ -10,7 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 import XCTest
-import TestHelpers
+import SAPTestHelpers
 @testable import ArgumentParser
 
 final class HelpGenerationTests: XCTestCase {

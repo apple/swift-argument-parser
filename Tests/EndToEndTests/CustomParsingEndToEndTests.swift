@@ -10,7 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 import XCTest
-import TestHelpers
+import SAPTestHelpers
 import ArgumentParser
 
 final class ParsingEndToEndTests: XCTestCase {

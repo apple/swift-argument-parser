@@ -25,7 +25,7 @@ let package = Package(
             name: "ArgumentParser",
             dependencies: []),
         .target(
-            name: "TestHelpers",
+            name: "SAPTestHelpers",
             dependencies: ["ArgumentParser"]),
         
         .target(
@@ -43,15 +43,15 @@ let package = Package(
         
         .testTarget(
             name: "EndToEndTests",
-            dependencies: ["ArgumentParser", "TestHelpers"]),
+            dependencies: ["ArgumentParser", "SAPTestHelpers"]),
         .testTarget(
             name: "UnitTests",
-            dependencies: ["ArgumentParser", "TestHelpers"]),
+            dependencies: ["ArgumentParser", "SAPTestHelpers"]),
         .testTarget(
             name: "PackageManagerTests",
-            dependencies: ["ArgumentParser", "TestHelpers"]),
+            dependencies: ["ArgumentParser", "SAPTestHelpers"]),
         .testTarget(
             name: "ExampleTests",
-            dependencies: ["TestHelpers"]),
+            dependencies: ["SAPTestHelpers"]),
     ]
 )

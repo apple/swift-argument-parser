@@ -10,7 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 import XCTest
-import TestHelpers
+import SAPTestHelpers
 
 final class MathExampleTests: XCTestCase {
   func testMath_Simple() throws {
