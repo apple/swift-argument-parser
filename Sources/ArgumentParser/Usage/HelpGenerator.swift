@@ -28,7 +28,7 @@ internal struct HelpGenerator {
   }
   
   struct Section {
-    struct Element {
+    struct Element: Hashable {
       var label: String
       var abstract: String = ""
       var discussion: String = ""
@@ -125,7 +125,9 @@ internal struct HelpGenerator {
   static func generateSections(commandStack: [ParsableCommand.Type]) -> [Section] {
     var positionalElements: [Section.Element] = []
     var optionElements: [Section.Element] = []
-    
+    /// Used to keep track of elements already seen from parent commands.
+    var alreadySeenElements = Set<Section.Element>()
+
     for commandType in commandStack {
       let args = Array(ArgumentSet(commandType))
       
@@ -174,10 +176,13 @@ internal struct HelpGenerator {
         }
         
         let element = Section.Element(label: synopsis, abstract: description, discussion: arg.help.help?.discussion ?? "")
-        if case .positional = arg.kind {
-          positionalElements.append(element)
-        } else {
-          optionElements.append(element)
+        if !alreadySeenElements.contains(element) {
+          alreadySeenElements.insert(element)
+          if case .positional = arg.kind {
+            positionalElements.append(element)
+          } else {
+            optionElements.append(element)
+          }
         }
       }
     }

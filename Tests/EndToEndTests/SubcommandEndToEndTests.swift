@@ -87,7 +87,6 @@ extension SubcommandEndToEndTests {
 
             OPTIONS:
               --name <name>
-              --name <name>
               --bar <bar>
               -h, --help              Show help information.
 
@@ -96,7 +95,6 @@ extension SubcommandEndToEndTests {
             USAGE: foo b --name <name> --baz <baz>
 
             OPTIONS:
-              --name <name>
               --name <name>
               --baz <baz>
               -h, --help              Show help information.
