@@ -80,10 +80,9 @@ extension FlagsEndToEndTests {
     AssertParse(Bar.self, ["--enable-logging"]) { options in
       XCTAssertEqual(options.logging, true)
     }
-// Can't test this yet, because .chooseFirst flags don't work
-//    AssertParse(Bar.self, ["--enable-logging", "--disable-logging"]) { options in
-//      XCTAssertEqual(options.logging, false)
-//    }
+    AssertParse(Bar.self, ["--disable-logging", "--enable-logging"]) { options in
+      XCTAssertEqual(options.logging, false)
+    }
   }
 }
 
@@ -261,5 +260,27 @@ extension FlagsEndToEndTests {
   
   func testParsingCaseIterableArray_Fails() throws {
     XCTAssertThrowsError(try Qux.parse(["--pink", "--small", "--bloop"]))
+  }
+}
+
+fileprivate struct RepeatOK: ParsableArguments {
+  @Flag(exclusivity: .chooseFirst)
+  var color: Color
+
+  @Flag(exclusivity: .chooseLast)
+  var shape: Shape
+}
+
+extension FlagsEndToEndTests {
+  func testParsingCaseIterable_RepeatableFlags() throws {
+    AssertParse(RepeatOK.self, ["--pink", "--purple", "--square"]) { options in
+      XCTAssertEqual(options.color, .pink)
+      XCTAssertEqual(options.shape, .square)
+    }
+
+    AssertParse(RepeatOK.self, ["--round", "--oblong", "--silver"]) { options in
+      XCTAssertEqual(options.color, .silver)
+      XCTAssertEqual(options.shape, .oblong)
+    }
   }
 }
