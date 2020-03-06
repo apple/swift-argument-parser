@@ -25,7 +25,7 @@ fileprivate struct Bar: ParsableArguments {
   @Flag(inversion: .prefixedNo)
   var extattr: Bool
 
-  @Flag(inversion: .prefixedNo)
+  @Flag(inversion: .prefixedNo, exclusivity: .exclusive)
   var extattr2: Bool?
 
   @Flag(inversion: .prefixedEnableDisable, exclusivity: .chooseFirst)
@@ -79,6 +79,9 @@ extension FlagsEndToEndTests {
     }
     AssertParse(Bar.self, ["--enable-logging"]) { options in
       XCTAssertEqual(options.logging, true)
+    }
+    AssertParse(Bar.self, ["--no-extattr2", "--no-extattr2"]) { options in
+      XCTAssertEqual(options.extattr2, false)
     }
     AssertParse(Bar.self, ["--disable-logging", "--enable-logging"]) { options in
       XCTAssertEqual(options.logging, false)
@@ -269,6 +272,9 @@ fileprivate struct RepeatOK: ParsableArguments {
 
   @Flag(exclusivity: .chooseLast)
   var shape: Shape
+
+  @Flag(name: .shortAndLong, default: .small, exclusivity: .exclusive)
+  var size: Size
 }
 
 extension FlagsEndToEndTests {
@@ -281,6 +287,10 @@ extension FlagsEndToEndTests {
     AssertParse(RepeatOK.self, ["--round", "--oblong", "--silver"]) { options in
       XCTAssertEqual(options.color, .silver)
       XCTAssertEqual(options.shape, .oblong)
+    }
+
+    AssertParse(RepeatOK.self, ["--large", "--pink", "--round", "-l"]) { options in
+      XCTAssertEqual(options.size, .large)
     }
   }
 }

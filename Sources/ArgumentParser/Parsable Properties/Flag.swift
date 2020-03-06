@@ -226,7 +226,7 @@ extension Flag where Value == Int {
   }
 }
 
-extension Flag where Value: CaseIterable, Value: RawRepresentable, Value.RawValue == String {
+extension Flag where Value: CaseIterable, Value: Equatable, Value: RawRepresentable, Value.RawValue == String {
   /// Creates a property that gets its value from the presence of a flag,
   /// where the allowed flags are defined by a `CaseIterable` type.
   ///
@@ -252,8 +252,6 @@ extension Flag where Value: CaseIterable, Value: RawRepresentable, Value.RawValu
         let caseKey = InputKey(rawValue: value.rawValue)
         let help = ArgumentDefinition.Help(options: initial != nil ? .isOptional : [], help: help, defaultValue: defaultValue, key: key)
         return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .nextAsValue, initialValue: initial, update: .nullary({ (origin, name, values) in
-          // TODO: We should catch duplicate flags that hit a single part of
-          // an exclusive argument set in the value parsing, not here.
           hasUpdated = try ArgumentSet.updateFlag(key: key, value: value, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
         }))
       }
@@ -279,7 +277,7 @@ extension Flag {
     name: NameSpecification = .long,
     exclusivity: FlagExclusivity = .exclusive,
     help: ArgumentHelp? = nil
-  ) where Value == Element?, Element: CaseIterable, Element: RawRepresentable, Element.RawValue == String {
+  ) where Value == Element?, Element: CaseIterable, Element: Equatable, Element: RawRepresentable, Element.RawValue == String {
     self.init(_parsedValue: .init { key in
       // This gets flipped to `true` the first time one of these flags is
       // encountered.
@@ -289,8 +287,6 @@ extension Flag {
         let caseKey = InputKey(rawValue: value.rawValue)
         let help = ArgumentDefinition.Help(options: .isOptional, help: help, key: key)
         return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .nextAsValue, initialValue: nil as Element?, update: .nullary({ (origin, name, values) in
-          // TODO: We should catch duplicate flags that hit a single part of
-          // an exclusive argument set in the value parsing, not here.
           hasUpdated = try ArgumentSet.updateFlag(key: key, value: value, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
         }))
       }
