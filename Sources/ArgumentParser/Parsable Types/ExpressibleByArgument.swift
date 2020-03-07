@@ -101,7 +101,7 @@ extension Double: ExpressibleByArgument {}
 extension Bool: ExpressibleByArgument {}
 
 extension Array where Element: ExpressibleByArgument {
-  var defaultValueDescription: String {
-	map { $0.defaultValueDescription }.joined(separator: ", ")
+  internal var defaultValueDescription: String {
+	  map { $0.defaultValueDescription }.joined(separator: ", ")
   }
 }

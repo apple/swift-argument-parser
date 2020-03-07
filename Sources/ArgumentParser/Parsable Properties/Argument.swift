@@ -32,6 +32,7 @@ public struct Argument<Value>:
     self._parsedValue = _parsedValue
   }
   
+  /// :nodoc:
   public init(from decoder: Decoder) throws {
     try self.init(_decoder: decoder)
   }
@@ -51,6 +52,7 @@ public struct Argument<Value>:
   }
   
   /// The value presented by this property wrapper.
+  /// :nodoc:
   public var wrappedValue: Value {
     get {
       switch _parsedValue {
@@ -67,6 +69,7 @@ public struct Argument<Value>:
 }
 
 extension Argument: CustomStringConvertible {
+  /// :nodoc:
   public var description: String {
     switch _parsedValue {
     case .value(let v):
@@ -234,6 +237,10 @@ extension Argument {
     })
   }
   
+  /// Creates an optional property that reads its value from an argument.
+  ///
+  /// This initializer is deprecated — either don't specify a default value for
+  /// an optional property or make the property non-optional.
   @available(*, deprecated, message: """
     Default values don't make sense for optional properties.
     Remove the 'default' parameter if its value is nil,

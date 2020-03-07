@@ -20,6 +20,7 @@ public protocol ParsableCommand: ParsableArguments {
   /// This is generated from the configuration, if given, or from the type
   /// name if not. This is a customization point so that a WrappedParsable
   /// can pass through the wrapped type's name.
+  /// :nodoc:
   static var _commandName: String { get }
   
   /// Runs this command.
@@ -32,6 +33,7 @@ public protocol ParsableCommand: ParsableArguments {
 }
 
 extension ParsableCommand {
+  /// :nodoc:
   public static var _commandName: String {
     configuration.commandName ??
       String(describing: Self.self).convertedToSnakeCase(separator: "-")

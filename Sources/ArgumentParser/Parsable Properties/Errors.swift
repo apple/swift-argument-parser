@@ -34,10 +34,17 @@ public struct ValidationError: Error, CustomStringConvertible {
     self.message = message
   }
   
+  /// :nodoc:
   public var description: String {
     message
   }
 }
+
+#if os(Windows)
+  fileprivate let _validationFailureCode = ERROR_BAD_ARGUMENTS
+#else
+  fileprivate let _validationFailureCode = EX_USAGE
+#endif
 
 /// An error type that only includes an exit code.
 ///
@@ -64,11 +71,7 @@ public struct ExitCode: Error, RawRepresentable, Hashable {
   public static let failure = ExitCode(EXIT_FAILURE)
   
   /// An exit code that indicates that the user provided invalid input.
-#if os(Windows)
-  public static let validationFailure = ExitCode(ERROR_BAD_ARGUMENTS)
-#else
-  public static let validationFailure = ExitCode(EX_USAGE)
-#endif
+  public static let validationFailure = ExitCode(_validationFailureCode)
 
   /// A Boolean value indicating whether this exit code represents the
   /// successful completion of a command.
@@ -95,6 +98,7 @@ public enum CleanExit: Error, CustomStringConvertible {
   /// Treat this error as a clean exit with the given message.
   case message(String)
   
+  /// :nodoc:
   public var description: String {
     switch self {
     case .helpRequest: return "--help"

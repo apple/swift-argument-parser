@@ -1,0 +1,34 @@
+<header class="header">
+  <p class="header-col header-col--primary">
+    <a class="header-link" href="{{path_to_root}}index.html">
+      {{docs_title}}
+    </a>
+    {{#doc_coverage}} ({{doc_coverage}}% documented){{/doc_coverage}}
+  </p>
+
+  {{^disable_search}}
+  <p class="header-col--secondary">
+    <form role="search" action="{{path_to_root}}search.json">
+      <input type="text" placeholder="Search documentation" data-typeahead>
+    </form>
+  </p>
+  {{/disable_search}}
+
+  {{#github_url}}
+    <p class="header-col header-col--secondary">
+      <a class="header-link" href="{{github_url}}">
+        <img class="header-icon" src="{{path_to_root}}img/gh.png"/>
+        View on GitHub
+      </a>
+    </p>
+  {{/github_url}}
+
+  {{#dash_url}}
+    <p class="header-col header-col--secondary">
+      <a class="header-link" href="{{dash_url}}">
+        <img class="header-icon" src="{{path_to_root}}img/dash.png"/>
+        Install in Dash
+      </a>
+    </p>
+  {{/dash_url}}
+</header>

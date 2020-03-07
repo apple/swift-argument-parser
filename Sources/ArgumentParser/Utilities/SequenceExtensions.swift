@@ -12,7 +12,7 @@
 extension Sequence where Element: Hashable {
   /// Returns an array with only the unique elements of this sequence, in the
   /// order of the first occurence of each unique element.
-  func uniquing() -> [Element] {
+  internal func uniquing() -> [Element] {
     var seen = Set<Element>()
     return self.filter { seen.insert($0).0 }
   }
@@ -22,7 +22,7 @@ extension Sequence where Element: Hashable {
   ///
   ///     [1, 2, 2, 2, 3, 3, 2, 2, 1, 1, 1].uniquingAdjacentElements()
   ///     // [1, 2, 3, 2, 1]
-  func uniquingAdjacentElements() -> [Element] {
+  internal func uniquingAdjacentElements() -> [Element] {
     var iterator = makeIterator()
     guard let first = iterator.next()
       else { return [] }

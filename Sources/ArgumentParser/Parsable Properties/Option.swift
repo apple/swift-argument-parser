@@ -34,6 +34,7 @@ public struct Option<Value>: Decodable, ParsedWrapper {
     self._parsedValue = _parsedValue
   }
   
+  /// :nodoc:
   public init(from decoder: Decoder) throws {
     try self.init(_decoder: decoder)
   }
@@ -53,6 +54,7 @@ public struct Option<Value>: Decodable, ParsedWrapper {
   }
 
   /// The value presented by this property wrapper.
+  /// :nodoc:
   public var wrappedValue: Value {
     get {
       switch _parsedValue {
@@ -69,6 +71,7 @@ public struct Option<Value>: Decodable, ParsedWrapper {
 }
 
 extension Option: CustomStringConvertible {
+  /// :nodoc:
   public var description: String {
     switch _parsedValue {
     case .value(let v):
@@ -196,7 +199,7 @@ extension Option where Value: ExpressibleByArgument {
 
 /// The strategy to use when parsing a single value from `@Option` arguments.
 ///
-/// - SeeAlso: `ArrayParsingStrategy``
+/// - SeeAlso: `ArrayParsingStrategy`
 public enum SingleValueParsingStrategy {
   /// Parse the input after the option. Expect it to be a value.
   ///

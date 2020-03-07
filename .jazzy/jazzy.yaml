@@ -1,0 +1,68 @@
+---
+author_url: https://github.com/apple/swift-argument-parser
+module: ArgumentParser
+theme: theme
+documentation: Documentation/*.md
+github_url: https://github.com/apple/swift-argument-parser
+github_file_prefix: https://github.com/apple/swift-argument-parser/tree/0.3.1
+hide_documentation_coverage: true
+disable_search: true
+
+custom_categories:
+- name: Guides
+  children:
+  - Getting Started
+  - Arguments, Options, and Flags
+  - Commands and Subcommands
+  - Customizing Help
+  - Validation and Errors
+  - Manual Parsing and Testing
+  - Completion Scripts
+- name: Parsable Properties
+  children:
+  - Argument
+  - Option
+  - Flag
+- name: Parsable Types
+  children:
+  - ParsableCommand
+  - ParsableArguments
+  - OptionGroup
+  - EnumerableFlag
+- name: Customization
+  children:
+  - ArgumentHelp
+  - NameSpecification
+  - CommandConfiguration  
+  - FlagInversion
+  - FlagExclusivity
+  - SingleValueParsingStrategy
+  - ArrayParsingStrategy
+  - ArgumentArrayParsingStrategy
+  - CompletionKind
+  - CompletionShell
+- name: Validation and Errors
+  children:
+  - ValidationError
+  - CleanExit
+  - ExitCode
+- name: Expressible Types
+  children:
+  - ExpressibleByArgument
+  - String
+  - Int
+  - Int8
+  - Int16
+  - Int32
+  - Int64
+  - UInt
+  - UInt8
+  - UInt16
+  - UInt32
+  - UInt64
+  - Double
+  - Float
+  - Bool
+  - Optional
+  - RawRepresentable
+  - LosslessStringConvertible

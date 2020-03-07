@@ -36,6 +36,7 @@ public struct OptionGroup<Value: ParsableArguments>: Decodable, ParsedWrapper {
     self._parsedValue = _parsedValue
   }
   
+  /// :nodoc:
   public init(from decoder: Decoder) throws {
     if let d = decoder as? SingleValueDecoder,
       let value = try? d.previousValue(Value.self)
@@ -63,6 +64,7 @@ public struct OptionGroup<Value: ParsableArguments>: Decodable, ParsedWrapper {
   }
 
   /// The value presented by this property wrapper.
+  /// :nodoc:
   public var wrappedValue: Value {
     get {
       switch _parsedValue {
@@ -79,6 +81,7 @@ public struct OptionGroup<Value: ParsableArguments>: Decodable, ParsedWrapper {
 }
 
 extension OptionGroup: CustomStringConvertible {
+  /// :nodoc:
   public var description: String {
     switch _parsedValue {
     case .value(let v):

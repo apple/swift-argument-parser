@@ -10,7 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 extension String {
-  func wrapped(to columns: Int, wrappingIndent: Int = 0) -> String {
+  internal func wrapped(to columns: Int, wrappingIndent: Int = 0) -> String {
     let columns = columns - wrappingIndent
     var result: [Substring] = []
     
@@ -47,7 +47,7 @@ extension String {
   ///
   ///     "hello".addingIntercappedPrefix("my")
   ///     // myHello
-  func addingIntercappedPrefix(_ prefix: String) -> String {
+  internal func addingIntercappedPrefix(_ prefix: String) -> String {
     guard let firstChar = first else { return prefix }
     return "\(prefix)\(firstChar.uppercased())\(self.dropFirst())"
   }
@@ -65,7 +65,7 @@ extension String {
   ///     // my-hello-there
   ///     "helloThere".addingPrefixWithAutodetectedStyle("my")
   ///     // myHelloThere
-  func addingPrefixWithAutodetectedStyle(_ prefix: String) -> String {
+  internal func addingPrefixWithAutodetectedStyle(_ prefix: String) -> String {
     if contains("-") {
       return "\(prefix)-\(self)"
     } else if contains("_") {
@@ -88,7 +88,7 @@ extension String {
   ///     // my_url_property
   ///     "myURLProperty".convertedToSnakeCase(separator: "-")
   ///     // my-url-property
-  func convertedToSnakeCase(separator: Character = "_") -> String {
+  internal func convertedToSnakeCase(separator: Character = "_") -> String {
     guard !isEmpty else { return self }
     var result = ""
     // Whether we should append a separator when we see a uppercase character.
@@ -125,8 +125,7 @@ extension String {
   ///     // 3
   ///     "bar".editDistance(to: "baz")
   ///     // 1
-
-  func editDistance(to target: String) -> Int {
+  internal func editDistance(to target: String) -> Int {
     let rows = self.count
     let columns = target.count
     
@@ -160,7 +159,7 @@ extension String {
     return matrix.last!.last!
   }
   
-  func indentingEachLine(by n: Int) -> String {
+  internal func indentingEachLine(by n: Int) -> String {
     let hasTrailingNewline = self.last == "\n"
     let lines = self.split(separator: "\n", omittingEmptySubsequences: false)
     if hasTrailingNewline && lines.last == "" {
