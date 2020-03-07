@@ -2,9 +2,11 @@
 
 ## Usage
 
-Begin by declaring a type that defines the information you need to collect from the command line.
+Begin by declaring a type that defines the information
+that you need to collect from the command line.
 Decorate each stored property with one of `ArgumentParser`'s property wrappers,
-and declare conformance to `ParsableCommand`.
+declare conformance to `ParsableCommand`,
+and implement your command's logic in the `run()` method.
 
 ```swift
 import ArgumentParser
@@ -18,21 +20,6 @@ struct Repeat: ParsableCommand {
 
     @Argument(help: "The phrase to repeat.")
     var phrase: String
-
-    // continued below…
-}
-```
-
-Next, implement the `run()` method on your type, 
-and kick off execution by calling the type's static `main()` method.  
-The `ArgumentParser` library parses the command-line arguments,
-instantiates your command type, and then either executes your custom `run()` method 
-or exits with useful a message.
-
-```swift
-struct Repeat: ParsableCommand {
-
-    // continued from above…
 
     func run() throws {
         let repeatCount = count ?? .max
@@ -49,6 +36,11 @@ struct Repeat: ParsableCommand {
 
 Repeat.main()
 ```
+
+You kick off execution by calling your type's static `main()` method.
+The `ArgumentParser` library parses the command-line arguments,
+instantiates your command type, and then either executes your `run()` method
+or exits with useful a message.
 
 `ArgumentParser` uses your properties' names and type information,
 along with the details you provide using property wrappers,
@@ -91,19 +83,24 @@ You can also see examples of `ArgumentParser` adoption among Swift project tools
 
 ## Adding `ArgumentParser` as a Dependency
 
-Add the following line to the dependencies in your `Package.swift` file:
+To use the `ArgumentParser` library in a SwiftPM project, 
+add the following line to the dependencies in your `Package.swift` file:
 
 ```swift
 .package(url: "https://github.com/apple/swift-argument-parser", from: "0.0.1"),
 ```
 
-...and then include `"ArgumentParser"` as a dependency for your executable target:
+Because `ArgumentParser` is under active development,
+source-stability is only guaranteed within minor versions (e.g. between `0.0.3` and `0.0.4`).
+If you don't want potentially source-breaking package updates,
+use this dependency specification instead:
+
+```swift
+.package(url: "https://github.com/apple/swift-argument-parser", .upToNextMinor(from: "0.0.1")),
+```
+
+Finally, include `"ArgumentParser"` as a dependency for your executable target:
 
 ```swift
 .product(name: "ArgumentParser", package: "swift-argument-parser"),
 ```
-
-> **Note:** Because `ArgumentParser` is under active development,
-source-stability is only guaranteed within minor versions (e.g. between `0.0.3` and `0.0.4`).
-If you don't want potentially source-breaking package updates,
-you can specify your package dependency using `.upToNextMinor(from: "0.0.1")` instead.
