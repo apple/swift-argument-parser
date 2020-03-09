@@ -276,7 +276,7 @@ extension ArgumentSet {
   /// - Parameter commandStack: commands that have been parsed
   func lenientParse(_ all: SplitArguments) throws -> LenientParsedValues {
     // Create a local, mutable copy of the arguments:
-    var set = all
+    var inputArguments = all
     
     func parseValue(
       _ argument: ArgumentDefinition,
@@ -293,7 +293,7 @@ extension ArgumentSet {
         if let value = parsed.value {
           // This was `--foo=bar` style:
           try update(origin, parsed.name, value, &result)
-        } else if let (origin2, value) = set.popNextElementIfValue(after: originElement) {
+        } else if let (origin2, value) = inputArguments.popNextElementIfValue(after: originElement) {
           // Use `popNextElementIfValue(after:)` to handle cases where short option
           // labels are combined
           let origins = origin.inserting(origin2)
@@ -308,7 +308,7 @@ extension ArgumentSet {
         if let value = parsed.value {
           // This was `--foo=bar` style:
           try update(origin, parsed.name, value, &result)
-        } else if let (origin2, value) = set.popNextValue(after: originElement) {
+        } else if let (origin2, value) = inputArguments.popNextValue(after: originElement) {
           // Use `popNext(after:)` to handle cases where short option
           // labels are combined
           let origins = origin.inserting(origin2)
@@ -325,7 +325,7 @@ extension ArgumentSet {
           try update(origin, parsed.name, value, &result)
           usedOrigins.formUnion(origin)
         } else {
-          guard let (origin2, value) = set.popNextElementAsValue(after: originElement) else {
+          guard let (origin2, value) = inputArguments.popNextElementAsValue(after: originElement) else {
             throw ParserError.missingValueForOption(origin, parsed.name)
           }
           let origins = origin.inserting(origin2)
@@ -345,7 +345,7 @@ extension ArgumentSet {
         }
         
         // ...and then consume the rest of the arguments
-        while let (origin2, value) = set.popNextElementAsValue(after: originElement) {
+        while let (origin2, value) = inputArguments.popNextElementAsValue(after: originElement) {
           let origins = origin.inserting(origin2)
           try update(origins, parsed.name, value, &result)
           usedOrigins.formUnion(origins)
@@ -363,7 +363,7 @@ extension ArgumentSet {
         }
         
         // ...and then consume the arguments until hitting an option
-        while let (origin2, value) = set.popNextElementIfValue() {
+        while let (origin2, value) = inputArguments.popNextElementIfValue() {
           let origins = origin.inserting(origin2)
           try update(origins, parsed.name, value, &result)
           usedOrigins.formUnion(origins)
@@ -373,27 +373,35 @@ extension ArgumentSet {
     
     var result = ParsedValues(elements: [], originalInput: all.originalInput)
     var positionalValues: [(InputOrigin.Element, String)] = []
+    var unusedOptions: [(InputOrigin.Element, String)] = []
     var usedOrigins = InputOrigin()
     
     try setInitialValues(into: &result)
     
     // Loop over all arguments:
-    while let (origin, next) = set.popNext() {
+    while let (origin, next) = inputArguments.popNext() {
       defer {
-        set.removeAll(in: usedOrigins)
+        inputArguments.removeAll(in: usedOrigins)
       }
       
       switch next {
       case let .value(v):
         positionalValues.append((origin, v))
       case let .option(parsed):
+        // Look for an argument that matches this `--option` or `-o`-style
+        // input. If we can't find one, just move on to the next input. We
+        // defer catching leftover arguments until we've fully extracted all
+        // the information for the selected command.
         guard
           let argument: ArgumentDefinition = try? first(matching: parsed, at: origin)
-          else { continue }
+          else {
+            unusedOptions.append((origin, all.originalInput(at: origin)))
+            continue
+          }
         
         switch argument.update {
         case let .nullary(update):
-          // We need don’t expect a value for this option.
+          // We don’t expect a value for this option.
           guard parsed.value == nil else {
             throw ParserError.unexpectedValueForOption(origin, parsed.name, parsed.value!)
           }
@@ -405,13 +413,14 @@ extension ArgumentSet {
       case .terminator:
         // Mark the terminator as used:
         result.set(ParsedValues.Element(key: .terminator, value: 0, inputOrigin: [origin]))
+        unusedOptions.append((origin, all.originalInput(at: origin)))
       }
     }
     
     // We have parsed all non-positional values at this point.
     // Next: parse / consume the positional values.
     do {
-      try parsePositionalValues(from: positionalValues, into: &result)
+      try parsePositionalValues(positionalValues, unusedOptions: unusedOptions, into: &result)
     } catch {
       switch error {
       case ParserError.unexpectedExtraValues:
@@ -456,30 +465,50 @@ extension ArgumentSet {
   }
   
   func parsePositionalValues(
-    from values: [(InputOrigin.Element, String)],
+    _ positionalValues: [(InputOrigin.Element, String)],
+    unusedOptions: [(InputOrigin.Element, String)],
     into result: inout ParsedValues
   ) throws {
-    guard !values.isEmpty else { return }
-    var remainingValues = values[values.startIndex..<values.endIndex]
+    guard !positionalValues.isEmpty || !unusedOptions.isEmpty else { return }
+    var positionalValues = positionalValues[...]
+    var unusedOptions = unusedOptions[...]
+    
+    /// Pops the next origin / string pair to use.
+    /// If `unconditional` is false, this always pops from `positionalValues`;
+    /// if true, then it pops from whichever of `positionalValues` or
+    /// `unusedOptions` has the element that came first in the original input.
+    func next(unconditional: Bool) -> (InputOrigin.Element, String)? {
+      guard unconditional, let firstUnusedOption = unusedOptions.first else {
+        return positionalValues.popFirst()
+      }
+      guard let firstPositional = positionalValues.first else {
+        return unusedOptions.popFirst()
+      }
+      return firstPositional.0 < firstUnusedOption.0
+        ? positionalValues.popFirst()
+        : unusedOptions.popFirst()
+    }
     
     ArgumentLoop:
-    for argument in self {
-      guard case .positional = argument.kind else { continue }
+    for argumentDefinition in self {
+      guard case .positional = argumentDefinition.kind else { continue }
+      guard case let .unary(update) = argumentDefinition.update else {
+        preconditionFailure("Shouldn't see a nullary positional argument.")
+      }
+      let allowOptionsAsInput = argumentDefinition.parsingStrategy == .allRemainingInput
+      
       repeat {
-        guard let (origin, v) = remainingValues.popFirst() else { break ArgumentLoop }
-        switch argument.update {
-        case .nullary(_):
-          preconditionFailure("Shouldn't see a nullary positional argument.")
-        case .unary(let c):
-          try c([origin], nil, v, &result)
+        guard let (origin, value) = next(unconditional: allowOptionsAsInput) else {
+          break ArgumentLoop
         }
-      } while argument.help.options.contains(.isRepeating)
+        try update([origin], nil, value, &result)
+      } while argumentDefinition.isRepeatingPositional
     }
     
     // Finished with the defined arguments; are there leftover values to parse?
-    guard remainingValues.isEmpty else {
-      let v = values.map { (InputOrigin(element: $0.0), $0.1) }
-      throw ParserError.unexpectedExtraValues(v)
+    guard positionalValues.isEmpty else {
+      let extraValues = positionalValues.map { (InputOrigin(element: $0.0), $0.1) }
+      throw ParserError.unexpectedExtraValues(extraValues)
     }
   }
 }

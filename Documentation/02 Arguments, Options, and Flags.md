@@ -322,7 +322,6 @@ The default strategy for parsing options as arrays is to read each value from a 
 ```swift
 struct Example: ParsableCommand {
     @Option() var file: [String]
-    
     @Flag() var verbose: Bool
     
     func run() throws {
@@ -364,4 +363,45 @@ Finally, the `.remaining` parsing strategy uses all the inputs that follow the o
 Verbose: true, files: ["file1.swift", "file2.swift"]
 % example --file file1.swift file2.swift --verbose
 Verbose: false, files: ["file1.swift", "file2.swift", "--verbose"]
+```
+
+## Alternative positional argument parsing strategies
+
+The default strategy for parsing arrays of positional arguments is to ignore  all dash-prefixed command-line inputs. For example, this command accepts a `--verbose` flag and a list of file names as positional arguments:
+
+```swift
+struct Example: ParsableCommand {
+    @Flag() var verbose: Bool
+    @Argument() var files: [String]
+    
+    func run() throws {
+        print("Verbose: \(verbose), files: \(files)")
+    }
+}
+```
+
+The `files` argument array uses the default `.remaining` parsing strategy, so it only picks up values that don't have a prefix:
+
+```
+% example --verbose file1.swift file2.swift
+Verbose: true, files: ["file1.swift", "file2.swift"]
+% example --verbose file1.swift file2.swift --other
+Error: Unexpected argument '--other'
+Usage: example [--verbose] [<files> ...]
+```
+
+Any input after the `--` terminator is automatically treated as positional input, so users can provide dash-prefixed values that way even with the default configuration:
+
+```
+% example --verbose -- file1.swift file2.swift --other
+Verbose: true, files: ["file1.swift", "file2.swift", "--other"]
+```
+
+The `.unconditionalRemaining` parsing strategy uses whatever input is left after parsing known options and flags, even if that input is dash-prefixed, including the terminator itself. If `files` were defined as `@Argument(parsing: .unconditionalRemaining) var files: [String]`, then the resulting array would also include strings that look like options:
+
+```
+% example --verbose file1.swift file2.swift --other
+Verbose: true, files: ["file1.swift", "file2.swift", "--other"]
+% example -- --verbose file1.swift file2.swift --other
+Verbose: false, files: ["--", "--verbose", "file1.swift", "file2.swift", "--other"]
 ```

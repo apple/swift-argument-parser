@@ -300,6 +300,57 @@ extension RepeatingEndToEndTests {
 
 // MARK: -
 
+fileprivate struct Foozle: ParsableArguments {
+  @Flag() var verbose: Bool
+  @Argument(parsing: .unconditionalRemaining) var names: [String]
+}
+
+extension RepeatingEndToEndTests {
+  func testParsing_repeatingUnconditionalArgument() throws {
+    AssertParse(Foozle.self, []) { foozle in
+      XCTAssertFalse(foozle.verbose)
+      XCTAssertEqual(foozle.names, [])
+    }
+    
+    AssertParse(Foozle.self, ["--other"]) { foozle in
+      XCTAssertFalse(foozle.verbose)
+      XCTAssertEqual(foozle.names, ["--other"])
+    }
+    
+    AssertParse(Foozle.self, ["--verbose", "one", "two", "three"]) { foozle in
+      XCTAssertTrue(foozle.verbose)
+      XCTAssertEqual(foozle.names, ["one", "two", "three"])
+    }
+    
+    AssertParse(Foozle.self, ["one", "two", "three", "--other", "--verbose"]) { foozle in
+      XCTAssertTrue(foozle.verbose)
+      XCTAssertEqual(foozle.names, ["one", "two", "three", "--other"])
+    }
+    
+    AssertParse(Foozle.self, ["--verbose", "--other", "one", "two", "three"]) { foozle in
+      XCTAssertTrue(foozle.verbose)
+      XCTAssertEqual(foozle.names, ["--other", "one", "two", "three"])
+    }
+    
+    AssertParse(Foozle.self, ["--verbose", "--other", "one", "--", "two", "three"]) { foozle in
+      XCTAssertTrue(foozle.verbose)
+      XCTAssertEqual(foozle.names, ["--other", "one", "--", "two", "three"])
+    }
+    
+    AssertParse(Foozle.self, ["--other", "one", "--", "two", "three", "--verbose"]) { foozle in
+      XCTAssertFalse(foozle.verbose)
+      XCTAssertEqual(foozle.names, ["--other", "one", "--", "two", "three", "--verbose"])
+    }
+    
+    AssertParse(Foozle.self, ["--", "--verbose", "--other", "one", "two", "three"]) { foozle in
+      XCTAssertFalse(foozle.verbose)
+      XCTAssertEqual(foozle.names, ["--", "--verbose", "--other", "one", "two", "three"])
+    }
+  }
+}
+
+// MARK: -
+
 struct PerformanceTest: ParsableCommand {
   @Option(name: .short) var bundleIdentifiers: [String]
   
