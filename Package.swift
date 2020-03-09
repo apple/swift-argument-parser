@@ -25,9 +25,9 @@ let package = Package(
             name: "ArgumentParser",
             dependencies: []),
         .target(
-            name: "SAPTestHelpers",
+            name: "ArgumentParserTestHelpers",
             dependencies: ["ArgumentParser"]),
-        
+
         .target(
             name: "roll",
             dependencies: ["ArgumentParser"],
@@ -40,18 +40,18 @@ let package = Package(
             name: "repeat",
             dependencies: ["ArgumentParser"],
             path: "Examples/repeat"),
-        
+
         .testTarget(
-            name: "EndToEndTests",
-            dependencies: ["ArgumentParser", "SAPTestHelpers"]),
+            name: "ArgumentParserEndToEndTests",
+            dependencies: ["ArgumentParser", "ArgumentParserTestHelpers"]),
         .testTarget(
-            name: "UnitTests",
-            dependencies: ["ArgumentParser", "SAPTestHelpers"]),
+            name: "ArgumentParserUnitTests",
+            dependencies: ["ArgumentParser", "ArgumentParserTestHelpers"]),
         .testTarget(
-            name: "PackageManagerTests",
-            dependencies: ["ArgumentParser", "SAPTestHelpers"]),
+            name: "ArgumentParserPackageManagerTests",
+            dependencies: ["ArgumentParser", "ArgumentParserTestHelpers"]),
         .testTarget(
-            name: "ExampleTests",
-            dependencies: ["SAPTestHelpers"]),
+            name: "ArgumentParserExampleTests",
+            dependencies: ["ArgumentParserTestHelpers"]),
     ]
 )

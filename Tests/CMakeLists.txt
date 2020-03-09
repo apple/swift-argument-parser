@@ -1,2 +1,2 @@
-add_subdirectory(EndToEndTests)
-add_subdirectory(UnitTests)
+add_subdirectory(SAPEndToEndTests)
+add_subdirectory(SAPUnitTests)
