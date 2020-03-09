@@ -104,7 +104,7 @@ public enum ArgumentArrayParsingStrategy {
   case remaining
   
   /// Parse all remaining inputs after parsing any known options or flags,
-  /// including dash-prefixed inputs.
+  /// including dash-prefixed inputs and the `--` terminator.
   ///
   /// For example, for a parsable type defined as following:
   ///
@@ -118,8 +118,11 @@ public enum ArgumentArrayParsingStrategy {
   /// `Options(verbose: true, words: ["one", "two", "--other"])`.
   ///
   /// - Note: This parsing strategy can be surprising for users, particularly
-  ///   when combined with options and flags. Use care when specifying the
-  ///   `unconditionalRemaining` parsing strategy.
+  ///   when combined with options and flags. Prefer `remaining` whenever
+  ///   possible, since users can always terminate options and flags with
+  ///   the `--` terminator. With the `remaining` parsing strategy, the input
+  ///   `--verbose -- one two --other` would have the same result as the above
+  ///   example: `Options(verbose: true, words: ["one", "two", "--other"])`.
   case unconditionalRemaining
 }
 

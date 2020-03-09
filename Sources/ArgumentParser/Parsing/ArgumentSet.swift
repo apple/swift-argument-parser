@@ -396,6 +396,7 @@ extension ArgumentSet {
       case .terminator:
         // Mark the terminator as used:
         result.set(ParsedValues.Element(key: .terminator, value: 0, inputOrigin: [origin]))
+        unusedOptions.append((origin, all.originalInput(at: origin)))
       }
     }
     

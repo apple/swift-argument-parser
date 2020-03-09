@@ -331,6 +331,21 @@ extension RepeatingEndToEndTests {
       XCTAssertTrue(foozle.verbose)
       XCTAssertEqual(foozle.names, ["--other", "one", "two", "three"])
     }
+    
+    AssertParse(Foozle.self, ["--verbose", "--other", "one", "--", "two", "three"]) { foozle in
+      XCTAssertTrue(foozle.verbose)
+      XCTAssertEqual(foozle.names, ["--other", "one", "--", "two", "three"])
+    }
+    
+    AssertParse(Foozle.self, ["--other", "one", "--", "two", "three", "--verbose"]) { foozle in
+      XCTAssertFalse(foozle.verbose)
+      XCTAssertEqual(foozle.names, ["--other", "one", "--", "two", "three", "--verbose"])
+    }
+    
+    AssertParse(Foozle.self, ["--", "--verbose", "--other", "one", "two", "three"]) { foozle in
+      XCTAssertFalse(foozle.verbose)
+      XCTAssertEqual(foozle.names, ["--", "--verbose", "--other", "one", "two", "three"])
+    }
   }
 }
 
