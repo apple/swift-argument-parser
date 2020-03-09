@@ -37,6 +37,12 @@ public struct NameSpecification: ExpressibleByArrayLiteral {
     ///
     /// Short labels can be combined into groups.
     case customShort(Character)
+
+    /// Read the value from an environment variable. The name is using the `THE_QUICK_BROWN_FOX` style.
+    case environment
+    
+    /// Read the value from an environment variable with the specified name/
+    case customEnvironment(String)
   }
   var elements: Set<Element>
   
@@ -102,6 +108,9 @@ extension NameSpecification.Element {
         : .long(name)
     case .customShort(let name):
       return .short(name)
+    case .environment,
+         .customEnvironment:
+      return nil
     }
   }
 }
@@ -129,6 +138,9 @@ extension FlagInversion {
           let modifiedName = name.addingPrefixWithAutodetectedStyle(prefix)
           let modifiedElement = NameSpecification.Element.customLong(modifiedName, withSingleDash: withSingleDash)
           return modifiedElement.name(for: key)
+        case .environment,
+             .customEnvironment:
+          return nil
         }
       }
     }
@@ -145,5 +157,30 @@ extension FlagInversion {
         makeNames(withPrefix: "disable", includingShort: false)
       )
     }
+  }
+}
+
+extension NameSpecification.Element {
+  /// Creates the argument name for this specification element.
+  func environmentName(for key: InputKey) -> EnvironmentName? {
+    switch self {
+    case .long,
+         .short,
+         .customLong,
+         .customShort:
+      return nil
+    case .environment:
+      let raw = key.rawValue.convertedToSnakeCase().uppercased()
+      return EnvironmentName(rawValue: raw)
+    case .customEnvironment(let raw):
+      return EnvironmentName(rawValue: raw)
+    }
+  }
+}
+
+extension NameSpecification {
+  /// Creates the argument names for each element in the name specification.
+  func makeEnvironmentNames(_ key: InputKey) -> [EnvironmentName] {
+    return elements.compactMap { $0.environmentName(for: key) }
   }
 }

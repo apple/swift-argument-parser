@@ -145,7 +145,7 @@ extension Argument {
   ) {
     self.init(_parsedValue: .init { key in
       let help = ArgumentDefinition.Help(options: [], help: help, key: key)
-      let arg = ArgumentDefinition(kind: .positional, help: help, update: .unary({
+      let arg = ArgumentDefinition(kind: .positional, environmentNames: [], help: help, update: .unary({
         (origin, _, valueString, parsedValues) in
         parsedValues.set(try transform(valueString), forKey: key, inputOrigin: origin)
       }), initial: { origin, values in
@@ -175,14 +175,15 @@ extension Argument {
       let help = ArgumentDefinition.Help(options: [.isOptional, .isRepeating], help: help, key: key)
       let arg = ArgumentDefinition(
         kind: .positional,
+        environmentNames: [],
         help: help,
         parsingStrategy: parsingStrategy == .remaining ? .nextAsValue : .allRemainingInput,
         update: .appendToArray(forType: Element.self, key: key),
         initial: { origin, values in
           values.set([], forKey: key, inputOrigin: origin)
-        })
+      })
       return ArgumentSet(alternatives: [arg])
-    })
+      })
   }
   
   /// Creates a property that reads an array from zero or more arguments,
@@ -207,6 +208,7 @@ extension Argument {
       let help = ArgumentDefinition.Help(options: [.isOptional, .isRepeating], help: help, key: key)
       let arg = ArgumentDefinition(
         kind: .positional,
+        environmentNames: [],
         help: help,
         parsingStrategy: parsingStrategy == .remaining ? .nextAsValue : .allRemainingInput,
         update: .unary({

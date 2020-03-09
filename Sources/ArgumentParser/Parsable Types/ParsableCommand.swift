@@ -54,14 +54,19 @@ extension ParsableCommand {
   ///
   /// - Parameter arguments: An array of arguments to use for parsing. If
   ///   `arguments` is `nil`, this uses the program's command-line arguments.
+  /// - Parameter environment: Environment variables to use for parsing. if
+  ///   `environment` is `nil`, this will use the current environment variables.
+  ///   Some values may specify that they can be read from the environment, in
+  ///   which case they will be read from this dictionary.
   /// - Returns: A new instance of this type, one of its subcommands, or a
   ///   command type internal to the `ArgumentParser` library.
   public static func parseAsRoot(
-    _ arguments: [String]? = nil
+    _ arguments: [String]? = nil,
+    environment: [String: String]? = nil
   ) throws -> ParsableCommand {
     var parser = CommandParser(self)
-    let arguments = arguments ?? Array(CommandLine.arguments.dropFirst())
-    var result = try parser.parse(arguments: arguments).get()
+    let input = OriginalInput(arguments: arguments, environment: environment)
+    var result = try parser.parse(originalInput: input).get()
     do {
       try result.validate()
     } catch {
@@ -78,9 +83,12 @@ extension ParsableCommand {
   ///
   /// - Parameter arguments: An array of arguments to use for parsing. If
   ///   `arguments` is `nil`, this uses the program's command-line arguments.
-  public static func main(_ arguments: [String]? = nil) -> Never {
+  public static func main(
+    _ arguments: [String]? = nil,
+    environment: [String: String]? = nil
+  ) -> Never {
     do {
-      let command = try parseAsRoot(arguments)
+      let command = try parseAsRoot(arguments, environment: environment)
       try command.run()
       exit()
     } catch {

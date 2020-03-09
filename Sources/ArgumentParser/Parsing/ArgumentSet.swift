@@ -96,7 +96,7 @@ extension ArgumentSet {
   /// Creates an argument set for a single Boolean flag.
   static func flag(key: InputKey, name: NameSpecification, help: ArgumentHelp?) -> ArgumentSet {
     let help = ArgumentDefinition.Help(options: .isOptional, help: help, key: key)
-    let arg = ArgumentDefinition(kind: .name(key: key, specification: name), help: help, update: .nullary({ (origin, name, values) in
+    let arg = ArgumentDefinition(kind: .name(key: key, specification: name), environmentNames: name.makeEnvironmentNames(key), help: help, update: .nullary({ (origin, name, values) in
       values.set(true, forKey: key, inputOrigin: origin)
     }), initial: { origin, values in
       values.set(false, forKey: key, inputOrigin: origin)
@@ -104,23 +104,12 @@ extension ArgumentSet {
     return ArgumentSet(arg)
   }
 
-  static func updateFlag<Value: Equatable>(key: InputKey, value: Value, origin: InputOrigin, values: inout ParsedValues, hasUpdated: Bool, exclusivity: FlagExclusivity) throws -> Bool {
-    switch (hasUpdated, exclusivity) {
-    case (true, .exclusive):
-      // This value has already been set.
-      if let previous = values.element(forKey: key) {
-        if (previous.value as? Value) == value {
-          // setting the value again will consume the argument
-          values.set(value, forKey: key, inputOrigin: origin)
-        }
-        else {
-          throw ParserError.duplicateExclusiveValues(previous: previous.inputOrigin, duplicate: origin, originalInput: values.originalInput)
-        }
-      }
-    case (true, .chooseFirst):
-      values.update(forKey: key, inputOrigin: origin, initial: value, closure: { _ in })
-    case (false, _), (_, .chooseLast):
+  static func updateFlag<Value: Equatable>(key: InputKey, value: Value, origin: InputOrigin, values: inout ParsedValues, didUpdate: Bool, exclusivity: FlagExclusivity) throws -> Bool {
+    switch try exclusivity.shouldAllowUpdate(key: key, origin: origin, value: value, values: values, didUpdate: didUpdate) {
+    case .allow:
       values.set(value, forKey: key, inputOrigin: origin)
+    case .ignore:
+      values.add(inputOrigin: origin, for: key)
     }
     return true
   }
@@ -133,16 +122,16 @@ extension ArgumentSet {
     let help = ArgumentDefinition.Help(options: helpOptions, help: help, defaultValue: initialValue.map(String.init), key: key)
     let (enableNames, disableNames) = inversion.enableDisableNamePair(for: key, name: name)
 
-    var hasUpdated = false
-    let enableArg = ArgumentDefinition(kind: .named(enableNames),help: help, update: .nullary({ (origin, name, values) in
-        hasUpdated = try ArgumentSet.updateFlag(key: key, value: true, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
+    var didUpdate = false
+    let enableArg = ArgumentDefinition(kind: .named(enableNames), environmentNames: name.makeEnvironmentNames(key), help: help, update: .nullary({ (origin, name, values) in
+      didUpdate = try ArgumentSet.updateFlag(key: key, value: true, origin: origin, values: &values, didUpdate: didUpdate, exclusivity: exclusivity)
     }), initial: { origin, values in
       if let initialValue = initialValue {
         values.set(initialValue, forKey: key, inputOrigin: origin)
       }
     })
-    let disableArg = ArgumentDefinition(kind: .named(disableNames), help: ArgumentDefinition.Help(options: [.isOptional], key: key), update: .nullary({ (origin, name, values) in
-        hasUpdated = try ArgumentSet.updateFlag(key: key, value: false, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
+    let disableArg = ArgumentDefinition(kind: .named(disableNames), environmentNames: name.makeEnvironmentNames(key), help: ArgumentDefinition.Help(options: [.isOptional], key: key), update: .nullary({ (origin, name, values) in
+      didUpdate = try ArgumentSet.updateFlag(key: key, value: false, origin: origin, values: &values, didUpdate: didUpdate, exclusivity: exclusivity)
     }), initial: { _, _ in })
     return ArgumentSet(exclusive: [enableArg, disableArg])
   }
@@ -150,7 +139,7 @@ extension ArgumentSet {
   /// Creates an argument set for an incrementing integer flag.
   static func counter(key: InputKey, name: NameSpecification, help: ArgumentHelp?) -> ArgumentSet {
     let help = ArgumentDefinition.Help(options: [.isOptional, .isRepeating], help: help, key: key)
-    let arg = ArgumentDefinition(kind: .name(key: key, specification: name), help: help, update: .nullary({ (origin, name, values) in
+    let arg = ArgumentDefinition(kind: .name(key: key, specification: name), environmentNames: name.makeEnvironmentNames(key), help: help, update: .nullary({ (origin, name, values) in
       guard let a = values.element(forKey: key)?.value, let b = a as? Int else {
         throw ParserError.invalidState
       }
@@ -162,12 +151,49 @@ extension ArgumentSet {
   }
 }
 
+enum ExclusivityResult {
+  case allow
+  case ignore
+}
+
+extension FlagExclusivity {
+  /// Should we allow updating the value?
+  ///
+  /// Will return `.allow` if the value should be updated. Throws an error if updating is invalid. Returns `.ignore` if the value should be ignored.
+  func shouldAllowUpdate<Value: Equatable>(key: InputKey, origin: InputOrigin, value: Value, values: ParsedValues, didUpdate: Bool) throws -> ExclusivityResult {
+    let previous = values.element(forKey: key)
+    switch (didUpdate, previous?.inputOrigin, self) {
+    case (_, let o?, _) where !o.containsAnyArguments:
+      // If the value was set from environment variables only,
+      // we don’t care able the exclusivity.
+      return .allow
+    case (true, _, .exclusive):
+      // This value has already been set.
+      if let p = previous {
+        if (p.value as? Value) == value {
+          // Ignore duplicated value.
+          return .ignore
+        }
+        throw ParserError.duplicateExclusiveValues(previous: p.inputOrigin, duplicate: origin, originalInput: values.originalInput)
+      } else {
+        let originalInput = values.originalInput[origin]
+        throw ParserError.unexpectedExtraValues([(origin, originalInput)])
+      }
+    case (false, _, _), (_, _, .chooseLast):
+      return .allow
+    default:
+      return .ignore
+    }
+  }
+}
+
 // MARK: -
 
 extension ArgumentSet {
   /// Create a unary / argument that parses the string as `A`.
   init<A: ExpressibleByArgument>(key: InputKey, kind: ArgumentDefinition.Kind, parsingStrategy: ArgumentDefinition.ParsingStrategy = .nextAsValue, parseType type: A.Type, name: NameSpecification, default initial: A?, help: ArgumentHelp?) {
-    var arg = ArgumentDefinition(key: key, kind: kind, parsingStrategy: parsingStrategy, parser: A.init(argument:), default: initial)
+    let envNames = name.makeEnvironmentNames(key)
+    var arg = ArgumentDefinition(key: key, kind: kind, parsingStrategy: parsingStrategy, environmentNames: envNames, parser: A.init(argument:), default: initial)
     arg.help.help = help
     arg.help.defaultValue = initial.map { "\($0.defaultValueDescription)" }
     self.init(arg)
@@ -176,7 +202,7 @@ extension ArgumentSet {
 
 extension ArgumentDefinition {
   /// Create a unary / argument that parses using the given closure.
-  fileprivate init<A>(key: InputKey, kind: ArgumentDefinition.Kind, parsingStrategy: ParsingStrategy = .nextAsValue, parser: @escaping (String) -> A?, parseType type: A.Type = A.self, default initial: A?) {
+  fileprivate init<A>(key: InputKey, kind: ArgumentDefinition.Kind, parsingStrategy: ParsingStrategy = .nextAsValue, environmentNames: [EnvironmentName], parser: @escaping (String) -> A?, parseType type: A.Type = A.self, default initial: A?) {
     let initialValueCreator: (InputOrigin, inout ParsedValues) throws -> Void
     if let initialValue = initial {
       initialValueCreator = { origin, values in
@@ -186,7 +212,7 @@ extension ArgumentDefinition {
       initialValueCreator = { _, _ in }
     }
     
-    self.init(kind: kind, help: ArgumentDefinition.Help(key: key), parsingStrategy: parsingStrategy, update: .unary({ (origin, name, value, values) in
+    self.init(kind: kind, environmentNames: environmentNames, help: ArgumentDefinition.Help(key: key), parsingStrategy: parsingStrategy, update: .unary({ (origin, name, value, values) in
       guard let v = parser(value) else {
         throw ParserError.unableToParseValue(origin, name, value, forKey: key)
       }
@@ -212,11 +238,11 @@ extension ArgumentSet {
   /// the matching command(s).
   ///
   /// - Parameter all: The input (from the command line) that needs to be parsed
-  /// - Parameter commandStack: commands that have been parsed
   func lenientParse(_ all: SplitArguments) throws -> LenientParsedValues {
     // Create a local, mutable copy of the arguments:
     var inputArguments = all
     
+    /// Parse a value for a given definition.
     func parseValue(
       _ argument: ArgumentDefinition,
       _ parsed: ParsedArgument,
@@ -314,7 +340,23 @@ extension ArgumentSet {
     var usedOrigins = InputOrigin()
     
     try setInitialValues(into: &result)
-    
+
+    // Loop over everything in the environment:
+    for (name, value) in inputArguments.originalInput.environment {
+      guard let argument = first(matching: name) else { continue }
+      let origin = InputOrigin.environment(name)
+      switch argument.update {
+      case let .nullary(update):
+        // We need need a value for this option.
+        // The fact that the environment variable is set (to anything)
+        // is sufficient. We’ll ignore the actual value.
+        try update(origin, nil, &result)
+      case let .unary(update):
+        // Take the value from the environment and run the updater:
+        try update(origin, nil, value, &result)
+      }
+    }
+
     // Loop over all arguments:
     while let (origin, next) = inputArguments.popNext() {
       defer {
@@ -401,7 +443,11 @@ extension ArgumentSet {
     }
     return match
   }
-  
+
+  func first(matching name: EnvironmentName) -> ArgumentDefinition? {
+    return first(where: { $0.environmentVariableNames.contains(name) })
+  }
+
   func parsePositionalValues(
     from unusedInput: SplitArguments,
     into result: inout ParsedValues
@@ -446,7 +492,7 @@ extension ArgumentSet {
         guard let origin = next(unconditional: allowOptionsAsInput) else {
           break ArgumentLoop
         }
-        let value = unusedInput.originalInput(at: origin)!
+        let value = unusedInput.originalInput[origin]
         try update([origin], nil, value, &result)
       } while argumentDefinition.isRepeatingPositional
     }
@@ -457,7 +503,7 @@ extension ArgumentSet {
       let extraValues: [(InputOrigin, String)] = argumentStack
         .map { $0.0 }
         .map {
-          (InputOrigin(element: $0), unusedInput.originalInput(at: $0)!)
+          (InputOrigin(element: $0), unusedInput.originalInput[$0])
         }
       throw ParserError.unexpectedExtraValues(extraValues)
     }

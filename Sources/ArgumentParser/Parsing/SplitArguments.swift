@@ -139,7 +139,7 @@ struct SplitArguments {
   }
   
   var elements: [(index: Index, element: Element)]
-  var originalInput: [String]
+  var originalInput: OriginalInput
 }
 
 extension SplitArguments.Element: CustomDebugStringConvertible {
@@ -204,15 +204,6 @@ extension SplitArguments {
     return elements.first {
       $0.0 == position
       }?.1
-  }
-  
-  /// Returns the original input string at the given origin, or `nil` if
-  /// `origin` is a sub-index.
-  func originalInput(at origin: InputOrigin.Element) -> String? {
-    guard case let .argumentIndex(index) = origin else {
-      return nil
-    }
-    return originalInput[index.inputIndex.rawValue]
   }
   
   mutating func popNext() -> (InputOrigin.Element, Element)? {
@@ -283,7 +274,7 @@ extension SplitArguments {
     // Remove all elements with this `InputIndex`:
     remove(at: nextIndex)
     // Return the original input
-    return (.argumentIndex(nextIndex), originalInput[unconditionalIndex.rawValue])
+    return (.argumentIndex(nextIndex), originalInput[nextIndex])
   }
   
   /// Pops the next element if it is a value.
@@ -393,13 +384,13 @@ extension SplitArguments {
       let input: String
       switch index.subIndex {
       case .complete:
-        input = originalInput[index.inputIndex.rawValue]
+        input = originalInput[index]
       case .sub:
         if case .option(let option) = element {
           input = String(describing: option)
         } else {
           // Odd case. Fall back to entire input at that index:
-          input = originalInput[index.inputIndex.rawValue]
+          input = originalInput[index]
         }
       }
       return (.init(argumentIndex: index), input)
@@ -410,9 +401,9 @@ extension SplitArguments {
 extension SplitArguments {
   /// Parses the given input into an array of `Element`.
   ///
-  /// - Parameter arguments: The input from the command line.
-  init(arguments: [String]) throws {
-    self.init(elements: [], originalInput: arguments)
+  /// - Parameter originalInput: The input from the command line and environment variables.
+  init(originalInput: OriginalInput) throws {
+    self.init(elements: [], originalInput: originalInput)
     
     var inputIndex = InputIndex(rawValue: 0)
     
@@ -422,7 +413,7 @@ extension SplitArguments {
       elements.append((index, element))
     }
     
-    var args = arguments[arguments.startIndex..<arguments.endIndex]
+    var args = originalInput.arguments[...]
     argLoop: while let arg = args.popFirst() {
       defer {
         inputIndex = inputIndex.next

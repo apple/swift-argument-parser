@@ -47,6 +47,11 @@ fileprivate func Assert(nameSpecification: NameSpecification, key: String, makeN
   Assert(names: names, expected: expected, file: file, line: line)
 }
 
+fileprivate func Assert(nameSpecification: NameSpecification, key: String, makeEnvironmentNames expected: [EnvironmentName], file: StaticString = #file, line: UInt = #line) {
+    let names = nameSpecification.makeEnvironmentNames(InputKey(rawValue: key))
+    Assert(names: names, expected: expected, file: file, line: line)
+}
+
 fileprivate func Assert<N>(names: [N], expected: [N], file: StaticString = #file, line: UInt = #line) where N: Equatable {
   names.forEach {
     XCTAssert(expected.contains($0), "Unexpected name '\($0)'.", file: file, line: line)
@@ -59,22 +64,46 @@ fileprivate func Assert<N>(names: [N], expected: [N], file: StaticString = #file
 extension NameSpecificationTests {
   func testMakeNames_short() {
     Assert(nameSpecification: .short, key: "foo", makeNames: [.short("f")])
+    Assert(nameSpecification: .short, key: "foo", makeEnvironmentNames: [])
   }
   
   func testMakeNames_Long() {
     Assert(nameSpecification: .long, key: "fooBarBaz", makeNames: [.long("foo-bar-baz")])
+    Assert(nameSpecification: .long, key: "fooBarBaz", makeEnvironmentNames: [])
     Assert(nameSpecification: .long, key: "fooURLForBarBaz", makeNames: [.long("foo-url-for-bar-baz")])
+    Assert(nameSpecification: .long, key: "fooURLForBarBaz", makeEnvironmentNames: [])
   }
   
   func testMakeNames_customLong() {
     Assert(nameSpecification: .customLong("bar"), key: "foo", makeNames: [.long("bar")])
+    Assert(nameSpecification: .customLong("bar"), key: "foo", makeEnvironmentNames: [])
   }
   
   func testMakeNames_customShort() {
     Assert(nameSpecification: .customShort("v"), key: "foo", makeNames: [.short("v")])
+    Assert(nameSpecification: .customShort("v"), key: "foo", makeEnvironmentNames: [])
   }
   
   func testMakeNames_customLongWithSingleDash() {
     Assert(nameSpecification: .customLong("baz", withSingleDash: true), key: "foo", makeNames: [.longWithSingleDash("baz")])
+    Assert(nameSpecification: .customLong("baz", withSingleDash: true), key: "foo", makeEnvironmentNames: [])
+  }
+
+  func testMakeNames_environment() {
+    Assert(nameSpecification: [.environment], key: "foo", makeNames: [])
+    Assert(nameSpecification: [.environment], key: "foo", makeEnvironmentNames: [EnvironmentName(rawValue: "FOO")])
+
+    Assert(nameSpecification: [.environment], key: "fooBar", makeNames: [])
+    Assert(nameSpecification: [.environment], key: "fooBar", makeEnvironmentNames: [EnvironmentName(rawValue: "FOO_BAR")])
+  }
+
+  func testMakeNames_customnEnvironment() {
+    Assert(nameSpecification: [.customEnvironment("bar")], key: "foo", makeNames: [])
+    Assert(nameSpecification: [.customEnvironment("bar")], key: "foo", makeEnvironmentNames: [EnvironmentName(rawValue: "bar")])
+  }
+
+  func testMakeNames_mixed() {
+    Assert(nameSpecification: [.long, .short, .environment], key: "foo", makeNames: [.long("foo"), .short("f")])
+    Assert(nameSpecification: [.long, .short, .environment], key: "foo", makeEnvironmentNames: [EnvironmentName(rawValue: "FOO")])
   }
 }

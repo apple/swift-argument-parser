@@ -64,6 +64,7 @@ struct ArgumentDefinition {
   }
   
   var kind: Kind
+  var environmentVariableNames: [EnvironmentName]
   var help: Help
   var parsingStrategy: ParsingStrategy
   var update: Update
@@ -83,12 +84,13 @@ struct ArgumentDefinition {
       ?? "value"
   }
   
-  init(kind: Kind, help: Help, parsingStrategy: ParsingStrategy = .nextAsValue, update: Update, initial: @escaping Initial = { _, _ in }) {
+  init(kind: Kind, environmentNames: [EnvironmentName], help: Help, parsingStrategy: ParsingStrategy = .nextAsValue, update: Update, initial: @escaping Initial = { _, _ in }) {
     if case (.positional, .nullary) = (kind, update) {
       preconditionFailure("Can't create a nullary positional argument.")
     }
     
     self.kind = kind
+    self.environmentVariableNames = environmentNames
     self.help = help
     self.parsingStrategy = parsingStrategy
     self.update = update

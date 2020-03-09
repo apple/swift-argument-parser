@@ -115,3 +115,43 @@ extension SimpleEndToEndTests {
     XCTAssertThrowsError(try Baz.parse(["--name", "--format", "Bar", "Foo"]))
   }
 }
+
+// MARK: Environment Variables
+
+fileprivate struct Qux: ParsableArguments {
+  @Option(name: [.environment])
+  var name: String
+}
+
+fileprivate struct Qux2: ParsableArguments {
+  @Option(name: [.environment, .long])
+  var name: String
+}
+
+extension SimpleEndToEndTests {
+  func testParsingFromEnvironment_1() {
+    XCTAssertThrowsError(try Qux.parse(["--name", "Bar"], environment: [:]))
+  }
+
+  func testParsingFromEnvironment_2() {
+    AssertParse(Qux.self, [], environment: ["NAME": "Bar"]) { qux in
+      XCTAssertEqual(qux.name, "Bar")
+    }
+  }
+
+  func testParsingFromEnvironment_3() {
+    AssertParse(Qux2.self, [], environment: ["NAME": "Bar"]) { qux in
+      XCTAssertEqual(qux.name, "Bar")
+    }
+  }
+
+  func testParsingFromEnvironmentAndArguments_1() {
+    XCTAssertThrowsError(try Qux.parse(["--name", "Bar"], environment: ["NAME": "bar"]))
+  }
+
+  func testParsingFromEnvironmentAndArguments_2() {
+    AssertParse(Qux2.self, ["--name", "foo"], environment: ["NAME": "bar"]) { qux in
+      XCTAssertEqual(qux.name, "foo")
+    }
+  }
+}

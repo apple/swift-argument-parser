@@ -274,6 +274,24 @@ extension RepeatingEndToEndTests {
 
 // MARK: -
 
+fileprivate struct Ozz: ParsableArguments {
+  @Option(name: [.long, .environment], parsing: .upToNextOption) var names: [String]
+}
+
+extension RepeatingEndToEndTests {
+  func testParsingFromEnvironment() {
+    AssertParse(Ozz.self, [], environment: ["NAMES": "A"]) { ozz in
+      XCTAssertEqual(ozz.names, ["A"])
+    }
+  }
+
+  func testParsingFromEnvironmentAndArguments() {
+    AssertParse(Ozz.self, ["--names", "A", "B"], environment: ["NAMES": "C"]) { ozz in
+      XCTAssertEqual(ozz.names, ["A", "B"])
+    }
+  }
+}
+
 fileprivate struct Weazle: ParsableArguments {
   @Flag() var verbose: Bool
   @Argument() var names: [String]

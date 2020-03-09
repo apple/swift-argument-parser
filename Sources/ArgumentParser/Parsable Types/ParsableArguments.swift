@@ -83,10 +83,11 @@ extension ParsableArguments {
   ///   `arguments` is `nil`, this uses the program's command-line arguments.
   /// - Returns: A new instance of this type.
   public static func parse(
-    _ arguments: [String]? = nil
+    _ arguments: [String]? = nil,
+    environment: [String: String]? = nil
   ) throws -> Self {
     // Parse the command and unwrap the result if necessary.
-    switch try self.asCommand.parseAsRoot(arguments) {
+    switch try self.asCommand.parseAsRoot(arguments, environment: environment) {
     case is HelpCommand:
       throw ParserError.helpRequested
     case let result as _WrappedParsableCommand<Self>:

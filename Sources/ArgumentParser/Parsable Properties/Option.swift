@@ -238,7 +238,7 @@ extension Option {
     self.init(_parsedValue: .init { key in
       let kind = ArgumentDefinition.Kind.name(key: key, specification: name)
       let help = ArgumentDefinition.Help(options: initial != nil ? .isOptional : [], help: help, key: key)
-      var arg = ArgumentDefinition(kind: kind, help: help, parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy), update: .unary({
+      var arg = ArgumentDefinition(kind: kind, environmentNames: name.makeEnvironmentNames(key), help: help, parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy), update: .unary({
         (origin, _, valueString, parsedValues) in
         parsedValues.set(try transform(valueString), forKey: key, inputOrigin: origin)
       }), initial: { origin, values in
@@ -269,7 +269,7 @@ extension Option {
     self.init(_parsedValue: .init { key in
       let kind = ArgumentDefinition.Kind.name(key: key, specification: name)
       let help = ArgumentDefinition.Help(options: [.isOptional, .isRepeating], help: help, key: key)
-      let arg = ArgumentDefinition(kind: kind, help: help, parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy), update: .appendToArray(forType: Element.self, key: key), initial: { origin, values in
+      let arg = ArgumentDefinition(kind: kind, environmentNames: name.makeEnvironmentNames(key), help: help, parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy), update: .appendToArray(forType: Element.self, key: key), initial: { origin, values in
         values.set([], forKey: key, inputOrigin: origin)
       })
       return ArgumentSet(alternatives: [arg])
@@ -297,7 +297,7 @@ extension Option {
     self.init(_parsedValue: .init { key in
       let kind = ArgumentDefinition.Kind.name(key: key, specification: name)
       let help = ArgumentDefinition.Help(options: [.isOptional, .isRepeating], help: help, key: key)
-      let arg = ArgumentDefinition(kind: kind, help: help, parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy), update: .unary({
+      let arg = ArgumentDefinition(kind: kind, environmentNames: name.makeEnvironmentNames(key), help: help, parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy), update: .unary({
         (origin, name, valueString, parsedValues) in
         let element = try transform(valueString)
         parsedValues.update(forKey: key, inputOrigin: origin, initial: [Element](), closure: {

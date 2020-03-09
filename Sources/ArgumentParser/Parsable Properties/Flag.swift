@@ -140,7 +140,7 @@ extension Flag where Value == Optional<Bool> {
   ) {
     self.init(_parsedValue: .init { key in
       .flag(key: key, name: name, default: nil, inversion: inversion, exclusivity: exclusivity, help: help)
-    })
+      })
   }
 }
 
@@ -245,14 +245,14 @@ extension Flag where Value: CaseIterable, Value: Equatable, Value: RawRepresenta
     self.init(_parsedValue: .init { key in
       // This gets flipped to `true` the first time one of these flags is
       // encountered.
-      var hasUpdated = false
+      var didUpdate = false
       let defaultValue = initial.map(String.init(describing:))
 
       let args = Value.allCases.map { value -> ArgumentDefinition in
         let caseKey = InputKey(rawValue: value.rawValue)
         let help = ArgumentDefinition.Help(options: initial != nil ? .isOptional : [], help: help, defaultValue: defaultValue, key: key)
         return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .nextAsValue, initialValue: initial, update: .nullary({ (origin, name, values) in
-          hasUpdated = try ArgumentSet.updateFlag(key: key, value: value, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
+          didUpdate = try ArgumentSet.updateFlag(key: key, value: value, origin: origin, values: &values, didUpdate: didUpdate, exclusivity: exclusivity)
         }))
       }
       return exclusivity == .exclusive
@@ -281,13 +281,13 @@ extension Flag {
     self.init(_parsedValue: .init { key in
       // This gets flipped to `true` the first time one of these flags is
       // encountered.
-      var hasUpdated = false
+      var didUpdate = false
       
       let args = Element.allCases.map { value -> ArgumentDefinition in
         let caseKey = InputKey(rawValue: value.rawValue)
         let help = ArgumentDefinition.Help(options: .isOptional, help: help, key: key)
         return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .nextAsValue, initialValue: nil as Element?, update: .nullary({ (origin, name, values) in
-          hasUpdated = try ArgumentSet.updateFlag(key: key, value: value, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
+          didUpdate = try ArgumentSet.updateFlag(key: key, value: value, origin: origin, values: &values, didUpdate: didUpdate, exclusivity: exclusivity)
         }))
       }
       return exclusivity == .exclusive
@@ -326,7 +326,7 @@ extension Flag {
 
 extension ArgumentDefinition {
   static func flag<V>(name: NameSpecification, key: InputKey, caseKey: InputKey, help: Help, parsingStrategy: ArgumentDefinition.ParsingStrategy, initialValue: V?, update: Update) -> ArgumentDefinition {
-    return ArgumentDefinition(kind: .name(key: caseKey, specification: name), help: help, parsingStrategy: parsingStrategy, update: update, initial: { origin, values in
+    return ArgumentDefinition(kind: .name(key: caseKey, specification: name), environmentNames: name.makeEnvironmentNames(caseKey), help: help, parsingStrategy: parsingStrategy, update: update, initial: { origin, values in
       if let initial = initialValue {
         values.set(initial, forKey: key, inputOrigin: origin)
       }

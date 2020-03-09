@@ -206,3 +206,66 @@ extension OptionalEndToEndTests {
     XCTAssertThrowsError(try Bar.parse(["-f", "--name", "A"]))
   }
 }
+
+// MARK: -
+
+fileprivate struct Baz: ParsableArguments {
+  enum Format: String, ExpressibleByArgument {
+    case A
+    case B
+    case C
+  }
+  @Option(name: [.environment, .long]) var name: String?
+  @Option(name: [.environment, .long]) var format: Format?
+  @Option(name: [.environment, .long]) var foo: String
+}
+
+extension OptionalEndToEndTests {
+  func testParsingWithAllValuesFromEnvironment() {
+    AssertParse(Baz.self, [], environment: ["NAME": "A", "FORMAT": "B", "FOO": "C"]) { bar in
+      XCTAssertEqual(bar.name, "A")
+      XCTAssertEqual(bar.format, .B)
+      XCTAssertEqual(bar.foo, "C")
+    }
+  }
+
+  func testParsingFromEnvironmentAndArguments_1() {
+    AssertParse(Baz.self, [], environment: ["NAME": "A", "FORMAT": "B", "FOO": "C"]) { bar in
+      XCTAssertEqual(bar.name, "A")
+      XCTAssertEqual(bar.format, .B)
+      XCTAssertEqual(bar.foo, "C")
+    }
+  }
+
+  func testParsingFromEnvironmentAndArguments_2() {
+    AssertParse(Baz.self, ["--format", "B"], environment: ["NAME": "A", "FOO": "C"]) { bar in
+      XCTAssertEqual(bar.name, "A")
+      XCTAssertEqual(bar.format, .B)
+      XCTAssertEqual(bar.foo, "C")
+    }
+  }
+
+  func testParsingFromEnvironmentAndArguments_3() {
+    AssertParse(Baz.self, ["--name", "A", "--foo", "C"], environment: ["FORMAT": "B"]) { bar in
+      XCTAssertEqual(bar.name, "A")
+      XCTAssertEqual(bar.format, .B)
+      XCTAssertEqual(bar.foo, "C")
+    }
+  }
+
+  func testParsingFromEnvironmentAndArguments_4() {
+    AssertParse(Baz.self, ["--name", "AA", "--foo", "CC", "--format", "A"], environment: ["FORMAT": "B"]) { bar in
+      XCTAssertEqual(bar.name, "AA")
+      XCTAssertEqual(bar.format, .A)
+      XCTAssertEqual(bar.foo, "CC")
+    }
+  }
+
+  func testParsingFromEnvironmentAndArguments_5() {
+    AssertParse(Baz.self, ["--name", "AA", "--foo", "CC", "--format", "A"], environment: ["NAME": "A", "FORMAT": "B", "FOO": "C"]) { bar in
+      XCTAssertEqual(bar.name, "AA")
+      XCTAssertEqual(bar.format, .A)
+      XCTAssertEqual(bar.foo, "CC")
+    }
+  }
+}

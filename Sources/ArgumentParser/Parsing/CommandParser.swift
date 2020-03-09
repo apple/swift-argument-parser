@@ -54,7 +54,7 @@ extension CommandParser {
   fileprivate func consumeNextCommand(split: inout SplitArguments) -> Tree<ParsableCommand.Type>? {
     guard let (origin, element) = split.peekNext(),
       element.isValue,
-      let value = split.originalInput(at: origin),
+      let value = split.originalInput[completeIndex: origin],
       let subcommandNode = currentNode.firstChild(withName: value)
     else { return nil }
     _ = split.popNextValue()
@@ -92,7 +92,7 @@ extension CommandParser {
           throw ParserError.unknownOption(InputOrigin.Element.argumentIndex(index), argument.name)
         }
       }
-       
+
       let extra = split.coalescedExtraElements()
       throw ParserError.unexpectedExtraValues(extra)
     }
@@ -181,10 +181,10 @@ extension CommandParser {
   ///
   /// - Parameter arguments: The array of arguments to parse. This should not
   ///   include the command name as the first argument.
-  mutating func parse(arguments: [String]) -> Result<ParsableCommand, CommandError> {
+  mutating func parse(originalInput: OriginalInput) -> Result<ParsableCommand, CommandError> {
     var split: SplitArguments
     do {
-      split = try SplitArguments(arguments: arguments)
+      split = try SplitArguments(originalInput: originalInput)
     } catch let error as ParserError {
       return .failure(CommandError(commandStack: [commandTree.element], parserError: error))
     } catch {

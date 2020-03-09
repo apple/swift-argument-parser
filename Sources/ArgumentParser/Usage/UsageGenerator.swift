@@ -193,8 +193,8 @@ extension ErrorMessageGenerator {
       return unexpectedValueForOptionMessage(origin: o, name: n, value: v)
     case .unexpectedExtraValues(let v):
       return unexpectedExtraValuesMessage(values: v)
-    case .duplicateExclusiveValues(previous: let previous, duplicate: let duplicate, originalInput: let arguments):
-      return duplicateExclusiveValues(previous: previous, duplicate: duplicate, arguments: arguments)
+    case .duplicateExclusiveValues(previous: let previous, duplicate: let duplicate, originalInput: let originalInput):
+      return duplicateExclusiveValues(previous: previous, duplicate: duplicate, originalInput: originalInput)
     case .noValue(forKey: let k):
       return noValueMessage(key: k)
     case .unableToParseValue(let o, let n, let v, forKey: let k):
@@ -275,7 +275,7 @@ extension ErrorMessageGenerator {
       })
     
     if let suggestion = suggestion {
-        return "Unknown option '\(name.synopsisString)'. Did you mean '\(suggestion.synopsisString)'?"
+      return "Unknown option '\(name.synopsisString)'. Did you mean '\(suggestion.synopsisString)'?"
     }
     return "Unknown option '\(name.synopsisString)'"
   }
@@ -304,11 +304,10 @@ extension ErrorMessageGenerator {
     }
   }
   
-  func duplicateExclusiveValues(previous: InputOrigin, duplicate: InputOrigin, arguments: [String]) -> String? {
-    func elementString(_ origin: InputOrigin, _ arguments: [String]) -> String? {
-      guard case .argumentIndex(let split) = origin.elements.first else { return nil }
-      var argument = "\'\(arguments[split.inputIndex.rawValue])\'"
-      if case let .sub(offsetIndex) = split.subIndex {
+  func duplicateExclusiveValues(previous: InputOrigin, duplicate: InputOrigin, originalInput: OriginalInput) -> String? {
+    func elementString(_ origin: InputOrigin) -> String? {
+      var argument = "\'\(originalInput[origin])\'"
+      if case .argumentIndex(let split) = origin.elements.first, case .sub(let offsetIndex) = split.subIndex {
         let stringIndex = argument.index(argument.startIndex, offsetBy: offsetIndex+2)
         argument = "\'\(argument[stringIndex])\' in \(argument)"
       }
@@ -316,8 +315,8 @@ extension ErrorMessageGenerator {
     }
 
     // Note that the RHS of these coalescing operators cannot be reached at this time.
-    let dupeString = elementString(duplicate, arguments) ?? "position \(duplicate)"
-    let origString = elementString(previous, arguments) ?? "position \(previous)"
+    let dupeString = elementString(duplicate) ?? "position \(duplicate)"
+    let origString = elementString(previous) ?? "position \(previous)"
 
     //TODO: review this message once environment values are supported.
     return "Value to be set with \(dupeString) had already been set with \(origString)"

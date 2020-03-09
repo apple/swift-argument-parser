@@ -18,6 +18,7 @@
 struct InputOrigin: Equatable, ExpressibleByArrayLiteral {
   enum Element: Comparable, Hashable {
     case argumentIndex(SplitArguments.Index)
+    case environment(EnvironmentName)
   }
   
   private var _elements: Set<Element> = []
@@ -43,7 +44,15 @@ struct InputOrigin: Equatable, ExpressibleByArrayLiteral {
   init(argumentIndex: SplitArguments.Index) {
     self.init(element: .argumentIndex(argumentIndex))
   }
-  
+
+  static func environment(_ name: EnvironmentName) -> InputOrigin {
+    return InputOrigin(elements: [.environment(name)])
+  }
+}
+
+// MARK: Set Like Operations
+
+extension InputOrigin {
   mutating func insert(_ other: Element) {
     guard !_elements.contains(other) else { return }
     _elements.insert(other)
@@ -59,6 +68,22 @@ struct InputOrigin: Equatable, ExpressibleByArrayLiteral {
   mutating func formUnion(_ other: InputOrigin) {
     _elements.formUnion(other._elements)
   }
+}
+
+// MARK: Other
+
+extension InputOrigin {
+  /// Does this origin contain elements that are from the command line arguments?
+  var containsAnyArguments: Bool {
+    return !_elements.allSatisfy {
+      switch $0 {
+      case .argumentIndex:
+        return false
+      case .environment:
+        return true
+      }
+    }
+  }
 
   func forEach(_ closure: (Element) -> Void) {
     _elements.forEach(closure)
@@ -68,8 +93,14 @@ struct InputOrigin: Equatable, ExpressibleByArrayLiteral {
 extension InputOrigin.Element {
   static func < (lhs: Self, rhs: Self) -> Bool {
     switch (lhs, rhs) {
+    case (.argumentIndex, .environment):
+      return true
+    case (.environment, .argumentIndex):
+      return false
     case (.argumentIndex(let l), .argumentIndex(let r)):
       return l < r
+    case (.environment(let l), .environment(let r)):
+      return l.rawValue < r.rawValue
     }
   }
 }

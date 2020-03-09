@@ -38,9 +38,7 @@ struct ParsedValues {
   var elements: [Element] = []
   
   /// This is the *original* array of arguments that this was parsed from.
-  ///
-  /// This is used for error output generation.
-  var originalInput: [String]
+  var originalInput: OriginalInput
 }
 
 enum LenientParsedValues {
@@ -65,7 +63,13 @@ extension ParsedValues {
       elements.append(element)
     }
   }
-  
+
+  /// Adds the given input origin to any existing element.
+  mutating func add(inputOrigin: InputOrigin, for key: InputKey) {
+    guard let index = elements.firstIndex(where: { $0.key == key }) else { return }
+    elements[index].inputOrigin.formUnion(inputOrigin)
+  }
+
   func element(forKey key: InputKey) -> Element? {
     return elements.first(where: { $0.key == key })
   }

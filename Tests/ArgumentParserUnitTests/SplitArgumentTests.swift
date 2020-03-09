@@ -13,6 +13,13 @@ import XCTest
 @testable import ArgumentParser
 import ArgumentParserTestHelpers
 
+extension SplitArguments {
+    fileprivate init(arguments: [String], environment: [String: String] = [:]) throws {
+        let input = OriginalInput(arguments: arguments, environment: environment)
+        try self.init(originalInput: input)
+    }
+}
+
 extension SplitArguments.InputIndex: ExpressibleByIntegerLiteral {
   public init(integerLiteral value: Int) {
     self.init(rawValue: value)
@@ -46,7 +53,7 @@ final class SplitArgumentTests: XCTestCase {
   func testEmpty() throws {
     let sut = try SplitArguments(arguments: [])
     XCTAssertEqual(sut.elements.count, 0)
-    XCTAssertEqual(sut.originalInput.count, 0)
+    XCTAssertEqual(sut.originalInput.arguments.count, 0)
   }
   
   func testSingleValue() throws {
@@ -56,8 +63,8 @@ final class SplitArgumentTests: XCTestCase {
     AssertIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
     AssertElementEqual(sut, at: 0, .value("abc"))
     
-    XCTAssertEqual(sut.originalInput.count, 1)
-    XCTAssertEqual(sut.originalInput, ["abc"])
+    XCTAssertEqual(sut.originalInput.arguments.count, 1)
+    XCTAssertEqual(sut.originalInput.arguments, ["abc"])
   }
   
   func testSingleLongOption() throws {
@@ -67,8 +74,8 @@ final class SplitArgumentTests: XCTestCase {
     AssertIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
     AssertElementEqual(sut, at: 0, .option(.name(.long("abc"))))
     
-    XCTAssertEqual(sut.originalInput.count, 1)
-    XCTAssertEqual(sut.originalInput, ["--abc"])
+    XCTAssertEqual(sut.originalInput.arguments.count, 1)
+    XCTAssertEqual(sut.originalInput.arguments, ["--abc"])
   }
   
   func testSingleShortOption() throws {
@@ -78,8 +85,8 @@ final class SplitArgumentTests: XCTestCase {
     AssertIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
     AssertElementEqual(sut, at: 0, .option(.name(.short("a"))))
     
-    XCTAssertEqual(sut.originalInput.count, 1)
-    XCTAssertEqual(sut.originalInput, ["-a"])
+    XCTAssertEqual(sut.originalInput.arguments.count, 1)
+    XCTAssertEqual(sut.originalInput.arguments, ["-a"])
   }
   
   func testSingleLongOptionWithValue() throws {
@@ -89,8 +96,8 @@ final class SplitArgumentTests: XCTestCase {
     AssertIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
     AssertElementEqual(sut, at: 0, .option(.nameWithValue(.long("abc"), "def")))
     
-    XCTAssertEqual(sut.originalInput.count, 1)
-    XCTAssertEqual(sut.originalInput, ["--abc=def"])
+    XCTAssertEqual(sut.originalInput.arguments.count, 1)
+    XCTAssertEqual(sut.originalInput.arguments, ["--abc=def"])
   }
   
   func testMultipleShortOptionsCombined() throws {
@@ -110,8 +117,8 @@ final class SplitArgumentTests: XCTestCase {
     AssertIndexEqual(sut, at: 3, inputIndex: 0, subIndex: .sub(2))
     AssertElementEqual(sut, at: 3, .option(.name(.short("c"))))
     
-    XCTAssertEqual(sut.originalInput.count, 1)
-    XCTAssertEqual(sut.originalInput, ["-abc"])
+    XCTAssertEqual(sut.originalInput.arguments.count, 1)
+    XCTAssertEqual(sut.originalInput.arguments, ["-abc"])
   }
   
   func testSingleLongOptionWithValueAndSingleDash() throws {
@@ -122,8 +129,8 @@ final class SplitArgumentTests: XCTestCase {
     AssertIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
     AssertElementEqual(sut, at: 0, .option(.nameWithValue(.longWithSingleDash("abc"), "def")))
     
-    XCTAssertEqual(sut.originalInput.count, 1)
-    XCTAssertEqual(sut.originalInput, ["-abc=def"])
+    XCTAssertEqual(sut.originalInput.arguments.count, 1)
+    XCTAssertEqual(sut.originalInput.arguments, ["-abc=def"])
   }
 }
 
@@ -142,8 +149,8 @@ extension SplitArgumentTests {
     AssertIndexEqual(sut, at: 2, inputIndex: 2, subIndex: .complete)
     AssertElementEqual(sut, at: 2, .value("1234"))
     
-    XCTAssertEqual(sut.originalInput.count, 3)
-    XCTAssertEqual(sut.originalInput, ["abc", "x", "1234"])
+    XCTAssertEqual(sut.originalInput.arguments.count, 3)
+    XCTAssertEqual(sut.originalInput.arguments, ["abc", "x", "1234"])
   }
   
   func testMultipleLongOptions() throws {
@@ -160,8 +167,8 @@ extension SplitArgumentTests {
     AssertIndexEqual(sut, at: 2, inputIndex: 2, subIndex: .complete)
     AssertElementEqual(sut, at: 2, .option(.name(.long("abc-def"))))
     
-    XCTAssertEqual(sut.originalInput.count, 3)
-    XCTAssertEqual(sut.originalInput, ["--d", "--1", "--abc-def"])
+    XCTAssertEqual(sut.originalInput.arguments.count, 3)
+    XCTAssertEqual(sut.originalInput.arguments, ["--d", "--1", "--abc-def"])
   }
   
   func testMultipleShortOptions() throws {
@@ -178,8 +185,8 @@ extension SplitArgumentTests {
     AssertIndexEqual(sut, at: 2, inputIndex: 2, subIndex: .complete)
     AssertElementEqual(sut, at: 2, .option(.name(.short("z"))))
     
-    XCTAssertEqual(sut.originalInput.count, 3)
-    XCTAssertEqual(sut.originalInput, ["-x", "-y", "-z"])
+    XCTAssertEqual(sut.originalInput.arguments.count, 3)
+    XCTAssertEqual(sut.originalInput.arguments, ["-x", "-y", "-z"])
   }
   
   func testMultipleShortOptionsCombined_2() throws {
@@ -208,8 +215,8 @@ extension SplitArgumentTests {
     AssertIndexEqual(sut, at: 6, inputIndex: 2, subIndex: .complete)
     AssertElementEqual(sut, at: 6, .option(.name(.short("a"))))
     
-    XCTAssertEqual(sut.originalInput.count, 3)
-    XCTAssertEqual(sut.originalInput, ["-bc", "-fv", "-a"])
+    XCTAssertEqual(sut.originalInput.arguments.count, 3)
+    XCTAssertEqual(sut.originalInput.arguments, ["-bc", "-fv", "-a"])
   }
 }
 
@@ -240,8 +247,8 @@ extension SplitArgumentTests {
     AssertIndexEqual(sut, at: 6, inputIndex: 4, subIndex: .sub(1))
     AssertElementEqual(sut, at: 6, .option(.name(.short("z"))))
     
-    XCTAssertEqual(sut.originalInput.count, 5)
-    XCTAssertEqual(sut.originalInput, ["-x", "abc", "--foo", "1234", "-zz"])
+    XCTAssertEqual(sut.originalInput.arguments.count, 5)
+    XCTAssertEqual(sut.originalInput.arguments, ["-x", "abc", "--foo", "1234", "-zz"])
   }
   
   func testMixed_2() throws {
@@ -270,8 +277,8 @@ extension SplitArgumentTests {
     AssertIndexEqual(sut, at: 6, inputIndex: 4, subIndex: .complete)
     AssertElementEqual(sut, at: 6, .option(.name(.long("foo"))))
     
-    XCTAssertEqual(sut.originalInput.count, 5)
-    XCTAssertEqual(sut.originalInput, ["1234", "-zz", "abc", "-x", "--foo"])
+    XCTAssertEqual(sut.originalInput.arguments.count, 5)
+    XCTAssertEqual(sut.originalInput.arguments, ["1234", "-zz", "abc", "-x", "--foo"])
   }
   
   func testTerminator_1() throws {
@@ -288,8 +295,8 @@ extension SplitArgumentTests {
     AssertIndexEqual(sut, at: 2, inputIndex: 2, subIndex: .complete)
     AssertElementEqual(sut, at: 2, .value("--bar"))
     
-    XCTAssertEqual(sut.originalInput.count, 3)
-    XCTAssertEqual(sut.originalInput, ["--foo", "--", "--bar"])
+    XCTAssertEqual(sut.originalInput.arguments.count, 3)
+    XCTAssertEqual(sut.originalInput.arguments, ["--foo", "--", "--bar"])
   }
   
   func testTerminator_2() throws {
@@ -306,8 +313,8 @@ extension SplitArgumentTests {
     AssertIndexEqual(sut, at: 2, inputIndex: 2, subIndex: .complete)
     AssertElementEqual(sut, at: 2, .value("bar"))
     
-    XCTAssertEqual(sut.originalInput.count, 3)
-    XCTAssertEqual(sut.originalInput, ["--foo", "--", "bar"])
+    XCTAssertEqual(sut.originalInput.arguments.count, 3)
+    XCTAssertEqual(sut.originalInput.arguments, ["--foo", "--", "bar"])
   }
   
   func testTerminator_3() throws {
@@ -324,8 +331,8 @@ extension SplitArgumentTests {
     AssertIndexEqual(sut, at: 2, inputIndex: 2, subIndex: .complete)
     AssertElementEqual(sut, at: 2, .value("--bar=baz"))
     
-    XCTAssertEqual(sut.originalInput.count, 3)
-    XCTAssertEqual(sut.originalInput, ["--foo", "--", "--bar=baz"])
+    XCTAssertEqual(sut.originalInput.arguments.count, 3)
+    XCTAssertEqual(sut.originalInput.arguments, ["--foo", "--", "--bar=baz"])
   }
   
   func testTerminatorAtTheEnd() throws {
@@ -339,8 +346,8 @@ extension SplitArgumentTests {
     AssertIndexEqual(sut, at: 1, inputIndex: 1, subIndex: .complete)
     AssertElementEqual(sut, at: 1, .terminator)
     
-    XCTAssertEqual(sut.originalInput.count, 2)
-    XCTAssertEqual(sut.originalInput, ["--foo", "--"])
+    XCTAssertEqual(sut.originalInput.arguments.count, 2)
+    XCTAssertEqual(sut.originalInput.arguments, ["--foo", "--"])
   }
   
   func testTerminatorAtTheBeginning() throws {
@@ -354,8 +361,8 @@ extension SplitArgumentTests {
     AssertIndexEqual(sut, at: 1, inputIndex: 1, subIndex: .complete)
     AssertElementEqual(sut, at: 1, .value("--foo"))
     
-    XCTAssertEqual(sut.originalInput.count, 2)
-    XCTAssertEqual(sut.originalInput, ["--", "--foo"])
+    XCTAssertEqual(sut.originalInput.arguments.count, 2)
+    XCTAssertEqual(sut.originalInput.arguments, ["--", "--foo"])
   }
 }
 

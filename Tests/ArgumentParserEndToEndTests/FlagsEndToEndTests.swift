@@ -30,6 +30,9 @@ fileprivate struct Bar: ParsableArguments {
 
   @Flag(inversion: .prefixedEnableDisable, exclusivity: .chooseFirst)
   var logging: Bool
+
+  @Flag(inversion: .prefixedEnableDisable, exclusivity: .chooseLast)
+  var download: Bool
 }
 
 extension FlagsEndToEndTests {
@@ -61,30 +64,81 @@ extension FlagsEndToEndTests {
     }
   }
   
-  func testParsing_invert() throws {
+  func testParsing_invert_1() throws {
     AssertParse(Bar.self, ["--no-extattr"]) { options in
       XCTAssertEqual(options.extattr, false)
     }
+  }
+
+  func testParsing_invert_2() throws {
     AssertParse(Bar.self, ["--extattr", "--no-extattr"]) { options in
       XCTAssertEqual(options.extattr, false)
     }
+  }
+
+  func testParsing_invert_3() throws {
     AssertParse(Bar.self, ["--extattr", "--no-extattr", "--no-extattr"]) { options in
       XCTAssertEqual(options.extattr, false)
     }
+  }
+
+  func testParsing_invert_4() throws {
     AssertParse(Bar.self, ["--no-extattr", "--no-extattr", "--extattr"]) { options in
       XCTAssertEqual(options.extattr, true)
     }
+  }
+
+  func testParsing_invert_5() throws {
     AssertParse(Bar.self, ["--extattr", "--no-extattr", "--extattr"]) { options in
       XCTAssertEqual(options.extattr, true)
     }
+  }
+
+  func testParsing_invert_6() throws {
     AssertParse(Bar.self, ["--enable-logging"]) { options in
       XCTAssertEqual(options.logging, true)
     }
-    AssertParse(Bar.self, ["--no-extattr2", "--no-extattr2"]) { options in
-      XCTAssertEqual(options.extattr2, false)
+  }
+
+  func testParsing_invert_7() throws {
+    AssertParse(Bar.self, ["--disable-logging"]) { options in
+      XCTAssertEqual(options.logging, false)
     }
+  }
+
+  func testParsing_invert_8() throws {
     AssertParse(Bar.self, ["--disable-logging", "--enable-logging"]) { options in
       XCTAssertEqual(options.logging, false)
+    }
+  }
+
+  func testParsing_invert_9() throws {
+    AssertParse(Bar.self, ["--enable-logging", "--disable-logging"]) { options in
+      XCTAssertEqual(options.logging, true)
+    }
+  }
+
+  func testParsing_invert_10() throws {
+    AssertParse(Bar.self, ["--enable-download"]) { options in
+      XCTAssertEqual(options.download, true)
+    }
+  }
+
+  func testParsing_invert_11() throws {
+    AssertParse(Bar.self, ["--disable-download", "--enable-download"]) { options in
+      XCTAssertEqual(options.download, true)
+    }
+  }
+
+  func testParsing_invert_12() throws {
+    AssertParse(Bar.self, ["--enable-download", "--disable-download"]) { options in
+      XCTAssertEqual(options.download, false)
+    }
+  }
+
+  func testParsing_invert_13() throws {
+    AssertParse(Bar.self, ["--no-extattr2", "--no-extattr2"]) { options in
+      XCTAssertEqual(options.extattr2, false)
     }
   }
 }
@@ -291,6 +345,149 @@ extension FlagsEndToEndTests {
 
     AssertParse(RepeatOK.self, ["--large", "--pink", "--round", "-l"]) { options in
       XCTAssertEqual(options.size, .large)
+    }
+  }
+}
+
+// MARK: Environment
+
+
+fileprivate struct Baz2: ParsableArguments {
+  @Flag(name: [.environment, .long])
+  var shape: Shape?
+}
+
+extension FlagsEndToEndTests {
+  func testParsingFromEnvironmentAndArguments_single_default() {
+    AssertParse(Baz2.self, [], environment: [:]) { options in
+      XCTAssertNil(options.shape)
+    }
+  }
+
+  func testParsingFromEnvironmentAndArguments_single_1() {
+    AssertParse(Baz2.self, ["--round"], environment: [:]) { options in
+      XCTAssertEqual(options.shape, .round)
+    }
+  }
+
+  func testParsingFromEnvironmentAndArguments_single_2() {
+    AssertParse(Baz2.self, ["--square"], environment: [:]) { options in
+      XCTAssertEqual(options.shape, .square)
+    }
+  }
+
+  func testParsingFromEnvironmentAndArguments_single_3() {
+    AssertParse(Baz2.self, [], environment: ["ROUND": ""]) { options in
+      XCTAssertEqual(options.shape, .round)
+    }
+  }
+
+  func testParsingFromEnvironmentAndArguments_single_4() {
+    AssertParse(Baz2.self, [], environment: ["SQUARE": ""]) { options in
+      XCTAssertEqual(options.shape, .square)
+    }
+  }
+
+  func testParsingFromEnvironmentAndArguments_single_5() {
+    AssertParse(Baz2.self, [], environment: ["OBLONG": ""]) { options in
+      XCTAssertEqual(options.shape, .oblong)
+    }
+  }
+
+  func testParsingFromEnvironmentAndArguments_single_6() {
+    AssertParse(Baz2.self, ["--round"], environment: ["OBLONG": ""]) { options in
+      XCTAssertEqual(options.shape, .round)
+    }
+  }
+
+  func testParsingFromEnvironmentAndArguments_single_7() {
+    AssertParse(Baz2.self, ["--square"], environment: ["ROUND": ""]) { options in
+      XCTAssertEqual(options.shape, .square)
+    }
+  }
+}
+
+fileprivate struct Baz3: ParsableArguments {
+  @Flag(name: [.environment, .long])
+  var color: Color
+
+  @Flag(name: [.environment, .long], default: .small)
+  var size: Size
+
+  @Flag(name: [.environment, .long])
+  var shape: Shape?
+}
+
+extension FlagsEndToEndTests {
+  func testParsingFromEnvironment_1() {
+    AssertParse(Baz3.self, [], environment: ["PINK": "", "SMALL": "", "ROUND": ""]) { options in
+      XCTAssertEqual(options.color, .pink)
+      XCTAssertEqual(options.size, .small)
+      XCTAssertEqual(options.shape, .round)
+    }
+  }
+
+  func testParsingFromEnvironment_2() {
+    AssertParse(Baz3.self, [], environment: ["PURPLE": "", "MEDIUM": "", "SQUARE": ""]) { options in
+      XCTAssertEqual(options.color, .purple)
+      XCTAssertEqual(options.size, .medium)
+      XCTAssertEqual(options.shape, .square)
+    }
+  }
+
+  func testParsingFromEnvironment_3() {
+    AssertParse(Baz3.self, [], environment: ["SILVER": "", "LARGE": "", "OBLONG": ""]) { options in
+      XCTAssertEqual(options.color, .silver)
+      XCTAssertEqual(options.size, .large)
+      XCTAssertEqual(options.shape, .oblong)
+    }
+  }
+
+  func testParsingFromEnvironmentAndArguments_1() {
+    AssertParse(Baz3.self, ["--round"], environment: ["PINK": "", "SMALL": ""]) { options in
+      XCTAssertEqual(options.color, .pink)
+      XCTAssertEqual(options.size, .small)
+      XCTAssertEqual(options.shape, .round)
+    }
+  }
+
+  func testParsingFromEnvironmentAndArguments_2() {
+    AssertParse(Baz3.self, ["--purple", "--square"], environment: ["MEDIUM": ""]) { options in
+      XCTAssertEqual(options.color, .purple)
+      XCTAssertEqual(options.size, .medium)
+      XCTAssertEqual(options.shape, .square)
+    }
+  }
+
+  func testParsingFromEnvironmentAndArguments_3() {
+    AssertParse(Baz3.self, ["--large"], environment: ["SILVER": "", "OBLONG": ""]) { options in
+      XCTAssertEqual(options.color, .silver)
+      XCTAssertEqual(options.size, .large)
+      XCTAssertEqual(options.shape, .oblong)
+    }
+  }
+
+  func testParsingFromEnvironmentAndArguments_4() {
+    AssertParse(Baz3.self, ["--large"], environment: ["SILVER": "", "OBLONG": "", "MEDIUM": ""]) { options in
+      XCTAssertEqual(options.color, .silver)
+      XCTAssertEqual(options.size, .large)
+      XCTAssertEqual(options.shape, .oblong)
+    }
+  }
+
+  func testParsingFromEnvironmentAndArguments_5() {
+    AssertParse(Baz3.self, ["--purple", "--square"], environment: ["SILVER": "", "MEDIUM": ""]) { options in
+      XCTAssertEqual(options.color, .purple)
+      XCTAssertEqual(options.size, .medium)
+      XCTAssertEqual(options.shape, .square)
+    }
+  }
+
+  func testParsingFromEnvironmentAndArguments_6() {
+    AssertParse(Baz3.self, ["--round"], environment: ["PINK": "", "OBLONG": "", "SMALL": ""]) { options in
+      XCTAssertEqual(options.color, .pink)
+      XCTAssertEqual(options.size, .small)
+      XCTAssertEqual(options.shape, .round)
     }
   }
 }
