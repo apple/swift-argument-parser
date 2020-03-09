@@ -11,7 +11,7 @@
 
 import XCTest
 @testable import ArgumentParser
-import SAPTestHelpers
+import ArgumentParserTestHelpers
 
 extension SplitArguments.InputIndex: ExpressibleByIntegerLiteral {
   public init(integerLiteral value: Int) {

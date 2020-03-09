@@ -10,7 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 import XCTest
-import SAPTestHelpers
+import ArgumentParserTestHelpers
 
 final class RollDiceExampleTests: XCTestCase {
   func testRollDice() throws {

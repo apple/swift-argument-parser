@@ -11,7 +11,7 @@
 
 import XCTest
 @testable import ArgumentParser
-import SAPTestHelpers
+import ArgumentParserTestHelpers
 
 final class HelpTests: XCTestCase {
 }
