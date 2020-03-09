@@ -110,7 +110,7 @@ public enum ArgumentArrayParsingStrategy {
   ///
   ///     struct Options: ParsableArguments {
   ///         @Flag() var verbose: Bool
-  ///         @Argument(parsing: .remainingValues) var words: [String]
+  ///         @Argument(parsing: .unconditionalRemaining) var words: [String]
   ///     }
   ///
   /// Parsing the input `--verbose one two --other` would include the `--other`
