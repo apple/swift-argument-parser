@@ -36,4 +36,4 @@ set_target_properties(ArgumentParser PROPERTIES
 target_compile_options(ArgumentParser PRIVATE
   $<$<BOOL:${BUILD_TESTING}>:-enable-testing>)
 target_link_libraries(ArgumentParser PRIVATE
-  Foundation)
+  $<$<NOT:$<PLATFORM_ID:Darwin>>:Foundation>)

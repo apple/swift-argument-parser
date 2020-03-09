@@ -16,4 +16,4 @@ add_library(EndToEndTests
   SubcommandEndToEndTests.swift
   ValidationEndToEndTests.swift)
 target_link_libraries(EndToEndTests PUBLIC
-  TestHelpers)
+  SAPTestHelpers)

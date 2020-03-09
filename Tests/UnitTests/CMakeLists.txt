@@ -8,4 +8,4 @@ add_library(UnitTests
   UsageGenerationTests.swift)
 target_link_libraries(UnitTests PRIVATE
   ArgumentParser
-  TestHelpers)
+  SAPTestHelpers)
