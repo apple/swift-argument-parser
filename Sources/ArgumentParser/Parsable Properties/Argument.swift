@@ -73,12 +73,15 @@ extension Argument where Value: ExpressibleByArgument {
   /// If the property has an `Optional` type, the argument is optional and
   /// defaults to `nil`.
   ///
-  /// - Parameter help: Information about how to use this argument.
+  /// - Parameters
+  ///   - initial: A default value to use for this property.
+  ///   - help: Information about how to use this argument.
   public init(
+    default initial: Value? = nil,
     help: ArgumentHelp? = nil
   ) {
     self.init(_parsedValue: .init { key in
-      ArgumentSet(key: key, kind: .positional, parseType: Value.self, name: NameSpecification.long, default: nil, help: help)
+      ArgumentSet(key: key, kind: .positional, parseType: Value.self, name: NameSpecification.long, default: initial, help: help)
       })
   }
 }
@@ -131,10 +134,12 @@ extension Argument {
   /// the given closure.
   ///
   /// - Parameters:
+  ///   - initial: A default value to use for this property.
   ///   - help: Information about how to use this argument.
   ///   - transform: A closure that converts a string into this property's
   ///     type or throws an error.
   public init(
+    default initial: Value? = nil,
     help: ArgumentHelp? = nil,
     transform: @escaping (String) throws -> Value
   ) {
@@ -143,7 +148,11 @@ extension Argument {
       let arg = ArgumentDefinition(kind: .positional, help: help, update: .unary({
         (origin, _, valueString, parsedValues) in
         parsedValues.set(try transform(valueString), forKey: key, inputOrigin: origin)
-      }))
+      }), initial: { origin, values in
+        if let v = initial {
+          values.set(v, forKey: key, inputOrigin: origin)
+        }
+      })
       return ArgumentSet(alternatives: [arg])
       })
   }
