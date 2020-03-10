@@ -44,7 +44,7 @@ extension RawRepresentable where Self: ExpressibleByArgument, RawValue: Expressi
 
 // MARK: LosslessStringConvertible
 
-extension LosslessStringConvertible {
+extension LosslessStringConvertible where Self: ExpressibleByArgument {
   public init?(argument: String) {
     self.init(argument)
   }
