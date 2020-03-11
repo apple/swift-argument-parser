@@ -170,18 +170,23 @@ extension ArgumentSet {
     return ArgumentSet(arg)
   }
 
-  static func updateFlag(key: InputKey, value: Any, origin: InputOrigin, values: inout ParsedValues, hasUpdated: Bool, exclusivity: FlagExclusivity) throws -> Bool {
-    let previous = values.element(forKey: key)
-    switch (hasUpdated, previous, exclusivity) {
-    case(true, let previous?, .exclusive):
+  static func updateFlag<Value: Equatable>(key: InputKey, value: Value, origin: InputOrigin, values: inout ParsedValues, hasUpdated: Bool, exclusivity: FlagExclusivity) throws -> Bool {
+    switch (hasUpdated, exclusivity) {
+    case (true, .exclusive):
       // This value has already been set.
-      throw ParserError.duplicateExclusiveValues(previous: previous.inputOrigin, duplicate: origin, originalInput: values.originalInput)
-    case (true, _, .chooseFirst):
+      if let previous = values.element(forKey: key) {
+        if (previous.value as? Value) == value {
+          // setting the value again will consume the argument
+          values.set(value, forKey: key, inputOrigin: origin)
+        }
+        else {
+          throw ParserError.duplicateExclusiveValues(previous: previous.inputOrigin, duplicate: origin, originalInput: values.originalInput)
+        }
+      }
+    case (true, .chooseFirst):
       values.update(forKey: key, inputOrigin: origin, initial: value, closure: { _ in })
-    case (false, _, _), (_, _, .chooseLast):
+    case (false, _), (_, .chooseLast):
       values.set(value, forKey: key, inputOrigin: origin)
-    default:
-      break
     }
     return true
   }
