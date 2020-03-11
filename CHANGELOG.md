@@ -12,7 +12,18 @@ package updates, you can specify your package dependency using
 
 ## [Unreleased]
 
-*No changes yet.*
+### Additions
+
+- You can specify the `.unconditionalRemaining` parsing strategy for arrays of
+  positional arguments to accept dash-prefixed input, like
+  `example --one two -three`.
+
+### Fixes
+
+- The extension providing `init?(argument:)` to `RawRepresentable` types is now
+  properly constrained.
+- The parser no longer treats passing the same exclusive flag more than once as
+  an error.
 
 ## [0.0.2] - 2020-03-06
 
