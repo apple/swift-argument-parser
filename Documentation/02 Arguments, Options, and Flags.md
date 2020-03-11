@@ -43,7 +43,7 @@ This example shows how `ArgumentParser` provides defaults that speed up your ini
 - Option and flag names are derived from the names of your command's properties.
 - Whether arguments are required and what kinds of inputs are valid is based on your properties' types.
 
-In this example, all of the properties have default values — Boolean flags always default to `false`, optional properties default to `nil`, and arrays default to an empty array. An option or flag with a `default` parameter can also be omitted by the user.
+In this example, all of the properties have default values — Boolean flags always default to `false`, optional properties default to `nil`, and arrays default to an empty array. An option, flag or argument with a `default` parameter can also be omitted by the user.
 
 Users must provide values for all properties with no implicit or specified default. For example, this command would require one integer argument and a string with the key `--user-name`.
 
