@@ -73,7 +73,7 @@ extension Argument where Value: ExpressibleByArgument {
   /// If the property has an `Optional` type, the argument is optional and
   /// defaults to `nil`.
   ///
-  /// - Parameters
+  /// - Parameters:
   ///   - initial: A default value to use for this property.
   ///   - help: Information about how to use this argument.
   public init(
