@@ -102,6 +102,8 @@ extension HelpGenerationTests {
 
   enum OptionFlags: String, CaseIterable { case optional, required }
   struct D: ParsableCommand {
+    @Argument(default: "--", help: "Your occupation.")
+    var occupation: String
 
     @Option(default: "John", help: "Your name.")
     var name: String
@@ -118,7 +120,10 @@ extension HelpGenerationTests {
 
   func testHelpWithDefaultValues() {
     AssertHelp(for: D.self, equals: """
-            USAGE: d [--name <name>] [--age <age>] [--logging <logging>] [--optional] [--required]
+            USAGE: d [<occupation>] [--name <name>] [--age <age>] [--logging <logging>] [--optional] [--required]
+
+            ARGUMENTS:
+              <occupation>            Your occupation. (default: --)
 
             OPTIONS:
               --name <name>           Your name. (default: John)
