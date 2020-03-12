@@ -47,6 +47,9 @@ public struct OptionGroup<Value: ParsableArguments>: Decodable, ParsedWrapper {
       self.init(_parsedValue: .value(value))
     } else {
       try self.init(_decoder: decoder)
+      if let d = decoder as? SingleValueDecoder {
+        d.saveValue(wrappedValue)
+      }
     }
     
     do {

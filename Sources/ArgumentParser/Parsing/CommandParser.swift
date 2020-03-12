@@ -19,10 +19,10 @@ struct HelpRequested: Error {}
 struct CommandParser {
   let commandTree: Tree<ParsableCommand.Type>
   var currentNode: Tree<ParsableCommand.Type>
-  var parsedValues: [(type: ParsableCommand.Type, decodedResult: ParsableCommand)] = []
+  var decodedArguments: [DecodedArguments] = []
   
   var commandStack: [ParsableCommand.Type] {
-    let result = parsedValues.map { $0.type }
+    let result = decodedArguments.compactMap { $0.commandType }
     if currentNode.element == result.last {
       return result
     } else {
@@ -89,11 +89,11 @@ extension CommandParser {
       throw ParserError.unexpectedExtraValues(extra)
     }
     
-    guard let lastParsed = parsedValues.last else {
+    guard let lastCommand = decodedArguments.lazy.compactMap({ $0.command }).last else {
       throw ParserError.invalidState
     }
     
-    return lastParsed.decodedResult
+    return lastCommand
   }
   
   /// Extracts the current command from `split`, throwing if decoding isn't
@@ -117,7 +117,7 @@ extension CommandParser {
     }
     
     // Decode the values from ParsedValues into the ParsableCommand:
-    let decoder = ArgumentDecoder(values: values, previouslyParsedValues: parsedValues)
+    let decoder = ArgumentDecoder(values: values, previouslyParsedValues: decodedArguments)
     var decodedResult: ParsableCommand
     do {
       decodedResult = try currentNode.element.init(from: decoder)
@@ -132,8 +132,11 @@ extension CommandParser {
     // by the decoder.
     split.removeAll(in: decoder.usedOrigins)
     
-    // Save this decoded result to add to the next command.
-    parsedValues.append((currentNode.element, decodedResult))
+    // Save the decoded results to add to the next command.
+    let newDecodedValues = decoder.previouslyDecoded
+      .filter { prev in !decodedArguments.contains(where: { $0.type == prev.type })}
+    decodedArguments.append(contentsOf: newDecodedValues)
+    decodedArguments.append(DecodedArguments(type: currentNode.element, value: decodedResult))
   }
   
   /// Starting with the current node, extracts commands out of `split` and
