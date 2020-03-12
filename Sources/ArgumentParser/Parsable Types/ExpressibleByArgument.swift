@@ -66,3 +66,16 @@ extension Double: ExpressibleByArgument {}
 
 extension Bool: ExpressibleByArgument {}
 
+extension ExpressibleByArgument {
+
+  var defaultValueDescription: String {
+
+    let mirror = Mirror(reflecting: self)
+
+    if mirror.displayStyle == .optional, let value = mirror.children.first?.value {
+        return "\(value)"
+    }
+
+    return "\(self)"
+  }
+}

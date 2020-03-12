@@ -235,7 +235,7 @@ extension ArgumentSet {
   init<A: ExpressibleByArgument>(key: InputKey, kind: ArgumentDefinition.Kind, parsingStrategy: ArgumentDefinition.ParsingStrategy = .nextAsValue, parseType type: A.Type, name: NameSpecification, default initial: A?, help: ArgumentHelp?) {
     var arg = ArgumentDefinition(key: key, kind: kind, parsingStrategy: parsingStrategy, parser: A.init(argument:), default: initial)
     arg.help.help = help
-    arg.help.defaultValue = initial.map { "\($0)" }
+    arg.help.defaultValue = initial.map { "\($0.defaultValueDescription)" }
     self.init(arg)
   }
 }
