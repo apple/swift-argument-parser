@@ -147,3 +147,51 @@ extension NestedCommandEndToEndTests {
     XCTAssertThrowsError(try Foo.parse(["build", "--build", "12"]))
   }
 }
+
+private struct Options: ParsableArguments {
+  @Option() var firstName: String?
+}
+
+private struct UniqueOptions: ParsableArguments {
+  @Option() var lastName: String?
+}
+
+private struct Super: ParsableCommand {
+  static var configuration: CommandConfiguration {
+    .init(subcommands: [Sub1.self, Sub2.self])
+  }
+
+  @OptionGroup() var options: Options
+
+  struct Sub1: ParsableCommand {
+    @OptionGroup() var options: Options
+  }
+
+  struct Sub2: ParsableCommand {
+    @OptionGroup() var options: UniqueOptions
+  }
+}
+
+extension NestedCommandEndToEndTests {
+  func testParsing_SharedOptions() throws {
+    AssertParseCommand(Super.self, Super.self, []) { sup in
+      XCTAssertNil(sup.options.firstName)
+    }
+
+    AssertParseCommand(Super.self, Super.self, ["--first-name", "Foo"]) { sup in
+      XCTAssertEqual("Foo", sup.options.firstName)
+    }
+
+    AssertParseCommand(Super.self, Super.Sub1.self, ["sub1"]) { sub1 in
+      XCTAssertNil(sub1.options.firstName)
+    }
+
+    AssertParseCommand(Super.self, Super.Sub1.self, ["sub1", "--first-name", "Foo"]) { sub1 in
+      XCTAssertEqual("Foo", sub1.options.firstName)
+    }
+
+    AssertParseCommand(Super.self, Super.Sub2.self, ["sub2", "--last-name", "Foo"]) { sub2 in
+      XCTAssertEqual("Foo", sub2.options.lastName)
+    }
+  }
+}

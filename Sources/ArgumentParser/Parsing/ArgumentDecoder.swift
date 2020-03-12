@@ -9,11 +9,29 @@
 //
 //===----------------------------------------------------------------------===//
 
+/// A previously decoded parsable arguments type.
+///
+/// Because arguments are consumed and decoded the first time they're
+/// encountered, we save the decoded instances for using later in the
+/// command/subcommand hierarchy.
+struct DecodedArguments {
+  var type: ParsableArguments.Type
+  var value: ParsableArguments
+
+  var commandType: ParsableCommand.Type? {
+    type as? ParsableCommand.Type
+  }
+
+  var command: ParsableCommand? {
+    value as? ParsableCommand
+  }
+}
+
 /// A decoder that decodes from parsed command-line arguments.
 final class ArgumentDecoder: Decoder {
-  init(values: ParsedValues, previouslyParsedValues: [(ParsableCommand.Type, ParsableCommand)] = []) {
+  init(values: ParsedValues, previouslyDecoded: [DecodedArguments] = []) {
     self.values = values
-    self.previouslyParsedValues = previouslyParsedValues
+    self.previouslyDecoded = previouslyDecoded
     self.usedOrigins = InputOrigin()
     
     // Mark the terminator position(s) as used:
@@ -25,7 +43,7 @@ final class ArgumentDecoder: Decoder {
   let values: ParsedValues
   var usedOrigins: InputOrigin
   var nextCommandIndex = 0
-  var previouslyParsedValues: [(ParsableCommand.Type, ParsableCommand)] = []
+  var previouslyDecoded: [DecodedArguments] = []
   
   var codingPath: [CodingKey] = []
   
@@ -137,12 +155,13 @@ struct SingleValueDecoder: Decoder {
   }
   
   func previousValue<T>(_ type: T.Type) throws -> T {
-    for (previousType, value) in underlying.previouslyParsedValues {
-      if type == previousType {
-        return value as! T
-      }
-    }
-    throw ParserError.invalidState
+    guard let previous = underlying.previouslyDecoded.first(where: { type == $0.type })
+      else { throw ParserError.invalidState }
+    return previous.value as! T
+  }
+
+  func saveValue<T: ParsableArguments>(_ value: T, type: T.Type = T.self) {
+    underlying.previouslyDecoded.append(DecodedArguments(type: type, value: value))
   }
   
   struct SingleValueContainer: SingleValueDecodingContainer {
