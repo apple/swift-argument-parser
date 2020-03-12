@@ -336,3 +336,40 @@ extension DefaultsEndToEndTests {
     XCTAssertThrowsError(try Baz.parse(["--bool", "truthy"]))
   }
 }
+
+fileprivate struct Qux: ParsableArguments {
+  @Argument(default: "quux")
+  var name: String
+}
+
+extension PositionalEndToEndTests {
+  func testParsing_Defaults() throws {
+    AssertParse(Qux.self, []) { qux in
+      XCTAssertEqual(qux.name, "quux")
+    }
+    AssertParse(Qux.self, ["Bar"]) { qux in
+      XCTAssertEqual(qux.name, "Bar")
+    }
+    AssertParse(Qux.self, ["Bar-"]) { qux in
+      XCTAssertEqual(qux.name, "Bar-")
+    }
+    AssertParse(Qux.self, ["Bar--"]) { qux in
+      XCTAssertEqual(qux.name, "Bar--")
+    }
+    AssertParse(Qux.self, ["--", "-Bar"]) { qux in
+      XCTAssertEqual(qux.name, "-Bar")
+    }
+    AssertParse(Qux.self, ["--", "--Bar"]) { qux in
+      XCTAssertEqual(qux.name, "--Bar")
+    }
+    AssertParse(Qux.self, ["--", "--"]) { qux in
+      XCTAssertEqual(qux.name, "--")
+    }
+  }
+
+  func testParsing_Defaults_Fails() throws {
+    XCTAssertThrowsError(try Qux.parse(["--name"]))
+    XCTAssertThrowsError(try Qux.parse(["Foo", "Bar"]))
+  }
+}
+
