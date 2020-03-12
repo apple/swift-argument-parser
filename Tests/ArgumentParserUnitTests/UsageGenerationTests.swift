@@ -72,11 +72,14 @@ extension UsageGenerationTests {
     
     @Option(default: 0)
     var count: Int
+
+    @Argument(default: "no-arg")
+    var arg: String
   }
   
   func testSynopsisWithDefaults() {
     let help = UsageGenerator(toolName: "bar", parsable: E())
-    XCTAssertEqual(help.synopsis, "bar [--name <name>] [--count <count>]")
+    XCTAssertEqual(help.synopsis, "bar [--name <name>] [--count <count>] [<arg>]")
   }
   
   struct F: ParsableArguments {
