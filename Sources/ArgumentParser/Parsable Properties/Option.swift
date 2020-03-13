@@ -238,7 +238,7 @@ extension Option {
     self.init(_parsedValue: .init { key in
       let kind = ArgumentDefinition.Kind.name(key: key, specification: name)
       let help = ArgumentDefinition.Help(options: initial != nil ? .isOptional : [], help: help, key: key)
-      let arg = ArgumentDefinition(kind: kind, help: help, parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy), update: .unary({
+      var arg = ArgumentDefinition(kind: kind, help: help, parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy), update: .unary({
         (origin, _, valueString, parsedValues) in
         parsedValues.set(try transform(valueString), forKey: key, inputOrigin: origin)
       }), initial: { origin, values in
@@ -246,6 +246,7 @@ extension Option {
           values.set(v, forKey: key, inputOrigin: origin)
         }
       })
+      arg.help.defaultValue = initial.map { "\($0)" }
       return ArgumentSet(alternatives: [arg])
       })
   }
