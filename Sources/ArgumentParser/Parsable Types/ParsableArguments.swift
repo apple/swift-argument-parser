@@ -125,6 +125,16 @@ extension ParsableArguments {
     MessageInfo(error: error, type: self).fullText
   }
   
+  /// Returns the exit code for the given error.
+  ///
+  /// - Parameter error: An error to generate a message for.
+  /// - Returns: The exit code for the `error`.
+  public static func exitCode(
+    for error: Error
+  ) -> ExitCode {
+    ExitCode(MessageInfo(error: error, type: self).exitCode)
+  }
+
   /// Terminates execution with a message and exit code that is appropriate
   /// for the given error.
   ///
