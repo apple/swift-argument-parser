@@ -101,6 +101,22 @@ extension HelpGenerationTests {
   }
 
   enum OptionFlags: String, CaseIterable { case optional, required }
+  enum Degree {
+    case bachelor, master, doctor
+    static func degreeTransform(_ string: String) throws -> Degree {
+      switch string {
+      case "bachelor":
+        return .bachelor
+      case "master":
+        return .master
+      case "doctor":
+        return .doctor
+      default:
+        throw ValidationError("Not a valid string for 'Degree'")
+      }
+    }
+  }
+
   struct D: ParsableCommand {
     @Argument(default: "--", help: "Your occupation.")
     var occupation: String
@@ -119,11 +135,14 @@ extension HelpGenerationTests {
 
     @Flag(default: .optional, help: "Vegan diet.")
     var nda: OptionFlags
+
+    @Option(default: .bachelor, help: "Your degree.", transform: Degree.degreeTransform)
+    var degree: Degree
   }
 
   func testHelpWithDefaultValues() {
     AssertHelp(for: D.self, equals: """
-            USAGE: d [<occupation>] [--name <name>] [--middle-name <middle-name>] [--age <age>] [--logging <logging>] [--optional] [--required]
+            USAGE: d [<occupation>] [--name <name>] [--middle-name <middle-name>] [--age <age>] [--logging <logging>] [--optional] [--required] [--degree <degree>]
 
             ARGUMENTS:
               <occupation>            Your occupation. (default: --)
@@ -135,6 +154,7 @@ extension HelpGenerationTests {
               --age <age>             Your age. (default: 20)
               --logging <logging>     Whether logging is enabled. (default: false)
               --optional/--required   Vegan diet. (default: optional)
+              --degree <degree>       Your degree. (default: bachelor)
               -h, --help              Show help information.
 
             """)
