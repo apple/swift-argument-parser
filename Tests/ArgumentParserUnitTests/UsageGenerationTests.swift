@@ -117,26 +117,20 @@ extension UsageGenerationTests {
 
   struct I: ParsableArguments {
     enum Color {
-      case red
-      case blue
-
-      public static func color(from: String) -> Color? {
-        switch from {
-        case "red":
-          return .red
-        case "blue":
-          return .blue
-        default:
-          return nil
+        case red, blue
+        static func transform(_ string: String) throws -> Color {
+          switch string {
+          case "red":
+            return .red
+          case "blue":
+            return .blue
+          default:
+            throw ValidationError("Not a valid string for 'Color'")
+          }
         }
-      }
     }
 
-    static func transform(_ string: String) throws -> Color {
-        Color.color(from: string)!
-    }
-
-    @Option(default: .red, transform: transform)
+    @Option(default: .red, transform: Color.transform)
     var color: Color
   }
 
