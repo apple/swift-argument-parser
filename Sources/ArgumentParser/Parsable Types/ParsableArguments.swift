@@ -132,7 +132,7 @@ extension ParsableArguments {
   public static func exitCode(
     for error: Error
   ) -> ExitCode {
-    ExitCode(MessageInfo(error: error, type: self).exitCode)
+    MessageInfo(error: error, type: self).exitCode
   }
 
   /// Terminates execution with a message and exit code that is appropriate
@@ -149,7 +149,7 @@ extension ParsableArguments {
     withError error: Error? = nil
   ) -> Never {
     guard let error = error else {
-      _exit(ExitCode.success.code)
+      _exit(ExitCode.success.rawValue)
     }
     
     let messageInfo = MessageInfo(error: error, type: self)
@@ -160,7 +160,7 @@ extension ParsableArguments {
         print(messageInfo.fullText, to: &standardError)
       }
     }
-    _exit(messageInfo.exitCode)
+    _exit(messageInfo.exitCode.rawValue)
   }
   
   /// Parses a new instance of this type from command-line arguments or exits

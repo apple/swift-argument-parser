@@ -62,7 +62,7 @@ enum MessageInfo {
           self = .help(text: message)
         }
       case let error as ExitCode:
-        self = .other(message: "", exitCode: error.code)
+        self = .other(message: "", exitCode: error.rawValue)
       case let error as LocalizedError where error.errorDescription != nil:
         self = .other(message: error.errorDescription!, exitCode: EXIT_FAILURE)
       default:
@@ -106,11 +106,11 @@ enum MessageInfo {
     }
   }
 
-  var exitCode: Int32 {
+  var exitCode: ExitCode {
     switch self {
-    case .help: return ExitCode.success.code
-    case .validation: return ExitCode.validationFailure.code
-    case .other(_, let exitCode): return exitCode
+    case .help: return ExitCode.success
+    case .validation: return ExitCode.validationFailure
+    case .other(_, let code): return ExitCode(code)
     }
   }
 }

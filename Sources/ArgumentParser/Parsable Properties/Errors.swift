@@ -37,12 +37,17 @@ public struct ValidationError: Error, CustomStringConvertible {
 /// If you're printing custom errors messages yourself, you can throw this error
 /// to specify the exit code without adding any additional output to standard
 /// out or standard error.
-public struct ExitCode: Error {
-  var code: Int32
+public struct ExitCode: Error, RawRepresentable, Hashable {
+  /// The exit code represented by this instance.
+  public var rawValue: Int32
 
   /// Creates a new `ExitCode` with the given code.
   public init(_ code: Int32) {
-    self.code = code
+    self.rawValue = code
+  }
+  
+  public init(rawValue: Int32) {
+    self.init(rawValue)
   }
   
   /// An exit code that indicates successful completion of a command.
@@ -53,6 +58,12 @@ public struct ExitCode: Error {
   
   /// An exit code that indicates that the user provided invalid input.
   public static let validationFailure = ExitCode(EX_USAGE)
+
+  /// A Boolean value indicated whether this exit code represents the successful
+  /// completion of a command.
+  public var isSuccess: Bool {
+    self == Self.success
+  }
 }
 
 /// An error type that represents a clean (i.e. non-error state) exit of the
