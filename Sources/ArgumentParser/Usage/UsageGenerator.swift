@@ -9,7 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-@_implementationOnly import Foundation
+import Foundation
 
 struct UsageGenerator {
   var toolName: String

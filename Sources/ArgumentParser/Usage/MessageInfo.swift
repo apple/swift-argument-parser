@@ -9,7 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-@_implementationOnly import Foundation
+import Foundation
 
 enum MessageInfo {
   case help(text: String)

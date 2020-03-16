@@ -9,6 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+import Foundation
+
 /// A type that can be expressed as a command-line argument.
 public protocol ExpressibleByArgument {
   /// Creates a new instance of this type from a command-line-specified
@@ -38,6 +40,17 @@ extension RawRepresentable where Self: ExpressibleByArgument, RawValue: Expressi
       self.init(rawValue: value)
     } else {
       return nil
+    }
+  }
+}
+
+extension URL: ExpressibleByArgument {
+  public init?(argument: String) {
+    if let url = URL(string: argument), url.scheme != nil {
+      self.init(string: argument)
+    } else {
+      // Assuming it is a file url.
+      self.init(fileURLWithPath: argument)
     }
   }
 }

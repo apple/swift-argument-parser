@@ -5,6 +5,7 @@ add_library(UnitTests
   SplitArgumentTests.swift
   StringWrappingTests.swift
   TreeTests.swift
+  URLArgumentTests.swift
   UsageGenerationTests.swift)
 target_link_libraries(UnitTests PRIVATE
   ArgumentParser
