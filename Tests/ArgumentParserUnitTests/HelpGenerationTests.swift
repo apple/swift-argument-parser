@@ -212,7 +212,22 @@ extension HelpGenerationTests {
     struct AnotherCommandWithVeryLongName: ParsableCommand {
       static var configuration: CommandConfiguration = CommandConfiguration(abstract: "Test long command name.")
     }
-    struct AnotherCommand: ParsableCommand {}
+    struct AnotherCommand: ParsableCommand {
+      @Option(default: nil)
+      var someOptionWithVeryLongName: String?
+      
+      @Option(default: nil)
+      var option: String?
+      
+      @Argument(default: "", help: "This is an argument with a long name.")
+      var argumentWithVeryLongNameAndHelp: String
+      
+      @Argument(default: "")
+      var argumentWithVeryLongName: String
+      
+      @Argument(default: "")
+      var argument: String
+    }
     static var configuration = CommandConfiguration(subcommands: [CommandWithVeryLongName.self,ShortCommand.self,AnotherCommandWithVeryLongName.self,AnotherCommand.self])
   }
   
@@ -229,6 +244,22 @@ extension HelpGenerationTests {
       another-command-with-very-long-name
                               Test long command name.
       another-command
+
+    """)
+    
+    AssertHelp(for: H.AnotherCommand.self, equals: """
+    USAGE: another-command [--some-option-with-very-long-name <some-option-with-very-long-name>] [--option <option>] [<argument-with-very-long-name-and-help>] [<argument-with-very-long-name>] [<argument>]
+
+    ARGUMENTS:
+      <argument-with-very-long-name-and-help>
+                              This is an argument with a long name.
+      <argument-with-very-long-name>
+      <argument>
+
+    OPTIONS:
+      --some-option-with-very-long-name <some-option-with-very-long-name>
+      --option <option>
+      -h, --help              Show help information.
 
     """)
   }
