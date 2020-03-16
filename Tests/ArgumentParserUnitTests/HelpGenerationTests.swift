@@ -203,4 +203,33 @@ extension HelpGenerationTests {
 
                """)
   }
+  
+  struct H: ParsableCommand {
+    struct CommandWithVeryLongName: ParsableCommand {}
+    struct ShortCommand: ParsableCommand {
+      static var configuration: CommandConfiguration = CommandConfiguration(abstract: "Test short command name.")
+    }
+    struct AnotherCommandWithVeryLongName: ParsableCommand {
+      static var configuration: CommandConfiguration = CommandConfiguration(abstract: "Test long command name.")
+    }
+    struct AnotherCommand: ParsableCommand {}
+    static var configuration = CommandConfiguration(subcommands: [CommandWithVeryLongName.self,ShortCommand.self,AnotherCommandWithVeryLongName.self,AnotherCommand.self])
+  }
+  
+  func testHelpWithSubcommands() {
+    AssertHelp(for: H.self, equals: """
+    USAGE: h <subcommand>
+
+    OPTIONS:
+      -h, --help              Show help information.
+
+    SUBCOMMANDS:
+      command-with-very-long-name
+      short-command           Test short command name.
+      another-command-with-very-long-name
+                              Test long command name.
+      another-command
+
+    """)
+  }
 }
