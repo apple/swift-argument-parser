@@ -44,16 +44,19 @@ internal struct HelpGenerator {
         let wrappedDiscussion = self.discussion.isEmpty
           ? ""
           : self.discussion.wrapped(to: HelpGenerator.screenWidth, wrappingIndent: HelpGenerator.helpIndent * 4) + "\n"
-        
-        if paddedLabel.count < HelpGenerator.labelColumnWidth {
-          return paddedLabel
-            + wrappedAbstract.dropFirst(paddedLabel.count) + "\n"
-            + wrappedDiscussion
-        } else {
-          return paddedLabel + "\n"
-            + wrappedAbstract + "\n"
-            + wrappedDiscussion
-        }
+        let renderedAbstract: String = {
+          guard !abstract.isEmpty else { return "" }
+          if paddedLabel.count < HelpGenerator.labelColumnWidth {
+            // Render after padded label.
+            return String(wrappedAbstract.dropFirst(paddedLabel.count))
+          } else {
+            // Render in a new line.
+            return "\n" + wrappedAbstract
+          }
+        }()
+        return paddedLabel
+          + renderedAbstract + "\n"
+          + wrappedDiscussion
       }
     }
     
