@@ -192,3 +192,17 @@ extension ArgumentSet {
     self.init(additive: a)
   }
 }
+
+/// The fatal error message to display when someone accesses a
+/// `ParsableArguments` type after initializing it directly.
+internal let directlyInitializedError = """
+
+  --------------------------------------------------------------------
+  Can't read a value from a parsable argument definition.
+
+  This error indicates that a `ParsableCommand` or `ParsableArguments`
+  type is being initialized directly, instead of by calling `parse`,
+  `parseAsRoot`, or `main`. See the documentation for correct usage.
+  --------------------------------------------------------------------
+
+  """
