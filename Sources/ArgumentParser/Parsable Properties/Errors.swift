@@ -59,8 +59,8 @@ public struct ExitCode: Error, RawRepresentable, Hashable {
   /// An exit code that indicates that the user provided invalid input.
   public static let validationFailure = ExitCode(EX_USAGE)
 
-  /// A Boolean value indicated whether this exit code represents the successful
-  /// completion of a command.
+  /// A Boolean value indicating whether this exit code represents the
+  /// successful completion of a command.
   public var isSuccess: Bool {
     self == Self.success
   }
