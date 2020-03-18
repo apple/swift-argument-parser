@@ -32,4 +32,16 @@ extension ExitCodeTests {
       XCTAssertEqual(ExitCode.success, A.exitCode(for: error))
     }
   }
+
+  func testExitCode_Success() {
+    XCTAssertFalse(A.exitCode(for: E()).isSuccess)
+    XCTAssertFalse(A.exitCode(for: ValidationError("")).isSuccess)
+    
+    do {
+      _ = try A.parse(["-h"])
+      XCTFail("Didn't throw help request error.")
+    } catch {
+      XCTAssertTrue(A.exitCode(for: error).isSuccess)
+    }
+  }
 }
