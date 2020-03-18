@@ -127,8 +127,11 @@ extension ParsableArguments {
   
   /// Returns the exit code for the given error.
   ///
-  /// - Parameter error: An error to generate a message for.
-  /// - Returns: The exit code for the `error`.
+  /// The returned code is the same exit code that is used if `error` is passed
+  /// to `exit(withError:)`.
+  ///
+  /// - Parameter error: An error to generate an exit code for.
+  /// - Returns: The exit code for `error`.
   public static func exitCode(
     for error: Error
   ) -> ExitCode {

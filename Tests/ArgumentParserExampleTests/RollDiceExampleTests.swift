@@ -10,6 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 import XCTest
+import ArgumentParser
 import ArgumentParserTestHelpers
 
 final class RollDiceExampleTests: XCTestCase {
@@ -41,7 +42,7 @@ final class RollDiceExampleTests: XCTestCase {
             Error: Missing value for '--times <n>'
             Usage: roll [--times <n>] [--sides <m>] [--seed <seed>] [--verbose]
             """,
-      exitCode: EX_USAGE)
+      exitCode: ExitCode.validationFailure.rawValue)
     
     AssertExecuteCommand(
       command: "roll --times ZZZ",
@@ -49,6 +50,6 @@ final class RollDiceExampleTests: XCTestCase {
             Error: The value 'ZZZ' is invalid for '--times <n>'
             Usage: roll [--times <n>] [--sides <m>] [--seed <seed>] [--verbose]
             """,
-      exitCode: EX_USAGE)
+      exitCode: ExitCode.validationFailure.rawValue)
   }
 }

@@ -136,7 +136,7 @@ extension XCTest {
   public func AssertExecuteCommand(
     command: String,
     expected: String? = nil,
-    exitCode: Int32 = 0,
+    exitCode: Int32 = ExitCode.success.rawValue,
     file: StaticString = #file, line: UInt = #line)
   {
     let splitCommand = command.split(separator: " ")
