@@ -40,7 +40,7 @@ Repeat.main()
 You kick off execution by calling your type's static `main()` method.
 The `ArgumentParser` library parses the command-line arguments,
 instantiates your command type, and then either executes your `run()` method
-or exits with useful a message.
+or exits with a useful message.
 
 `ArgumentParser` uses your properties' names and type information,
 along with the details you provide using property wrappers,
