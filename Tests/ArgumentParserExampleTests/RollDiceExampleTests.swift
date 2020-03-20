@@ -42,7 +42,7 @@ final class RollDiceExampleTests: XCTestCase {
             Error: Missing value for '--times <n>'
             Usage: roll [--times <n>] [--sides <m>] [--seed <seed>] [--verbose]
             """,
-      exitCode: ExitCode.validationFailure.rawValue)
+      exitCode: .validationFailure)
     
     AssertExecuteCommand(
       command: "roll --times ZZZ",
@@ -50,6 +50,6 @@ final class RollDiceExampleTests: XCTestCase {
             Error: The value 'ZZZ' is invalid for '--times <n>'
             Usage: roll [--times <n>] [--sides <m>] [--seed <seed>] [--verbose]
             """,
-      exitCode: ExitCode.validationFailure.rawValue)
+      exitCode: .validationFailure)
   }
 }

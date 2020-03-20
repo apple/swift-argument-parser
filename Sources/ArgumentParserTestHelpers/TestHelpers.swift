@@ -136,7 +136,7 @@ extension XCTest {
   public func AssertExecuteCommand(
     command: String,
     expected: String? = nil,
-    exitCode: Int32 = ExitCode.success.rawValue,
+    exitCode: ExitCode = .success,
     file: StaticString = #file, line: UInt = #line)
   {
     let splitCommand = command.split(separator: " ")
@@ -172,6 +172,6 @@ extension XCTest {
       AssertEqualStringsIgnoringTrailingWhitespace(expected, errorActual + outputActual, file: file, line: line)
     }
 
-    XCTAssertEqual(process.terminationStatus, exitCode, file: file, line: line)
+    XCTAssertEqual(process.terminationStatus, exitCode.rawValue, file: file, line: line)
   }
 }

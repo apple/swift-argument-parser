@@ -49,7 +49,7 @@ final class RepeatExampleTests: XCTestCase {
             Error: Missing expected argument '<phrase>'
             Usage: repeat [--count <count>] [--include-counter] <phrase>
             """,
-      exitCode: ExitCode.validationFailure.rawValue)
+      exitCode: .validationFailure)
     
     AssertExecuteCommand(
       command: "repeat hello --count",
@@ -57,7 +57,7 @@ final class RepeatExampleTests: XCTestCase {
             Error: Missing value for '--count <count>'
             Usage: repeat [--count <count>] [--include-counter] <phrase>
             """,
-      exitCode: ExitCode.validationFailure.rawValue)
+      exitCode: .validationFailure)
     
     AssertExecuteCommand(
       command: "repeat hello --count ZZZ",
@@ -65,6 +65,6 @@ final class RepeatExampleTests: XCTestCase {
             Error: The value 'ZZZ' is invalid for '--count <count>'
             Usage: repeat [--count <count>] [--include-counter] <phrase>
             """,
-      exitCode: ExitCode.validationFailure.rawValue)
+      exitCode: .validationFailure)
   }
 }
