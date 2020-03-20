@@ -206,12 +206,13 @@ extension SplitArguments {
       }?.1
   }
   
-  /// Returns the original input string at the given origin.
-  func originalInput(at origin: InputOrigin.Element) -> String {
-    switch origin {
-    case .argumentIndex(let index):
-      return originalInput[index.inputIndex.rawValue]
+  /// Returns the original input string at the given origin, or `nil` if
+  /// `origin` is a sub-index.
+  func originalInput(at origin: InputOrigin.Element) -> String? {
+    guard case let .argumentIndex(index) = origin else {
+      return nil
     }
+    return originalInput[index.inputIndex.rawValue]
   }
   
   mutating func popNext() -> (InputOrigin.Element, Element)? {

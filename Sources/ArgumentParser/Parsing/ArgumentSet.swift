@@ -377,8 +377,6 @@ extension ArgumentSet {
     }
     
     var result = ParsedValues(elements: [], originalInput: all.originalInput)
-    var positionalValues: [(InputOrigin.Element, String)] = []
-    var unusedOptions: [(InputOrigin.Element, String)] = []
     var usedOrigins = InputOrigin()
     
     try setInitialValues(into: &result)
@@ -390,8 +388,9 @@ extension ArgumentSet {
       }
       
       switch next {
-      case let .value(v):
-        positionalValues.append((origin, v))
+      case .value:
+        // We'll parse positional values later.
+        break
       case let .option(parsed):
         // Look for an argument that matches this `--option` or `-o`-style
         // input. If we can't find one, just move on to the next input. We
@@ -400,7 +399,6 @@ extension ArgumentSet {
         guard
           let argument: ArgumentDefinition = try? first(matching: parsed, at: origin)
           else {
-            unusedOptions.append((origin, all.originalInput(at: origin)))
             continue
           }
         
@@ -418,14 +416,15 @@ extension ArgumentSet {
       case .terminator:
         // Mark the terminator as used:
         result.set(ParsedValues.Element(key: .terminator, value: 0, inputOrigin: [origin]))
-        unusedOptions.append((origin, all.originalInput(at: origin)))
       }
     }
     
     // We have parsed all non-positional values at this point.
     // Next: parse / consume the positional values.
     do {
-      try parsePositionalValues(positionalValues, unusedOptions: unusedOptions, into: &result)
+      var stripped = all
+      stripped.removeAll(in: usedOrigins)
+      try parsePositionalValues(from: stripped, into: &result)
     } catch {
       switch error {
       case ParserError.unexpectedExtraValues:
@@ -470,28 +469,35 @@ extension ArgumentSet {
   }
   
   func parsePositionalValues(
-    _ positionalValues: [(InputOrigin.Element, String)],
-    unusedOptions: [(InputOrigin.Element, String)],
+    from unusedInput: SplitArguments,
     into result: inout ParsedValues
   ) throws {
-    guard !positionalValues.isEmpty || !unusedOptions.isEmpty else { return }
-    var positionalValues = positionalValues[...]
-    var unusedOptions = unusedOptions[...]
+    // Filter out the inputs that aren't "whole" arguments, like `-h` and `-i`
+    // from the input `-hi`.
+    var argumentStack = unusedInput.elements.filter {
+      $0.index.subIndex == .complete
+    }.map {
+      (InputOrigin.Element.argumentIndex($0.index), $0.element)
+    }[...]
     
-    /// Pops the next origin / string pair to use.
-    /// If `unconditional` is false, this always pops from `positionalValues`;
-    /// if true, then it pops from whichever of `positionalValues` or
-    /// `unusedOptions` has the element that came first in the original input.
-    func next(unconditional: Bool) -> (InputOrigin.Element, String)? {
-      guard unconditional, let firstUnusedOption = unusedOptions.first else {
-        return positionalValues.popFirst()
+    guard !argumentStack.isEmpty else { return }
+    
+    /// Pops arguments until reaching one that is a value (i.e., isn't dash-
+    /// prefixed).
+    func skipNonValues() {
+      while argumentStack.first?.1.isValue == false {
+        _ = argumentStack.popFirst()
       }
-      guard let firstPositional = positionalValues.first else {
-        return unusedOptions.popFirst()
+    }
+    
+    /// Pops the origin of the next argument to use.
+    ///
+    /// If `unconditional` is false, this skips over any non-"value" input.
+    func next(unconditional: Bool) -> InputOrigin.Element? {
+      if !unconditional {
+        skipNonValues()
       }
-      return firstPositional.0 < firstUnusedOption.0
-        ? positionalValues.popFirst()
-        : unusedOptions.popFirst()
+      return argumentStack.popFirst()?.0
     }
     
     ArgumentLoop:
@@ -503,16 +509,20 @@ extension ArgumentSet {
       let allowOptionsAsInput = argumentDefinition.parsingStrategy == .allRemainingInput
       
       repeat {
-        guard let (origin, value) = next(unconditional: allowOptionsAsInput) else {
+        guard let origin = next(unconditional: allowOptionsAsInput) else {
           break ArgumentLoop
         }
+        let value = unusedInput.originalInput(at: origin)!
         try update([origin], nil, value, &result)
       } while argumentDefinition.isRepeatingPositional
     }
     
     // Finished with the defined arguments; are there leftover values to parse?
-    guard positionalValues.isEmpty else {
-      let extraValues = positionalValues.map { (InputOrigin(element: $0.0), $0.1) }
+    skipNonValues()
+    guard argumentStack.isEmpty else {
+      let extraValues: [(InputOrigin, String)] = argumentStack.map(\.0).map {
+        return (InputOrigin(element: $0), unusedInput.originalInput(at: $0)!)
+      }
       throw ParserError.unexpectedExtraValues(extraValues)
     }
   }
