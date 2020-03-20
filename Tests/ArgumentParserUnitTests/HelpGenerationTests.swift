@@ -101,6 +101,22 @@ extension HelpGenerationTests {
   }
 
   enum OptionFlags: String, CaseIterable { case optional, required }
+  enum Degree {
+    case bachelor, master, doctor
+    static func degreeTransform(_ string: String) throws -> Degree {
+      switch string {
+      case "bachelor":
+        return .bachelor
+      case "master":
+        return .master
+      case "doctor":
+        return .doctor
+      default:
+        throw ValidationError("Not a valid string for 'Degree'")
+      }
+    }
+  }
+
   struct D: ParsableCommand {
     @Argument(default: "--", help: "Your occupation.")
     var occupation: String
@@ -119,11 +135,14 @@ extension HelpGenerationTests {
 
     @Flag(default: .optional, help: "Vegan diet.")
     var nda: OptionFlags
+
+    @Option(default: .bachelor, help: "Your degree.", transform: Degree.degreeTransform)
+    var degree: Degree
   }
 
   func testHelpWithDefaultValues() {
     AssertHelp(for: D.self, equals: """
-            USAGE: d [<occupation>] [--name <name>] [--middle-name <middle-name>] [--age <age>] [--logging <logging>] [--optional] [--required]
+            USAGE: d [<occupation>] [--name <name>] [--middle-name <middle-name>] [--age <age>] [--logging <logging>] [--optional] [--required] [--degree <degree>]
 
             ARGUMENTS:
               <occupation>            Your occupation. (default: --)
@@ -135,6 +154,7 @@ extension HelpGenerationTests {
               --age <age>             Your age. (default: 20)
               --logging <logging>     Whether logging is enabled. (default: false)
               --optional/--required   Vegan diet. (default: optional)
+              --degree <degree>       Your degree. (default: bachelor)
               -h, --help              Show help information.
 
             """)
@@ -182,5 +202,65 @@ extension HelpGenerationTests {
                  -h, --help              Show help information.
 
                """)
+  }
+  
+  struct H: ParsableCommand {
+    struct CommandWithVeryLongName: ParsableCommand {}
+    struct ShortCommand: ParsableCommand {
+      static var configuration: CommandConfiguration = CommandConfiguration(abstract: "Test short command name.")
+    }
+    struct AnotherCommandWithVeryLongName: ParsableCommand {
+      static var configuration: CommandConfiguration = CommandConfiguration(abstract: "Test long command name.")
+    }
+    struct AnotherCommand: ParsableCommand {
+      @Option(default: nil)
+      var someOptionWithVeryLongName: String?
+      
+      @Option(default: nil)
+      var option: String?
+      
+      @Argument(default: "", help: "This is an argument with a long name.")
+      var argumentWithVeryLongNameAndHelp: String
+      
+      @Argument(default: "")
+      var argumentWithVeryLongName: String
+      
+      @Argument(default: "")
+      var argument: String
+    }
+    static var configuration = CommandConfiguration(subcommands: [CommandWithVeryLongName.self,ShortCommand.self,AnotherCommandWithVeryLongName.self,AnotherCommand.self])
+  }
+  
+  func testHelpWithSubcommands() {
+    AssertHelp(for: H.self, equals: """
+    USAGE: h <subcommand>
+
+    OPTIONS:
+      -h, --help              Show help information.
+
+    SUBCOMMANDS:
+      command-with-very-long-name
+      short-command           Test short command name.
+      another-command-with-very-long-name
+                              Test long command name.
+      another-command
+
+    """)
+    
+    AssertHelp(for: H.AnotherCommand.self, equals: """
+    USAGE: another-command [--some-option-with-very-long-name <some-option-with-very-long-name>] [--option <option>] [<argument-with-very-long-name-and-help>] [<argument-with-very-long-name>] [<argument>]
+
+    ARGUMENTS:
+      <argument-with-very-long-name-and-help>
+                              This is an argument with a long name.
+      <argument-with-very-long-name>
+      <argument>
+
+    OPTIONS:
+      --some-option-with-very-long-name <some-option-with-very-long-name>
+      --option <option>
+      -h, --help              Show help information.
+
+    """)
   }
 }

@@ -66,7 +66,7 @@ public struct OptionGroup<Value: ParsableArguments>: Decodable, ParsedWrapper {
       case .value(let v):
         return v
       case .definition:
-        fatalError("Trying to read value from definition.")
+        fatalError(directlyInitializedError)
       }
     }
     set {

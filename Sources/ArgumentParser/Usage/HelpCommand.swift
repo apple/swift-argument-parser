@@ -18,8 +18,8 @@ struct HelpCommand: ParsableCommand {
   
   init() {}
   
-  func run() {
-    print(generateHelp())
+  func run() throws {
+    throw CommandError(commandStack: commandStack, parserError: .helpRequested)
   }
   
   mutating func buildCommandStack(with parser: CommandParser) throws {

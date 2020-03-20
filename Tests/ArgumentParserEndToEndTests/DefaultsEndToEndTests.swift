@@ -342,8 +342,8 @@ fileprivate struct Qux: ParsableArguments {
   var name: String
 }
 
-extension PositionalEndToEndTests {
-  func testParsing_Defaults() throws {
+extension DefaultsEndToEndTests {
+  func testParsing_ArgumentDefaults() throws {
     AssertParse(Qux.self, []) { qux in
       XCTAssertEqual(qux.name, "quux")
     }
@@ -367,7 +367,7 @@ extension PositionalEndToEndTests {
     }
   }
 
-  func testParsing_Defaults_Fails() throws {
+  func testParsing_ArgumentDefaults_Fails() throws {
     XCTAssertThrowsError(try Qux.parse(["--name"]))
     XCTAssertThrowsError(try Qux.parse(["Foo", "Bar"]))
   }

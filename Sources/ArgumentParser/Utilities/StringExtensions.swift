@@ -94,55 +94,27 @@ extension String {
   ///     // my-url-property
   func convertedToSnakeCase(separator: Character = "_") -> String {
     guard !isEmpty else { return self }
-    // This algorithm expects the first character of the string to be lowercase,
-    // per Swift API design guidelines. If it's an uppercase character instead,
-    // add and strip an extra character at the beginning.
-    // TODO: Fold this logic into the body of this method?
-    guard first?.isUppercase == false else {
-      return String(
-        ("z" + self).convertedToSnakeCase(separator: separator)
-          .dropFirst(2)
-      )
-    }
-    
-    var words : [Range<String.Index>] = []
-    // The general idea of this algorithm is to split words on transition from
-    // lower to upper case, then on transition of >1 upper case characters to
-    // lowercase
-    var cursor = startIndex
-    
-    // Find next uppercase character
-    while let nextUpperCase = self[cursor...].dropFirst().firstIndex(where: { $0.isUppercase }) {
-      words.append(cursor..<nextUpperCase)
-      cursor = nextUpperCase
-      
-      // Find next lowercase character
-      guard let nextLowerCase = self[cursor...].firstIndex(where: { $0.isLowercase }) else {
-        // There are no more lower case letters. Just end here.
-        break
+    var result = ""
+    // Whether we should append a separator when we see a uppercase character.
+    var separateOnUppercase = true
+    for index in indices {
+      let nextIndex = self.index(after: index)
+      let character = self[index]
+      if character.isUppercase {
+        if separateOnUppercase && !result.isEmpty {
+          // Append the separator.
+          result += "\(separator)"
+        }
+        // If the next character is uppercase and the next-next character is lowercase, like "L" in "URLSession", we should separate words.
+        separateOnUppercase = nextIndex < endIndex && self[nextIndex].isUppercase && self.index(after: nextIndex) < endIndex && self[self.index(after: nextIndex)].isLowercase
+      } else {
+        // If the character is `separator`, we do not want to append another separator when we see the next uppercase character.
+        separateOnUppercase = character != separator
       }
-      
-      // Is the next lowercase letter more than 1 after the uppercase? If so,
-      // we encountered a group of uppercase letters that we should treat as
-      // its own word
-      let nextCharacterAfterCapital = self.index(after: nextUpperCase)
-      if nextLowerCase != nextCharacterAfterCapital {
-        // There was a range of >1 capital letters. Turn those into a word,
-        // stopping at the capital before the lower case character.
-        let beforeLowerIndex = self.index(before: nextLowerCase)
-        words.append(nextUpperCase..<beforeLowerIndex)
-        
-        // Next word starts at the capital before the lowercase we just found
-        cursor = beforeLowerIndex
-      }
+      // Append the lowercased character.
+      result += character.lowercased()
     }
-    
-    // Add the last word segment; there's no effect on the result if empty.
-    words.append(cursor..<endIndex)
-    
-    return words.map { (range) in
-      self[range].lowercased()
-    }.joined(separator: String(separator))
+    return result
   }
   
   /// Returns the edit distance between this string and the provided target string.

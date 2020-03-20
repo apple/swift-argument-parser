@@ -17,13 +17,26 @@ package updates, you can specify your package dependency using
 - You can specify the `.unconditionalRemaining` parsing strategy for arrays of
   positional arguments to accept dash-prefixed input, like
   `example --one two -three`.
+- You can now provide a default value for a positional argument.
 
 ### Fixes
 
+- Supporting targets are now prefixed to prevent conflicts with other libraries.
 - The extension providing `init?(argument:)` to `RawRepresentable` types is now
   properly constrained.
 - The parser no longer treats passing the same exclusive flag more than once as
   an error.
+- `ParsableArguments` types that are declared as `@OptionGroup()` properties on
+  commands can now also be declared on subcommands. Previosuly, the parent 
+  command's declaration would prevent subcommands from seeing the user-supplied 
+  arguments.
+- Default values are rendered correctly for properties with `Optional` types.
+- The output of help requests is now printed during the "exit" phase of execution, 
+  instead of during the "run" phase.
+- Usage strings now correctly show that optional positional arguments aren't 
+  required.
+- Extended help now omits extra line breaks when displaying arguments or commands
+  with long names that don't provide help text.
 
 ## [0.0.2] - 2020-03-06
 

@@ -114,4 +114,28 @@ extension UsageGenerationTests {
     let help = UsageGenerator(toolName: "bar", parsable: H())
     XCTAssertEqual(help.synopsis, "bar")
   }
+
+  struct I: ParsableArguments {
+    enum Color {
+        case red, blue
+        static func transform(_ string: String) throws -> Color {
+          switch string {
+          case "red":
+            return .red
+          case "blue":
+            return .blue
+          default:
+            throw ValidationError("Not a valid string for 'Color'")
+          }
+        }
+    }
+
+    @Option(default: .red, transform: Color.transform)
+    var color: Color
+  }
+
+  func testSynopsisWithDefaultValueAndTransform() {
+    let help = UsageGenerator(toolName: "bar", parsable: I())
+    XCTAssertEqual(help.synopsis, "bar [--color <color>]")
+  }
 }

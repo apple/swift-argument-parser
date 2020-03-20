@@ -297,7 +297,7 @@ Usage: example [--verbose] --name <name> [<file>]
 
 Parsing options as arrays is similar — only adjacent key-value pairs are recognized by default.
 
-## Alternative single-value parsing strategies
+### Alternative single-value parsing strategies
 
 You can change this behavior by providing a different parsing strategy in the `@Option` initializer. **Be careful when selecting any of the alternative parsing strategies** — they may lead your command-line tool to have unexpected behavior for users!
 
@@ -315,7 +315,7 @@ The `.scanningForValue` strategy, on the other hand, looks ahead in the list of 
 Verbose: true, name: Tomás, file: none
 ```
 
-## Alternative array parsing strategies
+### Alternative array parsing strategies
 
 The default strategy for parsing options as arrays is to read each value from a key-value pair. For example, this command expects zero or more input file names:
 
@@ -365,7 +365,7 @@ Verbose: true, files: ["file1.swift", "file2.swift"]
 Verbose: false, files: ["file1.swift", "file2.swift", "--verbose"]
 ```
 
-## Alternative positional argument parsing strategies
+### Alternative positional argument parsing strategies
 
 The default strategy for parsing arrays of positional arguments is to ignore  all dash-prefixed command-line inputs. For example, this command accepts a `--verbose` flag and a list of file names as positional arguments:
 
