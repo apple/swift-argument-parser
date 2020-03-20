@@ -40,7 +40,35 @@ struct ParsableArgumentsCodingKeyValidator {
     }
   }
   
+  struct ValidationError: Error {
+    let parsableArgumentsType: ParsableArguments.Type
+    let missingKey: String
+    var errorDescription: String {
+      """
+      
+      ------------------------------------------------------------------
+      Can't find the coding key for a parsable argument.
+      
+      This error indicates that an option, a flag, or an argument of a
+      `ParsableArguments` is defined without a corresponding `CodingKey`.
+      
+      Type: \(parsableArgumentsType)
+      Key: \(missingKey)
+      ------------------------------------------------------------------
+      
+      """
+    }
+  }
+  
   static func validate(_ type: ParsableArguments.Type) {
+    var error: ValidationError?
+    validate(type, error: &error)
+    if let error = error {
+      fatalError(error.errorDescription)
+    }
+  }
+  
+  static func validate(_ type: ParsableArguments.Type, error: inout ValidationError?) {
     let argumentKeys: [String] = Mirror(reflecting: type.init())
       .children
       .compactMap { child in
@@ -57,23 +85,9 @@ struct ParsableArgumentsCodingKeyValidator {
     } catch let result as Validator.ValidationResult {
       switch result {
       case .codingKeyNotFound(let key):
-        fatalError(
-          """
-          
-          ------------------------------------------------------------------
-          Can't find the coding key for a parsable argument.
-          
-          This error indicates that an option, a flag, or an argument of a
-          `ParsableArguments` is defined without a corresponding `CodingKey`.
-
-          Type: \(type)
-          Key: \(key)
-          ------------------------------------------------------------------
-          
-          """
-        )
+        error = ValidationError(parsableArgumentsType: type, missingKey: key)
       case .success:
-        break
+        error = nil
       }
     } catch {
       fatalError("\(error)")
