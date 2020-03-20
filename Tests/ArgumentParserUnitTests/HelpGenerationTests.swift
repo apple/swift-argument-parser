@@ -16,6 +16,21 @@ import ArgumentParserTestHelpers
 final class HelpGenerationTests: XCTestCase {
 }
 
+extension URL: ExpressibleByArgument {
+    public init?(argument: String) {
+        guard let url = URL(string: argument) else {
+            return nil
+        }
+        self = url
+    }
+
+    public var defaultValueDescription: String {
+        self.absoluteString == FileManager.default.currentDirectoryPath
+        ? "current directory"
+        : String(describing: self)
+    }
+}
+
 // MARK: -
 
 extension HelpGenerationTests {
@@ -117,6 +132,7 @@ extension HelpGenerationTests {
     }
   }
 
+
   struct D: ParsableCommand {
     @Argument(default: "--", help: "Your occupation.")
     var occupation: String
@@ -138,11 +154,14 @@ extension HelpGenerationTests {
 
     @Option(default: .bachelor, help: "Your degree.", transform: Degree.degreeTransform)
     var degree: Degree
+
+    @Option(default: URL(string: FileManager.default.currentDirectoryPath)!, help: "Directory.")
+    var directory: URL
   }
 
   func testHelpWithDefaultValues() {
     AssertHelp(for: D.self, equals: """
-            USAGE: d [<occupation>] [--name <name>] [--middle-name <middle-name>] [--age <age>] [--logging <logging>] [--optional] [--required] [--degree <degree>]
+            USAGE: d [<occupation>] [--name <name>] [--middle-name <middle-name>] [--age <age>] [--logging <logging>] [--optional] [--required] [--degree <degree>] [--directory <directory>]
 
             ARGUMENTS:
               <occupation>            Your occupation. (default: --)
@@ -155,6 +174,7 @@ extension HelpGenerationTests {
               --logging <logging>     Whether logging is enabled. (default: false)
               --optional/--required   Vegan diet. (default: optional)
               --degree <degree>       Your degree. (default: bachelor)
+              --directory <directory> Directory. (default: current directory)
               -h, --help              Show help information.
 
             """)

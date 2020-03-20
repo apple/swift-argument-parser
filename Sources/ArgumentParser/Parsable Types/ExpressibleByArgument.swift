@@ -14,6 +14,11 @@ public protocol ExpressibleByArgument {
   /// Creates a new instance of this type from a command-line-specified
   /// argument.
   init?(argument: String)
+
+  /// Default representation value in help.
+  ///
+  /// Implement this method to customize default value representation in help.
+  var defaultValueDescription: String { get }
 }
 
 extension String: ExpressibleByArgument {
@@ -68,7 +73,7 @@ extension Bool: ExpressibleByArgument {}
 
 extension ExpressibleByArgument {
 
-  var defaultValueDescription: String {
+  public var defaultValueDescription: String {
 
     let mirror = Mirror(reflecting: self)
 
