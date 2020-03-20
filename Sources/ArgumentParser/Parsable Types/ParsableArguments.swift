@@ -175,6 +175,9 @@ protocol ArgumentSetProvider {
 
 extension ArgumentSet {
   init(_ type: ParsableArguments.Type) {
+    // Validate coding keys
+    ParsableArgumentsCodingKeyValidator.validate(type)
+    
     let a: [ArgumentSet] = Mirror(reflecting: type.init())
       .children
       .compactMap { child in

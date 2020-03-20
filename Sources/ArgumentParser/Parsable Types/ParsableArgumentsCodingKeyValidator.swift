@@ -9,7 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-struct ParsableCommandCodingKeyValidator {
+struct ParsableArgumentsCodingKeyValidator {
   
   private struct Validator: Decoder {
     let argumentKeys: [String]
@@ -40,8 +40,8 @@ struct ParsableCommandCodingKeyValidator {
     }
   }
   
-  static func validate(_ command: ParsableCommand.Type) {
-    let argumentKeys: [String] = Mirror(reflecting: command.init())
+  static func validate(_ type: ParsableArguments.Type) {
+    let argumentKeys: [String] = Mirror(reflecting: type.init())
       .children
       .compactMap { child in
         guard
@@ -53,21 +53,23 @@ struct ParsableCommandCodingKeyValidator {
         return String(codingKey.first == "_" ? codingKey.dropFirst(1) : codingKey.dropFirst(0))
     }
     do {
-      let _ = try command.init(from: Validator(argumentKeys: argumentKeys))
+      let _ = try type.init(from: Validator(argumentKeys: argumentKeys))
     } catch let result as Validator.ValidationResult {
       switch result {
       case .codingKeyNotFound(let key):
         fatalError(
           """
+          
           ------------------------------------------------------------------
           Can't find the coding key for a parsable argument.
           
           This error indicates that an option, a flag, or an argument of a
-          `ParsableCommand` is defined without a corresponding `CodingKey`.
+          `ParsableArguments` is defined without a corresponding `CodingKey`.
 
-          Command: \(command)
+          Type: \(type)
           Key: \(key)
           ------------------------------------------------------------------
+          
           """
         )
       case .success:

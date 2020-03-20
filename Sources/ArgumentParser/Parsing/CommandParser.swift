@@ -102,9 +102,6 @@ extension CommandParser {
     // Build the argument set (i.e. information on how to parse):
     let commandArguments = ArgumentSet(currentNode.element)
     
-    // Validate coding keys
-    ParsableCommandCodingKeyValidator.validate(currentNode.element)
-    
     // Parse the arguments into a ParsedValues:
     let parsedResult = try commandArguments.lenientParse(split)
     
