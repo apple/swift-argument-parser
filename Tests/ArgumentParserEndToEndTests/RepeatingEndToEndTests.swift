@@ -302,6 +302,8 @@ extension RepeatingEndToEndTests {
 
 fileprivate struct Foozle: ParsableArguments {
   @Flag() var verbose: Bool
+  @Flag(name: .customShort("f")) var useFiles: Bool
+  @Flag(name: .customShort("i")) var useStandardInput: Bool
   @Argument(parsing: .unconditionalRemaining) var names: [String]
 }
 
@@ -346,6 +348,25 @@ extension RepeatingEndToEndTests {
       XCTAssertFalse(foozle.verbose)
       XCTAssertEqual(foozle.names, ["--", "--verbose", "--other", "one", "two", "three"])
     }
+    
+    AssertParse(Foozle.self, ["-one", "-two", "three"]) { foozle in
+      XCTAssertFalse(foozle.verbose)
+      XCTAssertFalse(foozle.useFiles)
+      XCTAssertFalse(foozle.useStandardInput)
+      XCTAssertEqual(foozle.names, ["-one", "-two", "three"])
+    }
+    
+    AssertParse(Foozle.self, ["-one", "-two", "three", "-if"]) { foozle in
+      XCTAssertFalse(foozle.verbose)
+      XCTAssertTrue(foozle.useFiles)
+      XCTAssertTrue(foozle.useStandardInput)
+      XCTAssertEqual(foozle.names, ["-one", "-two", "three"])
+    }
+  }
+  
+  func testParsing_repeatingUnconditionalArgument_Fails() throws {
+    // Only partially matches the `-fob` argument
+    XCTAssertThrowsError(try Foozle.parse(["-fib"]))
   }
 }
 
