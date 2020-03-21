@@ -125,6 +125,19 @@ extension ParsableArguments {
     MessageInfo(error: error, type: self).fullText
   }
   
+  /// Returns the exit code for the given error.
+  ///
+  /// The returned code is the same exit code that is used if `error` is passed
+  /// to `exit(withError:)`.
+  ///
+  /// - Parameter error: An error to generate an exit code for.
+  /// - Returns: The exit code for `error`.
+  public static func exitCode(
+    for error: Error
+  ) -> ExitCode {
+    MessageInfo(error: error, type: self).exitCode
+  }
+
   /// Terminates execution with a message and exit code that is appropriate
   /// for the given error.
   ///
@@ -139,7 +152,7 @@ extension ParsableArguments {
     withError error: Error? = nil
   ) -> Never {
     guard let error = error else {
-      _exit(ExitCode.success.code)
+      _exit(ExitCode.success.rawValue)
     }
     
     let messageInfo = MessageInfo(error: error, type: self)
@@ -150,7 +163,7 @@ extension ParsableArguments {
         print(messageInfo.fullText, to: &standardError)
       }
     }
-    _exit(messageInfo.exitCode)
+    _exit(messageInfo.exitCode.rawValue)
   }
   
   /// Parses a new instance of this type from command-line arguments or exits
