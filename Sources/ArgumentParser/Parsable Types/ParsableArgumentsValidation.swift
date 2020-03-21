@@ -9,14 +9,21 @@
 //
 //===----------------------------------------------------------------------===//
 
+extension ParsableArguments {
+  static func _validate() throws {
+    try ParsableArgumentsCodingKeyValidator.validate(self)
+  }
+}
+
+/// Ensure that all arguments have corresponding coding keys
 struct ParsableArgumentsCodingKeyValidator {
   
   private struct Validator: Decoder {
     let argumentKeys: [String]
     
-    enum ValidationResult: Error {
+    enum ValidationResult: Swift.Error {
       case success
-      case codingKeyNotFound(String)
+      case missingCodingKeys([String])
     }
     
     let codingPath: [CodingKey] = []
@@ -31,44 +38,23 @@ struct ParsableArgumentsCodingKeyValidator {
     }
     
     func container<Key>(keyedBy type: Key.Type) throws -> KeyedDecodingContainer<Key> where Key : CodingKey {
-      for argument in argumentKeys {
-        if Key(stringValue: argument) == nil {
-          throw ValidationResult.codingKeyNotFound(argument)
-        }
+      let missingKeys = argumentKeys.filter { Key(stringValue: $0) == nil }
+      if missingKeys.isEmpty {
+        throw ValidationResult.success
+      } else {
+        throw ValidationResult.missingCodingKeys(missingKeys)
       }
-      throw ValidationResult.success
     }
   }
   
-  struct ValidationError: Error {
+  /// This error indicates that an option, a flag, or an argument of
+  /// a `ParsableArguments` is defined without a corresponding `CodingKey`.
+  struct Error: Swift.Error {
     let parsableArgumentsType: ParsableArguments.Type
-    let missingKey: String
-    var errorDescription: String {
-      """
-      
-      ------------------------------------------------------------------
-      Can't find the coding key for a parsable argument.
-      
-      This error indicates that an option, a flag, or an argument of a
-      `ParsableArguments` is defined without a corresponding `CodingKey`.
-      
-      Type: \(parsableArgumentsType)
-      Key: \(missingKey)
-      ------------------------------------------------------------------
-      
-      """
-    }
+    let missingCodingKeys: [String]
   }
   
-  static func validate(_ type: ParsableArguments.Type) {
-    var error: ValidationError?
-    validate(type, error: &error)
-    if let error = error {
-      fatalError(error.errorDescription)
-    }
-  }
-  
-  static func validate(_ type: ParsableArguments.Type, error: inout ValidationError?) {
+  static func validate(_ type: ParsableArguments.Type) throws {
     let argumentKeys: [String] = Mirror(reflecting: type.init())
       .children
       .compactMap { child in
@@ -80,17 +66,21 @@ struct ParsableArgumentsCodingKeyValidator {
         // Property wrappers have underscore-prefixed names
         return String(codingKey.first == "_" ? codingKey.dropFirst(1) : codingKey.dropFirst(0))
     }
+    guard argumentKeys.count > 0 else {
+      return
+    }
     do {
       let _ = try type.init(from: Validator(argumentKeys: argumentKeys))
+      fatalError("The validator should always throw.")
     } catch let result as Validator.ValidationResult {
       switch result {
-      case .codingKeyNotFound(let key):
-        error = ValidationError(parsableArgumentsType: type, missingKey: key)
+      case .missingCodingKeys(let keys):
+        throw Error(parsableArgumentsType: type, missingCodingKeys: keys)
       case .success:
-        error = nil
+        break
       }
     } catch {
-      fatalError("\(error)")
+      fatalError("Unexpected validation error: \(error)")
     }
   }
 }

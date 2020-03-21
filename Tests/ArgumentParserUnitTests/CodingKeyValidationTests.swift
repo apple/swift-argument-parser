@@ -65,22 +65,52 @@ final class CodingKeyValidationTests: XCTestCase {
     }
   }
   
+  private struct E: ParsableArguments {
+    @Argument(help: "The phrase to repeat.")
+    var phrase: String
+    
+    @Option(help: "The number of times to repeat 'phrase'.")
+    var count: Int?
+    
+    @Flag(help: "Include a counter with each repetition.")
+    var includeCounter: Bool
+    
+    enum CodingKeys: String, CodingKey {
+      case count
+    }
+  }
+  
   func testCodingKeyValidation() throws {
-    var error: ParsableArgumentsCodingKeyValidator.ValidationError?
+    try ParsableArgumentsCodingKeyValidator.validate(A.self)
     
-    ParsableArgumentsCodingKeyValidator.validate(A.self, error: &error)
-    XCTAssertNil(error)
+    try ParsableArgumentsCodingKeyValidator.validate(B.self)
     
-    ParsableArgumentsCodingKeyValidator.validate(B.self, error: &error)
-    XCTAssertNil(error)
+    XCTAssertThrowsError(try ParsableArgumentsCodingKeyValidator.validate(C.self)) { (error) in
+      if let error = error as? ParsableArgumentsCodingKeyValidator.Error {
+        XCTAssert(error.missingCodingKeys == ["count"])
+        XCTAssert(error.parsableArgumentsType.init() is C)
+      } else {
+        XCTFail()
+      }
+    }
     
-    ParsableArgumentsCodingKeyValidator.validate(C.self, error: &error)
-    XCTAssert(error?.missingKey == "count")
-    XCTAssert(error?.parsableArgumentsType.init() is C)
+    XCTAssertThrowsError(try ParsableArgumentsCodingKeyValidator.validate(D.self)) { (error) in
+      if let error = error as? ParsableArgumentsCodingKeyValidator.Error {
+        XCTAssert(error.missingCodingKeys == ["phrase"])
+        XCTAssert(error.parsableArgumentsType.init() is D)
+      } else {
+        XCTFail()
+      }
+    }
     
-    ParsableArgumentsCodingKeyValidator.validate(D.self, error: &error)
-    XCTAssert(error?.missingKey == "phrase")
-    XCTAssert(error?.parsableArgumentsType.init() is D)
+    XCTAssertThrowsError(try ParsableArgumentsCodingKeyValidator.validate(E.self)) { (error) in
+      if let error = error as? ParsableArgumentsCodingKeyValidator.Error {
+        XCTAssert(error.missingCodingKeys == ["phrase", "includeCounter"])
+        XCTAssert(error.parsableArgumentsType.init() is E)
+      } else {
+        XCTFail()
+      }
+    }
   }
   
 }
