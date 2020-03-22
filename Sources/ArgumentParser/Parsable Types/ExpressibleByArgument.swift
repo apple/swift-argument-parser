@@ -21,6 +21,12 @@ public protocol ExpressibleByArgument {
   var defaultValueDescription: String { get }
 }
 
+extension ExpressibleByArgument {
+  public var defaultValueDescription: String {
+    "\(self)"
+  }
+}
+
 extension String: ExpressibleByArgument {
   public init?(argument: String) {
     self = argument
@@ -34,6 +40,13 @@ extension Optional: ExpressibleByArgument where Wrapped: ExpressibleByArgument {
     } else {
       return nil
     }
+  }
+  
+  public var defaultValueDescription: String {
+    guard let value = self else {
+      return "none"
+    }
+    return "\(value)"
   }
 }
 
@@ -70,17 +83,3 @@ extension Float: ExpressibleByArgument {}
 extension Double: ExpressibleByArgument {}
 
 extension Bool: ExpressibleByArgument {}
-
-extension ExpressibleByArgument {
-
-  public var defaultValueDescription: String {
-
-    let mirror = Mirror(reflecting: self)
-
-    if mirror.displayStyle == .optional, let value = mirror.children.first?.value {
-        return "\(value)"
-    }
-
-    return "\(self)"
-  }
-}
