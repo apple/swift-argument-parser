@@ -52,13 +52,13 @@ extension CommandParser {
   /// - Returns: A node for the matched subcommand if one was found;
   ///   otherwise, `nil`.
   fileprivate func consumeNextCommand(split: inout SplitArguments) -> Tree<ParsableCommand.Type>? {
-    if let command = split.peekNextValue() {
-      if let subcommandNode = currentNode.firstChild(withName: command.1) {
-        _ = split.popNextValue()
-        return subcommandNode
-      }
-    }
-    return nil
+    guard let (origin, element) = split.peekNext(),
+      element.isValue,
+      let value = split.originalInput(at: origin),
+      let subcommandNode = currentNode.firstChild(withName: value)
+    else { return nil }
+    _ = split.popNextValue()
+    return subcommandNode
   }
   
   /// Throws a `HelpRequested` error if the user has specified either of the

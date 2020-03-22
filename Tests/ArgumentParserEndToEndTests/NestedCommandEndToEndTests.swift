@@ -58,14 +58,13 @@ fileprivate func AssertParseFooCommand<A>(_ type: A.Type, _ arguments: [String],
 
 extension NestedCommandEndToEndTests {
   func testParsing_package() throws {
+    AssertParseFooCommand(Foo.Package.self, ["package"]) { package in
+      XCTAssertFalse(package.force)
+    }
+    
     AssertParseFooCommand(Foo.Package.Clean.self, ["package", "clean"]) { clean in
       XCTAssertEqual(clean.foo.verbose, false)
       XCTAssertEqual(clean.package.force, false)
-    }
-    
-    AssertParseFooCommand(Foo.Package.Clean.self, ["-f", "package", "clean"]) { clean in
-      XCTAssertEqual(clean.foo.verbose, false)
-      XCTAssertEqual(clean.package.force, true)
     }
     
     AssertParseFooCommand(Foo.Package.Clean.self, ["package", "-f", "clean"]) { clean in
@@ -94,11 +93,6 @@ extension NestedCommandEndToEndTests {
     }
     
     AssertParseFooCommand(Foo.Package.Config.self, ["package", "config", "-f"]) { config in
-      XCTAssertEqual(config.foo.verbose, false)
-      XCTAssertEqual(config.package.force, true)
-    }
-    
-    AssertParseFooCommand(Foo.Package.Config.self, ["-f", "package", "config"]) { config in
       XCTAssertEqual(config.foo.verbose, false)
       XCTAssertEqual(config.package.force, true)
     }
@@ -132,19 +126,20 @@ extension NestedCommandEndToEndTests {
   }
   
   func testParsing_fails() throws {
-    XCTAssertThrowsError(try Foo.parse(["package"]))
-    XCTAssertThrowsError(try Foo.parse(["clean", "package"]))
-    XCTAssertThrowsError(try Foo.parse(["config", "package"]))
-    XCTAssertThrowsError(try Foo.parse(["package", "c"]))
-    XCTAssertThrowsError(try Foo.parse(["package", "build"]))
-    XCTAssertThrowsError(try Foo.parse(["package", "build", "clean"]))
-    XCTAssertThrowsError(try Foo.parse(["package", "clean", "foo"]))
-    XCTAssertThrowsError(try Foo.parse(["package", "config", "bar"]))
-    XCTAssertThrowsError(try Foo.parse(["package", "clean", "build"]))
-    XCTAssertThrowsError(try Foo.parse(["build"]))
-    XCTAssertThrowsError(try Foo.parse(["build", "-f"]))
-    XCTAssertThrowsError(try Foo.parse(["build", "--build"]))
-    XCTAssertThrowsError(try Foo.parse(["build", "--build", "12"]))
+    XCTAssertThrowsError(try Foo.parseAsRoot(["clean", "package"]))
+    XCTAssertThrowsError(try Foo.parseAsRoot(["config", "package"]))
+    XCTAssertThrowsError(try Foo.parseAsRoot(["package", "c"]))
+    XCTAssertThrowsError(try Foo.parseAsRoot(["package", "build"]))
+    XCTAssertThrowsError(try Foo.parseAsRoot(["package", "build", "clean"]))
+    XCTAssertThrowsError(try Foo.parseAsRoot(["package", "clean", "foo"]))
+    XCTAssertThrowsError(try Foo.parseAsRoot(["package", "config", "bar"]))
+    XCTAssertThrowsError(try Foo.parseAsRoot(["package", "clean", "build"]))
+    XCTAssertThrowsError(try Foo.parseAsRoot(["build"]))
+    XCTAssertThrowsError(try Foo.parseAsRoot(["build", "-f"]))
+    XCTAssertThrowsError(try Foo.parseAsRoot(["build", "--build"]))
+    XCTAssertThrowsError(try Foo.parseAsRoot(["build", "--build", "12"]))
+    XCTAssertThrowsError(try Foo.parseAsRoot(["-f", "package", "clean"]))
+    XCTAssertThrowsError(try Foo.parseAsRoot(["-f", "package", "config"]))
   }
 }
 
