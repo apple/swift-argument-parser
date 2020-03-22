@@ -17,18 +17,18 @@ final class HelpGenerationTests: XCTestCase {
 }
 
 extension URL: ExpressibleByArgument {
-    public init?(argument: String) {
-        guard let url = URL(string: argument) else {
-            return nil
-        }
-        self = url
+  public init?(argument: String) {
+    guard let url = URL(string: argument) else {
+      return nil
     }
+    self = url
+  }
 
-    public var defaultValueDescription: String {
-        self.absoluteString == FileManager.default.currentDirectoryPath
-        ? "current directory"
-        : String(describing: self)
-    }
+  public var defaultValueDescription: String {
+    self.absoluteString == FileManager.default.currentDirectoryPath
+      ? "current directory"
+      : String(describing: self)
+  }
 }
 
 // MARK: -
