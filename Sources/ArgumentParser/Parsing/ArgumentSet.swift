@@ -520,8 +520,8 @@ extension ArgumentSet {
     // Finished with the defined arguments; are there leftover values to parse?
     skipNonValues()
     guard argumentStack.isEmpty else {
-      let extraValues: [(InputOrigin, String)] = argumentStack.map(\.0).map {
-        return (InputOrigin(element: $0), unusedInput.originalInput(at: $0)!)
+      let extraValues: [(InputOrigin, String)] = argumentStack.map {
+        return (InputOrigin(element: $0.0), unusedInput.originalInput(at: $0.0)!)
       }
       throw ParserError.unexpectedExtraValues(extraValues)
     }
