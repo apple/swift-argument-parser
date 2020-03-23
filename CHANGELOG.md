@@ -12,12 +12,20 @@ package updates, you can specify your package dependency using
 
 ## [Unreleased]
 
+*No changes yet.*
+
+## [0.0.3] - 2020-03-22
+
 ### Additions
 
 - You can specify the `.unconditionalRemaining` parsing strategy for arrays of
   positional arguments to accept dash-prefixed input, like
   `example --one two -three`.
 - You can now provide a default value for a positional argument.
+- You can now customize the display of default values in the extended help for
+  an `ExpressibleByArgument` type.
+- You can call the static `exitCode(for:)` method on any command to retrieve the
+  exit code for a given error.
 
 ### Fixes
 
@@ -37,6 +45,10 @@ package updates, you can specify your package dependency using
   required.
 - Extended help now omits extra line breaks when displaying arguments or commands
   with long names that don't provide help text.
+
+The 0.0.3 release includes contributions from [compnerd], [elliottwilliams],
+[glessard], [griffin-stewie], [iainsmith], [Lantua], [miguelangel-dev],
+[natecook1000], [sjavora], and [YuAo]. Thank you!
 
 ## [0.0.2] - 2020-03-06
 
@@ -85,7 +97,8 @@ The 0.0.2 release includes contributions from [AliSoftware], [buttaface],
 
 <!-- Link references for releases -->
 
-[Unreleased]: https://github.com/apple/swift-argument-parser/compare/0.0.2...HEAD
+[Unreleased]: https://github.com/apple/swift-argument-parser/compare/0.0.3...HEAD
+[0.0.3]: https://github.com/apple/swift-argument-parser/compare/0.0.2...0.0.3
 [0.0.2]: https://github.com/apple/swift-argument-parser/compare/0.0.1...0.0.2
 [0.0.1]: https://github.com/apple/swift-argument-parser/releases/tag/0.0.1
 
@@ -95,14 +108,19 @@ The 0.0.2 release includes contributions from [AliSoftware], [buttaface],
 [buttaface]: https://github.com/apple/swift-argument-parser/commits?author=buttaface
 [compnerd]: https://github.com/apple/swift-argument-parser/commits?author=compnerd
 [dduan]: https://github.com/apple/swift-argument-parser/commits?author=dduan
+[elliottwilliams]: https://github.com/apple/swift-argument-parser/commits?author=elliottwilliams
 [glessard]: https://github.com/apple/swift-argument-parser/commits?author=glessard
 [griffin-stewie]: https://github.com/apple/swift-argument-parser/commits?author=griffin-stewie
+[iainsmith]: https://github.com/apple/swift-argument-parser/commits?author=iainsmith
 [IngmarStein]: https://github.com/apple/swift-argument-parser/commits?author=IngmarStein
 [jonathanpenn]: https://github.com/apple/swift-argument-parser/commits?author=jonathanpenn
 [klaaspieter]: https://github.com/apple/swift-argument-parser/commits?author=klaaspieter
+[Lantua]: https://github.com/apple/swift-argument-parser/commits?author=Lantua
+[miguelangel-dev]: https://github.com/apple/swift-argument-parser/commits?author=miguelangel-dev
 [natecook1000]: https://github.com/apple/swift-argument-parser/commits?author=natecook1000
 [Sajjon]: https://github.com/apple/swift-argument-parser/commits?author=Sajjon
 [sjavora]: https://github.com/apple/swift-argument-parser/commits?author=sjavora
 [Wildchild9]: https://github.com/apple/swift-argument-parser/commits?author=Wildchild9
+[YuAo]: https://github.com/apple/swift-argument-parser/commits?author=YuAo
 [zntfdr]: https://github.com/apple/swift-argument-parser/commits?author=zntfdr
 
