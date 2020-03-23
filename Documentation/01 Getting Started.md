@@ -6,6 +6,8 @@ This guide walks through building an example command. You'll learn about the dif
 
 ## Adding `ArgumentParser` as a Dependency
 
+Let's write a tool called `count` that reads an input file, counts the words, and writes the result to an output file.
+
 First, we need to add `swift-argument-parser` as a dependency to our package, 
 and then include `"ArgumentParser"` as a dependency for our executable target.
 Our "Package.swift" file ends up looking like this:
@@ -27,11 +29,11 @@ let package = Package(
 )
 ```
 
+> **Note:** To read more about creating and configuring packages using Swift Package Manager, see [Using the Package Manager](https://swift.org/getting-started/#using-the-package-manager).
+
 ## Building Our First Command
 
-Let's write a tool called `count` that reads an input file, counts the words, and writes the result to an output file.
-
-We can run our `count` tool like this:
+Once we've built the `count` tool, we'll be able to run it like this:
 
 ```
 % count readme.md readme.counts
