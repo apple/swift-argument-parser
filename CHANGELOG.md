@@ -14,6 +14,12 @@ package updates, you can specify your package dependency using
 
 *No changes yet.*
 
+## [0.0.4] - 2020-03-23
+
+### Fixes
+
+- Removed usage of 5.2-only syntax.
+
 ## [0.0.3] - 2020-03-22
 
 ### Additions
@@ -97,7 +103,8 @@ The 0.0.2 release includes contributions from [AliSoftware], [buttaface],
 
 <!-- Link references for releases -->
 
-[Unreleased]: https://github.com/apple/swift-argument-parser/compare/0.0.3...HEAD
+[Unreleased]: https://github.com/apple/swift-argument-parser/compare/0.0.4...HEAD
+[0.0.4]: https://github.com/apple/swift-argument-parser/compare/0.0.3...0.0.4
 [0.0.3]: https://github.com/apple/swift-argument-parser/compare/0.0.2...0.0.3
 [0.0.2]: https://github.com/apple/swift-argument-parser/compare/0.0.1...0.0.2
 [0.0.1]: https://github.com/apple/swift-argument-parser/releases/tag/0.0.1
