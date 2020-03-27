@@ -9,14 +9,23 @@
 //
 //===----------------------------------------------------------------------===//
 
+fileprivate protocol ParsableArgumentsValidator {
+  static func validate(_ type: ParsableArguments.Type) throws
+}
+
 extension ParsableArguments {
   static func _validate() throws {
-    try ParsableArgumentsCodingKeyValidator.validate(self)
+    let validators: [ParsableArgumentsValidator.Type] = [
+      ParsableArgumentsCodingKeyValidator.self
+    ]
+    for validator in validators {
+      try validator.validate(self)
+    }
   }
 }
 
 /// Ensure that all arguments have corresponding coding keys
-struct ParsableArgumentsCodingKeyValidator {
+struct ParsableArgumentsCodingKeyValidator: ParsableArgumentsValidator {
   
   private struct Validator: Decoder {
     let argumentKeys: [String]
