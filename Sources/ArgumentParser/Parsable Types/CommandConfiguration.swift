@@ -24,6 +24,9 @@ public struct CommandConfiguration {
   /// display.
   public var discussion: String
   
+  /// Version information for this command.
+  public var version: String
+
   /// A Boolean value indicating whether this command should be shown in
   /// the extended help display.
   public var shouldDisplay: Bool
@@ -57,6 +60,7 @@ public struct CommandConfiguration {
     commandName: String? = nil,
     abstract: String = "",
     discussion: String = "",
+    version: String = "",
     shouldDisplay: Bool = true,
     subcommands: [ParsableCommand.Type] = [],
     defaultSubcommand: ParsableCommand.Type? = nil,
@@ -65,6 +69,7 @@ public struct CommandConfiguration {
     self.commandName = commandName
     self.abstract = abstract
     self.discussion = discussion
+    self.version = version
     self.shouldDisplay = shouldDisplay
     self.subcommands = subcommands
     self.defaultSubcommand = defaultSubcommand

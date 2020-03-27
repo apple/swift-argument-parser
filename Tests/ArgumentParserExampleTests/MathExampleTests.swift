@@ -108,6 +108,18 @@ final class MathExampleTests: XCTestCase {
             """,
       exitCode: .validationFailure)
   }
+  
+  func testMath_Versions() throws {
+    AssertExecuteCommand(
+      command: "math --version",
+      expected: "1.0.0")
+    AssertExecuteCommand(
+      command: "math stats --version",
+      expected: "1.0.0")
+    AssertExecuteCommand(
+      command: "math stats average --version",
+      expected: "1.5.0-alpha")
+  }
 
   func testMath_ExitCodes() throws {
     AssertExecuteCommand(

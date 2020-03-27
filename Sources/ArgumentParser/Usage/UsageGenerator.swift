@@ -176,6 +176,11 @@ struct ErrorMessageGenerator {
 extension ErrorMessageGenerator {
   func makeErrorMessage() -> String? {
     switch error {
+    case .helpRequested:
+      return nil
+    case .versionRequested:
+      return nil
+
     case .notImplemented:
       return notImplementedMessage
     case .invalidState:
@@ -194,8 +199,6 @@ extension ErrorMessageGenerator {
       return noValueMessage(key: k)
     case .unableToParseValue(let o, let n, let v, forKey: let k):
       return unableToParseValueMessage(origin: o, name: n, value: v, key: k)
-    case .helpRequested:
-      return nil
     case .invalidOption(let str):
       return "Invalid option: \(str)"
     case .nonAlphanumericShortOption(let c):

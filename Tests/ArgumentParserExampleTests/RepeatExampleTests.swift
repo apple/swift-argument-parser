@@ -50,7 +50,7 @@ final class RepeatExampleTests: XCTestCase {
             Usage: repeat [--count <count>] [--include-counter] <phrase>
             """,
       exitCode: .validationFailure)
-    
+
     AssertExecuteCommand(
       command: "repeat hello --count",
       expected: """
@@ -63,6 +63,14 @@ final class RepeatExampleTests: XCTestCase {
       command: "repeat hello --count ZZZ",
       expected: """
             Error: The value 'ZZZ' is invalid for '--count <count>'
+            Usage: repeat [--count <count>] [--include-counter] <phrase>
+            """,
+      exitCode: .validationFailure)
+    
+    AssertExecuteCommand(
+      command: "repeat --version hello",
+      expected: """
+            Error: Unknown option '--version'
             Usage: repeat [--count <count>] [--include-counter] <phrase>
             """,
       exitCode: .validationFailure)

@@ -24,9 +24,20 @@ enum MessageInfo {
     case let e as CommandError:
       commandStack = e.commandStack
       parserError = e.parserError
-      if case .helpRequested = e.parserError {
+
+      switch e.parserError {
+      case .helpRequested:
         self = .help(text: HelpGenerator(commandStack: e.commandStack).rendered)
         return
+      case .versionRequested:
+        let versionString = commandStack
+          .map { $0.configuration.version }
+          .last(where: { !$0.isEmpty })
+          ?? "Unspecified version"
+        self = .help(text: versionString)
+        return
+      default:
+        break
       }
     case let e as ParserError:
       commandStack = [type.asCommand]
