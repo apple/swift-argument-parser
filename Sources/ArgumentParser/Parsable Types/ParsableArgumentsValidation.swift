@@ -49,9 +49,16 @@ struct ParsableArgumentsCodingKeyValidator {
   
   /// This error indicates that an option, a flag, or an argument of
   /// a `ParsableArguments` is defined without a corresponding `CodingKey`.
-  struct Error: Swift.Error {
+  struct Error: Swift.Error, CustomStringConvertible {
     let parsableArgumentsType: ParsableArguments.Type
     let missingCodingKeys: [String]
+    var description: String {
+      if missingCodingKeys.count > 1 {
+        return "Arguments \(missingCodingKeys.map({ "`\($0)`" }).joined(separator: ",")) of `\(parsableArgumentsType)` are defined without corresponding `CodingKey`s."
+      } else {
+        return "Argument `\(missingCodingKeys[0])` of `\(parsableArgumentsType)` is defined without a corresponding `CodingKey`."
+      }
+    }
   }
   
   static func validate(_ type: ParsableArguments.Type) throws {
