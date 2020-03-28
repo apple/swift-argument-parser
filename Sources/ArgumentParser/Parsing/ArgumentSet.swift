@@ -41,19 +41,11 @@ struct ArgumentSet {
   init(arguments: [ArgumentDefinition], kind: Kind) {
     self.content = .arguments(arguments)
     self.kind = kind
-    // TODO: Move this check into a separate validation pass for completed
-    // argument sets.
-    precondition(
-      self.hasValidArguments,
-      "Can't have a positional argument following an array of positional arguments.")
   }
   
   init(sets: [ArgumentSet], kind: Kind) {
     self.content = .sets(sets)
     self.kind = kind
-    precondition(
-      self.hasValidArguments,
-      "Can't have a positional argument following an array of positional arguments.")
   }
 }
 
@@ -114,44 +106,6 @@ extension ArgumentSet {
       return arguments.contains(where: { $0.isRepeatingPositional })
     case .sets(let sets):
       return sets.contains(where: { $0.hasRepeatingPositional })
-    }
-  }
-  
-  /// A Boolean value indicating whether this set has valid positional
-  /// arguments.
-  ///
-  /// For positional arguments to be valid, there must be at most one
-  /// positional array argument, and it must be the last positional argument
-  /// in the argument list. Any other configuration leads to ambiguity in
-  /// parsing the arguments.
-  var hasValidArguments: Bool {
-    // Exclusive and alternative argument sets must each individually
-    // satisfy this requirement.
-    guard kind == .additive else {
-      switch content {
-      case .arguments: return true
-      case .sets(let sets): return sets.allSatisfy({ $0.hasValidArguments })
-      }
-    }
-    
-    switch content {
-    case .arguments(let arguments):
-      guard let repeatedPositional = arguments.firstIndex(where: { $0.isRepeatingPositional })
-        else { return true }
-      
-      let hasPositionalFollowingRepeated = arguments[repeatedPositional...]
-        .dropFirst()
-        .contains(where: { $0.isPositional })
-      return !hasPositionalFollowingRepeated
-      
-    case .sets(let sets):
-      guard let repeatedPositional = sets.firstIndex(where: { $0.hasRepeatingPositional })
-        else { return true }
-      let hasPositionalFollowingRepeated = sets[repeatedPositional...]
-        .dropFirst()
-        .contains(where: { $0.hasPositional })
-      
-      return !hasPositionalFollowingRepeated
     }
   }
 }

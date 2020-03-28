@@ -1,5 +1,5 @@
 add_library(UnitTests
-  CodingKeyValidationTests.swift
+  ParsableArgumentsValidationTests.swift
   ErrorMessageTests.swift
   HelpGenerationTests.swift
   NameSpecificationTests.swift
