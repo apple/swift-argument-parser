@@ -143,3 +143,29 @@ extension SubcommandEndToEndTests {
   }
 }
 
+// MARK: Version flags
+
+private struct A: ParsableCommand {
+  static var configuration = CommandConfiguration(
+    version: "1.0.0",
+    subcommands: [HasVersionFlag.self, NoVersionFlag.self])
+  
+  struct HasVersionFlag: ParsableCommand {
+    @Flag() var version: Bool
+  }
+  
+  struct NoVersionFlag: ParsableCommand {
+    @Flag() var hello: Bool
+  }
+}
+
+extension SubcommandEndToEndTests {
+  func testParsingVersionFlags() throws {
+    AssertErrorMessage(A.self, ["--version"], "1.0.0")
+    AssertErrorMessage(A.self, ["no-version-flag", "--version"], "1.0.0")
+
+    AssertParseCommand(A.self, A.HasVersionFlag.self, ["has-version-flag", "--version"]) { cmd in
+      XCTAssertTrue(cmd.version)
+    }
+  }
+}
