@@ -48,6 +48,9 @@ public struct CommandConfiguration {
   ///     the name of the command type to hyphen-separated lowercase words.
   ///   - abstract: A one-line description of the command.
   ///   - discussion: A longer description of the command.
+  ///   - version: The version number for this command. When you provide a
+  ///     non-empty string, the arguemnt parser prints it if the user provides
+  ///     a `--version` flag.
   ///   - shouldDisplay: A Boolean value indicating whether the command
   ///     should be shown in the extended help display.
   ///   - subcommands: An array of the types that define subcommands for the
