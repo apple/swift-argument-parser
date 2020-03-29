@@ -45,6 +45,26 @@ extension ParsableArguments {
   }
 }
 
+fileprivate extension ArgumentSet {
+  var firstPositionalArgument: ArgumentDefinition? {
+    switch content {
+    case .arguments(let arguments):
+      return arguments.first(where: { $0.isPositional })
+    case .sets(let sets):
+      return sets.first(where: { $0.firstPositionalArgument != nil })?.firstPositionalArgument
+    }
+  }
+  
+  var firstRepeatedPositionalArgument: ArgumentDefinition? {
+    switch content {
+    case .arguments(let arguments):
+      return arguments.first(where: { $0.isRepeatingPositional })
+    case .sets(let sets):
+      return sets.first(where: { $0.firstRepeatedPositionalArgument != nil })?.firstRepeatedPositionalArgument
+    }
+  }
+}
+
 /// For positional arguments to be valid, there must be at most one
 /// positional array argument, and it must be the last positional argument
 /// in the argument list. Any other configuration leads to ambiguity in
@@ -60,7 +80,7 @@ struct PositionalArgumentsValidator: ParsableArgumentsValidator {
   }
   
   static func validate(_ type: ParsableArguments.Type) throws {
-    let sets: [(key: InputKey, argumentSet: ArgumentSet)] = Mirror(reflecting: type.init())
+    let sets: [ArgumentSet] = Mirror(reflecting: type.init())
       .children
       .compactMap { child in
         guard
@@ -72,18 +92,20 @@ struct PositionalArgumentsValidator: ParsableArgumentsValidator {
         codingKey = String(codingKey.first == "_" ? codingKey.dropFirst(1) : codingKey.dropFirst(0))
         
         let key = InputKey(rawValue: codingKey)
-        return (key, parsed.argumentSet(for: key))
+        return parsed.argumentSet(for: key)
     }
     
-    guard let repeatedPositional = sets.firstIndex(where: { $0.argumentSet.hasRepeatingPositional })
+    guard let repeatedPositional = sets.firstIndex(where: { $0.firstRepeatedPositionalArgument != nil })
       else { return }
     let positionalFollowingRepeated = sets[repeatedPositional...]
       .dropFirst()
-      .first(where: { $0.argumentSet.hasPositional })
+      .first(where: { $0.firstPositionalArgument != nil })
     
     if let positionalFollowingRepeated = positionalFollowingRepeated {
-      throw Error(repeatedPositionalArgument: sets[repeatedPositional].key.rawValue,
-                  positionalArgumentFollowingRepeated: positionalFollowingRepeated.key.rawValue)
+      let firstRepeatedPositionalArgument: ArgumentDefinition = sets[repeatedPositional].firstRepeatedPositionalArgument!
+      let positionalFollowingRepeatedArgument: ArgumentDefinition = positionalFollowingRepeated.firstPositionalArgument!
+      throw Error(repeatedPositionalArgument: firstRepeatedPositionalArgument.valueName,
+                  positionalArgumentFollowingRepeated: positionalFollowingRepeatedArgument.valueName)
     }
   }
 }

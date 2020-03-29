@@ -13,7 +13,7 @@ import XCTest
 import ArgumentParserTestHelpers
 @testable import ArgumentParser
 
-final class CodingKeyValidationTests: XCTestCase {
+final class ParsableArgumentsValidationTests: XCTestCase {
   private struct A: ParsableCommand {
     @Option(help: "The number of times to repeat 'phrase'.")
     var count: Int?
@@ -134,6 +134,40 @@ final class CodingKeyValidationTests: XCTestCase {
     var option: Bool
   }
   
+  private struct I: ParsableArguments {
+    @Argument()
+    var name: String
+    
+    @OptionGroup()
+    var options: F
+  }
+  
+  private struct J: ParsableArguments {
+    struct Options: ParsableArguments {
+      @Argument()
+      var numberOfItems: [Int]
+    }
+    
+    @OptionGroup()
+    var options: Options
+    
+    @Argument()
+    var phrase: String
+  }
+  
+  private struct K: ParsableArguments {
+    struct Options: ParsableArguments {
+      @Argument()
+      var items: [Int]
+    }
+    
+    @Argument()
+    var phrase: String
+    
+    @OptionGroup()
+    var options: Options
+  }
+  
   func testPositionalArgumentsValidation() throws {
     try PositionalArgumentsValidator.validate(A.self)
     try PositionalArgumentsValidator.validate(F.self)
@@ -147,5 +181,16 @@ final class CodingKeyValidationTests: XCTestCase {
       XCTAssert(error is PositionalArgumentsValidator.Error)
     }
     try PositionalArgumentsValidator.validate(H.self)
+    try PositionalArgumentsValidator.validate(I.self)
+    XCTAssertThrowsError(try PositionalArgumentsValidator.validate(J.self)) { error in
+      if let error = error as? PositionalArgumentsValidator.Error {
+        XCTAssert(error.positionalArgumentFollowingRepeated == "phrase")
+        XCTAssert(error.repeatedPositionalArgument == "number-of-items")
+      } else {
+        XCTFail()
+      }
+      XCTAssert(error is PositionalArgumentsValidator.Error)
+    }
+    try PositionalArgumentsValidator.validate(K.self)
   }
 }

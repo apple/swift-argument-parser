@@ -90,26 +90,6 @@ extension ArgumentSet {
   }
 }
 
-extension ArgumentSet {
-  var hasPositional: Bool {
-    switch content {
-    case .arguments(let arguments):
-      return arguments.contains(where: { $0.isPositional })
-    case .sets(let sets):
-      return sets.contains(where: { $0.hasPositional })
-    }
-  }
-  
-  var hasRepeatingPositional: Bool {
-    switch content {
-    case .arguments(let arguments):
-      return arguments.contains(where: { $0.isRepeatingPositional })
-    case .sets(let sets):
-      return sets.contains(where: { $0.hasRepeatingPositional })
-    }
-  }
-}
-
 // MARK: Flag
 
 extension ArgumentSet {
