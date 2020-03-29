@@ -13,7 +13,7 @@ import XCTest
 import ArgumentParserTestHelpers
 @testable import ArgumentParser
 
-final class CodingKeyValidationTests: XCTestCase {
+final class ParsableArgumentsValidationTests: XCTestCase {
   private struct A: ParsableCommand {
     @Option(help: "The number of times to repeat 'phrase'.")
     var count: Int?
@@ -88,7 +88,6 @@ final class CodingKeyValidationTests: XCTestCase {
     XCTAssertThrowsError(try ParsableArgumentsCodingKeyValidator.validate(C.self)) { (error) in
       if let error = error as? ParsableArgumentsCodingKeyValidator.Error {
         XCTAssert(error.missingCodingKeys == ["count"])
-        XCTAssert(error.parsableArgumentsType.init() is C)
       } else {
         XCTFail()
       }
@@ -97,7 +96,6 @@ final class CodingKeyValidationTests: XCTestCase {
     XCTAssertThrowsError(try ParsableArgumentsCodingKeyValidator.validate(D.self)) { (error) in
       if let error = error as? ParsableArgumentsCodingKeyValidator.Error {
         XCTAssert(error.missingCodingKeys == ["phrase"])
-        XCTAssert(error.parsableArgumentsType.init() is D)
       } else {
         XCTFail()
       }
@@ -106,11 +104,93 @@ final class CodingKeyValidationTests: XCTestCase {
     XCTAssertThrowsError(try ParsableArgumentsCodingKeyValidator.validate(E.self)) { (error) in
       if let error = error as? ParsableArgumentsCodingKeyValidator.Error {
         XCTAssert(error.missingCodingKeys == ["phrase", "includeCounter"])
-        XCTAssert(error.parsableArgumentsType.init() is E)
       } else {
         XCTFail()
       }
     }
   }
   
+  private struct F: ParsableArguments {
+    @Argument()
+    var phrase: String
+    
+    @Argument()
+    var items: [Int]
+  }
+  
+  private struct G: ParsableArguments {
+    @Argument()
+    var items: [Int]
+    
+    @Argument()
+    var phrase: String
+  }
+  
+  private struct H: ParsableArguments {
+    @Argument()
+    var items: [Int]
+    
+    @Option()
+    var option: Bool
+  }
+  
+  private struct I: ParsableArguments {
+    @Argument()
+    var name: String
+    
+    @OptionGroup()
+    var options: F
+  }
+  
+  private struct J: ParsableArguments {
+    struct Options: ParsableArguments {
+      @Argument()
+      var numberOfItems: [Int]
+    }
+    
+    @OptionGroup()
+    var options: Options
+    
+    @Argument()
+    var phrase: String
+  }
+  
+  private struct K: ParsableArguments {
+    struct Options: ParsableArguments {
+      @Argument()
+      var items: [Int]
+    }
+    
+    @Argument()
+    var phrase: String
+    
+    @OptionGroup()
+    var options: Options
+  }
+  
+  func testPositionalArgumentsValidation() throws {
+    try PositionalArgumentsValidator.validate(A.self)
+    try PositionalArgumentsValidator.validate(F.self)
+    XCTAssertThrowsError(try PositionalArgumentsValidator.validate(G.self)) { error in
+      if let error = error as? PositionalArgumentsValidator.Error {
+        XCTAssert(error.positionalArgumentFollowingRepeated == "phrase")
+        XCTAssert(error.repeatedPositionalArgument == "items")
+      } else {
+        XCTFail()
+      }
+      XCTAssert(error is PositionalArgumentsValidator.Error)
+    }
+    try PositionalArgumentsValidator.validate(H.self)
+    try PositionalArgumentsValidator.validate(I.self)
+    XCTAssertThrowsError(try PositionalArgumentsValidator.validate(J.self)) { error in
+      if let error = error as? PositionalArgumentsValidator.Error {
+        XCTAssert(error.positionalArgumentFollowingRepeated == "phrase")
+        XCTAssert(error.repeatedPositionalArgument == "numberOfItems")
+      } else {
+        XCTFail()
+      }
+      XCTAssert(error is PositionalArgumentsValidator.Error)
+    }
+    try PositionalArgumentsValidator.validate(K.self)
+  }
 }

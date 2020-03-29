@@ -13,13 +13,99 @@ fileprivate protocol ParsableArgumentsValidator {
   static func validate(_ type: ParsableArguments.Type) throws
 }
 
+struct ParsableArgumentsValidationError: Error, CustomStringConvertible {
+  let parsableArgumentsType: ParsableArguments.Type
+  let underlayingErrors: [Error]
+  var description: String {
+    """
+    Validation failed for `\(parsableArgumentsType)`:
+    \(underlayingErrors.map({"- \($0)"}).joined(separator: "\n"))
+    
+    """
+  }
+}
+
 extension ParsableArguments {
   static func _validate() throws {
     let validators: [ParsableArgumentsValidator.Type] = [
+      PositionalArgumentsValidator.self,
       ParsableArgumentsCodingKeyValidator.self
     ]
-    for validator in validators {
-      try validator.validate(self)
+    let errors: [Error] = validators.compactMap { validator in
+      do {
+        try validator.validate(self)
+        return nil
+      } catch {
+        return error
+      }
+    }
+    if errors.count > 0 {
+      throw ParsableArgumentsValidationError(parsableArgumentsType: self, underlayingErrors: errors)
+    }
+  }
+}
+
+fileprivate extension ArgumentSet {
+  var firstPositionalArgument: ArgumentDefinition? {
+    switch content {
+    case .arguments(let arguments):
+      return arguments.first(where: { $0.isPositional })
+    case .sets(let sets):
+      return sets.first(where: { $0.firstPositionalArgument != nil })?.firstPositionalArgument
+    }
+  }
+  
+  var firstRepeatedPositionalArgument: ArgumentDefinition? {
+    switch content {
+    case .arguments(let arguments):
+      return arguments.first(where: { $0.isRepeatingPositional })
+    case .sets(let sets):
+      return sets.first(where: { $0.firstRepeatedPositionalArgument != nil })?.firstRepeatedPositionalArgument
+    }
+  }
+}
+
+/// For positional arguments to be valid, there must be at most one
+/// positional array argument, and it must be the last positional argument
+/// in the argument list. Any other configuration leads to ambiguity in
+/// parsing the arguments.
+struct PositionalArgumentsValidator: ParsableArgumentsValidator {
+  
+  struct Error: Swift.Error, CustomStringConvertible {
+    let repeatedPositionalArgument: String
+    let positionalArgumentFollowingRepeated: String
+    var description: String {
+      "Can't have a positional argument `\(positionalArgumentFollowingRepeated)` following an array of positional arguments `\(repeatedPositionalArgument)`."
+    }
+  }
+  
+  static func validate(_ type: ParsableArguments.Type) throws {
+    let sets: [ArgumentSet] = Mirror(reflecting: type.init())
+      .children
+      .compactMap { child in
+        guard
+          var codingKey = child.label,
+          let parsed = child.value as? ArgumentSetProvider
+          else { return nil }
+        
+        // Property wrappers have underscore-prefixed names
+        codingKey = String(codingKey.first == "_" ? codingKey.dropFirst(1) : codingKey.dropFirst(0))
+        
+        let key = InputKey(rawValue: codingKey)
+        return parsed.argumentSet(for: key)
+    }
+    
+    guard let repeatedPositional = sets.firstIndex(where: { $0.firstRepeatedPositionalArgument != nil })
+      else { return }
+    let positionalFollowingRepeated = sets[repeatedPositional...]
+      .dropFirst()
+      .first(where: { $0.firstPositionalArgument != nil })
+    
+    if let positionalFollowingRepeated = positionalFollowingRepeated {
+      let firstRepeatedPositionalArgument: ArgumentDefinition = sets[repeatedPositional].firstRepeatedPositionalArgument!
+      let positionalFollowingRepeatedArgument: ArgumentDefinition = positionalFollowingRepeated.firstPositionalArgument!
+      throw Error(repeatedPositionalArgument: firstRepeatedPositionalArgument.help.keys.first!.rawValue,
+                  positionalArgumentFollowingRepeated: positionalFollowingRepeatedArgument.help.keys.first!.rawValue)
     }
   }
 }
@@ -59,13 +145,12 @@ struct ParsableArgumentsCodingKeyValidator: ParsableArgumentsValidator {
   /// This error indicates that an option, a flag, or an argument of
   /// a `ParsableArguments` is defined without a corresponding `CodingKey`.
   struct Error: Swift.Error, CustomStringConvertible {
-    let parsableArgumentsType: ParsableArguments.Type
     let missingCodingKeys: [String]
     var description: String {
       if missingCodingKeys.count > 1 {
-        return "Arguments \(missingCodingKeys.map({ "`\($0)`" }).joined(separator: ",")) of `\(parsableArgumentsType)` are defined without corresponding `CodingKey`s."
+        return "Arguments \(missingCodingKeys.map({ "`\($0)`" }).joined(separator: ",")) are defined without corresponding `CodingKey`s."
       } else {
-        return "Argument `\(missingCodingKeys[0])` of `\(parsableArgumentsType)` is defined without a corresponding `CodingKey`."
+        return "Argument `\(missingCodingKeys[0])` is defined without a corresponding `CodingKey`."
       }
     }
   }
@@ -91,7 +176,7 @@ struct ParsableArgumentsCodingKeyValidator: ParsableArgumentsValidator {
     } catch let result as Validator.ValidationResult {
       switch result {
       case .missingCodingKeys(let keys):
-        throw Error(parsableArgumentsType: type, missingCodingKeys: keys)
+        throw Error(missingCodingKeys: keys)
       case .success:
         break
       }
