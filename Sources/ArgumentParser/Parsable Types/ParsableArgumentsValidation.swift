@@ -104,8 +104,8 @@ struct PositionalArgumentsValidator: ParsableArgumentsValidator {
     if let positionalFollowingRepeated = positionalFollowingRepeated {
       let firstRepeatedPositionalArgument: ArgumentDefinition = sets[repeatedPositional].firstRepeatedPositionalArgument!
       let positionalFollowingRepeatedArgument: ArgumentDefinition = positionalFollowingRepeated.firstPositionalArgument!
-      throw Error(repeatedPositionalArgument: firstRepeatedPositionalArgument.valueName,
-                  positionalArgumentFollowingRepeated: positionalFollowingRepeatedArgument.valueName)
+      throw Error(repeatedPositionalArgument: firstRepeatedPositionalArgument.help.keys.first!.rawValue,
+                  positionalArgumentFollowingRepeated: positionalFollowingRepeatedArgument.help.keys.first!.rawValue)
     }
   }
 }

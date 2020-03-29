@@ -185,7 +185,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
     XCTAssertThrowsError(try PositionalArgumentsValidator.validate(J.self)) { error in
       if let error = error as? PositionalArgumentsValidator.Error {
         XCTAssert(error.positionalArgumentFollowingRepeated == "phrase")
-        XCTAssert(error.repeatedPositionalArgument == "number-of-items")
+        XCTAssert(error.repeatedPositionalArgument == "numberOfItems")
       } else {
         XCTFail()
       }
