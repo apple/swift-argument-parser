@@ -283,4 +283,20 @@ extension HelpGenerationTests {
 
     """)
   }
+
+  struct I: ParsableCommand {
+    static var configuration = CommandConfiguration(version: "1.0.0")
+  }
+
+  func testHelpWithVersion() {
+    AssertHelp(for: I.self, equals: """
+    USAGE: i
+
+    OPTIONS:
+      --version               Show the version.
+      -h, --help              Show help information.
+
+    """)
+
+  }
 }
