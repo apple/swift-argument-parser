@@ -26,6 +26,7 @@ final class MathExampleTests: XCTestCase {
         USAGE: math <subcommand>
 
         OPTIONS:
+          --version               Show the version.
           -h, --help              Show help information.
 
         SUBCOMMANDS:
@@ -50,6 +51,7 @@ final class MathExampleTests: XCTestCase {
 
         OPTIONS:
           -x, --hex-output        Use hexadecimal notation for the result.
+          --version               Show the version.
           -h, --help              Show help information.
         """
     
@@ -69,6 +71,7 @@ final class MathExampleTests: XCTestCase {
 
         OPTIONS:
           --kind <kind>           The kind of average to provide. (default: mean)
+          --version               Show the version.
           -h, --help              Show help information.
         """
     
@@ -87,6 +90,7 @@ final class MathExampleTests: XCTestCase {
           <values>                A group of floating-point values to operate on.
 
         OPTIONS:
+          --version               Show the version.
           -h, --help              Show help information.
         """
     
@@ -107,6 +111,18 @@ final class MathExampleTests: XCTestCase {
             Usage: math stats average [--kind <kind>] [<values> ...]
             """,
       exitCode: .validationFailure)
+  }
+  
+  func testMath_Versions() throws {
+    AssertExecuteCommand(
+      command: "math --version",
+      expected: "1.0.0")
+    AssertExecuteCommand(
+      command: "math stats --version",
+      expected: "1.0.0")
+    AssertExecuteCommand(
+      command: "math stats average --version",
+      expected: "1.5.0-alpha")
   }
 
   func testMath_ExitCodes() throws {

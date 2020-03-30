@@ -24,6 +24,9 @@ public struct CommandConfiguration {
   /// display.
   public var discussion: String
   
+  /// Version information for this command.
+  public var version: String
+
   /// A Boolean value indicating whether this command should be shown in
   /// the extended help display.
   public var shouldDisplay: Bool
@@ -45,6 +48,9 @@ public struct CommandConfiguration {
   ///     the name of the command type to hyphen-separated lowercase words.
   ///   - abstract: A one-line description of the command.
   ///   - discussion: A longer description of the command.
+  ///   - version: The version number for this command. When you provide a
+  ///     non-empty string, the arguemnt parser prints it if the user provides
+  ///     a `--version` flag.
   ///   - shouldDisplay: A Boolean value indicating whether the command
   ///     should be shown in the extended help display.
   ///   - subcommands: An array of the types that define subcommands for the
@@ -57,6 +63,7 @@ public struct CommandConfiguration {
     commandName: String? = nil,
     abstract: String = "",
     discussion: String = "",
+    version: String = "",
     shouldDisplay: Bool = true,
     subcommands: [ParsableCommand.Type] = [],
     defaultSubcommand: ParsableCommand.Type? = nil,
@@ -65,6 +72,7 @@ public struct CommandConfiguration {
     self.commandName = commandName
     self.abstract = abstract
     self.discussion = discussion
+    self.version = version
     self.shouldDisplay = shouldDisplay
     self.subcommands = subcommands
     self.defaultSubcommand = defaultSubcommand

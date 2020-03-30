@@ -12,6 +12,7 @@
 /// Gets thrown while parsing and will be handled by the error output generation.
 enum ParserError: Error {
   case helpRequested
+  case versionRequested
   case notImplemented
   case invalidState
   case unknownOption(InputOrigin.Element, Name)

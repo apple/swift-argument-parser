@@ -63,9 +63,17 @@ extension CommandParser {
   
   /// Throws a `HelpRequested` error if the user has specified either of the
   /// built in help flags.
-  func checkForHelpFlag(_ split: SplitArguments) throws {
+  func checkForBuiltInFlags(_ split: SplitArguments) throws {
+    // Look for help flags
     guard !split.contains(anyOf: self.commandTree.element.getHelpNames()) else {
       throw HelpRequested()
+    }
+
+    // Look for --version if any commands in the stack define a version
+    if commandStack.contains(where: { !$0.configuration.version.isEmpty }) {
+      guard !split.contains(Name.long("version")) else {
+        throw CommandError(commandStack: commandStack, parserError: .versionRequested)
+      }
     }
   }
   
@@ -74,7 +82,7 @@ extension CommandParser {
   /// If there are remaining arguments or if no commands have been parsed,
   /// this throws an error.
   fileprivate func extractLastParsedValue(_ split: SplitArguments) throws -> ParsableCommand {
-    try checkForHelpFlag(split)
+    try checkForBuiltInFlags(split)
     
     // We should have used up all arguments at this point:
     guard split.isEmpty else {
@@ -124,7 +132,7 @@ extension CommandParser {
     } catch let error {
       // If decoding this command failed, see if they were asking for
       // help before propagating that parsing failure.
-      try checkForHelpFlag(split)
+      try checkForBuiltInFlags(split)
       throw error
     }
     
@@ -152,7 +160,7 @@ extension CommandParser {
       }
       
       // Look for the help flag before falling back to a default command.
-      try checkForHelpFlag(split)
+      try checkForBuiltInFlags(split)
       
       // No command was found, so fall back to the default subcommand.
       if let defaultSubcommand = currentNode.element.configuration.defaultSubcommand {
@@ -238,6 +246,18 @@ extension CommandParser {
 }
 
 extension SplitArguments {
+  func contains(_ needle: Name) -> Bool {
+    self.elements.contains {
+      switch $0.element {
+      case .option(.name(let name)),
+           .option(.nameWithValue(let name, _)):
+        return name == needle
+      default:
+        return false
+      }
+    }
+  }
+
   func contains(anyOf names: [Name]) -> Bool {
     self.elements.contains {
       switch $0.element {

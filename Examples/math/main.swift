@@ -18,6 +18,9 @@ struct Math: ParsableCommand {
         // Optional abstracts and discussions are used for help output.
         abstract: "A utility for performing maths.",
 
+        // Commands can define a version for automatic '--version' support.
+        version: "1.0.0",
+
         // Pass an array to `subcommands` to set up a nested tree of subcommands.
         // With language support for type-level introspection, this could be
         // provided by automatically finding nested `ParsableCommand` types.
@@ -89,7 +92,8 @@ extension Math {
 extension Math.Statistics {
     struct Average: ParsableCommand {
         static var configuration = CommandConfiguration(
-            abstract: "Print the average of the values.")
+            abstract: "Print the average of the values.",
+            version: "1.5.0-alpha")
         
         enum Kind: String, ExpressibleByArgument {
             case mean, median, mode

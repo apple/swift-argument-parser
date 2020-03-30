@@ -190,6 +190,10 @@ internal struct HelpGenerator {
       }
     }
     
+    if commandStack.contains(where: { !$0.configuration.version.isEmpty }) {
+      optionElements.append(.init(label: "--version", abstract: "Show the version."))
+    }
+
     let helpLabels = commandStack
       .first!
       .getHelpNames()
@@ -198,7 +202,7 @@ internal struct HelpGenerator {
     if !helpLabels.isEmpty {
       optionElements.append(.init(label: helpLabels, abstract: "Show help information."))
     }
-    
+
     let subcommandElements: [Section.Element] =
       commandStack.last!.configuration.subcommands.compactMap { command in
         guard command.configuration.shouldDisplay else { return nil }

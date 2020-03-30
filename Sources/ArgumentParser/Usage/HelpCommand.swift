@@ -44,4 +44,3 @@ struct HelpCommand: ParsableCommand {
     self._subcommands = Argument(_parsedValue: .value(commandStack.map { $0._commandName }))
   }
 }
-
