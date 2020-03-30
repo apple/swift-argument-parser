@@ -61,15 +61,7 @@ extension ParsableCommand {
   ) throws -> ParsableCommand {
     var parser = CommandParser(self)
     let arguments = arguments ?? Array(CommandLine.arguments.dropFirst())
-    var result = try parser.parse(arguments: arguments).get()
-    do {
-      try result.validate()
-    } catch {
-      throw CommandError(
-        commandStack: parser.commandStack,
-        parserError: ParserError.userValidationError(error))
-    }
-    return result
+    return try parser.parse(arguments: arguments).get()
   }
   
   /// Parses an instance of this type, or one of its subcommands, from

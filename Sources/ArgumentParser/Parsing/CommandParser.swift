@@ -106,7 +106,7 @@ extension CommandParser {
   
   /// Extracts the current command from `split`, throwing if decoding isn't
   /// possible.
-  fileprivate mutating func parseCurrent(_ split: inout SplitArguments) throws {
+  fileprivate mutating func parseCurrent(_ split: inout SplitArguments) throws -> ParsableCommand {
     // Build the argument set (i.e. information on how to parse):
     let commandArguments = ArgumentSet(currentNode.element)
     
@@ -145,14 +145,23 @@ extension CommandParser {
       .filter { prev in !decodedArguments.contains(where: { $0.type == prev.type })}
     decodedArguments.append(contentsOf: newDecodedValues)
     decodedArguments.append(DecodedArguments(type: currentNode.element, value: decodedResult))
+
+    return decodedResult
   }
   
   /// Starting with the current node, extracts commands out of `split` and
   /// descends into subcommands as far as possible.
   internal mutating func descendingParse(_ split: inout SplitArguments) throws {
     while true {
-      try parseCurrent(&split)
-      
+      var parsedCommand = try parseCurrent(&split)
+
+      // after decoding a command, make sure to validate it
+      do {
+        try parsedCommand.validate()
+      } catch {
+        throw CommandError(commandStack: commandStack, parserError: ParserError.userValidationError(error))
+      }
+
       // Look for next command in the argument list.
       if let nextCommand = consumeNextCommand(split: &split) {
         currentNode = nextCommand
