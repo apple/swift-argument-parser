@@ -146,12 +146,16 @@ extension XCTest {
     let commandURL = debugURL.appendingPathComponent(commandName)
     guard (try? commandURL.checkResourceIsReachable()) ?? false else {
       XCTFail("No executable at '\(commandURL.standardizedFileURL.path)'.",
-        file: file, line: line);
+        file: file, line: line)
       return
     }
     
     let process = Process()
-    process.launchPath = commandURL.path
+    if #available(macOS 10.13, *) {
+      process.executableURL = commandURL
+    } else {
+      process.launchPath = commandURL.path
+    }
     process.arguments = arguments
     
     let output = Pipe()
@@ -159,7 +163,14 @@ extension XCTest {
     let error = Pipe()
     process.standardError = error
     
-    process.launch()
+    if #available(macOS 10.13, *) {
+      guard (try? process.run()) != nil else {
+        XCTFail("Couldn't run command process.", file: file, line: line)
+        return
+      }
+    } else {
+      process.launch()
+    }
     process.waitUntilExit()
     
     let outputData = output.fileHandleForReading.readDataToEndOfFile()
