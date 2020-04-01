@@ -84,7 +84,8 @@ extension Option where Value: ExpressibleByArgument {
     name: NameSpecification = .long,
     default initial: Value? = nil,
     parsing parsingStrategy: SingleValueParsingStrategy = .next,
-    help: ArgumentHelp? = nil
+    help: ArgumentHelp? = nil,
+    completion: CompletionKind = .default
   ) {
     self.init(_parsedValue: .init { key in
       ArgumentSet(
@@ -93,7 +94,9 @@ extension Option where Value: ExpressibleByArgument {
         parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy),
         parseType: Value.self,
         name: name,
-        default: initial, help: help)
+        default: initial,
+        help: help,
+        completion: completion)
       })
   }
 }
@@ -233,12 +236,13 @@ extension Option {
     default initial: Value? = nil,
     parsing parsingStrategy: SingleValueParsingStrategy = .next,
     help: ArgumentHelp? = nil,
+    completion: CompletionKind = .default,
     transform: @escaping (String) throws -> Value
   ) {
     self.init(_parsedValue: .init { key in
       let kind = ArgumentDefinition.Kind.name(key: key, specification: name)
       let help = ArgumentDefinition.Help(options: initial != nil ? .isOptional : [], help: help, key: key)
-      var arg = ArgumentDefinition(kind: kind, help: help, parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy), update: .unary({
+      var arg = ArgumentDefinition(kind: kind, help: help, completion: completion, parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy), update: .unary({
         (origin, name, valueString, parsedValues) in
         do {
           let transformedValue = try transform(valueString)
@@ -269,12 +273,13 @@ extension Option {
   public init<Element>(
     name: NameSpecification = .long,
     parsing parsingStrategy: ArrayParsingStrategy = .singleValue,
-    help: ArgumentHelp? = nil
+    help: ArgumentHelp? = nil,
+    completion: CompletionKind = .default
   ) where Element: ExpressibleByArgument, Value == Array<Element> {
     self.init(_parsedValue: .init { key in
       let kind = ArgumentDefinition.Kind.name(key: key, specification: name)
       let help = ArgumentDefinition.Help(options: [.isOptional, .isRepeating], help: help, key: key)
-      let arg = ArgumentDefinition(kind: kind, help: help, parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy), update: .appendToArray(forType: Element.self, key: key), initial: { origin, values in
+      let arg = ArgumentDefinition(kind: kind, help: help, completion: completion, parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy), update: .appendToArray(forType: Element.self, key: key), initial: { origin, values in
         values.set([], forKey: key, inputOrigin: origin)
       })
       return ArgumentSet(alternatives: [arg])
@@ -297,12 +302,13 @@ extension Option {
     name: NameSpecification = .long,
     parsing parsingStrategy: ArrayParsingStrategy = .singleValue,
     help: ArgumentHelp? = nil,
+    completion: CompletionKind = .default,
     transform: @escaping (String) throws -> Element
   ) where Value == Array<Element> {
     self.init(_parsedValue: .init { key in
       let kind = ArgumentDefinition.Kind.name(key: key, specification: name)
       let help = ArgumentDefinition.Help(options: [.isOptional, .isRepeating], help: help, key: key)
-      let arg = ArgumentDefinition(kind: kind, help: help, parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy), update: .unary({
+      let arg = ArgumentDefinition(kind: kind, help: help, completion: completion, parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy), update: .unary({
         (origin, name, valueString, parsedValues) in
         do {
           let transformedElement = try transform(valueString)

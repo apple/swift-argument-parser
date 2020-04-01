@@ -94,9 +94,9 @@ extension ArgumentSet {
 
 extension ArgumentSet {
   /// Creates an argument set for a single Boolean flag.
-  static func flag(key: InputKey, name: NameSpecification, help: ArgumentHelp?) -> ArgumentSet {
+  static func flag(key: InputKey, name: NameSpecification, help: ArgumentHelp?, completion: CompletionKind) -> ArgumentSet {
     let help = ArgumentDefinition.Help(options: .isOptional, help: help, key: key)
-    let arg = ArgumentDefinition(kind: .name(key: key, specification: name), help: help, update: .nullary({ (origin, name, values) in
+    let arg = ArgumentDefinition(kind: .name(key: key, specification: name), help: help, completion: completion, update: .nullary({ (origin, name, values) in
       values.set(true, forKey: key, inputOrigin: origin)
     }), initial: { origin, values in
       values.set(false, forKey: key, inputOrigin: origin)
@@ -126,7 +126,7 @@ extension ArgumentSet {
   }
   
   /// Creates an argument set for a pair of inverted Boolean flags.
-  static func flag(key: InputKey, name: NameSpecification, default initialValue: Bool?, inversion: FlagInversion, exclusivity: FlagExclusivity, help: ArgumentHelp?) -> ArgumentSet {
+  static func flag(key: InputKey, name: NameSpecification, default initialValue: Bool?, inversion: FlagInversion, exclusivity: FlagExclusivity, help: ArgumentHelp?, completion: CompletionKind) -> ArgumentSet {
     // The flag is required if initialValue is `nil`, otherwise it's optional
     let helpOptions: ArgumentDefinition.Help.Options = initialValue != nil ? .isOptional : []
     
@@ -134,23 +134,23 @@ extension ArgumentSet {
     let (enableNames, disableNames) = inversion.enableDisableNamePair(for: key, name: name)
 
     var hasUpdated = false
-    let enableArg = ArgumentDefinition(kind: .named(enableNames),help: help, update: .nullary({ (origin, name, values) in
+    let enableArg = ArgumentDefinition(kind: .named(enableNames),help: help, completion: completion, update: .nullary({ (origin, name, values) in
         hasUpdated = try ArgumentSet.updateFlag(key: key, value: true, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
     }), initial: { origin, values in
       if let initialValue = initialValue {
         values.set(initialValue, forKey: key, inputOrigin: origin)
       }
     })
-    let disableArg = ArgumentDefinition(kind: .named(disableNames), help: ArgumentDefinition.Help(options: [.isOptional], key: key), update: .nullary({ (origin, name, values) in
+    let disableArg = ArgumentDefinition(kind: .named(disableNames), help: ArgumentDefinition.Help(options: [.isOptional], key: key), completion: completion, update: .nullary({ (origin, name, values) in
         hasUpdated = try ArgumentSet.updateFlag(key: key, value: false, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
     }), initial: { _, _ in })
     return ArgumentSet(exclusive: [enableArg, disableArg])
   }
   
   /// Creates an argument set for an incrementing integer flag.
-  static func counter(key: InputKey, name: NameSpecification, help: ArgumentHelp?) -> ArgumentSet {
+  static func counter(key: InputKey, name: NameSpecification, help: ArgumentHelp?, completion: CompletionKind) -> ArgumentSet {
     let help = ArgumentDefinition.Help(options: [.isOptional, .isRepeating], help: help, key: key)
-    let arg = ArgumentDefinition(kind: .name(key: key, specification: name), help: help, update: .nullary({ (origin, name, values) in
+    let arg = ArgumentDefinition(kind: .name(key: key, specification: name), help: help, completion: completion, update: .nullary({ (origin, name, values) in
       guard let a = values.element(forKey: key)?.value, let b = a as? Int else {
         throw ParserError.invalidState
       }
@@ -166,8 +166,8 @@ extension ArgumentSet {
 
 extension ArgumentSet {
   /// Create a unary / argument that parses the string as `A`.
-  init<A: ExpressibleByArgument>(key: InputKey, kind: ArgumentDefinition.Kind, parsingStrategy: ArgumentDefinition.ParsingStrategy = .nextAsValue, parseType type: A.Type, name: NameSpecification, default initial: A?, help: ArgumentHelp?) {
-    var arg = ArgumentDefinition(key: key, kind: kind, parsingStrategy: parsingStrategy, parser: A.init(argument:), default: initial)
+  init<A: ExpressibleByArgument>(key: InputKey, kind: ArgumentDefinition.Kind, parsingStrategy: ArgumentDefinition.ParsingStrategy = .nextAsValue, parseType type: A.Type, name: NameSpecification, default initial: A?, help: ArgumentHelp?, completion: CompletionKind) {
+    var arg = ArgumentDefinition(key: key, kind: kind, parsingStrategy: parsingStrategy, parser: A.init(argument:), default: initial, completion: completion)
     arg.help.help = help
     arg.help.defaultValue = initial.map { "\($0.defaultValueDescription)" }
     self.init(arg)
@@ -176,7 +176,7 @@ extension ArgumentSet {
 
 extension ArgumentDefinition {
   /// Create a unary / argument that parses using the given closure.
-  fileprivate init<A>(key: InputKey, kind: ArgumentDefinition.Kind, parsingStrategy: ParsingStrategy = .nextAsValue, parser: @escaping (String) -> A?, parseType type: A.Type = A.self, default initial: A?) {
+  fileprivate init<A>(key: InputKey, kind: ArgumentDefinition.Kind, parsingStrategy: ParsingStrategy = .nextAsValue, parser: @escaping (String) -> A?, parseType type: A.Type = A.self, default initial: A?, completion: CompletionKind) {
     let initialValueCreator: (InputOrigin, inout ParsedValues) throws -> Void
     if let initialValue = initial {
       initialValueCreator = { origin, values in
@@ -186,7 +186,7 @@ extension ArgumentDefinition {
       initialValueCreator = { _, _ in }
     }
     
-    self.init(kind: kind, help: ArgumentDefinition.Help(key: key), parsingStrategy: parsingStrategy, update: .unary({ (origin, name, value, values) in
+    self.init(kind: kind, help: ArgumentDefinition.Help(key: key), completion: completion, parsingStrategy: parsingStrategy, update: .unary({ (origin, name, value, values) in
       guard let v = parser(value) else {
         throw ParserError.unableToParseValue(origin, name, value, forKey: key)
       }

@@ -19,11 +19,21 @@ public protocol ExpressibleByArgument {
   ///
   /// Implement this method to customize default value representation in help.
   var defaultValueDescription: String { get }
+  
+  static var allValueStrings: [String] { get }
 }
 
 extension ExpressibleByArgument {
   public var defaultValueDescription: String {
     "\(self)"
+  }
+  
+  public static var allValueStrings: [String] { [] }
+}
+
+extension ExpressibleByArgument where Self: CaseIterable {
+  var allValueStrings: [String] {
+    Self.allCases.map { String(describing: $0) }
   }
 }
 

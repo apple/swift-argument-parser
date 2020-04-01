@@ -13,6 +13,8 @@
 enum ParserError: Error {
   case helpRequested
   case versionRequested
+  case completionScriptRequested
+  
   case notImplemented
   case invalidState
   case unknownOption(InputOrigin.Element, Name)

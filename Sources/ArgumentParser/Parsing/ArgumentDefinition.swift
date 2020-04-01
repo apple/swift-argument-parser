@@ -31,6 +31,7 @@ struct ArgumentDefinition {
     var discussion: String?
     var defaultValue: String?
     var keys: [InputKey]
+    var allValues: [String] = []
     
     struct Options: OptionSet {
       var rawValue: UInt
@@ -44,6 +45,14 @@ struct ArgumentDefinition {
       self.help = help
       self.defaultValue = defaultValue
       self.keys = [key]
+    }
+    
+    init<T: ExpressibleByArgument>(type: T.Type, options: Options = [], help: ArgumentHelp? = nil, defaultValue: String? = nil, key: InputKey) {
+      self.options = options
+      self.help = help
+      self.defaultValue = defaultValue
+      self.keys = [key]
+      self.allValues = type.allValueStrings
     }
   }
   
@@ -65,6 +74,7 @@ struct ArgumentDefinition {
   
   var kind: Kind
   var help: Help
+  var completion: CompletionKind
   var parsingStrategy: ParsingStrategy
   var update: Update
   var initial: Initial
@@ -83,13 +93,21 @@ struct ArgumentDefinition {
       ?? "value"
   }
   
-  init(kind: Kind, help: Help, parsingStrategy: ParsingStrategy = .nextAsValue, update: Update, initial: @escaping Initial = { _, _ in }) {
+  init(
+    kind: Kind,
+    help: Help,
+    completion: CompletionKind,
+    parsingStrategy: ParsingStrategy = .nextAsValue,
+    update: Update,
+    initial: @escaping Initial = { _, _ in }
+  ) {
     if case (.positional, .nullary) = (kind, update) {
       preconditionFailure("Can't create a nullary positional argument.")
     }
     
     self.kind = kind
     self.help = help
+    self.completion = completion
     self.parsingStrategy = parsingStrategy
     self.update = update
     self.initial = initial

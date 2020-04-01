@@ -99,7 +99,9 @@ extension Math.Statistics {
             case mean, median, mode
         }
 
-        @Option(default: .mean, help: "The kind of average to provide.")
+        @Option(default: .mean,
+                help: "The kind of average to provide.",
+                completion: .list(["mean", "median", "mode"]))
         var kind: Kind
         
         @Argument(help: "A group of floating-point values to operate on.")
@@ -201,6 +203,11 @@ extension Math.Statistics {
         @Option(help: .hidden)
         var testCustomExitCode: Int32?
       
+        @Option(completion: .file)
+        var file: String?
+        @Option(completion: .directory)
+        var directory: String?
+
         func validate() throws {
             if testSuccessExitCode {
                 throw ExitCode.success

@@ -75,6 +75,10 @@ extension CommandParser {
         throw CommandError(commandStack: commandStack, parserError: .versionRequested)
       }
     }
+    
+    guard !split.contains(Name.long("generate-completion")) else {
+      throw CommandError(commandStack: commandStack, parserError: .completionScriptRequested)
+    }
   }
   
   /// Returns the last parsed value if there are no remaining unused arguments.

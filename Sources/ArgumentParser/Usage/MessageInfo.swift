@@ -25,6 +25,7 @@ enum MessageInfo {
       commandStack = e.commandStack
       parserError = e.parserError
 
+      // Exit early on built-in requests
       switch e.parserError {
       case .helpRequested:
         self = .help(text: HelpGenerator(commandStack: e.commandStack).rendered)
@@ -36,16 +37,19 @@ enum MessageInfo {
           ?? "Unspecified version"
         self = .help(text: versionString)
         return
+      case .completionScriptRequested:
+        let completionScript = generateCompletionScript(type.asCommand)
+        self = .help(text: completionScript)
+        return
       default:
         break
       }
+      
     case let e as ParserError:
-      commandStack = [type.asCommand]
-      parserError = e
-      if case .helpRequested = e {
-        self = .help(text: HelpGenerator(commandStack: [type.asCommand]).rendered)
-        return
-      }
+      // Send ParserErrors back through the CommandError path
+      self.init(error: CommandError(commandStack: [type.asCommand], parserError: e), type: type)
+      return
+
     default:
       commandStack = [type.asCommand]
       // if the error wasn't one of our two Error types, wrap it as a userValidationError
