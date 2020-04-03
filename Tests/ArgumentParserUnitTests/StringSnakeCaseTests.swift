@@ -25,14 +25,16 @@ extension StringSnakeCaseTests {
       ("", ""), // don't die on empty string
       ("a", "a"), // single character
       ("aA", "a_a"), // two characters
-      ("version4Thing", "version4_thing"), // numerics
+      ("version4Thing", "version_4_thing"), // numerics
       ("partCAPS", "part_caps"), // only insert underscore before first all caps
       ("partCAPSLowerAGAIN", "part_caps_lower_again"), // switch back and forth caps.
       ("manyWordsInThisThing", "many_words_in_this_thing"), // simple lowercase + underscore + more
       ("asdfĆqer", "asdf_ćqer"),
       ("already_snake_case", "already_snake_case"),
-      ("dataPoint22", "data_point22"),
-      ("dataPoint22Word", "data_point22_word"),
+      ("dataPoint22", "data_point_22"),
+      ("dataPoint22Word", "data_point_22_word"),
+      ("svg2png", "svg_2_png"),
+      ("PDF2Text", "pdf_2_text"),
       ("_oneTwoThree", "_one_two_three"),
       ("oneTwoThree_", "one_two_three_"),
       ("__oneTwoThree", "__one_two_three"),
@@ -67,14 +69,16 @@ extension StringSnakeCaseTests {
       ("", ""), // don't die on empty string
       ("a", "a"), // single character
       ("aA", "a-a"), // two characters
-      ("version4Thing", "version4-thing"), // numerics
+      ("version4Thing", "version-4-thing"), // numerics
       ("partCAPS", "part-caps"), // only insert underscore before first all caps
       ("partCAPSLowerAGAIN", "part-caps-lower-again"), // switch back and forth caps.
       ("manyWordsInThisThing", "many-words-in-this-thing"), // simple lowercase + underscore + more
       ("asdfĆqer", "asdf-ćqer"),
       ("already_snake_case", "already_snake_case"),
-      ("dataPoint22", "data-point22"),
-      ("dataPoint22Word", "data-point22-word"),
+      ("dataPoint22", "data-point-22"),
+      ("dataPoint22Word", "data-point-22-word"),
+      ("svg2png", "svg-2-png"),
+      ("PDF2Text", "pdf-2-text"),
       ("_oneTwoThree", "_one-two-three"),
       ("oneTwoThree_", "one-two-three_"),
       ("__oneTwoThree", "__one-two-three"),

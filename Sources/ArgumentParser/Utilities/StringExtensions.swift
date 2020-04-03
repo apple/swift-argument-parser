@@ -97,20 +97,25 @@ extension String {
     var result = ""
     // Whether we should append a separator when we see a uppercase character.
     var separateOnUppercase = true
+    var justGotLastDigit = false
     for index in indices {
       let nextIndex = self.index(after: index)
       let character = self[index]
-      if character.isUppercase {
-        if separateOnUppercase && !result.isEmpty {
+      if justGotLastDigit && character != separator {
+        result += "\(separator)"
+      }
+      if character.isUppercase || character.isNumber {
+        if !justGotLastDigit && separateOnUppercase && !result.isEmpty {
           // Append the separator.
           result += "\(separator)"
         }
         // If the next character is uppercase and the next-next character is lowercase, like "L" in "URLSession", we should separate words.
-        separateOnUppercase = nextIndex < endIndex && self[nextIndex].isUppercase && self.index(after: nextIndex) < endIndex && self[self.index(after: nextIndex)].isLowercase
+        separateOnUppercase = nextIndex < endIndex && ((self[nextIndex].isUppercase && self.index(after: nextIndex) < endIndex && self[self.index(after: nextIndex)].isLowercase) || (!character.isNumber && self[nextIndex].isNumber))
       } else {
         // If the character is `separator`, we do not want to append another separator when we see the next uppercase character.
         separateOnUppercase = character != separator
       }
+      justGotLastDigit = character.isNumber && nextIndex < endIndex && !self[nextIndex].isNumber
       // Append the lowercased character.
       result += character.lowercased()
     }
