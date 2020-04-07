@@ -206,6 +206,8 @@ extension CommandParser {
       return .failure(error)
     } catch let error as ParserError {
       return .failure(CommandError(commandStack: commandStack, parserError: error))
+    } catch let error as ValidationError {
+      return .failure(CommandError(commandStack: commandStack, parserError: .userValidationError(error)))
     } catch is HelpRequested {
       return .success(HelpCommand(commandStack: commandStack))
     } catch {
