@@ -27,7 +27,7 @@ fileprivate struct Foo: ParsableArguments {
     var string: Int
     
     private static func convert(_ str: String) throws -> Int {
-        guard let converted = Int(argument: str) else { throw ValidationError("Could not convert to Int") }
+        guard let converted = Int(argument: str) else { throw ValidationError("Could not convert to Int.") }
         return converted
     }
 }
@@ -40,6 +40,6 @@ extension TransformEndToEndTests {
     }
     
     func testValidation_Fail() throws {
-        AssertFullErrorMessage(Foo.self, ["--string", "Forty Two"], "Error: Internal error. Invalid state while parsing command-line arguments.\n" + Foo.usageString)
+        AssertFullErrorMessage(Foo.self, ["--string", "Forty Two"], "Error: Could not convert to Int.\n" + Foo.usageString)
     }
 }
