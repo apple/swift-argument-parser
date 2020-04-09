@@ -145,7 +145,7 @@ extension SubcommandEndToEndTests {
 
 // MARK: Nested Command Arguments Validated
 
-private struct BaseCommand: ParsableCommand {
+struct BaseCommand: ParsableCommand {
   enum BaseCommandError: Error {
     case baseCommandFailure
     case subCommandFailure
