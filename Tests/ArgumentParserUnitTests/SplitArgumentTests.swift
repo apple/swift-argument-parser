@@ -67,7 +67,7 @@ final class SplitArgumentTests: XCTestCase {
     AssertIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
     AssertElementEqual(sut, at: 0, .option(.name(.long("abc"))))
     
-    XCTAssertEqual(sut.originalInput.count, 1)
+    XCTAssertEqual(sut.originalInput.count, 2)
     XCTAssertEqual(sut.originalInput, ["--abc"])
   }
   
