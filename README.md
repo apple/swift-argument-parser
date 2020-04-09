@@ -1,5 +1,6 @@
 # Swift Argument Parser
 
+
 ## Usage
 
 Begin by declaring a type that defines the information
