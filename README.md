@@ -37,7 +37,7 @@ struct Repeat: ParsableCommand {
 Repeat.main()
 ```
 
-You kick off execution by calling your type's static `main()` method.
+Kick off execution by calling your type's static `main()` method.
 The `ArgumentParser` library parses the command-line arguments,
 instantiates your command type, and then either executes your `run()` method
 or exits with a useful message.
