@@ -16,39 +16,142 @@ import ArgumentParser
 final class TransformEndToEndTests: XCTestCase {
 }
 
-fileprivate struct FooOption: ParsableArguments {
+fileprivate enum FooBarError: Error {
+    case outOfBounds
+}
+
+fileprivate protocol Convert {
+    static func convert(_ str: String) throws -> Int
+}
+
+extension Convert {
+    
+    
+    static func convert(_ str: String) throws -> Int {
+        guard let converted = Int(argument: str) else { throw ValidationError("Could not transform to an Int.") }
+        guard converted < 1000 else { throw FooBarError.outOfBounds }
+        return converted
+    }
+}
+
+// MARK: - Options
+
+fileprivate struct FooOption: Convert, ParsableArguments {
 
     static var usageString: String = """
     Usage: foo_option --string <int_str>
+    """
+    
+    @Option(help: ArgumentHelp("Convert string to integer", valueName: "int_str"),
+            transform: { try convert($0) })
+    var string: Int
+}
+
+fileprivate struct BarOption: Convert, ParsableCommand {
+    
+    static var usageString: String = """
+    Usage: bar-option [--strings <int_str> ...]
+    """
+    
+    @Option(help: ArgumentHelp("Convert a list of strings to an array of integers", valueName: "int_str"),
+            transform: { try convert($0) })
+    var strings: [Int]
+}
+
+extension TransformEndToEndTests {
+    
+    // MARK: Single Values
+    
+    func testSingleOptionTransform() throws {
+        AssertParse(FooOption.self, ["--string", "42"]) { foo in
+            XCTAssertEqual(foo.string, 42)
+        }
+    }
+    
+    func testSingleOptionValidation_Fail_CustomErrorMessage() throws {
+        AssertFullErrorMessage(FooOption.self, ["--string", "Forty Two"], "Error: Could not transform to an Int.\n" + FooOption.usageString)
+    }
+
+    func testSingleOptionValidation_Fail_DefaultErrorMessage() throws {
+        AssertFullErrorMessage(FooOption.self, ["--string", "4827"], "Error: The value '4827' is invalid for '--string <int_str>'\n" + FooOption.usageString)
+    }
+
+    // MARK: Arrays
+    
+    func testOptionArrayTransform() throws {
+        AssertParse(BarOption.self, ["--strings", "42", "--strings", "72", "--strings", "99"]) { bar in
+            XCTAssertEqual(bar.strings, [42, 72, 99])
+        }
+    }
+    
+    func testOptionArrayValidation_Fail_CustomErrorMessage() throws {
+        AssertFullErrorMessage(BarOption.self, ["--strings", "Forty Two", "--strings", "72", "--strings", "99"], "Error: Could not transform to an Int.\n" + BarOption.usageString)
+    }
+    
+    func testOptionArrayValidation_Fail_DefaultErrorMessage() throws {
+        AssertFullErrorMessage(BarOption.self, ["--strings", "4827", "--strings", "72", "--strings", "99"], "Error: The value '4827' is invalid for '--strings <int_str>'\n" + BarOption.usageString)
+    }
+}
+
+// MARK: - Arguments
+
+fileprivate struct FooArgument: Convert, ParsableArguments {
+
+    static var usageString: String = """
+    Usage: foo_argument <int_str>
     """
     
     enum FooError: Error {
         case outOfBounds
     }
     
-    @Option(help: ArgumentHelp("Convert string to integer", valueName: "int_str"),
-            transform: { try convert($0) })
+    @Argument(help: ArgumentHelp("Convert string to integer", valueName: "int_str"),
+              transform: { try convert($0) })
     var string: Int
+}
+
+fileprivate struct BarArgument: Convert, ParsableCommand {
     
-    private static func convert(_ str: String) throws -> Int {
-        guard let converted = Int(argument: str) else { throw ValidationError("Could not transform to an Int.") }
-        guard converted < 1000 else { throw FooError.outOfBounds }
-        return converted
-    }
+    static var usageString: String = """
+    Usage: bar-argument [<int_str> ...]
+    """
+    
+    @Argument(help: ArgumentHelp("Convert a list of strings to an array of integers", valueName: "int_str"),
+              transform: { try convert($0) })
+    var strings: [Int]
 }
 
 extension TransformEndToEndTests {
-    func testTransform() throws {
-        AssertParse(FooOption.self, ["--string", "42"]) { foo in
+    
+    // MARK: Single Values
+    
+    func testArgumentTransform() throws {
+        AssertParse(FooArgument.self, ["42"]) { foo in
             XCTAssertEqual(foo.string, 42)
         }
     }
     
-    func testValidation_Fail_CustomErrorMessage() throws {
-        AssertFullErrorMessage(FooOption.self, ["--string", "Forty Two"], "Error: Could not transform to an Int.\n" + FooOption.usageString)
+    func testArgumentValidation_Fail_CustomErrorMessage() throws {
+        AssertFullErrorMessage(FooArgument.self, ["Forty Two"], "Error: Could not transform to an Int.\n" + FooArgument.usageString)
     }
 
-    func testValidation_Fail_DefaultErrorMessage() throws {
-        AssertFullErrorMessage(FooOption.self, ["--string", "4827"], "Error: The value '4827' is invalid for '--string <int_str>'\n" + FooOption.usageString)
+    func testArgumentValidation_Fail_DefaultErrorMessage() throws {
+        AssertFullErrorMessage(FooArgument.self, ["4827"], "Error: The value '4827' is invalid for '<int_str>'\n" + FooArgument.usageString)
+    }
+    
+    // MARK: Arrays
+    
+    func testArgumentArrayTransform() throws {
+        AssertParse(BarArgument.self, ["42", "72", "99"]) { bar in
+            XCTAssertEqual(bar.strings, [42, 72, 99])
+        }
+    }
+    
+    func testArgumentArrayValidation_Fail_CustomErrorMessage() throws {
+        AssertFullErrorMessage(BarArgument.self, ["Forty Two", "72", "99"], "Error: Could not transform to an Int.\n" + BarArgument.usageString)
+    }
+    
+    func testArgumentArrayValidation_Fail_DefaultErrorMessage() throws {
+        AssertFullErrorMessage(BarArgument.self, ["4827", "72", "99"], "Error: The value '4827' is invalid for '<int_str>'\n" + BarArgument.usageString)
     }
 }
