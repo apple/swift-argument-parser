@@ -17,10 +17,19 @@ import Darwin
 import MSVCRT
 #endif
 
+/// A prototype that allows error types to vend a custom message
+///
+/// Opting in your error types to this will prevent automatic error messages
+/// from being generated. In most cases automatic error messages will be
+/// the best option.
+public protocol CustomParserErrorConvertible {
+    var message: String { get }
+}
+
 /// An error type that is presented to the user as an error with parsing their
 /// command-line input.
-public struct ValidationError: Error, CustomStringConvertible {
-  var message: String
+public struct ValidationError: Error, CustomParserErrorConvertible, CustomStringConvertible {
+  public internal(set) var message: String
   
   /// Creates a new validation error with the given message.
   public init(_ message: String) {
