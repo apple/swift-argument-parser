@@ -179,7 +179,7 @@ extension ArgumentDefinition.Update {
     return ArgumentDefinition.Update.unary {
       (origin, name, value, values) in
       guard let v = A(argument: value) else {
-        throw ParserError.unableToParseValue(origin, name, value, forKey: key)
+        throw ParserError.unableToParseValue(origin, name, value, forKey: key, customMessage: nil)
       }
       values.update(forKey: key, inputOrigin: origin, initial: [A](), closure: {
         $0.append(v)

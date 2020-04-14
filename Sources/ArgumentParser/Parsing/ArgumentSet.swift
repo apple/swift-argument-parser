@@ -188,7 +188,7 @@ extension ArgumentDefinition {
     
     self.init(kind: kind, help: ArgumentDefinition.Help(key: key), parsingStrategy: parsingStrategy, update: .unary({ (origin, name, value, values) in
       guard let v = parser(value) else {
-        throw ParserError.unableToParseValue(origin, name, value, forKey: key)
+        throw ParserError.unableToParseValue(origin, name, value, forKey: key, customMessage: nil)
       }
       values.set(v, forKey: key, inputOrigin: origin)
     }), initial: initialValueCreator)

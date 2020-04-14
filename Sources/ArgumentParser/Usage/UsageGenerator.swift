@@ -197,8 +197,8 @@ extension ErrorMessageGenerator {
       return duplicateExclusiveValues(previous: previous, duplicate: duplicate, arguments: arguments)
     case .noValue(forKey: let k):
       return noValueMessage(key: k)
-    case .unableToParseValue(let o, let n, let v, forKey: let k):
-      return unableToParseValueMessage(origin: o, name: n, value: v, key: k)
+    case .unableToParseValue(let o, let n, let v, forKey: let k, customMessage: let m):
+      return unableToParseValueMessage(origin: o, name: n, value: v, key: k, message: m)
     case .invalidOption(let str):
       return "Invalid option: \(str)"
     case .nonAlphanumericShortOption(let c):
@@ -339,16 +339,18 @@ extension ErrorMessageGenerator {
     }
   }
   
-  func unableToParseValueMessage(origin: InputOrigin, name: Name?, value: String, key: InputKey) -> String {
+    func unableToParseValueMessage(origin: InputOrigin, name: Name?, value: String, key: InputKey, message: String?) -> String {
     let valueName = arguments(for: key).first?.valueName
-    switch (name, valueName) {
-    case let (n?, v?):
+    switch (name, valueName, message) {
+    case let (_, _, m?):
+      return "\(m)"
+    case let (n?, v?, _):
       return "The value '\(value)' is invalid for '\(n.synopsisString) <\(v)>'"
-    case let (_, v?):
+    case let (_, v?, _):
       return "The value '\(value)' is invalid for '<\(v)>'"
-    case let (n?, _):
+    case let (n?, _, _):
       return "The value '\(value)' is invalid for '\(n.synopsisString)'"
-    case (nil, nil):
+    case (nil, nil, _):
       return "The value '\(value)' is invalid."
     }
   }
