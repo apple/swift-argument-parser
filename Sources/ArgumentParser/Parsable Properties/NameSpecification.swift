@@ -38,10 +38,11 @@ public struct NameSpecification: ExpressibleByArrayLiteral {
     /// Short labels can be combined into groups.
     case customShort(Character)
   }
-  var elements: Set<Element>
+  
+  var elements: [Element]
   
   public init<S>(_ sequence: S) where S : Sequence, Element == S.Element {
-    self.elements = Set(sequence)
+    self.elements = sequence.uniqued()
   }
   
   public init(arrayLiteral elements: Element...) {
