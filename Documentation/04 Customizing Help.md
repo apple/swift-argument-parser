@@ -121,7 +121,7 @@ hello!
 
 ## Modifying the Help Flag Names
 
-Users can see the help screen for a command by passing either `-h` or `--help` flag, by default. If you need to use one of those flags for another purpose, you can provide alternative names when configuring a root command.
+Users can see the help screen for a command by passing either the `-h` or the `--help` flag, by default. If you need to use one of those flags for another purpose, you can provide alternative names when configuring a root command.
 
 ```swift
 struct Example: ParsableCommand {
@@ -157,7 +157,7 @@ OPTIONS:
 
 You may want to suppress features under development or experimental flags from the generated help screen. You can hide an argument or a subcommand by passing `shouldDisplay: false` to the property wrapper or `CommandConfiguration` initializers, respectively. 
 
-`ArgumentHelp` include a `.hidden` static property that makes it even simpler to hide arguments:
+`ArgumentHelp` includes a `.hidden` static property that makes it even simpler to hide arguments:
 
 ```swift
 struct Example: ParsableCommand {
@@ -165,6 +165,3 @@ struct Example: ParsableCommand {
     var experimentalEnableWidgets: Bool
 }
 ```
-
-
-
