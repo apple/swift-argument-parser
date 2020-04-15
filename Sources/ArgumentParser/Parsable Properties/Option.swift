@@ -249,7 +249,7 @@ extension Option {
             throw ParserError.unableToParseValue(origin, name, valueString, forKey: key, customMessage: error.message)
         }
         catch /* All other errors */ {
-            throw ParserError.unableToParseValue(origin, name, valueString, forKey: key, customMessage: nil)
+            throw ParserError.unableToParseValue(origin, name, valueString, forKey: key)
         }
         
       }), initial: { origin, values in
@@ -321,7 +321,7 @@ extension Option {
             throw ParserError.unableToParseValue(origin, name, valueString, forKey: key, customMessage: error.message)
         }
         catch /* All other errors */ {
-            throw ParserError.unableToParseValue(origin, name, valueString, forKey: key, customMessage: nil)
+            throw ParserError.unableToParseValue(origin, name, valueString, forKey: key)
         }
         
       }),
