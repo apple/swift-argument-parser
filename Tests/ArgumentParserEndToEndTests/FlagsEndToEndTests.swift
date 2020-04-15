@@ -145,8 +145,10 @@ enum Size: String, EnumerableFlag {
   
   static func name(for value: Size) -> NameSpecification {
     switch value {
-    case .humongous: return .customLong("huge")
-    default: return .long
+    case .humongous:
+      return [.long, .customLong("huge")]
+    default:
+      return .long
     }
   }
 }
@@ -217,6 +219,18 @@ extension FlagsEndToEndTests {
     }
     
     AssertParse(Baz.self, ["--pink", "--huge"]) { options in
+      XCTAssertEqual(options.color, .pink)
+      XCTAssertEqual(options.size, .humongous)
+      XCTAssertEqual(options.shape, nil)
+    }
+    
+    AssertParse(Baz.self, ["--pink", "--humongous"]) { options in
+      XCTAssertEqual(options.color, .pink)
+      XCTAssertEqual(options.size, .humongous)
+      XCTAssertEqual(options.shape, nil)
+    }
+    
+    AssertParse(Baz.self, ["--pink", "--huge", "--humongous"]) { options in
       XCTAssertEqual(options.color, .pink)
       XCTAssertEqual(options.size, .humongous)
       XCTAssertEqual(options.shape, nil)
