@@ -14,6 +14,24 @@ package updates, you can specify your package dependency using
 
 *No changes yet.*
 
+## [0.0.5] - 2020-04-15
+
+### Additions
+
+- You can now specify a version string in a `ParsableCommand`'s configuration.
+  The generated tool will then automatically respond to a `--version` flag.
+- Command definitions are now validated at runtime in debug mode, to check
+  issues that can't be detected during compilation.
+
+### Fixes
+
+- Deprecation warnings during compilation on Linux have been removed.
+- The `validate()` method is now called on each command in the matched command
+  stack, instead of only the last command in the stack.
+
+The 0.0.5 release includes contributions from [kennyyork], [natecook1000],
+[sgl0v], and [YuAo]. Thank you!
+
 ## [0.0.4] - 2020-03-23
 
 ### Fixes
@@ -103,7 +121,8 @@ The 0.0.2 release includes contributions from [AliSoftware], [buttaface],
 
 <!-- Link references for releases -->
 
-[Unreleased]: https://github.com/apple/swift-argument-parser/compare/0.0.4...HEAD
+[Unreleased]: https://github.com/apple/swift-argument-parser/compare/0.0.5...HEAD
+[0.0.5]: https://github.com/apple/swift-argument-parser/compare/0.0.4...0.0.5
 [0.0.4]: https://github.com/apple/swift-argument-parser/compare/0.0.3...0.0.4
 [0.0.3]: https://github.com/apple/swift-argument-parser/compare/0.0.2...0.0.3
 [0.0.2]: https://github.com/apple/swift-argument-parser/compare/0.0.1...0.0.2
@@ -121,11 +140,13 @@ The 0.0.2 release includes contributions from [AliSoftware], [buttaface],
 [iainsmith]: https://github.com/apple/swift-argument-parser/commits?author=iainsmith
 [IngmarStein]: https://github.com/apple/swift-argument-parser/commits?author=IngmarStein
 [jonathanpenn]: https://github.com/apple/swift-argument-parser/commits?author=jonathanpenn
+[kennyyork]: https://github.com/apple/swift-argument-parser/commits?author=kennyyork
 [klaaspieter]: https://github.com/apple/swift-argument-parser/commits?author=klaaspieter
 [Lantua]: https://github.com/apple/swift-argument-parser/commits?author=Lantua
 [miguelangel-dev]: https://github.com/apple/swift-argument-parser/commits?author=miguelangel-dev
 [natecook1000]: https://github.com/apple/swift-argument-parser/commits?author=natecook1000
 [Sajjon]: https://github.com/apple/swift-argument-parser/commits?author=Sajjon
+[sgl0v]: https://github.com/apple/swift-argument-parser/commits?author=sgl0v
 [sjavora]: https://github.com/apple/swift-argument-parser/commits?author=sjavora
 [Wildchild9]: https://github.com/apple/swift-argument-parser/commits?author=Wildchild9
 [YuAo]: https://github.com/apple/swift-argument-parser/commits?author=YuAo
