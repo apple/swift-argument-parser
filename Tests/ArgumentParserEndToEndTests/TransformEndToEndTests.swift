@@ -69,11 +69,11 @@ extension TransformEndToEndTests {
     }
     
     func testSingleOptionValidation_Fail_CustomErrorMessage() throws {
-        AssertFullErrorMessage(FooOption.self, ["--string", "Forty Two"], "Error: Could not transform to an Int.\n" + FooOption.usageString)
+        AssertFullErrorMessage(FooOption.self, ["--string", "Forty Two"], "Error: The value 'Forty Two' is invalid for '--string <int_str>': Could not transform to an Int.\n" + FooOption.usageString)
     }
 
     func testSingleOptionValidation_Fail_DefaultErrorMessage() throws {
-        AssertFullErrorMessage(FooOption.self, ["--string", "4827"], "Error: The value '4827' is invalid for '--string <int_str>'\n" + FooOption.usageString)
+        AssertFullErrorMessage(FooOption.self, ["--string", "4827"], "Error: The value '4827' is invalid for '--string <int_str>': outOfBounds\n" + FooOption.usageString)
     }
 
     // MARK: Arrays
@@ -85,11 +85,11 @@ extension TransformEndToEndTests {
     }
     
     func testOptionArrayValidation_Fail_CustomErrorMessage() throws {
-        AssertFullErrorMessage(BarOption.self, ["--strings", "Forty Two", "--strings", "72", "--strings", "99"], "Error: Could not transform to an Int.\n" + BarOption.usageString)
+        AssertFullErrorMessage(BarOption.self, ["--strings", "Forty Two", "--strings", "72", "--strings", "99"], "Error: The value 'Forty Two' is invalid for '--strings <int_str>': Could not transform to an Int.\n" + BarOption.usageString)
     }
     
     func testOptionArrayValidation_Fail_DefaultErrorMessage() throws {
-        AssertFullErrorMessage(BarOption.self, ["--strings", "4827", "--strings", "72", "--strings", "99"], "Error: The value '4827' is invalid for '--strings <int_str>'\n" + BarOption.usageString)
+        AssertFullErrorMessage(BarOption.self, ["--strings", "4827", "--strings", "72", "--strings", "99"], "Error: The value '4827' is invalid for '--strings <int_str>': outOfBounds\n" + BarOption.usageString)
     }
 }
 
@@ -132,11 +132,11 @@ extension TransformEndToEndTests {
     }
     
     func testArgumentValidation_Fail_CustomErrorMessage() throws {
-        AssertFullErrorMessage(FooArgument.self, ["Forty Two"], "Error: Could not transform to an Int.\n" + FooArgument.usageString)
+        AssertFullErrorMessage(FooArgument.self, ["Forty Two"], "Error: The value 'Forty Two' is invalid for '<int_str>': Could not transform to an Int.\n" + FooArgument.usageString)
     }
 
     func testArgumentValidation_Fail_DefaultErrorMessage() throws {
-        AssertFullErrorMessage(FooArgument.self, ["4827"], "Error: The value '4827' is invalid for '<int_str>'\n" + FooArgument.usageString)
+        AssertFullErrorMessage(FooArgument.self, ["4827"], "Error: The value '4827' is invalid for '<int_str>': outOfBounds\n" + FooArgument.usageString)
     }
     
     // MARK: Arrays
@@ -148,10 +148,10 @@ extension TransformEndToEndTests {
     }
     
     func testArgumentArrayValidation_Fail_CustomErrorMessage() throws {
-        AssertFullErrorMessage(BarArgument.self, ["Forty Two", "72", "99"], "Error: Could not transform to an Int.\n" + BarArgument.usageString)
+        AssertFullErrorMessage(BarArgument.self, ["Forty Two", "72", "99"], "Error: The value 'Forty Two' is invalid for '<int_str>': Could not transform to an Int.\n" + BarArgument.usageString)
     }
     
     func testArgumentArrayValidation_Fail_DefaultErrorMessage() throws {
-        AssertFullErrorMessage(BarArgument.self, ["4827", "72", "99"], "Error: The value '4827' is invalid for '<int_str>'\n" + BarArgument.usageString)
+        AssertFullErrorMessage(BarArgument.self, ["4827", "72", "99"], "Error: The value '4827' is invalid for '<int_str>': outOfBounds\n" + BarArgument.usageString)
     }
 }
