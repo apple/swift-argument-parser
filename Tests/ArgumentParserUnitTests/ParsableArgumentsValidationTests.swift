@@ -193,4 +193,128 @@ final class ParsableArgumentsValidationTests: XCTestCase {
     }
     try PositionalArgumentsValidator.validate(K.self)
   }
+
+  private struct DifferentNames: ParsableArguments {
+    @Option()
+    var foo: String
+
+    @Option()
+    var bar: String
+  }
+
+  struct TwoOfTheSameName: ParsableCommand {
+    @Option()
+    var foo: String
+
+    @Option(name: .customLong("foo"))
+    var notActuallyFoo: String
+  }
+
+  private struct MultipleUniquenessViolations: ParsableArguments {
+    @Option()
+    var foo: String
+
+    @Option(name: .customLong("foo"))
+    var notActuallyFoo: String
+
+    @Option()
+    var bar: String
+
+    @Flag(name: .customLong("bar"))
+    var notBar: Bool
+
+    @Option()
+    var help: String
+  }
+
+  private struct MultipleNamesPerArgument: ParsableCommand {
+    @Flag(name: [.customShort("v"), .customLong("very-chatty")])
+    var verbose: Bool
+
+    enum Versimilitude: String, ExpressibleByArgument {
+      case yes
+      case some
+      case none
+    }
+
+    @Option(name: .customShort("v"))
+    var versimilitude: Versimilitude
+  }
+
+  private struct FourDuplicateNames: ParsableArguments {
+    @Option()
+    var foo: String
+
+    @Option(name: .customLong("foo"))
+    var notActuallyFoo: String
+
+    @Flag(name: .customLong("foo"))
+    var stillNotFoo: Bool
+
+    enum Numbers: Int, ExpressibleByArgument {
+      case one = 1
+      case two
+      case three
+    }
+
+    @Option(name: .customLong("foo"))
+    var alsoNotFoo: Numbers
+  }
+
+  private let unexpectedErrorMessage = "Expected error of type `ParsableArgumentsUniqueNamesValidator.Error`, but got something else."
+
+  func testUniqueNamesValidation_NoViolation() throws {
+    XCTAssertNoThrow(try ParsableArgumentsUniqueNamesValidator.validate(DifferentNames.self))
+  }
+
+  func testUniqueNamesValidation_TwoOfSameName() throws {
+    XCTAssertThrowsError(try ParsableArgumentsUniqueNamesValidator.validate(TwoOfTheSameName.self)) { error in
+      if let error = error as? ParsableArgumentsUniqueNamesValidator.Error {
+        XCTAssertEqual(error.description, "Multiple (2) `Option` or `Flag` arguments are named \"foo\".")
+      } else {
+        XCTFail(unexpectedErrorMessage)
+      }
+    }
+  }
+
+  func testUniqueNamesValidation_TwoDuplications() throws {
+    XCTAssertThrowsError(try ParsableArgumentsUniqueNamesValidator.validate(MultipleUniquenessViolations.self)) { error in
+      if let error = error as? ParsableArgumentsUniqueNamesValidator.Error {
+        XCTAssert(
+          /// The `Mirror` reflects the properties `foo` and `bar` in a random order, but `help` will always be first
+          /// because the `Error`s `violations` array is built that way.
+          error.description == """
+          Multiple (2) `Option` or `Flag` arguments are named \"bar\".
+          Multiple (2) `Option` or `Flag` arguments are named \"foo\".
+          """
+          || error.description == """
+          Multiple (2) `Option` or `Flag` arguments are named \"foo\".
+          Multiple (2) `Option` or `Flag` arguments are named \"bar\".
+          """
+        )
+      } else {
+        XCTFail(unexpectedErrorMessage)
+      }
+    }
+  }
+
+  func testUniqueNamesValidation_ArgumentHasMultipleNames() throws {
+    XCTAssertThrowsError(try ParsableArgumentsUniqueNamesValidator.validate(MultipleNamesPerArgument.self)) { error in
+      if let error = error as? ParsableArgumentsUniqueNamesValidator.Error {
+        XCTAssertEqual(error.description, "Multiple (2) `Option` or `Flag` arguments are named \"v\".")
+      } else {
+        XCTFail(unexpectedErrorMessage)
+      }
+    }
+  }
+
+  func testUniqueNamesValidation_MoreThanTwoDuplications() throws {
+    XCTAssertThrowsError(try ParsableArgumentsUniqueNamesValidator.validate(FourDuplicateNames.self)) { error in
+      if let error = error as? ParsableArgumentsUniqueNamesValidator.Error {
+        XCTAssertEqual(error.description, "Multiple (4) `Option` or `Flag` arguments are named \"foo\".")
+      } else {
+        XCTFail(unexpectedErrorMessage)
+      }
+    }
+  }
 }

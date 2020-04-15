@@ -29,7 +29,8 @@ extension ParsableArguments {
   static func _validate() throws {
     let validators: [ParsableArgumentsValidator.Type] = [
       PositionalArgumentsValidator.self,
-      ParsableArgumentsCodingKeyValidator.self
+      ParsableArgumentsCodingKeyValidator.self,
+      ParsableArgumentsUniqueNamesValidator.self
     ]
     let errors: [Error] = validators.compactMap { validator in
       do {
@@ -182,6 +183,66 @@ struct ParsableArgumentsCodingKeyValidator: ParsableArgumentsValidator {
       }
     } catch {
       fatalError("Unexpected validation error: \(error)")
+    }
+  }
+}
+
+/// Ensure argument names are unique within a `ParsableArguments` or `ParsableCommand`.
+struct ParsableArgumentsUniqueNamesValidator: ParsableArgumentsValidator {
+  struct Error: Swift.Error, CustomStringConvertible {
+    var duplicateNames: [String: Int] = [:]
+
+    var occurred: Bool {
+      !duplicateNames.isEmpty
+    }
+
+    var description: String {
+      var description = duplicateNames.reduce(into: "") { description, entry in
+        description += "Multiple (\(entry.value)) `Option` or `Flag` arguments are named \"\(entry.key)\".\n"
+      }
+      if description.last == "\n" {
+        description.removeLast()
+      }
+      return description
+    }
+  }
+
+  static func validate(_ type: ParsableArguments.Type) throws {
+    let argSets: [ArgumentSet] = Mirror(reflecting: type.init())
+      .children
+      .compactMap { child in
+        guard
+          var codingKey = child.label,
+          let parsed = child.value as? ArgumentSetProvider
+          else { return nil }
+
+        // Property wrappers have underscore-prefixed names
+        codingKey = String(codingKey.first == "_" ? codingKey.dropFirst(1) : codingKey.dropFirst(0))
+
+        let key = InputKey(rawValue: codingKey)
+        return parsed.argumentSet(for: key)
+    }
+
+    let countedNames: [String: Int] = argSets.reduce(into: [:]) { countedNames, args in
+      switch args.content {
+      case .arguments(let defs):
+        for name in defs.flatMap({ $0.names }) {
+          countedNames[name.valueString, default: 0] += 1
+        }
+      default:
+        break
+      }
+    }
+
+    var error = Error()
+
+    let duplicateNames = countedNames.filter { $0.value > 1 }
+    if !duplicateNames.isEmpty {
+      error.duplicateNames = duplicateNames
+    }
+
+    if error.occurred {
+      throw error
     }
   }
 }
