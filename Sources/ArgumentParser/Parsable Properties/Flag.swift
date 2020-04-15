@@ -275,20 +275,15 @@ extension Flag {
       // This gets flipped to `true` the first time one of these flags is
       // encountered.
       var hasUpdated = false
-      
+
       let args = Element.allCases.map { value -> ArgumentDefinition in
         let caseKey = InputKey(rawValue: String(describing: value))
         let name = Element.name(for: value)
         let help = ArgumentDefinition.Help(options: .isOptional, help: help, key: key)
         return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .nextAsValue, initialValue: nil as Element?, update: .nullary({ (origin, name, values) in
-          if hasUpdated && exclusivity == .exclusive {
-            throw ParserError.unexpectedExtraValues([(origin, String(describing: value))])
-          }
-          if !hasUpdated || exclusivity == .chooseLast {
-            values.set(value, forKey: key, inputOrigin: origin)
-          }
-          hasUpdated = true
+          hasUpdated = try ArgumentSet.updateFlag(key: key, value: value, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
         }))
+
       }
       return exclusivity == .exclusive
         ? ArgumentSet(exclusive: args)
@@ -347,24 +342,13 @@ extension Flag where Value: CaseIterable, Value: RawRepresentable, Value: Equata
       // This gets flipped to `true` the first time one of these flags is
       // encountered.
       var hasUpdated = false
-      
+      let defaultValue = initial.map(String.init(describing:))
+
       let args = Value.allCases.map { value -> ArgumentDefinition in
         let caseKey = InputKey(rawValue: value.rawValue)
-        let help = ArgumentDefinition.Help(options: initial != nil ? .isOptional : [], help: help, key: key)
+        let help = ArgumentDefinition.Help(options: initial != nil ? .isOptional : [], help: help, defaultValue: defaultValue, key: key)
         return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .nextAsValue, initialValue: initial, update: .nullary({ (origin, name, values) in
-          // TODO: We should catch duplicate flags that hit a single part of
-          // an exclusive argument set in the value parsing, not here.
-          let previous = values.element(forKey: key)
-          switch (hasUpdated, previous, exclusivity) {
-          case (true, let p?, .exclusive):
-            // This value has already been set.
-            throw ParserError.duplicateExclusiveValues(previous: p.inputOrigin, duplicate: origin, originalInput: values.originalInput)
-          case (false, _, _), (_, _, .chooseLast):
-            values.set(value, forKey: key, inputOrigin: origin)
-          default:
-            break
-          }
-          hasUpdated = true
+          hasUpdated = try ArgumentSet.updateFlag(key: key, value: value, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
         }))
       }
       return exclusivity == .exclusive
@@ -398,7 +382,7 @@ extension Flag {
       return exclusivity == .exclusive
         ? ArgumentSet(exclusive: args)
         : ArgumentSet(additive: args)
-      })
+    })
   }
   
   /// Creates an array property that gets its values from the presence of
@@ -426,7 +410,7 @@ extension Flag {
         }))
       }
       return ArgumentSet(additive: args)
-      })
+    })
   }
 }
 
