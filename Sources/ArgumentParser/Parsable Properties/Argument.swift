@@ -152,11 +152,8 @@ extension Argument {
             let transformedValue = try transform(valueString)
             parsedValues.set(transformedValue, forKey: key, inputOrigin: origin)
         }
-        catch let error as CustomParserErrorConvertible {
-            throw ParserError.unableToParseValue(origin, name, valueString, forKey: key, customMessage: error.message)
-        }
-        catch /* All other errors */ {
-            throw ParserError.unableToParseValue(origin, name, valueString, forKey: key)
+        catch {
+            throw ParserError.unableToParseValue(origin, name, valueString, forKey: key, originalError: error)
         }
         
       }), initial: { origin, values in
@@ -229,11 +226,8 @@ extension Argument {
                     $0.append(transformedElement)
                 })
             }
-            catch let error as CustomParserErrorConvertible {
-                throw ParserError.unableToParseValue(origin, name, valueString, forKey: key, customMessage: error.message)
-            }
-            catch /* All other errors */ {
-                throw ParserError.unableToParseValue(origin, name, valueString, forKey: key)
+            catch {
+                throw ParserError.unableToParseValue(origin, name, valueString, forKey: key, originalError: error)
             }
             
         }),
