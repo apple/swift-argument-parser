@@ -194,7 +194,11 @@ final class ParsableArgumentsValidationTests: XCTestCase {
     try PositionalArgumentsValidator.validate(K.self)
   }
 
-  private struct DifferentNames: ParsableArguments {
+  // MARK: ParsableArgumentsUniqueNamesValidator tests
+  fileprivate let unexpectedErrorMessage = "Expected error of type `ParsableArgumentsUniqueNamesValidator.Error`, but got something else."
+
+  // MARK: Names are unique
+  fileprivate struct DifferentNames: ParsableArguments {
     @Option()
     var foo: String
 
@@ -202,7 +206,12 @@ final class ParsableArgumentsValidationTests: XCTestCase {
     var bar: String
   }
 
-  struct TwoOfTheSameName: ParsableCommand {
+  func testUniqueNamesValidation_NoViolation() throws {
+    XCTAssertNoThrow(try ParsableArgumentsUniqueNamesValidator.validate(DifferentNames.self))
+  }
+
+  // MARK: One name is duplicated
+  fileprivate struct TwoOfTheSameName: ParsableCommand {
     @Option()
     var foo: String
 
@@ -210,7 +219,18 @@ final class ParsableArgumentsValidationTests: XCTestCase {
     var notActuallyFoo: String
   }
 
-  private struct MultipleUniquenessViolations: ParsableArguments {
+  func testUniqueNamesValidation_TwoOfSameName() throws {
+    XCTAssertThrowsError(try ParsableArgumentsUniqueNamesValidator.validate(TwoOfTheSameName.self)) { error in
+      if let error = error as? ParsableArgumentsUniqueNamesValidator.Error {
+        XCTAssertEqual(error.description, "Multiple (2) `Option` or `Flag` arguments are named \"foo\".")
+      } else {
+        XCTFail(unexpectedErrorMessage)
+      }
+    }
+  }
+
+  // MARK: Multiple names are duplicated
+  fileprivate struct MultipleUniquenessViolations: ParsableArguments {
     @Option()
     var foo: String
 
@@ -225,56 +245,6 @@ final class ParsableArgumentsValidationTests: XCTestCase {
 
     @Option()
     var help: String
-  }
-
-  private struct MultipleNamesPerArgument: ParsableCommand {
-    @Flag(name: [.customShort("v"), .customLong("very-chatty")])
-    var verbose: Bool
-
-    enum Versimilitude: String, ExpressibleByArgument {
-      case yes
-      case some
-      case none
-    }
-
-    @Option(name: .customShort("v"))
-    var versimilitude: Versimilitude
-  }
-
-  private struct FourDuplicateNames: ParsableArguments {
-    @Option()
-    var foo: String
-
-    @Option(name: .customLong("foo"))
-    var notActuallyFoo: String
-
-    @Flag(name: .customLong("foo"))
-    var stillNotFoo: Bool
-
-    enum Numbers: Int, ExpressibleByArgument {
-      case one = 1
-      case two
-      case three
-    }
-
-    @Option(name: .customLong("foo"))
-    var alsoNotFoo: Numbers
-  }
-
-  private let unexpectedErrorMessage = "Expected error of type `ParsableArgumentsUniqueNamesValidator.Error`, but got something else."
-
-  func testUniqueNamesValidation_NoViolation() throws {
-    XCTAssertNoThrow(try ParsableArgumentsUniqueNamesValidator.validate(DifferentNames.self))
-  }
-
-  func testUniqueNamesValidation_TwoOfSameName() throws {
-    XCTAssertThrowsError(try ParsableArgumentsUniqueNamesValidator.validate(TwoOfTheSameName.self)) { error in
-      if let error = error as? ParsableArgumentsUniqueNamesValidator.Error {
-        XCTAssertEqual(error.description, "Multiple (2) `Option` or `Flag` arguments are named \"foo\".")
-      } else {
-        XCTFail(unexpectedErrorMessage)
-      }
-    }
   }
 
   func testUniqueNamesValidation_TwoDuplications() throws {
@@ -297,6 +267,21 @@ final class ParsableArgumentsValidationTests: XCTestCase {
     }
   }
 
+  // MARK: Argument has multiple names and one is duplicated
+  fileprivate struct MultipleNamesPerArgument: ParsableCommand {
+    @Flag(name: [.customShort("v"), .customLong("very-chatty")])
+    var verbose: Bool
+
+    enum Versimilitude: String, ExpressibleByArgument {
+      case yes
+      case some
+      case none
+    }
+
+    @Option(name: .customShort("v"))
+    var versimilitude: Versimilitude
+  }
+
   func testUniqueNamesValidation_ArgumentHasMultipleNames() throws {
     XCTAssertThrowsError(try ParsableArgumentsUniqueNamesValidator.validate(MultipleNamesPerArgument.self)) { error in
       if let error = error as? ParsableArgumentsUniqueNamesValidator.Error {
@@ -307,6 +292,27 @@ final class ParsableArgumentsValidationTests: XCTestCase {
     }
   }
 
+  // MARK: One name duplicated several times
+  fileprivate struct FourDuplicateNames: ParsableArguments {
+    @Option()
+    var foo: String
+
+    @Option(name: .customLong("foo"))
+    var notActuallyFoo: String
+
+    @Flag(name: .customLong("foo"))
+    var stillNotFoo: Bool
+
+    enum Numbers: Int, ExpressibleByArgument {
+      case one = 1
+      case two
+      case three
+    }
+
+    @Option(name: .customLong("foo"))
+    var alsoNotFoo: Numbers
+  }
+
   func testUniqueNamesValidation_MoreThanTwoDuplications() throws {
     XCTAssertThrowsError(try ParsableArgumentsUniqueNamesValidator.validate(FourDuplicateNames.self)) { error in
       if let error = error as? ParsableArgumentsUniqueNamesValidator.Error {
@@ -315,5 +321,38 @@ final class ParsableArgumentsValidationTests: XCTestCase {
         XCTFail(unexpectedErrorMessage)
       }
     }
+  }
+
+  // MARK: CaseIterable enum flag has first letter duplication
+  fileprivate enum ExampleEnum: String, ExpressibleByArgument, CaseIterable {
+    case first
+    case second
+    case other
+    case forth
+    case fith
+  }
+
+  fileprivate struct DuplicatedFirstLettersShortNames: ParsableCommand {
+    @Flag(name: .short, default: .first)
+    var enumFlag: ExampleEnum
+  }
+
+  fileprivate struct DuplicatedFirstLettersLongNames: ParsableCommand {
+    @Flag(name: .long, default: .first)
+    var enumFlag2: ExampleEnum
+  }
+
+  func testUniqueNamesValidation_DuplicatedFlagFirstLetters_ShortNames() throws {
+    XCTAssertThrowsError(try ParsableArgumentsUniqueNamesValidator.validate(DuplicatedFirstLettersShortNames.self)) { error in
+      if let error = error as? ParsableArgumentsUniqueNamesValidator.Error {
+        XCTAssertEqual(error.description, "Multiple (3) `Option` or `Flag` arguments are named \"f\".")
+      } else {
+        XCTFail(unexpectedErrorMessage)
+      }
+    }
+  }
+
+  func testUniqueNamesValidation_DuplicatedFlagFirstLetters_LongNames() throws {
+    XCTAssertNoThrow(try ParsableArgumentsUniqueNamesValidator.validate(DuplicatedFirstLettersLongNames.self))
   }
 }
