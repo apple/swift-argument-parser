@@ -95,13 +95,12 @@ extension Math.Statistics {
             abstract: "Print the average of the values.",
             version: "1.5.0-alpha")
         
-        enum Kind: String, ExpressibleByArgument {
+        enum Kind: String, ExpressibleByArgument, CaseIterable {
             case mean, median, mode
         }
 
         @Option(default: .mean,
-                help: "The kind of average to provide.",
-                completion: .list(["mean", "median", "mode"]))
+                help: "The kind of average to provide.")
         var kind: Kind
         
         @Argument(help: "A group of floating-point values to operate on.")

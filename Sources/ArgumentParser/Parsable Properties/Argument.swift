@@ -79,10 +79,10 @@ extension Argument where Value: ExpressibleByArgument {
   public init(
     default initial: Value? = nil,
     help: ArgumentHelp? = nil,
-    completion: CompletionKind = .default
+    completion: CompletionKind? = nil
   ) {
     self.init(_parsedValue: .init { key in
-      ArgumentSet(key: key, kind: .positional, parseType: Value.self, name: NameSpecification.long, default: initial, help: help, completion: completion)
+      ArgumentSet(key: key, kind: .positional, parseType: Value.self, name: NameSpecification.long, default: initial, help: help, completion: completion ?? Value.defaultCompletionKind)
       })
   }
 }
@@ -142,12 +142,12 @@ extension Argument {
   public init(
     default initial: Value? = nil,
     help: ArgumentHelp? = nil,
-    completion: CompletionKind = .default,
+    completion: CompletionKind? = nil,
     transform: @escaping (String) throws -> Value
   ) {
     self.init(_parsedValue: .init { key in
       let help = ArgumentDefinition.Help(options: [], help: help, key: key)
-      let arg = ArgumentDefinition(kind: .positional, help: help, completion: completion, update: .unary({
+      let arg = ArgumentDefinition(kind: .positional, help: help, completion: completion ?? .default, update: .unary({
         (origin, name, valueString, parsedValues) in
         do {
           let transformedValue = try transform(valueString)
@@ -175,7 +175,7 @@ extension Argument {
   public init<Element>(
     parsing parsingStrategy: ArgumentArrayParsingStrategy = .remaining,
     help: ArgumentHelp? = nil,
-    completion: CompletionKind = .default
+    completion: CompletionKind? = nil
   )
     where Element: ExpressibleByArgument, Value == Array<Element>
   {
@@ -184,7 +184,7 @@ extension Argument {
       let arg = ArgumentDefinition(
         kind: .positional,
         help: help,
-        completion: completion,
+        completion: completion ?? Element.defaultCompletionKind,
         parsingStrategy: parsingStrategy == .remaining ? .nextAsValue : .allRemainingInput,
         update: .appendToArray(forType: Element.self, key: key),
         initial: { origin, values in
@@ -208,7 +208,7 @@ extension Argument {
   public init<Element>(
     parsing parsingStrategy: ArgumentArrayParsingStrategy = .remaining,
     help: ArgumentHelp? = nil,
-    completion: CompletionKind = .default,
+    completion: CompletionKind? = nil,
     transform: @escaping (String) throws -> Element
   )
     where Value == Array<Element>
@@ -218,7 +218,7 @@ extension Argument {
       let arg = ArgumentDefinition(
         kind: .positional,
         help: help,
-        completion: completion,
+        completion: completion ?? .default,
         parsingStrategy: parsingStrategy == .remaining ? .nextAsValue : .allRemainingInput,
         update: .unary({
           (origin, name, valueString, parsedValues) in

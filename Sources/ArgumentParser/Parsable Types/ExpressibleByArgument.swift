@@ -21,6 +21,8 @@ public protocol ExpressibleByArgument {
   var defaultValueDescription: String { get }
   
   static var allValueStrings: [String] { get }
+
+  static var defaultCompletionKind: CompletionKind { get }
 }
 
 extension ExpressibleByArgument {
@@ -29,11 +31,19 @@ extension ExpressibleByArgument {
   }
   
   public static var allValueStrings: [String] { [] }
+
+  public static var defaultCompletionKind: CompletionKind {
+    .default
+  }
 }
 
 extension ExpressibleByArgument where Self: CaseIterable {
-  var allValueStrings: [String] {
-    Self.allCases.map { String(describing: $0) }
+  public static var allValueStrings: [String] {
+    self.allCases.map { String(describing: $0) }
+  }
+
+  public static var defaultCompletionKind: CompletionKind {
+    .list(allValueStrings)
   }
 }
 
