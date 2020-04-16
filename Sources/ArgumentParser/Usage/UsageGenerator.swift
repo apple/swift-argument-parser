@@ -343,33 +343,29 @@ extension ErrorMessageGenerator {
     let valueName = arguments(for: key).first?.valueName
     
     // We want to make the "best effort" in producing a custom error message.
-    // We favour `LocalizedError.errorDescription` and fall back to
+    // We favour `LocalizedError.errorDescription` and fallback to
     // CustomStringConvertible. To opt-in return your custom error mesage
     // in the `description` property of CustomStringConvertible.
-    let customErrorMessage: String? = {
-        switch error {
-            case is LocalizedError where (error as? LocalizedError)?.errorDescription != nil:
-                return (error as? LocalizedError)?.errorDescription
-            case let err?:
-                return String(describing: err)
-            default:
-                return nil
-        }
+    let customErrorMessage: String = {
+      switch error {
+      case is LocalizedError where (error as? LocalizedError)?.errorDescription != nil:
+        return ": " + (error as! LocalizedError).errorDescription! // !!! Checked above that this will not be nil
+      case let err?:
+        return ": " + String(describing: err)
+      default:
+        return ""
+      }
     }()
     
-    switch (name, valueName, customErrorMessage) {
-    case let (n?, v?, m?):
-        return "The value '\(value)' is invalid for '\(n.synopsisString) <\(v)>': \(m)"
-    case let (n?, v?, _):
-      return "The value '\(value)' is invalid for '\(n.synopsisString) <\(v)>'"
-    case let (_, v?, m?):
-        return "The value '\(value)' is invalid for '<\(v)>': \(m)"
-    case let (_, v?, _):
-      return "The value '\(value)' is invalid for '<\(v)>'"
-    case let (n?, _, _):
-      return "The value '\(value)' is invalid for '\(n.synopsisString)'"
-    case (nil, nil, _):
-      return "The value '\(value)' is invalid."
+    switch (name, valueName) {
+    case let (n?, v?):
+      return "The value '\(value)' is invalid for '\(n.synopsisString) <\(v)>'\(customErrorMessage)"
+    case let (_, v?):
+      return "The value '\(value)' is invalid for '<\(v)>'\(customErrorMessage)"
+    case let (n?, _):
+      return "The value '\(value)' is invalid for '\(n.synopsisString)'\(customErrorMessage)"
+    case (nil, nil):
+      return "The value '\(value)' is invalid.\(customErrorMessage)"
     }
   }
 }
