@@ -30,7 +30,7 @@ extension ParsableArguments {
     let validators: [ParsableArgumentsValidator.Type] = [
       PositionalArgumentsValidator.self,
       ParsableArgumentsCodingKeyValidator.self,
-      ParsableArgumentsUniqueNamesValidator.self
+      ParsableArgumentsUniqueNamesValidator.self,
     ]
     let errors: [Error] = validators.compactMap { validator in
       do {
