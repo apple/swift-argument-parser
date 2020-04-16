@@ -240,15 +240,12 @@ extension Option {
       let help = ArgumentDefinition.Help(options: initial != nil ? .isOptional : [], help: help, key: key)
       var arg = ArgumentDefinition(kind: kind, help: help, parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy), update: .unary({
         (origin, name, valueString, parsedValues) in
-        
         do {
-            let transformedValue = try transform(valueString)
-            parsedValues.set(transformedValue, forKey: key, inputOrigin: origin)
+          let transformedValue = try transform(valueString)
+          parsedValues.set(transformedValue, forKey: key, inputOrigin: origin)
+        } catch {
+          throw ParserError.unableToParseValue(origin, name, valueString, forKey: key, originalError: error)
         }
-        catch /* All other errors */ {
-            throw ParserError.unableToParseValue(origin, name, valueString, forKey: key, originalError: error)
-        }
-        
       }), initial: { origin, values in
         if let v = initial {
           values.set(v, forKey: key, inputOrigin: origin)
@@ -307,20 +304,16 @@ extension Option {
       let help = ArgumentDefinition.Help(options: [.isOptional, .isRepeating], help: help, key: key)
       let arg = ArgumentDefinition(kind: kind, help: help, parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy), update: .unary({
         (origin, name, valueString, parsedValues) in
-        
         do {
-            let transformedElement = try transform(valueString)
-            parsedValues.update(forKey: key, inputOrigin: origin, initial: [Element](), closure: {
+          let transformedElement = try transform(valueString)
+          parsedValues.update(forKey: key, inputOrigin: origin, initial: [Element](), closure: {
                 $0.append(transformedElement)
-            })
-        }
-        catch {
+          })
+        } catch {
             throw ParserError.unableToParseValue(origin, name, valueString, forKey: key, originalError: error)
         }
-        
-      }),
-                                   initial: { origin, values in
-                                    values.set([], forKey: key, inputOrigin: origin)
+      }), initial: { origin, values in
+            values.set([], forKey: key, inputOrigin: origin)
       })
       return ArgumentSet(alternatives: [arg])
       })
