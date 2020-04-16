@@ -348,8 +348,8 @@ extension ErrorMessageGenerator {
     // in the `description` property of CustomStringConvertible.
     let customErrorMessage: String = {
       switch error {
-      case is LocalizedError where (error as? LocalizedError)?.errorDescription != nil:
-        return ": " + (error as! LocalizedError).errorDescription! // !!! Checked above that this will not be nil
+        case let err as LocalizedError where err.errorDescription != nil:
+        return ": " + err.errorDescription! // !!! Checked above that this will not be nil
       case let err?:
         return ": " + String(describing: err)
       default:
