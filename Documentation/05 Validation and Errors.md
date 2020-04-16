@@ -100,3 +100,38 @@ struct Example: ParsableCommand {
     }
 }
 ```
+
+## Handling Transform Errors
+
+During argument and option parsing you can use a closure to transform the command line stings to custom types. If this transformation fails you can throw a `ValidationError` its `message` property will be displayed to the user. 
+
+In addition, you can throw your own errors. Errors that conform to `CustomStringConvertible` or `LocalizedError` provide the best experience for users.
+
+```swift
+struct ExampleTransformError: Error, CustomStringConvertible {
+    var description: String
+}
+
+struct ExampleDataModel: Codable {
+  let identifier: UUID
+  let tokens: [String]
+  let tokenCount: Int
+}
+
+struct Example: ParsableCommand {
+
+  // Reads in the argument string and attempts to transform it to
+  // a `ExampleDataModel` object using the JSONDecoder. If the
+  // string is not valid JSON `decode` will throw an error and
+  // parsing will halt.
+  @Argument(transform: {
+    guard let data = $0.data(using: .utf8) else { throw ValidationError("Badly encoded string, should be UTF-8") }
+    return try JSONDecoder().decode(ExampleDataModel.self, from: data) })
+  var inputJSON: ExampleDataModel
+  
+  // Specifiying this option will always cause the parser to exit
+  // and print the cistom error.
+  @Option(transform: { throw ExampleTransformError(description: "Trying to write to failOption always produces an error. Input: \($0)") })
+  var failOption: String?
+}
+```
