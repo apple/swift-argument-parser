@@ -20,7 +20,7 @@ import MSVCRT
 /// An error type that is presented to the user as an error with parsing their
 /// command-line input.
 public struct ValidationError: Error, CustomStringConvertible {
-  var message: String
+  public internal(set) var message: String
   
   /// Creates a new validation error with the given message.
   public init(_ message: String) {
