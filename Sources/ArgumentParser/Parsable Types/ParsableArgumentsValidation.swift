@@ -197,13 +197,9 @@ struct ParsableArgumentsUniqueNamesValidator: ParsableArgumentsValidator {
     }
 
     var description: String {
-      var description = duplicateNames.reduce(into: "") { description, entry in
-        description += "Multiple (\(entry.value)) `Option` or `Flag` arguments are named \"\(entry.key)\".\n"
-      }
-      if description.last == "\n" {
-        description.removeLast()
-      }
-      return description
+      duplicateNames.map { entry in
+        "Multiple (\(entry.value)) `Option` or `Flag` arguments are named \"\(entry.key)\"."
+      }.joined(separator: "\n")
     }
   }
 
