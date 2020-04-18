@@ -121,7 +121,7 @@ struct ExampleDataModel: Codable {
 struct Example: ParsableCommand {
 
   // Reads in the argument string and attempts to transform it to
-  // a `ExampleDataModel` object using the JSONDecoder. If the
+  // a `ExampleDataModel` object using the `JSONDecoder`. If the
   // string is not valid JSON `decode` will throw an error and
   // parsing will halt.
   @Argument(transform: {
