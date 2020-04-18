@@ -192,10 +192,6 @@ struct ParsableArgumentsUniqueNamesValidator: ParsableArgumentsValidator {
   struct Error: Swift.Error, CustomStringConvertible {
     var duplicateNames: [String: Int] = [:]
 
-    var occurred: Bool {
-      !duplicateNames.isEmpty
-    }
-
     var description: String {
       duplicateNames.map { entry in
         "Multiple (\(entry.value)) `Option` or `Flag` arguments are named \"\(entry.key)\"."
@@ -230,15 +226,9 @@ struct ParsableArgumentsUniqueNamesValidator: ParsableArgumentsValidator {
       }
     }
 
-    var error = Error()
-
     let duplicateNames = countedNames.filter { $0.value > 1 }
     if !duplicateNames.isEmpty {
-      error.duplicateNames = duplicateNames
-    }
-
-    if error.occurred {
-      throw error
+      throw Error(duplicateNames: duplicateNames)
     }
   }
 }
