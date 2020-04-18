@@ -178,7 +178,7 @@ struct Example: ParsableCommand {
 }
 ```
 
-Throw an error from the `transform` function to indicate that the user provided an invalid value for that type. (See: [Handling Transform Errors](./05%20Validation%20and%20Errors.md#handling-transform-errors) in [Validation and Errors](./05%20Validation%20and%20Errors.md) for details about customising `transform` function errors.)
+Throw an error from the `transform` function to indicate that the user provided an invalid value for that type. See [Handling Transform Errors](./05%20Validation%20and%20Errors.md#handling-transform-errors) for more about customizing `transform` function errors.
 
 ## Using flag inversions, enumerations, and counts
 

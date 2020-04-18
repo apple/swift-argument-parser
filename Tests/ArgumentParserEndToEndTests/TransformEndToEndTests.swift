@@ -25,8 +25,6 @@ fileprivate protocol Convert {
 }
 
 extension Convert {
-    
-    
     static func convert(_ str: String) throws -> Int {
         guard let converted = Int(argument: str) else { throw ValidationError("Could not transform to an Int.") }
         guard converted < 1000 else { throw FooBarError.outOfBounds }
