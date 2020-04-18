@@ -130,7 +130,7 @@ struct Example: ParsableCommand {
   var inputJSON: ExampleDataModel
   
   // Specifiying this option will always cause the parser to exit
-  // and print the cistom error.
+  // and print the custom error.
   @Option(transform: { throw ExampleTransformError(description: "Trying to write to failOption always produces an error. Input: \($0)") })
   var failOption: String?
 }
