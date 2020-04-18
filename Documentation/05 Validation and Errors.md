@@ -103,7 +103,7 @@ struct Example: ParsableCommand {
 
 ## Handling Transform Errors
 
-During argument and option parsing you can use a closure to transform the command line stings to custom types. If this transformation fails you can throw a `ValidationError` its `message` property will be displayed to the user. 
+During argument and option parsing, you can use a closure to transform the command line strings to custom types. If this transformation fails, you can throw a `ValidationError`; its `message` property will be displayed to the user. 
 
 In addition, you can throw your own errors. Errors that conform to `CustomStringConvertible` or `LocalizedError` provide the best experience for users.
 
