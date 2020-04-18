@@ -343,12 +343,12 @@ extension ErrorMessageGenerator {
     let valueName = arguments(for: key).first?.valueName
     
     // We want to make the "best effort" in producing a custom error message.
-    // We favour `LocalizedError.errorDescription` and fallback to
-    // CustomStringConvertible. To opt-in return your custom error mesage
-    // in the `description` property of CustomStringConvertible.
+    // We favour `LocalizedError.errorDescription` and fall back to
+    // `CustomStringConvertible`. To opt in, return your custom error message
+    // as the `description` property of `CustomStringConvertible`.
     let customErrorMessage: String = {
       switch error {
-        case let err as LocalizedError where err.errorDescription != nil:
+      case let err as LocalizedError where err.errorDescription != nil:
         return ": " + err.errorDescription! // !!! Checked above that this will not be nil
       case let err?:
         return ": " + String(describing: err)
