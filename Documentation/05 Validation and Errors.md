@@ -109,24 +109,27 @@ In addition, you can throw your own errors. Errors that conform to `CustomString
 
 ```swift
 struct ExampleTransformError: Error, CustomStringConvertible {
-    var description: String
+  var description: String
 }
 
 struct ExampleDataModel: Codable {
   let identifier: UUID
   let tokens: [String]
   let tokenCount: Int
+  
+  static func dataModel(_ jsonString: String) throws -> ExampleDataModel  {
+    guard let data = jsonString.data(using: .utf8) else { throw ValidationError("Badly encoded string, should be UTF-8") }
+    return try JSONDecoder().decode(ExampleDataModel.self, from: data)
+  }
 }
 
 struct Example: ParsableCommand {
 
   // Reads in the argument string and attempts to transform it to
-  // a `ExampleDataModel` object using the `JSONDecoder`. If the
+  // an `ExampleDataModel` object using the `JSONDecoder`. If the
   // string is not valid JSON, `decode` will throw an error and
   // parsing will halt.
-  @Argument(transform: {
-    guard let data = $0.data(using: .utf8) else { throw ValidationError("Badly encoded string, should be UTF-8") }
-    return try JSONDecoder().decode(ExampleDataModel.self, from: data) })
+  @Argument(transform: ExampleDataModel.dataModel )
   var inputJSON: ExampleDataModel
   
   // Specifiying this option will always cause the parser to exit
