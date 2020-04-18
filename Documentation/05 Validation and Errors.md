@@ -122,7 +122,7 @@ struct Example: ParsableCommand {
 
   // Reads in the argument string and attempts to transform it to
   // a `ExampleDataModel` object using the `JSONDecoder`. If the
-  // string is not valid JSON `decode` will throw an error and
+  // string is not valid JSON, `decode` will throw an error and
   // parsing will halt.
   @Argument(transform: {
     guard let data = $0.data(using: .utf8) else { throw ValidationError("Badly encoded string, should be UTF-8") }
