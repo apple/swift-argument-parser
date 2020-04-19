@@ -139,7 +139,7 @@ struct Example: ParsableCommand {
 }
 ```
 
-Throwing from a transform closure not only befits users by providing more context but can reduce development time by pinpointing issues faster and mor precisely.
+Throwing from a transform closure benefits users by providing context and can reduce development time by pinpointing issues quickly and more precisely.
 
 ```
 % example '{"Bad JSON"}'
@@ -147,7 +147,7 @@ Error: The value '{"Bad JSON"}' is invalid for '<input-json>': dataCorrupted(Swi
 Usage: example <input-json> --fail-option <fail-option>
 ```
 
-While throwing Standard Library or Foundation errors adds context, custom errors provide the best experience for users and developers.
+While throwing standard library or Foundation errors adds context, custom errors provide the best experience for users and developers.
 
 ```
 % example '{"tokenCount":0,"tokens":[],"identifier":"F77D661C-C5B7-448E-9344-267B284F66AD"}' --fail-option="Some Text Here!"
