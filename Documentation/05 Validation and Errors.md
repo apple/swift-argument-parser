@@ -100,3 +100,57 @@ struct Example: ParsableCommand {
     }
 }
 ```
+
+## Handling Transform Errors
+
+During argument and option parsing, you can use a closure to transform the command line strings to custom types. If this transformation fails, you can throw a `ValidationError`; its `message` property will be displayed to the user. 
+
+In addition, you can throw your own errors. Errors that conform to `CustomStringConvertible` or `LocalizedError` provide the best experience for users.
+
+```swift
+struct ExampleTransformError: Error, CustomStringConvertible {
+  var description: String
+}
+
+struct ExampleDataModel: Codable {
+  let identifier: UUID
+  let tokens: [String]
+  let tokenCount: Int
+  
+  static func dataModel(_ jsonString: String) throws -> ExampleDataModel  {
+    guard let data = jsonString.data(using: .utf8) else { throw ValidationError("Badly encoded string, should be UTF-8") }
+    return try JSONDecoder().decode(ExampleDataModel.self, from: data)
+  }
+}
+
+struct Example: ParsableCommand {
+
+  // Reads in the argument string and attempts to transform it to
+  // an `ExampleDataModel` object using the `JSONDecoder`. If the
+  // string is not valid JSON, `decode` will throw an error and
+  // parsing will halt.
+  @Argument(transform: ExampleDataModel.dataModel )
+  var inputJSON: ExampleDataModel
+  
+  // Specifiying this option will always cause the parser to exit
+  // and print the custom error.
+  @Option(transform: { throw ExampleTransformError(description: "Trying to write to failOption always produces an error. Input: \($0)") })
+  var failOption: String?
+}
+```
+
+Throwing from a transform closure benefits users by providing context and can reduce development time by pinpointing issues quickly and more precisely.
+
+```
+% example '{"Bad JSON"}'
+Error: The value '{"Bad JSON"}' is invalid for '<input-json>': dataCorrupted(Swift.DecodingError.Context(codingPath: [], debugDescription: "The given data was not valid JSON.", underlyingError: Optional(Error Domain=NSCocoaErrorDomain Code=3840 "No value for key in object around character 11." UserInfo={NSDebugDescription=No value for key in object around character 11.})))
+Usage: example <input-json> --fail-option <fail-option>
+```
+
+While throwing standard library or Foundation errors adds context, custom errors provide the best experience for users and developers.
+
+```
+% example '{"tokenCount":0,"tokens":[],"identifier":"F77D661C-C5B7-448E-9344-267B284F66AD"}' --fail-option="Some Text Here!"
+Error: The value 'Some Text Here!' is invalid for '--fail-option <fail-option>': Trying to write to failOption always produces an error. Input: Some Text Here!
+Usage: example <input-json> --fail-option <fail-option>
+```

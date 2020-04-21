@@ -146,8 +146,13 @@ extension Argument {
     self.init(_parsedValue: .init { key in
       let help = ArgumentDefinition.Help(options: [], help: help, key: key)
       let arg = ArgumentDefinition(kind: .positional, help: help, update: .unary({
-        (origin, _, valueString, parsedValues) in
-        parsedValues.set(try transform(valueString), forKey: key, inputOrigin: origin)
+        (origin, name, valueString, parsedValues) in
+        do {
+          let transformedValue = try transform(valueString)
+          parsedValues.set(transformedValue, forKey: key, inputOrigin: origin)
+        } catch {
+          throw ParserError.unableToParseValue(origin, name, valueString, forKey: key, originalError: error)
+        }
       }), initial: { origin, values in
         if let v = initial {
           values.set(v, forKey: key, inputOrigin: origin)
@@ -211,10 +216,14 @@ extension Argument {
         parsingStrategy: parsingStrategy == .remaining ? .nextAsValue : .allRemainingInput,
         update: .unary({
           (origin, name, valueString, parsedValues) in
-          let element = try transform(valueString)
-          parsedValues.update(forKey: key, inputOrigin: origin, initial: [Element](), closure: {
-            $0.append(element)
-          })
+          do {
+              let transformedElement = try transform(valueString)
+              parsedValues.update(forKey: key, inputOrigin: origin, initial: [Element](), closure: {
+                $0.append(transformedElement)
+              })
+            } catch {
+              throw ParserError.unableToParseValue(origin, name, valueString, forKey: key, originalError: error)
+          }
         }),
         initial: { origin, values in
           values.set([], forKey: key, inputOrigin: origin)
