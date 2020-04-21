@@ -17,6 +17,10 @@ import Darwin
 import MSVCRT
 #endif
 
+#if os(Windows)
+import let WinSDK.ERROR_BAD_ARGUMENTS
+#endif
+
 /// An error type that is presented to the user as an error with parsing their
 /// command-line input.
 public struct ValidationError: Error, CustomStringConvertible {
@@ -57,7 +61,11 @@ public struct ExitCode: Error, RawRepresentable, Hashable {
   public static let failure = ExitCode(EXIT_FAILURE)
   
   /// An exit code that indicates that the user provided invalid input.
+#if os(Windows)
+  public static let validationFailure = ExitCode(ERROR_BAD_ARGUMENTS)
+#else
   public static let validationFailure = ExitCode(EX_USAGE)
+#endif
 
   /// A Boolean value indicating whether this exit code represents the
   /// successful completion of a command.
