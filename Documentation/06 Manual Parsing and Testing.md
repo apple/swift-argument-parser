@@ -105,11 +105,8 @@ howdy
 hi
 ```
 
+## Parsing without validating
 
-
-
-
-
-
-
-
+If you want to skip your `ParsableArguments`types `validate()` method (for testing or otherwise) you can call
+`Math.parse(["add", "4", "5"], skipValidation: true)`. Skipping validation skips the validate method on all commands
+and subcommands.

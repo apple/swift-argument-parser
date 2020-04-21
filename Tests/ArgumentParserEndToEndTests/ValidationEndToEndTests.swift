@@ -122,6 +122,12 @@ extension ValidationEndToEndTests {
     // verify that error description is printed if avaiable via LocalizedError
     AssertErrorMessage(Foo.self, ["--throw", "Joe"], UserValidationError.userValidationError.errorDescription!)
   }
+
+  func testCustomValidationCanBeSkipped() throws {
+    AssertParse(Foo.self, ["tim", "Joe", "--throw"], skipCustomValidation: true) { (foo) in
+      XCTAssertEqual(foo.names, ["tim", "Joe"])
+    }
+  }
   
   func testEmptyErrorValidation() {
     AssertErrorMessage(Foo.self, ["--show-usage-only", "Joe"], "")

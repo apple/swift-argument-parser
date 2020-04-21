@@ -83,15 +83,17 @@ extension ParsableArguments {
   ///   `arguments` is `nil`, this uses the program's command-line arguments.
   /// - Returns: A new instance of this type.
   public static func parse(
-    _ arguments: [String]? = nil
+    _ arguments: [String]? = nil,
+    skipCustomValidation: Bool = false
   ) throws -> Self {
     // Parse the command and unwrap the result if necessary.
-    switch try self.asCommand.parseAsRoot(arguments) {
+    switch try self.asCommand.parseAsRoot(arguments, skipCustomValidation: skipCustomValidation) {
     case is HelpCommand:
       throw ParserError.helpRequested
     case let result as _WrappedParsableCommand<Self>:
       return result.options
     case var result as Self:
+      if skipCustomValidation { return result }
       do {
         try result.validate()
       } catch {

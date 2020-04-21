@@ -232,6 +232,35 @@ extension SubcommandEndToEndTests {
                         wait(for: [cmd.didValidateExpectation], timeout: 0.1)
     }
   }
+
+  func testSkippingValidate_subcommands() {
+    // provide a value to base-flag that will throw
+    AssertErrorMessage(
+      BaseCommand.self,
+      ["--base-flag", "foo", "sub", "--sub-flag", "foo", "subsub"],
+      "baseCommandFailure"
+    )
+
+    // provide a value to sub-flag that will throw
+    AssertErrorMessage(
+      BaseCommand.self,
+      ["--base-flag", BaseCommand.baseFlagValue, "sub", "--sub-flag", "foo", "subsub"],
+      "subCommandFailure"
+    )
+
+    // provide a valid command and make sure both validates succeed
+    AssertParseCommand(BaseCommand.self,
+                       BaseCommand.SubCommand.SubSubCommand.self,
+                       ["--base-flag", BaseCommand.baseFlagValue, "sub", "--sub-flag", BaseCommand.SubCommand.subFlagValue, "subsub", "--sub-sub-flag"],
+                       skipCustomValidation: true) { cmd in
+                        XCTAssertTrue(cmd.subSubFlag)
+
+                        // make sure that the instance of SubSubCommand provided
+                        // does not have its validate method called when called with skipCustomValidation.
+                        cmd.didValidateExpectation.isInverted = true
+                        wait(for: [cmd.didValidateExpectation], timeout: 0.1)
+    }
+  }
 }
 
 // MARK: Version flags

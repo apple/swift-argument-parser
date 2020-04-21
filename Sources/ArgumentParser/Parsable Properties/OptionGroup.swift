@@ -52,6 +52,8 @@ public struct OptionGroup<Value: ParsableArguments>: Decodable, ParsedWrapper {
       }
     }
     
+    let skipValidation = (decoder as? SingleValueDecoder)?.skipCustomValidation ?? false
+    if skipValidation { return }
     do {
       try wrappedValue.validate()
     } catch {

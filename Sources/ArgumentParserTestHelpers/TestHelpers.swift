@@ -57,9 +57,9 @@ public func AssertResultFailure<T, U: Error>(
   }
 }
 
-public func AssertErrorMessage<A>(_ type: A.Type, _ arguments: [String], _ errorMessage: String, file: StaticString = #file, line: UInt = #line) where A: ParsableArguments {
+public func AssertErrorMessage<A>(_ type: A.Type, _ arguments: [String], skipCustomValidation: Bool = false, _ errorMessage: String, file: StaticString = #file, line: UInt = #line) where A: ParsableArguments {
   do {
-    _ = try A.parse(arguments)
+    _ = try A.parse(arguments, skipCustomValidation: skipCustomValidation)
     XCTFail("Parsing should have failed.", file: file, line: line)
   } catch {
     // We expect to hit this path, i.e. getting an error:
@@ -77,9 +77,9 @@ public func AssertFullErrorMessage<A>(_ type: A.Type, _ arguments: [String], _ e
   }
 }
 
-public func AssertParse<A>(_ type: A.Type, _ arguments: [String], file: StaticString = #file, line: UInt = #line, closure: (A) throws -> Void) where A: ParsableArguments {
+public func AssertParse<A>(_ type: A.Type, _ arguments: [String], skipCustomValidation: Bool = false, file: StaticString = #file, line: UInt = #line, closure: (A) throws -> Void) where A: ParsableArguments {
   do {
-    let parsed = try type.parse(arguments)
+    let parsed = try type.parse(arguments, skipCustomValidation: skipCustomValidation)
     try closure(parsed)
   } catch {
     let message = type.message(for: error)
@@ -87,9 +87,9 @@ public func AssertParse<A>(_ type: A.Type, _ arguments: [String], file: StaticSt
   }
 }
 
-public func AssertParseCommand<A: ParsableCommand>(_ rootCommand: ParsableCommand.Type, _ type: A.Type, _ arguments: [String], file: StaticString = #file, line: UInt = #line, closure: (A) throws -> Void) {
+public func AssertParseCommand<A: ParsableCommand>(_ rootCommand: ParsableCommand.Type, _ type: A.Type, _ arguments: [String], skipCustomValidation: Bool = false, file: StaticString = #file, line: UInt = #line, closure: (A) throws -> Void) {
   do {
-    let command = try rootCommand.parseAsRoot(arguments)
+    let command = try rootCommand.parseAsRoot(arguments, skipCustomValidation: skipCustomValidation)
     guard let aCommand = command as? A else {
       XCTFail("Command is of unexpected type: \(command)", file: file, line: line)
       return

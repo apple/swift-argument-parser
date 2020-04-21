@@ -106,7 +106,7 @@ extension CommandParser {
   
   /// Extracts the current command from `split`, throwing if decoding isn't
   /// possible.
-  fileprivate mutating func parseCurrent(_ split: inout SplitArguments) throws -> ParsableCommand {
+  fileprivate mutating func parseCurrent(_ split: inout SplitArguments, skipCustomValidation: Bool) throws -> ParsableCommand {
     // Build the argument set (i.e. information on how to parse):
     let commandArguments = ArgumentSet(currentNode.element)
     
@@ -125,7 +125,7 @@ extension CommandParser {
     }
     
     // Decode the values from ParsedValues into the ParsableCommand:
-    let decoder = ArgumentDecoder(values: values, previouslyDecoded: decodedArguments)
+    let decoder = ArgumentDecoder(values: values, previouslyDecoded: decodedArguments, skipCustomValidation: skipCustomValidation)
     var decodedResult: ParsableCommand
     do {
       decodedResult = try currentNode.element.init(from: decoder)
@@ -151,15 +151,17 @@ extension CommandParser {
   
   /// Starting with the current node, extracts commands out of `split` and
   /// descends into subcommands as far as possible.
-  internal mutating func descendingParse(_ split: inout SplitArguments) throws {
+  internal mutating func descendingParse(_ split: inout SplitArguments, skipCustomValidation: Bool) throws {
     while true {
-      var parsedCommand = try parseCurrent(&split)
+      var parsedCommand = try parseCurrent(&split, skipCustomValidation: skipCustomValidation)
 
       // after decoding a command, make sure to validate it
-      do {
-        try parsedCommand.validate()
-      } catch {
-        throw CommandError(commandStack: commandStack, parserError: ParserError.userValidationError(error))
+      if !skipCustomValidation {
+        do {
+          try parsedCommand.validate()
+        } catch {
+          throw CommandError(commandStack: commandStack, parserError: ParserError.userValidationError(error))
+        }
       }
 
       // Look for next command in the argument list.
@@ -190,7 +192,7 @@ extension CommandParser {
   ///
   /// - Parameter arguments: The array of arguments to parse. This should not
   ///   include the command name as the first argument.
-  mutating func parse(arguments: [String]) -> Result<ParsableCommand, CommandError> {
+  mutating func parse(arguments: [String], skipCustomValidation: Bool) -> Result<ParsableCommand, CommandError> {
     var split: SplitArguments
     do {
       split = try SplitArguments(arguments: arguments)
@@ -201,7 +203,7 @@ extension CommandParser {
     }
     
     do {
-      try descendingParse(&split)
+      try descendingParse(&split, skipCustomValidation: skipCustomValidation)
       let result = try extractLastParsedValue(split)
       
       // HelpCommand is a valid result, but needs extra information about

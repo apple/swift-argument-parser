@@ -29,10 +29,11 @@ struct DecodedArguments {
 
 /// A decoder that decodes from parsed command-line arguments.
 final class ArgumentDecoder: Decoder {
-  init(values: ParsedValues, previouslyDecoded: [DecodedArguments] = []) {
+  init(values: ParsedValues, previouslyDecoded: [DecodedArguments] = [], skipCustomValidation: Bool) {
     self.values = values
     self.previouslyDecoded = previouslyDecoded
     self.usedOrigins = InputOrigin()
+    self.skipCustomValidation = skipCustomValidation
     
     // Mark the terminator position(s) as used:
     values.elements.filter { $0.key == .terminator }.forEach {
@@ -41,6 +42,7 @@ final class ArgumentDecoder: Decoder {
   }
   
   let values: ParsedValues
+  let skipCustomValidation: Bool
   var usedOrigins: InputOrigin
   var nextCommandIndex = 0
   var previouslyDecoded: [DecodedArguments] = []
@@ -108,7 +110,7 @@ final class ParsedArgumentsContainer<K>: KeyedDecodingContainerProtocol where K 
   }
   
   func decode<T>(_ type: T.Type, forKey key: K) throws -> T where T : Decodable {
-    let subDecoder = SingleValueDecoder(userInfo: decoder.userInfo, underlying: decoder, codingPath: codingPath + [key], key: InputKey(key), parsedElement: element(forKey: key))
+    let subDecoder = SingleValueDecoder(userInfo: decoder.userInfo, underlying: decoder, codingPath: codingPath + [key], key: InputKey(key), parsedElement: element(forKey: key), skipCustomValidation: decoder.skipCustomValidation)
     return try type.init(from: subDecoder)
   }
   
@@ -135,6 +137,7 @@ struct SingleValueDecoder: Decoder {
   var codingPath: [CodingKey]
   var key: InputKey
   var parsedElement: ParsedValues.Element?
+  var skipCustomValidation: Bool
   
   func container<K>(keyedBy type: K.Type) throws -> KeyedDecodingContainer<K> where K: CodingKey {
     return KeyedDecodingContainer(ParsedArgumentsContainer(for: underlying, keyType: type, codingPath: codingPath))
