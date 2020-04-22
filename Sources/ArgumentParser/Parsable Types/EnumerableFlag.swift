@@ -49,15 +49,31 @@
 ///
 /// With this extension, a user can use short or long versions of the flags:
 ///
-///     $ example -s -x --medium
-///     [.small, .extraLarge, .medium]
+///     $ example -s -l -x --medium
+///     [.small, .large, .extraLarge, .medium]
 public protocol EnumerableFlag: CaseIterable, Equatable {
   /// Returns the name specification to use for the given flag.
+  ///
+  /// The default implementation for this method always returns `.long`.
+  /// Implement this method for your custom `EnumerableFlag` type to provide
+  /// different name specifications for different cases.
   static func name(for value: Self) -> NameSpecification
+  
+  /// Returns the help information to show for the given flag.
+  ///
+  /// The default implementation for this method always returns `nil`, which
+  /// groups the flags together with the help provided in the `@Flag`
+  /// declaration. Implement this method for your custom type to provide
+  /// different help information for each flag.
+  static func help(for value: Self) -> ArgumentHelp?
 }
 
 extension EnumerableFlag {
   public static func name(for value: Self) -> NameSpecification {
     .long
+  }
+  
+  public static func help(for value: Self) -> ArgumentHelp? {
+    nil
   }
 }

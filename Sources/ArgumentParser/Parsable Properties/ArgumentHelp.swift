@@ -19,6 +19,9 @@ public struct ArgumentHelp {
   
   /// An alternative name to use for the argument's value when showing usage
   /// information.
+  ///
+  /// - Note: This property is ignored when generating help for flags, since
+  ///   flags don't include a value.
   public var valueName: String?
   
   /// A Boolean value indicating whether this argument should be shown in

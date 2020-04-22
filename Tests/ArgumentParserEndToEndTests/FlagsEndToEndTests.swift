@@ -145,10 +145,25 @@ enum Size: String, EnumerableFlag {
   
   static func name(for value: Size) -> NameSpecification {
     switch value {
+    case .small, .medium, .large:
+      return .shortAndLong
     case .humongous:
       return [.long, .customLong("huge")]
     default:
       return .long
+    }
+  }
+  
+  static func help(for value: Size) -> ArgumentHelp? {
+    switch value {
+    case .small:
+      return "A smallish size"
+    case .medium:
+      return "Not too big, not too small"
+    case .humongous:
+      return "Roughly the size of a barge"
+    case .large, .extraLarge:
+      return nil
     }
   }
 }
@@ -331,6 +346,7 @@ fileprivate struct DeprecatedFlags: ParsableArguments {
   @Flag() var single: One
   @Flag() var optional: Two?
   @Flag() var array: [Three]
+  @Flag(name: .long) var size: Size?
 }
 
 extension FlagsEndToEndTests {

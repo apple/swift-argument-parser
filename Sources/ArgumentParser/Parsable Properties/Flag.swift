@@ -249,10 +249,14 @@ extension Flag where Value: EnumerableFlag {
       var hasUpdated = false
       let defaultValue = initial.map(String.init(describing:))
 
-      let args = Value.allCases.map { value -> ArgumentDefinition in
+      let caseHelps = Value.allCases.map { Value.help(for: $0) }
+      let hasCustomCaseHelp = caseHelps.contains(where: { $0 != nil })
+      
+      let args = Value.allCases.enumerated().map { (i, value) -> ArgumentDefinition in
         let caseKey = InputKey(rawValue: String(describing: value))
         let name = Value.name(for: value)
-        let help = ArgumentDefinition.Help(options: initial != nil ? .isOptional : [], help: help, defaultValue: defaultValue, key: key)
+        let helpForCase = hasCustomCaseHelp ? (caseHelps[i] ?? help) : help
+        let help = ArgumentDefinition.Help(options: initial != nil ? .isOptional : [], help: helpForCase, defaultValue: defaultValue, key: key, isComposite: !hasCustomCaseHelp)
         return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .nextAsValue, initialValue: initial, update: .nullary({ (origin, name, values) in
           hasUpdated = try ArgumentSet.updateFlag(key: key, value: value, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
         }))
@@ -275,11 +279,15 @@ extension Flag {
       // This gets flipped to `true` the first time one of these flags is
       // encountered.
       var hasUpdated = false
+      
+      let caseHelps = Element.allCases.map { Element.help(for: $0) }
+      let hasCustomCaseHelp = caseHelps.contains(where: { $0 != nil })
 
-      let args = Element.allCases.map { value -> ArgumentDefinition in
+      let args = Element.allCases.enumerated().map { (i, value) -> ArgumentDefinition in
         let caseKey = InputKey(rawValue: String(describing: value))
         let name = Element.name(for: value)
-        let help = ArgumentDefinition.Help(options: .isOptional, help: help, key: key)
+        let helpForCase = hasCustomCaseHelp ? (caseHelps[i] ?? help) : help
+        let help = ArgumentDefinition.Help(options: .isOptional, help: helpForCase, key: key, isComposite: !hasCustomCaseHelp)
         return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .nextAsValue, initialValue: nil as Element?, update: .nullary({ (origin, name, values) in
           hasUpdated = try ArgumentSet.updateFlag(key: key, value: value, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
         }))
@@ -304,10 +312,14 @@ extension Flag {
     help: ArgumentHelp? = nil
   ) where Value == Array<Element>, Element: EnumerableFlag {
     self.init(_parsedValue: .init { key in
-      let args = Element.allCases.map { value -> ArgumentDefinition in
+      let caseHelps = Element.allCases.map { Element.help(for: $0) }
+      let hasCustomCaseHelp = caseHelps.contains(where: { $0 != nil })
+
+      let args = Element.allCases.enumerated().map { (i, value) -> ArgumentDefinition in
         let caseKey = InputKey(rawValue: String(describing: value))
         let name = Element.name(for: value)
-        let help = ArgumentDefinition.Help(options: .isOptional, help: help, key: key)
+        let helpForCase = hasCustomCaseHelp ? (caseHelps[i] ?? help) : help
+        let help = ArgumentDefinition.Help(options: .isOptional, help: helpForCase, key: key, isComposite: !hasCustomCaseHelp)
         return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .nextAsValue, initialValue: [Element](), update: .nullary({ (origin, name, values) in
           values.update(forKey: key, inputOrigin: origin, initial: [Element](), closure: {
             $0.append(value)
@@ -346,7 +358,7 @@ extension Flag where Value: CaseIterable, Value: RawRepresentable, Value: Equata
 
       let args = Value.allCases.map { value -> ArgumentDefinition in
         let caseKey = InputKey(rawValue: value.rawValue)
-        let help = ArgumentDefinition.Help(options: initial != nil ? .isOptional : [], help: help, defaultValue: defaultValue, key: key)
+        let help = ArgumentDefinition.Help(options: initial != nil ? .isOptional : [], help: help, defaultValue: defaultValue, key: key, isComposite: true)
         return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .nextAsValue, initialValue: initial, update: .nullary({ (origin, name, values) in
           hasUpdated = try ArgumentSet.updateFlag(key: key, value: value, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
         }))
@@ -374,7 +386,7 @@ extension Flag {
       
       let args = Element.allCases.map { value -> ArgumentDefinition in
         let caseKey = InputKey(rawValue: value.rawValue)
-        let help = ArgumentDefinition.Help(options: .isOptional, help: help, key: key)
+        let help = ArgumentDefinition.Help(options: .isOptional, help: help, key: key, isComposite: true)
         return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .nextAsValue, initialValue: nil as Element?, update: .nullary({ (origin, name, values) in
           hasUpdated = try ArgumentSet.updateFlag(key: key, value: value, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
         }))
@@ -402,7 +414,7 @@ extension Flag {
     self.init(_parsedValue: .init { key in
       let args = Element.allCases.map { value -> ArgumentDefinition in
         let caseKey = InputKey(rawValue: value.rawValue)
-        let help = ArgumentDefinition.Help(options: .isOptional, help: help, key: key)
+        let help = ArgumentDefinition.Help(options: .isOptional, help: help, key: key, isComposite: true)
         return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .nextAsValue, initialValue: [Element](), update: .nullary({ (origin, name, values) in
           values.update(forKey: key, inputOrigin: origin, initial: [Element](), closure: {
             $0.append(value)
