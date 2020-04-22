@@ -76,9 +76,63 @@ extension CommandParser {
       }
     }
     
-    guard !split.contains(Name.long("generate-completion")) else {
-      throw CommandError(commandStack: commandStack, parserError: .completionScriptRequested)
+    if let completionArgument = split.argument(named: Name.long("generate-completion")) {
+      switch completionArgument {
+      case .name:
+        throw CommandError(commandStack: commandStack, parserError: .completionScriptRequested(shell: nil))
+      case .nameWithValue(_, let value):
+        throw CommandError(commandStack: commandStack, parserError: .completionScriptRequested(shell: value))
+      }
+      
     }
+  }
+  
+  func handleCustomCompletion(_ arguments: [String]) throws {
+    // Completion functions use a custom format:
+    //
+    // <command> ---completion [<subcommand> ...] -- <argument-name> [<completion-text>]
+    //
+    // The triple-dash prefix makes '---completion' invalid syntax for regular
+    // arguments, so it's safe to use for this internal purpose.
+    guard arguments.first == "---completion"
+      else { return }
+    
+    var args = arguments.dropFirst()
+    var current = commandTree
+    while let subcommandName = args.popFirst() {
+      // A double dash separates the subcommands from the argument information
+      if subcommandName == "--" { break }
+      
+      guard let nextCommandNode = current.firstChild(withName: subcommandName)
+        else { throw ParserError.invalidState }
+      current = nextCommandNode
+    }
+    
+    // Some kind of argument name is the next required element
+    guard let argToMatch = args.popFirst() else {
+      throw ParserError.invalidState
+    }
+    // Completion text is optional here
+    let completionValue = args.popFirst() ?? ""
+    
+    // There should be no more arguments remaining at this point
+    guard args.isEmpty else { throw ParserError.invalidState }
+
+    // Generate the argument set and parse the argument to find in the set
+    let argset = ArgumentSet(current.element)
+    let (index, parsedArgument) = try! parseIndividualArg(argToMatch, at: 0).first!
+    
+    // Look up the specified argument and retrieve its custom completion function
+    guard case .option(let parsed) = parsedArgument,
+      let matchedArgument = try? argset.first(matching: parsed, at: .argumentIndex(index)),
+      case .custom(let completionFunction) = matchedArgument.completion
+      else { throw ParserError.invalidState }
+    
+    // Parsing and retrieval successful! We don't want to continue with any
+    // other parsing here, so after printing the result of the completion
+    // function, exit with a success code.
+    print(completionFunction(completionValue).joined(separator: "\n"))
+    throw ParserError.userValidationError(ExitCode.success)
   }
   
   /// Returns the last parsed value if there are no remaining unused arguments.
@@ -195,6 +249,12 @@ extension CommandParser {
   /// - Parameter arguments: The array of arguments to parse. This should not
   ///   include the command name as the first argument.
   mutating func parse(arguments: [String]) -> Result<ParsableCommand, CommandError> {
+    do {
+      try handleCustomCompletion(arguments)
+    } catch {
+      return .failure(CommandError(commandStack: [commandTree.element], parserError: error as! ParserError))
+    }
+    
     var split: SplitArguments
     do {
       split = try SplitArguments(arguments: arguments)
@@ -271,6 +331,27 @@ extension SplitArguments {
     }
   }
 
+  func argument(named needle: Name) -> ParsedArgument? {
+    guard let element = elements.first(where: {
+      switch $0.element {
+      case .option(.name(let name)),
+           .option(.nameWithValue(let name, _)):
+        return name == needle
+      default:
+        return false
+      }
+    })?.element else {
+      return nil
+    }
+    
+    switch element {
+    case .option(let argument):
+      return argument
+    case .value, .terminator:
+      return nil
+    }
+  }
+  
   func contains(anyOf names: [Name]) -> Bool {
     self.elements.contains {
       switch $0.element {

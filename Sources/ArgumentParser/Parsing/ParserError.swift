@@ -13,7 +13,7 @@
 enum ParserError: Error {
   case helpRequested
   case versionRequested
-  case completionScriptRequested
+  case completionScriptRequested(shell: String?)
   
   case notImplemented
   case invalidState

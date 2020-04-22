@@ -37,10 +37,17 @@ enum MessageInfo {
           ?? "Unspecified version"
         self = .help(text: versionString)
         return
-      case .completionScriptRequested:
-        let completionScript = generateCompletionScript(type.asCommand)
-        self = .help(text: completionScript)
-        return
+      case .completionScriptRequested(let shell):
+        do {
+          let completionsGenerator = try CompletionsGenerator(command: type.asCommand, shell: shell)
+          let completionScript = completionsGenerator.generateCompletionScript()
+          self = .help(text: completionScript)
+          return
+        } catch {
+          self.init(error: error, type: type)
+          return
+        }
+
       default:
         break
       }

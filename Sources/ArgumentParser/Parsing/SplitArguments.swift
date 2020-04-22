@@ -135,7 +135,7 @@ struct SplitArguments {
     }
     
     var inputIndex: InputIndex
-    var subIndex: SubIndex
+    var subIndex: SubIndex = .complete
   }
   
   var elements: [(index: Index, element: Element)]
@@ -407,6 +407,57 @@ extension SplitArguments {
   }
 }
 
+func parseIndividualArg(_ arg: String, at position: Int) throws -> [(SplitArguments.Index, SplitArguments.Element)] {
+  let index = SplitArguments.Index(inputIndex: .init(rawValue: position))
+  if let nonDashIdx = arg.firstIndex(where: { $0 != "-" }) {
+    let dashCount = arg.distance(from: arg.startIndex, to: nonDashIdx)
+    let remainder = arg[nonDashIdx..<arg.endIndex]
+    switch dashCount {
+    case 0:
+      return [(index, .value(arg))]
+    case 1:
+      // Long option:
+      let parsed = try ParsedArgument(longArgWithSingleDashRemainder: remainder)
+      
+      // Short options:
+      let parts = parsed.subarguments
+      switch parts.count {
+      case 0:
+        // This is a '-name=value' style argument
+        return [(index, .option(parsed))]
+      case 1:
+        // This is a single short '-n' style argument
+        return [(index, .option(.name(.short(remainder.first!))))]
+      default:
+        var result: [(SplitArguments.Index, SplitArguments.Element)] = [(index, .option(parsed))]
+        for (sub, a) in parts {
+          var i = index
+          i.subIndex = .sub(sub)
+          result.append((i, .option(a)))
+        }
+        return result
+      }
+    case 2:
+      return [(index, .option(ParsedArgument(arg)))]
+    default:
+      throw ParserError.invalidOption(arg)
+    }
+  } else {
+    // All dashes
+    let dashCount = arg.count
+    switch dashCount {
+    case 0, 1:
+      // Empty string or single dash
+      return [(index, .value(arg))]
+    case 2:
+      // We found the 1st "--". All the remaining are positional.
+      return [(index, .terminator)]
+    default:
+      throw ParserError.invalidOption(arg)
+    }
+  }
+}
+
 extension SplitArguments {
   /// Parses the given input into an array of `Element`.
   ///
@@ -414,75 +465,23 @@ extension SplitArguments {
   init(arguments: [String]) throws {
     self.init(elements: [], originalInput: arguments)
     
-    var inputIndex = InputIndex(rawValue: 0)
-    
-    func append(_ element: SplitArguments.Element, sub: Int? = nil) {
-      let subIndex = sub.flatMap { SubIndex.sub($0) } ?? SubIndex.complete
-      let index = Index(inputIndex: inputIndex, subIndex: subIndex)
-      elements.append((index, element))
-    }
-    
+    var position = 0
     var args = arguments[arguments.startIndex..<arguments.endIndex]
     argLoop: while let arg = args.popFirst() {
       defer {
-        inputIndex = inputIndex.next
+        position += 1
       }
       
-      if let nonDashIdx = arg.firstIndex(where: { $0 != "-" }) {
-        let dashCount = arg.distance(from: arg.startIndex, to: nonDashIdx)
-        let remainder = arg[nonDashIdx..<arg.endIndex]
-        switch dashCount {
-        case 0:
-          append(.value(arg))
-        case 1:
-          // Long option:
-          let parsed = try ParsedArgument(longArgWithSingleDashRemainder: remainder)
-          // Multiple short options:
-          let parts = parsed.subarguments
-          switch parts.count {
-          case 0:
-            // Long only:
-            append(.option(parsed))
-          case 1:
-            // Short only:
-            if let c = remainder.first {
-              append(.option(.name(.short(c))))
-            }
-          default:
-            append(.option(parsed))
-            for (sub, a) in parts {
-              append(.option(a), sub: sub)
-            }
-          }
-        case 2:
-          let parsed = ParsedArgument(arg)
-          append(.option(parsed))
-        default:
-          throw ParserError.invalidOption(arg)
-        }
-      } else {
-        // All dashes
-        let dashCount = arg.count
-        switch dashCount {
-        case 0:
-          // Empty string
-          append(.value(arg))
-        case 1:
-          append(.value(arg))
-        case 2:
-          // We found the 1st "--". All the remaining are positional.
-          // We need to mark this index as used:
-          append(.terminator)
-          break argLoop
-        default:
-          throw ParserError.invalidOption(arg)
-        }
+      let parsedElements = try parseIndividualArg(arg, at: position)
+      elements.append(contentsOf: parsedElements)
+      if parsedElements.first!.1 == .terminator {
+        break
       }
-      
     }
-    args.forEach {
-      append(.value($0))
-      inputIndex = InputIndex(rawValue: inputIndex.rawValue + 1)
+    
+    for arg in args {
+      elements.append((Index(inputIndex: InputIndex(rawValue: position)), .value(arg)))
+      position += 1
     }
   }
 }

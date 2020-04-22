@@ -28,27 +28,38 @@ extension CompletionScriptTests {
   }
 
   func testBase() throws {
-    let script = generateCompletionScript(Base.self)
-    XCTAssertEqual("""
-      #compdef base
-      local context state state_descr line
-      typeset -A opt_args
-
-      _base() {
-          integer ret=1
-          local -a args
-          args+=(
-              '--name[The user'"'"'s name.]:name:'
-              '--kind[]:kind:(one two three)'
-              '--other-kind[]:other-kind:(1 2 3)'
-              '(-h --help)'{-h,--help}'[Print help information.]'
-          )
-          _arguments -w -s -S $args[@] && ret=0
-          return ret
-      }
-
-
-      _base
-      """, script)
+    let script = try CompletionsGenerator(command: Base.self, shell: "zsh")
+          .generateCompletionScript()
+    print(script)
+    XCTAssertEqual(baseCompletions, script)
   }
 }
+
+let baseCompletions = """
+#compdef base
+local context state state_descr line
+_base_commandname="base"
+typeset -A opt_args
+
+_base() {
+    integer ret=1
+    local -a args
+    args+=(
+        '--name[The user'"'"'s name.]:name:'
+        '--kind[]:kind:(one two three)'
+        '--other-kind[]:other-kind:(1 2 3)'
+        '(-h --help)'{-h,--help}'[Print help information.]'
+    )
+    _arguments -w -s -S $args[@] && ret=0
+
+    return ret
+}
+
+
+_custom_completion() {
+    local completions=($($*))
+    _describe '' completions
+}
+
+_base
+"""

@@ -168,7 +168,7 @@ final class MathExampleTests: XCTestCase {
 extension MathExampleTests {
   func testMath_CompletionScript() {
     AssertExecuteCommand(
-      command: "math --generate-completion",
+      command: "math --generate-completion=zsh",
       expected: completionScriptText)
   }
 }
@@ -176,6 +176,7 @@ extension MathExampleTests {
 private let completionScriptText = """
 #compdef math
 local context state state_descr line
+_math_commandname="math"
 typeset -A opt_args
 
 _math() {
@@ -187,34 +188,35 @@ _math() {
         '(-)*:: :->arg'
     )
     _arguments -w -s -S $args[@] && ret=0
-        case $state in
-            (command)
-                local modes
-                modes=(
-                    'add:Print the sum of the values.'
-                    'multiply:Print the product of the values.'
-                    'stats:Calculate descriptive statistics.'
-                    'help:Show subcommand help information.'
-                )
-                _describe "mode" modes
-                ;;
-            (arg)
-                case ${words[1]} in
-                    (add)
-                        _math_add
-                        ;;
-                    (multiply)
-                        _math_multiply
-                        ;;
-                    (stats)
-                        _math_stats
-                        ;;
-                    (help)
-                        _math_help
-                        ;;
-                esac
-                ;;
-        esac    return ret
+    case $state in
+        (command)
+            local subcommands
+            subcommands=(
+                'add:Print the sum of the values.'
+                'multiply:Print the product of the values.'
+                'stats:Calculate descriptive statistics.'
+                'help:Show subcommand help information.'
+            )
+            _describe "subcommand" subcommands
+            ;;
+        (arg)
+            case ${words[1]} in
+                (add)
+                    _math_add
+                    ;;
+                (multiply)
+                    _math_multiply
+                    ;;
+                (stats)
+                    _math_stats
+                    ;;
+                (help)
+                    _math_help
+                    ;;
+            esac
+            ;;
+    esac
+    return ret
 }
 
 _math_add() {
@@ -225,6 +227,7 @@ _math_add() {
         '(-h --help)'{-h,--help}'[Print help information.]'
     )
     _arguments -w -s -S $args[@] && ret=0
+
     return ret
 }
 
@@ -236,6 +239,7 @@ _math_multiply() {
         '(-h --help)'{-h,--help}'[Print help information.]'
     )
     _arguments -w -s -S $args[@] && ret=0
+
     return ret
 }
 
@@ -248,30 +252,31 @@ _math_stats() {
         '(-)*:: :->arg'
     )
     _arguments -w -s -S $args[@] && ret=0
-        case $state in
-            (command)
-                local modes
-                modes=(
-                    'average:Print the average of the values.'
-                    'stdev:Print the standard deviation of the values.'
-                    'quantiles:Print the quantiles of the values (TBD).'
-                )
-                _describe "mode" modes
-                ;;
-            (arg)
-                case ${words[1]} in
-                    (average)
-                        _math_stats_average
-                        ;;
-                    (stdev)
-                        _math_stats_stdev
-                        ;;
-                    (quantiles)
-                        _math_stats_quantiles
-                        ;;
-                esac
-                ;;
-        esac    return ret
+    case $state in
+        (command)
+            local subcommands
+            subcommands=(
+                'average:Print the average of the values.'
+                'stdev:Print the standard deviation of the values.'
+                'quantiles:Print the quantiles of the values (TBD).'
+            )
+            _describe "subcommand" subcommands
+            ;;
+        (arg)
+            case ${words[1]} in
+                (average)
+                    _math_stats_average
+                    ;;
+                (stdev)
+                    _math_stats_stdev
+                    ;;
+                (quantiles)
+                    _math_stats_quantiles
+                    ;;
+            esac
+            ;;
+    esac
+    return ret
 }
 
 _math_stats_average() {
@@ -282,6 +287,7 @@ _math_stats_average() {
         '(-h --help)'{-h,--help}'[Print help information.]'
     )
     _arguments -w -s -S $args[@] && ret=0
+
     return ret
 }
 
@@ -292,6 +298,7 @@ _math_stats_stdev() {
         '(-h --help)'{-h,--help}'[Print help information.]'
     )
     _arguments -w -s -S $args[@] && ret=0
+
     return ret
 }
 
@@ -303,11 +310,13 @@ _math_stats_quantiles() {
         '--test-failure-exit-code[]'
         '--test-validation-exit-code[]'
         '--test-custom-exit-code[]:test-custom-exit-code:'
-        '--file[]:file:_files'
+        '--file[]:file:_files -g *.swift'
         '--directory[]:directory:_files -/'
+        '--custom[]:custom:{_custom_completion $_math_commandname ---completion stats quantiles -- --custom}'
         '(-h --help)'{-h,--help}'[Print help information.]'
     )
     _arguments -w -s -S $args[@] && ret=0
+
     return ret
 }
 
@@ -318,9 +327,15 @@ _math_help() {
         '(-h --help)'{-h,--help}'[Print help information.]'
     )
     _arguments -w -s -S $args[@] && ret=0
+
     return ret
 }
 
+
+_custom_completion() {
+    local completions=($($*))
+    _describe '' completions
+}
 
 _math
 """

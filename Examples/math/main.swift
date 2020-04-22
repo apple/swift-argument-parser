@@ -202,11 +202,14 @@ extension Math.Statistics {
         @Option(help: .hidden)
         var testCustomExitCode: Int32?
       
-        @Option(completion: .file)
+        // These args are for testing custom completion scripts:
+        @Option(help: .hidden, completion: .file(pattern: "*.swift"))
         var file: String?
-        @Option(completion: .directory)
+        @Option(help: .hidden, completion: .directory)
         var directory: String?
-
+        @Option(help: .hidden, completion: .custom(customCompletion))
+        var custom: String?
+      
         func validate() throws {
             if testSuccessExitCode {
                 throw ExitCode.success
@@ -226,5 +229,13 @@ extension Math.Statistics {
         }
     }
 }
+
+func customCompletion(_ s: String) -> [String] {
+  return s == "a"
+    ? ["aardvark", "aaaaalbert"]
+    : ["hello", "helicopter", "heliotrope"]
+}
+
+
 
 Math.main()

@@ -163,4 +163,10 @@ extension String {
     
     return matrix.last!.last!
   }
+  
+  func indentingEachLine(by n: Int) -> String {
+    self.split(separator: "\n")
+      .map { String(repeating: " ", count: n) + $0 }
+      .joined(separator: "\n")
+  }
 }
