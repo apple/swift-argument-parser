@@ -140,7 +140,7 @@ extension Flag where Value == Optional<Bool> {
     completion: CompletionKind = .default
   ) {
     self.init(_parsedValue: .init { key in
-      .flag(key: key, name: name, default: nil, inversion: inversion, exclusivity: exclusivity, help: help, completion: completion)
+      .flag(key: key, name: name, default: nil, inversion: inversion, exclusivity: exclusivity, help: help)
     })
   }
 }
@@ -156,11 +156,10 @@ extension Flag where Value == Bool {
   ///   - help: Information about how to use this flag.
   public init(
     name: NameSpecification = .long,
-    help: ArgumentHelp? = nil,
-    completion: CompletionKind = .default
+    help: ArgumentHelp? = nil
   ) {
     self.init(_parsedValue: .init { key in
-      .flag(key: key, name: name, help: help, completion: completion)
+      .flag(key: key, name: name, help: help)
       })
   }
   
@@ -201,11 +200,10 @@ extension Flag where Value == Bool {
     default initial: Bool? = false,
     inversion: FlagInversion,
     exclusivity: FlagExclusivity = .chooseLast,
-    help: ArgumentHelp? = nil,
-    completion: CompletionKind = .default
+    help: ArgumentHelp? = nil
   ) {
     self.init(_parsedValue: .init { key in
-      .flag(key: key, name: name, default: initial, inversion: inversion, exclusivity: exclusivity, help: help, completion: completion)
+      .flag(key: key, name: name, default: initial, inversion: inversion, exclusivity: exclusivity, help: help)
       })
   }
 }
@@ -221,11 +219,10 @@ extension Flag where Value == Int {
   ///   - help: Information about how to use this flag.
   public init(
     name: NameSpecification = .long,
-    help: ArgumentHelp? = nil,
-    completion: CompletionKind = .default
+    help: ArgumentHelp?
   ) {
     self.init(_parsedValue: .init { key in
-      .counter(key: key, name: name, help: help, completion: completion)
+      .counter(key: key, name: name, help: help, completion: .default)
       })
   }
 }
@@ -244,8 +241,7 @@ extension Flag where Value: CaseIterable, Value: Equatable, Value: RawRepresenta
     name: NameSpecification = .long,
     default initial: Value? = nil,
     exclusivity: FlagExclusivity = .exclusive,
-    help: ArgumentHelp? = nil,
-    completion: CompletionKind = .default
+    help: ArgumentHelp? = nil
   ) {
     self.init(_parsedValue: .init { key in
       // This gets flipped to `true` the first time one of these flags is
@@ -256,7 +252,7 @@ extension Flag where Value: CaseIterable, Value: Equatable, Value: RawRepresenta
       let args = Value.allCases.map { value -> ArgumentDefinition in
         let caseKey = InputKey(rawValue: value.rawValue)
         let help = ArgumentDefinition.Help(options: initial != nil ? .isOptional : [], help: help, defaultValue: defaultValue, key: key)
-        return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, completion: completion, parsingStrategy: .nextAsValue, initialValue: initial, update: .nullary({ (origin, name, values) in
+        return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .nextAsValue, initialValue: initial, update: .nullary({ (origin, name, values) in
           hasUpdated = try ArgumentSet.updateFlag(key: key, value: value, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
         }))
       }
@@ -281,8 +277,7 @@ extension Flag {
   public init<Element>(
     name: NameSpecification = .long,
     exclusivity: FlagExclusivity = .exclusive,
-    help: ArgumentHelp? = nil,
-    completion: CompletionKind = .default
+    help: ArgumentHelp? = nil
   ) where Value == Element?, Element: CaseIterable, Element: Equatable, Element: RawRepresentable, Element.RawValue == String {
     self.init(_parsedValue: .init { key in
       // This gets flipped to `true` the first time one of these flags is
@@ -292,7 +287,7 @@ extension Flag {
       let args = Element.allCases.map { value -> ArgumentDefinition in
         let caseKey = InputKey(rawValue: value.rawValue)
         let help = ArgumentDefinition.Help(options: .isOptional, help: help, key: key)
-        return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, completion: completion, parsingStrategy: .nextAsValue, initialValue: nil as Element?, update: .nullary({ (origin, name, values) in
+        return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .nextAsValue, initialValue: nil as Element?, update: .nullary({ (origin, name, values) in
           hasUpdated = try ArgumentSet.updateFlag(key: key, value: value, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
         }))
       }
@@ -313,14 +308,13 @@ extension Flag {
   ///   - help: Information about how to use this flag.
   public init<Element>(
     name: NameSpecification = .long,
-    help: ArgumentHelp? = nil,
-    completion: CompletionKind = .default
+    help: ArgumentHelp? = nil
   ) where Value == Array<Element>, Element: CaseIterable, Element: RawRepresentable, Element.RawValue == String {
     self.init(_parsedValue: .init { key in
       let args = Element.allCases.map { value -> ArgumentDefinition in
         let caseKey = InputKey(rawValue: value.rawValue)
         let help = ArgumentDefinition.Help(options: .isOptional, help: help, key: key)
-        return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, completion: completion, parsingStrategy: .nextAsValue, initialValue: [Element](), update: .nullary({ (origin, name, values) in
+        return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .nextAsValue, initialValue: [Element](), update: .nullary({ (origin, name, values) in
           values.update(forKey: key, inputOrigin: origin, initial: [Element](), closure: {
             $0.append(value)
           })
@@ -332,8 +326,8 @@ extension Flag {
 }
 
 extension ArgumentDefinition {
-  static func flag<V>(name: NameSpecification, key: InputKey, caseKey: InputKey, help: Help, completion: CompletionKind, parsingStrategy: ArgumentDefinition.ParsingStrategy, initialValue: V?, update: Update) -> ArgumentDefinition {
-    return ArgumentDefinition(kind: .name(key: caseKey, specification: name), help: help, completion: completion, parsingStrategy: parsingStrategy, update: update, initial: { origin, values in
+  static func flag<V>(name: NameSpecification, key: InputKey, caseKey: InputKey, help: Help, parsingStrategy: ArgumentDefinition.ParsingStrategy, initialValue: V?, update: Update) -> ArgumentDefinition {
+    return ArgumentDefinition(kind: .name(key: caseKey, specification: name), help: help, completion: .default, parsingStrategy: parsingStrategy, update: update, initial: { origin, values in
       if let initial = initialValue {
         values.set(initial, forKey: key, inputOrigin: origin)
       }
