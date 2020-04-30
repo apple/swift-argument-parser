@@ -224,6 +224,7 @@ _math_add() {
     local -a args
     args+=(
         '(--hex-output -x)'{--hex-output,-x}'[Use hexadecimal notation for the result.]'
+        ':values:'
         '(-h --help)'{-h,--help}'[Print help information.]'
     )
     _arguments -w -s -S $args[@] && ret=0
@@ -236,6 +237,7 @@ _math_multiply() {
     local -a args
     args+=(
         '(--hex-output -x)'{--hex-output,-x}'[Use hexadecimal notation for the result.]'
+        ':values:'
         '(-h --help)'{-h,--help}'[Print help information.]'
     )
     _arguments -w -s -S $args[@] && ret=0
@@ -284,6 +286,7 @@ _math_stats_average() {
     local -a args
     args+=(
         '--kind[The kind of average to provide.]:kind:(mean median mode)'
+        ':values:'
         '(-h --help)'{-h,--help}'[Print help information.]'
     )
     _arguments -w -s -S $args[@] && ret=0
@@ -295,6 +298,7 @@ _math_stats_stdev() {
     integer ret=1
     local -a args
     args+=(
+        ':values:'
         '(-h --help)'{-h,--help}'[Print help information.]'
     )
     _arguments -w -s -S $args[@] && ret=0
@@ -306,6 +310,7 @@ _math_stats_quantiles() {
     integer ret=1
     local -a args
     args+=(
+        ':values:'
         '--test-success-exit-code[]'
         '--test-failure-exit-code[]'
         '--test-validation-exit-code[]'
@@ -324,6 +329,7 @@ _math_help() {
     integer ret=1
     local -a args
     args+=(
+        ':subcommands:'
         '(-h --help)'{-h,--help}'[Print help information.]'
     )
     _arguments -w -s -S $args[@] && ret=0

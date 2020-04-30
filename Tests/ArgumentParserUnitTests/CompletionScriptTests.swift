@@ -30,8 +30,44 @@ extension CompletionScriptTests {
   func testBase() throws {
     let script = try CompletionsGenerator(command: Base.self, shell: "zsh")
           .generateCompletionScript()
-    print(script)
     XCTAssertEqual(baseCompletions, script)
+  }
+}
+
+extension CompletionScriptTests {
+  struct Custom: ParsableCommand {
+    @Option(name: .shortAndLong, completion: .custom { _ in ["a", "b", "c"] })
+    var one: String
+
+    @Argument(completion: .custom { _ in ["d", "e", "f"] })
+    var two: String
+
+    @Option(name: .customShort("z"), completion: .custom { _ in ["x", "y", "z"] })
+    var three: String
+  }
+  
+  func verifyCustomOutput(
+    _ arg: String,
+    expectedOutput: String,
+    file: StaticString = #file, line: UInt = #line
+  ) throws {
+    do {
+      _ = try Custom.parse(["---completion", "--", arg])
+      XCTFail("Didn't error as expected", file: file, line: line)
+    } catch let error as CommandError {
+      guard case .completionScriptCustomResponse(let output) = error.parserError else {
+        XCTFail("Unexpected error: \(error)", file: file, line: line)
+        return
+      }
+      XCTAssertEqual(expectedOutput, output, file: file, line: line)
+    }
+  }
+  
+  func testCustomCompletions() throws {
+    try verifyCustomOutput("-o", expectedOutput: "a\nb\nc")
+    try verifyCustomOutput("--one", expectedOutput: "a\nb\nc")
+    try verifyCustomOutput("two", expectedOutput: "d\ne\nf")
+    try verifyCustomOutput("-z", expectedOutput: "x\ny\nz")
   }
 }
 

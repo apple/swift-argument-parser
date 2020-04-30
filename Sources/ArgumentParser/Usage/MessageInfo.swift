@@ -48,6 +48,10 @@ enum MessageInfo {
           return
         }
 
+      case .completionScriptCustomResponse(let output):
+        self = .help(text: output)
+        return
+        
       default:
         break
       }

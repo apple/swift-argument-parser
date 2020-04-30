@@ -219,7 +219,7 @@ extension Flag where Value == Int {
   ///   - help: Information about how to use this flag.
   public init(
     name: NameSpecification = .long,
-    help: ArgumentHelp?
+    help: ArgumentHelp? = nil
   ) {
     self.init(_parsedValue: .init { key in
       .counter(key: key, name: name, help: help, completion: .default)

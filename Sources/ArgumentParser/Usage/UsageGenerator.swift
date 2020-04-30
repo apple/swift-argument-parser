@@ -176,7 +176,7 @@ struct ErrorMessageGenerator {
 extension ErrorMessageGenerator {
   func makeErrorMessage() -> String? {
     switch error {
-    case .helpRequested, .versionRequested, .completionScriptRequested:
+    case .helpRequested, .versionRequested, .completionScriptRequested, .completionScriptCustomResponse:
       return nil
 
     case .notImplemented:

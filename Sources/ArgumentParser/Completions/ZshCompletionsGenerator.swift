@@ -130,7 +130,7 @@ extension ArgumentDefinition {
     let line: String
     switch names.count {
     case 0:
-      return nil
+      line = ""
     case 1:
       line = """
       \(names[0].synopsisString)[\(zshCompletionAbstract ?? "")]
@@ -171,7 +171,7 @@ extension ArgumentDefinition {
       let commandName = commands.first!._commandName
       let subcommandNames = commands.dropFirst().map { $0._commandName }.joined(separator: " ")
       // TODO: Make this work for @Arguments
-      let argumentName = preferredNameForSynopsis?.synopsisString ?? "-no-name-"
+      let argumentName = preferredNameForSynopsis?.synopsisString ?? self.help.keys.first?.rawValue ?? "---"
       return "{_custom_completion $_\(commandName)_commandname ---completion \(subcommandNames) -- \(argumentName)}"
     }
   }

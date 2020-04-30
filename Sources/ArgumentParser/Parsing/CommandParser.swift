@@ -116,23 +116,39 @@ extension CommandParser {
     let completionValue = args.popFirst() ?? ""
     
     // There should be no more arguments remaining at this point
-    guard args.isEmpty else { throw ParserError.invalidState }
+    guard args.isEmpty else {
+      throw ParserError.invalidState
+    }
 
     // Generate the argument set and parse the argument to find in the set
     let argset = ArgumentSet(current.element)
-    let (index, parsedArgument) = try! parseIndividualArg(argToMatch, at: 0).first!
+    let (_, parsedArgument) = try! parseIndividualArg(argToMatch, at: 0).first!
     
     // Look up the specified argument and retrieve its custom completion function
-    guard case .option(let parsed) = parsedArgument,
-      let matchedArgument = try? argset.first(matching: parsed, at: .argumentIndex(index)),
-      case .custom(let completionFunction) = matchedArgument.completion
-      else { throw ParserError.invalidState }
+    let completionFunction: (String) -> [String]
+    
+    switch parsedArgument {
+    case .option(let parsed):
+      guard let matchedArgument = argset.first(matching: parsed),
+        case .custom(let f) = matchedArgument.completion
+        else { throw ParserError.invalidState }
+      completionFunction = f
+
+    case .value(let str):
+      guard let matchedArgument = argset.firstPositional(named: str),
+        case .custom(let f) = matchedArgument.completion
+        else { throw ParserError.invalidState }
+      completionFunction = f
+      
+    case .terminator:
+      throw ParserError.invalidState
+    }
     
     // Parsing and retrieval successful! We don't want to continue with any
     // other parsing here, so after printing the result of the completion
     // function, exit with a success code.
-    print(completionFunction(completionValue).joined(separator: "\n"))
-    throw ParserError.userValidationError(ExitCode.success)
+    let output = completionFunction(completionValue).joined(separator: "\n")
+    throw ParserError.completionScriptCustomResponse(output)
   }
   
   /// Returns the last parsed value if there are no remaining unused arguments.

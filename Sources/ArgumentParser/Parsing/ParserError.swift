@@ -14,6 +14,7 @@ enum ParserError: Error {
   case helpRequested
   case versionRequested
   case completionScriptRequested(shell: String?)
+  case completionScriptCustomResponse(String)
   
   case notImplemented
   case invalidState

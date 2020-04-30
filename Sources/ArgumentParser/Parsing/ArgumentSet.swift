@@ -330,11 +330,8 @@ extension ArgumentSet {
         // input. If we can't find one, just move on to the next input. We
         // defer catching leftover arguments until we've fully extracted all
         // the information for the selected command.
-        guard
-          let argument: ArgumentDefinition = try? first(matching: parsed, at: origin)
-          else {
-            continue
-          }
+        guard let argument = first(matching: parsed)
+          else { continue }
         
         switch argument.update {
         case let .nullary(update):
@@ -393,13 +390,16 @@ extension ArgumentSet {
   ///   - origin: Where `parsed` came from.
   /// - Returns: The matching definition.
   func first(
-    matching parsed: ParsedArgument,
-    at origin: InputOrigin.Element
-  ) throws -> ArgumentDefinition {
-    guard let match = first(where: { $0.names.contains(parsed.name) }) else {
-      throw ParserError.unknownOption(origin, parsed.name)
-    }
-    return match
+    matching parsed: ParsedArgument
+  ) -> ArgumentDefinition? {
+    return first(where: { $0.names.contains(parsed.name) })
+  }
+  
+  func firstPositional(
+    named name: String
+  ) -> ArgumentDefinition? {
+    let key = InputKey(rawValue: name)
+    return first(where: { $0.help.keys.contains(key) })
   }
   
   func parsePositionalValues(
