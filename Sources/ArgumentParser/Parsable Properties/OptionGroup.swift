@@ -44,7 +44,7 @@ public struct OptionGroup<Value: ParsableArguments>: Decodable, ParsedWrapper {
     if let d = decoder as? SingleValueDecoder,
       let value = try? d.previousValue(Value.self)
     {
-      self.init(_parsedValue: .value(value))
+      self.init(_parsedValue: .value(value, ArgumentSource(source: [])))
     } else {
       try self.init(_decoder: decoder)
       if let d = decoder as? SingleValueDecoder {
@@ -63,14 +63,14 @@ public struct OptionGroup<Value: ParsableArguments>: Decodable, ParsedWrapper {
   public var wrappedValue: Value {
     get {
       switch _parsedValue {
-      case .value(let v):
+      case .value(let v, _):
         return v
       case .definition:
         fatalError(directlyInitializedError)
       }
     }
     set {
-      _parsedValue = .value(newValue)
+      _parsedValue = .value(newValue, _parsedValue.source ?? ArgumentSource(source: []))
     }
   }
 }
@@ -78,7 +78,7 @@ public struct OptionGroup<Value: ParsableArguments>: Decodable, ParsedWrapper {
 extension OptionGroup: CustomStringConvertible {
   public var description: String {
     switch _parsedValue {
-    case .value(let v):
+    case .value(let v, _):
       return String(describing: v)
     case .definition:
       return "OptionGroup(*definition*)"

@@ -36,11 +36,17 @@ struct HelpCommand: ParsableCommand {
   
   init(from decoder: Decoder) throws {
     let container = try decoder.container(keyedBy: CodingKeys.self)
-    self._subcommands = Argument(_parsedValue: .value(try container.decode([String].self, forKey: .subcommands)))
+    self._subcommands = Argument(
+      _parsedValue: .value(
+        try container.decode([String].self, forKey: .subcommands),
+        ArgumentSource(source: [])))
   }
   
   init(commandStack: [ParsableCommand.Type]) {
     self.commandStack = commandStack
-    self._subcommands = Argument(_parsedValue: .value(commandStack.map { $0._commandName }))
+    self._subcommands = Argument(
+      _parsedValue: .value(
+        commandStack.map { $0._commandName },
+        ArgumentSource(source: [])))
   }
 }

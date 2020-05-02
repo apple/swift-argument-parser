@@ -18,11 +18,25 @@ enum Parsed<Value> {
     var makeSet: (InputKey) -> ArgumentSet
   }
   
-  case value(Value)
+  case value(Value, ArgumentSource)
   case definition(Definition)
   
   internal init(_ makeSet: @escaping (InputKey) -> ArgumentSet) {
     self = .definition(Definition(makeSet: makeSet))
+  }
+  
+  var value: Value? {
+    switch self {
+    case .value(let v, _): return v
+    case .definition: return nil
+    }
+  }
+  
+  var source: ArgumentSource? {
+    switch self {
+    case .value(_, let s): return s
+    case .definition: return nil
+    }
   }
 }
 
@@ -54,7 +68,14 @@ extension ParsedWrapper {
       throw ParserError.noValue(forKey: d.parsedElement?.key ?? d.key)
     }
     
-    self.init(_parsedValue: .value(value))
+    let sourceIndexes: [Int] = d.parsedElement!.inputOrigin.elements.compactMap { x -> Int? in
+      guard case .argumentIndex(let i) = x else { return nil }
+      return i.inputIndex.rawValue
+    }
+    let sourceValues = sourceIndexes.map { d.underlying.values.originalInput[$0] }
+    let source = ArgumentSource(source: Array(zip(sourceValues, sourceIndexes)))
+    
+    self.init(_parsedValue: .value(value, source))
   }
   
   func argumentSet(for key: InputKey) -> ArgumentSet {
@@ -70,18 +91,25 @@ extension ParsedWrapper {
 extension ParsedWrapper where Value: Decodable {
   init(_decoder: Decoder) throws {
     var value: Value
+    let source: ArgumentSource
     
     do {
       value = try Value.init(from: _decoder)
+      source = ArgumentSource(source: [])
     } catch {
-      if let d = _decoder as? SingleValueDecoder,
-        let v = d.parsedElement?.value as? Value {
-        value = v
-      } else {
+      guard let d = _decoder as? SingleValueDecoder,
+        let v = d.parsedElement?.value as? Value else {
         throw error
       }
-    }
+      value = v
     
-    self.init(_parsedValue: .value(value))
+      let sourceIndexes: [Int] = d.parsedElement!.inputOrigin.elements.compactMap { x -> Int? in
+        guard case .argumentIndex(let i) = x else { return nil }
+        return i.inputIndex.rawValue
+      }
+      let sourceValues = sourceIndexes.map { d.underlying.values.originalInput[$0] }
+      source = ArgumentSource(source: Array(zip(sourceValues, sourceIndexes)))
+    }
+    self.init(_parsedValue: .value(value, source))
   }
 }

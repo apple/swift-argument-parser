@@ -42,14 +42,23 @@ public struct Option<Value>: Decodable, ParsedWrapper {
   public var wrappedValue: Value {
     get {
       switch _parsedValue {
-      case .value(let v):
+      case .value(let v, _):
         return v
       case .definition:
         fatalError(directlyInitializedError)
       }
     }
     set {
-      _parsedValue = .value(newValue)
+      _parsedValue = .value(newValue, _parsedValue.source ?? ArgumentSource(source: []))
+    }
+  }
+  
+  public var projectedValue: ArgumentSource {
+    switch _parsedValue {
+    case .value(_, let source):
+      return source
+    case .definition:
+      fatalError(directlyInitializedError)
     }
   }
 }
@@ -57,7 +66,7 @@ public struct Option<Value>: Decodable, ParsedWrapper {
 extension Option: CustomStringConvertible {
   public var description: String {
     switch _parsedValue {
-    case .value(let v):
+    case .value(let v, _):
       return String(describing: v)
     case .definition:
       return "Option(*definition*)"
