@@ -230,7 +230,7 @@ extension Flag where Value == Int {
 
 extension Flag where Value: EnumerableFlag {
   /// Creates a property that gets its value from the presence of a flag,
-  /// where the allowed flags are defined by a `CaseIterable` type.
+  /// where the allowed flags are defined by an `EnumerableFlag` type.
   ///
   /// - Parameters:
   ///   - name: A specification for what names are allowed for this flag.
@@ -270,7 +270,7 @@ extension Flag where Value: EnumerableFlag {
 
 extension Flag {
   /// Creates a property that gets its value from the presence of a flag,
-  /// where the allowed flags are defined by a case-iterable type.
+  /// where the allowed flags are defined by an `EnumerableFlag` type.
   public init<Element>(
     exclusivity: FlagExclusivity = .exclusive,
     help: ArgumentHelp? = nil
@@ -300,8 +300,8 @@ extension Flag {
   }
   
   /// Creates an array property that gets its values from the presence of
-  /// zero or more flags, where the allowed flags are defined by a
-  /// case-iterable type.
+  /// zero or more flags, where the allowed flags are defined by an
+  /// `EnumerableFlag` type.
   ///
   /// This property has an empty array as its default value.
   ///
