@@ -115,10 +115,10 @@ struct Example: ParsableCommand {
 
 Arguments and options can be parsed from any type that conforms to the `ExpressibleByArgument` protocol. Standard library integer and floating-point types, strings, and Booleans all conform to `ExpressibleByArgument`.
 
-You can make your own custom types conform to `ExpressibleByArgument` by implementing `init(argument:)`:
+You can make your own custom types conform to `ExpressibleByArgument` by implementing `init?(argument:)`:
 
 ```swift
-struct Path {
+struct Path: ExpressibleByArgument {
     var pathString: String
     
     init?(argument: String) {
