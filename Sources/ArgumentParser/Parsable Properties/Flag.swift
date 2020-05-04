@@ -188,7 +188,9 @@ extension Flag where Value == Bool {
   ///
   /// - Parameters:
   ///   - name: A specification for what names are allowed for this flag.
-  ///   - initial: The default value for this flag.
+  ///   - initial: A default value to use for this property. If `initial` is
+  ///     `nil`, one of the flags declared by this `@Flag` attribute is required
+  ///     from the user.
   ///   - inversion: The method for converting this flag's name into an on/off
   ///     pair.
   ///   - exclusivity: The behavior to use when an on/off pair of flags is
@@ -235,7 +237,8 @@ extension Flag where Value: EnumerableFlag {
   /// - Parameters:
   ///   - name: A specification for what names are allowed for this flag.
   ///   - initial: A default value to use for this property. If `initial` is
-  ///     `nil`, this flag is required.
+  ///     `nil`, one of the flags declared by this `@Flag` attribute is required
+  ///     from the user.
   ///   - exclusivity: The behavior to use when multiple flags are specified.
   ///   - help: Information about how to use this flag.
   public init(
