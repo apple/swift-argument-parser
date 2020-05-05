@@ -30,6 +30,7 @@ enum MessageInfo {
       case .helpRequested:
         self = .help(text: HelpGenerator(commandStack: e.commandStack).rendered)
         return
+        
       case .versionRequested:
         let versionString = commandStack
           .map { $0.configuration.version }
@@ -37,11 +38,11 @@ enum MessageInfo {
           ?? "Unspecified version"
         self = .help(text: versionString)
         return
+        
       case .completionScriptRequested(let shell):
         do {
-          let completionsGenerator = try CompletionsGenerator(command: type.asCommand, shell: shell)
-          let completionScript = completionsGenerator.generateCompletionScript()
-          self = .help(text: completionScript)
+          let completionsGenerator = try CompletionsGenerator(command: type.asCommand, shellName: shell)
+          self = .help(text: completionsGenerator.generateCompletionScript())
           return
         } catch {
           self.init(error: error, type: type)

@@ -27,10 +27,17 @@ extension CompletionScriptTests {
     @Option(completion: .list(["1", "2", "3"])) var otherKind: Kind
   }
 
-  func testBase() throws {
-    let script = try CompletionsGenerator(command: Base.self, shell: "zsh")
+  func testBase_Zsh() throws {
+    let script1 = try CompletionsGenerator(command: Base.self, shell: .zsh)
           .generateCompletionScript()
-    XCTAssertEqual(baseCompletions, script)
+    XCTAssertEqual(baseCompletions, script1)
+    
+    let script2 = try CompletionsGenerator(command: Base.self, shellName: "zsh")
+          .generateCompletionScript()
+    XCTAssertEqual(baseCompletions, script2)
+    
+    let script3 = Base.completionScript(for: .zsh)
+    XCTAssertEqual(baseCompletions, script3)
   }
 }
 
@@ -56,8 +63,7 @@ extension CompletionScriptTests {
       XCTFail("Didn't error as expected", file: file, line: line)
     } catch let error as CommandError {
       guard case .completionScriptCustomResponse(let output) = error.parserError else {
-        XCTFail("Unexpected error: \(error)", file: file, line: line)
-        return
+        throw error
       }
       XCTAssertEqual(expectedOutput, output, file: file, line: line)
     }
@@ -68,6 +74,8 @@ extension CompletionScriptTests {
     try verifyCustomOutput("--one", expectedOutput: "a\nb\nc")
     try verifyCustomOutput("two", expectedOutput: "d\ne\nf")
     try verifyCustomOutput("-z", expectedOutput: "x\ny\nz")
+    
+    XCTAssertThrowsError(try verifyCustomOutput("--bad", expectedOutput: ""))
   }
 }
 

@@ -179,6 +179,11 @@ extension ErrorMessageGenerator {
     case .helpRequested, .versionRequested, .completionScriptRequested, .completionScriptCustomResponse:
       return nil
 
+    case .unsupportedShell(let shell?):
+      return unsupportedShell(shell)
+    case .unsupportedShell:
+      return unsupportedAutodetectedShell
+      
     case .notImplemented:
       return notImplementedMessage
     case .invalidState:
@@ -248,6 +253,21 @@ extension ErrorMessageGenerator {
     return "Internal error. Invalid state while parsing command-line arguments."
   }
 
+  var unsupportedAutodetectedShell: String {
+    """
+    Can't autodetect a supported shell.
+    Please use --generate-completions=<shell> with one of:
+        \(CompletionShell.allCases.map { $0.rawValue }.joined(separator: " "))
+    """
+  }
+
+  func unsupportedShell(_ shell: String) -> String {
+    """
+    Can't generate completion scripts for '\(shell)'.
+    Please use --generate-completions=<shell> with one of:
+        \(CompletionShell.allCases.map { $0.rawValue }.joined(separator: " "))
+    """
+  }
 
   func unknownOptionMessage(origin: InputOrigin.Element, name: Name) -> String {
     if case .short = name {

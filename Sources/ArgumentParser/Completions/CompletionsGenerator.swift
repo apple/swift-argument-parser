@@ -17,46 +17,64 @@ import Darwin
 import MSVCRT
 #endif
 
-struct CompletionsGenerator {
-  enum Shell: String, RawRepresentable, CaseIterable {
-    case zsh
-    case bash
-    case fish
-    
-    static func autodetect() -> Shell? {
-      guard let shellVar = getenv("SHELL") else { return nil }
-      let shellParts = String(cString: shellVar).split(separator: "/")
-      return Shell(rawValue: String(shellParts.last ?? ""))
+/// A shell for which the parser can generate a completion script.
+public struct CompletionShell: RawRepresentable, Hashable, CaseIterable {
+  public var rawValue: String
+  
+  /// Creates a new instance from the given string.
+  public init?(rawValue: String) {
+    switch rawValue {
+    case "zsh", "bash", "fish":
+      self.rawValue = rawValue
+    default:
+      return nil
     }
   }
   
-  var shell: Shell
+  /// An instance representing `zsh`.
+  public static var zsh: CompletionShell { CompletionShell(rawValue: "zsh")! }
+
+  /// An instance representing `bash`.
+  public static var bash: CompletionShell { CompletionShell(rawValue: "bash")! }
+
+  /// An instance representing `fish`.
+  public static var fish: CompletionShell { CompletionShell(rawValue: "fish")! }
+  
+  /// Returns an instance representing the current shell, if recognized.
+  public static func autodetect() -> CompletionShell? {
+    guard let shellVar = getenv("SHELL") else { return nil }
+    let shellParts = String(cString: shellVar).split(separator: "/")
+    return CompletionShell(rawValue: String(shellParts.last ?? ""))
+  }
+  
+  /// An array of all supported shells for completion scripts.
+  public static var allCases: [CompletionShell] {
+    [.zsh, .bash, .fish]
+  }
+}
+
+struct CompletionsGenerator {
+  var shell: CompletionShell
   var command: ParsableCommand.Type
   
-  init(command: ParsableCommand.Type, shell str: String?) throws {
-    if let str = str {
-      guard let shell = Shell(rawValue: str) else {
-        print("""
-          Can't generate completion scripts for '\(str)'.
-          Please use --generate-completions=<shell> with one of:
-              \(Shell.allCases.map { $0.rawValue }.joined(separator: " "))
-          """)
-        throw ExitCode.failure
-      }
-      self.shell = shell
-    } else {
-      guard let shell = Shell.autodetect() else {
-        print("""
-          Can't autodetect a supported shell.
-          Please use --generate-completions=<shell> with one of:
-              \(Shell.allCases.map { $0.rawValue }.joined(separator: " "))
-          """)
-        throw ExitCode.failure
-      }
-      self.shell = shell
+  init(command: ParsableCommand.Type, shell: CompletionShell?) throws {
+    guard let _shell = shell ?? .autodetect() else {
+      throw ParserError.unsupportedShell()
     }
-    
+
+    self.shell = _shell
     self.command = command
+  }
+
+  init(command: ParsableCommand.Type, shellName: String?) throws {
+    if let shellName = shellName {
+      guard let shell = CompletionShell(rawValue: shellName) else {
+        throw ParserError.unsupportedShell(shellName)
+      }
+      try self.init(command: command, shell: shell)
+    } else {
+      try self.init(command: command, shell: nil)
+    }
   }
   
   func generateCompletionScript() -> String {
@@ -67,6 +85,8 @@ struct CompletionsGenerator {
       return BashCompletionsGenerator.generateCompletionScript(command)
     case .fish:
       return FishCompletionsGenerator.generateCompletionScript(command)
+    default:
+      fatalError("Invalid CompletionShell")
     }
   }
 }
