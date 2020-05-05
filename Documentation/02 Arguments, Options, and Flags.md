@@ -211,7 +211,7 @@ false false
 Error: Missing one of: '--enable-required-element', '--disable-required-element'
 ```
 
-To create a flag with custom names for a Boolean value, to provide an exclusive choice between more than two names, or for collecting multiple values from a set of defined choices, define an enumeration that conforms to the `EnumerableFlag` documentation.
+To create a flag with custom names for a Boolean value, to provide an exclusive choice between more than two names, or for collecting multiple values from a set of defined choices, define an enumeration that conforms to the `EnumerableFlag` protocol.
 
 ```swift
 enum CacheMethod: EnumerableFlag {
