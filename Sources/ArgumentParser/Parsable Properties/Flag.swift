@@ -21,12 +21,12 @@
 /// `verbose` has a default value of `false`, but becomes `true` if `--verbose`
 /// is provided on the command line.
 ///
-/// A flag can have a value that is a `Bool`, an `Int`, or any `CaseIterable`
-/// type. When using a `CaseIterable` type as a flag, the individual cases
+/// A flag can have a value that is a `Bool`, an `Int`, or any `EnumerableFlag`
+/// type. When using an `EnumerableFlag` type as a flag, the individual cases
 /// form the flags that are used on the command line.
 ///
 ///     struct Options {
-///         enum Operation: CaseIterable, ... {
+///         enum Operation: EnumerableFlag {
 ///             case add
 ///             case multiply
 ///         }
