@@ -30,6 +30,10 @@ public struct CommandConfiguration {
   /// A Boolean value indicating whether this command should be shown in
   /// the extended help display.
   public var shouldDisplay: Bool
+    
+  /// A Boolean value indicating whether this command should display help
+  /// when executed without further user input.
+  public var defaultToHelp: Bool
   
   /// An array of the types that define subcommands for this command.
   public var subcommands: [ParsableCommand.Type]
@@ -51,6 +55,8 @@ public struct CommandConfiguration {
   ///   - version: The version number for this command. When you provide a
   ///     non-empty string, the arguemnt parser prints it if the user provides
   ///     a `--version` flag.
+  ///   - defaultToHelp: A Boolean value indicating whether the command should
+  ///     display help in the absence of other user input.
   ///   - shouldDisplay: A Boolean value indicating whether the command
   ///     should be shown in the extended help display.
   ///   - subcommands: An array of the types that define subcommands for the
@@ -65,6 +71,7 @@ public struct CommandConfiguration {
     discussion: String = "",
     version: String = "",
     shouldDisplay: Bool = true,
+    defaultToHelp: Bool = false,
     subcommands: [ParsableCommand.Type] = [],
     defaultSubcommand: ParsableCommand.Type? = nil,
     helpNames: NameSpecification = [.short, .long]
@@ -74,6 +81,7 @@ public struct CommandConfiguration {
     self.discussion = discussion
     self.version = version
     self.shouldDisplay = shouldDisplay
+    self.defaultToHelp = defaultToHelp
     self.subcommands = subcommands
     self.defaultSubcommand = defaultSubcommand
     self.helpNames = helpNames

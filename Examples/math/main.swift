@@ -20,6 +20,9 @@ struct Math: ParsableCommand {
 
         // Commands can define a version for automatic '--version' support.
         version: "1.0.0",
+        
+        // Show help on no input.
+        defaultToHelp: true,
 
         // Pass an array to `subcommands` to set up a nested tree of subcommands.
         // With language support for type-level introspection, this could be

@@ -191,6 +191,7 @@ extension CommandParser {
   /// - Parameter arguments: The array of arguments to parse. This should not
   ///   include the command name as the first argument.
   mutating func parse(arguments: [String]) -> Result<ParsableCommand, CommandError> {
+    
     var split: SplitArguments
     do {
       split = try SplitArguments(arguments: arguments)
@@ -201,6 +202,10 @@ extension CommandParser {
     }
     
     do {
+      if arguments.isEmpty && commandStack.contains(where: { $0.configuration.defaultToHelp }) {
+        throw HelpRequested()
+      }
+
       try descendingParse(&split)
       let result = try extractLastParsedValue(split)
       

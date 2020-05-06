@@ -38,6 +38,7 @@ final class MathExampleTests: XCTestCase {
     AssertExecuteCommand(command: "math -h", expected: helpText)
     AssertExecuteCommand(command: "math --help", expected: helpText)
     AssertExecuteCommand(command: "math help", expected: helpText)
+    AssertExecuteCommand(command: "math", expected: helpText)
   }
   
   func testMath_AddHelp() throws {
