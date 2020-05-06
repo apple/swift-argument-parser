@@ -207,7 +207,7 @@ extension Math.Statistics {
         var file: String?
         @Option(help: .hidden, completion: .directory)
         var directory: String?
-        @Option(help: .hidden, completion: .custom(customCompletion))
+        @Option(help: "Use a custom completion function", completion: .custom(customCompletion))
         var custom: String?
       
         func validate() throws {
@@ -230,8 +230,8 @@ extension Math.Statistics {
     }
 }
 
-func customCompletion(_ s: String) -> [String] {
-  return s == "a"
+func customCompletion(_ s: [String]) -> [String] {
+  return (s.last ?? "").starts(with: "a")
     ? ["aardvark", "aaaaalbert"]
     : ["hello", "helicopter", "heliotrope"]
 }

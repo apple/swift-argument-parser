@@ -171,8 +171,9 @@ extension ArgumentDefinition {
       let commandName = commands.first!._commandName
       let subcommandNames = commands.dropFirst().map { $0._commandName }.joined(separator: " ")
       // TODO: Make this work for @Arguments
-      let argumentName = preferredNameForSynopsis?.synopsisString ?? self.help.keys.first?.rawValue ?? "---"
-      return "{_custom_completion $_\(commandName)_commandname ---completion \(subcommandNames) -- \(argumentName)}"
+      let argumentName = preferredNameForSynopsis?.synopsisString
+            ?? self.help.keys.first?.rawValue ?? "---"
+      return "{_custom_completion $_\(commandName)_commandname ---completion \(subcommandNames) -- \(argumentName) $words}"
     }
   }
 }

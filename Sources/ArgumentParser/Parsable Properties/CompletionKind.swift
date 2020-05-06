@@ -14,7 +14,7 @@ public enum CompletionKind {
   case file(pattern: String?)
   case directory(pattern: String?)
   case list([String])
-  case custom((String) -> [String])
+  case custom(([String]) -> [String])
   
   public static var file: CompletionKind { .file(pattern: nil) }
   public static var directory: CompletionKind { .directory(pattern: nil) }

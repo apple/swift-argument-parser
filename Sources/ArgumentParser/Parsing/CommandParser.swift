@@ -113,19 +113,14 @@ extension CommandParser {
       throw ParserError.invalidState
     }
     // Completion text is optional here
-    let completionValue = args.popFirst() ?? ""
-    
-    // There should be no more arguments remaining at this point
-    guard args.isEmpty else {
-      throw ParserError.invalidState
-    }
+    let completionValues = Array(args)
 
     // Generate the argument set and parse the argument to find in the set
     let argset = ArgumentSet(current.element)
     let (_, parsedArgument) = try! parseIndividualArg(argToMatch, at: 0).first!
     
     // Look up the specified argument and retrieve its custom completion function
-    let completionFunction: (String) -> [String]
+    let completionFunction: ([String]) -> [String]
     
     switch parsedArgument {
     case .option(let parsed):
@@ -147,7 +142,7 @@ extension CommandParser {
     // Parsing and retrieval successful! We don't want to continue with any
     // other parsing here, so after printing the result of the completion
     // function, exit with a success code.
-    let output = completionFunction(completionValue).joined(separator: "\n")
+    let output = completionFunction(completionValues).joined(separator: "\n")
     throw ParserError.completionScriptCustomResponse(output)
   }
   
