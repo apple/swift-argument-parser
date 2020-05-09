@@ -9,13 +9,26 @@
 //
 //===----------------------------------------------------------------------===//
 
+/// The type of completion to use for an argument or option.
 public enum CompletionKind {
+  /// Use the default completion kind for the value's type.
   case `default`
-  case file(pattern: String?)
-  case directory(pattern: String?)
+
+  /// Use the specified list of completion strings.
   case list([String])
+
+  /// Complete file names that match the specified pattern.
+  case file(pattern: String?)
+
+  /// Complete directory names that match the specified pattern.
+  case directory(pattern: String?)
+
+  /// Generate completions using the given closure.
   case custom(([String]) -> [String])
   
+  /// Complete file names.
   public static var file: CompletionKind { .file(pattern: nil) }
+
+  /// Complete directory names.
   public static var directory: CompletionKind { .directory(pattern: nil) }
 }
