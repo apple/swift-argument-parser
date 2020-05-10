@@ -130,7 +130,7 @@ extension ArgumentSet {
     // The flag is required if initialValue is `nil`, otherwise it's optional
     let helpOptions: ArgumentDefinition.Help.Options = initialValue != nil ? .isOptional : []
     
-    let help = ArgumentDefinition.Help(options: helpOptions, help: help, defaultValue: initialValue.map(String.init), key: key)
+    let help = ArgumentDefinition.Help(options: helpOptions, help: help, defaultValue: initialValue.map(String.init), key: key, isComposite: true)
     let (enableNames, disableNames) = inversion.enableDisableNamePair(for: key, name: name)
 
     var hasUpdated = false

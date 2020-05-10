@@ -130,21 +130,45 @@ extension FlagsEndToEndTests {
   }
 }
 
-enum Color: String, CaseIterable {
+enum Color: String, EnumerableFlag {
   case pink
   case purple
   case silver
 }
 
-enum Size: String, CaseIterable {
+enum Size: String, EnumerableFlag {
   case small
   case medium
   case large
   case extraLarge
-  case humongous = "huge"
+  case humongous
+  
+  static func name(for value: Size) -> NameSpecification {
+    switch value {
+    case .small, .medium, .large:
+      return .shortAndLong
+    case .humongous:
+      return [.long, .customLong("huge")]
+    default:
+      return .long
+    }
+  }
+  
+  static func help(for value: Size) -> ArgumentHelp? {
+    switch value {
+    case .small:
+      return "A smallish size"
+    case .medium:
+      return "Not too big, not too small"
+    case .humongous:
+      return "Roughly the size of a barge"
+    case .large, .extraLarge:
+      return nil
+    }
+  }
 }
 
-enum Shape: String, CaseIterable {
+enum Shape: String, EnumerableFlag {
   case round
   case square
   case oblong
@@ -210,6 +234,18 @@ extension FlagsEndToEndTests {
     }
     
     AssertParse(Baz.self, ["--pink", "--huge"]) { options in
+      XCTAssertEqual(options.color, .pink)
+      XCTAssertEqual(options.size, .humongous)
+      XCTAssertEqual(options.shape, nil)
+    }
+    
+    AssertParse(Baz.self, ["--pink", "--humongous"]) { options in
+      XCTAssertEqual(options.color, .pink)
+      XCTAssertEqual(options.size, .humongous)
+      XCTAssertEqual(options.shape, nil)
+    }
+    
+    AssertParse(Baz.self, ["--pink", "--huge", "--humongous"]) { options in
       XCTAssertEqual(options.color, .pink)
       XCTAssertEqual(options.size, .humongous)
       XCTAssertEqual(options.shape, nil)
@@ -291,6 +327,40 @@ extension FlagsEndToEndTests {
 
     AssertParse(RepeatOK.self, ["--large", "--pink", "--round", "-l"]) { options in
       XCTAssertEqual(options.size, .large)
+    }
+  }
+}
+
+fileprivate struct DeprecatedFlags: ParsableArguments {
+  enum One: String, CaseIterable {
+    case one
+  }
+  enum Two: String, CaseIterable {
+    case two
+  }
+  enum Three: String, CaseIterable {
+    case three
+    case four
+  }
+
+  @Flag() var single: One
+  @Flag() var optional: Two?
+  @Flag() var array: [Three]
+  @Flag(name: .long) var size: Size?
+}
+
+extension FlagsEndToEndTests {
+  func testParsingDeprecatedFlags() throws {
+    AssertParse(DeprecatedFlags.self, ["--one"]) { options in
+      XCTAssertEqual(options.single, .one)
+      XCTAssertNil(options.optional)
+      XCTAssertTrue(options.array.isEmpty)
+    }
+
+    AssertParse(DeprecatedFlags.self, ["--one", "--two", "--three", "--four", "--three"]) { options in
+      XCTAssertEqual(options.single, .one)
+      XCTAssertEqual(options.optional, .two)
+      XCTAssertEqual(options.array, [.three, .four, .three])
     }
   }
 }

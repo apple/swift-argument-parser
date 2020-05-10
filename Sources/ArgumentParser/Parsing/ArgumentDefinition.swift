@@ -31,6 +31,7 @@ struct ArgumentDefinition {
     var discussion: String?
     var defaultValue: String?
     var keys: [InputKey]
+    var isComposite: Bool
     
     struct Options: OptionSet {
       var rawValue: UInt
@@ -39,11 +40,12 @@ struct ArgumentDefinition {
       static let isRepeating = Options(rawValue: 1 << 1)
     }
     
-    init(options: Options = [], help: ArgumentHelp? = nil, defaultValue: String? = nil, key: InputKey) {
+    init(options: Options = [], help: ArgumentHelp? = nil, defaultValue: String? = nil, key: InputKey, isComposite: Bool = false) {
       self.options = options
       self.help = help
       self.defaultValue = defaultValue
       self.keys = [key]
+      self.isComposite = isComposite
     }
   }
   

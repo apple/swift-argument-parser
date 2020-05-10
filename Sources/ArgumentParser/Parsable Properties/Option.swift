@@ -78,7 +78,8 @@ extension Option where Value: ExpressibleByArgument {
   ///
   /// - Parameters:
   ///   - name: A specification for what names are allowed for this flag.
-  ///   - initial: A default value to use for this property.
+  ///   - initial: A default value to use for this property. If `initial` is
+  ///     `nil`, this option and value are required from the user.
   ///   - help: Information about how to use this option.
   public init(
     name: NameSpecification = .long,
@@ -224,7 +225,8 @@ extension Option {
   ///
   /// - Parameters:
   ///   - name: A specification for what names are allowed for this flag.
-  ///   - initial: A default value to use for this property.
+  ///   - initial: A default value to use for this property. If `initial` is
+  ///     `nil`, this option and value are required from the user.
   ///   - help: Information about how to use this option.
   ///   - transform: A closure that converts a string into this property's
   ///     type or throws an error.

@@ -211,15 +211,15 @@ false false
 Error: Missing one of: '--enable-required-element', '--disable-required-element'
 ```
 
-You can also use flags with types that are `CaseIterable` and `RawRepresentable` with a string raw value. This is useful for providing custom names for a Boolean value, for an exclusive choice between more than two names, or for collecting multiple values from a set of defined choices.
+To create a flag with custom names for a Boolean value, to provide an exclusive choice between more than two names, or for collecting multiple values from a set of defined choices, define an enumeration that conforms to the `EnumerableFlag` protocol.
 
 ```swift
-enum CacheMethod: String, CaseIterable {
+enum CacheMethod: EnumerableFlag {
     case inMemoryCache
     case persistentCache
 }
 
-enum Color: String, CaseIterable {
+enum Color: EnumerableFlag {
     case pink, purple, silver
 }
 
@@ -235,7 +235,7 @@ struct Example: ParsableCommand {
 }
 ``` 
 
-The flag names in this case are drawn from the raw values:
+The flag names in this case are drawn from the raw values — for information about customizing the names and help text, see the  [`EnumerableFlag` documentation](../Sources/ArgumentParser/Parsable%20Types/EnumerableFlag.swift).
 
 ```
 % example --in-memory-cache --pink --silver

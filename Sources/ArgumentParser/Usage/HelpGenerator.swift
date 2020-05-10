@@ -144,8 +144,9 @@ internal struct HelpGenerator {
         let synopsis: String
         let description: String
         
-        if i < args.count - 1 && args[i + 1].help.keys == arg.help.keys {
-          // If the next argument has the same keys as this one, we have a group of arguments to output together
+        if args[i].help.isComposite {
+          // If this argument is composite, we have a group of arguments to
+          // output together.
           var groupedArgs = [arg]
           let defaultValue = arg.help.defaultValue.map { "(default: \($0))" } ?? ""
           while i < args.count - 1 && args[i + 1].help.keys == arg.help.keys {
