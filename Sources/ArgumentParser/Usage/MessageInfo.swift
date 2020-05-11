@@ -27,7 +27,7 @@ enum MessageInfo {
 
       switch e.parserError {
       case .helpRequested:
-        self = .help(text: HelpGenerator(commandStack: e.commandStack).rendered)
+        self = .help(text: HelpGenerator(commandStack: e.commandStack).rendered())
         return
       case .versionRequested:
         let versionString = commandStack
@@ -43,7 +43,7 @@ enum MessageInfo {
       commandStack = [type.asCommand]
       parserError = e
       if case .helpRequested = e {
-        self = .help(text: HelpGenerator(commandStack: [type.asCommand]).rendered)
+        self = .help(text: HelpGenerator(commandStack: [type.asCommand]).rendered())
         return
       }
     default:
@@ -53,7 +53,7 @@ enum MessageInfo {
       parserError = .userValidationError(error)
     }
     
-    let usage = HelpGenerator(commandStack: commandStack).usageMessage
+    let usage = HelpGenerator(commandStack: commandStack).usageMessage()
     
     // Parsing errors and user-thrown validation errors have the usage
     // string attached. Other errors just get the error message.
@@ -68,7 +68,7 @@ enum MessageInfo {
           if let command = command {
             commandStack = CommandParser(type.asCommand).commandStack(for: command)
           }
-          self = .help(text: HelpGenerator(commandStack: commandStack).rendered)
+          self = .help(text: HelpGenerator(commandStack: commandStack).rendered())
         case .message(let message):
           self = .help(text: message)
         }
