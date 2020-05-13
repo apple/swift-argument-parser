@@ -117,12 +117,25 @@ public func AssertHelp<T: ParsableArguments>(
 ) {
   do {
     _ = try T.parse(["-h"])
-    XCTFail()
+    XCTFail(file: file, line: line)
   } catch {
     let helpString = T.fullMessage(for: error)
     AssertEqualStringsIgnoringTrailingWhitespace(
       helpString, expected, file: file, line: line)
   }
+  
+  let helpString = T.helpMessage()
+  AssertEqualStringsIgnoringTrailingWhitespace(
+    helpString, expected, file: file, line: line)
+}
+
+public func AssertHelp<T: ParsableCommand, U: ParsableCommand>(
+  for _: T.Type, root _: U.Type, equals expected: String,
+  file: StaticString = #file, line: UInt = #line
+) {
+  let helpString = U.helpMessage(for: T.self)
+  AssertEqualStringsIgnoringTrailingWhitespace(
+    helpString, expected, file: file, line: line)
 }
 
 extension XCTest {
