@@ -493,7 +493,14 @@ private extension ParsedArgument {
   }
   
   init(longArgWithSingleDashRemainder remainder: Substring) throws {
-    try self.init(longArgRemainder: remainder, makeName: { Name.longWithSingleDash(String($0)) })
+    try self.init(longArgRemainder: remainder, makeName: {
+      /// If an argument has a single dash and single character,
+      /// followed by a value, treat it as a short name.
+      ///     `-c=1`      ->  `Name.short("c")`
+      /// Otherwise, treat it as a long name with single dash.
+      ///     `-count=1`  ->  `Name.longWithSingleDash("count")`
+      $0.count == 1 ? Name.short($0.first!) : Name.longWithSingleDash(String($0))
+    })
   }
   
   init(longArgRemainder remainder: Substring, makeName: (Substring) -> Name) throws {
