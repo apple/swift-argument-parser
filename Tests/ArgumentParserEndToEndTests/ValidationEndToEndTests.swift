@@ -31,6 +31,19 @@ fileprivate struct Foo: ParsableArguments {
   static var usageString: String = """
     Usage: foo [--count <count>] [<names> ...] [--version] [--throw]
     """
+
+  static var helpString: String = """
+    USAGE: foo [--count <count>] [<names> ...] [--version] [--throw]
+
+    ARGUMENTS:
+      <names>
+
+    OPTIONS:
+      --count <count>
+      --version
+      --throw
+      -h, --help              Show help information.
+    """
   
   @Option()
   var count: Int?
@@ -106,7 +119,9 @@ extension ValidationEndToEndTests {
     AssertErrorMessage(Foo.self, [], "Must specify at least one name.")
     AssertFullErrorMessage(Foo.self, [], """
             Error: Must specify at least one name.
-            \(Foo.usageString)
+
+            \(Foo.helpString)
+            
             """)
     
     AssertErrorMessage(Foo.self, ["--count", "3", "Joe"], """

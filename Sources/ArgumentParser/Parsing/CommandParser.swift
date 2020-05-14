@@ -214,6 +214,7 @@ extension CommandParser {
     } catch let error as CommandError {
       return .failure(error)
     } catch let error as ParserError {
+      let error = arguments.isEmpty ? ParserError.noArguments(error) : error
       return .failure(CommandError(commandStack: commandStack, parserError: error))
     } catch is HelpRequested {
       return .success(HelpCommand(commandStack: commandStack))
