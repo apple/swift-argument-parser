@@ -12,7 +12,7 @@
 internal struct HelpGenerator {
   static var helpIndent = 2
   static var labelColumnWidth = 26
-  static var screenWidth: Int {
+  static var systemScreenWidth: Int {
     _screenWidthOverride ?? _terminalSize().width
   }
   
@@ -21,7 +21,7 @@ internal struct HelpGenerator {
   struct Usage {
     var components: [String]
     
-    var rendered: String {
+    func rendered(screenWidth: Int) -> String {
       components
         .joined(separator: "\n")
     }
@@ -37,13 +37,13 @@ internal struct HelpGenerator {
         String(repeating: " ", count: HelpGenerator.helpIndent) + label
       }
       
-      var rendered: String {
+      func rendered(screenWidth: Int) -> String {
         let paddedLabel = self.paddedLabel
         let wrappedAbstract = self.abstract
-          .wrapped(to: HelpGenerator.screenWidth, wrappingIndent: HelpGenerator.labelColumnWidth)
+          .wrapped(to: screenWidth, wrappingIndent: HelpGenerator.labelColumnWidth)
         let wrappedDiscussion = self.discussion.isEmpty
           ? ""
-          : self.discussion.wrapped(to: HelpGenerator.screenWidth, wrappingIndent: HelpGenerator.helpIndent * 4) + "\n"
+          : self.discussion.wrapped(to: screenWidth, wrappingIndent: HelpGenerator.helpIndent * 4) + "\n"
         let renderedAbstract: String = {
           guard !abstract.isEmpty else { return "" }
           if paddedLabel.count < HelpGenerator.labelColumnWidth {
@@ -82,10 +82,10 @@ internal struct HelpGenerator {
     var discussion: String = ""
     var isSubcommands: Bool = false
     
-    var rendered: String {
+    func rendered(screenWidth: Int) -> String {
       guard !elements.isEmpty else { return "" }
       
-      let renderedElements = elements.map { $0.rendered }.joined()
+      let renderedElements = elements.map { $0.rendered(screenWidth: screenWidth) }.joined()
       return "\(String(describing: header).uppercased()):\n"
         + renderedElements
     }
@@ -125,6 +125,10 @@ internal struct HelpGenerator {
     self.discussionSections = []
   }
   
+  init(_ type: ParsableArguments.Type) {
+    self.init(commandStack: [type.asCommand])
+  }
+
   static func generateSections(commandStack: [ParsableCommand.Type]) -> [Section] {
     var positionalElements: [Section.Element] = []
     var optionElements: [Section.Element] = []
@@ -219,22 +223,24 @@ internal struct HelpGenerator {
     ]
   }
   
-  var usageMessage: String {
-    "Usage: \(usage.rendered)"
+  func usageMessage(screenWidth: Int? = nil) -> String {
+    let screenWidth = screenWidth ?? HelpGenerator.systemScreenWidth
+    return "Usage: \(usage.rendered(screenWidth: screenWidth))"
   }
   
-  var rendered: String {
+  func rendered(screenWidth: Int? = nil) -> String {
+    let screenWidth = screenWidth ?? HelpGenerator.systemScreenWidth
     let renderedSections = sections
-      .map { $0.rendered }
+      .map { $0.rendered(screenWidth: screenWidth) }
       .filter { !$0.isEmpty }
       .joined(separator: "\n")
     let renderedAbstract = abstract.isEmpty
       ? ""
-      : "OVERVIEW: \(abstract)".wrapped(to: HelpGenerator.screenWidth) + "\n\n"
+      : "OVERVIEW: \(abstract)".wrapped(to: screenWidth) + "\n\n"
     
     return """
     \(renderedAbstract)\
-    USAGE: \(usage.rendered)
+    USAGE: \(usage.rendered(screenWidth: screenWidth))
     
     \(renderedSections)
     """

@@ -132,7 +132,6 @@ extension HelpGenerationTests {
     }
   }
 
-
   struct D: ParsableCommand {
     @Argument(default: "--", help: "Your occupation.")
     var occupation: String
@@ -267,8 +266,8 @@ extension HelpGenerationTests {
 
     """)
     
-    AssertHelp(for: H.AnotherCommand.self, equals: """
-    USAGE: another-command [--some-option-with-very-long-name <some-option-with-very-long-name>] [--option <option>] [<argument-with-very-long-name-and-help>] [<argument-with-very-long-name>] [<argument>]
+    AssertHelp(for: H.AnotherCommand.self, root: H.self, equals: """
+    USAGE: h another-command [--some-option-with-very-long-name <some-option-with-very-long-name>] [--option <option>] [<argument-with-very-long-name-and-help>] [<argument-with-very-long-name>] [<argument>]
 
     ARGUMENTS:
       <argument-with-very-long-name-and-help>

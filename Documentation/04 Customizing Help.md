@@ -165,3 +165,17 @@ struct Example: ParsableCommand {
     var experimentalEnableWidgets: Bool
 }
 ```
+
+## Generating Help Text Programmatically
+
+The help screen is automatically shown to users when they call your command with the help flag. You can generate the same text from within your program by calling the `helpMessage()` method.
+
+```swift
+let help = Repeat.helpMessage()
+// `help` matches the output above
+
+let fortyColumnHelp = Repeat.helpMessage(columns: 40)
+// `fortyColumnHelp` is the same help screen, but wrapped to 40 columns
+```
+
+When generating help text for a subcommand, call `helpMessage(for:)` on the `ParsableCommand` type that represents the root of the command tree and pass the subcommand type as a parameter to ensure the correct display.

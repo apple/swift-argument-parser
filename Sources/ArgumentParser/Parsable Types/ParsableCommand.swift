@@ -64,6 +64,25 @@ extension ParsableCommand {
     return try parser.parse(arguments: arguments).get()
   }
   
+  /// Returns the text of the help screen for the given subcommand of this
+  /// command.
+  ///
+  /// - Parameters:
+  ///   - subcommand: The subcommand to generate the help screen for.
+  ///     `subcommand` must be declared in the subcommand tree of this
+  ///     command.
+  ///   - columns: The column width to use when wrapping long line in the
+  ///     help screen. If `columns` is `nil`, uses the current terminal
+  ///     width, or a default value of `80` if the terminal width is not
+  ///     available.
+  public static func helpMessage(
+    for subcommand: ParsableCommand.Type,
+    columns: Int? = nil
+  ) -> String { 
+    let stack = CommandParser(self).commandStack(for: subcommand)
+    return HelpGenerator(commandStack: stack).rendered(screenWidth: columns)
+  }
+
   /// Parses an instance of this type, or one of its subcommands, from
   /// command-line arguments and calls its `run()` method, exiting cleanly
   /// or with a relevant error message.

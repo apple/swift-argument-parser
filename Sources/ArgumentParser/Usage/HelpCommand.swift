@@ -27,7 +27,7 @@ struct HelpCommand: ParsableCommand {
   }
   
   func generateHelp() -> String {
-    return HelpGenerator(commandStack: commandStack).rendered
+    return HelpGenerator(commandStack: commandStack).rendered()
   }
   
   enum CodingKeys: CodingKey {
