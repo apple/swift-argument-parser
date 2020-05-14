@@ -100,10 +100,10 @@ struct ChangelogAuthors: ParsableCommand {
   
   func links(for authors: [Author]) -> String {
     if authors.count <= 2 {
-      return authors.map(\.inlineLink).joined(separator: " and ")
+      return authors.map({ $0.inlineLink }).joined(separator: " and ")
     } else {
       let result = authors.dropLast()
-        .map(\.inlineLink)
+        .map({ $0.inlineLink })
         .joined(separator: ", ")
       return "\(result), and \(authors.last!.inlineLink)"
     }
@@ -111,7 +111,7 @@ struct ChangelogAuthors: ParsableCommand {
   
   func references(for authors: [Author]) -> String {
     authors
-      .map(\.linkReference)
+      .map({ $0.linkReference })
       .joined(separator: "\n")
   }
   
@@ -129,8 +129,8 @@ struct ChangelogAuthors: ParsableCommand {
   func run() throws {
     let data = try Data(contentsOf: try comparisonURL())
     let comparison = try JSONDecoder().decode(Comparison.self, from: data)
-    let authors = comparison.commits.map(\.author)
-      .uniqued(by: \.login)
+    let authors = comparison.commits.map({ $0.author })
+      .uniqued(by: { $0.login })
       .sorted(by: { $0.login.lowercased() < $1.login.lowercased() })
     
     print(links(for: authors))
