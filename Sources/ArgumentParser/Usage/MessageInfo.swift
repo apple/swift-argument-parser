@@ -80,6 +80,10 @@ enum MessageInfo {
         self = .other(message: String(describing: error), exitCode: EXIT_FAILURE)
       }
     } else if let parserError = parserError {
+      let usage: String = {
+        guard case ParserError.noArguments = parserError else { return usage }
+        return "\n" + HelpGenerator(commandStack: [type.asCommand]).rendered
+      }()
       let message = ArgumentSet(commandStack.last!).helpMessage(for: parserError)
       self = .validation(message: message, usage: usage)
     } else {
