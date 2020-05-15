@@ -253,6 +253,7 @@ extension Option {
           values.set(v, forKey: key, inputOrigin: origin)
         }
       })
+      arg.help.options.formUnion(ArgumentDefinition.Help.Options(type: Value.self))
       arg.help.defaultValue = initial.map { "\($0)" }
       return ArgumentSet(alternatives: [arg])
       })

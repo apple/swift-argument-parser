@@ -138,4 +138,15 @@ extension UsageGenerationTests {
     let help = UsageGenerator(toolName: "bar", parsable: I())
     XCTAssertEqual(help.synopsis, "bar [--color <color>]")
   }
+
+  struct J: ParsableArguments {
+    struct Foo {}
+    @Option(transform: { _ in Foo() }) var req: Foo
+    @Option(transform: { _ in Foo() }) var opt: Foo?
+  }
+
+  func testSynopsisWithTransform() {
+    let help = UsageGenerator(toolName: "bar", parsable: J())
+    XCTAssertEqual(help.synopsis, "bar --req <req> [--opt <opt>]")
+  }
 }
