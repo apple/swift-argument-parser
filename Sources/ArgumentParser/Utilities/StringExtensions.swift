@@ -165,8 +165,14 @@ extension String {
   }
   
   func indentingEachLine(by n: Int) -> String {
-    self.split(separator: "\n")
-      .map { String(repeating: " ", count: n) + $0 }
-      .joined(separator: "\n")
+    let hasTrailingNewline = self.last == "\n"
+    let lines = self.split(separator: "\n", omittingEmptySubsequences: false)
+    if hasTrailingNewline && lines.last == "" {
+      return lines.dropLast().map { String(repeating: " ", count: n) + $0 }
+        .joined(separator: "\n") + "\n"
+    } else {
+      return lines.map { String(repeating: " ", count: n) + $0 }
+        .joined(separator: "\n")
+    }
   }
 }

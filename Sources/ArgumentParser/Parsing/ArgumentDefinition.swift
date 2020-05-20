@@ -183,6 +183,14 @@ extension ArgumentDefinition {
   var isRepeatingPositional: Bool {
     isPositional && help.options.contains(.isRepeating)
   }
+
+  var isNullary: Bool {
+    if case .nullary = update {
+      return true
+    } else {
+      return false
+    }
+  }
 }
 
 extension ArgumentDefinition.Kind {
