@@ -189,6 +189,12 @@ extension Math.Statistics {
         static var configuration = CommandConfiguration(
             abstract: "Print the quantiles of the values (TBD).")
 
+        @Argument(completion: .list(["alphabet", "alligator", "branch", "braggart"]))
+        var oneOfFour: String
+
+        @Argument(completion: .custom { _ in ["alabaster", "breakfast", "crunch", "crash"] })
+        var customArg: String
+
         @Argument(help: "A group of floating-point values to operate on.")
         var values: [Double]
 
@@ -203,7 +209,7 @@ extension Math.Statistics {
         var testCustomExitCode: Int32?
       
         // These args are for testing custom completion scripts:
-        @Option(help: .hidden, completion: .file(pattern: "*.swift"))
+        @Option(help: .hidden, completion: .file(pattern: "swift"))
         var file: String?
         @Option(help: .hidden, completion: .directory)
         var directory: String?
