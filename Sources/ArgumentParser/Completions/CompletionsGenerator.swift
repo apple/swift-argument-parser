@@ -24,7 +24,7 @@ public struct CompletionShell: RawRepresentable, Hashable, CaseIterable {
   /// Creates a new instance from the given string.
   public init?(rawValue: String) {
     switch rawValue {
-    case "zsh", "bash", "fish":
+    case "zsh", "bash":
       self.rawValue = rawValue
     default:
       return nil
@@ -74,6 +74,7 @@ struct CompletionsGenerator {
     }
   }
   
+  /// Generates a Bash completion script for this generators shell and command..
   func generateCompletionScript() -> String {
     switch shell {
     case .zsh:
@@ -81,7 +82,18 @@ struct CompletionsGenerator {
     case .bash:
       return BashCompletionsGenerator.generateCompletionScript(command)
     default:
-      fatalError("Invalid CompletionShell")
+      fatalError("Invalid CompletionShell: \(shell)")
     }
+  }
+}
+
+extension ArgumentDefinition {
+  /// Returns a string with the arguments for the callback to generate custom completions for
+  /// this argument.
+  func customCompletionCall(_ commands: [ParsableCommand.Type]) -> String {
+    let subcommandNames = commands.dropFirst().map { $0._commandName }.joined(separator: " ")
+    let argumentName = preferredNameForSynopsis?.synopsisString
+          ?? self.help.keys.first?.rawValue ?? "---"
+    return "---completion \(subcommandNames) -- \(argumentName)"
   }
 }

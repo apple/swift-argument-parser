@@ -10,6 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 struct ZshCompletionsGenerator {
+  /// Generates a Zsh completion script for the given command.
   static func generateCompletionScript(_ type: ParsableCommand.Type) -> String {
     """
     #compdef \(type._commandName)
@@ -169,11 +170,7 @@ extension ArgumentDefinition {
     case .custom:
       // Generate a call back into the command to retrieve a completions list
       let commandName = commands.first!._commandName
-      let subcommandNames = commands.dropFirst().map { $0._commandName }.joined(separator: " ")
-      // TODO: Make this work for @Arguments
-      let argumentName = preferredNameForSynopsis?.synopsisString
-            ?? self.help.keys.first?.rawValue ?? "---"
-      return "{_custom_completion $_\(commandName)_commandname ---completion \(subcommandNames) -- \(argumentName) $words}"
+      return "{_custom_completion $_\(commandName)_commandname \(customCompletionCall(commands)) $words}"
     }
   }
 }
