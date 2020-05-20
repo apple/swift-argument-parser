@@ -298,4 +298,23 @@ extension HelpGenerationTests {
     """)
 
   }
+  
+  struct J: ParsableCommand {
+    static var configuration = CommandConfiguration(discussion: "test")
+  }
+  
+  func testOverviewButNoAbstractSpacing() {
+    let renderedHelp = HelpGenerator(J.self).rendered()
+    AssertEqualStringsIgnoringTrailingWhitespace(renderedHelp, """
+    OVERVIEW:
+    test
+
+    USAGE: j
+    
+    OPTIONS:
+      -h, --help              Show help information.
+    
+    """)
+  }
+
 }

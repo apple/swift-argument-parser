@@ -117,7 +117,10 @@ internal struct HelpGenerator {
     
     self.abstract = currentCommand.configuration.abstract
     if !currentCommand.configuration.discussion.isEmpty {
-      self.abstract += "\n\n\(currentCommand.configuration.discussion)"
+      if !self.abstract.isEmpty {
+        self.abstract += "\n"
+      }
+      self.abstract += "\n\(currentCommand.configuration.discussion)"
     }
     
     self.usage = Usage(components: [usageString])
