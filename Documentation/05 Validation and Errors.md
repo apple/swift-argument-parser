@@ -32,7 +32,7 @@ struct Select: ParsableCommand {
         }
     }
     
-    func run() {
+    mutating func run() {
         print(elements.shuffled().prefix(count).joined(separator: "\n"))
     }
 }
@@ -63,7 +63,7 @@ The `ValidationError` type is a special `ArgumentParser` error — a validation 
 struct LineCount: ParsableCommand {
     @Argument() var file: String
     
-    func run() throws {
+    mutating func run() throws {
         let contents = try String(contentsOfFile: file, encoding: .utf8)
         let lines = contents.split(separator: "\n")
         print(lines.count)
@@ -91,7 +91,7 @@ struct RuntimeError: Error, CustomStringConvertible {
 struct Example: ParsableCommand {
     @Argument() var inputFile: String
     
-    func run() throws {
+    mutating func run() throws {
         if !ExampleCore.processFile(inputFile) {
             // ExampleCore.processFile(_:) prints its own errors
             // and returns `false` on failure.

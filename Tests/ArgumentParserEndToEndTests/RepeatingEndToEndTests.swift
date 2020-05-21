@@ -375,7 +375,7 @@ extension RepeatingEndToEndTests {
 struct PerformanceTest: ParsableCommand {
   @Option(name: .short) var bundleIdentifiers: [String]
   
-  func run() throws { print(bundleIdentifiers) }
+  mutating func run() throws { print(bundleIdentifiers) }
 }
 
 fileprivate func argumentGenerator(_ count: Int) -> [String] {

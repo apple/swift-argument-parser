@@ -29,7 +29,7 @@ public protocol TestableParsableCommand: ParsableCommand, TestableParsableArgume
 }
 
 public extension TestableParsableCommand {
-  func run() throws {
+  mutating func run() throws {
     didRunExpectation.fulfill()
   }
 }
