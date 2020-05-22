@@ -53,7 +53,9 @@ enum MessageInfo {
       parserError = .userValidationError(error)
     }
     
+    let commandNames = commandStack.map { $0._commandName }.joined(separator: " ")
     let usage = HelpGenerator(commandStack: commandStack).usageMessage()
+      + "\n  See '\(commandNames) --help' for more information."
     
     // Parsing errors and user-thrown validation errors have the usage
     // string attached. Other errors just get the error message.
