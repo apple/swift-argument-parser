@@ -27,6 +27,8 @@ SUBCOMMANDS:
   average                 Print the average of the values.
   stdev                   Print the standard deviation of the values.
   quantiles               Print the quantiles of the values (TBD).
+
+  See 'math help stats <subcommand>' for detailed help.
 ```
 
 Start by defining the root `Math` command. You can provide a static `configuration` property for a command that specifies its subcommands and a default subcommand, if any.

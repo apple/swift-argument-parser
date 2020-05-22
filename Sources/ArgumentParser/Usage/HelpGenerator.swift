@@ -96,6 +96,7 @@ internal struct HelpGenerator {
     var content: String
   }
   
+  var commandStack: [ParsableCommand.Type]
   var abstract: String
   var usage: Usage
   var sections: [Section]
@@ -107,7 +108,8 @@ internal struct HelpGenerator {
     }
     
     let currentArgSet = ArgumentSet(currentCommand)
-    
+    self.commandStack = commandStack
+
     let toolName = commandStack.map { $0._commandName }.joined(separator: " ")
     var usageString = UsageGenerator(toolName: toolName, definition: [currentArgSet]).synopsis
     if !currentCommand.configuration.subcommands.isEmpty {
@@ -231,6 +233,12 @@ internal struct HelpGenerator {
     return "Usage: \(usage.rendered(screenWidth: screenWidth))"
   }
   
+  var includesSubcommands: Bool {
+    guard let subcommandSection = sections.first(where: { $0.header == .subcommands })
+      else { return false }
+    return !subcommandSection.elements.isEmpty
+  }
+  
   func rendered(screenWidth: Int? = nil) -> String {
     let screenWidth = screenWidth ?? HelpGenerator.systemScreenWidth
     let renderedSections = sections
@@ -241,11 +249,21 @@ internal struct HelpGenerator {
       ? ""
       : "OVERVIEW: \(abstract)".wrapped(to: screenWidth) + "\n\n"
     
+    var helpSubcommandMessage: String = ""
+    if includesSubcommands {
+      var names = commandStack.map { $0._commandName }
+      names.insert("help", at: 1)
+      helpSubcommandMessage = """
+
+          See '\(names.joined(separator: " ")) <subcommand>' for detailed help.
+        """
+    }
+    
     return """
     \(renderedAbstract)\
     USAGE: \(usage.rendered(screenWidth: screenWidth))
     
-    \(renderedSections)
+    \(renderedSections)\(helpSubcommandMessage)
     """
   }
 }
