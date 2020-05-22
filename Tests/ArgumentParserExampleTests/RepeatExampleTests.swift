@@ -65,6 +65,7 @@ final class RepeatExampleTests: XCTestCase {
       expected: """
             Error: Missing value for '--count <count>'
             Usage: repeat [--count <count>] [--include-counter] <phrase>
+              See 'repeat --help' for more information.
             """,
       exitCode: .validationFailure)
     
@@ -73,6 +74,7 @@ final class RepeatExampleTests: XCTestCase {
       expected: """
             Error: The value 'ZZZ' is invalid for '--count <count>'
             Usage: repeat [--count <count>] [--include-counter] <phrase>
+              See 'repeat --help' for more information.
             """,
       exitCode: .validationFailure)
     
@@ -81,6 +83,7 @@ final class RepeatExampleTests: XCTestCase {
       expected: """
             Error: Unknown option '--version'
             Usage: repeat [--count <count>] [--include-counter] <phrase>
+              See 'repeat --help' for more information.
             """,
       exitCode: .validationFailure)
   }

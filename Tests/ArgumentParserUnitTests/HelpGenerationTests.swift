@@ -264,6 +264,7 @@ extension HelpGenerationTests {
                               Test long command name.
       another-command
 
+      See 'h help <subcommand>' for detailed help.
     """)
     
     AssertHelp(for: H.AnotherCommand.self, root: H.self, equals: """

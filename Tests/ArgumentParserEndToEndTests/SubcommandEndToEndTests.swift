@@ -81,6 +81,7 @@ extension SubcommandEndToEndTests {
               a
               b
 
+              See 'foo help <subcommand>' for detailed help.
             """, helpFoo)
     AssertEqualStringsIgnoringTrailingWhitespace("""
             USAGE: foo a --name <name> --bar <bar>
