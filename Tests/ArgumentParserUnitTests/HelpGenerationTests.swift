@@ -317,4 +317,27 @@ extension HelpGenerationTests {
     """)
   }
 
+  struct K: ParsableCommand {
+    @Argument(help: "A list of paths.")
+    var paths: [String]
+    
+    func validate() throws {
+      if paths.isEmpty {
+        throw ValidationError("At least one path must be specified.")
+      }
+    }
+  }
+  
+  func testHelpWithNoValueForArray() {
+    AssertHelp(for: K.self, equals: """
+    USAGE: k [<paths> ...]
+
+    ARGUMENTS:
+      <paths>                 A list of paths.
+
+    OPTIONS:
+      -h, --help              Show help information.
+
+    """)
+  }
 }

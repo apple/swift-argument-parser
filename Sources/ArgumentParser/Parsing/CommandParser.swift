@@ -159,6 +159,7 @@ extension CommandParser {
       do {
         try parsedCommand.validate()
       } catch {
+        try checkForBuiltInFlags(split)
         throw CommandError(commandStack: commandStack, parserError: ParserError.userValidationError(error))
       }
 
