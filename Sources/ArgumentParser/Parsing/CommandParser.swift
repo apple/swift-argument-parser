@@ -85,7 +85,7 @@ extension CommandParser {
     try checkForBuiltInFlags(split)
     
     // We should have used up all arguments at this point:
-    guard split.isEmpty else {
+    guard !split.containsNonTerminatorArguments else {
       // Check if one of the arguments is an unknown option
       for (index, element) in split.elements {
         if case .option(let argument) = element {
