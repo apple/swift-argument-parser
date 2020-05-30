@@ -97,6 +97,27 @@ extension Option where Value: ExpressibleByArgument {
         default: initial, help: help)
       })
   }
+
+  /// Creates a property with a default value provided by standard Swift default value syntax.
+  ///
+  /// For instance, the following are now equivalent:
+  /// - `@Option(default: "bar") var foo: String`
+  /// - `@Option() var foo: String = "bar"`
+  ///
+  /// This syntax allows defaults to be set for options much more naturally for the developer.
+  ///
+  /// Parameters are the same as `.init(name:default:parsing:help:)`, just replacing `default` with `wrappedValue`
+  public init(
+    wrappedValue: Value,
+    name: NameSpecification = .long,
+    parsing parsingStrategy: SingleValueParsingStrategy = .next,
+    help: ArgumentHelp? = nil
+  ) {
+      self.init(name: name,
+                default: wrappedValue,
+                parsing: parsingStrategy,
+                help: help)
+  }
 }
 
 /// The strategy to use when parsing a single value from `@Option` arguments.
