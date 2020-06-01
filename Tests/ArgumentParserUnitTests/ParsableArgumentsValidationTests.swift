@@ -324,7 +324,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   }
 
   // MARK: CaseIterable enum flag has first letter duplication
-  fileprivate enum ExampleEnum: String, ExpressibleByArgument, CaseIterable {
+  fileprivate enum ExampleEnum: String, EnumerableFlag {
     case first
     case second
     case other
