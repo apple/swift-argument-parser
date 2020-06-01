@@ -84,18 +84,24 @@ extension ParsableCommand {
   }
 
   /// Parses an instance of this type, or one of its subcommands, from
-  /// command-line arguments and calls its `run()` method, exiting cleanly
-  /// or with a relevant error message.
+  /// the given arguments and calls its `run()` method, exiting with a
+  /// relevant error message if necessary.
   ///
   /// - Parameter arguments: An array of arguments to use for parsing. If
   ///   `arguments` is `nil`, this uses the program's command-line arguments.
-  public static func main(_ arguments: [String]? = nil) -> Never {
+  public static func main(_ arguments: [String]?) {
     do {
       let command = try parseAsRoot(arguments)
       try command.run()
-      exit()
     } catch {
       exit(withError: error)
     }
+  }
+
+  /// Parses an instance of this type, or one of its subcommands, from
+  /// command-line arguments and calls its `run()` method, exiting with a
+  /// relevant error message if necessary.
+  public static func main() {
+    self.main(nil)
   }
 }
