@@ -39,12 +39,10 @@ fileprivate struct AlmostAllArguments: ParsableArguments {
   @Argument(default: 0) var c2: Int?
 
   @Argument(default: 0, help: "", transform: { _ in 0 }) var d: Int?
-  @Argument(default: 0) var d1: Int?
   @Argument(help: "") var d2: Int?
   @Argument(transform: { _ in 0 }) var d3: Int?
   @Argument(help: "", transform: { _ in 0 }) var d4: Int?
   @Argument(default: 0, transform: { _ in 0 }) var d5: Int?
-  @Argument(default: 0, help: "") var d6: Int?
 
   @Argument(parsing: .remaining, help: "") var e: [Int]
   @Argument() var e0: [Int]
