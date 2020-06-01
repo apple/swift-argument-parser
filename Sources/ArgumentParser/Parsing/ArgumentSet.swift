@@ -348,8 +348,8 @@ extension ArgumentSet {
           try parseValue(argument, parsed, origin, update, &result, &usedOrigins)
         }
       case .terminator:
-        // Mark the terminator as used:
-        result.set(ParsedValues.Element(key: .terminator, value: 0, inputOrigin: [origin]))
+        // Ignore the terminator, it might get picked up as a positional value later.
+        break
       }
     }
     

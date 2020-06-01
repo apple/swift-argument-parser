@@ -63,9 +63,11 @@ When called without both values, the command exits with an error:
 % example 5
 Error: Missing '--user-name <user-name>'
 Usage: example --user-name <user-name> <value>
+  See 'example --help' for more information.
 % example --user-name kjohnson
 Error: Missing '<value>'
 Usage: example --user-name <user-name> <value>
+  See 'example --help' for more information.
 ```
 
 ## Customizing option and flag names
@@ -293,6 +295,7 @@ Verbose: true, name: Tomás, file: none
 % example --name --verbose Tomás
 Error: Missing value for '--name <name>'
 Usage: example [--verbose] --name <name> [<file>]
+  See 'example --help' for more information.
 ```
 
 Parsing options as arrays is similar — only adjacent key-value pairs are recognized by default.
@@ -338,6 +341,7 @@ Verbose: true, files: ["file1.swift", "file2.swift"]
 % example --file --verbose file1.swift --file file2.swift
 Error: Missing value for '--file <file>'
 Usage: example [--file <file> ...] [--verbose]
+  See 'example --help' for more information.
 ```
 
 The `.unconditionalSingleValue` parsing strategy uses whatever input follows the key as its value, even if that input is dash-prefixed. If `file` were defined as `@Option(parsing: .unconditionalSingleValue) var file: [String]`, then the resulting array could include strings that look like options:
@@ -388,6 +392,7 @@ Verbose: true, files: ["file1.swift", "file2.swift"]
 % example --verbose file1.swift file2.swift --other
 Error: Unexpected argument '--other'
 Usage: example [--verbose] [<files> ...]
+  See 'example --help' for more information.
 ```
 
 Any input after the `--` terminator is automatically treated as positional input, so users can provide dash-prefixed values that way even with the default configuration:

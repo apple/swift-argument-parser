@@ -21,25 +21,25 @@ extension SplitArguments.InputIndex: ExpressibleByIntegerLiteral {
 
 private func AssertIndexEqual(_ sut: SplitArguments, at index: Int, inputIndex: Int, subIndex: SplitArguments.SubIndex, file: StaticString = #file, line: UInt = #line) {
   guard index < sut.elements.count else {
-    XCTFail("Element index \(index) is out of range. sur only has \(sut.elements.count) elements.", file: file, line: line)
+    XCTFail("Element index \(index) is out of range. sur only has \(sut.elements.count) elements.", file: (file), line: line)
     return
   }
   let splitIndex = sut.elements[index].0
   let expected = SplitArguments.Index(inputIndex: SplitArguments.InputIndex(rawValue: inputIndex), subIndex: subIndex)
   if splitIndex.inputIndex != expected.inputIndex {
-    XCTFail("inputIndex does not match: \(splitIndex.inputIndex.rawValue) != \(expected.inputIndex.rawValue)", file: file, line: line)
+    XCTFail("inputIndex does not match: \(splitIndex.inputIndex.rawValue) != \(expected.inputIndex.rawValue)", file: (file), line: line)
   }
   if splitIndex.subIndex != expected.subIndex {
-    XCTFail("inputIndex does not match: \(splitIndex.subIndex) != \(expected.subIndex)", file: file, line: line)
+    XCTFail("inputIndex does not match: \(splitIndex.subIndex) != \(expected.subIndex)", file: (file), line: line)
   }
 }
 
 private func AssertElementEqual(_ sut: SplitArguments, at index: Int, _ element: SplitArguments.Element, file: StaticString = #file, line: UInt = #line) {
   guard index < sut.elements.count else {
-    XCTFail("Element index \(index) is out of range. sur only has \(sut.elements.count) elements.", file: file, line: line)
+    XCTFail("Element index \(index) is out of range. sur only has \(sut.elements.count) elements.", file: (file), line: line)
     return
   }
-  XCTAssertEqual(sut.elements[index].1, element, file: file, line: line)
+  XCTAssertEqual(sut.elements[index].1, element, file: (file), line: line)
 }
 
 final class SplitArgumentTests: XCTestCase {

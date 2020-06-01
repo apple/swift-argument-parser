@@ -54,6 +54,7 @@ hello
 $ repeat
 Error: Missing required value for argument 'phrase'.
 Usage: repeat [--count <count>] [--include-counter] <phrase>
+  See 'repeat --help' for more information.
 $ repeat --help
 USAGE: repeat [--count <count>] [--include-counter] <phrase>
 

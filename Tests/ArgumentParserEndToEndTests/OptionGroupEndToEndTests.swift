@@ -16,7 +16,7 @@ import ArgumentParser
 final class OptionGroupEndToEndTests: XCTestCase {
 }
 
-struct Inner: TestableParsableArguments {
+fileprivate struct Inner: TestableParsableArguments {
   @Flag(name: [.short, .long])
   var extraVerbiage: Bool
   @Option(default: 0)
@@ -33,7 +33,7 @@ struct Inner: TestableParsableArguments {
   }
 }
 
-struct Outer: TestableParsableArguments {
+fileprivate struct Outer: TestableParsableArguments {
   @Flag()
   var verbose: Bool
   @Argument()
@@ -53,7 +53,7 @@ struct Outer: TestableParsableArguments {
   }
 }
 
-struct Command: TestableParsableCommand {
+fileprivate struct Command: TestableParsableCommand {
   static let configuration = CommandConfiguration(commandName: "testCommand")
   
   @OptionGroup()

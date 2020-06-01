@@ -196,10 +196,20 @@ extension SplitArguments.Element {
 }
 
 extension SplitArguments {
+  /// `true` if the arguments are empty.
   var isEmpty: Bool {
     elements.isEmpty
   }
-  
+
+  /// `true` if the arguments are empty, or if the only remaining argument is the `--` terminator.
+  var containsNonTerminatorArguments: Bool {
+    if elements.isEmpty { return false }
+    if elements.count > 1 { return true }
+    
+    if case .terminator = elements[0].element { return false }
+    else { return true }
+  }
+
   subscript(position: Index) -> Element? {
     return elements.first {
       $0.0 == position

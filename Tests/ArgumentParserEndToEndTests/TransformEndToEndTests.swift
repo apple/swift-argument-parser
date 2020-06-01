@@ -38,6 +38,7 @@ fileprivate struct FooOption: Convert, ParsableArguments {
 
   static var usageString: String = """
   Usage: foo_option --string <int_str>
+    See 'foo_option --help' for more information.
   """
   
   @Option(help: ArgumentHelp("Convert string to integer", valueName: "int_str"),
@@ -49,6 +50,7 @@ fileprivate struct BarOption: Convert, ParsableCommand {
     
   static var usageString: String = """
   Usage: bar-option [--strings <int_str> ...]
+    See 'bar-option --help' for more information.
   """
     
   @Option(help: ArgumentHelp("Convert a list of strings to an array of integers", valueName: "int_str"),
@@ -97,6 +99,7 @@ fileprivate struct FooArgument: Convert, ParsableArguments {
 
   static var usageString: String = """
   Usage: foo_argument <int_str>
+    See 'foo_argument --help' for more information.
   """
   
   enum FooError: Error {
@@ -112,6 +115,7 @@ fileprivate struct BarArgument: Convert, ParsableCommand {
     
   static var usageString: String = """
   Usage: bar-argument [<int_str> ...]
+    See 'bar-argument --help' for more information.
   """
   
   @Argument(help: ArgumentHelp("Convert a list of strings to an array of integers", valueName: "int_str"),
