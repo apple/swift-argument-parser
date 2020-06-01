@@ -141,14 +141,14 @@ extension Argument {
     help: ArgumentHelp? = nil
   ) where Value == T? {
     self.init(_parsedValue: .init { key in
-      ArgumentSet(
+      var arg = ArgumentDefinition(
         key: key,
         kind: .positional,
         parsingStrategy: .nextAsValue,
-        parseType: T.self,
-        name: .long,
-        default: nil,
-        help: help)
+        parser: T.init(argument:),
+        default: nil)
+      arg.help.help = help
+      return ArgumentSet(arg.optional)
     })
   }
   
