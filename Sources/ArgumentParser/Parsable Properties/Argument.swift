@@ -71,7 +71,7 @@ extension Argument where Value: ExpressibleByArgument {
   /// Creates a property that reads its value from an argument.
   ///
   /// - Parameters:
-  ///   - initial: A default value to use for this property. If `default` is
+  ///   - initial: A default value to use for this property. If `initial` is
   ///     `nil`, the user must supply a value for this argument.
   ///   - help: Information about how to use this argument.
   public init(
