@@ -49,10 +49,10 @@ fileprivate func Assert(nameSpecification: NameSpecification, key: String, makeN
 
 fileprivate func Assert<N>(names: [N], expected: [N], file: StaticString = #file, line: UInt = #line) where N: Equatable {
   names.forEach {
-    XCTAssert(expected.contains($0), "Unexpected name '\($0)'.", file: file, line: line)
+    XCTAssert(expected.contains($0), "Unexpected name '\($0)'.", file: (file), line: line)
   }
   expected.forEach {
-    XCTAssert(names.contains($0), "Missing name '\($0)'.", file: file, line: line)
+    XCTAssert(names.contains($0), "Missing name '\($0)'.", file: (file), line: line)
   }
 }
 

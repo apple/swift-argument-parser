@@ -51,7 +51,7 @@ public func AssertResultFailure<T, U: Error>(
   switch expression() {
   case .success:
     let msg = message()
-    XCTFail(msg.isEmpty ? "Incorrectly succeeded" : msg, file: file, line: line)
+    XCTFail(msg.isEmpty ? "Incorrectly succeeded" : msg, file: (file), line: line)
   case .failure:
     break
   }
@@ -60,20 +60,20 @@ public func AssertResultFailure<T, U: Error>(
 public func AssertErrorMessage<A>(_ type: A.Type, _ arguments: [String], _ errorMessage: String, file: StaticString = #file, line: UInt = #line) where A: ParsableArguments {
   do {
     _ = try A.parse(arguments)
-    XCTFail("Parsing should have failed.", file: file, line: line)
+    XCTFail("Parsing should have failed.", file: (file), line: line)
   } catch {
     // We expect to hit this path, i.e. getting an error:
-    XCTAssertEqual(A.message(for: error), errorMessage, file: file, line: line)
+    XCTAssertEqual(A.message(for: error), errorMessage, file: (file), line: line)
   }
 }
 
 public func AssertFullErrorMessage<A>(_ type: A.Type, _ arguments: [String], _ errorMessage: String, file: StaticString = #file, line: UInt = #line) where A: ParsableArguments {
   do {
     _ = try A.parse(arguments)
-    XCTFail("Parsing should have failed.", file: file, line: line)
+    XCTFail("Parsing should have failed.", file: (file), line: line)
   } catch {
     // We expect to hit this path, i.e. getting an error:
-    XCTAssertEqual(A.fullMessage(for: error), errorMessage, file: file, line: line)
+    XCTAssertEqual(A.fullMessage(for: error), errorMessage, file: (file), line: line)
   }
 }
 
@@ -83,7 +83,7 @@ public func AssertParse<A>(_ type: A.Type, _ arguments: [String], file: StaticSt
     try closure(parsed)
   } catch {
     let message = type.message(for: error)
-    XCTFail("\"\(message)\" — \(error)", file: file, line: line)
+    XCTFail("\"\(message)\" — \(error)", file: (file), line: line)
   }
 }
 
@@ -91,13 +91,13 @@ public func AssertParseCommand<A: ParsableCommand>(_ rootCommand: ParsableComman
   do {
     let command = try rootCommand.parseAsRoot(arguments)
     guard let aCommand = command as? A else {
-      XCTFail("Command is of unexpected type: \(command)", file: file, line: line)
+      XCTFail("Command is of unexpected type: \(command)", file: (file), line: line)
       return
     }
     try closure(aCommand)
   } catch {
     let message = rootCommand.message(for: error)
-    XCTFail("\"\(message)\" — \(error)", file: file, line: line)
+    XCTFail("\"\(message)\" — \(error)", file: (file), line: line)
   }
 }
 
@@ -105,9 +105,9 @@ public func AssertEqualStringsIgnoringTrailingWhitespace(_ string1: String, _ st
   let lines1 = string1.split(separator: "\n", omittingEmptySubsequences: false)
   let lines2 = string2.split(separator: "\n", omittingEmptySubsequences: false)
   
-  XCTAssertEqual(lines1.count, lines2.count, "Strings have different numbers of lines.", file: file, line: line)
+  XCTAssertEqual(lines1.count, lines2.count, "Strings have different numbers of lines.", file: (file), line: line)
   for (line1, line2) in zip(lines1, lines2) {
-    XCTAssertEqual(line1.trimmed(), line2.trimmed(), file: file, line: line)
+    XCTAssertEqual(line1.trimmed(), line2.trimmed(), file: (file), line: line)
   }
 }
 
@@ -117,7 +117,7 @@ public func AssertHelp<T: ParsableArguments>(
 ) {
   do {
     _ = try T.parse(["-h"])
-    XCTFail(file: file, line: line)
+    XCTFail(file: (file), line: line)
   } catch {
     let helpString = T.fullMessage(for: error)
     AssertEqualStringsIgnoringTrailingWhitespace(
@@ -159,7 +159,7 @@ extension XCTest {
     let commandURL = debugURL.appendingPathComponent(commandName)
     guard (try? commandURL.checkResourceIsReachable()) ?? false else {
       XCTFail("No executable at '\(commandURL.standardizedFileURL.path)'.",
-        file: file, line: line)
+              file: (file), line: line)
       return
     }
     
@@ -178,7 +178,7 @@ extension XCTest {
     
     if #available(macOS 10.13, *) {
       guard (try? process.run()) != nil else {
-        XCTFail("Couldn't run command process.", file: file, line: line)
+        XCTFail("Couldn't run command process.", file: (file), line: line)
         return
       }
     } else {
@@ -196,6 +196,6 @@ extension XCTest {
       AssertEqualStringsIgnoringTrailingWhitespace(expected, errorActual + outputActual, file: file, line: line)
     }
 
-    XCTAssertEqual(process.terminationStatus, exitCode.rawValue, file: file, line: line)
+    XCTAssertEqual(process.terminationStatus, exitCode.rawValue, file: (file), line: line)
   }
 }
