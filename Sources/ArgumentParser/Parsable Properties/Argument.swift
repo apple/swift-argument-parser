@@ -70,11 +70,9 @@ extension Argument: DecodableParsedWrapper where Value: Decodable {}
 extension Argument where Value: ExpressibleByArgument {
   /// Creates a property that reads its value from an argument.
   ///
-  /// If the property has an `Optional` type, the argument is optional and
-  /// defaults to `nil`.
-  ///
   /// - Parameters:
-  ///   - initial: A default value to use for this property.
+  ///   - initial: A default value to use for this property. If `default` is
+  ///     `nil`, the user must supply a value for this argument.
   ///   - help: Information about how to use this argument.
   public init(
     default initial: Value? = nil,
@@ -132,11 +130,10 @@ public enum ArgumentArrayParsingStrategy {
 extension Argument {
   /// Creates an optional property that reads its value from an argument.
   ///
-  /// The argument is optional for the caller of the command and defaults to `nil`.
+  /// The argument is optional for the caller of the command and defaults to 
+  /// `nil`.
   ///
-  /// - Parameters:
-  ///   - initial: A default value to use for this property.
-  ///   - help: Information about how to use this argument.
+  /// - Parameter help: Information about how to use this argument.
   public init<T: ExpressibleByArgument>(
     help: ArgumentHelp? = nil
   ) where Value == T? {
