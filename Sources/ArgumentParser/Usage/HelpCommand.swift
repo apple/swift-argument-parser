@@ -20,7 +20,7 @@ struct HelpCommand: ParsableCommand {
   
   init() {}
   
-  func run() throws {
+  mutating func run() throws {
     throw CommandError(commandStack: commandStack, parserError: .helpRequested)
   }
   
@@ -29,7 +29,7 @@ struct HelpCommand: ParsableCommand {
   }
   
   func generateHelp() -> String {
-    return HelpGenerator(commandStack: commandStack).rendered
+    return HelpGenerator(commandStack: commandStack).rendered()
   }
   
   enum CodingKeys: CodingKey {

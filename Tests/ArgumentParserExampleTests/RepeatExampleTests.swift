@@ -47,7 +47,16 @@ final class RepeatExampleTests: XCTestCase {
       command: "repeat",
       expected: """
             Error: Missing expected argument '<phrase>'
-            Usage: repeat [--count <count>] [--include-counter] <phrase>
+
+            USAGE: repeat [--count <count>] [--include-counter] <phrase>
+
+            ARGUMENTS:
+              <phrase>                The phrase to repeat.
+
+            OPTIONS:
+              --count <count>         The number of times to repeat 'phrase'.
+              --include-counter       Include a counter with each repetition.
+              -h, --help              Show help information.
             """,
       exitCode: .validationFailure)
 
@@ -56,6 +65,7 @@ final class RepeatExampleTests: XCTestCase {
       expected: """
             Error: Missing value for '--count <count>'
             Usage: repeat [--count <count>] [--include-counter] <phrase>
+              See 'repeat --help' for more information.
             """,
       exitCode: .validationFailure)
     
@@ -64,6 +74,7 @@ final class RepeatExampleTests: XCTestCase {
       expected: """
             Error: The value 'ZZZ' is invalid for '--count <count>'
             Usage: repeat [--count <count>] [--include-counter] <phrase>
+              See 'repeat --help' for more information.
             """,
       exitCode: .validationFailure)
     
@@ -72,6 +83,7 @@ final class RepeatExampleTests: XCTestCase {
       expected: """
             Error: Unknown option '--version'
             Usage: repeat [--count <count>] [--include-counter] <phrase>
+              See 'repeat --help' for more information.
             """,
       exitCode: .validationFailure)
   }

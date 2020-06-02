@@ -27,6 +27,8 @@ SUBCOMMANDS:
   average                 Print the average of the values.
   stdev                   Print the standard deviation of the values.
   quantiles               Print the quantiles of the values (TBD).
+
+  See 'math help stats <subcommand>' for detailed help.
 ```
 
 Start by defining the root `Math` command. You can provide a static `configuration` property for a command that specifies its subcommands and a default subcommand, if any.
@@ -72,7 +74,7 @@ extension Math {
         @OptionGroup()
         var options: Math.Options
         
-        func run() {
+        mutating func run() {
             let result = options.values.reduce(0, +)
             print(format(result: result, usingHex: options.hexadecimalOutput))
         }
@@ -85,7 +87,7 @@ extension Math {
         @OptionGroup()
         var options: Math.Options
         
-        func run() {
+        mutating func run() {
             let result = options.values.reduce(1, *)
             print(format(result: result, usingHex: options.hexadecimalOutput))
         }
@@ -128,7 +130,7 @@ extension Math.Statistics {
         func calculateMedian() -> Double { ... }
         func calculateMode() -> [Double] { ... }
     
-        func run() {
+        mutating func run() {
             switch kind {
             case .mean:
                 print(calculateMean())
@@ -151,7 +153,7 @@ extension Math.Statistics {
         @Argument(help: "A group of floating-point values to operate on.")
         var values: [Double]
         
-        func run() {
+        mutating func run() {
             if values.isEmpty {
                 print(0.0)
             } else {

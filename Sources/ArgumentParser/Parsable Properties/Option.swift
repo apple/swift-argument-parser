@@ -72,13 +72,12 @@ extension Option: DecodableParsedWrapper where Value: Decodable {}
 extension Option where Value: ExpressibleByArgument {
   /// Creates a property that reads its value from a labeled option.
   ///
-  /// If the property has an `Optional` type, or you provide a non-`nil`
-  /// value for the `initial` parameter, specifying this option is not
-  /// required.
-  ///
   /// - Parameters:
   ///   - name: A specification for what names are allowed for this flag.
-  ///   - initial: A default value to use for this property.
+  ///   - initial: A default value to use for this property. If `initial` is
+  ///     `nil`, this option and value are required from the user.
+  ///   - parsingStrategy: The behavior to use when looking for this option's
+  ///     value.
   ///   - help: Information about how to use this option.
   public init(
     name: NameSpecification = .long,
@@ -218,8 +217,7 @@ public enum ArrayParsingStrategy {
 }
 
 extension Option {
-  /// Creates a property that reads its value from a labeled option, parsing
-  /// with the given closure.
+  /// Creates a property that reads its value from a labeled option.
   ///
   /// If the property has an `Optional` type, or you provide a non-`nil`
   /// value for the `initial` parameter, specifying this option is not
@@ -227,7 +225,58 @@ extension Option {
   ///
   /// - Parameters:
   ///   - name: A specification for what names are allowed for this flag.
-  ///   - initial: A default value to use for this property.
+  ///   - parsingStrategy: The behavior to use when looking for this option's
+  ///     value.
+  ///   - help: Information about how to use this option.
+  public init<T: ExpressibleByArgument>(
+    name: NameSpecification = .long,
+    parsing parsingStrategy: SingleValueParsingStrategy = .next,
+    help: ArgumentHelp? = nil
+  ) where Value == T? {
+    self.init(_parsedValue: .init { key in
+      var arg = ArgumentDefinition(
+        key: key,
+        kind: .name(key: key, specification: name),
+        parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy),
+        parser: T.init(argument:),
+        default: nil)
+      arg.help.help = help
+      return ArgumentSet(arg.optional)
+    })
+  }
+
+  @available(*, deprecated, message: """
+    Default values don't make sense for optional properties.
+    Remove the 'default' parameter if its value is nil,
+    or make your property non-optional if it's non-nil.
+    """)
+  public init<T: ExpressibleByArgument>(
+    name: NameSpecification = .long,
+    default initial: T?,
+    parsing parsingStrategy: SingleValueParsingStrategy = .next,
+    help: ArgumentHelp? = nil
+  ) where Value == T? {
+    self.init(_parsedValue: .init { key in
+      var arg = ArgumentDefinition(
+        key: key,
+        kind: .name(key: key, specification: name),
+        parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy),
+        parser: T.init(argument:),
+        default: initial)
+      arg.help.help = help
+      return ArgumentSet(arg.optional)
+    })
+  }
+
+  /// Creates a property that reads its value from a labeled option, parsing
+  /// with the given closure.
+  ///
+  /// - Parameters:
+  ///   - name: A specification for what names are allowed for this flag.
+  ///   - initial: A default value to use for this property. If `initial` is
+  ///     `nil`, this option and value are required from the user.
+  ///   - parsingStrategy: The behavior to use when looking for this option's
+  ///     value.
   ///   - help: Information about how to use this option.
   ///   - transform: A closure that converts a string into this property's
   ///     type or throws an error.
@@ -255,6 +304,7 @@ extension Option {
           values.set(v, forKey: key, inputOrigin: origin)
         }
       })
+      arg.help.options.formUnion(ArgumentDefinition.Help.Options(type: Value.self))
       arg.help.defaultValue = initial.map { "\($0)" }
       return ArgumentSet(alternatives: [arg])
       })

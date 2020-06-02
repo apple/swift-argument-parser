@@ -215,6 +215,15 @@ extension ErrorMessageGenerator {
       default:
         return String(describing: error)
       }
+    case .noArguments(let error):
+      switch error {
+      case let error as ParserError:
+        return ErrorMessageGenerator(arguments: self.arguments, error: error).makeErrorMessage()
+      case let error as LocalizedError:
+        return error.errorDescription
+      default:
+        return String(describing: error)
+      }
     }
   }
 }

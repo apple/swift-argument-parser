@@ -28,7 +28,7 @@ enum MessageInfo {
       // Exit early on built-in requests
       switch e.parserError {
       case .helpRequested:
-        self = .help(text: HelpGenerator(commandStack: e.commandStack).rendered)
+        self = .help(text: HelpGenerator(commandStack: e.commandStack).rendered())
         return
         
       case .versionRequested:
@@ -69,7 +69,9 @@ enum MessageInfo {
       parserError = .userValidationError(error)
     }
     
-    let usage = HelpGenerator(commandStack: commandStack).usageMessage
+    let commandNames = commandStack.map { $0._commandName }.joined(separator: " ")
+    let usage = HelpGenerator(commandStack: commandStack).usageMessage()
+      + "\n  See '\(commandNames) --help' for more information."
     
     // Parsing errors and user-thrown validation errors have the usage
     // string attached. Other errors just get the error message.
@@ -84,7 +86,7 @@ enum MessageInfo {
           if let command = command {
             commandStack = CommandParser(type.asCommand).commandStack(for: command)
           }
-          self = .help(text: HelpGenerator(commandStack: commandStack).rendered)
+          self = .help(text: HelpGenerator(commandStack: commandStack).rendered())
         case .message(let message):
           self = .help(text: message)
         }
@@ -96,6 +98,10 @@ enum MessageInfo {
         self = .other(message: String(describing: error), exitCode: EXIT_FAILURE)
       }
     } else if let parserError = parserError {
+      let usage: String = {
+        guard case ParserError.noArguments = parserError else { return usage }
+        return "\n" + HelpGenerator(commandStack: [type.asCommand]).rendered()
+      }()
       let message = ArgumentSet(commandStack.last!).helpMessage(for: parserError)
       self = .validation(message: message, usage: usage)
     } else {

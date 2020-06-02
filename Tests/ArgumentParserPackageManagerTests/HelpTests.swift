@@ -56,6 +56,7 @@ extension HelpTests {
                   describe
                   generate-xcodeproj
 
+                  See 'package help <subcommand>' for detailed help.
                 """.trimmingLines())
   }
   
@@ -74,6 +75,7 @@ extension HelpTests {
                   describe
                   generate-xcodeproj
 
+                  See 'package help <subcommand>' for detailed help.
                 """.trimmingLines()
     )
   }
@@ -100,6 +102,7 @@ extension HelpTests {
                   set-mirror
                   unset-mirror
 
+                  See 'package help config <subcommand>' for detailed help.
                 """.trimmingLines())
   }
   

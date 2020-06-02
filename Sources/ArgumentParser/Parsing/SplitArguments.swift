@@ -196,10 +196,20 @@ extension SplitArguments.Element {
 }
 
 extension SplitArguments {
+  /// `true` if the arguments are empty.
   var isEmpty: Bool {
     elements.isEmpty
   }
-  
+
+  /// `true` if the arguments are empty, or if the only remaining argument is the `--` terminator.
+  var containsNonTerminatorArguments: Bool {
+    if elements.isEmpty { return false }
+    if elements.count > 1 { return true }
+    
+    if case .terminator = elements[0].element { return false }
+    else { return true }
+  }
+
   subscript(position: Index) -> Element? {
     return elements.first {
       $0.0 == position
@@ -492,7 +502,14 @@ private extension ParsedArgument {
   }
   
   init(longArgWithSingleDashRemainder remainder: Substring) throws {
-    try self.init(longArgRemainder: remainder, makeName: { Name.longWithSingleDash(String($0)) })
+    try self.init(longArgRemainder: remainder, makeName: {
+      /// If an argument has a single dash and single character,
+      /// followed by a value, treat it as a short name.
+      ///     `-c=1`      ->  `Name.short("c")`
+      /// Otherwise, treat it as a long name with single dash.
+      ///     `-count=1`  ->  `Name.longWithSingleDash("count")`
+      $0.count == 1 ? Name.short($0.first!) : Name.longWithSingleDash(String($0))
+    })
   }
   
   init(longArgRemainder remainder: Substring, makeName: (Substring) -> Name) throws {

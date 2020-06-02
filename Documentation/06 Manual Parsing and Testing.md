@@ -56,10 +56,10 @@ Let's see how this works by using the `Math` command and subcommands defined in 
 
 ```swift
 do {
-    let command = try Math.parseAsRoot()
+    var command = try Math.parseAsRoot()
 
     switch command {
-    case let command as Math.Add:
+    case var command as Math.Add:
         print("You chose to add \(command.options.values.count) values.")
         command.run()
     default:

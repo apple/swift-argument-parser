@@ -129,6 +129,32 @@ extension RepeatingEndToEndTests {
 
 // MARK: -
 
+fileprivate struct Outer: ParsableCommand {
+  static let configuration = CommandConfiguration(subcommands: [Inner.self])
+}
+
+fileprivate struct Inner: ParsableCommand {
+  @Flag() 
+  var verbose: Bool
+
+  @Argument(parsing: .unconditionalRemaining) 
+  var files: [String]
+}
+
+extension RepeatingEndToEndTests {
+  func testParsing_subcommandRemaining() {
+    AssertParseCommand(
+      Outer.self, Inner.self,
+      ["inner", "--verbose", "one", "two", "--", "three", "--other"]) 
+    { inner in
+      XCTAssertTrue(inner.verbose)
+      XCTAssertEqual(inner.files, ["one", "two", "--", "three", "--other"])
+    }
+  }
+}
+
+// MARK: -
+
 fileprivate struct Qux: ParsableArguments {
   @Option(parsing: .upToNextOption) var names: [String]
   @Flag() var verbose: Bool
@@ -375,7 +401,7 @@ extension RepeatingEndToEndTests {
 struct PerformanceTest: ParsableCommand {
   @Option(name: .short) var bundleIdentifiers: [String]
   
-  func run() throws { print(bundleIdentifiers) }
+  mutating func run() throws { print(bundleIdentifiers) }
 }
 
 fileprivate func argumentGenerator(_ count: Int) -> [String] {

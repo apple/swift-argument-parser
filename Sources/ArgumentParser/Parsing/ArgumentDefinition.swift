@@ -32,6 +32,7 @@ struct ArgumentDefinition {
     var defaultValue: String?
     var keys: [InputKey]
     var allValues: [String] = []
+    var isComposite: Bool
     
     struct Options: OptionSet {
       var rawValue: UInt
@@ -40,11 +41,12 @@ struct ArgumentDefinition {
       static let isRepeating = Options(rawValue: 1 << 1)
     }
     
-    init(options: Options = [], help: ArgumentHelp? = nil, defaultValue: String? = nil, key: InputKey) {
+    init(options: Options = [], help: ArgumentHelp? = nil, defaultValue: String? = nil, key: InputKey, isComposite: Bool = false) {
       self.options = options
       self.help = help
       self.defaultValue = defaultValue
       self.keys = [key]
+      self.isComposite = isComposite
     }
     
     init<T: ExpressibleByArgument>(type: T.Type, options: Options = [], help: ArgumentHelp? = nil, defaultValue: String? = nil, key: InputKey) {
@@ -161,6 +163,7 @@ extension ArgumentDefinition: CustomDebugStringConvertible {
 extension ArgumentDefinition {
   var optional: ArgumentDefinition {
     var result = self
+    
     result.help.options.insert(.isOptional)
     return result
   }

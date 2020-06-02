@@ -63,9 +63,11 @@ When called without both values, the command exits with an error:
 % example 5
 Error: Missing '--user-name <user-name>'
 Usage: example --user-name <user-name> <value>
+  See 'example --help' for more information.
 % example --user-name kjohnson
 Error: Missing '<value>'
 Usage: example --user-name <user-name> <value>
+  See 'example --help' for more information.
 ```
 
 ## Customizing option and flag names
@@ -115,10 +117,10 @@ struct Example: ParsableCommand {
 
 Arguments and options can be parsed from any type that conforms to the `ExpressibleByArgument` protocol. Standard library integer and floating-point types, strings, and Booleans all conform to `ExpressibleByArgument`.
 
-You can make your own custom types conform to `ExpressibleByArgument` by implementing `init(argument:)`:
+You can make your own custom types conform to `ExpressibleByArgument` by implementing `init?(argument:)`:
 
 ```swift
-struct Path {
+struct Path: ExpressibleByArgument {
     var pathString: String
     
     init?(argument: String) {
@@ -141,7 +143,7 @@ enum ReleaseMode: String, ExpressibleByArgument {
 struct Example: ParsableCommand {
     @Option() var mode: ReleaseMode
     
-    func run() throws {
+    mutating func run() throws {
         print(mode)
     }
 }
@@ -192,7 +194,7 @@ struct Example: ParsableCommand {
     @Flag(default: nil, inversion: .prefixedEnableDisable)
     var requiredElement: Bool
     
-    func run() throws {
+    mutating func run() throws {
         print(index, requiredElement)
     }
 }
@@ -211,15 +213,15 @@ false false
 Error: Missing one of: '--enable-required-element', '--disable-required-element'
 ```
 
-You can also use flags with types that are `CaseIterable` and `RawRepresentable` with a string raw value. This is useful for providing custom names for a Boolean value, for an exclusive choice between more than two names, or for collecting multiple values from a set of defined choices.
+To create a flag with custom names for a Boolean value, to provide an exclusive choice between more than two names, or for collecting multiple values from a set of defined choices, define an enumeration that conforms to the `EnumerableFlag` protocol.
 
 ```swift
-enum CacheMethod: String, CaseIterable {
+enum CacheMethod: EnumerableFlag {
     case inMemoryCache
     case persistentCache
 }
 
-enum Color: String, CaseIterable {
+enum Color: EnumerableFlag {
     case pink, purple, silver
 }
 
@@ -228,14 +230,14 @@ struct Example: ParsableCommand {
     
     @Flag() var colors: [Color]
     
-    func run() throws {
+    mutating func run() throws {
         print(cacheMethod)
         print(colors)
     }
 }
 ``` 
 
-The flag names in this case are drawn from the raw values:
+The flag names in this case are drawn from the raw values — for information about customizing the names and help text, see the  [`EnumerableFlag` documentation](../Sources/ArgumentParser/Parsable%20Types/EnumerableFlag.swift).
 
 ```
 % example --in-memory-cache --pink --silver
@@ -252,7 +254,7 @@ struct Example: ParsableCommand {
     @Flag(name: .shortAndLong)
     var verbose: Int
     
-    func run() throws {
+    mutating func run() throws {
         print("Verbosity level: \(verbose)")
     }
 }
@@ -279,7 +281,7 @@ struct Example: ParsableCommand {
     @Option() var name: String
     @Argument() var file: String?
     
-    func run() throws {
+    mutating func run() throws {
         print("Verbose: \(verbose), name: \(name), file: \(file ?? "none")")
     }
 }
@@ -293,6 +295,7 @@ Verbose: true, name: Tomás, file: none
 % example --name --verbose Tomás
 Error: Missing value for '--name <name>'
 Usage: example [--verbose] --name <name> [<file>]
+  See 'example --help' for more information.
 ```
 
 Parsing options as arrays is similar — only adjacent key-value pairs are recognized by default.
@@ -324,7 +327,7 @@ struct Example: ParsableCommand {
     @Option() var file: [String]
     @Flag() var verbose: Bool
     
-    func run() throws {
+    mutating func run() throws {
         print("Verbose: \(verbose), files: \(file)")
     }
 }
@@ -338,6 +341,7 @@ Verbose: true, files: ["file1.swift", "file2.swift"]
 % example --file --verbose file1.swift --file file2.swift
 Error: Missing value for '--file <file>'
 Usage: example [--file <file> ...] [--verbose]
+  See 'example --help' for more information.
 ```
 
 The `.unconditionalSingleValue` parsing strategy uses whatever input follows the key as its value, even if that input is dash-prefixed. If `file` were defined as `@Option(parsing: .unconditionalSingleValue) var file: [String]`, then the resulting array could include strings that look like options:
@@ -374,7 +378,7 @@ struct Example: ParsableCommand {
     @Flag() var verbose: Bool
     @Argument() var files: [String]
     
-    func run() throws {
+    mutating func run() throws {
         print("Verbose: \(verbose), files: \(files)")
     }
 }
@@ -388,6 +392,7 @@ Verbose: true, files: ["file1.swift", "file2.swift"]
 % example --verbose file1.swift file2.swift --other
 Error: Unexpected argument '--other'
 Usage: example [--verbose] [<files> ...]
+  See 'example --help' for more information.
 ```
 
 Any input after the `--` terminator is automatically treated as positional input, so users can provide dash-prefixed values that way even with the default configuration:

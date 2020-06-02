@@ -19,8 +19,11 @@ extension String {
     while true {
       let nextChunk = self[currentIndex...].prefix(columns)
       if let lastLineBreak = nextChunk.lastIndex(of: "\n") {
-        result.append(self[currentIndex..<lastLineBreak])
+        result.append(contentsOf: self[currentIndex..<lastLineBreak].split(separator: "\n", omittingEmptySubsequences: false))
         currentIndex = index(after: lastLineBreak)
+      } else if nextChunk.endIndex == self.endIndex {
+        result.append(self[currentIndex...])
+        break
       } else if let lastSpace = nextChunk.lastIndex(of: " ") {
         result.append(self[currentIndex..<lastSpace])
         currentIndex = index(after: lastSpace)
@@ -28,20 +31,13 @@ extension String {
         result.append(self[currentIndex..<nextSpace])
         currentIndex = index(after: nextSpace)
       } else {
-        if let lastSegment = result.last,
-          lastSegment.count + self[currentIndex...].count < columns
-        {
-          result[result.count - 1] = self[lastSegment.startIndex...]
-          break
-        }
-        
         result.append(self[currentIndex...])
         break
       }
     }
     
     return result
-      .map { String(repeating: " ", count: wrappingIndent) + $0 }
+      .map { $0.isEmpty ? $0 : String(repeating: " ", count: wrappingIndent) + $0 }
       .joined(separator: "\n")
   }
   

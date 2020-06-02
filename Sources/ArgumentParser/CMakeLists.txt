@@ -8,6 +8,7 @@ add_library(ArgumentParser
   "Parsable Properties/OptionGroup.swift"
 
   "Parsable Types/CommandConfiguration.swift"
+  "Parsable Types/EnumerableFlag.swift"
   "Parsable Types/ExpressibleByArgument.swift"
   "Parsable Types/ParsableArguments.swift"
   "Parsable Types/ParsableCommand.swift"
@@ -31,9 +32,14 @@ add_library(ArgumentParser
 
   Utilities/StringExtensions.swift
   Utilities/Tree.swift)
+# NOTE: workaround for CMake not setting up include flags yet
 set_target_properties(ArgumentParser PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_Swift_MODULE_DIRECTORY})
 target_compile_options(ArgumentParser PRIVATE
   $<$<BOOL:${BUILD_TESTING}>:-enable-testing>)
 target_link_libraries(ArgumentParser PRIVATE
   $<$<NOT:$<PLATFORM_ID:Darwin>>:Foundation>)
+
+
+_install_target(ArgumentParser)
+set_property(GLOBAL APPEND PROPERTY ArgumentParser_EXPORTS ArgumentParser)

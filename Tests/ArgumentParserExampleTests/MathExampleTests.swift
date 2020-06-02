@@ -33,6 +33,8 @@ final class MathExampleTests: XCTestCase {
           add                     Print the sum of the values.
           multiply                Print the product of the values.
           stats                   Calculate descriptive statistics.
+
+          See 'math help <subcommand>' for detailed help.
         """
     
     AssertExecuteCommand(command: "math -h", expected: helpText)
@@ -109,6 +111,7 @@ final class MathExampleTests: XCTestCase {
       expected: """
             Error: Please provide at least one value to calculate the mode.
             Usage: math stats average [--kind <kind>] [<values> ...]
+              See 'math stats average --help' for more information.
             """,
       exitCode: .validationFailure)
   }
@@ -150,6 +153,7 @@ final class MathExampleTests: XCTestCase {
       expected: """
             Error: Unknown option '--foo'
             Usage: math add [--hex-output] [<values> ...]
+              See 'math add --help' for more information.
             """,
       exitCode: .validationFailure)
     
@@ -158,6 +162,7 @@ final class MathExampleTests: XCTestCase {
       expected: """
             Error: The value 'ZZZ' is invalid for '<values>'
             Usage: math add [--hex-output] [<values> ...]
+              See 'math add --help' for more information.
             """,
       exitCode: .validationFailure)
   }

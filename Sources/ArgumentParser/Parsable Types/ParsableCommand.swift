@@ -28,7 +28,7 @@ public protocol ParsableCommand: ParsableArguments {
   /// application by calling the static `main()` method on the root type.
   /// This method has a default implementation that prints help text
   /// for this command.
-  func run() throws
+  mutating func run() throws
 }
 
 extension ParsableCommand {
@@ -41,7 +41,7 @@ extension ParsableCommand {
     CommandConfiguration()
   }
   
-  public func run() throws {
+  public mutating func run() throws {
     throw CleanExit.helpRequest(self)
   }
 }
@@ -64,19 +64,44 @@ extension ParsableCommand {
     return try parser.parse(arguments: arguments).get()
   }
   
+  /// Returns the text of the help screen for the given subcommand of this
+  /// command.
+  ///
+  /// - Parameters:
+  ///   - subcommand: The subcommand to generate the help screen for.
+  ///     `subcommand` must be declared in the subcommand tree of this
+  ///     command.
+  ///   - columns: The column width to use when wrapping long line in the
+  ///     help screen. If `columns` is `nil`, uses the current terminal
+  ///     width, or a default value of `80` if the terminal width is not
+  ///     available.
+  public static func helpMessage(
+    for subcommand: ParsableCommand.Type,
+    columns: Int? = nil
+  ) -> String { 
+    let stack = CommandParser(self).commandStack(for: subcommand)
+    return HelpGenerator(commandStack: stack).rendered(screenWidth: columns)
+  }
+
   /// Parses an instance of this type, or one of its subcommands, from
-  /// command-line arguments and calls its `run()` method, exiting cleanly
-  /// or with a relevant error message.
+  /// the given arguments and calls its `run()` method, exiting with a
+  /// relevant error message if necessary.
   ///
   /// - Parameter arguments: An array of arguments to use for parsing. If
   ///   `arguments` is `nil`, this uses the program's command-line arguments.
-  public static func main(_ arguments: [String]? = nil) -> Never {
+  public static func main(_ arguments: [String]?) {
     do {
-      let command = try parseAsRoot(arguments)
+      var command = try parseAsRoot(arguments)
       try command.run()
-      exit()
     } catch {
       exit(withError: error)
     }
+  }
+
+  /// Parses an instance of this type, or one of its subcommands, from
+  /// command-line arguments and calls its `run()` method, exiting with a
+  /// relevant error message if necessary.
+  public static func main() {
+    self.main(nil)
   }
 }

@@ -30,6 +30,16 @@ Et leo duis ut diam quam.
 Integer eget aliquet nibh praesent tristique magna sit. Faucibus turpis in eu mi bibendum neque egestas congue quisque.       Risus nec feugiat in fermentum posuere urna nec tincidunt.
 """
 
+let jsonSample = """
+{
+  "level1": {
+    "level2": {
+      "level3": true
+    }
+  }
+}
+"""
+
 // MARK: -
 
 extension StringWrappingTests {
@@ -114,7 +124,7 @@ extension StringWrappingTests {
     XCTAssertEqual(longSample.wrapped(to: 60, wrappingIndent: 10), """
                       Pretium vulputate sapien nec sagittis aliquam
                       malesuada bibendum. Ut diam quam nulla porttitor.
-                      
+
                       Egestas egestas fringilla phasellus faucibus.
                       Amet dictum sit amet justo donec enim diam.
                       Consectetur adipiscing elit duis tristique.
@@ -129,5 +139,29 @@ extension StringWrappingTests {
                       feugiat in fermentum posuere urna nec tincidunt.
             """)
     
+  }
+
+  func testJSON() {
+    XCTAssertEqual(jsonSample.wrapped(to: 80), """
+            {
+              "level1": {
+                "level2": {
+                  "level3": true
+                }
+              }
+            }
+            """)
+  }
+
+  func testJSONWithIndent() {
+    XCTAssertEqual(jsonSample.wrapped(to: 80, wrappingIndent: 10), """
+                      {
+                        "level1": {
+                          "level2": {
+                            "level3": true
+                          }
+                        }
+                      }
+            """)
   }
 }

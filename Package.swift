@@ -41,6 +41,11 @@ var package = Package(
             dependencies: ["ArgumentParser"],
             path: "Examples/repeat"),
 
+        .target(
+            name: "changelog-authors",
+            dependencies: ["ArgumentParser"],
+            path: "Tools/changelog-authors"),
+
         .testTarget(
             name: "ArgumentParserEndToEndTests",
             dependencies: ["ArgumentParser", "ArgumentParserTestHelpers"]),

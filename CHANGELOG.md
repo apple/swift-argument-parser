@@ -14,6 +14,45 @@ package updates, you can specify your package dependency using
 
 *No changes yet.*
 
+## [0.0.6] - 2020-05-14
+
+### Additions
+
+- Command definition validation now checks for name collisions between options
+  and flags.
+- `ValidationError.message` is now publicly accessible.
+- Added an `EnumerableFlag` protocol for `CaseIterable` types that are used to
+  provide the names for flags. When declaring conformance to `EnumerableFlag`,
+  you can override the name specification and help text for individual flags.
+  See [#65] for more detail.
+- When a command that requires arguments is called with no arguments at all, 
+  the error message includes the full help text instead of the short usage
+  string. This is intended to provide a better experience for first-time users.
+- Added a `helpMessage()` method for generating the help text for a command
+  or subcommand.
+
+### Deprecations
+
+- `@Flag` properties that use `CaseIterable`/`String` types as their values
+  are deprecated, and the related `@Flag` initializers will be removed 
+  in a future version. 
+  
+  *Migration:* Add `EnumerableFlag` conformance to the type of these kinds of
+  `@Flag` properties.
+
+### Fixes
+
+- Errors thrown while parsing in a `transform` closure are printed correclty
+  instead of a general `Invalid state` error.
+- Improvements to the guides and in the error message when attempting to access
+  a value from an argument/option/flag definition.
+- Fixed issues in the CMake and Windows build configurations.
+- You can now use an `=` to join a value with an option's short name when calling
+  a command. This previously only worked for long names.
+
+The 0.0.6 release includes contributions from [compnerd], [john-mueller], 
+[natecook1000], [owenv], [rjstelling], and [toddthomas]. Thank you!
+
 ## [0.0.5] - 2020-04-15
 
 ### Additions
@@ -118,15 +157,23 @@ The 0.0.2 release includes contributions from [AliSoftware], [buttaface],
 
 - `ArgumentParser` initial release.
 
+---
+
+This changelog's format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 <!-- Link references for releases -->
 
-[Unreleased]: https://github.com/apple/swift-argument-parser/compare/0.0.5...HEAD
+[Unreleased]: https://github.com/apple/swift-argument-parser/compare/0.0.6...HEAD
+[0.0.6]: https://github.com/apple/swift-argument-parser/compare/0.0.5...0.0.6
 [0.0.5]: https://github.com/apple/swift-argument-parser/compare/0.0.4...0.0.5
 [0.0.4]: https://github.com/apple/swift-argument-parser/compare/0.0.3...0.0.4
 [0.0.3]: https://github.com/apple/swift-argument-parser/compare/0.0.2...0.0.3
 [0.0.2]: https://github.com/apple/swift-argument-parser/compare/0.0.1...0.0.2
 [0.0.1]: https://github.com/apple/swift-argument-parser/releases/tag/0.0.1
+
+<!-- Link references for pull requests -->
+
+[#65]: https://github.com/apple/swift-argument-parser/pull/65
 
 <!-- Link references for contributors -->
 
@@ -139,15 +186,19 @@ The 0.0.2 release includes contributions from [AliSoftware], [buttaface],
 [griffin-stewie]: https://github.com/apple/swift-argument-parser/commits?author=griffin-stewie
 [iainsmith]: https://github.com/apple/swift-argument-parser/commits?author=iainsmith
 [IngmarStein]: https://github.com/apple/swift-argument-parser/commits?author=IngmarStein
+[john-mueller]: https://github.com/apple/swift-argument-parser/commits?author=john-mueller
 [jonathanpenn]: https://github.com/apple/swift-argument-parser/commits?author=jonathanpenn
 [kennyyork]: https://github.com/apple/swift-argument-parser/commits?author=kennyyork
 [klaaspieter]: https://github.com/apple/swift-argument-parser/commits?author=klaaspieter
 [Lantua]: https://github.com/apple/swift-argument-parser/commits?author=Lantua
 [miguelangel-dev]: https://github.com/apple/swift-argument-parser/commits?author=miguelangel-dev
 [natecook1000]: https://github.com/apple/swift-argument-parser/commits?author=natecook1000
+[owenv]: https://github.com/apple/swift-argument-parser/commits?author=owenv
+[rjstelling]: https://github.com/apple/swift-argument-parser/commits?author=rjstelling
 [Sajjon]: https://github.com/apple/swift-argument-parser/commits?author=Sajjon
 [sgl0v]: https://github.com/apple/swift-argument-parser/commits?author=sgl0v
 [sjavora]: https://github.com/apple/swift-argument-parser/commits?author=sjavora
+[toddthomas]: https://github.com/apple/swift-argument-parser/commits?author=toddthomas
 [Wildchild9]: https://github.com/apple/swift-argument-parser/commits?author=Wildchild9
 [YuAo]: https://github.com/apple/swift-argument-parser/commits?author=YuAo
 [zntfdr]: https://github.com/apple/swift-argument-parser/commits?author=zntfdr

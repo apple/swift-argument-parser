@@ -38,7 +38,7 @@ extension Package {
     @Option(help: "Path to xcconfig file")
     var xcconfigOverrides: String?
     
-    func run() {
+    mutating func run() {
       print("Generating Xcode Project.......")
     }
   }

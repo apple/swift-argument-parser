@@ -41,6 +41,7 @@ final class RollDiceExampleTests: XCTestCase {
       expected: """
             Error: Missing value for '--times <n>'
             Usage: roll [--times <n>] [--sides <m>] [--seed <seed>] [--verbose]
+              See 'roll --help' for more information.
             """,
       exitCode: .validationFailure)
     
@@ -49,6 +50,7 @@ final class RollDiceExampleTests: XCTestCase {
       expected: """
             Error: The value 'ZZZ' is invalid for '--times <n>'
             Usage: roll [--times <n>] [--sides <m>] [--seed <seed>] [--verbose]
+              See 'roll --help' for more information.
             """,
       exitCode: .validationFailure)
   }

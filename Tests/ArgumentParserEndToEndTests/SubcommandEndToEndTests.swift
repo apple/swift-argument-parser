@@ -81,6 +81,7 @@ extension SubcommandEndToEndTests {
               a
               b
 
+              See 'foo help <subcommand>' for detailed help.
             """, helpFoo)
     AssertEqualStringsIgnoringTrailingWhitespace("""
             USAGE: foo a --name <name> --bar <bar>
@@ -126,7 +127,7 @@ fileprivate struct Math: ParsableCommand {
   @Argument(help: "The first operand")
   var operands: [Int]
   
-  func run() {
+  mutating func run() {
     XCTAssertEqual(operation, .multiply)
     XCTAssertTrue(verbose)
     XCTAssertEqual(operands, [5, 11])
@@ -136,7 +137,7 @@ fileprivate struct Math: ParsableCommand {
 
 extension SubcommandEndToEndTests {
   func testParsing_SingleCommand() throws {
-    let mathCommand = try Math.parseAsRoot(["--operation", "multiply", "-v", "5", "11"])
+    var mathCommand = try Math.parseAsRoot(["--operation", "multiply", "-v", "5", "11"])
     XCTAssertFalse(mathDidRun)
     try mathCommand.run()
     XCTAssertTrue(mathDidRun)

@@ -132,7 +132,6 @@ extension HelpGenerationTests {
     }
   }
 
-
   struct D: ParsableCommand {
     @Argument(default: "--", help: "Your occupation.")
     var occupation: String
@@ -265,10 +264,11 @@ extension HelpGenerationTests {
                               Test long command name.
       another-command
 
+      See 'h help <subcommand>' for detailed help.
     """)
     
-    AssertHelp(for: H.AnotherCommand.self, equals: """
-    USAGE: another-command [--some-option-with-very-long-name <some-option-with-very-long-name>] [--option <option>] [<argument-with-very-long-name-and-help>] [<argument-with-very-long-name>] [<argument>]
+    AssertHelp(for: H.AnotherCommand.self, root: H.self, equals: """
+    USAGE: h another-command [--some-option-with-very-long-name <some-option-with-very-long-name>] [--option <option>] [<argument-with-very-long-name-and-help>] [<argument-with-very-long-name>] [<argument>]
 
     ARGUMENTS:
       <argument-with-very-long-name-and-help>
@@ -298,5 +298,47 @@ extension HelpGenerationTests {
 
     """)
 
+  }
+  
+  struct J: ParsableCommand {
+    static var configuration = CommandConfiguration(discussion: "test")
+  }
+  
+  func testOverviewButNoAbstractSpacing() {
+    let renderedHelp = HelpGenerator(J.self).rendered()
+    AssertEqualStringsIgnoringTrailingWhitespace(renderedHelp, """
+    OVERVIEW:
+    test
+
+    USAGE: j
+    
+    OPTIONS:
+      -h, --help              Show help information.
+    
+    """)
+  }
+
+  struct K: ParsableCommand {
+    @Argument(help: "A list of paths.")
+    var paths: [String]
+    
+    func validate() throws {
+      if paths.isEmpty {
+        throw ValidationError("At least one path must be specified.")
+      }
+    }
+  }
+  
+  func testHelpWithNoValueForArray() {
+    AssertHelp(for: K.self, equals: """
+    USAGE: k [<paths> ...]
+
+    ARGUMENTS:
+      <paths>                 A list of paths.
+
+    OPTIONS:
+      -h, --help              Show help information.
+
+    """)
   }
 }

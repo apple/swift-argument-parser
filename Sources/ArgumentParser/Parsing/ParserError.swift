@@ -33,6 +33,7 @@ enum ParserError: Error {
   case unableToParseValue(InputOrigin, Name?, String, forKey: InputKey, originalError: Error? = nil)
   case missingSubcommand
   case userValidationError(Error)
+  case noArguments(Error)
 }
 
 /// These are errors used internally to the parsing, and will not be exposed to the help generation.

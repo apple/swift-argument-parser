@@ -32,7 +32,7 @@ struct Select: ParsableCommand {
         }
     }
     
-    func run() {
+    mutating func run() {
         print(elements.shuffled().prefix(count).joined(separator: "\n"))
     }
 }
@@ -44,12 +44,15 @@ When you provide useful error messages, they can guide new users to success with
 % select
 Error: Please provide at least one element to choose from.
 Usage: select [--count <count>] [<elements> ...]
+  See 'select --help' for more information.
 % select --count 2 hello
 Error: Please specify a 'count' less than the number of elements.
 Usage: select [--count <count>] [<elements> ...]
+  See 'select --help' for more information.
 % select --count 0 hello hey hi howdy
 Error: Please specify a 'count' of at least 1.
 Usage: select [--count <count>] [<elements> ...]
+  See 'select --help' for more information.
 % select --count 2 hello hey hi howdy
 howdy
 hey
@@ -63,7 +66,7 @@ The `ValidationError` type is a special `ArgumentParser` error — a validation 
 struct LineCount: ParsableCommand {
     @Argument() var file: String
     
-    func run() throws {
+    mutating func run() throws {
         let contents = try String(contentsOfFile: file, encoding: .utf8)
         let lines = contents.split(separator: "\n")
         print(lines.count)
@@ -91,7 +94,7 @@ struct RuntimeError: Error, CustomStringConvertible {
 struct Example: ParsableCommand {
     @Argument() var inputFile: String
     
-    func run() throws {
+    mutating func run() throws {
         if !ExampleCore.processFile(inputFile) {
             // ExampleCore.processFile(_:) prints its own errors
             // and returns `false` on failure.
@@ -145,6 +148,7 @@ Throwing from a transform closure benefits users by providing context and can re
 % example '{"Bad JSON"}'
 Error: The value '{"Bad JSON"}' is invalid for '<input-json>': dataCorrupted(Swift.DecodingError.Context(codingPath: [], debugDescription: "The given data was not valid JSON.", underlyingError: Optional(Error Domain=NSCocoaErrorDomain Code=3840 "No value for key in object around character 11." UserInfo={NSDebugDescription=No value for key in object around character 11.})))
 Usage: example <input-json> --fail-option <fail-option>
+  See 'select --help' for more information.
 ```
 
 While throwing standard library or Foundation errors adds context, custom errors provide the best experience for users and developers.
@@ -153,4 +157,5 @@ While throwing standard library or Foundation errors adds context, custom errors
 % example '{"tokenCount":0,"tokens":[],"identifier":"F77D661C-C5B7-448E-9344-267B284F66AD"}' --fail-option="Some Text Here!"
 Error: The value 'Some Text Here!' is invalid for '--fail-option <fail-option>': Trying to write to failOption always produces an error. Input: Some Text Here!
 Usage: example <input-json> --fail-option <fail-option>
+  See 'select --help' for more information.
 ```

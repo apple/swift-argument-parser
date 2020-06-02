@@ -130,7 +130,7 @@ extension ArgumentSet {
     // The flag is required if initialValue is `nil`, otherwise it's optional
     let helpOptions: ArgumentDefinition.Help.Options = initialValue != nil ? .isOptional : []
     
-    let help = ArgumentDefinition.Help(options: helpOptions, help: help, defaultValue: initialValue.map(String.init), key: key)
+    let help = ArgumentDefinition.Help(options: helpOptions, help: help, defaultValue: initialValue.map(String.init), key: key, isComposite: true)
     let (enableNames, disableNames) = inversion.enableDisableNamePair(for: key, name: name)
 
     var hasUpdated = false
@@ -176,7 +176,7 @@ extension ArgumentSet {
 
 extension ArgumentDefinition {
   /// Create a unary / argument that parses using the given closure.
-  fileprivate init<A>(key: InputKey, kind: ArgumentDefinition.Kind, parsingStrategy: ParsingStrategy = .nextAsValue, parser: @escaping (String) -> A?, parseType type: A.Type = A.self, default initial: A?, completion: CompletionKind) {
+  init<A>(key: InputKey, kind: ArgumentDefinition.Kind, parsingStrategy: ParsingStrategy = .nextAsValue, parser: @escaping (String) -> A?, parseType type: A.Type = A.self, default initial: A?, completion: CompletionKind) {
     let initialValueCreator: (InputOrigin, inout ParsedValues) throws -> Void
     if let initialValue = initial {
       initialValueCreator = { origin, values in
@@ -345,8 +345,8 @@ extension ArgumentSet {
           try parseValue(argument, parsed, origin, update, &result, &usedOrigins)
         }
       case .terminator:
-        // Mark the terminator as used:
-        result.set(ParsedValues.Element(key: .terminator, value: 0, inputOrigin: [origin]))
+        // Ignore the terminator, it might get picked up as a positional value later.
+        break
       }
     }
     
