@@ -18,7 +18,7 @@ struct BashCompletionsGenerator {
 
     \(generateCompletionFunction([type]))
 
-    complete -F _math math
+    complete -F _\(type._commandName) \(type._commandName)
     """
   }
 

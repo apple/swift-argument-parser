@@ -30,14 +30,27 @@ extension CompletionScriptTests {
   func testBase_Zsh() throws {
     let script1 = try CompletionsGenerator(command: Base.self, shell: .zsh)
           .generateCompletionScript()
-    XCTAssertEqual(baseCompletions, script1)
+    XCTAssertEqual(zshBaseCompletions, script1)
     
     let script2 = try CompletionsGenerator(command: Base.self, shellName: "zsh")
           .generateCompletionScript()
-    XCTAssertEqual(baseCompletions, script2)
+    XCTAssertEqual(zshBaseCompletions, script2)
     
     let script3 = Base.completionScript(for: .zsh)
-    XCTAssertEqual(baseCompletions, script3)
+    XCTAssertEqual(zshBaseCompletions, script3)
+  }
+
+  func testBase_Bash() throws {
+    let script1 = try CompletionsGenerator(command: Base.self, shell: .bash)
+          .generateCompletionScript()
+    XCTAssertEqual(bashBaseCompletions, script1)
+    
+    let script2 = try CompletionsGenerator(command: Base.self, shellName: "bash")
+          .generateCompletionScript()
+    XCTAssertEqual(bashBaseCompletions, script2)
+    
+    let script3 = Base.completionScript(for: .bash)
+    XCTAssertEqual(bashBaseCompletions, script3)
   }
 }
 
@@ -60,12 +73,12 @@ extension CompletionScriptTests {
   ) throws {
     do {
       _ = try Custom.parse(["---completion", "--", arg])
-      XCTFail("Didn't error as expected", file: file, line: line)
+      XCTFail("Didn't error as expected", file: (file), line: line)
     } catch let error as CommandError {
       guard case .completionScriptCustomResponse(let output) = error.parserError else {
         throw error
       }
-      XCTAssertEqual(expectedOutput, output, file: file, line: line)
+      XCTAssertEqual(expectedOutput, output, file: (file), line: line)
     }
   }
   
@@ -79,7 +92,7 @@ extension CompletionScriptTests {
   }
 }
 
-let baseCompletions = """
+private let zshBaseCompletions = """
 #compdef base
 local context state state_descr line
 _base_commandname="base"
@@ -106,4 +119,38 @@ _custom_completion() {
 }
 
 _base
+"""
+
+private let bashBaseCompletions = """
+#!/bin/bash
+
+_base() {
+    declare -a cur prev
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    COMPREPLY=()
+    opts="--name --kind --other-kind -h --help"
+    if [[ $COMP_CWORD == 1 ]]; then
+        COMPREPLY=( $(compgen -W "$opts" -- $cur) )
+        return
+    fi
+    case $prev in
+        --name)
+            
+            return
+        ;;
+        --kind)
+            COMPREPLY=( $(compgen -W "one two three" -- $cur) )
+            return
+        ;;
+        --other-kind)
+            COMPREPLY=( $(compgen -W "1 2 3" -- $cur) )
+            return
+        ;;
+    esac
+    COMPREPLY=( $(compgen -W "$opts" -- $cur) )
+}
+
+
+complete -F _base base
 """
