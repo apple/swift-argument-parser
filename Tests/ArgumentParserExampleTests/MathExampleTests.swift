@@ -86,12 +86,15 @@ final class MathExampleTests: XCTestCase {
     let helpText = """
         OVERVIEW: Print the quantiles of the values (TBD).
 
-        USAGE: math stats quantiles [<values> ...]
+        USAGE: math stats quantiles [<one-of-four>] [<custom-arg>] [<values> ...] [--custom <custom>]
 
         ARGUMENTS:
+          <one-of-four>
+          <custom-arg>
           <values>                A group of floating-point values to operate on.
 
         OPTIONS:
+          --custom <custom>       Use a custom completion function
           --version               Show the version.
           -h, --help              Show help information.
         """

@@ -190,10 +190,10 @@ extension Math.Statistics {
             abstract: "Print the quantiles of the values (TBD).")
 
         @Argument(completion: .list(["alphabet", "alligator", "branch", "braggart"]))
-        var oneOfFour: String
+        var oneOfFour: String?
 
         @Argument(completion: .custom { _ in ["alabaster", "breakfast", "crunch", "crash"] })
-        var customArg: String
+        var customArg: String?
 
         @Argument(help: "A group of floating-point values to operate on.")
         var values: [Double]
@@ -241,7 +241,5 @@ func customCompletion(_ s: [String]) -> [String] {
     ? ["aardvark", "aaaaalbert"]
     : ["hello", "helicopter", "heliotrope"]
 }
-
-
 
 Math.main()
