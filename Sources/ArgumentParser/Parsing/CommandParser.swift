@@ -76,7 +76,7 @@ extension CommandParser {
       }
     }
     
-    if let completionArgument = split.argument(named: Name.long("generate-completion")) {
+    if let completionArgument = split.argument(named: Name.long("generate-completion-script")) {
       switch completionArgument {
       case .name:
         throw CommandError(commandStack: commandStack, parserError: .completionScriptRequested(shell: nil))

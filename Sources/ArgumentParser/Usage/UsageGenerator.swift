@@ -256,7 +256,7 @@ extension ErrorMessageGenerator {
   var unsupportedAutodetectedShell: String {
     """
     Can't autodetect a supported shell.
-    Please use --generate-completions=<shell> with one of:
+    Please use --generate-completion-script=<shell> with one of:
         \(CompletionShell.allCases.map { $0.rawValue }.joined(separator: " "))
     """
   }
@@ -264,7 +264,7 @@ extension ErrorMessageGenerator {
   func unsupportedShell(_ shell: String) -> String {
     """
     Can't generate completion scripts for '\(shell)'.
-    Please use --generate-completions=<shell> with one of:
+    Please use --generate-completion-script=<shell> with one of:
         \(CompletionShell.allCases.map { $0.rawValue }.joined(separator: " "))
     """
   }

@@ -168,12 +168,151 @@ final class MathExampleTests: XCTestCase {
 extension MathExampleTests {
   func testMath_CompletionScript() {
     AssertExecuteCommand(
-      command: "math --generate-completion=zsh",
-      expected: completionScriptText)
+      command: "math --generate-completion-script=bash",
+      expected: bashCompletionScriptText)
+    AssertExecuteCommand(
+      command: "math --generate-completion-script=zsh",
+      expected: zshCompletionScriptText)
   }
 }
 
-private let completionScriptText = """
+private let bashCompletionScriptText = """
+#!/bin/bash
+
+_math() {
+    declare -a cur prev
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    COMPREPLY=()
+    opts="add multiply stats help -h --help"
+    if [[ $COMP_CWORD == 1 ]]; then
+        COMPREPLY=( $(compgen -W "$opts" -- $cur) )
+        return
+    fi
+    case ${COMP_WORDS[1]} in
+        (add)
+            _math_add 2
+            return
+            ;;
+        (multiply)
+            _math_multiply 2
+            return
+            ;;
+        (stats)
+            _math_stats 2
+            return
+            ;;
+        (help)
+            _math_help 2
+            return
+            ;;
+    esac
+    COMPREPLY=( $(compgen -W "$opts" -- $cur) )
+}
+_math_add() {
+    opts="--hex-output -x -h --help"
+    if [[ $COMP_CWORD == $1 ]]; then
+        COMPREPLY=( $(compgen -W "$opts" -- $cur) )
+        return
+    fi
+    COMPREPLY=( $(compgen -W "$opts" -- $cur) )
+}
+_math_multiply() {
+    opts="--hex-output -x -h --help"
+    if [[ $COMP_CWORD == $1 ]]; then
+        COMPREPLY=( $(compgen -W "$opts" -- $cur) )
+        return
+    fi
+    COMPREPLY=( $(compgen -W "$opts" -- $cur) )
+}
+_math_stats() {
+    opts="average stdev quantiles -h --help"
+    if [[ $COMP_CWORD == $1 ]]; then
+        COMPREPLY=( $(compgen -W "$opts" -- $cur) )
+        return
+    fi
+    case ${COMP_WORDS[$1]} in
+        (average)
+            _math_stats_average $(($1+1))
+            return
+            ;;
+        (stdev)
+            _math_stats_stdev $(($1+1))
+            return
+            ;;
+        (quantiles)
+            _math_stats_quantiles $(($1+1))
+            return
+            ;;
+    esac
+    COMPREPLY=( $(compgen -W "$opts" -- $cur) )
+}
+_math_stats_average() {
+    opts="--kind -h --help"
+    if [[ $COMP_CWORD == $1 ]]; then
+        COMPREPLY=( $(compgen -W "$opts" -- $cur) )
+        return
+    fi
+    case $prev in
+        --kind)
+            COMPREPLY=( $(compgen -W "mean median mode" -- $cur) )
+            return
+        ;;
+    esac
+    COMPREPLY=( $(compgen -W "$opts" -- $cur) )
+}
+_math_stats_stdev() {
+    opts="-h --help"
+    if [[ $COMP_CWORD == $1 ]]; then
+        COMPREPLY=( $(compgen -W "$opts" -- $cur) )
+        return
+    fi
+    COMPREPLY=( $(compgen -W "$opts" -- $cur) )
+}
+_math_stats_quantiles() {
+    opts="--test-success-exit-code --test-failure-exit-code --test-validation-exit-code --test-custom-exit-code --file --directory --custom -h --help"
+    opts="$opts alphabet alligator branch braggart"
+    opts="$opts $(math ---completion stats quantiles -- customArg $COMP_WORDS)"
+    if [[ $COMP_CWORD == $1 ]]; then
+        COMPREPLY=( $(compgen -W "$opts" -- $cur) )
+        return
+    fi
+    case $prev in
+        --test-custom-exit-code)
+            
+            return
+        ;;
+        --file)
+            COMPREPLY=()
+            _filedir 'swift'
+            return
+        ;;
+        --directory)
+            COMPREPLY=()
+            _filedir -d
+            return
+        ;;
+        --custom)
+            COMPREPLY=( $(compgen -W "$(math ---completion stats quantiles -- --custom $COMP_WORDS)" -- $cur) )
+            return
+        ;;
+    esac
+    COMPREPLY=( $(compgen -W "$opts" -- $cur) )
+}
+_math_help() {
+    opts="-h --help"
+    if [[ $COMP_CWORD == $1 ]]; then
+        COMPREPLY=( $(compgen -W "$opts" -- $cur) )
+        return
+    fi
+    COMPREPLY=( $(compgen -W "$opts" -- $cur) )
+}
+
+
+complete -F _math math
+"""
+
+private let zshCompletionScriptText = """
 #compdef math
 local context state state_descr line
 _math_commandname="math"
@@ -216,6 +355,7 @@ _math() {
             esac
             ;;
     esac
+
     return ret
 }
 
@@ -278,6 +418,7 @@ _math_stats() {
             esac
             ;;
     esac
+
     return ret
 }
 
@@ -310,14 +451,16 @@ _math_stats_quantiles() {
     integer ret=1
     local -a args
     args+=(
+        ':one-of-four:(alphabet alligator branch braggart)'
+        ':custom-arg:{_custom_completion $_math_commandname ---completion stats quantiles -- customArg $words}'
         ':values:'
         '--test-success-exit-code[]'
         '--test-failure-exit-code[]'
         '--test-validation-exit-code[]'
         '--test-custom-exit-code[]:test-custom-exit-code:'
-        '--file[]:file:_files -g *.swift'
+        '--file[]:file:_files -g swift'
         '--directory[]:directory:_files -/'
-        '--custom[]:custom:{_custom_completion $_math_commandname ---completion stats quantiles -- --custom}'
+        '--custom[Use a custom completion function]:custom:{_custom_completion $_math_commandname ---completion stats quantiles -- --custom $words}'
         '(-h --help)'{-h,--help}'[Print help information.]'
     )
     _arguments -w -s -S $args[@] && ret=0
