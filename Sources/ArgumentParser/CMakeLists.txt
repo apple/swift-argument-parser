@@ -11,6 +11,7 @@ add_library(ArgumentParser
   "Parsable Types/EnumerableFlag.swift"
   "Parsable Types/ExpressibleByArgument.swift"
   "Parsable Types/ParsableArguments.swift"
+  "Parsable Types/ParsableArgumentsValidation.swift"
   "Parsable Types/ParsableCommand.swift"
 
   Parsing/ArgumentDecoder.swift
