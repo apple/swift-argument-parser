@@ -136,7 +136,8 @@ extension Argument {
   ///
   /// - Parameter help: Information about how to use this argument.
   public init<T: ExpressibleByArgument>(
-    help: ArgumentHelp? = nil
+    help: ArgumentHelp? = nil,
+    completion: CompletionKind? = nil
   ) where Value == T? {
     self.init(_parsedValue: .init { key in
       var arg = ArgumentDefinition(
@@ -144,7 +145,8 @@ extension Argument {
         kind: .positional,
         parsingStrategy: .nextAsValue,
         parser: T.init(argument:),
-        default: nil)
+        default: nil,
+        completion: completion ?? .default)
       arg.help.help = help
       return ArgumentSet(arg.optional)
     })
@@ -167,7 +169,8 @@ extension Argument {
         parseType: T.self,
         name: .long,
         default: initial,
-        help: help)
+        help: help,
+        completion: .default)
     })
   }
   

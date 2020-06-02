@@ -231,7 +231,8 @@ extension Option {
   public init<T: ExpressibleByArgument>(
     name: NameSpecification = .long,
     parsing parsingStrategy: SingleValueParsingStrategy = .next,
-    help: ArgumentHelp? = nil
+    help: ArgumentHelp? = nil,
+    completion: CompletionKind? = nil
   ) where Value == T? {
     self.init(_parsedValue: .init { key in
       var arg = ArgumentDefinition(
@@ -239,7 +240,8 @@ extension Option {
         kind: .name(key: key, specification: name),
         parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy),
         parser: T.init(argument:),
-        default: nil)
+        default: nil,
+        completion: completion ?? .default)
       arg.help.help = help
       return ArgumentSet(arg.optional)
     })
@@ -262,7 +264,8 @@ extension Option {
         kind: .name(key: key, specification: name),
         parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy),
         parser: T.init(argument:),
-        default: initial)
+        default: initial,
+        completion: .default)
       arg.help.help = help
       return ArgumentSet(arg.optional)
     })

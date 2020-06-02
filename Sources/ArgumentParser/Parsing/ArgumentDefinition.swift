@@ -32,7 +32,7 @@ struct ArgumentDefinition {
     var defaultValue: String?
     var keys: [InputKey]
     var allValues: [String] = []
-    var isComposite: Bool
+    var isComposite: Bool = false
     
     struct Options: OptionSet {
       var rawValue: UInt
