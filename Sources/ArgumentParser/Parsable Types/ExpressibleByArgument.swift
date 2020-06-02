@@ -33,23 +33,6 @@ extension String: ExpressibleByArgument {
   }
 }
 
-extension Optional: ExpressibleByArgument where Wrapped: ExpressibleByArgument {
-  public init?(argument: String) {
-    if let value = Wrapped(argument: argument) {
-      self = value
-    } else {
-      return nil
-    }
-  }
-  
-  public var defaultValueDescription: String {
-    guard let value = self else {
-      return "none"
-    }
-    return "\(value)"
-  }
-}
-
 extension RawRepresentable where Self: ExpressibleByArgument, RawValue: ExpressibleByArgument {
   public init?(argument: String) {
     if let value = RawValue(argument: argument) {
