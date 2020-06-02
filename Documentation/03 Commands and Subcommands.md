@@ -74,7 +74,7 @@ extension Math {
         @OptionGroup()
         var options: Math.Options
         
-        func run() {
+        mutating func run() {
             let result = options.values.reduce(0, +)
             print(format(result: result, usingHex: options.hexadecimalOutput))
         }
@@ -87,7 +87,7 @@ extension Math {
         @OptionGroup()
         var options: Math.Options
         
-        func run() {
+        mutating func run() {
             let result = options.values.reduce(1, *)
             print(format(result: result, usingHex: options.hexadecimalOutput))
         }
@@ -130,7 +130,7 @@ extension Math.Statistics {
         func calculateMedian() -> Double { ... }
         func calculateMode() -> [Double] { ... }
     
-        func run() {
+        mutating func run() {
             switch kind {
             case .mean:
                 print(calculateMean())
@@ -153,7 +153,7 @@ extension Math.Statistics {
         @Argument(help: "A group of floating-point values to operate on.")
         var values: [Double]
         
-        func run() {
+        mutating func run() {
             if values.isEmpty {
                 print(0.0)
             } else {

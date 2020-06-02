@@ -126,7 +126,7 @@ struct ChangelogAuthors: ParsableCommand {
     return url
   }
   
-  func run() throws {
+  mutating func run() throws {
     let data = try Data(contentsOf: try comparisonURL())
     let comparison = try JSONDecoder().decode(Comparison.self, from: data)
     let authors = comparison.commits.map({ $0.author })

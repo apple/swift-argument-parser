@@ -28,7 +28,7 @@ public protocol ParsableCommand: ParsableArguments {
   /// application by calling the static `main()` method on the root type.
   /// This method has a default implementation that prints help text
   /// for this command.
-  func run() throws
+  mutating func run() throws
 }
 
 extension ParsableCommand {
@@ -41,7 +41,7 @@ extension ParsableCommand {
     CommandConfiguration()
   }
   
-  public func run() throws {
+  public mutating func run() throws {
     throw CleanExit.helpRequest(self)
   }
 }
@@ -91,7 +91,7 @@ extension ParsableCommand {
   ///   `arguments` is `nil`, this uses the program's command-line arguments.
   public static func main(_ arguments: [String]?) {
     do {
-      let command = try parseAsRoot(arguments)
+      var command = try parseAsRoot(arguments)
       try command.run()
     } catch {
       exit(withError: error)
