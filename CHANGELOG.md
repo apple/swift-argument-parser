@@ -12,7 +12,47 @@ package updates, you can specify your package dependency using
 
 ## [Unreleased]
 
-*No changes yet.*
+### Additions
+
+- Error messages and help screens now include information about how to request
+  more help.
+- CMake builds now support installation.
+
+### Changes
+
+- The `static func main()` method on `ParsableCommand` no longer returns
+  `Never`. This allows `ParsableCommand` types to be designated as the entry
+  point for a Swift executable by using the `@main` attribute.
+  
+  *Migration:* For most uses, this change is source compatible. If you have
+  used `main()` where a `() -> Never` function is explicitly required, you'll
+  need to change your usage or capture the method in another function.
+
+- `Optional` no longer conforms to `ExpressibleByArgument`, to avoid some
+  property declarations that don't make sense. 
+
+  *Migration:* This is source-compatible for all property declarations, with
+  deprecations for optional properties that define an explicit default. If
+  you're using optional values where an `ExpressibleByArgument` type is
+  expected, such as a generic function, you will need to change your usage
+  or provide an explicit override.
+
+- `ParsableCommand`'s `run()` method requirement is now a `mutating` method,
+  allowing mutations to a command's properties, such as sorting an array of
+  arguments, without additional copying.
+
+### Fixes
+
+- `@Option` properties of an optional type that use a `transform` closure now
+  correctly indicate their optionality in the usage string.
+- Correct wrapping and indentation are maintained for abstracts and discussions 
+  with short lines.
+- Empty abstracts no longer add extra blank lines to the help screen.
+- Help requests are still honored even when a parsed command fails validation.
+- The `--` terminator isn't consumed when parsing a command, so that it can be
+  parsed as a value when a subcommand includes an `.unconditionalRemaining`
+  argument array.
+- CMake builds work correctly again.
 
 ## [0.0.6] - 2020-05-14
 
