@@ -1,6 +1,11 @@
 add_library(ArgumentParser
+  Completions/BashCompletionsGenerator.swift
+  Completions/CompletionsGenerator.swift
+  Completions/ZshCompletionsGenerator.swift
+
   "Parsable Properties/Argument.swift"
   "Parsable Properties/ArgumentHelp.swift"
+  "Parsable Properties/CompletionKind.swift"
   "Parsable Properties/Errors.swift"
   "Parsable Properties/Flag.swift"
   "Parsable Properties/NameSpecification.swift"
@@ -31,6 +36,7 @@ add_library(ArgumentParser
   Usage/MessageInfo.swift
   Usage/UsageGenerator.swift
 
+  Utilities/SequenceExtensions.swift
   Utilities/StringExtensions.swift
   Utilities/Tree.swift)
 # NOTE: workaround for CMake not setting up include flags yet
