@@ -309,7 +309,7 @@ fileprivate struct RepeatOK: ParsableArguments {
   @Flag(exclusivity: .chooseLast)
   var shape: Shape
 
-  @Flag(name: .shortAndLong, default: .small, exclusivity: .exclusive)
+  @Flag(default: .small, exclusivity: .exclusive)
   var size: Size
 }
 

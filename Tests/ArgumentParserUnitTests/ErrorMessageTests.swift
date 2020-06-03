@@ -135,15 +135,31 @@ extension ErrorMessageTests {
   }
 }
 
-private enum OutputBehaviour: String, CaseIterable { case stats, count, list }
 private struct Options: ParsableArguments {
-  @Flag(name: .shortAndLong, default: .list, help: "Program output")
+  enum OutputBehaviour: String, EnumerableFlag {
+    case stats, count, list
+    
+    static func name(for value: OutputBehaviour) -> NameSpecification {
+      .shortAndLong
+    }
+  }
+
+  @Flag(default: .list, help: "Program output")
   var behaviour: OutputBehaviour
 
   @Flag(inversion: .prefixedNo, exclusivity: .exclusive) var bool: Bool
 }
+
 private struct OptOptions: ParsableArguments {
-  @Flag(name: .short, help: "Program output")
+  enum OutputBehaviour: String, EnumerableFlag {
+    case stats, count, list
+    
+    static func name(for value: OutputBehaviour) -> NameSpecification {
+      .short
+    }
+  }
+
+  @Flag(help: "Program output")
   var behaviour: OutputBehaviour?
 }
 
