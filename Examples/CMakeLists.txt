@@ -1,7 +1,8 @@
 add_executable(math
   math/main.swift)
 target_link_libraries(math PRIVATE
-  ArgumentParser)
+  ArgumentParser
+  $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Linux>:m>)
 
 add_executable(repeat
   repeat/main.swift)
