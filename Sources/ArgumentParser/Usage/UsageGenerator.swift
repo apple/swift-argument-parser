@@ -114,29 +114,11 @@ extension ArgumentDefinition {
   }
   
   var sortedNames: [Name] {
-    return names
-      .sorted { (lhs, rhs) -> Bool in
-        switch (lhs, rhs) {
-        case let (.long(l), .long(r)):
-          return l < r
-        case (_, .long):
-          return true
-        case (.long, _):
-          return false
-        case let (.short(l), .short(r)):
-          return l < r
-        case (_, .short):
-          return true
-        case (.short, _):
-          return false
-        case let (.longWithSingleDash(l), .longWithSingleDash(r)):
-          return l < r
-        }
-    }
+    return names.filter{ $0 != .long($0.valueString) } + names.filter{ $0 == .long($0.valueString) }
   }
   
   var preferredNameForSynopsis: Name? {
-    sortedNames.last
+    names.first{ $0 == .long($0.valueString) } ?? names.first
   }
   
   var synopsisValueName: String? {

@@ -149,4 +149,16 @@ extension UsageGenerationTests {
     let help = UsageGenerator(toolName: "bar", parsable: J())
     XCTAssertEqual(help.synopsis, "bar --req <req> [--opt <opt>]")
   }
+  
+  struct K: ParsableArguments {
+    @Option(
+      name: [.short, .customLong("remote"),  .customLong("when"), .customLong("there")],
+      help: "Help Message")
+    var time: String?
+  }
+  
+  func testSynopsisWithMultipleCustomNames() {
+    let help = UsageGenerator(toolName: "bar", parsable: K())
+    XCTAssertEqual(help.synopsis, "bar [--remote <remote>]")
+  }
 }
