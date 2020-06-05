@@ -114,11 +114,11 @@ extension ArgumentDefinition {
   }
   
   var sortedNames: [Name] {
-    return names.filter{ $0 != .long($0.valueString) } + names.filter{ $0 == .long($0.valueString) }
+    return names.filter{ $0 == .short($0.valueString.first!) } + names.filter{ $0 != .short($0.valueString.first!) }
   }
   
   var preferredNameForSynopsis: Name? {
-    names.first{ $0 == .long($0.valueString) } ?? names.first
+    names.first{ $0 != .short($0.valueString.first!) } ?? names.first
   }
   
   var synopsisValueName: String? {

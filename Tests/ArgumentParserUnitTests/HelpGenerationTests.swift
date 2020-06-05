@@ -361,7 +361,7 @@ extension HelpGenerationTests {
   
   struct L: ParsableArguments {
     @Option(
-      name: [.short, .customLong("remote"),  .customLong("when"), .long, .customLong("there"), .customShort("x"), .customShort("y")],
+      name: [.short, .customLong("remote"), .customLong("remote"), .short, .customLong("when"), .long, .customLong("other", withSingleDash: true), .customLong("there"), .customShort("x"), .customShort("y")],
       help: "Help Message")
     var time: String?
   }
@@ -371,7 +371,7 @@ extension HelpGenerationTests {
     USAGE: l [--remote <remote>]
 
     OPTIONS:
-      -t, -x, -y, --remote, --when, --time, --there <remote>
+      -t, -x, -y, --remote, --when, --time, -other, --there <remote>
                               Help Message
       -h, --help              Show help information.
 

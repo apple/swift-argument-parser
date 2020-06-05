@@ -41,7 +41,13 @@ public struct NameSpecification: ExpressibleByArrayLiteral {
   var elements: Array<Element>
   
   public init<S>(_ sequence: S) where S : Sequence, Element == S.Element {
-    self.elements = Array(sequence)
+    let array = Array(sequence)
+    self.elements = Array()
+    for element in array {
+      if !self.elements.contains(element) {
+        self.elements.append(element)
+      }
+    }
   }
   
   public init(arrayLiteral elements: Element...) {
