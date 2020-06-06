@@ -51,8 +51,8 @@ $ repeat hello --count 3
 hello
 hello
 hello
-$ repeat
-Error: Missing required value for argument 'phrase'.
+$ repeat --count 3
+Error: Missing expected argument 'phrase'.
 Usage: repeat [--count <count>] [--include-counter] <phrase>
   See 'repeat --help' for more information.
 $ repeat --help
