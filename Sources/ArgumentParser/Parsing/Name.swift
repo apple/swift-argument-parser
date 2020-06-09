@@ -55,7 +55,12 @@ extension Name {
   }
   
   var isShort: Bool {
-    return self == .short(self.valueString.first!)
+    switch self {
+    case .short:
+      return true
+    default:
+      return false
+    }
   }
 }
 
