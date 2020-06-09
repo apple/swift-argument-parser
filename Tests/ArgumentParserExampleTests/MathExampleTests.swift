@@ -179,7 +179,13 @@ extension MathExampleTests {
       command: "math --generate-completion-script=bash",
       expected: bashCompletionScriptText)
     AssertExecuteCommand(
+      command: "math --generate-completion-script bash",
+      expected: bashCompletionScriptText)
+    AssertExecuteCommand(
       command: "math --generate-completion-script=zsh",
+      expected: zshCompletionScriptText)
+    AssertExecuteCommand(
+      command: "math --generate-completion-script zsh",
       expected: zshCompletionScriptText)
   }
 }

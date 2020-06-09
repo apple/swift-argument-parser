@@ -75,75 +75,6 @@ extension CommandParser {
         throw CommandError(commandStack: commandStack, parserError: .versionRequested)
       }
     }
-    
-    if let completionArgument = split.argument(named: Name.long("generate-completion-script")) {
-      switch completionArgument {
-      case .name:
-        throw CommandError(commandStack: commandStack, parserError: .completionScriptRequested(shell: nil))
-      case .nameWithValue(_, let value):
-        throw CommandError(commandStack: commandStack, parserError: .completionScriptRequested(shell: value))
-      }
-      
-    }
-  }
-  
-  func handleCustomCompletion(_ arguments: [String]) throws {
-    // Completion functions use a custom format:
-    //
-    // <command> ---completion [<subcommand> ...] -- <argument-name> [<completion-text>]
-    //
-    // The triple-dash prefix makes '---completion' invalid syntax for regular
-    // arguments, so it's safe to use for this internal purpose.
-    guard arguments.first == "---completion"
-      else { return }
-    
-    var args = arguments.dropFirst()
-    var current = commandTree
-    while let subcommandName = args.popFirst() {
-      // A double dash separates the subcommands from the argument information
-      if subcommandName == "--" { break }
-      
-      guard let nextCommandNode = current.firstChild(withName: subcommandName)
-        else { throw ParserError.invalidState }
-      current = nextCommandNode
-    }
-    
-    // Some kind of argument name is the next required element
-    guard let argToMatch = args.popFirst() else {
-      throw ParserError.invalidState
-    }
-    // Completion text is optional here
-    let completionValues = Array(args)
-
-    // Generate the argument set and parse the argument to find in the set
-    let argset = ArgumentSet(current.element)
-    let (_, parsedArgument) = try! parseIndividualArg(argToMatch, at: 0).first!
-    
-    // Look up the specified argument and retrieve its custom completion function
-    let completionFunction: ([String]) -> [String]
-    
-    switch parsedArgument {
-    case .option(let parsed):
-      guard let matchedArgument = argset.first(matching: parsed),
-        case .custom(let f) = matchedArgument.completion
-        else { throw ParserError.invalidState }
-      completionFunction = f
-
-    case .value(let str):
-      guard let matchedArgument = argset.firstPositional(named: str),
-        case .custom(let f) = matchedArgument.completion
-        else { throw ParserError.invalidState }
-      completionFunction = f
-      
-    case .terminator:
-      throw ParserError.invalidState
-    }
-    
-    // Parsing and retrieval successful! We don't want to continue with any
-    // other parsing here, so after printing the result of the completion
-    // function, exit with a success code.
-    let output = completionFunction(completionValues).joined(separator: "\n")
-    throw ParserError.completionScriptCustomResponse(output)
   }
   
   /// Returns the last parsed value if there are no remaining unused arguments.
@@ -277,6 +208,7 @@ extension CommandParser {
     }
     
     do {
+      try checkForCompletionScriptRequest(&split)
       try descendingParse(&split)
       let result = try extractLastParsedValue(split)
       
@@ -299,6 +231,98 @@ extension CommandParser {
     }
   }
 }
+
+// MARK: Completion Script Support
+
+struct GenerateCompletions: ParsableCommand {
+    @Option() var generateCompletionScript: String
+}
+
+struct AutodetectedGenerateCompletions: ParsableCommand {
+    @Flag() var generateCompletionScript: Bool
+}
+
+extension CommandParser {
+  func checkForCompletionScriptRequest(_ split: inout SplitArguments) throws {
+    // We don't have the ability to check for `--name [value]`-style args yet,
+    // so we need to try parsing two different commands.
+    
+    // First look for `--generate-completion-script <shell>`
+    var completionsParser = CommandParser(GenerateCompletions.self)
+    if let result = try? completionsParser.parseCurrent(&split) as? GenerateCompletions {
+      throw CommandError(commandStack: commandStack, parserError: .completionScriptRequested(shell: result.generateCompletionScript))
+    }
+    
+    // Check for for `--generate-completion-script` without a value
+    var autodetectedParser = CommandParser(AutodetectedGenerateCompletions.self)
+    if let result = try? autodetectedParser.parseCurrent(&split) as? AutodetectedGenerateCompletions,
+       result.generateCompletionScript
+    {
+      throw CommandError(commandStack: commandStack, parserError: .completionScriptRequested(shell: nil))
+    }
+  }
+    
+  func handleCustomCompletion(_ arguments: [String]) throws {
+    // Completion functions use a custom format:
+    //
+    // <command> ---completion [<subcommand> ...] -- <argument-name> [<completion-text>]
+    //
+    // The triple-dash prefix makes '---completion' invalid syntax for regular
+    // arguments, so it's safe to use for this internal purpose.
+    guard arguments.first == "---completion"
+      else { return }
+    
+    var args = arguments.dropFirst()
+    var current = commandTree
+    while let subcommandName = args.popFirst() {
+      // A double dash separates the subcommands from the argument information
+      if subcommandName == "--" { break }
+      
+      guard let nextCommandNode = current.firstChild(withName: subcommandName)
+        else { throw ParserError.invalidState }
+      current = nextCommandNode
+    }
+    
+    // Some kind of argument name is the next required element
+    guard let argToMatch = args.popFirst() else {
+      throw ParserError.invalidState
+    }
+    // Completion text is optional here
+    let completionValues = Array(args)
+
+    // Generate the argument set and parse the argument to find in the set
+    let argset = ArgumentSet(current.element)
+    let (_, parsedArgument) = try! parseIndividualArg(argToMatch, at: 0).first!
+    
+    // Look up the specified argument and retrieve its custom completion function
+    let completionFunction: ([String]) -> [String]
+    
+    switch parsedArgument {
+    case .option(let parsed):
+      guard let matchedArgument = argset.first(matching: parsed),
+        case .custom(let f) = matchedArgument.completion
+        else { throw ParserError.invalidState }
+      completionFunction = f
+
+    case .value(let str):
+      guard let matchedArgument = argset.firstPositional(named: str),
+        case .custom(let f) = matchedArgument.completion
+        else { throw ParserError.invalidState }
+      completionFunction = f
+      
+    case .terminator:
+      throw ParserError.invalidState
+    }
+    
+    // Parsing and retrieval successful! We don't want to continue with any
+    // other parsing here, so after printing the result of the completion
+    // function, exit with a success code.
+    let output = completionFunction(completionValues).joined(separator: "\n")
+    throw ParserError.completionScriptCustomResponse(output)
+  }
+}
+
+// MARK: Building Command Stacks
 
 extension CommandParser {
   /// Builds an array of commands that matches the given command names.
@@ -344,27 +368,6 @@ extension SplitArguments {
     }
   }
 
-  func argument(named needle: Name) -> ParsedArgument? {
-    guard let element = elements.first(where: {
-      switch $0.element {
-      case .option(.name(let name)),
-           .option(.nameWithValue(let name, _)):
-        return name == needle
-      default:
-        return false
-      }
-    })?.element else {
-      return nil
-    }
-    
-    switch element {
-    case .option(let argument):
-      return argument
-    case .value, .terminator:
-      return nil
-    }
-  }
-  
   func contains(anyOf names: [Name]) -> Bool {
     self.elements.contains {
       switch $0.element {
