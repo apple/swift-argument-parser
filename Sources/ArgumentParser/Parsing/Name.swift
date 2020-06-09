@@ -53,6 +53,10 @@ extension Name {
       return n
     }
   }
+  
+  var isShort: Bool {
+    return self == .short(self.valueString.first!)
+  }
 }
 
 // short argument names based on the synopsisString
