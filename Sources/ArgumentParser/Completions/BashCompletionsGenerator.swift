@@ -141,6 +141,8 @@ struct BashCompletionsGenerator {
           return nil
         case .list(let list):
           return list.joined(separator: " ")
+        case .shellCommand(let command):
+          return "$(\(command))"
         case .custom:
           // Generate a call back into the command to retrieve a completions list
           let commandName = commands.first!._commandName
@@ -197,7 +199,10 @@ extension ArgumentDefinition {
       
     case .list(let list):
       return #"COMPREPLY=( $(compgen -W "\#(list.joined(separator: " "))" -- $cur) )"#
-      
+    
+    case .shellCommand(let command):
+      return "COMPREPLY=( $(\(command)) )"
+        
     case .custom:
       // Generate a call back into the command to retrieve a completions list
       let commandName = commands.first!._commandName      

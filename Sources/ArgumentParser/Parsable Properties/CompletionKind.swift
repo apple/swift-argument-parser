@@ -23,9 +23,12 @@ public enum CompletionKind {
   /// Complete directory names that match the specified pattern.
   case directory(pattern: String?)
 
+  /// Call the given shell command to generate completions.
+  case shellCommand(String)
+
   /// Generate completions using the given closure.
   case custom(([String]) -> [String])
-  
+
   /// Complete file names.
   public static var file: CompletionKind { .file(pattern: nil) }
 

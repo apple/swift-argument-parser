@@ -167,6 +167,9 @@ extension ArgumentDefinition {
     case .list(let list):
       return "(" + list.joined(separator: " ") + ")"
       
+    case .shellCommand(let command):
+      return "{_describe '' $(\(command))}"
+
     case .custom:
       // Generate a call back into the command to retrieve a completions list
       let commandName = commands.first!._commandName

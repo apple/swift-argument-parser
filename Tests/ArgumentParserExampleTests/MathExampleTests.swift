@@ -86,15 +86,12 @@ final class MathExampleTests: XCTestCase {
     let helpText = """
         OVERVIEW: Print the quantiles of the values (TBD).
 
-        USAGE: math stats quantiles [<one-of-four>] [<custom-arg>] [<values> ...] [--custom <custom>]
+        USAGE: math stats quantiles [<values> ...]
 
         ARGUMENTS:
-          <one-of-four>
-          <custom-arg>
           <values>                A group of floating-point values to operate on.
 
         OPTIONS:
-          --custom <custom>       Use a custom completion function
           --version               Show the version.
           -h, --help              Show help information.
         """
@@ -284,7 +281,7 @@ _math_stats_stdev() {
     COMPREPLY=( $(compgen -W "$opts" -- $cur) )
 }
 _math_stats_quantiles() {
-    opts="--test-success-exit-code --test-failure-exit-code --test-validation-exit-code --test-custom-exit-code --file --directory --custom -h --help"
+    opts="--test-success-exit-code --test-failure-exit-code --test-validation-exit-code --test-custom-exit-code --file --directory --shell --custom -h --help"
     opts="$opts alphabet alligator branch braggart"
     opts="$opts $(math ---completion stats quantiles -- customArg $COMP_WORDS)"
     if [[ $COMP_CWORD == $1 ]]; then
@@ -304,6 +301,10 @@ _math_stats_quantiles() {
         --directory)
             COMPREPLY=()
             _filedir -d
+            return
+        ;;
+        --shell)
+            COMPREPLY=( $(head -100 /usr/share/dict/words | tail -50) )
             return
         ;;
         --custom)
@@ -474,7 +475,8 @@ _math_stats_quantiles() {
         '--test-custom-exit-code[]:test-custom-exit-code:'
         '--file[]:file:_files -g swift'
         '--directory[]:directory:_files -/'
-        '--custom[Use a custom completion function]:custom:{_custom_completion $_math_commandname ---completion stats quantiles -- --custom $words}'
+        '--shell[]:shell:{_describe '' $(head -100 /usr/share/dict/words | tail -50)}'
+        '--custom[]:custom:{_custom_completion $_math_commandname ---completion stats quantiles -- --custom $words}'
         '(-h --help)'{-h,--help}'[Print help information.]'
     )
     _arguments -w -s -S $args[@] && ret=0

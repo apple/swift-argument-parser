@@ -189,10 +189,10 @@ extension Math.Statistics {
         static var configuration = CommandConfiguration(
             abstract: "Print the quantiles of the values (TBD).")
 
-        @Argument(completion: .list(["alphabet", "alligator", "branch", "braggart"]))
+        @Argument(help: .hidden, completion: .list(["alphabet", "alligator", "branch", "braggart"]))
         var oneOfFour: String?
 
-        @Argument(completion: .custom { _ in ["alabaster", "breakfast", "crunch", "crash"] })
+        @Argument(help: .hidden, completion: .custom { _ in ["alabaster", "breakfast", "crunch", "crash"] })
         var customArg: String?
 
         @Argument(help: "A group of floating-point values to operate on.")
@@ -213,9 +213,13 @@ extension Math.Statistics {
         var file: String?
         @Option(help: .hidden, completion: .directory)
         var directory: String?
-        @Option(help: "Use a custom completion function", completion: .custom(customCompletion))
+        
+        @Option(help: .hidden, completion: .shellCommand("head -100 /usr/share/dict/words | tail -50"))
+        var shell: String?
+        
+        @Option(help: .hidden, completion: .custom(customCompletion))
         var custom: String?
-      
+
         func validate() throws {
             if testSuccessExitCode {
                 throw ExitCode.success
