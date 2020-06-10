@@ -377,4 +377,24 @@ extension HelpGenerationTests {
 
     """)
   }
+
+  struct M: ParsableCommand {
+  }
+  struct N: ParsableCommand {
+    static var configuration = CommandConfiguration(subcommands: [M.self], defaultSubcommand: M.self)
+  }
+
+  func testHelpWithDefaultCommand() {
+    AssertHelp(for: N.self, equals: """
+    USAGE: n <subcommand>
+
+    OPTIONS:
+      -h, --help              Show help information.
+
+    SUBCOMMANDS:
+      m (default)
+
+      See 'n help <subcommand>' for detailed help.
+    """)
+  }
 }
