@@ -31,6 +31,7 @@ add_library(ArgumentParser
   Usage/MessageInfo.swift
   Usage/UsageGenerator.swift
 
+  Utilities/SequenceExtensions.swift
   Utilities/StringExtensions.swift
   Utilities/Tree.swift)
 # NOTE: workaround for CMake not setting up include flags yet
