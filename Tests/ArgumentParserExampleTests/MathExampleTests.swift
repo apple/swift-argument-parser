@@ -30,7 +30,7 @@ final class MathExampleTests: XCTestCase {
           -h, --help              Show help information.
 
         SUBCOMMANDS:
-          add                     Print the sum of the values.
+          add (default)           Print the sum of the values.
           multiply                Print the product of the values.
           stats                   Calculate descriptive statistics.
 
