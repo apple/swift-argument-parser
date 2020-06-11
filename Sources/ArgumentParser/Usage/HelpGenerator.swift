@@ -213,11 +213,16 @@ internal struct HelpGenerator {
       optionElements.append(.init(label: helpLabels, abstract: "Show help information."))
     }
 
+    let configuration = commandStack.last!.configuration
     let subcommandElements: [Section.Element] =
-      commandStack.last!.configuration.subcommands.compactMap { command in
+      configuration.subcommands.compactMap { command in
         guard command.configuration.shouldDisplay else { return nil }
+        var label = command._commandName
+        if command == configuration.defaultSubcommand {
+            label += " (default)"
+        }
         return Section.Element(
-          label: command._commandName,
+          label: label,
           abstract: command.configuration.abstract)
     }
     
