@@ -373,3 +373,22 @@ extension DefaultsEndToEndTests {
   }
 }
 
+
+fileprivate struct OptionPropertyInitArguments: ParsableArguments {
+  @Option
+  var data: String = "test"
+}
+
+extension DefaultsEndToEndTests {
+  func testParsing_OptionPropertyInit_NoTransform_UseDefault() throws {
+    AssertParse(OptionPropertyInitArguments.self, []) { arguments in
+      XCTAssertEqual(arguments.data, "test")
+    }
+  }
+
+  func testParsing_OptionPropertyInit_NoTransform_OverrideDefault() throws {
+    AssertParse(OptionPropertyInitArguments.self, ["--data", "test2"]) { arguments in
+      XCTAssertEqual(arguments.data, "test2")
+    }
+  }
+}
