@@ -374,14 +374,26 @@ extension DefaultsEndToEndTests {
 }
 
 
+fileprivate func exclaim(_ input: String) throws -> String {
+  return input + "!"
+}
+
 fileprivate struct OptionPropertyInitArguments_Default: ParsableArguments {
   @Option
   var data: String = "test"
+
+  @Option(transform: exclaim)
+  var transformedData: String = "test"
 }
 
-fileprivate struct OptionPropertyInitArguments_NoDefault: ParsableArguments {
+fileprivate struct OptionPropertyInitArguments_NoDefault_NoTransform: ParsableArguments {
   @Option()
   var data: String
+}
+
+fileprivate struct OptionPropertyInitArguments_NoDefault_Transform: ParsableArguments {
+  @Option(transform: exclaim)
+  var transformedData: String
 }
 
 extension DefaultsEndToEndTests {
@@ -402,8 +414,30 @@ extension DefaultsEndToEndTests {
   /// Tests that *not* providing a default value still parses the argument correctly from the command-line.
   /// This test is almost certainly duplicated by others in the repository, but allows for quick use of test filtering during development on the initialization functionality.
   func testParsing_OptionPropertyInit_NoDefault_NoTransform() throws {
-    AssertParse(OptionPropertyInitArguments_NoDefault.self, ["--data", "test"]) { arguments in
+    AssertParse(OptionPropertyInitArguments_NoDefault_NoTransform.self, ["--data", "test"]) { arguments in
       XCTAssertEqual(arguments.data, "test")
+    }
+  }
+
+  /// Tests that using default property initialization syntax on a property with a `transform` function provided parses the default value for the argument when nothing is provided from the command-line.
+  func testParsing_OptionPropertyInit_Default_Transform_UseDefault() throws {
+    AssertParse(OptionPropertyInitArguments_Default.self, []) { arguments in
+      XCTAssertEqual(arguments.transformedData, "test")
+    }
+  }
+
+  /// Tests that using default property initialization syntax on a property with a `transform` function provided parses and transforms the command-line-provided value for the argument when provided.
+  func testParsing_OptionPropertyInit_Default_Transform_OverrideDefault() throws {
+    AssertParse(OptionPropertyInitArguments_Default.self, ["--transformed-data", "test2"]) { arguments in
+      XCTAssertEqual(arguments.transformedData, "test2!")
+    }
+  }
+
+  /// Tests that *not* providing a default value for a property with a `transform` function still parses the argument correctly from the command-line.
+  /// This test is almost certainly duplicated by others in the repository, but allows for quick use of test filtering during development on the initialization functionality.
+  func testParsing_OptionPropertyInit_NoDefault_Transform() throws {
+    AssertParse(OptionPropertyInitArguments_NoDefault_Transform.self, ["--transformed-data", "test"]) { arguments in
+      XCTAssertEqual(arguments.transformedData, "test!")
     }
   }
 }

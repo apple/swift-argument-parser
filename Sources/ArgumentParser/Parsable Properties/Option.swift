@@ -371,7 +371,90 @@ extension Option {
       return ArgumentSet(alternatives: [arg])
       })
   }
-  
+
+  /// Creates a property that reads its value from a labeled option, parsing
+  /// with the given closure.
+  ///
+  /// - Parameters:
+  ///   - name: A specification for what names are allowed for this flag.
+  ///   - initial: A default value to use for this property. If `initial` is
+  ///     `nil`, this option and value are required from the user.
+  ///   - parsingStrategy: The behavior to use when looking for this option's
+  ///     value.
+  ///   - help: Information about how to use this option.
+  ///   - transform: A closure that converts a string into this property's
+  ///     type or throws an error.
+  @available(*, deprecated, message: "Use regular property initialization for default values (`var foo: String = \"bar\"`)")
+  public init(
+    name: NameSpecification = .long,
+    default initial: Value? = nil,
+    parsing parsingStrategy: SingleValueParsingStrategy = .next,
+    help: ArgumentHelp? = nil,
+    transform: @escaping (String) throws -> Value
+  ) {
+     self.init(
+      name: name,
+      initial: initial,
+      parsingStrategy: parsingStrategy,
+      help: help,
+      transform: transform
+    )
+  }
+
+  /// Creates a property with a default value provided by standard Swift default value syntax, parsing with the given closure.
+  ///
+  /// For instance, the following are now equivalent:
+  /// - `@Option(default: "bar", transform: someFunction) var foo: String`
+  /// - `@Option(transform: someFunction) var foo: String = "bar"`
+  ///
+  /// This syntax allows defaults to be set for options much more naturally for the developer.
+  ///
+  /// - Parameters:
+  ///   - wrappedValue: A default value to use for this property, provided implicitly by the compiler during `propertyWrapper` initialization.
+  ///   - name: A specification for what names are allowed for this flag.
+  ///   - parsingStrategy: The behavior to use when looking for this option's value.
+  ///   - help: Information about how to use this option.
+  ///   - transform: A closure that converts a string into this property's type or throws an error.
+   public init(
+    wrappedValue: Value,
+    name: NameSpecification = .long,
+    parsing parsingStrategy: SingleValueParsingStrategy = .next,
+    help: ArgumentHelp? = nil,
+    transform: @escaping (String) throws -> Value
+  ) {
+    self.init(
+      name: name,
+      initial: wrappedValue,
+      parsingStrategy: parsingStrategy,
+      help: help,
+      transform: transform
+    )
+  }
+
+  /// Creates a property with no default value, parsing with the given closure.
+  ///
+  /// With the addition of standard default property initialization syntax and the deprecation of the previous `init` with a `default` parameter, we must also provide a separate `init` with no default for when the older method is eventually removed.
+  ///
+  /// - Parameters:
+  ///   - name: A specification for what names are allowed for this flag.
+  ///   - parsingStrategy: The behavior to use when looking for this option's value.
+  ///   - help: Information about how to use this option.
+  ///   - transform: A closure that converts a string into this property's type or throws an error.
+  public init(
+    name: NameSpecification = .long,
+    parsing parsingStrategy: SingleValueParsingStrategy = .next,
+    help: ArgumentHelp? = nil,
+    transform: @escaping (String) throws -> Value
+  ) {
+    self.init(
+      name: name,
+      initial: nil,
+      parsingStrategy: parsingStrategy,
+      help: help,
+      transform: transform
+    )
+  }
+
   /// Creates an array property that reads its values from zero or more
   /// labeled options.
   ///
