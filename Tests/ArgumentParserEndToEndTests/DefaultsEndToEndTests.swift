@@ -385,18 +385,22 @@ fileprivate struct OptionPropertyInitArguments_NoDefault: ParsableArguments {
 }
 
 extension DefaultsEndToEndTests {
+  /// Tests that using default property initialization syntax parses the default value for the argument when nothing is provided from the command-line.
   func testParsing_OptionPropertyInit_Default_NoTransform_UseDefault() throws {
     AssertParse(OptionPropertyInitArguments_Default.self, []) { arguments in
       XCTAssertEqual(arguments.data, "test")
     }
   }
 
+  /// Tests that using default property initialization syntax parses the command-line-provided value for the argument when provided.
   func testParsing_OptionPropertyInit_Default_NoTransform_OverrideDefault() throws {
     AssertParse(OptionPropertyInitArguments_Default.self, ["--data", "test2"]) { arguments in
       XCTAssertEqual(arguments.data, "test2")
     }
   }
 
+  /// Tests that *not* providing a default value still parses the argument correctly from the command-line.
+  /// This test is almost certainly duplicated by others in the repository, but allows for quick use of test filtering during development on the initialization functionality.
   func testParsing_OptionPropertyInit_NoDefault_NoTransform() throws {
     AssertParse(OptionPropertyInitArguments_NoDefault.self, ["--data", "test"]) { arguments in
       XCTAssertEqual(arguments.data, "test")
