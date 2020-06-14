@@ -70,6 +70,26 @@ extension Option: DecodableParsedWrapper where Value: Decodable {}
 // MARK: Property Wrapper Initializers
 
 extension Option where Value: ExpressibleByArgument {
+  /// Creates a property with an optional default value, intended to be called by other constructors to centralize logic.
+  ///
+  /// This private `init` allows us to expose multiple other similar constructors to allow for standard default property initialization while reducing code duplication.
+  private init(
+    name: NameSpecification = .long,
+    initial: Value? = nil,
+    parsingStrategy: SingleValueParsingStrategy = .next,
+    help: ArgumentHelp? = nil
+  ) {
+    self.init(_parsedValue: .init { key in
+      ArgumentSet(
+        key: key,
+        kind: .name(key: key, specification: name),
+        parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy),
+        parseType: Value.self,
+        name: name,
+        default: initial, help: help)
+      })
+  }
+
   /// Creates a property that reads its value from a labeled option.
   ///
   /// - Parameters:
@@ -85,15 +105,12 @@ extension Option where Value: ExpressibleByArgument {
     parsing parsingStrategy: SingleValueParsingStrategy = .next,
     help: ArgumentHelp? = nil
   ) {
-    self.init(_parsedValue: .init { key in
-      ArgumentSet(
-        key: key,
-        kind: .name(key: key, specification: name),
-        parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy),
-        parseType: Value.self,
-        name: name,
-        default: initial, help: help)
-      })
+    self.init(
+      name: name,
+      initial: initial,
+      parsingStrategy: parsingStrategy,
+      help: help
+    )
   }
 
   /// Creates a property with a default value provided by standard Swift default value syntax.
@@ -111,10 +128,12 @@ extension Option where Value: ExpressibleByArgument {
     parsing parsingStrategy: SingleValueParsingStrategy = .next,
     help: ArgumentHelp? = nil
   ) {
-      self.init(name: name,
-                default: wrappedValue,
-                parsing: parsingStrategy,
-                help: help)
+     self.init(
+      name: name,
+      initial: wrappedValue,
+      parsingStrategy: parsingStrategy,
+      help: help
+    )
   }
 }
 
