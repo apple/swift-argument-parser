@@ -141,7 +141,7 @@ extension Option where Value: ExpressibleByArgument {
     )
   }
 
-  /// Creates a property with no default value
+  /// Creates a property with no default value.
   ///
   /// With the addition of standard default property initialization syntax and the deprecation of the previous `init` with a `default` parameter, we must also provide a separate `init` with no default for when the older method is eventually removed.
   ///
