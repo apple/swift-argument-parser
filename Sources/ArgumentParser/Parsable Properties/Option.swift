@@ -99,6 +99,7 @@ extension Option where Value: ExpressibleByArgument {
   ///   - parsingStrategy: The behavior to use when looking for this option's
   ///     value.
   ///   - help: Information about how to use this option.
+  @available(*, deprecated, message: "Use regular property initialization for default values (`var foo: String = \"bar\"`)")
   public init(
     name: NameSpecification = .long,
     default initial: Value? = nil,
@@ -121,7 +122,11 @@ extension Option where Value: ExpressibleByArgument {
   ///
   /// This syntax allows defaults to be set for options much more naturally for the developer.
   ///
-  /// Parameters are the same as `.init(name:default:parsing:help:)`, just replacing `default` with `wrappedValue`
+  /// - Parameters:
+  ///   - wrappedValue: A default value to use for this property, provided implicitly by the compiler during `propertyWrapper` initialization.
+  ///   - name: A specification for what names are allowed for this flag.
+  ///   - parsingStrategy: The behavior to use when looking for this option's value.
+  ///   - help: Information about how to use this option.
   public init(
     wrappedValue: Value,
     name: NameSpecification = .long,
@@ -131,6 +136,27 @@ extension Option where Value: ExpressibleByArgument {
      self.init(
       name: name,
       initial: wrappedValue,
+      parsingStrategy: parsingStrategy,
+      help: help
+    )
+  }
+
+  /// Creates a property with no default value
+  ///
+  /// With the addition of standard default property initialization syntax and the deprecation of the previous `init` with a `default` parameter, we must also provide a separate `init` with no default for when the older method is eventually removed.
+  ///
+  /// - Parameters:
+  ///   - name: A specification for what names are allowed for this flag.
+  ///   - parsingStrategy: The behavior to use when looking for this option's value.
+  ///   - help: Information about how to use this option.
+  public init(
+    name: NameSpecification = .long,
+    parsing parsingStrategy: SingleValueParsingStrategy = .next,
+    help: ArgumentHelp? = nil
+  ) {
+     self.init(
+      name: name,
+      initial: nil,
       parsingStrategy: parsingStrategy,
       help: help
     )
