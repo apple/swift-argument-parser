@@ -115,7 +115,7 @@ extension HelpGenerationTests {
             """)
   }
 
-  enum OptionFlags: String, CaseIterable { case optional, required }
+  enum OptionFlags: String, EnumerableFlag { case optional, required }
   enum Degree {
     case bachelor, master, doctor
     static func degreeTransform(_ string: String) throws -> Degree {
@@ -179,15 +179,32 @@ extension HelpGenerationTests {
             """)
   }
 
-  enum OutputBehaviour: String, CaseIterable { case stats, count, list }
   struct E: ParsableCommand {
-    @Flag(name: .shortAndLong, help: "Change the program output")
+    enum OutputBehaviour: String, EnumerableFlag {
+      case stats, count, list
+      
+      static func name(for value: OutputBehaviour) -> NameSpecification {
+        .shortAndLong
+      }
+    }
+    
+    @Flag(help: "Change the program output")
     var behaviour: OutputBehaviour
   }
+  
   struct F: ParsableCommand {
-    @Flag(name: .short, default: .list, help: "Change the program output")
+    enum OutputBehaviour: String, EnumerableFlag {
+      case stats, count, list
+      
+      static func name(for value: OutputBehaviour) -> NameSpecification {
+        .short
+      }
+    }
+
+    @Flag(default: .list, help: "Change the program output")
     var behaviour: OutputBehaviour
   }
+  
   struct G: ParsableCommand {
     @Flag(inversion: .prefixedNo, help: "Whether to flag")
     var flag: Bool
@@ -339,6 +356,45 @@ extension HelpGenerationTests {
     OPTIONS:
       -h, --help              Show help information.
 
+    """)
+  }
+  
+  struct L: ParsableArguments {
+    @Option(
+      name: [.short, .customLong("remote"), .customLong("remote"), .short, .customLong("when"), .long, .customLong("other", withSingleDash: true), .customLong("there"), .customShort("x"), .customShort("y")],
+      help: "Help Message")
+    var time: String?
+  }
+  
+  func testHelpWithMultipleCustomNames() {
+    AssertHelp(for: L.self, equals: """
+    USAGE: l [--remote <remote>]
+
+    OPTIONS:
+      -t, -x, -y, --remote, --when, --time, -other, --there <remote>
+                              Help Message
+      -h, --help              Show help information.
+
+    """)
+  }
+
+  struct M: ParsableCommand {
+  }
+  struct N: ParsableCommand {
+    static var configuration = CommandConfiguration(subcommands: [M.self], defaultSubcommand: M.self)
+  }
+
+  func testHelpWithDefaultCommand() {
+    AssertHelp(for: N.self, equals: """
+    USAGE: n <subcommand>
+
+    OPTIONS:
+      -h, --help              Show help information.
+
+    SUBCOMMANDS:
+      m (default)
+
+      See 'n help <subcommand>' for detailed help.
     """)
   }
 }

@@ -21,7 +21,7 @@ struct Repeat: ParsableCommand {
     @Argument(help: "The phrase to repeat.")
     var phrase: String
 
-    func run() throws {
+    mutating func run() throws {
         let repeatCount = count ?? .max
 
         for i in 1...repeatCount {

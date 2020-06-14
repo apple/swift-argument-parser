@@ -334,7 +334,7 @@ extension Flag {
   }
 }
 
-// - MARK: Deprecated CaseIterable/RawValue == String
+// - MARK: Unavailable CaseIterable/RawValue == String
 
 extension Flag where Value: CaseIterable, Value: RawRepresentable, Value: Equatable, Value.RawValue == String {
   /// Creates a property that gets its value from the presence of a flag,
@@ -346,7 +346,7 @@ extension Flag where Value: CaseIterable, Value: RawRepresentable, Value: Equata
   ///     `nil`, this flag is required.
   ///   - exclusivity: The behavior to use when multiple flags are specified.
   ///   - help: Information about how to use this flag.
-  @available(*, deprecated, message: "Add 'EnumerableFlag' conformance to your value type.")
+  @available(*, unavailable, message: "Add 'EnumerableFlag' conformance to your value type and, if needed, specify the 'name' of each case there.")
   public init(
     name: NameSpecification = .long,
     default initial: Value? = nil,
@@ -376,7 +376,7 @@ extension Flag where Value: CaseIterable, Value: RawRepresentable, Value: Equata
 extension Flag {
   /// Creates a property that gets its value from the presence of a flag,
   /// where the allowed flags are defined by a case-iterable type.
-  @available(*, deprecated, message: "Add 'EnumerableFlag' conformance to your value type.")
+  @available(*, unavailable, message: "Add 'EnumerableFlag' conformance to your value type and, if needed, specify the 'name' of each case there.")
   public init<Element>(
     name: NameSpecification = .long,
     exclusivity: FlagExclusivity = .exclusive,
@@ -409,7 +409,7 @@ extension Flag {
   /// - Parameters:
   ///   - name: A specification for what names are allowed for this flag.
   ///   - help: Information about how to use this flag.
-  @available(*, deprecated, message: "Add 'EnumerableFlag' conformance to your value type.")
+  @available(*, unavailable, message: "Add 'EnumerableFlag' conformance to your value type and, if needed, specify the 'name' of each case there.")
   public init<Element>(
     name: NameSpecification = .long,
     help: ArgumentHelp? = nil

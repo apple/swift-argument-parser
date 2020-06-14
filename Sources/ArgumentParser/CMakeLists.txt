@@ -11,6 +11,7 @@ add_library(ArgumentParser
   "Parsable Types/EnumerableFlag.swift"
   "Parsable Types/ExpressibleByArgument.swift"
   "Parsable Types/ParsableArguments.swift"
+  "Parsable Types/ParsableArgumentsValidation.swift"
   "Parsable Types/ParsableCommand.swift"
 
   Parsing/ArgumentDecoder.swift
@@ -30,6 +31,7 @@ add_library(ArgumentParser
   Usage/MessageInfo.swift
   Usage/UsageGenerator.swift
 
+  Utilities/SequenceExtensions.swift
   Utilities/StringExtensions.swift
   Utilities/Tree.swift)
 # NOTE: workaround for CMake not setting up include flags yet

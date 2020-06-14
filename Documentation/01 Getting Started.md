@@ -19,7 +19,7 @@ import PackageDescription
 let package = Package(
     name: "random",
     dependencies: [
-        .package(url: "https://github.com/apple/swift-argument-parser.git", from: "0.0.1"),
+        .package(url: "https://github.com/apple/swift-argument-parser.git", from: "0.1.0"),
     ],
     targets: [
         .target(
@@ -52,7 +52,7 @@ struct Count: ParsableCommand {
     @Argument()
     var outputFile: String
     
-    func run() throws {
+    mutating func run() throws {
         print("""
             Counting words in '\(inputFile)' \
             and writing the result into '\(outputFile)'.
@@ -91,7 +91,7 @@ struct Count: ParsableCommand {
     @Option()
     var outputFile: String
     
-    func run() throws {
+    mutating func run() throws {
         print("""
             Counting words in '\(inputFile)' \
             and writing the result into '\(outputFile)'.
@@ -135,7 +135,7 @@ struct Count: ParsableCommand {
     @Flag()
     var verbose: Bool
     
-    func run() throws {
+    mutating func run() throws {
         if verbose {
             print("""
                 Counting words in '\(inputFile)' \
@@ -177,7 +177,7 @@ struct Count: ParsableCommand {
     @Flag(name: .shortAndLong)
     var verbose: Bool
     
-    func run() throws { ... }
+    mutating func run() throws { ... }
 }
 ```
 
@@ -211,7 +211,7 @@ struct Count: ParsableCommand {
     @Flag(name: .shortAndLong, help: "Print status updates while counting.")
     var verbose: Bool
 
-    func run() throws { ... }
+    mutating func run() throws { ... }
 }
 ```
 
@@ -246,7 +246,7 @@ struct Count: ParsableCommand {
     @Flag(name: .shortAndLong, help: "Print status updates while counting.")
     var verbose: Bool
 
-    func run() throws {
+    mutating func run() throws {
         if verbose {
             print("""
                 Counting words in '\(inputFile)' \

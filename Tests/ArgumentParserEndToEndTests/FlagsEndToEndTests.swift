@@ -309,7 +309,7 @@ fileprivate struct RepeatOK: ParsableArguments {
   @Flag(exclusivity: .chooseLast)
   var shape: Shape
 
-  @Flag(name: .shortAndLong, default: .small, exclusivity: .exclusive)
+  @Flag(default: .small, exclusivity: .exclusive)
   var size: Size
 }
 
@@ -327,40 +327,6 @@ extension FlagsEndToEndTests {
 
     AssertParse(RepeatOK.self, ["--large", "--pink", "--round", "-l"]) { options in
       XCTAssertEqual(options.size, .large)
-    }
-  }
-}
-
-fileprivate struct DeprecatedFlags: ParsableArguments {
-  enum One: String, CaseIterable {
-    case one
-  }
-  enum Two: String, CaseIterable {
-    case two
-  }
-  enum Three: String, CaseIterable {
-    case three
-    case four
-  }
-
-  @Flag() var single: One
-  @Flag() var optional: Two?
-  @Flag() var array: [Three]
-  @Flag(name: .long) var size: Size?
-}
-
-extension FlagsEndToEndTests {
-  func testParsingDeprecatedFlags() throws {
-    AssertParse(DeprecatedFlags.self, ["--one"]) { options in
-      XCTAssertEqual(options.single, .one)
-      XCTAssertNil(options.optional)
-      XCTAssertTrue(options.array.isEmpty)
-    }
-
-    AssertParse(DeprecatedFlags.self, ["--one", "--two", "--three", "--four", "--three"]) { options in
-      XCTAssertEqual(options.single, .one)
-      XCTAssertEqual(options.optional, .two)
-      XCTAssertEqual(options.array, [.three, .four, .three])
     }
   }
 }

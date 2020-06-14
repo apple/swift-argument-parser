@@ -8,11 +8,68 @@ This project follows semantic versioning. While still in major version `0`,
 source-stability is only guaranteed within minor versions (e.g. between
 `0.0.3` and `0.0.4`). If you want to guard against potentially source-breaking
 package updates, you can specify your package dependency using
-`.upToNextMinor(from: "0.0.1")` as the requirement.
+`.upToNextMinor(from: "0.1.0")` as the requirement.
 
 ## [Unreleased]
 
 *No changes yet.*
+
+## [0.1.0] - 2020-06-03
+
+### Additions
+
+- Error messages and help screens now include information about how to request
+  more help.
+- CMake builds now support installation.
+
+### Changes
+
+- The `static func main()` method on `ParsableCommand` no longer returns
+  `Never`. This allows `ParsableCommand` types to be designated as the entry
+  point for a Swift executable by using the `@main` attribute.
+  
+  *Migration:* For most uses, this change is source compatible. If you have
+  used `main()` where a `() -> Never` function is explicitly required, you'll
+  need to change your usage or capture the method in another function.
+
+- `Optional` no longer conforms to `ExpressibleByArgument`, to avoid some
+  property declarations that don't make sense. 
+
+  *Migration:* This is source-compatible for all property declarations, with
+  deprecations for optional properties that define an explicit default. If
+  you're using optional values where an `ExpressibleByArgument` type is
+  expected, such as a generic function, you will need to change your usage
+  or provide an explicit override.
+
+- `ParsableCommand`'s `run()` method requirement is now a `mutating` method,
+  allowing mutations to a command's properties, such as sorting an array of
+  arguments, without additional copying.
+  
+  *Migration:* No changes are required for commands that are executed through
+  the `main()` method. If you manually parse a command and then call its
+  `run()` method, you may need to change the command from a constant to a
+  variable.
+
+### Removals
+
+- The `@Flag` initializers that were deprecated in version 0.0.6 are now
+  marked as unavailable.
+
+### Fixes
+
+- `@Option` properties of an optional type that use a `transform` closure now
+  correctly indicate their optionality in the usage string.
+- Correct wrapping and indentation are maintained for abstracts and discussions 
+  with short lines.
+- Empty abstracts no longer add extra blank lines to the help screen.
+- Help requests are still honored even when a parsed command fails validation.
+- The `--` terminator isn't consumed when parsing a command, so that it can be
+  parsed as a value when a subcommand includes an `.unconditionalRemaining`
+  argument array.
+- CMake builds work correctly again.
+
+The 0.1.0 release includes contributions from [aleksey-mashanov], [BradLarson],
+[compnerd], [erica], [ibrahimoktay], and [natecook1000]. Thank you!
 
 ## [0.0.6] - 2020-05-14
 
@@ -163,7 +220,8 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 
 <!-- Link references for releases -->
 
-[Unreleased]: https://github.com/apple/swift-argument-parser/compare/0.0.6...HEAD
+[Unreleased]: https://github.com/apple/swift-argument-parser/compare/0.1.0...HEAD
+[0.1.0]: https://github.com/apple/swift-argument-parser/compare/0.0.6...0.1.0
 [0.0.6]: https://github.com/apple/swift-argument-parser/compare/0.0.5...0.0.6
 [0.0.5]: https://github.com/apple/swift-argument-parser/compare/0.0.4...0.0.5
 [0.0.4]: https://github.com/apple/swift-argument-parser/compare/0.0.3...0.0.4
@@ -177,14 +235,18 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 
 <!-- Link references for contributors -->
 
+[aleksey-mashanov]: https://github.com/apple/swift-argument-parser/commits?author=aleksey-mashanov
 [AliSoftware]: https://github.com/apple/swift-argument-parser/commits?author=AliSoftware
+[BradLarson]: https://github.com/apple/swift-argument-parser/commits?author=BradLarson
 [buttaface]: https://github.com/apple/swift-argument-parser/commits?author=buttaface
 [compnerd]: https://github.com/apple/swift-argument-parser/commits?author=compnerd
 [dduan]: https://github.com/apple/swift-argument-parser/commits?author=dduan
 [elliottwilliams]: https://github.com/apple/swift-argument-parser/commits?author=elliottwilliams
+[erica]: https://github.com/apple/swift-argument-parser/commits?author=erica
 [glessard]: https://github.com/apple/swift-argument-parser/commits?author=glessard
 [griffin-stewie]: https://github.com/apple/swift-argument-parser/commits?author=griffin-stewie
 [iainsmith]: https://github.com/apple/swift-argument-parser/commits?author=iainsmith
+[ibrahimoktay]: https://github.com/apple/swift-argument-parser/commits?author=ibrahimoktay
 [IngmarStein]: https://github.com/apple/swift-argument-parser/commits?author=IngmarStein
 [john-mueller]: https://github.com/apple/swift-argument-parser/commits?author=john-mueller
 [jonathanpenn]: https://github.com/apple/swift-argument-parser/commits?author=jonathanpenn

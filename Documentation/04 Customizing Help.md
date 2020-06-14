@@ -87,7 +87,7 @@ struct Repeat: ParsableCommand {
     @Argument(help: "The phrase to repeat.")
     var phrase: String
     
-    func run() throws {
+    mutating func run() throws {
         while true { print(phrase) }
     }
 }
@@ -131,7 +131,7 @@ struct Example: ParsableCommand {
     @Option(name: .shortAndLong, help: "The number of history entries to show.")
     var historyDepth: Int
     
-    func run() throws {
+    mutating func run() throws {
         printHistory(depth: historyDepth)
     }
 }

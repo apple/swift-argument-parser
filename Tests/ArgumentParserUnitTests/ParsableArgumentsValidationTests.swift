@@ -26,7 +26,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
       case phrase
     }
     
-    func run() throws {}
+    mutating func run() throws {}
   }
   
   private struct B: ParsableCommand {
@@ -36,7 +36,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
     @Argument(help: "The phrase to repeat.")
     var phrase: String
     
-    func run() throws {}
+    mutating func run() throws {}
   }
   
   private struct C: ParsableCommand {
@@ -50,7 +50,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
       case phrase
     }
     
-    func run() throws {}
+    mutating func run() throws {}
   }
   
   private struct D: ParsableArguments {
@@ -323,22 +323,35 @@ final class ParsableArgumentsValidationTests: XCTestCase {
     }
   }
 
-  // MARK: CaseIterable enum flag has first letter duplication
-  fileprivate enum ExampleEnum: String, ExpressibleByArgument, CaseIterable {
-    case first
-    case second
-    case other
-    case forth
-    case fith
-  }
+  // MARK: EnumerableFlag has first letter duplication
 
   fileprivate struct DuplicatedFirstLettersShortNames: ParsableCommand {
-    @Flag(name: .short, default: .first)
+    enum ExampleEnum: String, EnumerableFlag {
+      case first
+      case second
+      case other
+      case forth
+      case fith
+      
+      static func name(for value: ExampleEnum) -> NameSpecification {
+        .short
+      }
+    }
+
+    @Flag(default: .first)
     var enumFlag: ExampleEnum
   }
 
   fileprivate struct DuplicatedFirstLettersLongNames: ParsableCommand {
-    @Flag(name: .long, default: .first)
+    enum ExampleEnum: String, EnumerableFlag {
+      case first
+      case second
+      case other
+      case forth
+      case fith
+    }
+
+    @Flag(default: .first)
     var enumFlag2: ExampleEnum
   }
 

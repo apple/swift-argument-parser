@@ -143,7 +143,7 @@ enum ReleaseMode: String, ExpressibleByArgument {
 struct Example: ParsableCommand {
     @Option() var mode: ReleaseMode
     
-    func run() throws {
+    mutating func run() throws {
         print(mode)
     }
 }
@@ -194,7 +194,7 @@ struct Example: ParsableCommand {
     @Flag(default: nil, inversion: .prefixedEnableDisable)
     var requiredElement: Bool
     
-    func run() throws {
+    mutating func run() throws {
         print(index, requiredElement)
     }
 }
@@ -230,7 +230,7 @@ struct Example: ParsableCommand {
     
     @Flag() var colors: [Color]
     
-    func run() throws {
+    mutating func run() throws {
         print(cacheMethod)
         print(colors)
     }
@@ -254,7 +254,7 @@ struct Example: ParsableCommand {
     @Flag(name: .shortAndLong)
     var verbose: Int
     
-    func run() throws {
+    mutating func run() throws {
         print("Verbosity level: \(verbose)")
     }
 }
@@ -281,7 +281,7 @@ struct Example: ParsableCommand {
     @Option() var name: String
     @Argument() var file: String?
     
-    func run() throws {
+    mutating func run() throws {
         print("Verbose: \(verbose), name: \(name), file: \(file ?? "none")")
     }
 }
@@ -327,7 +327,7 @@ struct Example: ParsableCommand {
     @Option() var file: [String]
     @Flag() var verbose: Bool
     
-    func run() throws {
+    mutating func run() throws {
         print("Verbose: \(verbose), files: \(file)")
     }
 }
@@ -378,7 +378,7 @@ struct Example: ParsableCommand {
     @Flag() var verbose: Bool
     @Argument() var files: [String]
     
-    func run() throws {
+    mutating func run() throws {
         print("Verbose: \(verbose), files: \(files)")
     }
 }

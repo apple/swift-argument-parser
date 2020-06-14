@@ -53,6 +53,15 @@ extension Name {
       return n
     }
   }
+  
+  var isShort: Bool {
+    switch self {
+    case .short:
+      return true
+    default:
+      return false
+    }
+  }
 }
 
 // short argument names based on the synopsisString

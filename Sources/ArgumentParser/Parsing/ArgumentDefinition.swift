@@ -145,6 +145,7 @@ extension ArgumentDefinition: CustomDebugStringConvertible {
 extension ArgumentDefinition {
   var optional: ArgumentDefinition {
     var result = self
+    
     result.help.options.insert(.isOptional)
     return result
   }
