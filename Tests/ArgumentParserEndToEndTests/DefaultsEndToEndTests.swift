@@ -373,3 +373,72 @@ extension DefaultsEndToEndTests {
   }
 }
 
+fileprivate struct Quux: ParsableArguments {
+  @Option(default: ["A", "B"], parsing: .upToNextOption)
+  var letters: [String]
+  
+  @Argument(default: [1, 2])
+  var numbers: [Int]
+}
+
+extension DefaultsEndToEndTests {
+  func testParsing_ArrayDefaults() throws {
+    AssertParse(Quux.self, []) { qux in
+      XCTAssertEqual(qux.letters, ["A", "B"])
+      XCTAssertEqual(qux.numbers, [1, 2])
+    }
+    AssertParse(Quux.self, ["--letters", "C", "D"]) { qux in
+      XCTAssertEqual(qux.letters, ["C", "D"])
+      XCTAssertEqual(qux.numbers, [1, 2])
+    }
+    AssertParse(Quux.self, ["3", "4"]) { qux in
+      XCTAssertEqual(qux.letters, ["A", "B"])
+      XCTAssertEqual(qux.numbers, [3, 4])
+    }
+    AssertParse(Quux.self, ["3", "4", "--letters", "C", "D"]) { qux in
+      XCTAssertEqual(qux.letters, ["C", "D"])
+      XCTAssertEqual(qux.numbers, [3, 4])
+    }
+  }
+}
+
+fileprivate struct Main: ParsableCommand {
+  static var configuration = CommandConfiguration(
+    subcommands: [Sub.self],
+    defaultSubcommand: Sub.self
+  )
+  
+  struct Options: ParsableArguments {
+    @Option(default: ["A", "B"], parsing: .upToNextOption)
+    var letters: [String]
+  }
+  
+  struct Sub: ParsableCommand {
+    @Argument(default: [1, 2])
+    var numbers: [Int]
+    
+    @OptionGroup()
+    var options: Main.Options
+  }
+}
+
+extension DefaultsEndToEndTests {
+  func testParsing_ArrayDefaults_Subcommands() {
+    AssertParseCommand(Main.self, Main.Sub.self, []) { sub in
+      XCTAssertEqual(sub.options.letters, ["A", "B"])
+      XCTAssertEqual(sub.numbers, [1, 2])
+    }
+    AssertParseCommand(Main.self, Main.Sub.self, ["--letters", "C", "D"]) { sub in
+      XCTAssertEqual(sub.options.letters, ["C", "D"])
+      XCTAssertEqual(sub.numbers, [1, 2])
+    }
+    AssertParseCommand(Main.self, Main.Sub.self, ["3", "4"]) { sub in
+      XCTAssertEqual(sub.options.letters, ["A", "B"])
+      XCTAssertEqual(sub.numbers, [3, 4])
+    }
+    AssertParseCommand(Main.self, Main.Sub.self, ["3", "4", "--letters", "C", "D"]) { sub in
+      XCTAssertEqual(sub.options.letters, ["C", "D"])
+      XCTAssertEqual(sub.numbers, [3, 4])
+    }
+  }
+}

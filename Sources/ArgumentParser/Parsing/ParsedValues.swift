@@ -9,7 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-struct InputKey: RawRepresentable, Equatable {
+struct InputKey: RawRepresentable, Hashable {
   var rawValue: String
 
   init(rawValue: String) {
