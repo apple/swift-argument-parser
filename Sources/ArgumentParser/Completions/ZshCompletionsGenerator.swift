@@ -110,7 +110,8 @@ struct ZshCompletionsGenerator {
 
 extension String {
   fileprivate func zshEscapingSingleQuotes() -> String {
-    self.split(separator: "'").joined(separator: #"'"'"'"#)
+    self.split(separator: "'", omittingEmptySubsequences: false)
+      .joined(separator: #"'"'"'"#)
   }
 }
 
