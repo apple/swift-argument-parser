@@ -110,19 +110,8 @@ extension CommandParser {
     // Build the argument set (i.e. information on how to parse):
     let commandArguments = ArgumentSet(currentNode.element)
     
-    // Parse the arguments into a ParsedValues:
-    let parsedResult = try commandArguments.lenientParse(split)
-    
-    let values: ParsedValues
-    switch parsedResult {
-    case .success(let v):
-      values = v
-    case .partial(let v, let e):
-      values = v
-      if currentNode.isLeaf {
-        throw e
-      }
-    }
+    // Parse the arguments, ignoring anything unexpected
+    let values = try commandArguments.lenientParse(split)
     
     // Decode the values from ParsedValues into the ParsableCommand:
     let decoder = ArgumentDecoder(values: values, previouslyDecoded: decodedArguments)
