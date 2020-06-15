@@ -43,11 +43,6 @@ struct ParsedValues {
   var originalInput: [String]
 }
 
-enum LenientParsedValues {
-  case success(ParsedValues)
-  case partial(ParsedValues, Swift.Error)
-}
-
 extension ParsedValues {
   mutating func set(_ new: Any, forKey key: InputKey, inputOrigin: InputOrigin) {
     set(Element(key: key, value: new, inputOrigin: inputOrigin))
