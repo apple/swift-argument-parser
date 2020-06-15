@@ -300,13 +300,13 @@ extension CommandParser {
     switch parsedArgument {
     case .option(let parsed):
       guard let matchedArgument = argset.first(matching: parsed),
-        case .custom(let f) = matchedArgument.completion
+        case .custom(let f) = matchedArgument.completion.kind
         else { throw ParserError.invalidState }
       completionFunction = f
 
     case .value(let str):
       guard let matchedArgument = argset.firstPositional(named: str),
-        case .custom(let f) = matchedArgument.completion
+        case .custom(let f) = matchedArgument.completion.kind
         else { throw ParserError.invalidState }
       completionFunction = f
       

@@ -136,7 +136,7 @@ struct BashCompletionsGenerator {
       .compactMap { arg -> String? in
         guard arg.isPositional else { return nil }
 
-        switch arg.completion {
+        switch arg.completion.kind {
         case .default, .file, .directory:
           return nil
         case .list(let list):
@@ -185,17 +185,17 @@ extension ArgumentDefinition {
 
   /// Returns the bash completions that can follow this argument's `--name`.
   fileprivate func bashValueCompletion(_ commands: [ParsableCommand.Type]) -> String {
-    switch completion {
+    switch completion.kind {
     case .default:
       return ""
       
-    case .file(let pattern):
-      let pattern = pattern.map { " '\($0)'" } ?? ""
-      // FIXME: _filedir isn't available by default in macOS
-      return "COMPREPLY=()\n_filedir\(pattern)"
+    case .file(_):
+      // TODO: Use '_filedir' when available
+      // FIXME: Use the extensions array
+      return "COMPREPLY=( $(compgen -f -- ${cur}) )"
 
     case .directory:
-      return "COMPREPLY=()\n_filedir -d"
+      return "COMPREPLY=( $(compgen -d -- ${cur}) )"
       
     case .list(let list):
       return #"COMPREPLY=( $(compgen -W "\#(list.joined(separator: " "))" -- $cur) )"#

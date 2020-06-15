@@ -209,12 +209,14 @@ extension Math.Statistics {
         var testCustomExitCode: Int32?
       
         // These args are for testing custom completion scripts:
-        @Option(help: .hidden, completion: .file(pattern: "swift"))
+        @Option(help: .hidden, completion: .file(extensions: ["txt", "md"]))
         var file: String?
         @Option(help: .hidden, completion: .directory)
         var directory: String?
         
-        @Option(help: .hidden, completion: .shellCommand("head -100 /usr/share/dict/words | tail -50"))
+        @Option(
+          help: .hidden,
+          completion: .shellCommand("head -100 /usr/share/dict/words | tail -50"))
         var shell: String?
         
         @Option(help: .hidden, completion: .custom(customCompletion))

@@ -151,17 +151,16 @@ extension ArgumentDefinition {
 
   /// Returns the zsh "action" for an argument completion string.
   func zshActionString(_ commands: [ParsableCommand.Type]) -> String {
-    switch completion {
+    switch completion.kind {
     case .default:
       return ""
       
-    case .file(let pattern?):
-      return "_files -g \(pattern)"
-    case .file:
-      return "_files"
+    case .file(let extensions):
+      let pattern = extensions.isEmpty
+        ? ""
+        : " -g '\(extensions.map { "*." + $0 }.joined(separator: " "))'"
+      return "_files\(pattern.zshEscapingSingleQuotes())"
       
-    case .directory(let pattern?):
-      return "_files -/ -g \(pattern)"
     case .directory:
       return "_files -/"
       

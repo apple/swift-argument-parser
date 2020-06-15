@@ -294,13 +294,11 @@ _math_stats_quantiles() {
             return
         ;;
         --file)
-            COMPREPLY=()
-            _filedir 'swift'
+            COMPREPLY=( $(compgen -f -- ${cur}) )
             return
         ;;
         --directory)
-            COMPREPLY=()
-            _filedir -d
+            COMPREPLY=( $(compgen -d -- ${cur}) )
             return
         ;;
         --shell)
@@ -473,7 +471,7 @@ _math_stats_quantiles() {
         '--test-failure-exit-code[]'
         '--test-validation-exit-code[]'
         '--test-custom-exit-code[]:test-custom-exit-code:'
-        '--file[]:file:_files -g swift'
+        '--file[]:file:_files -g '"'"'*.txt *.md'"'"''
         '--directory[]:directory:_files -/'
         '--shell[]:shell:{_describe '' $(head -100 /usr/share/dict/words | tail -50)}'
         '--custom[]:custom:{_custom_completion $_math_commandname ---completion stats quantiles -- --custom $words}'
