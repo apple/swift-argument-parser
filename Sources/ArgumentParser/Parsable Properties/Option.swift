@@ -92,6 +92,18 @@ extension Option where Value: ExpressibleByArgument {
 
   /// Creates a property that reads its value from a labeled option.
   ///
+  /// This method is deprecated, with usage split into two other methods below:
+  /// - `init(wrappedValue:name:parsing:help:)` for properties with a default value
+  /// - `init(name:parsing:help:)` for properties with no default value
+  ///
+  /// Existing usage of the `default` parameter should be replaced such as follows:
+  /// ```diff
+  /// -@Option(default: "bar")
+  /// -var foo: String
+  /// +@Option()
+  /// +var foo: String = "bar"
+  /// ```
+  ///
   /// - Parameters:
   ///   - name: A specification for what names are allowed for this flag.
   ///   - initial: A default value to use for this property. If `initial` is
@@ -116,14 +128,14 @@ extension Option where Value: ExpressibleByArgument {
 
   /// Creates a property with a default value provided by standard Swift default value syntax.
   ///
-  /// For instance, the following are now equivalent:
-  /// - `@Option(default: "bar") var foo: String`
-  /// - `@Option() var foo: String = "bar"`
-  ///
-  /// This syntax allows defaults to be set for options much more naturally for the developer.
+  /// This method is called to initialize an `Option` with a default value such as:
+  /// ```swift
+  /// @Option()
+  /// var foo: String = "bar"
+  /// ```
   ///
   /// - Parameters:
-  ///   - wrappedValue: A default value to use for this property, provided implicitly by the compiler during `propertyWrapper` initialization.
+  ///   - wrappedValue: A default value to use for this property, provided implicitly by the compiler during propery wrapper initialization.
   ///   - name: A specification for what names are allowed for this flag.
   ///   - parsingStrategy: The behavior to use when looking for this option's value.
   ///   - help: Information about how to use this option.
@@ -143,7 +155,11 @@ extension Option where Value: ExpressibleByArgument {
 
   /// Creates a property with no default value.
   ///
-  /// With the addition of standard default property initialization syntax and the deprecation of the previous `init` with a `default` parameter, we must also provide a separate `init` with no default for when the older method is eventually removed.
+  /// This method is called to initialize an `Option` without a default value such as:
+  /// ```swift
+  /// @Option()
+  /// var foo: String
+  /// ```
   ///
   /// - Parameters:
   ///   - name: A specification for what names are allowed for this flag.
@@ -366,6 +382,18 @@ extension Option {
   /// Creates a property that reads its value from a labeled option, parsing
   /// with the given closure.
   ///
+  /// This method is deprecated, with usage split into two other methods below:
+  /// - `init(wrappedValue:name:parsing:help:transform:)` for properties with a default value
+  /// - `init(name:parsing:help:transform:)` for properties with no default value
+  ///
+  /// Existing usage of the `default` parameter should be replaced such as follows:
+  /// ```diff
+  /// -@Option(default: "bar", transform: baz)
+  /// -var foo: String
+  /// +@Option(transform: baz)
+  /// +var foo: String = "bar"
+  /// ```
+  ///
   /// - Parameters:
   ///   - name: A specification for what names are allowed for this flag.
   ///   - initial: A default value to use for this property. If `initial` is
@@ -394,14 +422,13 @@ extension Option {
 
   /// Creates a property with a default value provided by standard Swift default value syntax, parsing with the given closure.
   ///
-  /// For instance, the following are now equivalent:
-  /// - `@Option(default: "bar", transform: someFunction) var foo: String`
-  /// - `@Option(transform: someFunction) var foo: String = "bar"`
-  ///
-  /// This syntax allows defaults to be set for options much more naturally for the developer.
-  ///
+  /// This method is called to initialize an `Option` with a default value such as:
+  /// ```swift
+  /// @Option(transform: baz)
+  /// var foo: String = "bar"
+  /// ```
   /// - Parameters:
-  ///   - wrappedValue: A default value to use for this property, provided implicitly by the compiler during `propertyWrapper` initialization.
+  ///   - wrappedValue: A default value to use for this property, provided implicitly by the compiler during property wrapper initialization.
   ///   - name: A specification for what names are allowed for this flag.
   ///   - parsingStrategy: The behavior to use when looking for this option's value.
   ///   - help: Information about how to use this option.
@@ -424,7 +451,11 @@ extension Option {
 
   /// Creates a property with no default value, parsing with the given closure.
   ///
-  /// With the addition of standard default property initialization syntax and the deprecation of the previous `init` with a `default` parameter, we must also provide a separate `init` with no default for when the older method is eventually removed.
+  /// This method is called to initialize an `Option` with no default value such as:
+  /// ```swift
+  /// @Option(transform: baz)
+  /// var foo: String
+  /// ```
   ///
   /// - Parameters:
   ///   - name: A specification for what names are allowed for this flag.
