@@ -16,9 +16,9 @@ final class SequenceExtensionTests: XCTestCase {}
 
 extension SequenceExtensionTests {
   func testUniqued() {
-    XCTAssertEqual([], (0..<0).uniqued())
-    XCTAssertEqual([0, 1, 2, 3, 4], (0..<5).uniqued())
-    XCTAssertEqual([0, 1, 2, 3, 4], [0, 1, 2, 3, 4, 0, 1, 2, 3, 4].uniqued())
-    XCTAssertEqual([0, 1, 2, 3, 4], [0, 1, 2, 3, 4, 4, 3, 2, 1, 0].uniqued())
+    XCTAssertEqual([], (0..<0).uniquified())
+    XCTAssertEqual([0, 1, 2, 3, 4], (0..<5).uniquified())
+    XCTAssertEqual([0, 1, 2, 3, 4], [0, 1, 2, 3, 4, 0, 1, 2, 3, 4].uniquified())
+    XCTAssertEqual([0, 1, 2, 3, 4], [0, 1, 2, 3, 4, 4, 3, 2, 1, 0].uniquified())
   }
 }

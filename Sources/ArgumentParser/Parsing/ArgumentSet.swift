@@ -213,7 +213,7 @@ extension ArgumentSet {
   ///
   /// - Parameter all: The input (from the command line) that needs to be parsed
   /// - Parameter commandStack: commands that have been parsed
-  func lenientParse(_ all: SplitArguments) throws -> LenientParsedValues {
+  func lenientParse(_ all: SplitArguments) throws -> ParsedValues {
     // Create a local, mutable copy of the arguments:
     var inputArguments = all
     
@@ -352,21 +352,11 @@ extension ArgumentSet {
     
     // We have parsed all non-positional values at this point.
     // Next: parse / consume the positional values.
-    do {
-      var stripped = all
-      stripped.removeAll(in: usedOrigins)
-      try parsePositionalValues(from: stripped, into: &result)
-    } catch {
-      switch error {
-      case ParserError.unexpectedExtraValues:
-        // There were more positional values than we could parse.
-        // If we‘re using subcommands, that could be expected.
-        return .partial(result, error)
-      default:
-        throw error
-      }
-    }
-    return .success(result)
+    var unusedArguments = all
+    unusedArguments.removeAll(in: usedOrigins)
+    try parsePositionalValues(from: unusedArguments, into: &result)
+    
+    return result
   }
 }
 
@@ -449,17 +439,6 @@ extension ArgumentSet {
         let value = unusedInput.originalInput(at: origin)!
         try update([origin], nil, value, &result)
       } while argumentDefinition.isRepeatingPositional
-    }
-    
-    // Finished with the defined arguments; are there leftover values to parse?
-    skipNonValues()
-    guard argumentStack.isEmpty else {
-      let extraValues: [(InputOrigin, String)] = argumentStack
-        .map { $0.0 }
-        .map {
-          (InputOrigin(element: $0), unusedInput.originalInput(at: $0)!)
-        }
-      throw ParserError.unexpectedExtraValues(extraValues)
     }
   }
 }

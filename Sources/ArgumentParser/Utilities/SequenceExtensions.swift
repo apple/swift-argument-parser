@@ -12,7 +12,7 @@
 extension Sequence where Element: Hashable {
   /// Returns an array with only the unique elements of this sequence, in the
   /// order of the first occurence of each unique element.
-  func uniqued() -> [Element] {
+  func uniquified() -> [Element] {
     var seen: Set<Element> = []
     var result: [Element] = []
     for element in self {

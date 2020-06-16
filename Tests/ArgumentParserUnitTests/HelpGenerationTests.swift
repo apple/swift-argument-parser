@@ -358,4 +358,43 @@ extension HelpGenerationTests {
 
     """)
   }
+  
+  struct L: ParsableArguments {
+    @Option(
+      name: [.short, .customLong("remote"), .customLong("remote"), .short, .customLong("when"), .long, .customLong("other", withSingleDash: true), .customLong("there"), .customShort("x"), .customShort("y")],
+      help: "Help Message")
+    var time: String?
+  }
+  
+  func testHelpWithMultipleCustomNames() {
+    AssertHelp(for: L.self, equals: """
+    USAGE: l [--remote <remote>]
+
+    OPTIONS:
+      -t, -x, -y, --remote, --when, --time, -other, --there <remote>
+                              Help Message
+      -h, --help              Show help information.
+
+    """)
+  }
+
+  struct M: ParsableCommand {
+  }
+  struct N: ParsableCommand {
+    static var configuration = CommandConfiguration(subcommands: [M.self], defaultSubcommand: M.self)
+  }
+
+  func testHelpWithDefaultCommand() {
+    AssertHelp(for: N.self, equals: """
+    USAGE: n <subcommand>
+
+    OPTIONS:
+      -h, --help              Show help information.
+
+    SUBCOMMANDS:
+      m (default)
+
+      See 'n help <subcommand>' for detailed help.
+    """)
+  }
 }

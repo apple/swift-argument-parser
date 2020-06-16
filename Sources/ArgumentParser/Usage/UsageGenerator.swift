@@ -63,7 +63,7 @@ extension ArgumentDefinition {
     
     switch kind {
     case .named:
-      let joinedSynopsisString = sortedNames
+      let joinedSynopsisString = partitionedNames
         .map { $0.synopsisString }
         .joined(separator: ", ")
       
@@ -113,30 +113,12 @@ extension ArgumentDefinition {
     return unadornedSynopsis
   }
   
-  var sortedNames: [Name] {
-    return names
-      .sorted { (lhs, rhs) -> Bool in
-        switch (lhs, rhs) {
-        case let (.long(l), .long(r)):
-          return l < r
-        case (_, .long):
-          return true
-        case (.long, _):
-          return false
-        case let (.short(l), .short(r)):
-          return l < r
-        case (_, .short):
-          return true
-        case (.short, _):
-          return false
-        case let (.longWithSingleDash(l), .longWithSingleDash(r)):
-          return l < r
-        }
-    }
+  var partitionedNames: [Name] {
+    return names.filter{ $0.isShort } + names.filter{ !$0.isShort }
   }
   
   var preferredNameForSynopsis: Name? {
-    sortedNames.last
+    names.first{ !$0.isShort } ?? names.first
   }
   
   var synopsisValueName: String? {
