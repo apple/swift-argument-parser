@@ -74,10 +74,10 @@ extension Option where Value: ExpressibleByArgument {
   ///
   /// This private `init` allows us to expose multiple other similar constructors to allow for standard default property initialization while reducing code duplication.
   private init(
-    name: NameSpecification = .long,
-    initial: Value? = nil,
-    parsingStrategy: SingleValueParsingStrategy = .next,
-    help: ArgumentHelp? = nil
+    name: NameSpecification,
+    initial: Value?,
+    parsingStrategy: SingleValueParsingStrategy,
+    help: ArgumentHelp?
   ) {
     self.init(_parsedValue: .init { key in
       ArgumentSet(
@@ -102,7 +102,7 @@ extension Option where Value: ExpressibleByArgument {
   @available(*, deprecated, message: "Use regular property initialization for default values (`var foo: String = \"bar\"`)")
   public init(
     name: NameSpecification = .long,
-    default initial: Value? = nil,
+    default initial: Value?,
     parsing parsingStrategy: SingleValueParsingStrategy = .next,
     help: ArgumentHelp? = nil
   ) {
@@ -336,7 +336,7 @@ extension Option {
   /// This private `init` allows us to expose multiple other similar constructors to allow for standard default property initialization while reducing code duplication.
   private init(
     name: NameSpecification,
-    initial: Value? = nil,
+    initial: Value?,
     parsingStrategy: SingleValueParsingStrategy,
     help: ArgumentHelp?,
     transform: @escaping (String) throws -> Value
@@ -378,7 +378,7 @@ extension Option {
   @available(*, deprecated, message: "Use regular property initialization for default values (`var foo: String = \"bar\"`)")
   public init(
     name: NameSpecification = .long,
-    default initial: Value? = nil,
+    default initial: Value?,
     parsing parsingStrategy: SingleValueParsingStrategy = .next,
     help: ArgumentHelp? = nil,
     transform: @escaping (String) throws -> Value
