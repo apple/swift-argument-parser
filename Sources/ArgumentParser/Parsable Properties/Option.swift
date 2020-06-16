@@ -331,23 +331,14 @@ extension Option {
     })
   }
 
-  /// Creates a property that reads its value from a labeled option, parsing
-  /// with the given closure.
+  /// Creates a property with an optional default value, intended to be called by other constructors to centralize logic.
   ///
-  /// - Parameters:
-  ///   - name: A specification for what names are allowed for this flag.
-  ///   - initial: A default value to use for this property. If `initial` is
-  ///     `nil`, this option and value are required from the user.
-  ///   - parsingStrategy: The behavior to use when looking for this option's
-  ///     value.
-  ///   - help: Information about how to use this option.
-  ///   - transform: A closure that converts a string into this property's
-  ///     type or throws an error.
-  public init(
-    name: NameSpecification = .long,
-    default initial: Value? = nil,
-    parsing parsingStrategy: SingleValueParsingStrategy = .next,
-    help: ArgumentHelp? = nil,
+  /// This private `init` allows us to expose multiple other similar constructors to allow for standard default property initialization while reducing code duplication.
+  private init(
+    name: NameSpecification,
+    initial: Value? = nil,
+    parsingStrategy: SingleValueParsingStrategy,
+    help: ArgumentHelp?,
     transform: @escaping (String) throws -> Value
   ) {
     self.init(_parsedValue: .init { key in
