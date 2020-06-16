@@ -32,6 +32,7 @@ struct ParsedValues {
     var value: Any
     /// Where in the input that this came from.
     var inputOrigin: InputOrigin
+    fileprivate var shouldClearArrayIfParsed = true
   }
   
   /// These are the parsed key-value pairs.
@@ -68,6 +69,20 @@ extension ParsedValues {
   mutating func update<A>(forKey key: InputKey, inputOrigin: InputOrigin, initial: A, closure: (inout A) -> Void) {
     var e = element(forKey: key) ?? Element(key: key, value: initial, inputOrigin: InputOrigin())
     var v = (e.value as? A ) ?? initial
+    closure(&v)
+    e.value = v
+    e.inputOrigin.formUnion(inputOrigin)
+    set(e)
+  }
+  
+  mutating func update<A>(forKey key: InputKey, inputOrigin: InputOrigin, initial: [A], closure: (inout [A]) -> Void) {
+    var e = element(forKey: key) ?? Element(key: key, value: initial, inputOrigin: InputOrigin())
+    var v = (e.value as? [A] ) ?? initial
+    // The first time a value is parsed from command line, empty array of any default values.
+    if e.shouldClearArrayIfParsed {
+      v.removeAll()
+      e.shouldClearArrayIfParsed = false
+    }
     closure(&v)
     e.value = v
     e.inputOrigin.formUnion(inputOrigin)

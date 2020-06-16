@@ -315,8 +315,6 @@ extension ArgumentSet {
     
     try setInitialValues(into: &result)
     
-    let initialCounts = getInitialArrayCounts(in: result)
-    
     // Loop over all arguments:
     while let (origin, next) = inputArguments.popNext() {
       defer {
@@ -361,8 +359,6 @@ extension ArgumentSet {
     unusedArguments.removeAll(in: usedOrigins)
     try parsePositionalValues(from: unusedArguments, into: &result)
     
-    removeInitialArrayValuesIfNecessary(from: &result, counts: initialCounts)
-    
     return result
   }
 }
@@ -373,27 +369,6 @@ extension ArgumentSet {
   func setInitialValues(into parsed: inout ParsedValues) throws {
     for arg in self {
       try arg.initial(InputOrigin(), &parsed)
-    }
-  }
-  
-  /// Gets the initial array count for every parsed value which is an array.
-  func getInitialArrayCounts(in parsed: ParsedValues) -> [InputKey: Int] {
-    let countSequence: [(InputKey, Int)] = parsed.elements.compactMap { element in
-      guard let array = element.value as? [Any] else { return nil }
-      return (element.key, array.count)
-    }
-    
-    return Dictionary(uniqueKeysWithValues: countSequence)
-  }
-  
-  /// Removes the default values from each value array if values are passed
-  /// on the command line.
-  func removeInitialArrayValuesIfNecessary(from parsed: inout ParsedValues, counts: [InputKey: Int]) {
-    for (key, count) in counts {
-      guard let element = parsed.element(forKey: key) else { continue }
-      if let array = element.value as? [Any], array.count != count {
-        parsed.set(Array(array.dropFirst(count)), forKey: key, inputOrigin: element.inputOrigin)
-      }
     }
   }
 }

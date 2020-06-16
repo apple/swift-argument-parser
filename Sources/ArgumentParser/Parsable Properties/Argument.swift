@@ -204,17 +204,13 @@ extension Argument {
   
   /// Creates a property that reads an array from zero or more arguments.
   ///
-  /// The property has an empty array as its default value if the `initial`
-  /// parameter is not specified.
-  ///
   /// - Parameters:
-  ///   - initial: A default value to use for this property. If `initial` is
-  ///     `nil`, this option defaults to an empty array.
+  ///   - initial: A default value to use for this property.
   ///   - parsingStrategy: The behavior to use when parsing multiple values
   ///     from the command-line arguments.
   ///   - help: Information about how to use this argument.
   public init<Element>(
-    default initial: Value? = nil,
+    default initial: Value = [],
     parsing parsingStrategy: ArgumentArrayParsingStrategy = .remaining,
     help: ArgumentHelp? = nil
   )
@@ -228,9 +224,9 @@ extension Argument {
         parsingStrategy: parsingStrategy == .remaining ? .nextAsValue : .allRemainingInput,
         update: .appendToArray(forType: Element.self, key: key),
         initial: { origin, values in
-          values.set(initial ?? [], forKey: key, inputOrigin: origin)
+          values.set(initial, forKey: key, inputOrigin: origin)
         })
-      arg.help.defaultValue = initial.map { "\($0)" }
+      arg.help.defaultValue = !initial.isEmpty ? "\(initial)" : nil
       return ArgumentSet(alternatives: [arg])
     })
   }
@@ -238,19 +234,15 @@ extension Argument {
   /// Creates a property that reads an array from zero or more arguments,
   /// parsing each element with the given closure.
   ///
-  /// The property has an empty array as its default value if the `initial`
-  /// parameter is not specified.
-  ///
   /// - Parameters:
-  ///   - initial: A default value to use for this property. If `initial` is
-  ///     `nil`, this option defaults to an empty array.
+  ///   - initial: A default value to use for this property.
   ///   - parsingStrategy: The behavior to use when parsing multiple values
   ///     from the command-line arguments.
   ///   - help: Information about how to use this argument.
   ///   - transform: A closure that converts a string into this property's
   ///     element type or throws an error.
   public init<Element>(
-    default initial: Value? = nil,
+    default initial: Value = [],
     parsing parsingStrategy: ArgumentArrayParsingStrategy = .remaining,
     help: ArgumentHelp? = nil,
     transform: @escaping (String) throws -> Element
@@ -275,9 +267,9 @@ extension Argument {
           }
         }),
         initial: { origin, values in
-          values.set(initial ?? [], forKey: key, inputOrigin: origin)
+          values.set(initial, forKey: key, inputOrigin: origin)
         })
-      arg.help.defaultValue = initial.map { "\($0)" }
+      arg.help.defaultValue = !initial.isEmpty ? "\(initial)" : nil
       return ArgumentSet(alternatives: [arg])
     })
   }
