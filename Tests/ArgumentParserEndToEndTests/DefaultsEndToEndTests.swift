@@ -508,3 +508,80 @@ extension DefaultsEndToEndTests {
     }
   }
 }
+
+
+fileprivate struct FlagPropertyInitArguments_Bool_Default: ParsableArguments {
+  @Flag(inversion: .prefixedNo)
+  var data: Bool = false
+}
+
+fileprivate struct FlagPropertyInitArguments_Bool_NoDefault: ParsableArguments {
+  @Flag(inversion: .prefixedNo)
+  var data: Bool
+}
+
+
+extension DefaultsEndToEndTests {
+  /// Tests that using default property initialization syntax parses the default value for the argument when nothing is provided from the command-line.
+  func testParsing_FlagPropertyInit_Bool_Default_UseDefault() throws {
+    AssertParse(FlagPropertyInitArguments_Bool_Default.self, []) { arguments in
+      XCTAssertEqual(arguments.data, false)
+    }
+  }
+
+  /// Tests that using default property initialization syntax parses the command-line-provided value for the argument when provided.
+  func testParsing_FlagPropertyInit_Bool_Default_OverrideDefault() throws {
+    AssertParse(FlagPropertyInitArguments_Bool_Default.self, ["--data"]) { arguments in
+      XCTAssertEqual(arguments.data, true)
+    }
+  }
+
+  /// Tests that *not* providing a default value still parses the argument correctly from the command-line.
+  /// This test is almost certainly duplicated by others in the repository, but allows for quick use of test filtering during development on the initialization functionality.
+  func testParsing_FlagPropertyInit_Bool_NoDefault() throws {
+    AssertParse(FlagPropertyInitArguments_Bool_NoDefault.self, ["--data"]) { arguments in
+      XCTAssertEqual(arguments.data, true)
+    }
+  }
+}
+
+
+fileprivate enum HasData: EnumerableFlag {
+  case noData
+  case data
+}
+
+fileprivate struct FlagPropertyInitArguments_EnumerableFlag_Default: ParsableArguments {
+  @Flag
+  var data: HasData = .noData
+}
+
+fileprivate struct FlagPropertyInitArguments_EnumerableFlag_NoDefault: ParsableArguments {
+  @Flag()
+  var data: HasData
+}
+
+
+extension DefaultsEndToEndTests {
+  /// Tests that using default property initialization syntax parses the default value for the argument when nothing is provided from the command-line.
+  func testParsing_FlagPropertyInit_EnumerableFlag_Default_UseDefault() throws {
+    AssertParse(FlagPropertyInitArguments_EnumerableFlag_Default.self, []) { arguments in
+      XCTAssertEqual(arguments.data, .noData)
+    }
+  }
+
+  /// Tests that using default property initialization syntax parses the command-line-provided value for the argument when provided.
+  func testParsing_FlagPropertyInit_EnumerableFlag_Default_OverrideDefault() throws {
+    AssertParse(FlagPropertyInitArguments_EnumerableFlag_Default.self, ["--data"]) { arguments in
+      XCTAssertEqual(arguments.data, .data)
+    }
+  }
+
+  /// Tests that *not* providing a default value still parses the argument correctly from the command-line.
+  /// This test is almost certainly duplicated by others in the repository, but allows for quick use of test filtering during development on the initialization functionality.
+  func testParsing_FlagPropertyInit_EnumerableFlag_NoDefault() throws {
+    AssertParse(FlagPropertyInitArguments_EnumerableFlag_NoDefault.self, ["--data"]) { arguments in
+      XCTAssertEqual(arguments.data, .data)
+    }
+  }
+}
