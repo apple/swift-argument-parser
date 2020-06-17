@@ -15,10 +15,21 @@ import XCTest
 final class SequenceExtensionTests: XCTestCase {}
 
 extension SequenceExtensionTests {
-  func testUniqued() {
-    XCTAssertEqual([], (0..<0).uniquified())
-    XCTAssertEqual([0, 1, 2, 3, 4], (0..<5).uniquified())
-    XCTAssertEqual([0, 1, 2, 3, 4], [0, 1, 2, 3, 4, 0, 1, 2, 3, 4].uniquified())
-    XCTAssertEqual([0, 1, 2, 3, 4], [0, 1, 2, 3, 4, 4, 3, 2, 1, 0].uniquified())
+  func testUniquing() {
+    XCTAssertEqual([], (0..<0).uniquing())
+    XCTAssertEqual([0, 1, 2, 3, 4], (0..<5).uniquing())
+    XCTAssertEqual([0, 1, 2, 3, 4], [0, 1, 2, 3, 4, 0, 1, 2, 3, 4].uniquing())
+    XCTAssertEqual([0, 1, 2, 3, 4], [0, 1, 2, 3, 4, 4, 3, 2, 1, 0].uniquing())
+  }
+  
+  func testUniquingAdjacentElements() {
+    XCTAssertEqual([], (0..<0).uniquingAdjacentElements())
+    XCTAssertEqual([0, 1, 2, 3, 4], (0..<5).uniquingAdjacentElements())
+    XCTAssertEqual(
+      [0, 1, 2, 3, 4],
+      [0, 0, 1, 1, 1, 1, 2, 3, 3, 3, 4, 4].uniquingAdjacentElements())
+    XCTAssertEqual(
+      [0, 1, 2, 3, 4, 3, 2, 1, 0],
+      [0, 1, 2, 3, 4, 4, 3, 2, 1, 0].uniquingAdjacentElements())
   }
 }

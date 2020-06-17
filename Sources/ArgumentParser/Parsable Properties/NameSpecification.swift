@@ -41,7 +41,7 @@ public struct NameSpecification: ExpressibleByArrayLiteral {
   var elements: [Element]
   
   public init<S>(_ sequence: S) where S : Sequence, Element == S.Element {
-    self.elements = sequence.uniquified()
+    self.elements = sequence.uniquing()
   }
   
   public init(arrayLiteral elements: Element...) {
