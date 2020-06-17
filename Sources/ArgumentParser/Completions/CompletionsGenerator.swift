@@ -38,7 +38,7 @@ public struct CompletionShell: RawRepresentable, Hashable, CaseIterable {
   public static var bash: CompletionShell { CompletionShell(rawValue: "bash")! }
 
   /// Returns an instance representing the current shell, if recognized.
-  public static func autodetect() -> CompletionShell? {
+  public static func autodetected() -> CompletionShell? {
     // FIXME: This retrieves the user's preferred shell, not necessarily the one currently in use.
     guard let shellVar = getenv("SHELL") else { return nil }
     let shellParts = String(cString: shellVar).split(separator: "/")
@@ -56,7 +56,7 @@ struct CompletionsGenerator {
   var command: ParsableCommand.Type
   
   init(command: ParsableCommand.Type, shell: CompletionShell?) throws {
-    guard let _shell = shell ?? .autodetect() else {
+    guard let _shell = shell ?? .autodetected() else {
       throw ParserError.unsupportedShell()
     }
 
