@@ -23,13 +23,13 @@ fileprivate struct Bar: ParsableArguments {
   var verbose: Bool
   
   @Flag(inversion: .prefixedNo)
-  var extattr: Bool
+  var extattr: Bool = false
 
   @Flag(inversion: .prefixedNo, exclusivity: .exclusive)
   var extattr2: Bool?
 
   @Flag(inversion: .prefixedEnableDisable, exclusivity: .chooseFirst)
-  var logging: Bool
+  var logging: Bool = false
 }
 
 extension FlagsEndToEndTests {

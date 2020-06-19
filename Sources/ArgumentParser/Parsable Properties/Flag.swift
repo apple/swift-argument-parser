@@ -296,7 +296,7 @@ extension Flag where Value == Bool {
   ) {
     self.init(
       name: name,
-      initial: false,
+      initial: nil,
       inversion: inversion,
       exclusivity: exclusivity,
       help: help

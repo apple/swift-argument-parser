@@ -207,7 +207,7 @@ extension HelpGenerationTests {
   
   struct G: ParsableCommand {
     @Flag(inversion: .prefixedNo, help: "Whether to flag")
-    var flag: Bool
+    var flag: Bool = false
   }
 
   func testHelpWithMutuallyExclusiveFlags() {

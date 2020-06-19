@@ -45,12 +45,10 @@ struct Options: ParsableArguments {
   
   @Flag(inversion: .prefixedEnableDisable,
         help: "[Experimental] Enable the new Pubgrub dependency resolver")
-  var pubgrubResolver: Bool
-  
+  var pubgrubResolver: Bool = false
   @Flag(inversion: .prefixedNo,
         help: "Link Swift stdlib statically")
-  var staticSwiftStdlib: Bool
-  
+  var staticSwiftStdlib: Bool = false
   @Option(default: ".",
           help: "Change working directory before any other operation")
   var packagePath: String
