@@ -19,7 +19,7 @@ final class EqualsEndToEndTests: XCTestCase {
 // MARK: .short name
 
 fileprivate struct Foo: ParsableArguments {
-  @Flag(name: .short) var toggle: Bool
+  @Flag(name: .short) var toggle: Bool = false
   @Option(name: .short) var name: String?
   @Option(name: .short) var format: String
 }

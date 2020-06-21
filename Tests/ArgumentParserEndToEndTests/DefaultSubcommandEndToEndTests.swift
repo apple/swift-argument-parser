@@ -30,7 +30,7 @@ private struct Default: ParsableCommand {
     case foo, bar, baz
   }
 
-  @Option(default: .foo) var mode: Mode
+  @Option var mode: Mode = .foo
 }
 
 private struct Foo: ParsableCommand {}
@@ -63,7 +63,7 @@ extension DefaultSubcommandEndToEndTests {
       XCTAssertEqual(.bar, def.mode)
     }
   }
-  
+
   func testParsingFailure() {
     XCTAssertThrowsError(try Main.parseAsRoot(["--mode", "qux"]))
     XCTAssertThrowsError(try Main.parseAsRoot(["qux"]))
