@@ -148,6 +148,9 @@ extension HelpGenerationTests {
     @Option(help: "Whether logging is enabled.")
     var logging: Bool = false
 
+    @Option(default: [7, 14], parsing: .upToNextOption, help: ArgumentHelp("Your lucky numbers.", valueName: "numbers"))
+    var lucky: [Int]
+
     @Flag(help: "Vegan diet.")
     var nda: OptionFlags = .optional
 
@@ -160,7 +163,7 @@ extension HelpGenerationTests {
 
   func testHelpWithDefaultValues() {
     AssertHelp(for: D.self, equals: """
-            USAGE: d [<occupation>] [--name <name>] [--middle-name <middle-name>] [--age <age>] [--logging <logging>] [--optional] [--required] [--degree <degree>] [--directory <directory>]
+            USAGE: d [<occupation>] [--name <name>] [--middle-name <middle-name>] [--age <age>] [--logging <logging>] [--lucky <numbers> ...] [--optional] [--required] [--degree <degree>] [--directory <directory>]
 
             ARGUMENTS:
               <occupation>            Your occupation. (default: --)
@@ -171,6 +174,7 @@ extension HelpGenerationTests {
                                       Your middle name. (default: Winston)
               --age <age>             Your age. (default: 20)
               --logging <logging>     Whether logging is enabled. (default: false)
+              --lucky <numbers>       Your lucky numbers. (default: [7, 14])
               --optional/--required   Vegan diet. (default: optional)
               --degree <degree>       Your degree. (default: bachelor)
               --directory <directory> Directory. (default: current directory)

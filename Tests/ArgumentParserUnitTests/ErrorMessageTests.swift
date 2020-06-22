@@ -174,3 +174,19 @@ extension ErrorMessageTests {
     AssertErrorMessage(OptOptions.self, ["-cbl"], "Value to be set with flag \'l\' in \'-cbl\' had already been set with flag \'c\' in \'-cbl\'")
   }
 }
+
+// MARK: -
+
+fileprivate struct Repeat: ParsableArguments {
+  @Option() var count: Int?
+  @Argument() var phrase: String
+}
+
+extension ErrorMessageTests {
+  func testBadOptionBeforeArgument() {
+    AssertErrorMessage(
+      Repeat.self,
+      ["--cont", "5", "Hello"],
+      "Unknown option '--cont'. Did you mean '--count'?")
+  }
+}

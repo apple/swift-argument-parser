@@ -344,13 +344,13 @@ extension Argument {
 
   /// Creates a property that reads an array from zero or more arguments.
   ///
-  /// The property has an empty array as its default value.
-  ///
   /// - Parameters:
+  ///   - initial: A default value to use for this property.
   ///   - parsingStrategy: The behavior to use when parsing multiple values
   ///     from the command-line arguments.
   ///   - help: Information about how to use this argument.
   public init<Element>(
+    default initial: Value = [],
     parsing parsingStrategy: ArgumentArrayParsingStrategy = .remaining,
     help: ArgumentHelp? = nil
   )
@@ -358,14 +358,15 @@ extension Argument {
   {
     self.init(_parsedValue: .init { key in
       let help = ArgumentDefinition.Help(options: [.isOptional, .isRepeating], help: help, key: key)
-      let arg = ArgumentDefinition(
+      var arg = ArgumentDefinition(
         kind: .positional,
         help: help,
         parsingStrategy: parsingStrategy == .remaining ? .nextAsValue : .allRemainingInput,
         update: .appendToArray(forType: Element.self, key: key),
         initial: { origin, values in
-          values.set([], forKey: key, inputOrigin: origin)
+          values.set(initial, forKey: key, inputOrigin: origin)
         })
+      arg.help.defaultValue = !initial.isEmpty ? "\(initial)" : nil
       return ArgumentSet(alternatives: [arg])
     })
   }
@@ -373,15 +374,15 @@ extension Argument {
   /// Creates a property that reads an array from zero or more arguments,
   /// parsing each element with the given closure.
   ///
-  /// The property has an empty array as its default value.
-  ///
   /// - Parameters:
+  ///   - initial: A default value to use for this property.
   ///   - parsingStrategy: The behavior to use when parsing multiple values
   ///     from the command-line arguments.
   ///   - help: Information about how to use this argument.
   ///   - transform: A closure that converts a string into this property's
   ///     element type or throws an error.
   public init<Element>(
+    default initial: Value = [],
     parsing parsingStrategy: ArgumentArrayParsingStrategy = .remaining,
     help: ArgumentHelp? = nil,
     transform: @escaping (String) throws -> Element
@@ -390,7 +391,7 @@ extension Argument {
   {
     self.init(_parsedValue: .init { key in
       let help = ArgumentDefinition.Help(options: [.isOptional, .isRepeating], help: help, key: key)
-      let arg = ArgumentDefinition(
+      var arg = ArgumentDefinition(
         kind: .positional,
         help: help,
         parsingStrategy: parsingStrategy == .remaining ? .nextAsValue : .allRemainingInput,
@@ -406,8 +407,9 @@ extension Argument {
           }
         }),
         initial: { origin, values in
-          values.set([], forKey: key, inputOrigin: origin)
+          values.set(initial, forKey: key, inputOrigin: origin)
         })
+      arg.help.defaultValue = !initial.isEmpty ? "\(initial)" : nil
       return ArgumentSet(alternatives: [arg])
     })
   }

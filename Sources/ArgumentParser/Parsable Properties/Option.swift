@@ -480,24 +480,25 @@ extension Option {
   /// Creates an array property that reads its values from zero or more
   /// labeled options.
   ///
-  /// This property defaults to an empty array.
-  ///
   /// - Parameters:
   ///   - name: A specification for what names are allowed for this flag.
+  ///   - initial: A default value to use for this property.
   ///   - parsingStrategy: The behavior to use when parsing multiple values
   ///     from the command-line arguments.
   ///   - help: Information about how to use this option.
   public init<Element>(
     name: NameSpecification = .long,
+    default initial: Array<Element> = [],
     parsing parsingStrategy: ArrayParsingStrategy = .singleValue,
     help: ArgumentHelp? = nil
   ) where Element: ExpressibleByArgument, Value == Array<Element> {
     self.init(_parsedValue: .init { key in
       let kind = ArgumentDefinition.Kind.name(key: key, specification: name)
       let help = ArgumentDefinition.Help(options: [.isOptional, .isRepeating], help: help, key: key)
-      let arg = ArgumentDefinition(kind: kind, help: help, parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy), update: .appendToArray(forType: Element.self, key: key), initial: { origin, values in
-        values.set([], forKey: key, inputOrigin: origin)
+      var arg = ArgumentDefinition(kind: kind, help: help, parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy), update: .appendToArray(forType: Element.self, key: key), initial: { origin, values in
+        values.set(initial, forKey: key, inputOrigin: origin)
       })
+      arg.help.defaultValue = !initial.isEmpty ? "\(initial)" : nil
       return ArgumentSet(alternatives: [arg])
       })
   }
@@ -505,10 +506,13 @@ extension Option {
   /// Creates an array property that reads its values from zero or more
   /// labeled options, parsing with the given closure.
   ///
-  /// This property defaults to an empty array.
+  /// This property defaults to an empty array if the `initial` parameter
+  /// is not specified.
   ///
   /// - Parameters:
   ///   - name: A specification for what names are allowed for this flag.
+  ///   - initial: A default value to use for this property. If `initial` is
+  ///     `nil`, this option defaults to an empty array.
   ///   - parsingStrategy: The behavior to use when parsing multiple values
   ///     from the command-line arguments.
   ///   - help: Information about how to use this option.
@@ -516,6 +520,7 @@ extension Option {
   ///     element type or throws an error.
   public init<Element>(
     name: NameSpecification = .long,
+    default initial: Array<Element> = [],
     parsing parsingStrategy: ArrayParsingStrategy = .singleValue,
     help: ArgumentHelp? = nil,
     transform: @escaping (String) throws -> Element
@@ -523,7 +528,7 @@ extension Option {
     self.init(_parsedValue: .init { key in
       let kind = ArgumentDefinition.Kind.name(key: key, specification: name)
       let help = ArgumentDefinition.Help(options: [.isOptional, .isRepeating], help: help, key: key)
-      let arg = ArgumentDefinition(kind: kind, help: help, parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy), update: .unary({
+      var arg = ArgumentDefinition.init(kind: kind, help: help, parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy), update: .unary({
         (origin, name, valueString, parsedValues) in
         do {
           let transformedElement = try transform(valueString)
@@ -534,8 +539,9 @@ extension Option {
             throw ParserError.unableToParseValue(origin, name, valueString, forKey: key, originalError: error)
         }
       }), initial: { origin, values in
-            values.set([], forKey: key, inputOrigin: origin)
+            values.set(initial, forKey: key, inputOrigin: origin)
       })
+      arg.help.defaultValue = !initial.isEmpty ? "\(initial)" : nil
       return ArgumentSet(alternatives: [arg])
       })
   }
