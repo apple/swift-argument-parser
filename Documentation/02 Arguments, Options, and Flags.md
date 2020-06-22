@@ -70,6 +70,31 @@ Usage: example --user-name <user-name> <value>
   See 'example --help' for more information.
 ```
 
+When using the `default` parameter for an array property, the default values will not be included if additional values are passed on the command line.
+
+```
+struct Lucky: ParsableCommand {
+  @Argument(default: [7, 14, 21])
+  var numbers: [Int]
+  
+  mutating func run() throws {
+    print("""
+    Your lucky numbers are:
+    \(numbers.map(String.init).joined(separator: " "))
+    """)
+  }
+}
+```
+
+```
+% lucky 
+Your lucky numbers are:
+7 14 21
+% lucky 1 2 3
+Your lucky numbers are:
+1 2 3
+```
+
 ## Customizing option and flag names
 
 By default, options and flags derive the name that you use on the command line from the name of the property, such as `--count` and `--index`. Camel-case names are converted to lowercase with hyphen-separated words, like `--strip-whitespace`.
