@@ -330,3 +330,23 @@ extension FlagsEndToEndTests {
     }
   }
 }
+
+
+fileprivate struct VoidFlag: ParsableArguments {
+  @Flag()
+  var test: Void?
+}
+
+extension FlagsEndToEndTests {
+  func testParsingVoid_DefaultNil() throws {
+    AssertParse(VoidFlag.self, []) { options in
+      XCTAssert(options.test == nil)
+    }
+  }
+
+  func testParsingVoid_OverrideDefault() throws {
+    AssertParse(VoidFlag.self, ["--test"]) { options in
+      XCTAssert(options.test != nil)
+    }
+  }
+}

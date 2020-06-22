@@ -144,6 +144,17 @@ extension Flag where Value == Optional<Bool> {
   }
 }
 
+extension Flag where Value == Optional<Void> {
+  public init(
+    name: NameSpecification = .long,
+    help: ArgumentHelp? = nil
+  ) {
+     self.init(_parsedValue: .init { key in
+      .flag(key: key, name: name, help: help, value: ())
+    })
+  }
+}
+
 extension Flag where Value == Bool {
   /// Creates a Boolean property that reads its value from the presence of a
   /// flag.

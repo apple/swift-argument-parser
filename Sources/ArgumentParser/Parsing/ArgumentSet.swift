@@ -104,6 +104,14 @@ extension ArgumentSet {
     return ArgumentSet(arg)
   }
 
+  static func flag(key: InputKey, name: NameSpecification, help: ArgumentHelp?, value: Void) -> ArgumentSet {
+    let help = ArgumentDefinition.Help(options: .isOptional, help: help, key: key)
+    let arg = ArgumentDefinition(kind: .name(key: key, specification: name), help: help, update: .nullary({ (origin, name, values) in
+      values.set(value, forKey: key, inputOrigin: origin)
+    }))
+    return ArgumentSet(arg)
+  }
+
   static func updateFlag<Value: Equatable>(key: InputKey, value: Value, origin: InputOrigin, values: inout ParsedValues, hasUpdated: Bool, exclusivity: FlagExclusivity) throws -> Bool {
     switch (hasUpdated, exclusivity) {
     case (true, .exclusive):
