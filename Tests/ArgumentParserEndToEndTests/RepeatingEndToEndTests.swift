@@ -19,7 +19,7 @@ final class RepeatingEndToEndTests: XCTestCase {
 // MARK: -
 
 fileprivate struct Bar: ParsableArguments {
-  @Option() var name: [String]
+  @Option() var name: [String] = []
 }
 
 extension RepeatingEndToEndTests {
@@ -66,7 +66,7 @@ extension RepeatingEndToEndTests {
 
 fileprivate struct Baz: ParsableArguments {
   @Flag var verbose: Bool = false
-  @Option(parsing: .remaining) var names: [String]
+  @Option(parsing: .remaining) var names: [String] = []
 }
 
 extension RepeatingEndToEndTests {
@@ -138,7 +138,7 @@ fileprivate struct Inner: ParsableCommand {
   var verbose: Bool = false
 
   @Argument(parsing: .unconditionalRemaining)
-  var files: [String]
+  var files: [String] = []
 }
 
 extension RepeatingEndToEndTests {
@@ -156,7 +156,7 @@ extension RepeatingEndToEndTests {
 // MARK: -
 
 fileprivate struct Qux: ParsableArguments {
-  @Option(parsing: .upToNextOption) var names: [String]
+  @Option(parsing: .upToNextOption) var names: [String] = []
   @Flag var verbose: Bool = false
   @Argument() var extra: String?
 }
@@ -234,9 +234,9 @@ fileprivate struct Wobble: ParsableArguments {
       self.value = value
     }
   }
-  @Option(transform: Name.init) var names: [Name]
-  @Option(parsing: .upToNextOption, transform: Name.init) var moreNames: [Name]
-  @Option(parsing: .remaining, transform: Name.init) var evenMoreNames: [Name]
+  @Option(transform: Name.init) var names: [Name] = []
+  @Option(parsing: .upToNextOption, transform: Name.init) var moreNames: [Name] = []
+  @Option(parsing: .remaining, transform: Name.init) var evenMoreNames: [Name] = []
 }
 
 extension RepeatingEndToEndTests {
@@ -302,7 +302,7 @@ extension RepeatingEndToEndTests {
 
 fileprivate struct Weazle: ParsableArguments {
   @Flag var verbose: Bool = false
-  @Argument() var names: [String]
+  @Argument() var names: [String] = []
 }
 
 extension RepeatingEndToEndTests {
@@ -330,7 +330,7 @@ fileprivate struct Foozle: ParsableArguments {
   @Flag var verbose: Bool = false
   @Flag(name: .customShort("f")) var useFiles: Bool = false
   @Flag(name: .customShort("i")) var useStandardInput: Bool = false
-  @Argument(parsing: .unconditionalRemaining) var names: [String]
+  @Argument(parsing: .unconditionalRemaining) var names: [String] = []
 }
 
 extension RepeatingEndToEndTests {
@@ -399,7 +399,7 @@ extension RepeatingEndToEndTests {
 // MARK: -
 
 struct PerformanceTest: ParsableCommand {
-  @Option(name: .short) var bundleIdentifiers: [String]
+  @Option(name: .short) var bundleIdentifiers: [String] = []
 
   mutating func run() throws { print(bundleIdentifiers) }
 }

@@ -350,7 +350,7 @@ extension Argument {
   ///     from the command-line arguments.
   ///   - help: Information about how to use this argument.
   public init<Element>(
-    default initial: Value = [],
+    wrappedValue: Value,
     parsing parsingStrategy: ArgumentArrayParsingStrategy = .remaining,
     help: ArgumentHelp? = nil
   )
@@ -364,9 +364,9 @@ extension Argument {
         parsingStrategy: parsingStrategy == .remaining ? .nextAsValue : .allRemainingInput,
         update: .appendToArray(forType: Element.self, key: key),
         initial: { origin, values in
-          values.set(initial, forKey: key, inputOrigin: origin)
+          values.set(wrappedValue, forKey: key, inputOrigin: origin)
         })
-      arg.help.defaultValue = !initial.isEmpty ? "\(initial)" : nil
+      arg.help.defaultValue = !wrappedValue.isEmpty ? "\(wrappedValue)" : nil
       return ArgumentSet(alternatives: [arg])
     })
   }
@@ -382,7 +382,7 @@ extension Argument {
   ///   - transform: A closure that converts a string into this property's
   ///     element type or throws an error.
   public init<Element>(
-    default initial: Value = [],
+    wrappedValue: Value,
     parsing parsingStrategy: ArgumentArrayParsingStrategy = .remaining,
     help: ArgumentHelp? = nil,
     transform: @escaping (String) throws -> Element
@@ -407,10 +407,31 @@ extension Argument {
           }
         }),
         initial: { origin, values in
-          values.set(initial, forKey: key, inputOrigin: origin)
+          values.set(wrappedValue, forKey: key, inputOrigin: origin)
         })
-      arg.help.defaultValue = !initial.isEmpty ? "\(initial)" : nil
+      arg.help.defaultValue = !wrappedValue.isEmpty ? "\(wrappedValue)" : nil
       return ArgumentSet(alternatives: [arg])
     })
+  }
+  
+  @available(*, deprecated, message: "Provide an empty array literal as a default value.")
+  public init<Element>(
+    parsing parsingStrategy: ArgumentArrayParsingStrategy = .remaining,
+    help: ArgumentHelp? = nil
+  )
+    where Element: ExpressibleByArgument, Value == Array<Element>
+  {
+    self.init(wrappedValue: [], parsing: parsingStrategy, help: help)
+  }
+
+  @available(*, deprecated, message: "Provide an empty array literal as a default value.")
+  public init<Element>(
+    parsing parsingStrategy: ArgumentArrayParsingStrategy = .remaining,
+    help: ArgumentHelp? = nil,
+    transform: @escaping (String) throws -> Element
+  )
+    where Value == Array<Element>
+  {
+    self.init(wrappedValue: [], parsing: parsingStrategy, help: help, transform: transform)
   }
 }

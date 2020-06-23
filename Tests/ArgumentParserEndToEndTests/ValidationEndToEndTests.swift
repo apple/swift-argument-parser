@@ -50,7 +50,7 @@ fileprivate struct Foo: ParsableArguments {
   var count: Int?
 
   @Argument()
-  var names: [String]
+  var names: [String] = []
 
   @Flag
   var version: Bool = false

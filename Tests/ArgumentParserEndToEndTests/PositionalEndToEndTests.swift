@@ -95,7 +95,7 @@ extension PositionalEndToEndTests {
 // MARK: Multiple values
 
 fileprivate struct Qux: ParsableArguments {
-  @Argument() var names: [String]
+  @Argument() var names: [String] = []
 }
 
 extension PositionalEndToEndTests {
@@ -133,7 +133,7 @@ extension PositionalEndToEndTests {
 
 fileprivate struct Wobble: ParsableArguments {
   @Argument() var count: Int
-  @Argument() var names: [String]
+  @Argument() var names: [String] = []
 }
 
 extension PositionalEndToEndTests {
@@ -180,7 +180,7 @@ extension PositionalEndToEndTests {
 // MARK: Multiple parsed values
 
 fileprivate struct Flob: ParsableArguments {
-  @Argument() var counts: [Int]
+  @Argument() var counts: [Int] = []
 }
 
 extension PositionalEndToEndTests {
@@ -215,7 +215,7 @@ extension PositionalEndToEndTests {
 // MARK: Multiple parsed values
 
 fileprivate struct BadlyFormed: ParsableArguments {
-  @Argument() var numbers: [Int]
+  @Argument() var numbers: [Int] = []
   @Argument() var name: String
 }
 

@@ -115,12 +115,12 @@ final class ParsableArgumentsValidationTests: XCTestCase {
     var phrase: String
 
     @Argument()
-    var items: [Int]
+    var items: [Int] = []
   }
 
   private struct G: ParsableArguments {
     @Argument()
-    var items: [Int]
+    var items: [Int] = []
 
     @Argument()
     var phrase: String
@@ -128,7 +128,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
 
   private struct H: ParsableArguments {
     @Argument()
-    var items: [Int]
+    var items: [Int] = []
 
     @Option()
     var option: Bool
@@ -145,7 +145,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   private struct J: ParsableArguments {
     struct Options: ParsableArguments {
       @Argument()
-      var numberOfItems: [Int]
+      var numberOfItems: [Int] = []
     }
 
     @OptionGroup()
@@ -158,7 +158,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   private struct K: ParsableArguments {
     struct Options: ParsableArguments {
       @Argument()
-      var items: [Int]
+      var items: [Int] = []
     }
 
     @Argument()

@@ -148,8 +148,8 @@ extension HelpGenerationTests {
     @Option(help: "Whether logging is enabled.")
     var logging: Bool = false
 
-    @Option(default: [7, 14], parsing: .upToNextOption, help: ArgumentHelp("Your lucky numbers.", valueName: "numbers"))
-    var lucky: [Int]
+    @Option(parsing: .upToNextOption, help: ArgumentHelp("Your lucky numbers.", valueName: "numbers"))
+    var lucky: [Int] = [7, 14]
 
     @Flag(help: "Vegan diet.")
     var nda: OptionFlags = .optional
@@ -341,7 +341,7 @@ extension HelpGenerationTests {
 
   struct K: ParsableCommand {
     @Argument(help: "A list of paths.")
-    var paths: [String]
+    var paths: [String] = []
 
     func validate() throws {
       if paths.isEmpty {

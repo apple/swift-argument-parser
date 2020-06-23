@@ -83,8 +83,8 @@ extension UsageGenerationTests {
   }
 
   struct F: ParsableArguments {
-    @Option() var name: [String]
-    @Argument() var nameCounts: [Int]
+    @Option() var name: [String] = []
+    @Argument() var nameCounts: [Int] = []
   }
 
   func testSynopsisWithRepeats() {

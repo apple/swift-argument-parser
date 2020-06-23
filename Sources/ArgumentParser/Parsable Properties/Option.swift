@@ -487,8 +487,8 @@ extension Option {
   ///     from the command-line arguments.
   ///   - help: Information about how to use this option.
   public init<Element>(
+    wrappedValue: [Element],
     name: NameSpecification = .long,
-    default initial: Array<Element> = [],
     parsing parsingStrategy: ArrayParsingStrategy = .singleValue,
     help: ArgumentHelp? = nil
   ) where Element: ExpressibleByArgument, Value == Array<Element> {
@@ -496,9 +496,9 @@ extension Option {
       let kind = ArgumentDefinition.Kind.name(key: key, specification: name)
       let help = ArgumentDefinition.Help(options: [.isOptional, .isRepeating], help: help, key: key)
       var arg = ArgumentDefinition(kind: kind, help: help, parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy), update: .appendToArray(forType: Element.self, key: key), initial: { origin, values in
-        values.set(initial, forKey: key, inputOrigin: origin)
+        values.set(wrappedValue, forKey: key, inputOrigin: origin)
       })
-      arg.help.defaultValue = !initial.isEmpty ? "\(initial)" : nil
+      arg.help.defaultValue = !wrappedValue.isEmpty ? "\(wrappedValue)" : nil
       return ArgumentSet(alternatives: [arg])
       })
   }
@@ -519,8 +519,8 @@ extension Option {
   ///   - transform: A closure that converts a string into this property's
   ///     element type or throws an error.
   public init<Element>(
+    wrappedValue: [Element],
     name: NameSpecification = .long,
-    default initial: Array<Element> = [],
     parsing parsingStrategy: ArrayParsingStrategy = .singleValue,
     help: ArgumentHelp? = nil,
     transform: @escaping (String) throws -> Element
@@ -536,13 +536,32 @@ extension Option {
                 $0.append(transformedElement)
           })
         } catch {
-            throw ParserError.unableToParseValue(origin, name, valueString, forKey: key, originalError: error)
+          throw ParserError.unableToParseValue(origin, name, valueString, forKey: key, originalError: error)
         }
       }), initial: { origin, values in
-            values.set(initial, forKey: key, inputOrigin: origin)
+        values.set(wrappedValue, forKey: key, inputOrigin: origin)
       })
-      arg.help.defaultValue = !initial.isEmpty ? "\(initial)" : nil
+      arg.help.defaultValue = !wrappedValue.isEmpty ? "\(wrappedValue)" : nil
       return ArgumentSet(alternatives: [arg])
-      })
+    })
+  }
+  
+  @available(*, deprecated, message: "Provide an empty array literal as a default value.")
+  public init<Element>(
+    name: NameSpecification = .long,
+    parsing parsingStrategy: ArrayParsingStrategy = .singleValue,
+    help: ArgumentHelp? = nil
+  ) where Element: ExpressibleByArgument, Value == Array<Element> {
+    self.init(wrappedValue: [], name: name, parsing: parsingStrategy, help: help)
+  }
+  
+  @available(*, deprecated, message: "Provide an empty array literal as a default value.")
+  public init<Element>(
+    name: NameSpecification = .long,
+    parsing parsingStrategy: ArrayParsingStrategy = .singleValue,
+    help: ArgumentHelp? = nil,
+    transform: @escaping (String) throws -> Element
+  ) where Value == Array<Element> {
+    self.init(wrappedValue: [], name: name, parsing: parsingStrategy, help: help, transform: transform)
   }
 }
