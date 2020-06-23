@@ -26,24 +26,24 @@ The three preceding examples could be calls of this `Example` command:
 
 ```swift
 struct Example: ParsableCommand {
-    @Argument() var files: [String]
+    @Argument() var files: [String] = []
 
     @Option() var count: Int?
 
-    @Option var index: Int = 0
+    @Option() var index = 0
 
-    @Flag() var verbose: Bool
+    @Flag() var verbose = false
 
-    @Flag() var stripWhitespace: Bool
+    @Flag() var stripWhitespace = false
 }
 ```
 
 This example shows how `ArgumentParser` provides defaults that speed up your initial development process:
 
 - Option and flag names are derived from the names of your command's properties.
-- Whether arguments are required and what kinds of inputs are valid is based on your properties' types.
+- What kinds of inputs are valid, and whether arguments are required, is based on your properties' types and default values.
 
-In this example, all of the properties have default values — Boolean flags always default to `false`, optional properties default to `nil`, and arrays default to an empty array. An option, flag, or argument with a `default` parameter can also be omitted by the user.
+In this example, all of the properties have default values (optional properties default to `nil`).
 
 Users must provide values for all properties with no implicit or specified default. For example, this command would require one integer argument and a string with the key `--user-name`.
 
@@ -70,12 +70,12 @@ Usage: example --user-name <user-name> <value>
   See 'example --help' for more information.
 ```
 
-When using the `default` parameter for an array property, the default values will not be included if additional values are passed on the command line.
+When providing a default value for an array property, any user-supplied values replace the entire default.
 
-```
+```swift
 struct Lucky: ParsableCommand {
-  @Argument(default: [7, 14, 21])
-  var numbers: [Int]
+  @Argument()
+  var numbers = [7, 14, 21]
   
   mutating func run() throws {
     print("""
@@ -104,10 +104,10 @@ You can override this default by specifying one or more name specifications in t
 ```swift
 struct Example: ParsableCommand {
     @Flag(name: .long)  // Same as the default
-    var stripWhitespace: Bool
+    var stripWhitespace = false
 
     @Flag(name: .short)
-    var verbose: Bool
+    var verbose = false
 
     @Option(name: .customLong("count"))
     var iterationCount: Int
@@ -214,7 +214,7 @@ Flags are most frequently used for `Bool` properties. You can generate a `true`/
 ```swift
 struct Example: ParsableCommand {
     @Flag(inversion: .prefixedNo)
-    var index: Bool = true
+    var index = true
 
     @Flag(inversion: .prefixedEnableDisable)
     var requiredElement: Bool
@@ -225,7 +225,7 @@ struct Example: ParsableCommand {
 }
 ```
 
-When providing a flag inversion, you can pass your own default with normal property initialization syntax (`@Flag var foo: Bool = true`). If you want to require that the user specify one of the two inversions, use a non-Optional type and do not pass a default value.
+When declaring a flag with an inversion, set the default by specifying `true` or `false` as the property's initial value. If you want to require that the user specify one of the two inversions, leave off the default value.
 
 In the `Example` command defined above, a flag is required for the `requiredElement` property. The specified prefixes are prepended to the long names for the flags:
 
@@ -241,19 +241,19 @@ Error: Missing one of: '--enable-required-element', '--disable-required-element'
 To create a flag with custom names for a Boolean value, to provide an exclusive choice between more than two names, or for collecting multiple values from a set of defined choices, define an enumeration that conforms to the `EnumerableFlag` protocol.
 
 ```swift
-enum CacheMethod: EnumerableFlag {
+enum CacheMethod: String, EnumerableFlag {
     case inMemoryCache
     case persistentCache
 }
 
-enum Color: EnumerableFlag {
+enum Color: String, EnumerableFlag {
     case pink, purple, silver
 }
 
 struct Example: ParsableCommand {
     @Flag() var cacheMethod: CacheMethod
 
-    @Flag() var colors: [Color]
+    @Flag() var colors: [Color] = []
 
     mutating func run() throws {
         print(cacheMethod)
@@ -302,7 +302,7 @@ For example, this command defines a `--verbose` flag, a `--name` option, and an 
 
 ```swift
 struct Example: ParsableCommand {
-    @Flag() var verbose: Bool
+    @Flag() var verbose = false
     @Option() var name: String
     @Argument() var file: String?
 
@@ -349,8 +349,8 @@ The default strategy for parsing options as arrays is to read each value from a 
 
 ```swift
 struct Example: ParsableCommand {
-    @Option() var file: [String]
-    @Flag() var verbose: Bool
+    @Option() var file: [String] = []
+    @Flag() var verbose = false
 
     mutating func run() throws {
         print("Verbose: \(verbose), files: \(file)")
@@ -400,8 +400,8 @@ The default strategy for parsing arrays of positional arguments is to ignore  al
 
 ```swift
 struct Example: ParsableCommand {
-    @Flag() var verbose: Bool
-    @Argument() var files: [String]
+    @Flag() var verbose = false
+    @Argument() var files: [String] = []
 
     mutating func run() throws {
         print("Verbose: \(verbose), files: \(files)")

@@ -267,21 +267,21 @@ extension FlagsEndToEndTests {
 
 fileprivate struct Qux: ParsableArguments {
   @Flag()
-  var color: [Color]
+  var color: [Color] = []
 
   @Flag()
-  var size: [Size]
+  var size: [Size] = [.small, .medium]
 }
 
 extension FlagsEndToEndTests {
   func testParsingCaseIterableArray_Values() throws {
     AssertParse(Qux.self, []) { options in
       XCTAssertEqual(options.color, [])
-      XCTAssertEqual(options.size, [])
+      XCTAssertEqual(options.size, [.small, .medium])
     }
     AssertParse(Qux.self, ["--pink"]) { options in
       XCTAssertEqual(options.color, [.pink])
-      XCTAssertEqual(options.size, [])
+      XCTAssertEqual(options.size, [.small, .medium])
     }
     AssertParse(Qux.self, ["--pink", "--purple", "--small"]) { options in
       XCTAssertEqual(options.color, [.pink, .purple])
@@ -293,7 +293,7 @@ extension FlagsEndToEndTests {
     }
     AssertParse(Qux.self, ["--pink", "--pink", "--purple", "--pink"]) { options in
       XCTAssertEqual(options.color, [.pink, .pink, .purple, .pink])
-      XCTAssertEqual(options.size, [])
+      XCTAssertEqual(options.size, [.small, .medium])
     }
   }
 

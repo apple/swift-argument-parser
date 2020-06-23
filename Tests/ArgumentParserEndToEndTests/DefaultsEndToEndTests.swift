@@ -509,11 +509,11 @@ extension DefaultsEndToEndTests {
 }
 
 fileprivate struct Quux: ParsableArguments {
-  @Option(default: ["A", "B"], parsing: .upToNextOption)
-  var letters: [String]
+  @Option(parsing: .upToNextOption)
+  var letters: [String] = ["A", "B"]
   
-  @Argument(default: [1, 2])
-  var numbers: [Int]
+  @Argument()
+  var numbers: [Int] = [1, 2]
 }
 
 extension DefaultsEndToEndTests {
@@ -619,13 +619,13 @@ fileprivate struct Main: ParsableCommand {
   )
   
   struct Options: ParsableArguments {
-    @Option(default: ["A", "B"], parsing: .upToNextOption)
-    var letters: [String]
+    @Option(parsing: .upToNextOption)
+    var letters: [String] = ["A", "B"]
   }
   
   struct Sub: ParsableCommand {
-    @Argument(default: [1, 2])
-    var numbers: [Int]
+    @Argument()
+    var numbers: [Int] = [1, 2]
     
     @OptionGroup()
     var options: Main.Options

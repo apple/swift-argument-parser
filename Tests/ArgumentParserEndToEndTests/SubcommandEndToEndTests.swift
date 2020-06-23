@@ -125,7 +125,7 @@ fileprivate struct Math: ParsableCommand {
   var verbose: Bool = false
 
   @Argument(help: "The first operand")
-  var operands: [Int]
+  var operands: [Int] = []
 
   mutating func run() {
     XCTAssertEqual(operation, .multiply)

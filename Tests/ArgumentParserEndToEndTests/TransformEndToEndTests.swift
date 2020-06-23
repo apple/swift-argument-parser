@@ -55,7 +55,7 @@ fileprivate struct BarOption: Convert, ParsableCommand {
     
   @Option(help: ArgumentHelp("Convert a list of strings to an array of integers", valueName: "int_str"),
           transform: { try convert($0) })
-  var strings: [Int]
+  var strings: [Int] = []
 }
 
 extension TransformEndToEndTests {
@@ -120,7 +120,7 @@ fileprivate struct BarArgument: Convert, ParsableCommand {
   
   @Argument(help: ArgumentHelp("Convert a list of strings to an array of integers", valueName: "int_str"),
             transform: { try convert($0) })
-  var strings: [Int]
+  var strings: [Int] = []
 }
 
 extension TransformEndToEndTests {

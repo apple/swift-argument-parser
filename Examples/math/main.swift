@@ -35,11 +35,11 @@ struct Math: ParsableCommand {
 struct Options: ParsableArguments {
     @Flag(name: [.customLong("hex-output"), .customShort("x")],
           help: "Use hexadecimal notation for the result.")
-    var hexadecimalOutput: Bool = false
+    var hexadecimalOutput = false
 
     @Argument(
         help: "A group of integers to operate on.")
-    var values: [Int]
+    var values: [Int] = []
 }
 
 extension Math {
@@ -103,7 +103,7 @@ extension Math.Statistics {
         var kind: Kind = .mean
 
         @Argument(help: "A group of floating-point values to operate on.")
-        var values: [Double]
+        var values: [Double] = []
 
         func validate() throws {
             if (kind == .median || kind == .mode) && values.isEmpty {
@@ -166,7 +166,7 @@ extension Math.Statistics {
             abstract: "Print the standard deviation of the values.")
 
         @Argument(help: "A group of floating-point values to operate on.")
-        var values: [Double]
+        var values: [Double] = []
 
         mutating func run() {
             if values.isEmpty {
@@ -189,15 +189,15 @@ extension Math.Statistics {
             abstract: "Print the quantiles of the values (TBD).")
 
         @Argument(help: "A group of floating-point values to operate on.")
-        var values: [Double]
+        var values: [Double] = []
 
         // These args and the validation method are for testing exit codes:
         @Flag(help: .hidden)
-        var testSuccessExitCode: Bool = false
+        var testSuccessExitCode = false
         @Flag(help: .hidden)
-        var testFailureExitCode: Bool = false
+        var testFailureExitCode = false
         @Flag(help: .hidden)
-        var testValidationExitCode: Bool = false
+        var testValidationExitCode = false
         @Option(help: .hidden)
         var testCustomExitCode: Int32?
 

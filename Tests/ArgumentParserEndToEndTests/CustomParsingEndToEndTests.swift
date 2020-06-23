@@ -126,10 +126,10 @@ extension ParsingEndToEndTests {
 
 fileprivate struct Qux: ParsableCommand {
   @Option(transform: { try Name(rawValue: $0) })
-  var firstName: [Name]
+  var firstName: [Name] = []
 
   @Argument(transform: { try Name(rawValue: $0) })
-  var lastName: [Name]
+  var lastName: [Name] = []
 }
 
 extension ParsingEndToEndTests {

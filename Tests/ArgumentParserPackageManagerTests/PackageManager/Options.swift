@@ -66,25 +66,25 @@ struct Options: ParsableArguments {
           parsing: .unconditionalSingleValue,
           help: ArgumentHelp("Pass flag through to all C compiler invocations",
                              valueName: "c-compiler-flag"))
-  var cCompilerFlags: [String]
+  var cCompilerFlags: [String] = []
 
   @Option(name: .customLong("Xcxx", withSingleDash: true),
           parsing: .unconditionalSingleValue,
           help: ArgumentHelp("Pass flag through to all C++ compiler invocations",
                              valueName: "cxx-compiler-flag"))
-  var cxxCompilerFlags: [String]
+  var cxxCompilerFlags: [String] = []
 
   @Option(name: .customLong("Xlinker", withSingleDash: true),
           parsing: .unconditionalSingleValue,
           help: ArgumentHelp("Pass flag through to all linker invocations",
                              valueName: "linker-flag"))
-  var linkerFlags: [String]
+  var linkerFlags: [String] = []
 
   @Option(name: .customLong("Xswiftc", withSingleDash: true),
           parsing: .unconditionalSingleValue,
           help: ArgumentHelp("Pass flag through to all Swift compiler invocations",
                              valueName: "swift-compiler-flag"))
-  var swiftCompilerFlags: [String]
+  var swiftCompilerFlags: [String] = []
 }
 
 struct Package: ParsableCommand {

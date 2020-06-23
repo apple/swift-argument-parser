@@ -97,8 +97,9 @@ extension ArgumentSet {
   static func flag(key: InputKey, name: NameSpecification, default initialValue: Bool?, help: ArgumentHelp?) -> ArgumentSet {
     // The flag is required if initialValue is `nil`, otherwise it's optional
     let helpOptions: ArgumentDefinition.Help.Options = initialValue != nil ? .isOptional : []
-
-    let help = ArgumentDefinition.Help(options: helpOptions, help: help, key: key)
+    let defaultValueString = initialValue == true ? "true" : nil
+    
+    let help = ArgumentDefinition.Help(options: helpOptions, help: help, defaultValue: defaultValueString, key: key)
     let arg = ArgumentDefinition(kind: .name(key: key, specification: name), help: help, update: .nullary({ (origin, name, values) in
       values.set(true, forKey: key, inputOrigin: origin)
     }), initial: { origin, values in

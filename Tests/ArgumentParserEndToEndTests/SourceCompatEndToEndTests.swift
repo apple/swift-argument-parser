@@ -50,22 +50,22 @@ fileprivate struct AlmostAllArguments: ParsableArguments {
   @Argument(help: "", transform: { _ in 0 }) var d4: Int?
   @Argument(default: 0, transform: { _ in 0 }) var d5: Int?
 
-  @Argument(default: [1, 2], parsing: .remaining, help: "") var e: [Int]
+  @Argument(parsing: .remaining, help: "") var e: [Int] = [1, 2]
   @Argument(parsing: .remaining, help: "") var e1: [Int]
-  @Argument(default: [1, 2], parsing: .remaining) var e2: [Int]
-  @Argument(default: [1, 2], help: "") var e3: [Int]
+  @Argument(parsing: .remaining) var e2: [Int] = [1, 2]
+  @Argument(help: "") var e3: [Int] = [1, 2]
   @Argument() var e4: [Int]
   @Argument(help: "") var e5: [Int]
   @Argument(parsing: .remaining) var e6: [Int]
-  @Argument(default: [1, 2]) var e7: [Int]
-  @Argument(default: [1, 2], parsing: .remaining, help: "", transform: { _ in 0 }) var e8: [Int]
+  @Argument() var e7: [Int] = [1, 2]
+  @Argument(parsing: .remaining, help: "", transform: { _ in 0 }) var e8: [Int] = [1, 2]
   @Argument(parsing: .remaining, help: "", transform: { _ in 0 }) var e9: [Int]
-  @Argument(default: [1, 2], parsing: .remaining, transform: { _ in 0 }) var e10: [Int]
-  @Argument(default: [1, 2], help: "", transform: { _ in 0 }) var e11: [Int]
+  @Argument(parsing: .remaining, transform: { _ in 0 }) var e10: [Int] = [1, 2]
+  @Argument(help: "", transform: { _ in 0 }) var e11: [Int] = [1, 2]
   @Argument(transform: { _ in 0 }) var e12: [Int]
   @Argument(help: "", transform: { _ in 0 }) var e13: [Int]
   @Argument(parsing: .remaining, transform: { _ in 0 }) var e14: [Int]
-  @Argument(default: [1, 2], transform: { _ in 0 }) var e15: [Int]
+  @Argument(transform: { _ in 0 }) var e15: [Int] = [1, 2]
 }
 
 fileprivate struct AllOptions: ParsableArguments {
@@ -143,33 +143,33 @@ fileprivate struct AllOptions: ParsableArguments {
   @Option(parsing: .next, transform: { _ in 0 }) var d12: Int?
   @Option(help: "", transform: { _ in 0 }) var d13: Int?
 
-  @Option(name: .long, default: [1, 2], parsing: .singleValue, help: "") var e: [Int]
-  @Option(default: [1, 2], parsing: .singleValue, help: "") var e1: [Int]
+  @Option(name: .long, parsing: .singleValue, help: "") var e: [Int] = [1, 2]
+  @Option(parsing: .singleValue, help: "") var e1: [Int] = [1, 2]
   @Option(name: .long, parsing: .singleValue, help: "") var e2: [Int]
-  @Option(name: .long, default: [1, 2], help: "") var e3: [Int]
+  @Option(name: .long, help: "") var e3: [Int] = [1, 2]
   @Option(parsing: .singleValue, help: "") var e4: [Int]
-  @Option(default: [1, 2], help: "") var e5: [Int]
-  @Option(default: [1, 2], parsing: .singleValue) var e6: [Int]
+  @Option(help: "") var e5: [Int] = [1, 2]
+  @Option(parsing: .singleValue) var e6: [Int] = [1, 2]
   @Option(name: .long, help: "") var e7: [Int]
   @Option(name: .long, parsing: .singleValue) var e8: [Int]
-  @Option(name: .long, default: [1, 2]) var e9: [Int]
+  @Option(name: .long) var e9: [Int] = [1, 2]
   @Option(name: .long) var e10: [Int]
-  @Option(default: [1, 2]) var e11: [Int]
+  @Option() var e11: [Int] = [1, 2]
   @Option(parsing: .singleValue) var e12: [Int]
   @Option(help: "") var e13: [Int]
 
-  @Option(name: .long, default: [1, 2], parsing: .singleValue, help: "", transform: { _ in 0 }) var f: [Int]
-  @Option(default: [1, 2], parsing: .singleValue, help: "", transform: { _ in 0 }) var f1: [Int]
+  @Option(name: .long, parsing: .singleValue, help: "", transform: { _ in 0 }) var f: [Int] = [1, 2]
+  @Option(parsing: .singleValue, help: "", transform: { _ in 0 }) var f1: [Int] = [1, 2]
   @Option(name: .long, parsing: .singleValue, help: "", transform: { _ in 0 }) var f2: [Int]
-  @Option(name: .long, default: [1, 2], help: "", transform: { _ in 0 }) var f3: [Int]
+  @Option(name: .long, help: "", transform: { _ in 0 }) var f3: [Int] = [1, 2]
   @Option(parsing: .singleValue, help: "", transform: { _ in 0 }) var f4: [Int]
-  @Option(default: [1, 2], help: "", transform: { _ in 0 }) var f5: [Int]
-  @Option(default: [1, 2], parsing: .singleValue, transform: { _ in 0 }) var f6: [Int]
+  @Option(help: "", transform: { _ in 0 }) var f5: [Int] = [1, 2]
+  @Option(parsing: .singleValue, transform: { _ in 0 }) var f6: [Int] = [1, 2]
   @Option(name: .long, help: "", transform: { _ in 0 }) var f7: [Int]
   @Option(name: .long, parsing: .singleValue, transform: { _ in 0 }) var f8: [Int]
-  @Option(name: .long, default: [1, 2], transform: { _ in 0 }) var f9: [Int]
+  @Option(name: .long, transform: { _ in 0 }) var f9: [Int] = [1, 2]
   @Option(name: .long, transform: { _ in 0 }) var f10: [Int]
-  @Option(default: [1, 2], transform: { _ in 0 }) var f11: [Int]
+  @Option(transform: { _ in 0 }) var f11: [Int] = [1, 2]
   @Option(parsing: .singleValue, transform: { _ in 0 }) var f12: [Int]
   @Option(help: "", transform: { _ in 0 }) var f13: [Int]
 }
@@ -254,8 +254,10 @@ struct AllFlags: ParsableArguments {
   @Flag(help: "") var g2: E?
   @Flag(exclusivity: .chooseLast) var g3: E?
 
-  @Flag(help: "") var h: [E]
-  @Flag() var h1: [E]
+  @Flag(help: "") var h: [E] = []
+  @Flag() var h1: [E] = []
+  @Flag(help: "") var h2: [E]
+  @Flag() var h3: [E]
 }
 
 extension SourceCompatEndToEndTests {
