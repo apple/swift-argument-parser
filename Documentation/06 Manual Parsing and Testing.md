@@ -12,9 +12,9 @@ Let's implement the `Select` command discussed in [Validation and Errors](05%20V
 
 ```swift
 struct SelectOptions: ParsableArguments {
-    @Option(default: 1)
-    var count: Int
-    
+    @Option
+    var count: Int = 1
+
     @Argument()
     var elements: [String]
 }
@@ -39,7 +39,7 @@ guard let options.elements.count >= options.count else {
 
 As you would expect, the `exit(withError:)` method includes usage information when you pass it a `ValidationError`.
 
-Finally, we print out the requested number of elements: 
+Finally, we print out the requested number of elements:
 
 ```swift
 let chosen = options.elements

@@ -2,16 +2,16 @@
 
 Support your users (and yourself) by providing rich help for arguments and commands.
 
-You can provide help text when declaring any `@Argument`, `@Option`, or `@Flag` by passing a string literal as the `help` parameter: 
+You can provide help text when declaring any `@Argument`, `@Option`, or `@Flag` by passing a string literal as the `help` parameter:
 
 ```swift
 struct Example: ParsableCommand {
     @Flag(help: "Display extra information while processing.")
     var verbose: Bool
-    
-    @Option(default: 0, help: "The number of extra lines to show.")
-    var extraLines: Int
-    
+
+    @Option(help: "The number of extra lines to show.")
+    var extraLines: Int = 0
+
     @Argument(help: "The input file.")
     var inputFile: String?
 }
@@ -24,10 +24,10 @@ Users see these strings in the automatically-generated help screen, which is tri
 USAGE: example [--verbose] [--extra-lines <extra-lines>] <input-file>
 
 ARGUMENTS:
-  <input-file>            The input file. 
+  <input-file>            The input file.
 
 OPTIONS:
-  --verbose               Display extra information while processing. 
+  --verbose               Display extra information while processing.
   --extra-lines <extra-lines>
                           The number of extra lines to show. (default: 0)
   -h, --help              Show help information.
@@ -43,12 +43,12 @@ Here's the same command with some extra customization:
 struct Example: ParsableCommand {
     @Flag(help: "Display extra information while processing.")
     var verbose: Bool
-    
-    @Option(default: 0, help: ArgumentHelp(
+
+    @Option(help: ArgumentHelp(
         "The number of extra lines to show.",
         valueName: "n"))
-    var extraLines: Int
-    
+    var extraLines: Int = 0
+
     @Argument(help: ArgumentHelp(
         "The input file.",
         discussion: "If no input file is provided, the tool reads from stdin.",
@@ -63,11 +63,11 @@ struct Example: ParsableCommand {
 USAGE: example [--verbose] [--extra-lines <n>] [<file>]
 
 ARGUMENTS:
-  <file>                  The input file. 
+  <file>                  The input file.
         If no input file is provided, the tool reads from stdin.
 
 OPTIONS:
-  --verbose               Display extra information while processing. 
+  --verbose               Display extra information while processing.
   --extra-lines <n>       The number of extra lines to show. (default: 0)
   -h, --help              Show help information.
 ```
@@ -83,10 +83,10 @@ struct Repeat: ParsableCommand {
         discussion: """
             Prints to stdout forever, or until you halt the program.
             """)
-            
+
     @Argument(help: "The phrase to repeat.")
     var phrase: String
-    
+
     mutating func run() throws {
         while true { print(phrase) }
     }
@@ -104,7 +104,7 @@ Prints to stdout forever, or until you halt the program.
 USAGE: repeat <phrase>
 
 ARGUMENTS:
-  <phrase>                The phrase to repeat. 
+  <phrase>                The phrase to repeat.
 
 OPTIONS:
   -h, --help              Show help information.
@@ -127,10 +127,10 @@ Users can see the help screen for a command by passing either the `-h` or the `-
 struct Example: ParsableCommand {
     static let configuration = CommandConfiguration(
         helpNames: [.long, .customShort("?")])
-        
+
     @Option(name: .shortAndLong, help: "The number of history entries to show.")
     var historyDepth: Int
-    
+
     mutating func run() throws {
         printHistory(depth: historyDepth)
     }
@@ -146,7 +146,7 @@ When running the command, `-h` matches the short name of the `historyDepth` prop
 USAGE: example --history-depth <history-depth>
 
 ARGUMENTS:
-  <phrase>                The phrase to repeat. 
+  <phrase>                The phrase to repeat.
 
 OPTIONS:
   -h, --history-depth     The number of history entries to show.
@@ -155,7 +155,7 @@ OPTIONS:
 
 ## Hiding Arguments and Commands
 
-You may want to suppress features under development or experimental flags from the generated help screen. You can hide an argument or a subcommand by passing `shouldDisplay: false` to the property wrapper or `CommandConfiguration` initializers, respectively. 
+You may want to suppress features under development or experimental flags from the generated help screen. You can hide an argument or a subcommand by passing `shouldDisplay: false` to the property wrapper or `CommandConfiguration` initializers, respectively.
 
 `ArgumentHelp` includes a `.hidden` static property that makes it even simpler to hide arguments:
 

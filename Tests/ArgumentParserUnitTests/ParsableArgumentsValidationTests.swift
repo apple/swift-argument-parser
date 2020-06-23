@@ -17,74 +17,74 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   private struct A: ParsableCommand {
     @Option(help: "The number of times to repeat 'phrase'.")
     var count: Int?
-    
+
     @Argument(help: "The phrase to repeat.")
     var phrase: String
-    
+
     enum CodingKeys: String, CodingKey {
       case count
       case phrase
     }
-    
+
     mutating func run() throws {}
   }
-  
+
   private struct B: ParsableCommand {
     @Option(help: "The number of times to repeat 'phrase'.")
     var count: Int?
-    
+
     @Argument(help: "The phrase to repeat.")
     var phrase: String
-    
+
     mutating func run() throws {}
   }
-  
+
   private struct C: ParsableCommand {
     @Option(help: "The number of times to repeat 'phrase'.")
     var count: Int?
-    
+
     @Argument(help: "The phrase to repeat.")
     var phrase: String
-    
+
     enum CodingKeys: String, CodingKey {
       case phrase
     }
-    
+
     mutating func run() throws {}
   }
-  
+
   private struct D: ParsableArguments {
     @Argument(help: "The phrase to repeat.")
     var phrase: String
-    
+
     @Option(help: "The number of times to repeat 'phrase'.")
     var count: Int?
-    
+
     enum CodingKeys: String, CodingKey {
       case count
     }
   }
-  
+
   private struct E: ParsableArguments {
     @Argument(help: "The phrase to repeat.")
     var phrase: String
-    
+
     @Option(help: "The number of times to repeat 'phrase'.")
     var count: Int?
-    
+
     @Flag(help: "Include a counter with each repetition.")
-    var includeCounter: Bool
-    
+    var includeCounter: Bool = false
+
     enum CodingKeys: String, CodingKey {
       case count
     }
   }
-  
+
   func testCodingKeyValidation() throws {
     try ParsableArgumentsCodingKeyValidator.validate(A.self)
-    
+
     try ParsableArgumentsCodingKeyValidator.validate(B.self)
-    
+
     XCTAssertThrowsError(try ParsableArgumentsCodingKeyValidator.validate(C.self)) { (error) in
       if let error = error as? ParsableArgumentsCodingKeyValidator.Error {
         XCTAssert(error.missingCodingKeys == ["count"])
@@ -92,7 +92,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
         XCTFail()
       }
     }
-    
+
     XCTAssertThrowsError(try ParsableArgumentsCodingKeyValidator.validate(D.self)) { (error) in
       if let error = error as? ParsableArgumentsCodingKeyValidator.Error {
         XCTAssert(error.missingCodingKeys == ["phrase"])
@@ -100,7 +100,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
         XCTFail()
       }
     }
-    
+
     XCTAssertThrowsError(try ParsableArgumentsCodingKeyValidator.validate(E.self)) { (error) in
       if let error = error as? ParsableArgumentsCodingKeyValidator.Error {
         XCTAssert(error.missingCodingKeys == ["phrase", "includeCounter"])
@@ -109,65 +109,65 @@ final class ParsableArgumentsValidationTests: XCTestCase {
       }
     }
   }
-  
+
   private struct F: ParsableArguments {
     @Argument()
     var phrase: String
-    
+
     @Argument()
     var items: [Int]
   }
-  
+
   private struct G: ParsableArguments {
     @Argument()
     var items: [Int]
-    
+
     @Argument()
     var phrase: String
   }
-  
+
   private struct H: ParsableArguments {
     @Argument()
     var items: [Int]
-    
+
     @Option()
     var option: Bool
   }
-  
+
   private struct I: ParsableArguments {
     @Argument()
     var name: String
-    
+
     @OptionGroup()
     var options: F
   }
-  
+
   private struct J: ParsableArguments {
     struct Options: ParsableArguments {
       @Argument()
       var numberOfItems: [Int]
     }
-    
+
     @OptionGroup()
     var options: Options
-    
+
     @Argument()
     var phrase: String
   }
-  
+
   private struct K: ParsableArguments {
     struct Options: ParsableArguments {
       @Argument()
       var items: [Int]
     }
-    
+
     @Argument()
     var phrase: String
-    
+
     @OptionGroup()
     var options: Options
   }
-  
+
   func testPositionalArgumentsValidation() throws {
     try PositionalArgumentsValidator.validate(A.self)
     try PositionalArgumentsValidator.validate(F.self)
@@ -241,7 +241,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
     var bar: String
 
     @Flag(name: .customLong("bar"))
-    var notBar: Bool
+    var notBar: Bool = false
 
     @Option()
     var help: String
@@ -270,7 +270,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   // MARK: Argument has multiple names and one is duplicated
   fileprivate struct MultipleNamesPerArgument: ParsableCommand {
     @Flag(name: [.customShort("v"), .customLong("very-chatty")])
-    var verbose: Bool
+    var verbose: Bool = false
 
     enum Versimilitude: String, ExpressibleByArgument {
       case yes
@@ -301,7 +301,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
     var notActuallyFoo: String
 
     @Flag(name: .customLong("foo"))
-    var stillNotFoo: Bool
+    var stillNotFoo: Bool = false
 
     enum Numbers: Int, ExpressibleByArgument {
       case one = 1
@@ -332,14 +332,14 @@ final class ParsableArgumentsValidationTests: XCTestCase {
       case other
       case forth
       case fith
-      
+
       static func name(for value: ExampleEnum) -> NameSpecification {
         .short
       }
     }
 
-    @Flag(default: .first)
-    var enumFlag: ExampleEnum
+    @Flag
+    var enumFlag: ExampleEnum = .first
   }
 
   fileprivate struct DuplicatedFirstLettersLongNames: ParsableCommand {
@@ -351,8 +351,8 @@ final class ParsableArgumentsValidationTests: XCTestCase {
       case fith
     }
 
-    @Flag(default: .first)
-    var enumFlag2: ExampleEnum
+    @Flag
+    var enumFlag2: ExampleEnum = .first
   }
 
   func testUniqueNamesValidation_DuplicatedFlagFirstLetters_ShortNames() throws {

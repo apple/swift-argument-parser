@@ -25,7 +25,7 @@ struct Math: ParsableCommand {
         // With language support for type-level introspection, this could be
         // provided by automatically finding nested `ParsableCommand` types.
         subcommands: [Add.self, Multiply.self, Statistics.self],
-        
+
         // A default subcommand, when provided, is automatically selected if a
         // subcommand is not given on the command line.
         defaultSubcommand: Add.self)
@@ -35,7 +35,7 @@ struct Math: ParsableCommand {
 struct Options: ParsableArguments {
     @Flag(name: [.customLong("hex-output"), .customShort("x")],
           help: "Use hexadecimal notation for the result.")
-    var hexadecimalOutput: Bool
+    var hexadecimalOutput: Bool = false
 
     @Argument(
         help: "A group of integers to operate on.")
@@ -56,7 +56,7 @@ extension Math {
         // arguments defined by another `ParsableArguments` type.
         @OptionGroup()
         var options: Options
-        
+
         mutating func run() {
             let result = options.values.reduce(0, +)
             print(format(result, usingHex: options.hexadecimalOutput))
@@ -69,14 +69,14 @@ extension Math {
 
         @OptionGroup()
         var options: Options
-        
+
         mutating func run() {
             let result = options.values.reduce(1, *)
             print(format(result, usingHex: options.hexadecimalOutput))
         }
     }
 }
- 
+
 // In practice, these nested types could be broken out into different files.
 extension Math {
     struct Statistics: ParsableCommand {
@@ -94,14 +94,14 @@ extension Math.Statistics {
         static var configuration = CommandConfiguration(
             abstract: "Print the average of the values.",
             version: "1.5.0-alpha")
-        
+
         enum Kind: String, ExpressibleByArgument {
             case mean, median, mode
         }
 
-        @Option(default: .mean, help: "The kind of average to provide.")
-        var kind: Kind
-        
+        @Option(help: "The kind of average to provide.")
+        var kind: Kind = .mean
+
         @Argument(help: "A group of floating-point values to operate on.")
         var values: [Double]
 
@@ -119,12 +119,12 @@ extension Math.Statistics {
             let sum = values.reduce(0, +)
             return sum / Double(values.count)
         }
-        
+
         func calculateMedian() -> Double {
             guard !values.isEmpty else {
                 return 0
             }
-            
+
             let sorted = values.sorted()
             let mid = sorted.count / 2
             if sorted.count.isMultiple(of: 2) {
@@ -133,18 +133,18 @@ extension Math.Statistics {
                 return sorted[mid]
             }
         }
-        
+
         func calculateMode() -> [Double] {
             guard !values.isEmpty else {
                 return []
             }
-            
+
             let grouped = Dictionary(grouping: values, by: { $0 })
             let highestFrequency = grouped.lazy.map { $0.value.count }.max()!
             return grouped.filter { _, v in v.count == highestFrequency }
                 .map { k, _ in k }
         }
-    
+
         mutating func run() {
             switch kind {
             case .mean:
@@ -167,7 +167,7 @@ extension Math.Statistics {
 
         @Argument(help: "A group of floating-point values to operate on.")
         var values: [Double]
-        
+
         mutating func run() {
             if values.isEmpty {
                 print(0.0)
@@ -183,7 +183,7 @@ extension Math.Statistics {
             }
         }
     }
-    
+
     struct Quantiles: ParsableCommand {
         static var configuration = CommandConfiguration(
             abstract: "Print the quantiles of the values (TBD).")
@@ -193,27 +193,27 @@ extension Math.Statistics {
 
         // These args and the validation method are for testing exit codes:
         @Flag(help: .hidden)
-        var testSuccessExitCode: Bool
+        var testSuccessExitCode: Bool = false
         @Flag(help: .hidden)
-        var testFailureExitCode: Bool
+        var testFailureExitCode: Bool = false
         @Flag(help: .hidden)
-        var testValidationExitCode: Bool
+        var testValidationExitCode: Bool = false
         @Option(help: .hidden)
         var testCustomExitCode: Int32?
-      
+
         func validate() throws {
             if testSuccessExitCode {
                 throw ExitCode.success
             }
-            
+
             if testFailureExitCode {
                 throw ExitCode.failure
             }
-            
+
             if testValidationExitCode {
                 throw ExitCode.validationFailure
             }
-            
+
             if let exitCode = testCustomExitCode {
                 throw ExitCode(exitCode)
             }

@@ -18,14 +18,14 @@ final class OptionGroupEndToEndTests: XCTestCase {
 
 fileprivate struct Inner: TestableParsableArguments {
   @Flag(name: [.short, .long])
-  var extraVerbiage: Bool
-  @Option(default: 0)
-  var size: Int
+  var extraVerbiage: Bool = false
+  @Option
+  var size: Int = 0
   @Argument()
   var name: String
-  
+
   let didValidateExpectation = XCTestExpectation(singleExpectation: "inner validated")
-  
+
   private enum CodingKeys: CodingKey {
     case extraVerbiage
     case size
@@ -34,17 +34,17 @@ fileprivate struct Inner: TestableParsableArguments {
 }
 
 fileprivate struct Outer: TestableParsableArguments {
-  @Flag()
-  var verbose: Bool
+  @Flag
+  var verbose: Bool = false
   @Argument()
   var before: String
   @OptionGroup()
   var inner: Inner
   @Argument()
   var after: String
-  
+
   let didValidateExpectation = XCTestExpectation(singleExpectation: "outer validated")
-  
+
   private enum CodingKeys: CodingKey {
     case verbose
     case before
@@ -55,13 +55,13 @@ fileprivate struct Outer: TestableParsableArguments {
 
 fileprivate struct Command: TestableParsableCommand {
   static let configuration = CommandConfiguration(commandName: "testCommand")
-  
+
   @OptionGroup()
   var outer: Outer
-  
+
   let didValidateExpectation = XCTestExpectation(singleExpectation: "Command validated")
   let didRunExpectation = XCTestExpectation(singleExpectation: "Command ran")
-  
+
   private enum CodingKeys: CodingKey {
     case outer
   }
@@ -73,23 +73,23 @@ extension OptionGroupEndToEndTests {
       XCTAssertEqual(options.verbose, false)
       XCTAssertEqual(options.before, "prefix")
       XCTAssertEqual(options.after, "postfix")
-      
+
       XCTAssertEqual(options.inner.extraVerbiage, false)
       XCTAssertEqual(options.inner.size, 0)
       XCTAssertEqual(options.inner.name, "name")
     }
-    
+
     AssertParse(Outer.self, ["prefix", "--extra-verbiage", "name", "postfix", "--verbose", "--size", "5"]) { options in
       XCTAssertEqual(options.verbose, true)
       XCTAssertEqual(options.before, "prefix")
       XCTAssertEqual(options.after, "postfix")
-      
+
       XCTAssertEqual(options.inner.extraVerbiage, true)
       XCTAssertEqual(options.inner.size, 5)
       XCTAssertEqual(options.inner.name, "name")
     }
   }
-  
+
   func testOptionGroup_isValidated() {
     // Parse the command, this should cause validation to be once each on
     // - command.outer.inner
@@ -99,7 +99,7 @@ extension OptionGroupEndToEndTests {
       wait(for: [command.didValidateExpectation, command.outer.didValidateExpectation, command.outer.inner.didValidateExpectation], timeout: 0.1)
     }
   }
-  
+
   func testOptionGroup_Fails() throws {
     XCTAssertThrowsError(try Outer.parse([]))
     XCTAssertThrowsError(try Outer.parse(["prefix"]))

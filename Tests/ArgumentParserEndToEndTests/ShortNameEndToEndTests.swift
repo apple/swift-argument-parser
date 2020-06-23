@@ -20,11 +20,11 @@ final class ShortNameEndToEndTests: XCTestCase {
 
 fileprivate struct Bar: ParsableArguments {
   @Flag(name: [.long, .short])
-  var verbose: Bool
-  
+  var verbose: Bool = false
+
   @Option(name: [.long, .short])
   var file: String?
-  
+
   @Argument()
   var name: String
 }
@@ -36,47 +36,47 @@ extension ShortNameEndToEndTests {
       XCTAssertNil(options.file)
       XCTAssertEqual(options.name, "foo")
     }
-    
+
     AssertParse(Bar.self, ["--verbose", "--file", "myfile", "foo"]) { options in
       XCTAssertEqual(options.verbose, true)
       XCTAssertEqual(options.file, "myfile")
       XCTAssertEqual(options.name, "foo")
     }
   }
-  
+
   func testParsing_simple() throws {
     AssertParse(Bar.self, ["-v", "foo"]) { options in
       XCTAssertEqual(options.verbose, true)
       XCTAssertNil(options.file)
       XCTAssertEqual(options.name, "foo")
     }
-    
+
     AssertParse(Bar.self, ["-f", "myfile", "foo"]) { options in
       XCTAssertEqual(options.verbose, false)
       XCTAssertEqual(options.file, "myfile")
       XCTAssertEqual(options.name, "foo")
     }
-    
+
     AssertParse(Bar.self, ["-v", "-f", "myfile", "foo"]) { options in
       XCTAssertEqual(options.verbose, true)
       XCTAssertEqual(options.file, "myfile")
       XCTAssertEqual(options.name, "foo")
     }
   }
-  
+
   func testParsing_combined() throws {
     AssertParse(Bar.self, ["-vf", "myfile", "foo"]) { options in
       XCTAssertEqual(options.verbose, true)
       XCTAssertEqual(options.file, "myfile")
       XCTAssertEqual(options.name, "foo")
     }
-    
+
     AssertParse(Bar.self, ["-fv", "myfile", "foo"]) { options in
       XCTAssertEqual(options.verbose, true)
       XCTAssertEqual(options.file, "myfile")
       XCTAssertEqual(options.name, "foo")
     }
-    
+
     AssertParse(Bar.self, ["foo", "-fv", "myfile"]) { options in
       XCTAssertEqual(options.verbose, true)
       XCTAssertEqual(options.file, "myfile")
@@ -90,10 +90,10 @@ extension ShortNameEndToEndTests {
 fileprivate struct Foo: ParsableArguments {
   @Option(name: [.long, .short])
   var name: String
-  
+
   @Option(name: [.long, .short])
   var file: String
-  
+
   @Option(name: [.long, .short])
   var city: String
 }
@@ -105,31 +105,31 @@ extension ShortNameEndToEndTests {
       XCTAssertEqual(options.file, "file")
       XCTAssertEqual(options.city, "city")
     }
-    
+
     AssertParse(Foo.self, ["-ncf", "name", "city", "file"]) { options in
       XCTAssertEqual(options.name, "name")
       XCTAssertEqual(options.file, "file")
       XCTAssertEqual(options.city, "city")
     }
-    
+
     AssertParse(Foo.self, ["-fnc", "file", "name", "city"]) { options in
       XCTAssertEqual(options.name, "name")
       XCTAssertEqual(options.file, "file")
       XCTAssertEqual(options.city, "city")
     }
-    
+
     AssertParse(Foo.self, ["-fcn", "file", "city", "name"]) { options in
       XCTAssertEqual(options.name, "name")
       XCTAssertEqual(options.file, "file")
       XCTAssertEqual(options.city, "city")
     }
-    
+
     AssertParse(Foo.self, ["-cnf", "city", "name", "file"]) { options in
       XCTAssertEqual(options.name, "name")
       XCTAssertEqual(options.file, "file")
       XCTAssertEqual(options.city, "city")
     }
-    
+
     AssertParse(Foo.self, ["-cfn", "city", "file", "name"]) { options in
       XCTAssertEqual(options.name, "name")
       XCTAssertEqual(options.file, "file")
