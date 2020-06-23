@@ -35,7 +35,7 @@ struct Math: ParsableCommand {
 struct Options: ParsableArguments {
     @Flag(name: [.customLong("hex-output"), .customShort("x")],
           help: "Use hexadecimal notation for the result.")
-    var hexadecimalOutput: Bool = false
+    var hexadecimalOutput = false
 
     @Argument(
         help: "A group of integers to operate on.")
@@ -193,11 +193,11 @@ extension Math.Statistics {
 
         // These args and the validation method are for testing exit codes:
         @Flag(help: .hidden)
-        var testSuccessExitCode: Bool = false
+        var testSuccessExitCode = false
         @Flag(help: .hidden)
-        var testFailureExitCode: Bool = false
+        var testFailureExitCode = false
         @Flag(help: .hidden)
-        var testValidationExitCode: Bool = false
+        var testValidationExitCode = false
         @Option(help: .hidden)
         var testCustomExitCode: Int32?
 

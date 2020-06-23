@@ -16,7 +16,7 @@ struct Repeat: ParsableCommand {
     var count: Int?
 
     @Flag(help: "Include a counter with each repetition.")
-    var includeCounter: Bool = false
+    var includeCounter = false
 
     @Argument(help: "The phrase to repeat.")
     var phrase: String
