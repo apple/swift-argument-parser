@@ -465,7 +465,7 @@ extension Flag where Value: EnumerableFlag {
     )
   }
 
-/// Creates a property with no default value that gets its value from the presence of a flag.
+  /// Creates a property with no default value that gets its value from the presence of a flag.
   ///
   /// Use this initializer to customize the name and number of states further than using a `Bool`.
   /// To use, define an `EnumerableFlag` enumeration with a case for each state, and use that as the type for your flag.
@@ -483,7 +483,7 @@ extension Flag where Value: EnumerableFlag {
   /// - Parameters:
   ///   - exclusivity: The behavior to use when multiple flags are specified.
   ///   - help: Information about how to use this flag.
-   public init(
+  public init(
     exclusivity: FlagExclusivity = .exclusive,
     help: ArgumentHelp? = nil
   ) {
