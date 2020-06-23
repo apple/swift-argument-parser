@@ -7,10 +7,10 @@ You can provide help text when declaring any `@Argument`, `@Option`, or `@Flag` 
 ```swift
 struct Example: ParsableCommand {
     @Flag(help: "Display extra information while processing.")
-    var verbose: Bool
+    var verbose = false
 
     @Option(help: "The number of extra lines to show.")
-    var extraLines: Int = 0
+    var extraLines = 0
 
     @Argument(help: "The input file.")
     var inputFile: String?
@@ -42,12 +42,12 @@ Here's the same command with some extra customization:
 ```swift
 struct Example: ParsableCommand {
     @Flag(help: "Display extra information while processing.")
-    var verbose: Bool
+    var verbose = false
 
     @Option(help: ArgumentHelp(
         "The number of extra lines to show.",
         valueName: "n"))
-    var extraLines: Int = 0
+    var extraLines = 0
 
     @Argument(help: ArgumentHelp(
         "The input file.",

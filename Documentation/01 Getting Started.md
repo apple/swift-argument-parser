@@ -133,7 +133,7 @@ struct Count: ParsableCommand {
     var outputFile: String
 
     @Flag()
-    var verbose: Bool
+    var verbose = false
     
     mutating func run() throws {
         if verbose {
@@ -175,7 +175,7 @@ struct Count: ParsableCommand {
     var outputFile: String
 
     @Flag(name: .shortAndLong)
-    var verbose: Bool
+    var verbose = false
     
     mutating func run() throws { ... }
 }
@@ -209,7 +209,7 @@ struct Count: ParsableCommand {
     var outputFile: String
 
     @Flag(name: .shortAndLong, help: "Print status updates while counting.")
-    var verbose: Bool
+    var verbose = false
 
     mutating func run() throws { ... }
 }
@@ -244,7 +244,7 @@ struct Count: ParsableCommand {
     var outputFile: String
 
     @Flag(name: .shortAndLong, help: "Print status updates while counting.")
-    var verbose: Bool
+    var verbose = false
 
     mutating func run() throws {
         if verbose {

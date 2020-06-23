@@ -16,7 +16,7 @@ struct Select: ParsableCommand {
     var count: Int = 1
 
     @Argument()
-    var elements: [String]
+    var elements: [String] = []
 
     mutating func validate() throws {
         guard count >= 1 else {
@@ -127,12 +127,11 @@ struct ExampleDataModel: Codable {
 }
 
 struct Example: ParsableCommand {
-
   // Reads in the argument string and attempts to transform it to
   // an `ExampleDataModel` object using the `JSONDecoder`. If the
   // string is not valid JSON, `decode` will throw an error and
   // parsing will halt.
-  @Argument(transform: ExampleDataModel.dataModel )
+  @Argument(transform: ExampleDataModel.dataModel)
   var inputJSON: ExampleDataModel
 
   // Specifiying this option will always cause the parser to exit

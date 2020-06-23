@@ -56,7 +56,7 @@ In this case, the `Options` type accepts a `--hexadecimal-output` flag and expec
 ```swift
 struct Options: ParsableArguments {
     @Flag(name: [.long, .customShort("x")], help: "Use hexadecimal notation for the result.")
-    var hexadecimalOutput: Bool
+    var hexadecimalOutput = false
 
     @Argument(help: "A group of integers to operate on.")
     var values: [Int]
@@ -124,7 +124,7 @@ extension Math.Statistics {
         var kind: Kind = .mean
 
         @Argument(help: "A group of floating-point values to operate on.")
-        var values: [Double]
+        var values: [Double] = []
 
         func calculateMean() -> Double { ... }
         func calculateMedian() -> Double { ... }
@@ -151,7 +151,7 @@ extension Math.Statistics {
             abstract: "Print the standard deviation of the values.")
 
         @Argument(help: "A group of floating-point values to operate on.")
-        var values: [Double]
+        var values: [Double] = []
 
         mutating func run() {
             if values.isEmpty {
