@@ -81,32 +81,31 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   }
 
   func testCodingKeyValidation() throws {
-    try ParsableArgumentsCodingKeyValidator.validate(A.self)
+    XCTAssertNil(ParsableArgumentsCodingKeyValidator.validate(A.self))
+    XCTAssertNil(ParsableArgumentsCodingKeyValidator.validate(B.self))
 
-    try ParsableArgumentsCodingKeyValidator.validate(B.self)
-
-    XCTAssertThrowsError(try ParsableArgumentsCodingKeyValidator.validate(C.self)) { (error) in
-      if let error = error as? ParsableArgumentsCodingKeyValidator.Error {
-        XCTAssert(error.missingCodingKeys == ["count"])
-      } else {
-        XCTFail()
-      }
+    if let error = ParsableArgumentsCodingKeyValidator.validate(C.self)
+      as? ParsableArgumentsCodingKeyValidator.Error
+    {
+      XCTAssert(error.missingCodingKeys == ["count"])
+    } else {
+      XCTFail()
+    }
+    
+    if let error = ParsableArgumentsCodingKeyValidator.validate(D.self)
+      as? ParsableArgumentsCodingKeyValidator.Error
+    {
+      XCTAssert(error.missingCodingKeys == ["phrase"])
+    } else {
+      XCTFail()
     }
 
-    XCTAssertThrowsError(try ParsableArgumentsCodingKeyValidator.validate(D.self)) { (error) in
-      if let error = error as? ParsableArgumentsCodingKeyValidator.Error {
-        XCTAssert(error.missingCodingKeys == ["phrase"])
-      } else {
-        XCTFail()
-      }
-    }
-
-    XCTAssertThrowsError(try ParsableArgumentsCodingKeyValidator.validate(E.self)) { (error) in
-      if let error = error as? ParsableArgumentsCodingKeyValidator.Error {
-        XCTAssert(error.missingCodingKeys == ["phrase", "includeCounter"])
-      } else {
-        XCTFail()
-      }
+    if let error = ParsableArgumentsCodingKeyValidator.validate(E.self)
+      as? ParsableArgumentsCodingKeyValidator.Error
+    {
+      XCTAssert(error.missingCodingKeys == ["phrase", "includeCounter"])
+    } else {
+      XCTFail()
     }
   }
 
@@ -169,29 +168,25 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   }
 
   func testPositionalArgumentsValidation() throws {
-    try PositionalArgumentsValidator.validate(A.self)
-    try PositionalArgumentsValidator.validate(F.self)
-    XCTAssertThrowsError(try PositionalArgumentsValidator.validate(G.self)) { error in
-      if let error = error as? PositionalArgumentsValidator.Error {
-        XCTAssert(error.positionalArgumentFollowingRepeated == "phrase")
-        XCTAssert(error.repeatedPositionalArgument == "items")
-      } else {
-        XCTFail()
-      }
-      XCTAssert(error is PositionalArgumentsValidator.Error)
+    XCTAssertNil(PositionalArgumentsValidator.validate(A.self))
+    XCTAssertNil(PositionalArgumentsValidator.validate(F.self))
+    XCTAssertNil(PositionalArgumentsValidator.validate(H.self))
+    XCTAssertNil(PositionalArgumentsValidator.validate(I.self))
+    XCTAssertNil(PositionalArgumentsValidator.validate(K.self))
+
+    if let error = PositionalArgumentsValidator.validate(G.self) as? PositionalArgumentsValidator.Error {
+      XCTAssert(error.positionalArgumentFollowingRepeated == "phrase")
+      XCTAssert(error.repeatedPositionalArgument == "items")
+    } else {
+      XCTFail()
     }
-    try PositionalArgumentsValidator.validate(H.self)
-    try PositionalArgumentsValidator.validate(I.self)
-    XCTAssertThrowsError(try PositionalArgumentsValidator.validate(J.self)) { error in
-      if let error = error as? PositionalArgumentsValidator.Error {
-        XCTAssert(error.positionalArgumentFollowingRepeated == "phrase")
-        XCTAssert(error.repeatedPositionalArgument == "numberOfItems")
-      } else {
-        XCTFail()
-      }
-      XCTAssert(error is PositionalArgumentsValidator.Error)
+
+    if let error = PositionalArgumentsValidator.validate(J.self) as? PositionalArgumentsValidator.Error {
+      XCTAssert(error.positionalArgumentFollowingRepeated == "phrase")
+      XCTAssert(error.repeatedPositionalArgument == "numberOfItems")
+    } else {
+      XCTFail()
     }
-    try PositionalArgumentsValidator.validate(K.self)
   }
 
   // MARK: ParsableArgumentsUniqueNamesValidator tests
@@ -207,7 +202,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   }
 
   func testUniqueNamesValidation_NoViolation() throws {
-    XCTAssertNoThrow(try ParsableArgumentsUniqueNamesValidator.validate(DifferentNames.self))
+    XCTAssertNil(ParsableArgumentsUniqueNamesValidator.validate(DifferentNames.self))
   }
 
   // MARK: One name is duplicated
@@ -220,12 +215,12 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   }
 
   func testUniqueNamesValidation_TwoOfSameName() throws {
-    XCTAssertThrowsError(try ParsableArgumentsUniqueNamesValidator.validate(TwoOfTheSameName.self)) { error in
-      if let error = error as? ParsableArgumentsUniqueNamesValidator.Error {
-        XCTAssertEqual(error.description, "Multiple (2) `Option` or `Flag` arguments are named \"foo\".")
-      } else {
-        XCTFail(unexpectedErrorMessage)
-      }
+    if let error = ParsableArgumentsUniqueNamesValidator.validate(TwoOfTheSameName.self)
+      as? ParsableArgumentsUniqueNamesValidator.Error
+    {
+      XCTAssertEqual(error.description, "Multiple (2) `Option` or `Flag` arguments are named \"foo\".")
+    } else {
+      XCTFail(unexpectedErrorMessage)
     }
   }
 
@@ -248,22 +243,22 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   }
 
   func testUniqueNamesValidation_TwoDuplications() throws {
-    XCTAssertThrowsError(try ParsableArgumentsUniqueNamesValidator.validate(MultipleUniquenessViolations.self)) { error in
-      if let error = error as? ParsableArgumentsUniqueNamesValidator.Error {
-        XCTAssert(
-          /// The `Mirror` reflects the properties `foo` and `bar` in a random order each time it's built.
-          error.description == """
-          Multiple (2) `Option` or `Flag` arguments are named \"bar\".
-          Multiple (2) `Option` or `Flag` arguments are named \"foo\".
-          """
-          || error.description == """
-          Multiple (2) `Option` or `Flag` arguments are named \"foo\".
-          Multiple (2) `Option` or `Flag` arguments are named \"bar\".
-          """
-        )
-      } else {
-        XCTFail(unexpectedErrorMessage)
-      }
+    if let error = ParsableArgumentsUniqueNamesValidator.validate(MultipleUniquenessViolations.self)
+      as? ParsableArgumentsUniqueNamesValidator.Error
+    {
+      XCTAssert(
+        /// The `Mirror` reflects the properties `foo` and `bar` in a random order each time it's built.
+        error.description == """
+        Multiple (2) `Option` or `Flag` arguments are named \"bar\".
+        Multiple (2) `Option` or `Flag` arguments are named \"foo\".
+        """
+        || error.description == """
+        Multiple (2) `Option` or `Flag` arguments are named \"foo\".
+        Multiple (2) `Option` or `Flag` arguments are named \"bar\".
+        """
+      )
+    } else {
+      XCTFail(unexpectedErrorMessage)
     }
   }
 
@@ -283,12 +278,12 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   }
 
   func testUniqueNamesValidation_ArgumentHasMultipleNames() throws {
-    XCTAssertThrowsError(try ParsableArgumentsUniqueNamesValidator.validate(MultipleNamesPerArgument.self)) { error in
-      if let error = error as? ParsableArgumentsUniqueNamesValidator.Error {
-        XCTAssertEqual(error.description, "Multiple (2) `Option` or `Flag` arguments are named \"v\".")
-      } else {
-        XCTFail(unexpectedErrorMessage)
-      }
+    if let error = ParsableArgumentsUniqueNamesValidator.validate(MultipleNamesPerArgument.self)
+      as? ParsableArgumentsUniqueNamesValidator.Error
+    {
+      XCTAssertEqual(error.description, "Multiple (2) `Option` or `Flag` arguments are named \"v\".")
+    } else {
+      XCTFail(unexpectedErrorMessage)
     }
   }
 
@@ -314,12 +309,12 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   }
 
   func testUniqueNamesValidation_MoreThanTwoDuplications() throws {
-    XCTAssertThrowsError(try ParsableArgumentsUniqueNamesValidator.validate(FourDuplicateNames.self)) { error in
-      if let error = error as? ParsableArgumentsUniqueNamesValidator.Error {
-        XCTAssertEqual(error.description, "Multiple (4) `Option` or `Flag` arguments are named \"foo\".")
-      } else {
-        XCTFail(unexpectedErrorMessage)
-      }
+    if let error = ParsableArgumentsUniqueNamesValidator.validate(FourDuplicateNames.self)
+      as? ParsableArgumentsUniqueNamesValidator.Error
+    {
+      XCTAssertEqual(error.description, "Multiple (4) `Option` or `Flag` arguments are named \"foo\".")
+    } else {
+      XCTFail(unexpectedErrorMessage)
     }
   }
 
@@ -356,16 +351,16 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   }
 
   func testUniqueNamesValidation_DuplicatedFlagFirstLetters_ShortNames() throws {
-    XCTAssertThrowsError(try ParsableArgumentsUniqueNamesValidator.validate(DuplicatedFirstLettersShortNames.self)) { error in
-      if let error = error as? ParsableArgumentsUniqueNamesValidator.Error {
-        XCTAssertEqual(error.description, "Multiple (3) `Option` or `Flag` arguments are named \"f\".")
-      } else {
-        XCTFail(unexpectedErrorMessage)
-      }
+    if let error = ParsableArgumentsUniqueNamesValidator.validate(DuplicatedFirstLettersShortNames.self)
+      as? ParsableArgumentsUniqueNamesValidator.Error
+    {
+      XCTAssertEqual(error.description, "Multiple (3) `Option` or `Flag` arguments are named \"f\".")
+    } else {
+      XCTFail(unexpectedErrorMessage)
     }
   }
 
   func testUniqueNamesValidation_DuplicatedFlagFirstLetters_LongNames() throws {
-    XCTAssertNoThrow(try ParsableArgumentsUniqueNamesValidator.validate(DuplicatedFirstLettersLongNames.self))
+    XCTAssertNil(ParsableArgumentsUniqueNamesValidator.validate(DuplicatedFirstLettersLongNames.self))
   }
 }
