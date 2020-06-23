@@ -361,7 +361,7 @@ extension Flag where Value == Int {
   ) {
     self.init(_parsedValue: .init { key in
       .counter(key: key, name: name, help: help)
-      })
+    })
   }
 }
 
@@ -536,6 +536,7 @@ extension Flag {
   ///   - name: A specification for what names are allowed for this flag.
   ///   - help: Information about how to use this flag.
   public init<Element>(
+    wrappedValue: [Element],
     help: ArgumentHelp? = nil
   ) where Value == Array<Element>, Element: EnumerableFlag {
     self.init(_parsedValue: .init { key in
@@ -547,7 +548,7 @@ extension Flag {
         let name = Element.name(for: value)
         let helpForCase = hasCustomCaseHelp ? (caseHelps[i] ?? help) : help
         let help = ArgumentDefinition.Help(options: .isOptional, help: helpForCase, key: key, isComposite: !hasCustomCaseHelp)
-        return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .nextAsValue, initialValue: [Element](), update: .nullary({ (origin, name, values) in
+        return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .nextAsValue, initialValue: wrappedValue, update: .nullary({ (origin, name, values) in
           values.update(forKey: key, inputOrigin: origin, initial: [Element](), closure: {
             $0.append(value)
           })
@@ -555,6 +556,13 @@ extension Flag {
       }
       return ArgumentSet(additive: args)
     })
+  }
+  
+  @available(*, deprecated, message: "Provide an empty array literal as a default value.")
+  public init<Element>(
+    help: ArgumentHelp? = nil
+  ) where Value == Array<Element>, Element: EnumerableFlag {
+    self.init(wrappedValue: [], help: help)
   }
 }
 

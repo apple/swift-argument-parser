@@ -254,8 +254,10 @@ struct AllFlags: ParsableArguments {
   @Flag(help: "") var g2: E?
   @Flag(exclusivity: .chooseLast) var g3: E?
 
-  @Flag(help: "") var h: [E]
-  @Flag() var h1: [E]
+  @Flag(help: "") var h: [E] = []
+  @Flag() var h1: [E] = []
+  @Flag(help: "") var h2: [E]
+  @Flag() var h3: [E]
 }
 
 extension SourceCompatEndToEndTests {
