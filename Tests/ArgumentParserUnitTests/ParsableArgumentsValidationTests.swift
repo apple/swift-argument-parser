@@ -363,4 +363,90 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   func testUniqueNamesValidation_DuplicatedFlagFirstLetters_LongNames() throws {
     XCTAssertNil(ParsableArgumentsUniqueNamesValidator.validate(DuplicatedFirstLettersLongNames.self))
   }
+  
+  fileprivate struct HasOneNonsenseFlag: ParsableCommand {
+    enum ExampleEnum: String, EnumerableFlag {
+      case first
+      case second
+      case other
+      case forth
+      case fith
+    }
+
+    @Flag
+    var enumFlag: ExampleEnum = .first
+    
+    @Flag
+    var fine: Bool = false
+
+    @Flag(inversion: .prefixedNo)
+    var alsoFine: Bool = false
+
+    @Flag(inversion: .prefixedNo)
+    var stillFine: Bool = true
+
+    @Flag(inversion: .prefixedNo)
+    var yetStillFine: Bool
+
+    @Flag
+    var nonsense: Bool = true
+  }
+
+  func testNonsenseFlagsValidation_OneFlag() throws {
+    if let error = NonsenseFlagsValidator.validate(HasOneNonsenseFlag.self)
+      as? NonsenseFlagsValidator.Error
+    {
+      XCTAssertEqual(
+        error.description,
+        """
+        One or more Boolean flags is declared with an initial value of `true`.
+        This results in the flag always being `true`, no matter whether the user
+        specifies the flag or not. To resolve this error, change the default to
+        `false`, provide a value for the `inversion:` parameter, or remove the
+        `@Flag` property wrapper altogether.
+
+        Affected flag(s):
+        --nonsense
+        """)
+    } else {
+      XCTFail(unexpectedErrorMessage)
+    }
+  }
+
+  fileprivate struct MultipleNonsenseFlags: ParsableCommand {
+    @Flag
+    var stuff = true
+
+    @Flag
+    var nonsense = true
+
+    @Flag
+    var okay = false
+
+    @Flag
+    var moreNonsense = true
+  }
+
+  func testNonsenseFlagsValidation_MultipleFlags() throws {
+    if let error = NonsenseFlagsValidator.validate(MultipleNonsenseFlags.self)
+      as? NonsenseFlagsValidator.Error
+    {
+      XCTAssertEqual(
+        error.description,
+        """
+        One or more Boolean flags is declared with an initial value of `true`.
+        This results in the flag always being `true`, no matter whether the user
+        specifies the flag or not. To resolve this error, change the default to
+        `false`, provide a value for the `inversion:` parameter, or remove the
+        `@Flag` property wrapper altogether.
+
+        Affected flag(s):
+        --stuff
+        --nonsense
+        --more-nonsense
+        """)
+    } else {
+      XCTFail(unexpectedErrorMessage)
+    }
+  }
 }

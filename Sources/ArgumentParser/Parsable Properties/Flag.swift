@@ -155,7 +155,7 @@ extension Flag where Value == Bool {
   ) {
     self.init(_parsedValue: .init { key in
       .flag(key: key, name: name, default: initial, help: help)
-      })
+    })
   }
 
   /// Creates a Boolean property that reads its value from the presence of a
@@ -189,14 +189,6 @@ extension Flag where Value == Bool {
     name: NameSpecification = .long,
     help: ArgumentHelp? = nil
   ) {
-    // Print a warning if the default value is set to `true`, as it cannot be overridden from the command line
-    if wrappedValue {
-      // Print a warning with color in the style of a deprecation warning
-      let magenta = "\u{001B}[0;35m"
-      let reset = "\u{001B}[0;0m"
-      print("\(magenta)warning:\(reset) setting the default value to `true` for a Flag without an inversion will always result in that flag being `true`, regardless of what is provided from the command line. Consider enabling an inversion (`@Flag(inversion: .prefixedNo)`) or removing the `@Flag` property wrapper altogether.")
-    }
-
     self.init(
       name: name,
       initial: wrappedValue,
