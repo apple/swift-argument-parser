@@ -8,15 +8,15 @@ While `ArgumentParser` validates that the inputs given by your user match the re
 
 To validate your commands properties after parsing, implement the `validate()` method on any `ParsableCommand` or `ParsableArguments` type. Throwing an error from the `validate()` method causes the program to print a message to standard error and exit with an error code, preventing the `run()` method from being called with invalid inputs.
 
-Here's a command that prints out one or more random elements from the list you provide. Its `validate()` method catches three different errors that a user can make and throws a relevant error for each one. 
+Here's a command that prints out one or more random elements from the list you provide. Its `validate()` method catches three different errors that a user can make and throws a relevant error for each one.
 
 ```swift
 struct Select: ParsableCommand {
-    @Option(default: 1)
-    var count: Int
-    
+    @Option
+    var count: Int = 1
+
     @Argument()
-    var elements: [String]
+    var elements: [String] = []
 
     mutating func validate() throws {
         guard count >= 1 else {
@@ -26,12 +26,12 @@ struct Select: ParsableCommand {
         guard !elements.isEmpty else {
             throw ValidationError("Please provide at least one element to choose from.")
         }
- 
+
         guard count <= elements.count else {
             throw ValidationError("Please specify a 'count' less than the number of elements.")
         }
     }
-    
+
     mutating func run() {
         print(elements.shuffled().prefix(count).joined(separator: "\n"))
     }
@@ -65,7 +65,7 @@ The `ValidationError` type is a special `ArgumentParser` error — a validation 
 ```swift
 struct LineCount: ParsableCommand {
     @Argument() var file: String
-    
+
     mutating func run() throws {
         let contents = try String(contentsOfFile: file, encoding: .utf8)
         let lines = contents.split(separator: "\n")
@@ -93,7 +93,7 @@ struct RuntimeError: Error, CustomStringConvertible {
 
 struct Example: ParsableCommand {
     @Argument() var inputFile: String
-    
+
     mutating func run() throws {
         if !ExampleCore.processFile(inputFile) {
             // ExampleCore.processFile(_:) prints its own errors
@@ -106,7 +106,7 @@ struct Example: ParsableCommand {
 
 ## Handling Transform Errors
 
-During argument and option parsing, you can use a closure to transform the command line strings to custom types. If this transformation fails, you can throw a `ValidationError`; its `message` property will be displayed to the user. 
+During argument and option parsing, you can use a closure to transform the command line strings to custom types. If this transformation fails, you can throw a `ValidationError`; its `message` property will be displayed to the user.
 
 In addition, you can throw your own errors. Errors that conform to `CustomStringConvertible` or `LocalizedError` provide the best experience for users.
 
@@ -119,7 +119,7 @@ struct ExampleDataModel: Codable {
   let identifier: UUID
   let tokens: [String]
   let tokenCount: Int
-  
+
   static func dataModel(_ jsonString: String) throws -> ExampleDataModel  {
     guard let data = jsonString.data(using: .utf8) else { throw ValidationError("Badly encoded string, should be UTF-8") }
     return try JSONDecoder().decode(ExampleDataModel.self, from: data)
@@ -127,14 +127,13 @@ struct ExampleDataModel: Codable {
 }
 
 struct Example: ParsableCommand {
-
   // Reads in the argument string and attempts to transform it to
   // an `ExampleDataModel` object using the `JSONDecoder`. If the
   // string is not valid JSON, `decode` will throw an error and
   // parsing will halt.
-  @Argument(transform: ExampleDataModel.dataModel )
+  @Argument(transform: ExampleDataModel.dataModel)
   var inputJSON: ExampleDataModel
-  
+
   // Specifiying this option will always cause the parser to exit
   // and print the custom error.
   @Option(transform: { throw ExampleTransformError(description: "Trying to write to failOption always produces an error. Input: \($0)") })

@@ -94,12 +94,18 @@ extension ArgumentSet {
 
 extension ArgumentSet {
   /// Creates an argument set for a single Boolean flag.
-  static func flag(key: InputKey, name: NameSpecification, help: ArgumentHelp?) -> ArgumentSet {
-    let help = ArgumentDefinition.Help(options: .isOptional, help: help, key: key)
+  static func flag(key: InputKey, name: NameSpecification, default initialValue: Bool?, help: ArgumentHelp?) -> ArgumentSet {
+    // The flag is required if initialValue is `nil`, otherwise it's optional
+    let helpOptions: ArgumentDefinition.Help.Options = initialValue != nil ? .isOptional : []
+    let defaultValueString = initialValue == true ? "true" : nil
+    
+    let help = ArgumentDefinition.Help(options: helpOptions, help: help, defaultValue: defaultValueString, key: key)
     let arg = ArgumentDefinition(kind: .name(key: key, specification: name), help: help, completion: .default, update: .nullary({ (origin, name, values) in
       values.set(true, forKey: key, inputOrigin: origin)
     }), initial: { origin, values in
-      values.set(false, forKey: key, inputOrigin: origin)
+      if let initialValue = initialValue {
+        values.set(initialValue, forKey: key, inputOrigin: origin)
+      }
     })
     return ArgumentSet(arg)
   }

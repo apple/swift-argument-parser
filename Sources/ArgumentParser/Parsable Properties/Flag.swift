@@ -146,6 +146,19 @@ extension Flag where Value == Optional<Bool> {
 }
 
 extension Flag where Value == Bool {
+  /// Creates a Boolean property with an optional default value, intended to be called by other constructors to centralize logic.
+  ///
+  /// This private `init` allows us to expose multiple other similar constructors to allow for standard default property initialization while reducing code duplication.
+  private init(
+    name: NameSpecification,
+    initial: Bool?,
+    help: ArgumentHelp? = nil
+  ) {
+    self.init(_parsedValue: .init { key in
+      .flag(key: key, name: name, default: initial, help: help)
+    })
+  }
+
   /// Creates a Boolean property that reads its value from the presence of a
   /// flag.
   ///
@@ -154,17 +167,65 @@ extension Flag where Value == Bool {
   /// - Parameters:
   ///   - name: A specification for what names are allowed for this flag.
   ///   - help: Information about how to use this flag.
+  @available(*, deprecated, message: "Provide an explicit default value of `false` for this flag (`@Flag var foo: Bool = false`)")
   public init(
     name: NameSpecification = .long,
     help: ArgumentHelp? = nil
   ) {
+    self.init(
+      name: name,
+      initial: false,
+      help: help
+    )
+  }
+
+  /// Creates a Boolean property with default value provided by standard Swift default value syntax that reads its value from the presence of a flag.
+  ///
+  /// - Parameters:
+  ///   - wrappedValue: A default value to use for this property, provided implicitly by the compiler during propery wrapper initialization.
+  ///   - name: A specification for what names are allowed for this flag.
+  ///   - help: Information about how to use this flag.
+  public init(
+    wrappedValue: Bool,
+    name: NameSpecification = .long,
+    help: ArgumentHelp? = nil
+  ) {
+    self.init(
+      name: name,
+      initial: wrappedValue,
+      help: help
+    )
+  }
+
+  /// Creates a property with an optional default value, intended to be called by other constructors to centralize logic.
+  ///
+  /// This private `init` allows us to expose multiple other similar constructors to allow for standard default property initialization while reducing code duplication.
+  private init(
+    name: NameSpecification,
+    initial: Bool?,
+    inversion: FlagInversion,
+    exclusivity: FlagExclusivity,
+    help: ArgumentHelp?
+  ) {
     self.init(_parsedValue: .init { key in
-      .flag(key: key, name: name, help: help)
+      .flag(key: key, name: name, default: initial, inversion: inversion, exclusivity: exclusivity, help: help)
       })
   }
-  
+
   /// Creates a Boolean property that reads its value from the presence of
   /// one or more inverted flags.
+  ///
+  /// /// This method is deprecated, with usage split into two other methods below:
+  /// - `init(wrappedValue:name:inversion:exclusivity:help:)` for properties with a default value
+  /// - `init(name:inversion:exclusivity:help:)` for properties with no default value
+  ///
+  /// Existing usage of the `default` parameter should be replaced such as follows:
+  /// ```diff
+  /// -@Flag(default: true)
+  /// -var foo: Bool
+  /// +@Flag()
+  /// +var foo: Bool = true
+  /// ```
   ///
   /// Use this initializer to create a Boolean flag with an on/off pair. With
   /// the following declaration, for example, the user can specify either
@@ -197,16 +258,84 @@ extension Flag where Value == Bool {
   ///   - exclusivity: The behavior to use when an on/off pair of flags is
   ///     specified.
   ///   - help: Information about how to use this flag.
+  @available(*, deprecated, message: "Use regular property initialization for default values (`var foo: Bool = false`)")
   public init(
     name: NameSpecification = .long,
-    default initial: Bool? = false,
+    default initial: Bool?,
     inversion: FlagInversion,
     exclusivity: FlagExclusivity = .chooseLast,
     help: ArgumentHelp? = nil
   ) {
-    self.init(_parsedValue: .init { key in
-      .flag(key: key, name: name, default: initial, inversion: inversion, exclusivity: exclusivity, help: help)
-      })
+    self.init(
+      name: name,
+      initial: initial,
+      inversion: inversion,
+      exclusivity: exclusivity,
+      help: help
+    )
+  }
+
+  /// Creates a Boolean property with default value provided by standard Swift default value syntax that reads its value from the presence of one or more inverted flags.
+  ///
+  /// Use this initializer to create a Boolean flag with an on/off pair.
+  /// With the following declaration, for example, the user can specify either `--use-https` or `--no-use-https` to set the `useHTTPS` flag to `true` or `false`, respectively.
+  ///
+  /// ```swift
+  /// @Flag(inversion: .prefixedNo)
+  /// var useHTTPS: Bool = true
+  /// ````
+  ///
+  /// - Parameters:
+  ///   - name: A specification for what names are allowed for this flag.
+  ///   - wrappedValue: A default value to use for this property, provided implicitly by the compiler during propery wrapper initialization.
+  ///   - inversion: The method for converting this flag's name into an on/off pair.
+  ///   - exclusivity: The behavior to use when an on/off pair of flags is specified.
+  ///   - help: Information about how to use this flag.
+  public init(
+    wrappedValue: Bool,
+    name: NameSpecification = .long,
+    inversion: FlagInversion,
+    exclusivity: FlagExclusivity = .chooseLast,
+    help: ArgumentHelp? = nil
+  ) {
+    self.init(
+      name: name,
+      initial: wrappedValue,
+      inversion: inversion,
+      exclusivity: exclusivity,
+      help: help
+    )
+  }
+
+  /// Creates a Boolean property with no default value that reads its value from the presence of one or more inverted flags.
+  ///
+  /// Use this initializer to create a Boolean flag with an on/off pair.
+  /// With the following declaration, for example, the user can specify either `--use-https` or `--no-use-https` to set the `useHTTPS` flag to `true` or `false`, respectively.
+  ///
+  /// ```swift
+  /// @Flag(inversion: .prefixedNo)
+  /// var useHTTPS: Bool
+  /// ````
+  ///
+  /// - Parameters:
+  ///   - name: A specification for what names are allowed for this flag.
+  ///   - wrappedValue: A default value to use for this property, provided implicitly by the compiler during propery wrapper initialization.
+  ///   - inversion: The method for converting this flag's name into an on/off pair.
+  ///   - exclusivity: The behavior to use when an on/off pair of flags is specified.
+  ///   - help: Information about how to use this flag.
+  public init(
+    name: NameSpecification = .long,
+    inversion: FlagInversion,
+    exclusivity: FlagExclusivity = .chooseLast,
+    help: ArgumentHelp? = nil
+  ) {
+    self.init(
+      name: name,
+      initial: nil,
+      inversion: inversion,
+      exclusivity: exclusivity,
+      help: help
+    )
   }
 }
 
@@ -225,27 +354,20 @@ extension Flag where Value == Int {
   ) {
     self.init(_parsedValue: .init { key in
       .counter(key: key, name: name, help: help, completion: .default)
-      })
+    })
   }
 }
 
 // - MARK: EnumerableFlag
 
 extension Flag where Value: EnumerableFlag {
-  /// Creates a property that gets its value from the presence of a flag,
-  /// where the allowed flags are defined by an `EnumerableFlag` type.
+  /// Creates a property with an optional default value, intended to be called by other constructors to centralize logic.
   ///
-  /// - Parameters:
-  ///   - name: A specification for what names are allowed for this flag.
-  ///   - initial: A default value to use for this property. If `initial` is
-  ///     `nil`, one of the flags declared by this `@Flag` attribute is required
-  ///     from the user.
-  ///   - exclusivity: The behavior to use when multiple flags are specified.
-  ///   - help: Information about how to use this flag.
-  public init(
-    default initial: Value? = nil,
-    exclusivity: FlagExclusivity = .exclusive,
-    help: ArgumentHelp? = nil
+  /// This private `init` allows us to expose multiple other similar constructors to allow for standard default property initialization while reducing code duplication.
+  private init(
+    initial: Value?,
+    exclusivity: FlagExclusivity,
+    help: ArgumentHelp?
   ) {
     self.init(_parsedValue: .init { key in
       // This gets flipped to `true` the first time one of these flags is
@@ -269,6 +391,100 @@ extension Flag where Value: EnumerableFlag {
         ? ArgumentSet(exclusive: args)
         : ArgumentSet(additive: args)
       })
+  }
+
+  /// Creates a property that gets its value from the presence of a flag,
+  /// where the allowed flags are defined by an `EnumerableFlag` type.
+  ///
+  /// This method is deprecated, with usage split into two other methods below:
+  /// - `init(wrappedValue:exclusivity:help:)` for properties with a default value
+  /// - `init(exclusivity:help:)` for properties with no default value
+  ///
+  /// Existing usage of the `default` parameter should be replaced such as follows:
+  /// ```diff
+  /// -@Argument(default: .baz)
+  /// -var foo: Bar
+  /// +@Argument()
+  /// +var foo: Bar = baz
+  /// ```
+  ///
+  /// - Parameters:
+  ///   - initial: A default value to use for this property. If `initial` is
+  ///     `nil`, one of the flags declared by this `@Flag` attribute is required
+  ///     from the user.
+  ///   - exclusivity: The behavior to use when multiple flags are specified.
+  ///   - help: Information about how to use this flag.
+  @available(*, deprecated, message: "Use regular property initialization for default values (`var foo: Bar = .baz`)")
+  public init(
+    default initial: Value?,
+    exclusivity: FlagExclusivity = .exclusive,
+    help: ArgumentHelp? = nil
+  ) {
+    self.init(
+      initial: initial,
+      exclusivity: exclusivity,
+      help: help
+    )
+  }
+
+  /// Creates a property with a default value provided by standard Swift default value syntax that gets its value from the presence of a flag.
+  ///
+  /// Use this initializer to customize the name and number of states further than using a `Bool`.
+  /// To use, define an `EnumerableFlag` enumeration with a case for each state, and use that as the type for your flag.
+  /// In this case, the user can specify either `--use-production-server` or `--use-development-server` to set the flag's value.
+  ///
+  /// ```swift
+  /// enum ServerChoice: EnumerableFlag {
+  ///   case useProductionServer
+  ///   case useDevelopmentServer
+  /// }
+  ///
+  /// @Flag() var serverChoice: ServerChoice = .useProductionServer
+  /// ```
+  ///
+  /// - Parameters:
+  ///   - wrappedValue: A default value to use for this property, provided implicitly by the compiler during propery wrapper initialization.
+  ///   - exclusivity: The behavior to use when multiple flags are specified.
+  ///   - help: Information about how to use this flag.
+  public init(
+    wrappedValue: Value,
+    exclusivity: FlagExclusivity = .exclusive,
+    help: ArgumentHelp? = nil
+  ) {
+    self.init(
+      initial: wrappedValue,
+      exclusivity: exclusivity,
+      help: help
+    )
+  }
+
+  /// Creates a property with no default value that gets its value from the presence of a flag.
+  ///
+  /// Use this initializer to customize the name and number of states further than using a `Bool`.
+  /// To use, define an `EnumerableFlag` enumeration with a case for each state, and use that as the type for your flag.
+  /// In this case, the user can specify either `--use-production-server` or `--use-development-server` to set the flag's value.
+  ///
+  /// ```swift
+  /// enum ServerChoice: EnumerableFlag {
+  ///   case useProductionServer
+  ///   case useDevelopmentServer
+  /// }
+  ///
+  /// @Flag() var serverChoice: ServerChoice
+  /// ```
+  ///
+  /// - Parameters:
+  ///   - exclusivity: The behavior to use when multiple flags are specified.
+  ///   - help: Information about how to use this flag.
+  public init(
+    exclusivity: FlagExclusivity = .exclusive,
+    help: ArgumentHelp? = nil
+  ) {
+    self.init(
+      initial: nil,
+      exclusivity: exclusivity,
+      help: help
+    )
   }
 }
 
@@ -313,6 +529,7 @@ extension Flag {
   ///   - name: A specification for what names are allowed for this flag.
   ///   - help: Information about how to use this flag.
   public init<Element>(
+    wrappedValue: [Element],
     help: ArgumentHelp? = nil
   ) where Value == Array<Element>, Element: EnumerableFlag {
     self.init(_parsedValue: .init { key in
@@ -324,7 +541,7 @@ extension Flag {
         let name = Element.name(for: value)
         let helpForCase = hasCustomCaseHelp ? (caseHelps[i] ?? help) : help
         let help = ArgumentDefinition.Help(options: .isOptional, help: helpForCase, key: key, isComposite: !hasCustomCaseHelp)
-        return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .nextAsValue, initialValue: [Element](), update: .nullary({ (origin, name, values) in
+        return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .nextAsValue, initialValue: wrappedValue, update: .nullary({ (origin, name, values) in
           values.update(forKey: key, inputOrigin: origin, initial: [Element](), closure: {
             $0.append(value)
           })
@@ -332,6 +549,13 @@ extension Flag {
       }
       return ArgumentSet(additive: args)
     })
+  }
+  
+  @available(*, deprecated, message: "Provide an empty array literal as a default value.")
+  public init<Element>(
+    help: ArgumentHelp? = nil
+  ) where Value == Array<Element>, Element: EnumerableFlag {
+    self.init(wrappedValue: [], help: help)
   }
 }
 

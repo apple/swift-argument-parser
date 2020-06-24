@@ -59,7 +59,7 @@ extension HelpTests {
                   See 'package help <subcommand>' for detailed help.
                 """.trimmingLines())
   }
-  
+
   func testGlobalHelp_messageForCleanExit_helpRequest() throws {
     XCTAssertEqual(
       Package.message(for: CleanExit.helpRequest()).trimmingLines(),
@@ -79,7 +79,7 @@ extension HelpTests {
                 """.trimmingLines()
     )
   }
-  
+
   func testGlobalHelp_messageForCleanExit_message() throws {
     let expectedMessage = "Failure"
     XCTAssertEqual(
@@ -87,7 +87,7 @@ extension HelpTests {
       expectedMessage
     )
   }
-  
+
   func testConfigHelp() throws {
     XCTAssertEqual(
       getErrorText(Package.self, ["help", "config"]).trimmingLines(),
@@ -105,11 +105,11 @@ extension HelpTests {
                   See 'package help config <subcommand>' for detailed help.
                 """.trimmingLines())
   }
-  
+
   func testGetMirrorHelp() throws {
     HelpGenerator._screenWidthOverride = 80
     defer { HelpGenerator._screenWidthOverride = nil }
-    
+
     XCTAssertEqual(
       getErrorText(Package.self, ["help", "config",  "get-mirror"]).trimmingLines(),
       """
@@ -159,10 +159,10 @@ extension HelpTests {
 }
 
 struct Simple: ParsableArguments {
-  @Flag() var verbose: Bool
+  @Flag var verbose: Bool = false
   @Option() var min: Int?
   @Argument() var max: Int
-  
+
   static var helpText = """
         USAGE: simple [--verbose] [--min <min>] <max>
 
@@ -205,7 +205,7 @@ struct NoHelp: ParsableCommand {
   static let configuration = CommandConfiguration(
     helpNames: []
   )
-  
+
   @Option(help: "How many florps?") var count: Int
 }
 
@@ -213,7 +213,7 @@ extension HelpTests {
   func testNoHelpNames() {
     let names = NoHelp.getHelpNames()
     XCTAssertEqual(names, [])
-    
+
     XCTAssertEqual(
       NoHelp.message(for: CleanExit.helpRequest()).trimmingLines(),
       """

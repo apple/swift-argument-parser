@@ -12,82 +12,79 @@
 import ArgumentParser
 
 struct Options: ParsableArguments {
-  @Option(default: "./.build", help: "Specify build/cache directory")
-  var buildPath: String
-  
+  @Option(help: "Specify build/cache directory")
+  var buildPath: String = "./.build"
+
   enum Configuration: String, ExpressibleByArgument, Decodable {
     case debug
     case release
   }
-  
-  @Option(name: .shortAndLong, default: .debug,
+
+  @Option(name: .shortAndLong,
           help: "Build with configuration")
-  var configuration: Configuration
-  
-  @Flag(default: true, inversion: .prefixedEnableDisable,
+  var configuration: Configuration = .debug
+
+  @Flag(inversion: .prefixedEnableDisable,
         help: "Use automatic resolution if Package.resolved file is out-of-date")
-  var automaticResolution: Bool
-  
-  @Flag(default: true, inversion: .prefixedEnableDisable,
+  var automaticResolution: Bool = true
+
+  @Flag(inversion: .prefixedEnableDisable,
         help: "Use indexing-while-building feature")
-  var indexStore: Bool
-  
-  @Flag(default: true, inversion: .prefixedEnableDisable,
+  var indexStore: Bool = true
+
+  @Flag(inversion: .prefixedEnableDisable,
         help: "Cache Package.swift manifests")
-  var packageManifestCaching: Bool
-  
-  @Flag(default: true, inversion: .prefixedEnableDisable)
-  var prefetching: Bool
-  
-  @Flag(default: true, inversion: .prefixedEnableDisable,
+  var packageManifestCaching: Bool = true
+
+  @Flag(inversion: .prefixedEnableDisable)
+  var prefetching: Bool = true
+
+  @Flag(inversion: .prefixedEnableDisable,
         help: "Use sandbox when executing subprocesses")
-  var sandbox: Bool
-  
+  var sandbox: Bool = true
+
   @Flag(inversion: .prefixedEnableDisable,
         help: "[Experimental] Enable the new Pubgrub dependency resolver")
-  var pubgrubResolver: Bool
-  
+  var pubgrubResolver: Bool = false
   @Flag(inversion: .prefixedNo,
         help: "Link Swift stdlib statically")
-  var staticSwiftStdlib: Bool
-  
-  @Option(default: ".",
-          help: "Change working directory before any other operation")
-  var packagePath: String
-  
+  var staticSwiftStdlib: Bool = false
+  @Option(help: "Change working directory before any other operation")
+  var packagePath: String = "."
+
   @Flag(help: "Turn on runtime checks for erroneous behavior")
-  var sanitize: Bool
-  
+  var sanitize: Bool = false
+
   @Flag(help: "Skip updating dependencies from their remote during a resolution")
-  var skipUpdate: Bool
-  
+  var skipUpdate: Bool = false
+
   @Flag(name: .shortAndLong,
         help: "Increase verbosity of informational output")
-  var verbose: Bool
-  
+  var verbose: Bool = false
+
   @Option(name: .customLong("Xcc", withSingleDash: true),
           parsing: .unconditionalSingleValue,
           help: ArgumentHelp("Pass flag through to all C compiler invocations",
                              valueName: "c-compiler-flag"))
-  var cCompilerFlags: [String]
-  
+  var cCompilerFlags: [String] = []
+
   @Option(name: .customLong("Xcxx", withSingleDash: true),
           parsing: .unconditionalSingleValue,
           help: ArgumentHelp("Pass flag through to all C++ compiler invocations",
                              valueName: "cxx-compiler-flag"))
-  var cxxCompilerFlags: [String]
-  
+  var cxxCompilerFlags: [String] = []
+
   @Option(name: .customLong("Xlinker", withSingleDash: true),
           parsing: .unconditionalSingleValue,
           help: ArgumentHelp("Pass flag through to all linker invocations",
                              valueName: "linker-flag"))
-  var linkerFlags: [String]
-  
+  var linkerFlags: [String] = []
+
   @Option(name: .customLong("Xswiftc", withSingleDash: true),
           parsing: .unconditionalSingleValue,
           help: ArgumentHelp("Pass flag through to all Swift compiler invocations",
                              valueName: "swift-compiler-flag"))
-  var swiftCompilerFlags: [String]
+  var swiftCompilerFlags: [String] = []
 }
 
 struct Package: ParsableCommand {

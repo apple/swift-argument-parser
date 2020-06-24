@@ -21,29 +21,29 @@ final class NestedCommandEndToEndTests: XCTestCase {
 fileprivate struct Foo: ParsableCommand {
   static var configuration =
     CommandConfiguration(subcommands: [Build.self, Package.self])
-  
+
   @Flag(name: .short)
-  var verbose: Bool
-  
+  var verbose: Bool = false
+
   struct Build: ParsableCommand {
     @OptionGroup() var foo: Foo
-    
+
     @Argument()
     var input: String
   }
-  
+
   struct Package: ParsableCommand {
     static var configuration =
       CommandConfiguration(subcommands: [Clean.self, Config.self])
-    
+
     @Flag(name: .short)
-    var force: Bool
-    
+    var force: Bool = false
+
     struct Clean: ParsableCommand {
       @OptionGroup() var foo: Foo
       @OptionGroup() var package: Package
     }
-    
+
     struct Config: ParsableCommand {
       @OptionGroup() var foo: Foo
       @OptionGroup() var package: Package
@@ -61,70 +61,70 @@ extension NestedCommandEndToEndTests {
     AssertParseFooCommand(Foo.Package.self, ["package"]) { package in
       XCTAssertFalse(package.force)
     }
-    
+
     AssertParseFooCommand(Foo.Package.Clean.self, ["package", "clean"]) { clean in
       XCTAssertEqual(clean.foo.verbose, false)
       XCTAssertEqual(clean.package.force, false)
     }
-    
+
     AssertParseFooCommand(Foo.Package.Clean.self, ["package", "-f", "clean"]) { clean in
       XCTAssertEqual(clean.foo.verbose, false)
       XCTAssertEqual(clean.package.force, true)
     }
-    
+
     AssertParseFooCommand(Foo.Package.Config.self, ["package", "-v", "config"]) { config in
       XCTAssertEqual(config.foo.verbose, true)
       XCTAssertEqual(config.package.force, false)
     }
-    
+
     AssertParseFooCommand(Foo.Package.Config.self, ["package", "config", "-v"]) { config in
       XCTAssertEqual(config.foo.verbose, true)
       XCTAssertEqual(config.package.force, false)
     }
-    
+
     AssertParseFooCommand(Foo.Package.Config.self, ["-v", "package", "config"]) { config in
       XCTAssertEqual(config.foo.verbose, true)
       XCTAssertEqual(config.package.force, false)
     }
-    
+
     AssertParseFooCommand(Foo.Package.Config.self, ["package", "-f", "config"]) { config in
       XCTAssertEqual(config.foo.verbose, false)
       XCTAssertEqual(config.package.force, true)
     }
-    
+
     AssertParseFooCommand(Foo.Package.Config.self, ["package", "config", "-f"]) { config in
       XCTAssertEqual(config.foo.verbose, false)
       XCTAssertEqual(config.package.force, true)
     }
-    
+
     AssertParseFooCommand(Foo.Package.Config.self, ["package", "-v", "config", "-f"]) { config in
       XCTAssertEqual(config.foo.verbose, true)
       XCTAssertEqual(config.package.force, true)
     }
-    
+
     AssertParseFooCommand(Foo.Package.Config.self, ["package", "-f", "config", "-v"]) { config in
       XCTAssertEqual(config.foo.verbose, true)
       XCTAssertEqual(config.package.force, true)
     }
-    
+
     AssertParseFooCommand(Foo.Package.Config.self, ["package", "-vf", "config"]) { config in
       XCTAssertEqual(config.foo.verbose, true)
       XCTAssertEqual(config.package.force, true)
     }
-    
+
     AssertParseFooCommand(Foo.Package.Config.self, ["package", "-fv", "config"]) { config in
       XCTAssertEqual(config.foo.verbose, true)
       XCTAssertEqual(config.package.force, true)
     }
   }
-  
+
   func testParsing_build() throws {
     AssertParseFooCommand(Foo.Build.self, ["build", "file"]) { build in
       XCTAssertEqual(build.foo.verbose, false)
       XCTAssertEqual(build.input, "file")
     }
   }
-  
+
   func testParsing_fails() throws {
     XCTAssertThrowsError(try Foo.parseAsRoot(["clean", "package"]))
     XCTAssertThrowsError(try Foo.parseAsRoot(["config", "package"]))

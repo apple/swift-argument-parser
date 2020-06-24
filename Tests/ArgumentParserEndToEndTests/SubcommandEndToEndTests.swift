@@ -21,23 +21,23 @@ final class SubcommandEndToEndTests: XCTestCase {
 fileprivate struct Foo: ParsableCommand {
   static var configuration =
     CommandConfiguration(subcommands: [CommandA.self, CommandB.self])
-  
+
   @Option() var name: String
 }
 
 fileprivate struct CommandA: ParsableCommand {
   static var configuration = CommandConfiguration(commandName: "a")
-  
+
   @OptionGroup() var foo: Foo
-  
+
   @Option() var bar: Int
 }
 
 fileprivate struct CommandB: ParsableCommand {
   static var configuration = CommandConfiguration(commandName: "b")
-  
+
   @OptionGroup() var foo: Foo
-  
+
   @Option() var baz: String
 }
 
@@ -47,29 +47,29 @@ extension SubcommandEndToEndTests {
       XCTAssertEqual(a.bar, 42)
       XCTAssertEqual(a.foo.name, "Foo")
     }
-    
+
     AssertParseCommand(Foo.self, CommandB.self, ["--name", "A", "b", "--baz", "abc"]) { b in
       XCTAssertEqual(b.baz, "abc")
       XCTAssertEqual(b.foo.name, "A")
     }
   }
-  
+
   func testParsing_SubCommand_manual() throws {
     AssertParseCommand(Foo.self, CommandA.self, ["--name", "Foo", "a", "--bar", "42"]) { a in
       XCTAssertEqual(a.bar, 42)
       XCTAssertEqual(a.foo.name, "Foo")
     }
-    
+
     AssertParseCommand(Foo.self, Foo.self, ["--name", "Foo"]) { foo in
       XCTAssertEqual(foo.name, "Foo")
     }
   }
-  
+
   func testParsing_SubCommand_help() throws {
     let helpFoo = Foo.message(for: CleanExit.helpRequest())
     let helpA = Foo.message(for: CleanExit.helpRequest(CommandA.self))
     let helpB = Foo.message(for: CleanExit.helpRequest(CommandB.self))
-    
+
     AssertEqualStringsIgnoringTrailingWhitespace("""
             USAGE: foo --name <name> <subcommand>
 
@@ -102,8 +102,8 @@ extension SubcommandEndToEndTests {
 
             """, helpB)
   }
-  
-  
+
+
   func testParsing_SubCommand_fails() throws {
     XCTAssertThrowsError(try Foo.parse(["--name", "Foo", "a", "--baz", "42"]), "'baz' is not an option for the 'a' subcommand.")
     XCTAssertThrowsError(try Foo.parse(["--name", "Foo", "b", "--bar", "42"]), "'bar' is not an option for the 'b' subcommand.")
@@ -117,16 +117,16 @@ fileprivate struct Math: ParsableCommand {
     case add
     case multiply
   }
-  
-  @Option(default: .add, help: "The operation to perform")
-  var operation: Operation
-  
+
+  @Option(help: "The operation to perform")
+  var operation: Operation = .add
+
   @Flag(name: [.short, .long])
-  var verbose: Bool
-  
+  var verbose: Bool = false
+
   @Argument(help: "The first operand")
-  var operands: [Int]
-  
+  var operands: [Int] = []
+
   mutating func run() {
     XCTAssertEqual(operation, .multiply)
     XCTAssertTrue(verbose)
@@ -172,7 +172,7 @@ struct BaseCommand: ParsableCommand {
 extension BaseCommand {
   struct SubCommand : ParsableCommand {
     static let subFlagValue = "sub"
-    
+
     static var configuration = CommandConfiguration(
       commandName: "sub",
       subcommands: [SubSubCommand.self]
@@ -197,8 +197,8 @@ extension BaseCommand.SubCommand {
       commandName: "subsub"
     )
 
-    @Flag()
-    var subSubFlag: Bool
+    @Flag
+    var subSubFlag: Bool = false
 
     private enum CodingKeys: CodingKey {
       case subSubFlag
@@ -241,13 +241,13 @@ private struct A: ParsableCommand {
   static var configuration = CommandConfiguration(
     version: "1.0.0",
     subcommands: [HasVersionFlag.self, NoVersionFlag.self])
-  
+
   struct HasVersionFlag: ParsableCommand {
-    @Flag() var version: Bool
+    @Flag var version: Bool = false
   }
-  
+
   struct NoVersionFlag: ParsableCommand {
-    @Flag() var hello: Bool
+    @Flag var hello: Bool = false
   }
 }
 

@@ -8,11 +8,55 @@ This project follows semantic versioning. While still in major version `0`,
 source-stability is only guaranteed within minor versions (e.g. between
 `0.0.3` and `0.0.4`). If you want to guard against potentially source-breaking
 package updates, you can specify your package dependency using
-`.upToNextMinor(from: "0.1.0")` as the requirement.
+`.upToNextMinor(from: "0.2.0")` as the requirement.
 
 ## [Unreleased]
 
 *No changes yet.*
+
+## [0.2.0] - 2020-06-23
+
+### Additions
+
+- You can now specify default values for array properties of parsable types.
+  The default values are overridden if the user provides at least one value
+  as part of the command-line arguments.
+
+### Changes
+
+- This release of `swift-argument-parser` requires Swift 5.2.
+- Default values for all properties are now written using default initialization
+  syntax, including some values that were previously implicit, such as empty
+  arrays and `false` for Boolean flags.
+  
+  *Migration:* Specify default values using typical Swift default value syntax
+  to remove the deprecation warnings:
+  
+  ```swift
+  // old
+  @Flag() var verbose: Bool
+  // new
+  @Flag() var verbose = false
+  ```
+  
+  **_Important:_** There is a semantic change for flags with inversions that do
+  not have a default value. In previous releases, these flags had a default
+  value of `false`; starting in 0.2.0, these flags will have no default, and
+  will therefore be required by the user. Specify a default value of `false` to
+  retain the old behavior.
+
+### Fixes
+
+- Options with multiple names now consistently show the first-declared name
+  in usage and help screens.
+- Default subcommands are indicated in the help screen.
+- User errors with options are now shown before positional argument errors,
+  eliminating some false negative reports.
+- CMake compatibility fixes.
+
+The 0.2.0 release includes contributions from [artemnovichkov], [compnerd], 
+[ibrahimoktay], [john-mueller], [MPLew-is], [natecook1000], and [owenv]. 
+Thank you!
 
 ## [0.1.0] - 2020-06-03
 
@@ -220,7 +264,8 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 
 <!-- Link references for releases -->
 
-[Unreleased]: https://github.com/apple/swift-argument-parser/compare/0.1.0...HEAD
+[Unreleased]: https://github.com/apple/swift-argument-parser/compare/0.2.0...HEAD
+[0.2.0]: https://github.com/apple/swift-argument-parser/compare/0.1.0...0.2.0
 [0.1.0]: https://github.com/apple/swift-argument-parser/compare/0.0.6...0.1.0
 [0.0.6]: https://github.com/apple/swift-argument-parser/compare/0.0.5...0.0.6
 [0.0.5]: https://github.com/apple/swift-argument-parser/compare/0.0.4...0.0.5
@@ -237,6 +282,7 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 
 [aleksey-mashanov]: https://github.com/apple/swift-argument-parser/commits?author=aleksey-mashanov
 [AliSoftware]: https://github.com/apple/swift-argument-parser/commits?author=AliSoftware
+[artemnovichkov]: https://github.com/apple/swift-argument-parser/commits?author=artemnovichkov
 [BradLarson]: https://github.com/apple/swift-argument-parser/commits?author=BradLarson
 [buttaface]: https://github.com/apple/swift-argument-parser/commits?author=buttaface
 [compnerd]: https://github.com/apple/swift-argument-parser/commits?author=compnerd
@@ -254,6 +300,7 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [klaaspieter]: https://github.com/apple/swift-argument-parser/commits?author=klaaspieter
 [Lantua]: https://github.com/apple/swift-argument-parser/commits?author=Lantua
 [miguelangel-dev]: https://github.com/apple/swift-argument-parser/commits?author=miguelangel-dev
+[MPLew-is]: https://github.com/apple/swift-argument-parser/commits?author=MPLew-is
 [natecook1000]: https://github.com/apple/swift-argument-parser/commits?author=natecook1000
 [owenv]: https://github.com/apple/swift-argument-parser/commits?author=owenv
 [rjstelling]: https://github.com/apple/swift-argument-parser/commits?author=rjstelling

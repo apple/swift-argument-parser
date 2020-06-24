@@ -56,7 +56,7 @@ In this case, the `Options` type accepts a `--hexadecimal-output` flag and expec
 ```swift
 struct Options: ParsableArguments {
     @Flag(name: [.long, .customShort("x")], help: "Use hexadecimal notation for the result.")
-    var hexadecimalOutput: Bool
+    var hexadecimalOutput = false
 
     @Argument(help: "A group of integers to operate on.")
     var values: [Int]
@@ -68,12 +68,12 @@ It's time to define our first two subcommands: `Add` and `Multiply`. Both of the
 ```swift
 extension Math {
     struct Add: ParsableCommand {
-        static var configuration 
+        static var configuration
             = CommandConfiguration(abstract: "Print the sum of the values.")
 
         @OptionGroup()
         var options: Math.Options
-        
+
         mutating func run() {
             let result = options.values.reduce(0, +)
             print(format(result: result, usingHex: options.hexadecimalOutput))
@@ -81,12 +81,12 @@ extension Math {
     }
 
     struct Multiply: ParsableCommand {
-        static var configuration 
+        static var configuration
             = CommandConfiguration(abstract: "Print the product of the values.")
 
         @OptionGroup()
         var options: Math.Options
-        
+
         mutating func run() {
             let result = options.values.reduce(1, *)
             print(format(result: result, usingHex: options.hexadecimalOutput))
@@ -98,7 +98,7 @@ extension Math {
 Next, we'll define `Statistics`, the third subcommand of `Math`. The `Statistics` command specifies a custom command name (`stats`) in its configuration, overriding the default derived from the type name (`statistics`). It also declares two additional subcommands, meaning that it acts as a forked branch in the command tree, and not a leaf.
 
 ```swift
-extension Math {   
+extension Math {
     struct Statistics: ParsableCommand {
         static var configuration = CommandConfiguration(
             commandName: "stats",
@@ -115,21 +115,21 @@ extension Math.Statistics {
     struct Average: ParsableCommand {
         static var configuration = CommandConfiguration(
             abstract: "Print the average of the values.")
-        
+
         enum Kind: String, ExpressibleByArgument {
             case mean, median, mode
         }
 
-        @Option(default: .mean, help: "The kind of average to provide.")
-        var kind: Kind
-        
+        @Option(help: "The kind of average to provide.")
+        var kind: Kind = .mean
+
         @Argument(help: "A group of floating-point values to operate on.")
-        var values: [Double]
-                
+        var values: [Double] = []
+
         func calculateMean() -> Double { ... }
         func calculateMedian() -> Double { ... }
         func calculateMode() -> [Double] { ... }
-    
+
         mutating func run() {
             switch kind {
             case .mean:
@@ -144,15 +144,15 @@ extension Math.Statistics {
             }
         }
     }
-    
+
     struct StandardDeviation: ParsableCommand {
         static var configuration = CommandConfiguration(
             commandName: "stdev",
             abstract: "Print the standard deviation of the values.")
-        
+
         @Argument(help: "A group of floating-point values to operate on.")
-        var values: [Double]
-        
+        var values: [Double] = []
+
         mutating func run() {
             if values.isEmpty {
                 print(0.0)

@@ -18,7 +18,7 @@ final class ValidationEndToEndTests: XCTestCase {
 
 fileprivate enum UserValidationError: LocalizedError {
   case userValidationError
-  
+
   var errorDescription: String? {
     switch self {
     case .userValidationError:
@@ -45,53 +45,53 @@ fileprivate struct Foo: ParsableArguments {
       --throw
       -h, --help              Show help information.
     """
-  
+
   @Option()
   var count: Int?
-  
+
   @Argument()
-  var names: [String]
-  
-  @Flag()
-  var version: Bool
-  
+  var names: [String] = []
+
+  @Flag
+  var version: Bool = false
+
   @Flag(name: [.customLong("throw")])
-  var throwCustomError: Bool
-  
-  @Flag(help: .hidden)
-  var showUsageOnly: Bool
-  
-  @Flag(help: .hidden)
-  var failValidationSilently: Bool
+  var throwCustomError: Bool = false
 
   @Flag(help: .hidden)
-  var failSilently: Bool
+  var showUsageOnly: Bool = false
+
+  @Flag(help: .hidden)
+  var failValidationSilently: Bool = false
+
+  @Flag(help: .hidden)
+  var failSilently: Bool = false
 
   mutating func validate() throws {
     if version {
       throw CleanExit.message("0.0.1")
     }
-    
+
     if names.isEmpty {
       throw ValidationError("Must specify at least one name.")
     }
-    
+
     if let count = count, names.count != count {
       throw ValidationError("Number of names (\(names.count)) doesn't match count (\(count)).")
     }
-    
+
     if throwCustomError {
       throw UserValidationError.userValidationError
     }
-    
+
     if showUsageOnly {
       throw ValidationError("")
     }
-    
+
     if failValidationSilently {
       throw ExitCode.validationFailure
     }
-    
+
     if failSilently {
       throw ExitCode.failure
     }
@@ -104,27 +104,27 @@ extension ValidationEndToEndTests {
       XCTAssertEqual(foo.names, ["Joe"])
       XCTAssertNil(foo.count)
     }
-    
+
     AssertParse(Foo.self, ["Joe", "Moe", "--count", "2"]) { foo in
       XCTAssertEqual(foo.names, ["Joe", "Moe"])
       XCTAssertEqual(foo.count, 2)
     }
   }
-  
+
   func testValidation_Version() throws {
     AssertErrorMessage(Foo.self, ["--version"], "0.0.1")
     AssertFullErrorMessage(Foo.self, ["--version"], "0.0.1")
   }
-  
+
   func testValidation_Fails() throws {
     AssertErrorMessage(Foo.self, [], "Must specify at least one name.")
     AssertFullErrorMessage(Foo.self, [], """
             Error: Must specify at least one name.
 
             \(Foo.helpString)
-            
+
             """)
-    
+
     AssertErrorMessage(Foo.self, ["--count", "3", "Joe"], """
             Number of names (1) doesn't match count (3).
             """)
@@ -133,12 +133,12 @@ extension ValidationEndToEndTests {
             \(Foo.usageString)
             """)
   }
-  
+
   func testCustomErrorValidation() {
     // verify that error description is printed if avaiable via LocalizedError
     AssertErrorMessage(Foo.self, ["--throw", "Joe"], UserValidationError.userValidationError.errorDescription!)
   }
-  
+
   func testEmptyErrorValidation() {
     AssertErrorMessage(Foo.self, ["--show-usage-only", "Joe"], "")
     AssertFullErrorMessage(Foo.self, ["--show-usage-only", "Joe"], Foo.usageString)
