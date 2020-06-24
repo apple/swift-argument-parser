@@ -98,3 +98,21 @@ extension ArgumentDefinition {
     return "---completion \(subcommandNames) -- \(argumentName)"
   }
 }
+
+extension ParsableCommand {
+  fileprivate static var compositeCommandName: [String] {
+    if let superCommandName = configuration._superCommandName {
+      return [superCommandName] + _commandName.split(separator: " ").map(String.init)
+    } else {
+      return _commandName.split(separator: " ").map(String.init)
+    }
+  }
+}
+
+extension Sequence where Element == ParsableCommand.Type {
+  func completionFunctionName() -> String {
+    "_" + self.flatMap { $0.compositeCommandName }
+      .uniquingAdjacentElements()
+      .joined(separator: "_")
+  }
+}

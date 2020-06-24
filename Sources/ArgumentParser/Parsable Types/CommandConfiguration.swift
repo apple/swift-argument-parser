@@ -16,6 +16,8 @@ public struct CommandConfiguration {
   /// If `nil`, the command name is derived by converting the name of
   /// the command type to hyphen-separated lowercase words.
   public var commandName: String?
+
+  public var _superCommandName: String?
   
   /// A one-line description of this command.
   public var abstract: String

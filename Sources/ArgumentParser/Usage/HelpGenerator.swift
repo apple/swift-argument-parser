@@ -110,7 +110,12 @@ internal struct HelpGenerator {
     let currentArgSet = ArgumentSet(currentCommand)
     self.commandStack = commandStack
 
-    let toolName = commandStack.map { $0._commandName }.joined(separator: " ")
+    // Build the tool name and subcommand name from the command configuration
+    var toolName = commandStack.map { $0._commandName }.joined(separator: " ")
+    if let superName = commandStack.first!.configuration._superCommandName {
+      toolName = "\(superName) \(toolName)"
+    }
+
     var usageString = UsageGenerator(toolName: toolName, definition: [currentArgSet]).synopsis
     if !currentCommand.configuration.subcommands.isEmpty {
       if usageString.last != " " { usageString += " " }

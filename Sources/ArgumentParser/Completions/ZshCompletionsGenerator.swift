@@ -12,7 +12,9 @@
 struct ZshCompletionsGenerator {
   /// Generates a Zsh completion script for the given command.
   static func generateCompletionScript(_ type: ParsableCommand.Type) -> String {
-    """
+    let initialFunctionName = [type].completionFunctionName()
+
+    return """
     #compdef \(type._commandName)
     local context state state_descr line
     _\(type._commandName)_commandname="\(type._commandName)"
@@ -24,13 +26,13 @@ struct ZshCompletionsGenerator {
         _describe '' completions
     }
 
-    _\(type._commandName)
+    \(initialFunctionName)
     """
   }
   
   static func generateCompletionFunction(_ commands: [ParsableCommand.Type]) -> String {
     let type = commands.last!
-    let functionName = commands.map { "_\($0._commandName)" }.joined()
+    let functionName = commands.completionFunctionName()
     let isRootCommand = commands.count == 1
     
     var args = generateCompletionArguments(commands)

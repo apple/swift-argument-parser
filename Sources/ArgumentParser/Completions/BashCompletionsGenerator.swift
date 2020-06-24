@@ -13,19 +13,20 @@ struct BashCompletionsGenerator {
   /// Generates a Bash completion script for the given command.
   static func generateCompletionScript(_ type: ParsableCommand.Type) -> String {
     // TODO: Add a check to see if the command is installed where we expect?
-    """
+    let initialFunctionName = [type].completionFunctionName()
+    return """
     #!/bin/bash
 
     \(generateCompletionFunction([type]))
 
-    complete -F _\(type._commandName) \(type._commandName)
+    complete -F \(initialFunctionName) \(type._commandName)
     """
   }
 
   /// Generates a Bash completion function for the last command in the given list.
   fileprivate static func generateCompletionFunction(_ commands: [ParsableCommand.Type]) -> String {
     let type = commands.last!
-    let functionName = commands.map { "_\($0._commandName)" }.joined()
+    let functionName = commands.completionFunctionName()
     
     // The root command gets a different treatment for the parsing index.
     let isRootCommand = commands.count == 1
