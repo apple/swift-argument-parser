@@ -368,6 +368,45 @@ extension Argument {
     )
   }
 
+
+  /// Creates an array property with an optional default value, intended to be called by other constructors to centralize logic.
+  ///
+  /// This private `init` allows us to expose multiple other similar constructors to allow for standard default property initialization while reducing code duplication.
+  private init<Element>(
+    initial: Value?,
+    parsingStrategy: ArgumentArrayParsingStrategy,
+    help: ArgumentHelp?,
+    completion: CompletionKind?
+  )
+    where Element: ExpressibleByArgument, Value == Array<Element>
+  {
+    self.init(_parsedValue: .init { key in
+      // Assign the initial-value setter and help text for default value based on if an initial value was provided.
+      let setInitialValue: ArgumentDefinition.Initial
+      let helpDefaultValue: String?
+      if let initial = initial {
+        setInitialValue = { origin, values in
+          values.set(initial, forKey: key, inputOrigin: origin)
+        }
+        helpDefaultValue = !initial.isEmpty ? initial.defaultValueDescription : nil
+      } else {
+        setInitialValue = { _, _ in }
+        helpDefaultValue = nil
+      }
+
+      let help = ArgumentDefinition.Help(options: [.isOptional, .isRepeating], help: help, key: key)
+      var arg = ArgumentDefinition(
+        kind: .positional,
+        help: help,
+        completion: completion ?? Element.defaultCompletionKind,
+        parsingStrategy: parsingStrategy == .remaining ? .nextAsValue : .allRemainingInput,
+        update: .appendToArray(forType: Element.self, key: key),
+        initial: setInitialValue)
+      arg.help.defaultValue = helpDefaultValue
+      return ArgumentSet(alternatives: [arg])
+    })
+  }
+
   /// Creates a property that reads an array from zero or more arguments.
   ///
   /// - Parameters:
@@ -383,22 +422,89 @@ extension Argument {
   )
     where Element: ExpressibleByArgument, Value == Array<Element>
   {
+    self.init(
+      initial: wrappedValue,
+      parsingStrategy: parsingStrategy,
+      help: help,
+      completion: completion
+    )
+  }
+
+  /// Creates a property with no default value that reads an array from zero or more arguments.
+  ///
+  /// This method is called to initialize an array `Argument` with no default value such as:
+  /// ```swift
+  /// @Argument()
+  /// var foo: [String]
+  /// ```
+  ///
+  /// - Parameters:
+  ///   - parsingStrategy: The behavior to use when parsing multiple values from the command-line arguments.
+  ///   - help: Information about how to use this argument.
+  public init<Element>(
+    parsing parsingStrategy: ArgumentArrayParsingStrategy = .remaining,
+    help: ArgumentHelp? = nil,
+    completion: CompletionKind? = nil
+  )
+    where Element: ExpressibleByArgument, Value == Array<Element>
+  {
+    self.init(
+      initial: nil,
+      parsingStrategy: parsingStrategy,
+      help: help,
+      completion: completion
+    )
+  }
+
+  /// Creates an array property with an optional default value, intended to be called by other constructors to centralize logic.
+  ///
+  /// This private `init` allows us to expose multiple other similar constructors to allow for standard default property initialization while reducing code duplication.
+  private init<Element>(
+    initial: Value?,
+    parsingStrategy: ArgumentArrayParsingStrategy,
+    help: ArgumentHelp?,
+    completion: CompletionKind?,
+    transform: @escaping (String) throws -> Element
+  )
+    where Value == Array<Element>
+  {
     self.init(_parsedValue: .init { key in
+      // Assign the initial-value setter and help text for default value based on if an initial value was provided.
+      let setInitialValue: ArgumentDefinition.Initial
+      let helpDefaultValue: String?
+      if let initial = initial {
+        setInitialValue = { origin, values in
+          values.set(initial, forKey: key, inputOrigin: origin)
+        }
+        helpDefaultValue = !initial.isEmpty ? "\(initial)" : nil
+      } else {
+        setInitialValue = { _, _ in }
+        helpDefaultValue = nil
+      }
+
       let help = ArgumentDefinition.Help(options: [.isOptional, .isRepeating], help: help, key: key)
       var arg = ArgumentDefinition(
         kind: .positional,
         help: help,
-        completion: completion ?? Element.defaultCompletionKind,
+        completion: completion ?? .default,
         parsingStrategy: parsingStrategy == .remaining ? .nextAsValue : .allRemainingInput,
-        update: .appendToArray(forType: Element.self, key: key),
-        initial: { origin, values in
-          values.set(wrappedValue, forKey: key, inputOrigin: origin)
-        })
-      arg.help.defaultValue = !wrappedValue.isEmpty ? wrappedValue.defaultValueDescription : nil
+        update: .unary({
+          (origin, name, valueString, parsedValues) in
+          do {
+              let transformedElement = try transform(valueString)
+              parsedValues.update(forKey: key, inputOrigin: origin, initial: [Element](), closure: {
+                $0.append(transformedElement)
+              })
+            } catch {
+              throw ParserError.unableToParseValue(origin, name, valueString, forKey: key, originalError: error)
+          }
+        }),
+        initial: setInitialValue)
+      arg.help.defaultValue = helpDefaultValue
       return ArgumentSet(alternatives: [arg])
     })
   }
-  
+
   /// Creates a property that reads an array from zero or more arguments,
   /// parsing each element with the given closure.
   ///
@@ -418,50 +524,41 @@ extension Argument {
   )
     where Value == Array<Element>
   {
-    self.init(_parsedValue: .init { key in
-      let help = ArgumentDefinition.Help(options: [.isOptional, .isRepeating], help: help, key: key)
-      var arg = ArgumentDefinition(
-        kind: .positional,
-        help: help,
-        completion: completion ?? .default,
-        parsingStrategy: parsingStrategy == .remaining ? .nextAsValue : .allRemainingInput,
-        update: .unary({
-          (origin, name, valueString, parsedValues) in
-          do {
-              let transformedElement = try transform(valueString)
-              parsedValues.update(forKey: key, inputOrigin: origin, initial: [Element](), closure: {
-                $0.append(transformedElement)
-              })
-            } catch {
-              throw ParserError.unableToParseValue(origin, name, valueString, forKey: key, originalError: error)
-          }
-        }),
-        initial: { origin, values in
-          values.set(wrappedValue, forKey: key, inputOrigin: origin)
-        })
-      arg.help.defaultValue = !wrappedValue.isEmpty ? "\(wrappedValue)" : nil
-      return ArgumentSet(alternatives: [arg])
-    })
-  }
-  
-  @available(*, deprecated, message: "Provide an empty array literal as a default value.")
-  public init<Element>(
-    parsing parsingStrategy: ArgumentArrayParsingStrategy = .remaining,
-    help: ArgumentHelp? = nil
-  )
-    where Element: ExpressibleByArgument, Value == Array<Element>
-  {
-    self.init(wrappedValue: [], parsing: parsingStrategy, help: help)
+    self.init(
+      initial: wrappedValue,
+      parsingStrategy: parsingStrategy,
+      help: help,
+      completion: completion,
+      transform: transform
+    )
   }
 
-  @available(*, deprecated, message: "Provide an empty array literal as a default value.")
+  /// Creates a property with no default value that reads an array from zero or more arguments, parsing each element with the given closure.
+  ///
+  /// This method is called to initialize an array `Argument` with no default value such as:
+  /// ```swift
+  /// @Argument(tranform: baz)
+  /// var foo: [String]
+  /// ```
+  ///
+  /// - Parameters:
+  ///   - parsingStrategy: The behavior to use when parsing multiple values from the command-line arguments.
+  ///   - help: Information about how to use this argument.
+  ///   - transform: A closure that converts a string into this property's element type or throws an error.
   public init<Element>(
     parsing parsingStrategy: ArgumentArrayParsingStrategy = .remaining,
     help: ArgumentHelp? = nil,
+    completion: CompletionKind? = nil,
     transform: @escaping (String) throws -> Element
   )
     where Value == Array<Element>
   {
-    self.init(wrappedValue: [], parsing: parsingStrategy, help: help, transform: transform)
+    self.init(
+      initial: nil,
+      parsingStrategy: parsingStrategy,
+      help: help,
+      completion: completion,
+      transform: transform
+    )
   }
 }
