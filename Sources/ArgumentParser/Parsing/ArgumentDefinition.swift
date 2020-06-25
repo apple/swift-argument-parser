@@ -142,6 +142,19 @@ extension ArgumentDefinition: CustomDebugStringConvertible {
   }
 }
 
+extension ArgumentDefinition: Equatable {
+  static func == (lhs: ArgumentDefinition, rhs: ArgumentDefinition) -> Bool {
+    lhs.names == rhs.names && lhs.parsingStrategy == rhs.parsingStrategy
+  }
+}
+
+extension ArgumentDefinition: Hashable {
+  func hash(into hasher: inout Hasher) {
+    hasher.combine(names)
+    hasher.combine(parsingStrategy)
+  }
+}
+
 extension ArgumentDefinition {
   var optional: ArgumentDefinition {
     var result = self

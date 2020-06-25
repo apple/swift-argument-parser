@@ -107,3 +107,38 @@ extension LongNameWithSingleDashEndToEndTests {
     XCTAssertThrowsError(try Bar.parse(["--file"]))
   }
 }
+
+fileprivate struct Foo: ParsableArguments {
+  @Option(name: [.short])
+  var optionOne: [Int] = []
+  
+  @Option(name: [
+    .customShort("t"),
+    .customLong("ot", withSingleDash: true),
+    .customLong("TWO", withSingleDash: true),
+  ], parsing: .upToNextOption)
+  var optionTwo: [Int] = []
+  
+  @Argument()
+  var extras: [Int] = []
+}
+
+extension LongNameWithSingleDashEndToEndTests {
+  func testParsing_ArrayUpToNextOption() {
+    AssertParse(Foo.self, ["-o", "1", "3", "-t", "2", "4"]) { foo in
+      XCTAssertEqual(foo.optionOne, [1])
+      XCTAssertEqual(foo.optionTwo, [2, 4])
+      XCTAssertEqual(foo.extras, [3])
+    }
+    AssertParse(Foo.self, ["-o", "1", "3", "-ot", "2", "4"]) { foo in
+      XCTAssertEqual(foo.optionOne, [1])
+      XCTAssertEqual(foo.optionTwo, [2, 4])
+      XCTAssertEqual(foo.extras, [3])
+    }
+    AssertParse(Foo.self, ["-o", "1", "3", "-TWO", "2", "4"]) { foo in
+      XCTAssertEqual(foo.optionOne, [1])
+      XCTAssertEqual(foo.optionTwo, [2, 4])
+      XCTAssertEqual(foo.extras, [3])
+    }
+  }
+}

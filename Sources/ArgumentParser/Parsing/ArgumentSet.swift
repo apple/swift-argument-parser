@@ -308,7 +308,7 @@ extension ArgumentSet {
         }
         
         // ...and then consume the arguments until hitting an option
-        while let (origin2, value) = inputArguments.popNextElementIfValue() {
+        while let (origin2, value) = inputArguments.popNextElementIfValue(after: originElement) {
           let origins = origin.inserting(origin2)
           try update(origins, parsed.name, value, &result)
           usedOrigins.formUnion(origins)
@@ -318,10 +318,12 @@ extension ArgumentSet {
     
     var result = ParsedValues(elements: [], originalInput: all.originalInput)
     var usedOrigins = InputOrigin()
+    var usedOptions = Set<ArgumentDefinition>()
     
     try setInitialValues(into: &result)
     
     // Loop over all arguments:
+    ArgumentLoop:
     while let (origin, next) = inputArguments.popNext() {
       defer {
         inputArguments.removeAll(in: usedOrigins)
@@ -331,6 +333,28 @@ extension ArgumentSet {
       case .value:
         // We'll parse positional values later.
         break
+      case let .possibleNegative(_, parsed):
+        // If this matches a short name or long name with single dash,
+        if let option = try? first(matching: parsed, at: origin) {
+          // and it has not been parsed before,
+          guard !usedOptions.contains(option) else { break }
+          // treat it as an option by falling through to next case.
+          fallthrough
+        }
+        
+        // If all characters match numeric short options, treat it as a group
+        // of options by falling through to next case.
+        for sub in parsed.subarguments {
+          guard let option = try? first(matching: sub.1, at: origin), !usedOptions.contains(option) else {
+            // Otherwise, treat it as a value to be parsed later, and remove
+            // the subindices so they are not parsed as options.
+            inputArguments.remove(at: origin)
+            continue ArgumentLoop
+          }
+        }
+
+        // Parse as an option
+        fallthrough
       case let .option(parsed):
         // Look for an argument that matches this `--option` or `-o`-style
         // input. If we can't find one, just move on to the next input. We
@@ -353,6 +377,8 @@ extension ArgumentSet {
         case let .unary(update):
           try parseValue(argument, parsed, origin, update, &result, &usedOrigins)
         }
+        
+        usedOptions.insert(argument)
       case .terminator:
         // Ignore the terminator, it might get picked up as a positional value later.
         break

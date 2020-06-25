@@ -16,6 +16,7 @@ import ArgumentParserTestHelpers
 final class MathExampleTests: XCTestCase {
   func testMath_Simple() throws {
     AssertExecuteCommand(command: "math 1 2 3 4 5", expected: "15")
+    AssertExecuteCommand(command: "math 1 -2 3 -4 5", expected: "3")
     AssertExecuteCommand(command: "math multiply 1 2 3 4 5", expected: "120")
   }
   

@@ -125,6 +125,60 @@ final class SplitArgumentTests: XCTestCase {
     XCTAssertEqual(sut.originalInput.count, 1)
     XCTAssertEqual(sut.originalInput, ["-abc=def"])
   }
+  
+  func testNegativeOrSingleOption() throws {
+    let sut = try SplitArguments(arguments: ["-1"])
+    
+    XCTAssertEqual(sut.elements.count, 1)
+    
+    AssertIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
+    AssertElementEqual(sut, at: 0, .possibleNegative(value: "-1", option: .name(.short("1"))))
+    
+    XCTAssertEqual(sut.originalInput.count, 1)
+    XCTAssertEqual(sut.originalInput, ["-1"])
+  }
+  
+  func testNegativeOrMultipleOptions() throws {
+    let sut = try SplitArguments(arguments: ["-12"])
+    
+    XCTAssertEqual(sut.elements.count, 3)
+    
+    AssertIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
+    AssertElementEqual(sut, at: 0, .possibleNegative(value: "-12", option: .name(.longWithSingleDash("12"))))
+    
+    AssertIndexEqual(sut, at: 1, inputIndex: 0, subIndex: .sub(0))
+    AssertElementEqual(sut, at: 1, .option(.name(.short("1"))))
+    
+    AssertIndexEqual(sut, at: 2, inputIndex: 0, subIndex: .sub(1))
+    AssertElementEqual(sut, at: 2, .option(.name(.short("2"))))
+    
+    XCTAssertEqual(sut.originalInput.count, 1)
+    XCTAssertEqual(sut.originalInput, ["-12"])
+  }
+  
+  func testNegativeOrShortOptionWithValue() throws {
+    let sut = try SplitArguments(arguments: ["-1=-23"])
+    
+    XCTAssertEqual(sut.elements.count, 1)
+    
+    AssertIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
+    AssertElementEqual(sut, at: 0, .option(.nameWithValue(.short("1"), "-23")))
+    
+    XCTAssertEqual(sut.originalInput.count, 1)
+    XCTAssertEqual(sut.originalInput, ["-1=-23"])
+  }
+  
+  func testNegativeOrLongOptionWithValueAndSingleDash() throws {
+    let sut = try SplitArguments(arguments: ["-12=-34"])
+    
+    XCTAssertEqual(sut.elements.count, 1)
+    
+    AssertIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
+    AssertElementEqual(sut, at: 0, .option(.nameWithValue(.longWithSingleDash("12"), "-34")))
+    
+    XCTAssertEqual(sut.originalInput.count, 1)
+    XCTAssertEqual(sut.originalInput, ["-12=-34"])
+  }
 }
 
 extension SplitArgumentTests {
@@ -182,6 +236,48 @@ extension SplitArgumentTests {
     XCTAssertEqual(sut.originalInput, ["-x", "-y", "-z"])
   }
   
+  func testMultiplePossibleNegatives() throws {
+    let sut = try SplitArguments(arguments: ["-1", "-2"])
+    
+    XCTAssertEqual(sut.elements.count, 2)
+    
+    AssertIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
+    AssertElementEqual(sut, at: 0, .possibleNegative(value: "-1", option: .name(.short("1"))))
+    
+    AssertIndexEqual(sut, at: 1, inputIndex: 1, subIndex: .complete)
+    AssertElementEqual(sut, at: 1, .possibleNegative(value: "-2", option: .name(.short("2"))))
+    
+    XCTAssertEqual(sut.originalInput.count, 2)
+    XCTAssertEqual(sut.originalInput, ["-1", "-2"])
+  }
+  
+  func testMultiplePossibleNegatives_2() throws {
+    let sut = try SplitArguments(arguments: ["-12", "-34"])
+    
+    XCTAssertEqual(sut.elements.count, 6)
+    
+    AssertIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
+    AssertElementEqual(sut, at: 0, .possibleNegative(value: "-12", option: .name(.longWithSingleDash("12"))))
+    
+    AssertIndexEqual(sut, at: 1, inputIndex: 0, subIndex: .sub(0))
+    AssertElementEqual(sut, at: 1, .option(.name(.short("1"))))
+    
+    AssertIndexEqual(sut, at: 2, inputIndex: 0, subIndex: .sub(1))
+    AssertElementEqual(sut, at: 2, .option(.name(.short("2"))))
+    
+    AssertIndexEqual(sut, at: 3, inputIndex: 1, subIndex: .complete)
+    AssertElementEqual(sut, at: 3, .possibleNegative(value: "-34", option: .name(.longWithSingleDash("34"))))
+    
+    AssertIndexEqual(sut, at: 4, inputIndex: 1, subIndex: .sub(0))
+    AssertElementEqual(sut, at: 4, .option(.name(.short("3"))))
+    
+    AssertIndexEqual(sut, at: 5, inputIndex: 1, subIndex: .sub(1))
+    AssertElementEqual(sut, at: 5, .option(.name(.short("4"))))
+    
+    XCTAssertEqual(sut.originalInput.count, 2)
+    XCTAssertEqual(sut.originalInput, ["-12", "-34"])
+  }
+  
   func testMultipleShortOptionsCombined_2() throws {
     let sut = try SplitArguments(arguments: ["-bc", "-fv", "-a"])
     
@@ -215,9 +311,9 @@ extension SplitArgumentTests {
 
 extension SplitArgumentTests {
   func testMixed_1() throws {
-    let sut = try SplitArguments(arguments: ["-x", "abc", "--foo", "1234", "-zz"])
+    let sut = try SplitArguments(arguments: ["-x", "abc", "--foo", "1234", "-zz", "-12"])
     
-    XCTAssertEqual(sut.elements.count, 7)
+    XCTAssertEqual(sut.elements.count, 10)
     
     AssertIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
     AssertElementEqual(sut, at: 0, .option(.name(.short("x"))))
@@ -240,38 +336,56 @@ extension SplitArgumentTests {
     AssertIndexEqual(sut, at: 6, inputIndex: 4, subIndex: .sub(1))
     AssertElementEqual(sut, at: 6, .option(.name(.short("z"))))
     
-    XCTAssertEqual(sut.originalInput.count, 5)
-    XCTAssertEqual(sut.originalInput, ["-x", "abc", "--foo", "1234", "-zz"])
+    AssertIndexEqual(sut, at: 7, inputIndex: 5, subIndex: .complete)
+    AssertElementEqual(sut, at: 7, .possibleNegative(value: "-12", option: .name(.longWithSingleDash("12"))))
+    
+    AssertIndexEqual(sut, at: 8, inputIndex: 5, subIndex: .sub(0))
+    AssertElementEqual(sut, at: 8, .option(.name(.short("1"))))
+    
+    AssertIndexEqual(sut, at: 9, inputIndex: 5, subIndex: .sub(1))
+    AssertElementEqual(sut, at: 9, .option(.name(.short("2"))))
+    
+    XCTAssertEqual(sut.originalInput.count, 6)
+    XCTAssertEqual(sut.originalInput, ["-x", "abc", "--foo", "1234", "-zz", "-12"])
   }
   
   func testMixed_2() throws {
-    let sut = try SplitArguments(arguments: ["1234", "-zz", "abc", "-x", "--foo"])
+    let sut = try SplitArguments(arguments: ["1234", "-12", "-zz", "abc", "-x", "--foo"])
     
-    XCTAssertEqual(sut.elements.count, 7)
+    XCTAssertEqual(sut.elements.count, 10)
     
     AssertIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
     AssertElementEqual(sut, at: 0, .value("1234"))
     
     AssertIndexEqual(sut, at: 1, inputIndex: 1, subIndex: .complete)
-    AssertElementEqual(sut, at: 1, .option(.name(.longWithSingleDash("zz"))))
+    AssertElementEqual(sut, at: 1, .possibleNegative(value: "-12", option: .name(.longWithSingleDash("12"))))
     
     AssertIndexEqual(sut, at: 2, inputIndex: 1, subIndex: .sub(0))
-    AssertElementEqual(sut, at: 2, .option(.name(.short("z"))))
+    AssertElementEqual(sut, at: 2, .option(.name(.short("1"))))
     
     AssertIndexEqual(sut, at: 3, inputIndex: 1, subIndex: .sub(1))
-    AssertElementEqual(sut, at: 3, .option(.name(.short("z"))))
+    AssertElementEqual(sut, at: 3, .option(.name(.short("2"))))
     
     AssertIndexEqual(sut, at: 4, inputIndex: 2, subIndex: .complete)
-    AssertElementEqual(sut, at: 4, .value("abc"))
+    AssertElementEqual(sut, at: 4, .option(.name(.longWithSingleDash("zz"))))
     
-    AssertIndexEqual(sut, at: 5, inputIndex: 3, subIndex: .complete)
-    AssertElementEqual(sut, at: 5, .option(.name(.short("x"))))
+    AssertIndexEqual(sut, at: 5, inputIndex: 2, subIndex: .sub(0))
+    AssertElementEqual(sut, at: 5, .option(.name(.short("z"))))
     
-    AssertIndexEqual(sut, at: 6, inputIndex: 4, subIndex: .complete)
-    AssertElementEqual(sut, at: 6, .option(.name(.long("foo"))))
+    AssertIndexEqual(sut, at: 6, inputIndex: 2, subIndex: .sub(1))
+    AssertElementEqual(sut, at: 6, .option(.name(.short("z"))))
     
-    XCTAssertEqual(sut.originalInput.count, 5)
-    XCTAssertEqual(sut.originalInput, ["1234", "-zz", "abc", "-x", "--foo"])
+    AssertIndexEqual(sut, at: 7, inputIndex: 3, subIndex: .complete)
+    AssertElementEqual(sut, at: 7, .value("abc"))
+    
+    AssertIndexEqual(sut, at: 8, inputIndex: 4, subIndex: .complete)
+    AssertElementEqual(sut, at: 8, .option(.name(.short("x"))))
+    
+    AssertIndexEqual(sut, at: 9, inputIndex: 5, subIndex: .complete)
+    AssertElementEqual(sut, at: 9, .option(.name(.long("foo"))))
+    
+    XCTAssertEqual(sut.originalInput.count, 6)
+    XCTAssertEqual(sut.originalInput, ["1234", "-12", "-zz", "abc", "-x", "--foo"])
   }
   
   func testTerminator_1() throws {
@@ -423,13 +537,48 @@ extension SplitArgumentTests {
       AssertElementEqual(sutB, at: 0, .option(.name(.short("f"))))
     }
   }
+  
+  func testRemovingValuesForPossibleNegative() throws {
+    let sut = try SplitArguments(arguments: ["-12"])
+    
+    XCTAssertEqual(sut.elements.count, 3)
+    AssertIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
+    AssertElementEqual(sut, at: 0, .possibleNegative(value: "-12", option: .name(.longWithSingleDash("12"))))
+    AssertIndexEqual(sut, at: 1, inputIndex: 0, subIndex: .sub(0))
+    AssertElementEqual(sut, at: 1, .option(.name(.short("1"))))
+    AssertIndexEqual(sut, at: 2, inputIndex: 0, subIndex: .sub(1))
+    AssertElementEqual(sut, at: 2, .option(.name(.short("2"))))
+    
+    do {
+      var sutB = sut
+      sutB.remove(at: SplitArguments.Index(inputIndex: 0, subIndex: .complete))
+      
+      XCTAssertEqual(sutB.elements.count, 0)
+    }
+    do {
+      var sutB = sut
+      sutB.remove(at: SplitArguments.Index(inputIndex: 0, subIndex: .sub(0)))
+      
+      XCTAssertEqual(sutB.elements.count, 1)
+      AssertIndexEqual(sutB, at: 0, inputIndex: 0, subIndex: .sub(1))
+      AssertElementEqual(sutB, at: 0, .option(.name(.short("2"))))
+    }
+    do {
+      var sutB = sut
+      sutB.remove(at: SplitArguments.Index(inputIndex: 0, subIndex: .sub(1)))
+      
+      XCTAssertEqual(sutB.elements.count, 1)
+      AssertIndexEqual(sutB, at: 0, inputIndex: 0, subIndex: .sub(0))
+      AssertElementEqual(sutB, at: 0, .option(.name(.short("1"))))
+    }
+  }
 }
 
 // MARK: - Pop & Peek
 
 extension SplitArgumentTests {
   func testPopNext() throws {
-    var sut = try SplitArguments(arguments: ["--foo", "bar"])
+    var sut = try SplitArguments(arguments: ["--foo", "bar", "-12"])
     
     let a = try XCTUnwrap(sut.popNext())
     XCTAssertEqual(a.0, .argumentIndex(SplitArguments.Index(inputIndex: 0, subIndex: .complete)))
@@ -439,11 +588,23 @@ extension SplitArgumentTests {
     XCTAssertEqual(b.0, .argumentIndex(SplitArguments.Index(inputIndex: 1, subIndex: .complete)))
     XCTAssertEqual(b.1, .value("bar"))
     
+    let c = try XCTUnwrap(sut.popNext())
+    XCTAssertEqual(c.0, .argumentIndex(SplitArguments.Index(inputIndex: 2, subIndex: .complete)))
+    XCTAssertEqual(c.1, .possibleNegative(value: "-12", option: .name(.longWithSingleDash("12"))))
+    
+    let d = try XCTUnwrap(sut.popNext())
+    XCTAssertEqual(d.0, .argumentIndex(SplitArguments.Index(inputIndex: 2, subIndex: .sub(0))))
+    XCTAssertEqual(d.1, .option(.name(.short("1"))))
+    
+    let e = try XCTUnwrap(sut.popNext())
+    XCTAssertEqual(e.0, .argumentIndex(SplitArguments.Index(inputIndex: 2, subIndex: .sub(1))))
+    XCTAssertEqual(e.1, .option(.name(.short("2"))))
+    
     XCTAssertNil(sut.popNext())
   }
   
   func testPeekNext() throws {
-    let sut = try SplitArguments(arguments: ["--foo", "bar"])
+    let sut = try SplitArguments(arguments: ["--foo", "bar", "-12"])
     
     let a = try XCTUnwrap(sut.peekNext())
     XCTAssertEqual(a.0, .argumentIndex(SplitArguments.Index(inputIndex: 0, subIndex: .complete)))
@@ -460,7 +621,7 @@ extension SplitArgumentTests {
   }
   
   func testPopNextElementIfValueAfter_1() throws {
-    var sut = try SplitArguments(arguments: ["--bar", "bar", "--foo", "foo"])
+    var sut = try SplitArguments(arguments: ["--bar", "bar", "-12", "--foo", "foo"])
     
     let value = try XCTUnwrap(sut.popNextElementIfValue(after: .argumentIndex(SplitArguments.Index(inputIndex: 0, subIndex: .complete))))
     XCTAssertEqual(value.0, .argumentIndex(SplitArguments.Index(inputIndex: 1, subIndex: .complete)))
@@ -468,48 +629,74 @@ extension SplitArgumentTests {
   }
   
   func testPopNextElementIfValueAfter_2() throws {
-    var sut = try SplitArguments(arguments: ["--bar", "bar", "--foo", "foo"])
+    var sut = try SplitArguments(arguments: ["--bar", "bar", "-12", "--foo", "foo"])
     
-    let value = try XCTUnwrap(sut.popNextElementIfValue(after: .argumentIndex(SplitArguments.Index(inputIndex: 2, subIndex: .complete))))
-    XCTAssertEqual(value.0, .argumentIndex(SplitArguments.Index(inputIndex: 3, subIndex: .complete)))
-    XCTAssertEqual(value.1, "foo")
+    let value = try XCTUnwrap(sut.popNextElementIfValue(after: .argumentIndex(SplitArguments.Index(inputIndex: 1, subIndex: .complete))))
+    XCTAssertEqual(value.0, .argumentIndex(SplitArguments.Index(inputIndex: 2, subIndex: .complete)))
+    XCTAssertEqual(value.1, "-12")
   }
   
   func testPopNextElementIfValueAfter_3() throws {
-    var sut = try SplitArguments(arguments: ["--bar", "bar", "--foo", "foo"])
-    XCTAssertNil(sut.popNextElementIfValue(after: .argumentIndex(SplitArguments.Index(inputIndex: 1, subIndex: .complete))))
+    var sut = try SplitArguments(arguments: ["--bar", "bar", "-12", "--foo", "foo"])
+    XCTAssertNil(sut.popNextElementIfValue(after: .argumentIndex(SplitArguments.Index(inputIndex: 2, subIndex: .complete))))
+  }
+  
+  func testPopNextElementIfValueAfter_4() throws {
+    var sut = try SplitArguments(arguments: ["--bar", "bar", "-12", "--foo", "foo"])
+    
+    let value = try XCTUnwrap(sut.popNextElementIfValue(after: .argumentIndex(SplitArguments.Index(inputIndex: 3, subIndex: .complete))))
+    XCTAssertEqual(value.0, .argumentIndex(SplitArguments.Index(inputIndex: 4, subIndex: .complete)))
+    XCTAssertEqual(value.1, "foo")
   }
   
   func testPopNextValueAfter_1() throws {
-    var sut = try SplitArguments(arguments: ["--bar", "bar", "--foo", "foo"])
+    var sut = try SplitArguments(arguments: ["--bar", "bar", "-12", "--foo", "foo"])
+    
+    XCTAssertEqual(sut.elements.count, 7)
     
     let valueA = try XCTUnwrap(sut.popNextValue(after: .argumentIndex(SplitArguments.Index(inputIndex: 0, subIndex: .complete))))
     XCTAssertEqual(valueA.0, .argumentIndex(SplitArguments.Index(inputIndex: 1, subIndex: .complete)))
     XCTAssertEqual(valueA.1, "bar")
     
     let valueB = try XCTUnwrap(sut.popNextValue(after: .argumentIndex(SplitArguments.Index(inputIndex: 0, subIndex: .complete))))
-    XCTAssertEqual(valueB.0, .argumentIndex(SplitArguments.Index(inputIndex: 3, subIndex: .complete)))
-    XCTAssertEqual(valueB.1, "foo")
+    XCTAssertEqual(valueB.0, .argumentIndex(SplitArguments.Index(inputIndex: 2, subIndex: .complete)))
+    XCTAssertEqual(valueB.1, "-12")
+    
+    let valueC = try XCTUnwrap(sut.popNextValue(after: .argumentIndex(SplitArguments.Index(inputIndex: 0, subIndex: .complete))))
+    XCTAssertEqual(valueC.0, .argumentIndex(SplitArguments.Index(inputIndex: 4, subIndex: .complete)))
+    XCTAssertEqual(valueC.1, "foo")
+    
+    XCTAssertNil(sut.popNextValue(after: .argumentIndex(SplitArguments.Index(inputIndex: 0, subIndex: .complete))))
+    
+    XCTAssertEqual(sut.elements.count, 2)
   }
   
   func testPopNextValueAfter_2() throws {
-    var sut = try SplitArguments(arguments: ["--bar", "bar", "--foo", "foo"])
+    var sut = try SplitArguments(arguments: ["--bar", "bar", "-12", "--foo", "foo"])
     
-    let value = try XCTUnwrap(sut.popNextValue(after: .argumentIndex(SplitArguments.Index(inputIndex: 2, subIndex: .complete))))
-    XCTAssertEqual(value.0, .argumentIndex(SplitArguments.Index(inputIndex: 3, subIndex: .complete)))
-    XCTAssertEqual(value.1, "foo")
+    XCTAssertEqual(sut.elements.count, 7)
+    
+    let value = try XCTUnwrap(sut.popNextValue(after: .argumentIndex(SplitArguments.Index(inputIndex: 1, subIndex: .complete))))
+    XCTAssertEqual(value.0, .argumentIndex(SplitArguments.Index(inputIndex: 2, subIndex: .complete)))
+    XCTAssertEqual(value.1, "-12")
+    
+    let valueC = try XCTUnwrap(sut.popNextValue(after: .argumentIndex(SplitArguments.Index(inputIndex: 1, subIndex: .complete))))
+    XCTAssertEqual(valueC.0, .argumentIndex(SplitArguments.Index(inputIndex: 4, subIndex: .complete)))
+    XCTAssertEqual(valueC.1, "foo")
     
     XCTAssertNil(sut.popNextValue(after: .argumentIndex(SplitArguments.Index(inputIndex: 2, subIndex: .complete))))
+    
+    XCTAssertEqual(sut.elements.count, 3)
   }
   
   func testPopNextValueAfter_3() throws {
-    var sut = try SplitArguments(arguments: ["--bar", "bar", "--foo", "foo"])
+    var sut = try SplitArguments(arguments: ["--bar", "bar", "-12", "--foo", "foo"])
     
-    XCTAssertNil(sut.popNextValue(after: .argumentIndex(SplitArguments.Index(inputIndex: 3, subIndex: .complete))))
+    XCTAssertNil(sut.popNextValue(after: .argumentIndex(SplitArguments.Index(inputIndex: 4, subIndex: .complete))))
   }
   
   func testPopNextElementAsValueAfter_1() throws {
-    var sut = try SplitArguments(arguments: ["--bar", "bar", "--foo", "foo"])
+    var sut = try SplitArguments(arguments: ["--bar", "bar", "-12", "--foo", "foo"])
     
     let valueA = try XCTUnwrap(sut.popNextElementAsValue(after: .argumentIndex(SplitArguments.Index(inputIndex: 0, subIndex: .complete))))
     XCTAssertEqual(valueA.0, .argumentIndex(SplitArguments.Index(inputIndex: 1, subIndex: .complete)))
@@ -517,7 +704,11 @@ extension SplitArgumentTests {
     
     let valueB = try XCTUnwrap(sut.popNextElementAsValue(after: .argumentIndex(SplitArguments.Index(inputIndex: 0, subIndex: .complete))))
     XCTAssertEqual(valueB.0, .argumentIndex(SplitArguments.Index(inputIndex: 2, subIndex: .complete)))
-    XCTAssertEqual(valueB.1, "--foo")
+    XCTAssertEqual(valueB.1, "-12")
+    
+    let valueC = try XCTUnwrap(sut.popNextElementAsValue(after: .argumentIndex(SplitArguments.Index(inputIndex: 0, subIndex: .complete))))
+    XCTAssertEqual(valueC.0, .argumentIndex(SplitArguments.Index(inputIndex: 3, subIndex: .complete)))
+    XCTAssertEqual(valueC.1, "--foo")
   }
   
   func testPopNextElementAsValueAfter_2() throws {
@@ -535,33 +726,49 @@ extension SplitArgumentTests {
   }
   
   func testPopNextElementIfValue() throws {
-    var sut = try SplitArguments(arguments: ["--bar", "bar", "--foo", "foo"])
+    var sut = try SplitArguments(arguments: ["--bar", "bar", "-12", "--foo", "foo"])
     
     _ = try XCTUnwrap(sut.popNext())
     
-    let value = try XCTUnwrap(sut.popNextElementIfValue())
-    XCTAssertEqual(value.0, .argumentIndex(SplitArguments.Index(inputIndex: 1, subIndex: .complete)))
-    XCTAssertEqual(value.1, "bar")
+    let valueA = try XCTUnwrap(sut.popNextElementIfValue())
+    XCTAssertEqual(valueA.0, .argumentIndex(SplitArguments.Index(inputIndex: 1, subIndex: .complete)))
+    XCTAssertEqual(valueA.1, "bar")
+    
+    let valueB = try XCTUnwrap(sut.popNextElementIfValue())
+    XCTAssertEqual(valueB.0, .argumentIndex(SplitArguments.Index(inputIndex: 2, subIndex: .complete)))
+    XCTAssertEqual(valueB.1, "-12")
+    
+    XCTAssertNil(sut.popNextElementIfValue())
+    _ = try XCTUnwrap(sut.popNext())
+    
+    let valueC = try XCTUnwrap(sut.popNextElementIfValue())
+    XCTAssertEqual(valueC.0, .argumentIndex(SplitArguments.Index(inputIndex: 4, subIndex: .complete)))
+    XCTAssertEqual(valueC.1, "foo")
     
     XCTAssertNil(sut.popNextElementIfValue())
   }
   
   func testPopNextValue() throws {
-    var sut = try SplitArguments(arguments: ["--bar", "bar", "--foo", "foo"])
+    var sut = try SplitArguments(arguments: ["--bar", "bar", "-12", "--foo", "foo"])
     
     let valueA = try XCTUnwrap(sut.popNextValue())
     XCTAssertEqual(valueA.0, SplitArguments.Index(inputIndex: 1, subIndex: .complete))
     XCTAssertEqual(valueA.1, "bar")
     
     let valueB = try XCTUnwrap(sut.popNextValue())
-    XCTAssertEqual(valueB.0, SplitArguments.Index(inputIndex: 3, subIndex: .complete))
-    XCTAssertEqual(valueB.1, "foo")
+    XCTAssertEqual(valueB.0, SplitArguments.Index(inputIndex: 2, subIndex: .complete))
+    XCTAssertEqual(valueB.1, "-12")
+    XCTAssertEqual(sut.elements.count, 3) // Ensure popping as value removes subindices
+    
+    let valueC = try XCTUnwrap(sut.popNextValue())
+    XCTAssertEqual(valueC.0, SplitArguments.Index(inputIndex: 4, subIndex: .complete))
+    XCTAssertEqual(valueC.1, "foo")
     
     XCTAssertNil(sut.popNextElementIfValue())
   }
   
   func testPeekNextValue() throws {
-    let sut = try SplitArguments(arguments: ["--bar", "bar", "--foo", "foo"])
+    let sut = try SplitArguments(arguments: ["--bar", "bar", "-12", "--foo", "foo"])
     
     let valueA = try XCTUnwrap(sut.peekNextValue())
     XCTAssertEqual(valueA.0, SplitArguments.Index(inputIndex: 1, subIndex: .complete))
@@ -570,5 +777,11 @@ extension SplitArgumentTests {
     let valueB = try XCTUnwrap(sut.peekNextValue())
     XCTAssertEqual(valueB.0, SplitArguments.Index(inputIndex: 1, subIndex: .complete))
     XCTAssertEqual(valueB.1, "bar")
+    
+    let sut2 = try SplitArguments(arguments: ["--bar", "-12"])
+    
+    let value2 = try XCTUnwrap(sut2.peekNextValue())
+    XCTAssertEqual(value2.0, SplitArguments.Index(inputIndex: 1, subIndex: .complete))
+    XCTAssertEqual(value2.1, "-12")
   }
 }

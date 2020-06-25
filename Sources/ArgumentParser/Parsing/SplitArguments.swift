@@ -76,12 +76,15 @@ enum ParsedArgument: Equatable, CustomStringConvertible {
 /// A parsed version of command-line arguments.
 ///
 /// This is a flat list of *values* and *options*. E.g. the
-/// arguments `["--foo", "bar"]` would be parsed into
-/// `[.option(.name(.long("foo"))), .value("bar")]`.
+/// arguments `["--foo", "bar", "-4"]` would be parsed into
+/// `[.option(.name(.long("foo"))), .value("bar"),
+/// .possibleNegative(value: "-4", option: .name(.short("4")))]`.
 struct SplitArguments {
   enum Element: Equatable {
     case option(ParsedArgument)
     case value(String)
+    /// An element that could represent a negative number or an option (or option group).
+    case possibleNegative(value: String, option: ParsedArgument)
     /// The `--` marker
     case terminator
   }
@@ -149,6 +152,8 @@ extension SplitArguments.Element: CustomDebugStringConvertible {
       return name.synopsisString
     case .option(.nameWithValue(let name, let value)):
       return name.synopsisString + "; value '\(value)'"
+    case .possibleNegative(let value, _):
+      return "negative? '\(value)'"
     case .value(let value):
       return "value '\(value)'"
     case .terminator:
@@ -176,6 +181,8 @@ extension SplitArguments: CustomStringConvertible {
           return "[\(index)] \(name.synopsisString)"
         case .option(.nameWithValue(let name, let value)):
           return "[\(index)] \(name.synopsisString)='\(value)'"
+        case .possibleNegative(let value, _):
+          return "[\(index)] '\(value)'"
         case .value(let value):
           return "[\(index)] '\(value)'"
         case .terminator:
@@ -189,7 +196,7 @@ extension SplitArguments: CustomStringConvertible {
 extension SplitArguments.Element {
   var isValue: Bool {
     switch self {
-    case .value: return true
+    case .value, .possibleNegative: return true
     case .option, .terminator: return false
     }
   }
@@ -236,7 +243,8 @@ extension SplitArguments {
     return (.argumentIndex(index), value)
   }
   
-  /// Pops the element immediately after the given index, if it is a `.value`.
+  /// Pops the element immediately after the given index, if it is a `.value`
+  /// or `.possibleNegative`.
   ///
   /// This is used to get the next value in `-fb name` where `name` is the
   /// value for `-f`, or `--foo name` where `name` is the value for `--foo`.
@@ -252,27 +260,32 @@ extension SplitArguments {
       let elementIndex = elements.firstIndex(where: { $0.0.inputIndex > after.inputIndex })
       else { return nil }
     
-    // Only succeed if the element is a value (not prefixed with a dash)
-    guard case .value(let value) = elements[elementIndex].1
-      else { return nil }
-    
-    let matchedArgumentIndex = elements[elementIndex].0
-    elements.remove(at: elementIndex)
-    return (.argumentIndex(matchedArgumentIndex), value)
+    // Succeed if the element is a value (not prefixed with a dash),
+    // or a possible negative value (number prefixed with a dash).
+    switch elements[elementIndex].1 {
+    case .value(let value), .possibleNegative(let value, _):
+      let matchedArgumentIndex = elements[elementIndex].0
+      remove(at: matchedArgumentIndex)
+      return (.argumentIndex(matchedArgumentIndex), value)
+    default:
+      return nil
+    }
   }
   
-  /// Pops the next `.value` after the given index.
+  /// Pops the next `.value` or `.possibleNegative` after the given index.
   ///
   /// This is used to get the next value in `-f -b name` where `name` is the value of `-f`.
   mutating func popNextValue(after origin: InputOrigin.Element) -> (InputOrigin.Element, String)? {
     guard case .argumentIndex(let after) = origin else { return nil }
-    for (index, element) in elements.enumerated() {
-      guard
-        element.0 > after,
-        case .value(let value) = element.1
-        else { continue }
-      elements.remove(at: index)
-      return (.argumentIndex(element.0), value)
+    for element in elements {
+      guard element.0 > after else { continue }
+      switch element.1 {
+      case .value(let value), .possibleNegative(let value, _):
+        remove(at: element.index)
+        return (.argumentIndex(element.0), value)
+      default:
+        continue
+      }
     }
     return nil
   }
@@ -296,48 +309,47 @@ extension SplitArguments {
     return (.argumentIndex(nextIndex), originalInput[unconditionalIndex.rawValue])
   }
   
-  /// Pops the next element if it is a value.
+  /// Pops the next element if it is a `.value` or `.possibleNegative`.
   ///
   /// If the current elements are `--b foo`, this will return `nil`. If the
   /// elements are `foo --b`, this will return the value `foo`.
   mutating func popNextElementIfValue() -> (InputOrigin.Element, String)? {
-    guard
-      let (index, element) = elements.first,
-      case .value(let value) = element
-      else { return nil }
-    elements.remove(at: 0)
-    return (.argumentIndex(index), value)
+    guard let (index, element) = elements.first else { return nil }
+    
+    switch element {
+    case .value(let value), .possibleNegative(let value, _):
+      remove(at: index)
+      return (.argumentIndex(index), value)
+    default:
+      return nil
+    }
   }
   
-  /// Finds and "pops" the next element that is a value.
+  /// Finds and "pops" the next element that is a `.value` or `.possibleNegative`.
   ///
   /// If the current elements are `--a --b foo`, this will remove and return
   /// `foo`.
   mutating func popNextValue() -> (Index, String)? {
-    guard let idx = elements.firstIndex(where: {
-      switch $0.element {
-      case .option: return false
-      case .value: return true
-      case .terminator: return false
-      }
-    }) else { return nil }
+    guard let idx = elements.firstIndex(where: { $0.element.isValue }) else { return nil }
     let e = elements[idx]
-    elements.remove(at: idx)
-    guard case let .value(v) = e.element else { fatalError() }
-    return (e.index, v)
+    remove(at: e.index)
+    switch e.element {
+    case .value(let v), .possibleNegative(let v, _):
+      return (e.index, v)
+    default:
+      fatalError()
+    }
   }
   
   func peekNextValue() -> (Index, String)? {
-    guard let idx = elements.firstIndex(where: {
-      switch $0.element {
-      case .option: return false
-      case .value: return true
-      case .terminator: return false
-      }
-    }) else { return nil }
+    guard let idx = elements.firstIndex(where: { $0.element.isValue }) else { return nil }
     let e = elements[idx]
-    guard case let .value(v) = e.element else { fatalError() }
-    return (e.index, v)
+    switch e.element {
+    case .value(let v), .possibleNegative(let v, _):
+      return (e.index, v)
+    default:
+      fatalError()
+    }
   }
   
   /// Removes the element(s) at the given `Index`.
@@ -432,6 +444,16 @@ extension SplitArguments {
       elements.append((index, element))
     }
     
+    /// Append as `.possibleNegative` if it could be a negative value;
+    /// otherwise, append as `.option`.
+    func appendAsPossibleNegative(if IsDashPrefixedNumber: Bool, value: String, option: ParsedArgument) {
+      if IsDashPrefixedNumber {
+        append(.possibleNegative(value: value, option: option))
+      } else {
+        append(.option(option))
+      }
+    }
+    
     var args = arguments[arguments.startIndex..<arguments.endIndex]
     argLoop: while let arg = args.popFirst() {
       defer {
@@ -445,6 +467,7 @@ extension SplitArguments {
         case 0:
           append(.value(arg))
         case 1:
+          let possibleNegativeNumber = Int(arg) != nil || Double(arg) != nil
           // Long option:
           let parsed = try ParsedArgument(longArgWithSingleDashRemainder: remainder)
           // Multiple short options:
@@ -452,14 +475,14 @@ extension SplitArguments {
           switch parts.count {
           case 0:
             // Long only:
-            append(.option(parsed))
+            appendAsPossibleNegative(if: possibleNegativeNumber, value: arg, option: parsed)
           case 1:
             // Short only:
             if let c = remainder.first {
-              append(.option(.name(.short(c))))
+              appendAsPossibleNegative(if: possibleNegativeNumber, value: arg, option: .name(.short(c)))
             }
           default:
-            append(.option(parsed))
+            appendAsPossibleNegative(if: possibleNegativeNumber, value: arg, option: parsed)
             for (sub, a) in parts {
               append(.option(a), sub: sub)
             }
