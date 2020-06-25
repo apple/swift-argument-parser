@@ -652,3 +652,54 @@ extension DefaultsEndToEndTests {
     }
   }
 }
+
+
+fileprivate struct RequiredArray_Option_NoTransform: ParsableArguments {
+  @Option(parsing: .remaining)
+  var array: [String]
+}
+
+fileprivate struct RequiredArray_Option_Transform: ParsableArguments {
+  @Option(parsing: .remaining, transform: exclaim)
+  var array: [String]
+}
+
+extension DefaultsEndToEndTests {
+  /// Tests that not providing an argument for a required array option produces an error.
+  func testParsing_RequiredArray_Option_NoTransform_NoInput() {
+    XCTAssertThrowsError(try RequiredArray_Option_NoTransform.parse([]))
+  }
+
+  /// Tests that providing a single argument for a required array option parses that value correctly.
+  func testParsing_RequiredArray_Option_NoTransform_SingleInput() {
+    AssertParse(RequiredArray_Option_NoTransform.self, ["--array", "1"]) { arguments in
+      XCTAssertEqual(arguments.array, ["1"])
+    }
+  }
+
+  /// Tests that providing multiple arguments for a required array option parses those values correctly.
+  func testParsing_RequiredArray_Option_NoTransform_MultipleInput() {
+    AssertParse(RequiredArray_Option_NoTransform.self, ["--array", "2", "3"]) { arguments in
+      XCTAssertEqual(arguments.array, ["2", "3"])
+    }
+  }
+
+  /// Tests that not providing an argument for a required array option with a transform produces an error.
+  func testParsing_RequiredArray_Option_Transform_NoInput() {
+    XCTAssertThrowsError(try RequiredArray_Option_Transform.parse([]))
+  }
+
+  /// Tests that providing a single argument for a required array option with a transform parses that value correctly.
+  func testParsing_RequiredArray_Option_Transform_SingleInput() {
+    AssertParse(RequiredArray_Option_Transform.self, ["--array", "1"]) { arguments in
+      XCTAssertEqual(arguments.array, ["1!"])
+    }
+  }
+
+  /// Tests that providing multiple arguments for a required array option with a transform parses those values correctly.
+  func testParsing_RequiredArray_Option_Transform_MultipleInput() {
+    AssertParse(RequiredArray_Option_Transform.self, ["--array", "2", "3"]) { arguments in
+      XCTAssertEqual(arguments.array, ["2!", "3!"])
+    }
+  }
+}
