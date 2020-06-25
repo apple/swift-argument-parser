@@ -446,8 +446,8 @@ extension SplitArguments {
     
     /// Append as `.possibleNegative` if it could be a negative value;
     /// otherwise, append as `.option`.
-    func appendAsPossibleNegative(if IsDashPrefixedNumber: Bool, value: String, option: ParsedArgument) {
-      if IsDashPrefixedNumber {
+    func appendAsPossibleNegative(if isDashPrefixedNumber: Bool, value: String, option: ParsedArgument) {
+      if isDashPrefixedNumber {
         append(.possibleNegative(value: value, option: option))
       } else {
         append(.option(option))
