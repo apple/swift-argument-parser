@@ -11,12 +11,12 @@
 
 @_implementationOnly import Foundation
 
-enum MessageInfo {
+public enum MessageInfo {
   case help(text: String)
   case validation(message: String, usage: String)
   case other(message: String, exitCode: Int32)
   
-  init(error: Error, type: ParsableArguments.Type) {
+  public init(error: Error, type: ParsableArguments.Type) {
     var commandStack: [ParsableCommand.Type]
     var parserError: ParserError? = nil
     
@@ -93,7 +93,7 @@ enum MessageInfo {
     }
   }
   
-  var message: String {
+  public var message: String {
     switch self {
     case .help(text: let text):
       return text
@@ -104,7 +104,7 @@ enum MessageInfo {
     }
   }
   
-  var fullText: String {
+  public var fullText: String {
     switch self {
     case .help(text: let text):
       return text
@@ -123,7 +123,7 @@ enum MessageInfo {
     }
   }
 
-  var exitCode: ExitCode {
+  public var exitCode: ExitCode {
     switch self {
     case .help: return ExitCode.success
     case .validation: return ExitCode.validationFailure
