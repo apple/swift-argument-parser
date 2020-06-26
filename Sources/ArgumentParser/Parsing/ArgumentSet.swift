@@ -154,9 +154,9 @@ extension ArgumentSet {
   }
   
   /// Creates an argument set for an incrementing integer flag.
-  static func counter(key: InputKey, name: NameSpecification, help: ArgumentHelp?, completion: CompletionKind) -> ArgumentSet {
+  static func counter(key: InputKey, name: NameSpecification, help: ArgumentHelp?) -> ArgumentSet {
     let help = ArgumentDefinition.Help(options: [.isOptional, .isRepeating], help: help, key: key)
-    let arg = ArgumentDefinition(kind: .name(key: key, specification: name), help: help, completion: completion, update: .nullary({ (origin, name, values) in
+    let arg = ArgumentDefinition(kind: .name(key: key, specification: name), help: help, completion: .default, update: .nullary({ (origin, name, values) in
       guard let a = values.element(forKey: key)?.value, let b = a as? Int else {
         throw ParserError.invalidState
       }

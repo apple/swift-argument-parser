@@ -102,13 +102,12 @@ extension Argument where Value: ExpressibleByArgument {
   @available(*, deprecated, message: "Use regular property initialization for default values (`var foo: String = \"bar\"`)")
   public init(
     default initial: Value?,
-    help: ArgumentHelp? = nil,
-    completion: CompletionKind? = nil
+    help: ArgumentHelp? = nil
   ) {
     self.init(
       initial: initial,
       help: help,
-      completion: completion
+      completion: nil
     )
   }
 
@@ -218,7 +217,7 @@ extension Argument {
         parsingStrategy: .nextAsValue,
         parser: T.init(argument:),
         default: nil,
-        completion: completion ?? .default)
+        completion: completion ?? T.defaultCompletionKind)
       arg.help.help = help
       return ArgumentSet(arg.optional)
     })
@@ -242,7 +241,7 @@ extension Argument {
         name: .long,
         default: initial,
         help: help,
-        completion: .default)
+        completion: T.defaultCompletionKind)
     })
   }
 
@@ -298,13 +297,12 @@ extension Argument {
   public init(
     default initial: Value?,
     help: ArgumentHelp? = nil,
-    completion: CompletionKind? = nil,
     transform: @escaping (String) throws -> Value
   ) {
     self.init(
       initial: initial,
       help: help,
-      completion: completion,
+      completion: nil,
       transform: transform
     )
   }

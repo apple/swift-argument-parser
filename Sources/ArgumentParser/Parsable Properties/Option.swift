@@ -87,8 +87,9 @@ extension Option where Value: ExpressibleByArgument {
         parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy),
         parseType: Value.self,
         name: name,
-        default: initial, help: help, completion: completion ?? .default)
-      })
+        default: initial, help: help, completion: completion ?? Value.defaultCompletionKind)
+     }
+    )
   }
 
   /// Creates a property that reads its value from a labeled option.
@@ -117,16 +118,14 @@ extension Option where Value: ExpressibleByArgument {
     name: NameSpecification = .long,
     default initial: Value?,
     parsing parsingStrategy: SingleValueParsingStrategy = .next,
-    help: ArgumentHelp? = nil,
-    completion: CompletionKind? = nil
+    help: ArgumentHelp? = nil
   ) {
     self.init(
       name: name,
       initial: initial,
       parsingStrategy: parsingStrategy,
       help: help,
-      completion: completion
-    )
+      completion: nil)
   }
 
   /// Creates a property with a default value provided by standard Swift default value syntax.
@@ -149,13 +148,12 @@ extension Option where Value: ExpressibleByArgument {
     completion: CompletionKind? = nil,
     help: ArgumentHelp? = nil
   ) {
-     self.init(
+    self.init(
       name: name,
       initial: wrappedValue,
       parsingStrategy: parsingStrategy,
       help: help,
-      completion: completion
-    )
+      completion: completion)
   }
 
   /// Creates a property with no default value.
@@ -176,7 +174,7 @@ extension Option where Value: ExpressibleByArgument {
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil
   ) {
-     self.init(
+    self.init(
       name: name,
       initial: nil,
       parsingStrategy: parsingStrategy,
@@ -326,7 +324,7 @@ extension Option {
         parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy),
         parser: T.init(argument:),
         default: nil,
-        completion: completion ?? .default)
+        completion: completion ?? T.defaultCompletionKind)
       arg.help.help = help
       return ArgumentSet(arg.optional)
     })
@@ -350,7 +348,7 @@ extension Option {
         parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy),
         parser: T.init(argument:),
         default: initial,
-        completion: .default)
+        completion: T.defaultCompletionKind)
       arg.help.help = help
       return ArgumentSet(arg.optional)
     })
@@ -419,7 +417,6 @@ extension Option {
     default initial: Value?,
     parsing parsingStrategy: SingleValueParsingStrategy = .next,
     help: ArgumentHelp? = nil,
-    completion: CompletionKind?,
     transform: @escaping (String) throws -> Value
   ) {
      self.init(
@@ -427,7 +424,7 @@ extension Option {
       initial: initial,
       parsingStrategy: parsingStrategy,
       help: help,
-      completion: completion,
+      completion: nil,
       transform: transform
     )
   }
@@ -445,7 +442,7 @@ extension Option {
   ///   - parsingStrategy: The behavior to use when looking for this option's value.
   ///   - help: Information about how to use this option.
   ///   - transform: A closure that converts a string into this property's type or throws an error.
-   public init(
+  public init(
     wrappedValue: Value,
     name: NameSpecification = .long,
     parsing parsingStrategy: SingleValueParsingStrategy = .next,
@@ -512,12 +509,19 @@ extension Option {
     self.init(_parsedValue: .init { key in
       let kind = ArgumentDefinition.Kind.name(key: key, specification: name)
       let help = ArgumentDefinition.Help(options: [.isOptional, .isRepeating], help: help, key: key)
-      var arg = ArgumentDefinition(kind: kind, help: help, completion: completion ?? Element.defaultCompletionKind, parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy), update: .appendToArray(forType: Element.self, key: key), initial: { origin, values in
-        values.set(wrappedValue, forKey: key, inputOrigin: origin)
-      })
+      var arg = ArgumentDefinition(
+        kind: kind,
+        help: help,
+        completion: completion ?? Element.defaultCompletionKind,
+        parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy),
+        update: .appendToArray(forType: Element.self, key: key),
+        initial: { origin, values in
+          values.set(wrappedValue, forKey: key, inputOrigin: origin)
+        }
+      )
       arg.help.defaultValue = !wrappedValue.isEmpty ? "\(wrappedValue)" : nil
       return ArgumentSet(alternatives: [arg])
-      })
+    })
   }
   
   /// Creates an array property that reads its values from zero or more
@@ -546,19 +550,25 @@ extension Option {
     self.init(_parsedValue: .init { key in
       let kind = ArgumentDefinition.Kind.name(key: key, specification: name)
       let help = ArgumentDefinition.Help(options: [.isOptional, .isRepeating], help: help, key: key)
-      var arg = ArgumentDefinition.init(kind: kind, help: help, completion: completion ?? .default, parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy), update: .unary({
-        (origin, name, valueString, parsedValues) in
-        do {
-          let transformedElement = try transform(valueString)
-          parsedValues.update(forKey: key, inputOrigin: origin, initial: [Element](), closure: {
-                $0.append(transformedElement)
-          })
-        } catch {
-          throw ParserError.unableToParseValue(origin, name, valueString, forKey: key, originalError: error)
+      var arg = ArgumentDefinition(
+        kind: kind,
+        help: help,
+        completion: completion ?? .default,
+        parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy),
+        update: .unary({ (origin, name, valueString, parsedValues) in
+          do {
+            let transformedElement = try transform(valueString)
+            parsedValues.update(forKey: key, inputOrigin: origin, initial: [Element](), closure: {
+                  $0.append(transformedElement)
+            })
+          } catch {
+            throw ParserError.unableToParseValue(origin, name, valueString, forKey: key, originalError: error)
+          }
+        }),
+        initial: { origin, values in
+          values.set(wrappedValue, forKey: key, inputOrigin: origin)
         }
-      }), initial: { origin, values in
-        values.set(wrappedValue, forKey: key, inputOrigin: origin)
-      })
+      )
       arg.help.defaultValue = !wrappedValue.isEmpty ? "\(wrappedValue)" : nil
       return ArgumentSet(alternatives: [arg])
     })

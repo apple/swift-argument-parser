@@ -136,8 +136,7 @@ extension Flag where Value == Optional<Bool> {
     name: NameSpecification = .long,
     inversion: FlagInversion,
     exclusivity: FlagExclusivity = .chooseLast,
-    help: ArgumentHelp? = nil,
-    completion: CompletionKind = .default
+    help: ArgumentHelp? = nil
   ) {
     self.init(_parsedValue: .init { key in
       .flag(key: key, name: name, default: nil, inversion: inversion, exclusivity: exclusivity, help: help)
@@ -353,7 +352,7 @@ extension Flag where Value == Int {
     help: ArgumentHelp? = nil
   ) {
     self.init(_parsedValue: .init { key in
-      .counter(key: key, name: name, help: help, completion: .default)
+      .counter(key: key, name: name, help: help)
     })
   }
 }

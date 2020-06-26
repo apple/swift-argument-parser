@@ -228,7 +228,7 @@ struct GenerateCompletions: ParsableCommand {
 }
 
 struct AutodetectedGenerateCompletions: ParsableCommand {
-    @Flag() var generateCompletionScript: Bool
+    @Flag() var generateCompletionScript = false
 }
 
 extension CommandParser {
