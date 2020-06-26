@@ -44,6 +44,13 @@ extension ParsableCommand {
   public mutating func run() throws {
     throw CleanExit.helpRequest(self)
   }
+    
+  private static func checkConfigurationPrecondition() {
+    precondition(
+      !self.configuration.subcommands.contains { $0 == self },
+      "The CommandConfiguration provided is invalid: you can't use a command as its own subcommand."
+    )
+  }
 }
 
 // MARK: - API
@@ -59,6 +66,7 @@ extension ParsableCommand {
   public static func parseAsRoot(
     _ arguments: [String]? = nil
   ) throws -> ParsableCommand {
+    checkConfigurationPrecondition()
     var parser = CommandParser(self)
     let arguments = arguments ?? Array(CommandLine.arguments.dropFirst())
     return try parser.parse(arguments: arguments).get()
@@ -79,6 +87,7 @@ extension ParsableCommand {
     for subcommand: ParsableCommand.Type,
     columns: Int? = nil
   ) -> String { 
+    checkConfigurationPrecondition()
     let stack = CommandParser(self).commandStack(for: subcommand)
     return HelpGenerator(commandStack: stack).rendered(screenWidth: columns)
   }
