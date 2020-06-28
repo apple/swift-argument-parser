@@ -88,10 +88,17 @@ extension Tree where Element == ParsableCommand.Type {
     children.first(where: { $0.element._commandName == name })
   }
   
-  convenience init(root command: ParsableCommand.Type) {
+  convenience init(root command: ParsableCommand.Type) throws {
     self.init(command)
     for subcommand in command.configuration.subcommands {
-      addChild(Tree(root: subcommand))
+      if subcommand == command {
+        throw InitializationError.recursiveSubcommand(subcommand)
+      }
+      try addChild(Tree(root: subcommand))
     }
+  }
+    
+  enum InitializationError: Error {
+    case recursiveSubcommand(ParsableCommand.Type)
   }
 }
