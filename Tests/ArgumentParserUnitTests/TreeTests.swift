@@ -62,7 +62,7 @@ extension TreeTests {
     static let configuration = CommandConfiguration(subcommands: [Sub.self])
   }
   struct Sub: ParsableCommand {
-    static var configuration = CommandConfiguration(subcommands: [Sub.self])
+    static let configuration = CommandConfiguration(subcommands: [Sub.self])
   }
     
   func testInitializationWithRecursiveSubcommand() {
