@@ -9,7 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-extension Sequence where Iterator.Element: Hashable {
+extension Sequence where Element: Hashable {
   func uniquified() -> [Iterator.Element] {
     var seen: [Iterator.Element: Bool] = [:]
     return self.filter { seen.updateValue(true, forKey: $0) == nil }
