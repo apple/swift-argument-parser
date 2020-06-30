@@ -9,14 +9,9 @@
 //
 //===----------------------------------------------------------------------===//
 
-extension Sequence where Element: Equatable {
+extension Sequence where Element: Hashable {
   func uniquified() -> [Element] {
-    var sequence = Array<Element>()
-    for element in self {
-      if !sequence.contains(element) {
-        sequence.append(element)
-      }
-    }
-    return sequence
+    var seen = Set<Element>()
+    return self.filter { seen.insert($0).0 }
   }
 }
