@@ -10,7 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 extension Sequence where Element: Hashable {
-  func uniquified() -> [Iterator.Element] {
+  func uniquified() -> [Element] {
     var seen = Set<Element>()
     return self.filter { seen.insert($0).0 }
   }
