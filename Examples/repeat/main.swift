@@ -19,11 +19,15 @@ struct Repeat: ParsableCommand {
     var includeCounter = false
 
     @Argument(help: "The phrase to repeat.")
-    var phrase: String
+    var phrase: [String]
 
     mutating func run() throws {
         let repeatCount = count ?? .max
 
+        dump($count)
+        dump($includeCounter)
+        dump($phrase)
+      
         for i in 1...repeatCount {
             if includeCounter {
                 print("\(i): \(phrase)")
