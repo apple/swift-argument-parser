@@ -47,6 +47,12 @@ extension ExpressibleByArgument where Self: CaseIterable {
   }
 }
 
+extension ExpressibleByArgument where Self: CaseIterable, Self: RawRepresentable, RawValue == String {
+  public static var allValueStrings: [String] {
+    self.allCases.map { $0.rawValue }
+  }
+}
+
 extension String: ExpressibleByArgument {
   public init?(argument: String) {
     self = argument

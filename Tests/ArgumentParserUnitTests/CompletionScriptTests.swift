@@ -18,7 +18,7 @@ final class CompletionScriptTests: XCTestCase {
 
 extension CompletionScriptTests {
   enum Kind: String, ExpressibleByArgument, CaseIterable {
-    case one, two, three
+    case one, two, three = "custom-three"
   }
   
   struct Base: ParsableCommand {
@@ -103,7 +103,7 @@ _base() {
     local -a args
     args+=(
         '--name[The user'"'"'s name.]:name:'
-        '--kind[]:kind:(one two three)'
+        '--kind[]:kind:(one two custom-three)'
         '--other-kind[]:other-kind:(1 2 3)'
         '(-h --help)'{-h,--help}'[Print help information.]'
     )
@@ -140,7 +140,7 @@ _base() {
             return
         ;;
         --kind)
-            COMPREPLY=( $(compgen -W "one two three" -- $cur) )
+            COMPREPLY=( $(compgen -W "one two custom-three" -- $cur) )
             return
         ;;
         --other-kind)

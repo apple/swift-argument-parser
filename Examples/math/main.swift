@@ -95,7 +95,7 @@ extension Math.Statistics {
             abstract: "Print the average of the values.",
             version: "1.5.0-alpha")
 
-      enum Kind: String, ExpressibleByArgument, CaseIterable {
+        enum Kind: String, ExpressibleByArgument, CaseIterable {
             case mean, median, mode
         }
 
