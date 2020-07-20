@@ -191,13 +191,12 @@ private let bashCompletionScriptText = """
 #!/bin/bash
 
 _math() {
-    declare -a cur prev
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
     COMPREPLY=()
     opts="add multiply stats help -h --help"
-    if [[ $COMP_CWORD == 1 ]]; then
-        COMPREPLY=( $(compgen -W "$opts" -- $cur) )
+    if [[ $COMP_CWORD == "1" ]]; then
+        COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
         return
     fi
     case ${COMP_WORDS[1]} in
@@ -218,28 +217,28 @@ _math() {
             return
             ;;
     esac
-    COMPREPLY=( $(compgen -W "$opts" -- $cur) )
+    COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
 }
 _math_add() {
     opts="--hex-output -x -h --help"
-    if [[ $COMP_CWORD == $1 ]]; then
-        COMPREPLY=( $(compgen -W "$opts" -- $cur) )
+    if [[ $COMP_CWORD == "$1" ]]; then
+        COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
         return
     fi
-    COMPREPLY=( $(compgen -W "$opts" -- $cur) )
+    COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
 }
 _math_multiply() {
     opts="--hex-output -x -h --help"
-    if [[ $COMP_CWORD == $1 ]]; then
-        COMPREPLY=( $(compgen -W "$opts" -- $cur) )
+    if [[ $COMP_CWORD == "$1" ]]; then
+        COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
         return
     fi
-    COMPREPLY=( $(compgen -W "$opts" -- $cur) )
+    COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
 }
 _math_stats() {
     opts="average stdev quantiles -h --help"
-    if [[ $COMP_CWORD == $1 ]]; then
-        COMPREPLY=( $(compgen -W "$opts" -- $cur) )
+    if [[ $COMP_CWORD == "$1" ]]; then
+        COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
         return
     fi
     case ${COMP_WORDS[$1]} in
@@ -256,36 +255,36 @@ _math_stats() {
             return
             ;;
     esac
-    COMPREPLY=( $(compgen -W "$opts" -- $cur) )
+    COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
 }
 _math_stats_average() {
     opts="--kind -h --help"
-    if [[ $COMP_CWORD == $1 ]]; then
-        COMPREPLY=( $(compgen -W "$opts" -- $cur) )
+    if [[ $COMP_CWORD == "$1" ]]; then
+        COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
         return
     fi
     case $prev in
         --kind)
-            COMPREPLY=( $(compgen -W "mean median mode" -- $cur) )
+            COMPREPLY=( $(compgen -W "mean median mode" -- "$cur") )
             return
         ;;
     esac
-    COMPREPLY=( $(compgen -W "$opts" -- $cur) )
+    COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
 }
 _math_stats_stdev() {
     opts="-h --help"
-    if [[ $COMP_CWORD == $1 ]]; then
-        COMPREPLY=( $(compgen -W "$opts" -- $cur) )
+    if [[ $COMP_CWORD == "$1" ]]; then
+        COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
         return
     fi
-    COMPREPLY=( $(compgen -W "$opts" -- $cur) )
+    COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
 }
 _math_stats_quantiles() {
     opts="--test-success-exit-code --test-failure-exit-code --test-validation-exit-code --test-custom-exit-code --file --directory --shell --custom -h --help"
     opts="$opts alphabet alligator branch braggart"
-    opts="$opts $(math ---completion stats quantiles -- customArg $COMP_WORDS)"
-    if [[ $COMP_CWORD == $1 ]]; then
-        COMPREPLY=( $(compgen -W "$opts" -- $cur) )
+    opts="$opts $(math ---completion stats quantiles -- customArg "$COMP_WORDS")"
+    if [[ $COMP_CWORD == "$1" ]]; then
+        COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
         return
     fi
     case $prev in
@@ -294,11 +293,11 @@ _math_stats_quantiles() {
             return
         ;;
         --file)
-            COMPREPLY=( $(compgen -f -- ${cur}) )
+            COMPREPLY=( $(compgen -f -- "$cur") )
             return
         ;;
         --directory)
-            COMPREPLY=( $(compgen -d -- ${cur}) )
+            COMPREPLY=( $(compgen -d -- "$cur") )
             return
         ;;
         --shell)
@@ -306,19 +305,19 @@ _math_stats_quantiles() {
             return
         ;;
         --custom)
-            COMPREPLY=( $(compgen -W "$(math ---completion stats quantiles -- --custom $COMP_WORDS)" -- $cur) )
+            COMPREPLY=( $(compgen -W "$(math ---completion stats quantiles -- --custom "$COMP_WORDS")" -- "$cur") )
             return
         ;;
     esac
-    COMPREPLY=( $(compgen -W "$opts" -- $cur) )
+    COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
 }
 _math_help() {
     opts="-h --help"
-    if [[ $COMP_CWORD == $1 ]]; then
-        COMPREPLY=( $(compgen -W "$opts" -- $cur) )
+    if [[ $COMP_CWORD == "$1" ]]; then
+        COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
         return
     fi
-    COMPREPLY=( $(compgen -W "$opts" -- $cur) )
+    COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
 }
 
 

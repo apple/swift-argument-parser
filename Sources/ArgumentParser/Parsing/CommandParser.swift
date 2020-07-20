@@ -224,11 +224,11 @@ extension CommandParser {
 // MARK: Completion Script Support
 
 struct GenerateCompletions: ParsableCommand {
-    @Option() var generateCompletionScript: String
+  @Option() var generateCompletionScript: String
 }
 
 struct AutodetectedGenerateCompletions: ParsableCommand {
-    @Flag() var generateCompletionScript = false
+  @Flag() var generateCompletionScript = false
 }
 
 extension CommandParser {

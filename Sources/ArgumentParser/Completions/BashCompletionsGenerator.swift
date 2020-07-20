@@ -58,7 +58,6 @@ struct BashCompletionsGenerator {
     // that other command functions don't need.
     if isRootCommand {
       result += """
-        #declare -a cur prev
         cur="${COMP_WORDS[COMP_CWORD]}"
         prev="${COMP_WORDS[COMP_CWORD-1]}"
         COMPREPLY=()

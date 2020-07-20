@@ -17,6 +17,18 @@ final class CompletionScriptTests: XCTestCase {
 }
 
 extension CompletionScriptTests {
+  struct Path: ExpressibleByArgument {
+    var path: String
+    
+    init?(argument: String) {
+      self.path = argument
+    }
+    
+    static var defaultCompletionKind: CompletionKind {
+      .file()
+    }
+  }
+    
   enum Kind: String, ExpressibleByArgument, CaseIterable {
     case one, two, three = "custom-three"
   }
@@ -25,6 +37,10 @@ extension CompletionScriptTests {
     @Option(help: "The user's name.") var name: String
     @Option() var kind: Kind
     @Option(completion: .list(["1", "2", "3"])) var otherKind: Kind
+    
+    @Option() var path1: Path
+    @Option() var path2: Path?
+    @Option(completion: .list(["a", "b", "c"])) var path3: Path
   }
 
   func testBase_Zsh() throws {
@@ -43,6 +59,7 @@ extension CompletionScriptTests {
   func testBase_Bash() throws {
     let script1 = try CompletionsGenerator(command: Base.self, shell: .bash)
           .generateCompletionScript()
+    print(script1)
     XCTAssertEqual(bashBaseCompletions, script1)
     
     let script2 = try CompletionsGenerator(command: Base.self, shellName: "bash")
@@ -105,6 +122,9 @@ _base() {
         '--name[The user'"'"'s name.]:name:'
         '--kind[]:kind:(one two custom-three)'
         '--other-kind[]:other-kind:(1 2 3)'
+        '--path1[]:path1:_files'
+        '--path2[]:path2:_files'
+        '--path3[]:path3:(a b c)'
         '(-h --help)'{-h,--help}'[Print help information.]'
     )
     _arguments -w -s -S $args[@] && ret=0
@@ -125,13 +145,12 @@ private let bashBaseCompletions = """
 #!/bin/bash
 
 _base() {
-    declare -a cur prev
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
     COMPREPLY=()
-    opts="--name --kind --other-kind -h --help"
-    if [[ $COMP_CWORD == 1 ]]; then
-        COMPREPLY=( $(compgen -W "$opts" -- $cur) )
+    opts="--name --kind --other-kind --path1 --path2 --path3 -h --help"
+    if [[ $COMP_CWORD == "1" ]]; then
+        COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
         return
     fi
     case $prev in
@@ -140,15 +159,27 @@ _base() {
             return
         ;;
         --kind)
-            COMPREPLY=( $(compgen -W "one two custom-three" -- $cur) )
+            COMPREPLY=( $(compgen -W "one two custom-three" -- "$cur") )
             return
         ;;
         --other-kind)
-            COMPREPLY=( $(compgen -W "1 2 3" -- $cur) )
+            COMPREPLY=( $(compgen -W "1 2 3" -- "$cur") )
+            return
+        ;;
+        --path1)
+            COMPREPLY=( $(compgen -f -- "$cur") )
+            return
+        ;;
+        --path2)
+            COMPREPLY=( $(compgen -f -- "$cur") )
+            return
+        ;;
+        --path3)
+            COMPREPLY=( $(compgen -W "a b c" -- "$cur") )
             return
         ;;
     esac
-    COMPREPLY=( $(compgen -W "$opts" -- $cur) )
+    COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
 }
 
 
