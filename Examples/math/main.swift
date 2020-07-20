@@ -128,7 +128,7 @@ extension Math.Statistics {
             let sorted = values.sorted()
             let mid = sorted.count / 2
             if sorted.count.isMultiple(of: 2) {
-                return sorted[mid - 1] + sorted[mid] / 2
+                return (sorted[mid - 1] + sorted[mid]) / 2
             } else {
                 return sorted[mid]
             }
