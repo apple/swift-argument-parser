@@ -58,7 +58,7 @@ struct BashCompletionsGenerator {
     // that other command functions don't need.
     if isRootCommand {
       result += """
-        declare -a cur prev
+        #declare -a cur prev
         cur="${COMP_WORDS[COMP_CWORD]}"
         prev="${COMP_WORDS[COMP_CWORD-1]}"
         COMPREPLY=()
@@ -74,8 +74,8 @@ struct BashCompletionsGenerator {
     }
 
     result += """
-        if [[ $COMP_CWORD == \(dollarOne) ]]; then
-            COMPREPLY=( $(compgen -W "$opts" -- $cur) )
+        if [[ $COMP_CWORD == "\(dollarOne)" ]]; then
+            COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
             return
         fi
 
@@ -112,7 +112,7 @@ struct BashCompletionsGenerator {
     
     // Finish off the function.
     result += """
-        COMPREPLY=( $(compgen -W "$opts" -- $cur) )
+        COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
     }
 
     """
@@ -152,7 +152,9 @@ struct BashCompletionsGenerator {
           let argumentName = arg.preferredNameForSynopsis?.synopsisString
                 ?? arg.help.keys.first?.rawValue ?? "---"
           
-          return "$(\(commandName) ---completion \(subcommandNames) -- \(argumentName) $COMP_WORDS)"
+          return """
+            $(\(commandName) ---completion \(subcommandNames) -- \(argumentName) "$COMP_WORDS")
+            """
         }
       }
   }
@@ -193,13 +195,13 @@ extension ArgumentDefinition {
     case .file(_):
       // TODO: Use '_filedir' when available
       // FIXME: Use the extensions array
-      return "COMPREPLY=( $(compgen -f -- ${cur}) )"
+      return #"COMPREPLY=( $(compgen -f -- "$cur") )"#
 
     case .directory:
-      return "COMPREPLY=( $(compgen -d -- ${cur}) )"
+      return #"COMPREPLY=( $(compgen -d -- "$cur") )"#
       
     case .list(let list):
-      return #"COMPREPLY=( $(compgen -W "\#(list.joined(separator: " "))" -- $cur) )"#
+      return #"COMPREPLY=( $(compgen -W "\#(list.joined(separator: " "))" -- "$cur") )"#
     
     case .shellCommand(let command):
       return "COMPREPLY=( $(\(command)) )"
@@ -207,7 +209,7 @@ extension ArgumentDefinition {
     case .custom:
       // Generate a call back into the command to retrieve a completions list
       let commandName = commands.first!._commandName      
-      return #"COMPREPLY=( $(compgen -W "$(\#(commandName) \#(customCompletionCall(commands)) $COMP_WORDS)" -- $cur) )"#
+      return #"COMPREPLY=( $(compgen -W "$(\#(commandName) \#(customCompletionCall(commands)) "$COMP_WORDS")" -- "$cur") )"#
     }
   }
 }
