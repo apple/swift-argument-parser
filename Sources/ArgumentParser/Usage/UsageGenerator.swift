@@ -18,7 +18,7 @@ struct UsageGenerator {
 
 extension UsageGenerator {
   init(definition: ArgumentSet) {
-    let toolName = CommandLine.arguments[0].split(separator: "/").last.map(String.init) ?? "<command>"
+    let toolName = CommandLine.arguments[0].split(separator: "/").last.map(String.init) ?? NSLocalizedString("<command>", bundle: .module, comment: "Command placeholder")
     self.init(toolName: toolName, definition: definition)
   }
   
@@ -41,7 +41,7 @@ extension UsageGenerator {
     case 0:
       return toolName
     case let x where x > 12:
-      return "\(toolName) <options>"
+      return NSLocalizedString(String(format: "%@ <options>", toolName), bundle: .module, comment: "Command options help")
     default:
       return "\(toolName) \(definition.synopsis.joined(separator: " "))"
     }
@@ -85,7 +85,7 @@ extension ArgumentDefinition {
       
       switch update {
       case .unary:
-        return "\(name.synopsisString) <\(synopsisValueName ?? "value")>"
+        return "\(name.synopsisString) <\(synopsisValueName ?? NSLocalizedString("value", bundle: .module, comment: "Placeholder"))>"
       case .nullary:
         return name.synopsisString
       }
@@ -182,11 +182,11 @@ extension ErrorMessageGenerator {
     case .unableToParseValue(let o, let n, let v, forKey: let k, originalError: let e):
       return unableToParseValueMessage(origin: o, name: n, value: v, key: k, error: e)
     case .invalidOption(let str):
-      return "Invalid option: \(str)"
+      return NSLocalizedString(String(format: "Invalid option: %@", str), bundle: .module, comment: "Error message")
     case .nonAlphanumericShortOption(let c):
-      return "Invalid option: -\(c)"
+      return NSLocalizedString(String(format: "Invalid option: -%@", c as! CVarArg), bundle: .module, comment: "Error message")
     case .missingSubcommand:
-      return "Missing required subcommand."
+      return NSLocalizedString("Missing required subcommand.", bundle: .module, comment: "Error message")
     case .userValidationError(let error):
       switch error {
       case let error as LocalizedError:
@@ -235,16 +235,16 @@ extension ErrorMessageGenerator {
 
 extension ErrorMessageGenerator {
   var notImplementedMessage: String {
-    return "Internal error. Parsing command-line arguments hit unimplemented code path."
+    return NSLocalizedString("Internal error. Parsing command-line arguments hit unimplemented code path.", bundle: .module, comment: "Error message")
   }
   var invalidState: String {
-    return "Internal error. Invalid state while parsing command-line arguments."
+    return NSLocalizedString("Internal error. Invalid state while parsing command-line arguments.", bundle: .module, comment: "Error message")
   }
 
 
   func unknownOptionMessage(origin: InputOrigin.Element, name: Name) -> String {
     if case .short = name {
-      return "Unknown option '\(name.synopsisString)'"
+      return NSLocalizedString(String(format: "Unknown option '%@'", name.synopsisString), bundle: .module, comment: "Error message")
     }
     
     // An empirically derived magic number
@@ -266,21 +266,21 @@ extension ErrorMessageGenerator {
       })
     
     if let suggestion = suggestion {
-        return "Unknown option '\(name.synopsisString)'. Did you mean '\(suggestion.synopsisString)'?"
+      return NSLocalizedString(String(format: "Unknown option '%1$@'. Did you mean '%2$@'?", name.synopsisString, suggestion.synopsisString), bundle: .module, comment: "Error message")
     }
-    return "Unknown option '\(name.synopsisString)'"
+    return NSLocalizedString(String(format: "Unknown option '%@'.", name.synopsisString), bundle: .module, comment: "Error message")
   }
   
   func missingValueForOptionMessage(origin: InputOrigin, name: Name) -> String {
     if let valueName = valueName(for: name) {
-      return "Missing value for '\(name.synopsisString) <\(valueName)>'"
+      return NSLocalizedString(String(format: "Missing value for '%1$@ <%2$@>'", name.synopsisString, valueName), bundle: .module, comment: "Error message")
     } else {
-      return "Missing value for '\(name.synopsisString)'"
+      return String(format: "Missing value for '%@'", name.synopsisString)
     }
   }
   
   func unexpectedValueForOptionMessage(origin: InputOrigin.Element, name: Name, value: String) -> String? {
-    return "The option '\(name.synopsisString)' does not take any value, but '\(value)' was specified."
+    return NSLocalizedString(String(format: "The option '1$%@' does not take any value, but '%2$@' was specified.", name.synopsisString, value), bundle: .module, comment: "Error message")
   }
   
   func unexpectedExtraValuesMessage(values: [(InputOrigin, String)]) -> String? {
@@ -288,10 +288,10 @@ extension ErrorMessageGenerator {
     case 0:
       return nil
     case 1:
-      return "Unexpected argument '\(values.first!.1)'"
+      return NSLocalizedString(String(format: "Unexpected argument '%@'", values.first!.1), bundle: .module, comment: "Error message")
     default:
       let v = values.map { $0.1 }.joined(separator: "', '")
-      return "\(values.count) unexpected arguments: '\(v)'"
+      return NSLocalizedString(String(format: "%1$@ unexpected arguments: '%2$@'", values.count, v), bundle: .module, comment: "Error message")
     }
   }
   
@@ -303,15 +303,15 @@ extension ErrorMessageGenerator {
         let stringIndex = argument.index(argument.startIndex, offsetBy: offsetIndex+2)
         argument = "\'\(argument[stringIndex])\' in \(argument)"
       }
-      return "flag \(argument)"
+      return NSLocalizedString(String(format: "flag \(argument)", argument), bundle: .module, comment: "Info text")
     }
 
     // Note that the RHS of these coalescing operators cannot be reached at this time.
-    let dupeString = elementString(duplicate, arguments) ?? "position \(duplicate)"
-    let origString = elementString(previous, arguments) ?? "position \(previous)"
+    let dupeString = elementString(duplicate, arguments) ?? NSLocalizedString(String(format: "position %@", duplicate as! CVarArg), bundle: .module, comment: "Position message")
+    let origString = elementString(previous, arguments) ?? NSLocalizedString(String(format: "position %@", previous as! CVarArg), bundle: .module, comment: "Position message")
 
     //TODO: review this message once environment values are supported.
-    return "Value to be set with \(dupeString) had already been set with \(origString)"
+    return NSLocalizedString(String(format: "Value to be set with %1$@ had already been set with %2$@", dupeString, origString), bundle: .module, comment: "Error message, uses above string as argument")
   }
   
   func noValueMessage(key: InputKey) -> String? {
@@ -321,12 +321,12 @@ extension ErrorMessageGenerator {
     }
     switch possibilities.count {
     case 0:
-      return "Missing expected argument"
+      return NSLocalizedString("Missing expected argument", bundle: .module, comment: "Error message")
     case 1:
-      return "Missing expected argument '\(possibilities.first!)'"
+      return NSLocalizedString(String(format: "Missing expected argument '%@'", possibilities.first!), bundle: .module, comment: "Error message")
     default:
       let p = possibilities.joined(separator: "', '")
-      return "Missing one of: '\(p)'"
+      return NSLocalizedString(String(format: "Missing one of: '%@'", p), bundle: .module, comment: "Error message")
     }
   }
   
@@ -350,13 +350,13 @@ extension ErrorMessageGenerator {
     
     switch (name, valueName) {
     case let (n?, v?):
-      return "The value '\(value)' is invalid for '\(n.synopsisString) <\(v)>'\(customErrorMessage)"
+      return NSLocalizedString(String(format: "The value '%1$@' is invalid for '%2$@ <%3$@>'%4$@", value, n.synopsisString, v, customErrorMessage), bundle: .module, comment: "Error message")
     case let (_, v?):
-      return "The value '\(value)' is invalid for '<\(v)>'\(customErrorMessage)"
+      return NSLocalizedString(String(format: "The value '%1$@' is invalid for '<%2$@>'%3$@", value, v, customErrorMessage), bundle: .module, comment: "Error message")
     case let (n?, _):
-      return "The value '\(value)' is invalid for '\(n.synopsisString)'\(customErrorMessage)"
+      return NSLocalizedString(String(format: "The value '%1$@' is invalid for '%2$@'%3$@", value, n.synopsisString, customErrorMessage), bundle: .module, comment: "Error message")
     case (nil, nil):
-      return "The value '\(value)' is invalid.\(customErrorMessage)"
+      return NSLocalizedString(String(format: "The value '%1$@' is invalid.%2$@", value, customErrorMessage), bundle: .module, comment: "Error message")
     }
   }
 }

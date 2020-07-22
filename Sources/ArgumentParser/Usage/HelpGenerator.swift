@@ -9,6 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+@_implementationOnly import Foundation
+
 internal struct HelpGenerator {
   static var helpIndent = 2
   static var labelColumnWidth = 26
@@ -68,11 +70,11 @@ internal struct HelpGenerator {
       var description: String {
         switch self {
         case .positionalArguments:
-          return "Arguments"
+          return NSLocalizedString("Arguments", bundle: .module, comment: "Description")
         case .subcommands:
-          return "Subcommands"
+          return NSLocalizedString("Subcommands", bundle: .module, comment: "Description")
         case .options:
-          return "Options"
+          return NSLocalizedString("Options", bundle: .module, comment: "Description")
         }
       }
     }
@@ -114,7 +116,7 @@ internal struct HelpGenerator {
     var usageString = UsageGenerator(toolName: toolName, definition: [currentArgSet]).synopsis
     if !currentCommand.configuration.subcommands.isEmpty {
       if usageString.last != " " { usageString += " " }
-      usageString += "<subcommand>"
+      usageString += NSLocalizedString("<subcommand>", bundle: .module, comment: "Subcommand placeholder")
     }
     
     self.abstract = currentCommand.configuration.abstract
@@ -157,7 +159,7 @@ internal struct HelpGenerator {
           // If this argument is composite, we have a group of arguments to
           // output together.
           var groupedArgs = [arg]
-          let defaultValue = arg.help.defaultValue.map { "(default: \($0))" } ?? ""
+          let defaultValue = arg.help.defaultValue.map { NSLocalizedString(String(format: "(default: %@)", $0), bundle: .module, comment: "Default value") } ?? ""
           while i < args.count - 1 && args[i + 1].help.keys == arg.help.keys {
             groupedArgs.append(args[i + 1])
             i += 1
@@ -181,7 +183,7 @@ internal struct HelpGenerator {
             .compactMap { $0 }
             .joined(separator: " ")
         } else {
-          let defaultValue = arg.help.defaultValue.flatMap { $0.isEmpty ? nil : "(default: \($0))" } ?? ""
+          let defaultValue = arg.help.defaultValue.flatMap { $0.isEmpty ? nil : NSLocalizedString(String(format: "(default: %@)", $0), bundle: .module, comment: "Default value") } ?? ""
           synopsis = arg.synopsisForHelp ?? ""
           description = [arg.help.help?.abstract, defaultValue]
             .compactMap { $0 }
@@ -201,7 +203,7 @@ internal struct HelpGenerator {
     }
     
     if commandStack.contains(where: { !$0.configuration.version.isEmpty }) {
-      optionElements.append(.init(label: "--version", abstract: "Show the version."))
+      optionElements.append(.init(label: "--version", abstract: NSLocalizedString("Show the version.", bundle: .module, comment: "Help text")))
     }
 
     let helpLabels = commandStack
@@ -210,7 +212,7 @@ internal struct HelpGenerator {
       .map { $0.synopsisString }
       .joined(separator: ", ")
     if !helpLabels.isEmpty {
-      optionElements.append(.init(label: helpLabels, abstract: "Show help information."))
+      optionElements.append(.init(label: helpLabels, abstract: NSLocalizedString("Show help information.", bundle: .module, comment: "Help text")))
     }
 
     let configuration = commandStack.last!.configuration
@@ -219,7 +221,7 @@ internal struct HelpGenerator {
         guard command.configuration.shouldDisplay else { return nil }
         var label = command._commandName
         if command == configuration.defaultSubcommand {
-            label += " (default)"
+          label += NSLocalizedString(" (default)", bundle: .module, comment: "Default value")
         }
         return Section.Element(
           label: label,
@@ -235,7 +237,7 @@ internal struct HelpGenerator {
   
   func usageMessage(screenWidth: Int? = nil) -> String {
     let screenWidth = screenWidth ?? HelpGenerator.systemScreenWidth
-    return "Usage: \(usage.rendered(screenWidth: screenWidth))"
+    return NSLocalizedString(String(format: "Usage: %@", usage.rendered(screenWidth: screenWidth)), bundle: .module, comment: "Usage help")
   }
   
   var includesSubcommands: Bool {
@@ -252,24 +254,24 @@ internal struct HelpGenerator {
       .joined(separator: "\n")
     let renderedAbstract = abstract.isEmpty
       ? ""
-      : "OVERVIEW: \(abstract)".wrapped(to: screenWidth) + "\n\n"
+      : NSLocalizedString(String(format: "OVERVIEW: %@", abstract), bundle: .module, comment: "Abstract").wrapped(to: screenWidth) + "\n\n"
     
     var helpSubcommandMessage: String = ""
     if includesSubcommands {
       var names = commandStack.map { $0._commandName }
       names.insert("help", at: 1)
-      helpSubcommandMessage = """
+        helpSubcommandMessage = NSLocalizedString(String(format: """
 
-          See '\(names.joined(separator: " ")) <subcommand>' for detailed help.
-        """
+          See '%@ <subcommand>' for detailed help.
+        """, names.joined(separator: " ")), bundle: .module, comment: "Help text")
     }
     
-    return """
-    \(renderedAbstract)\
-    USAGE: \(usage.rendered(screenWidth: screenWidth))
+    return NSLocalizedString(String(format: """
+    %1$@\
+    USAGE: %2$@
     
-    \(renderedSections)\(helpSubcommandMessage)
-    """
+    %3$@%4$@
+    """, renderedAbstract, usage.rendered(screenWidth: screenWidth), renderedSections, helpSubcommandMessage), bundle: .module, comment: "Help text")
   }
 }
 

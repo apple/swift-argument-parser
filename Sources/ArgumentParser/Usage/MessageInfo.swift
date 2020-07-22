@@ -33,7 +33,7 @@ enum MessageInfo {
         let versionString = commandStack
           .map { $0.configuration.version }
           .last(where: { !$0.isEmpty })
-          ?? "Unspecified version"
+          ?? NSLocalizedString("Unspecified version", bundle: .module, comment: "Error message")
         self = .help(text: versionString)
         return
       default:
@@ -55,7 +55,7 @@ enum MessageInfo {
     
     let commandNames = commandStack.map { $0._commandName }.joined(separator: " ")
     let usage = HelpGenerator(commandStack: commandStack).usageMessage()
-      + "\n  See '\(commandNames) --help' for more information."
+      + NSLocalizedString(String(format: "\n  See '%@ --help' for more information.", commandNames), bundle: .module, comment: "Help text")
     
     // Parsing errors and user-thrown validation errors have the usage
     // string attached. Other errors just get the error message.
@@ -109,10 +109,10 @@ enum MessageInfo {
     case .help(text: let text):
       return text
     case .validation(message: let message, usage: let usage):
-      let errorMessage = message.isEmpty ? "" : "Error: \(message)\n"
+      let errorMessage = message.isEmpty ? "" : NSLocalizedString(String(format: "Error: %@\n", message), bundle: .module, comment: "Error message")
       return errorMessage + usage
     case .other(let message, _):
-      return message.isEmpty ? "" : "Error: \(message)"
+      return message.isEmpty ? "" : NSLocalizedString(String(format: "Error: %@", message), bundle: .module, comment: "Error message")
     }
   }
   
