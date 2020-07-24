@@ -21,6 +21,10 @@ struct CommandParser {
   var currentNode: Tree<ParsableCommand.Type>
   var decodedArguments: [DecodedArguments] = []
   
+  var rootCommand: ParsableCommand.Type {
+    commandTree.element
+  }
+  
   var commandStack: [ParsableCommand.Type] {
     let result = decodedArguments.compactMap { $0.commandType }
     if currentNode.element == result.last {
@@ -233,6 +237,11 @@ struct AutodetectedGenerateCompletions: ParsableCommand {
 
 extension CommandParser {
   func checkForCompletionScriptRequest(_ split: inout SplitArguments) throws {
+    // Pseudo-commands don't support `--generate-completion-script` flag
+    guard rootCommand.configuration._superCommandName == nil else {
+      return
+    }
+    
     // We don't have the ability to check for `--name [value]`-style args yet,
     // so we need to try parsing two different commands.
     
