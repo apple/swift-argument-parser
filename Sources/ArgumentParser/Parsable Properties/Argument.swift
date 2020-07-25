@@ -35,6 +35,20 @@ public struct Argument<Value>:
   public init(from decoder: Decoder) throws {
     try self.init(_decoder: decoder)
   }
+
+  /// This initializer works around a quirk of property wrappers, where the
+  /// compiler will not see no-argument initializers in extensions. Explicitly
+  /// marking this initializer unavailable means that when `Value` conforms to
+  /// `ExpressibleByArgument`, that overload will be selected instead.
+  ///
+  /// ```swift
+  /// @Argument() var foo: String // Syntax without this initializer
+  /// @Argument var foo: String   // Syntax with this initializer
+  /// ```
+  @available(*, unavailable, message: "A default value must be provided unless the value type conforms to ExpressibleByArgument.")
+  public init() {
+    fatalError("unavailable")
+  }
   
   /// The value presented by this property wrapper.
   public var wrappedValue: Value {
@@ -113,8 +127,7 @@ extension Argument where Value: ExpressibleByArgument {
   ///
   /// This method is called to initialize an `Argument` with a default value such as:
   /// ```swift
-  /// @Argument()
-  /// var foo: String = "bar"
+  /// @Argument var foo: String = "bar"
   /// ```
   ///
   /// - Parameters:
@@ -134,8 +147,7 @@ extension Argument where Value: ExpressibleByArgument {
   ///
   /// This method is called to initialize an `Argument` without a default value such as:
   /// ```swift
-  /// @Argument()
-  /// var foo: String
+  /// @Argument var foo: String
   /// ```
   ///
   /// - Parameters:
