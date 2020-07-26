@@ -498,7 +498,7 @@ extension Option {
       var arg = ArgumentDefinition(kind: kind, help: help, parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy), update: .appendToArray(forType: Element.self, key: key), initial: { origin, values in
         values.set(wrappedValue, forKey: key, inputOrigin: origin)
       })
-      arg.help.defaultValue = !wrappedValue.isEmpty ? "\(wrappedValue)" : nil
+      arg.help.defaultValue = !wrappedValue.isEmpty ? wrappedValue.defaultValueDescription : nil
       return ArgumentSet(alternatives: [arg])
       })
   }

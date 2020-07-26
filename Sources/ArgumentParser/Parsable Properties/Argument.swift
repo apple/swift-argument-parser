@@ -366,7 +366,7 @@ extension Argument {
         initial: { origin, values in
           values.set(wrappedValue, forKey: key, inputOrigin: origin)
         })
-      arg.help.defaultValue = !wrappedValue.isEmpty ? "\(wrappedValue)" : nil
+      arg.help.defaultValue = !wrappedValue.isEmpty ? wrappedValue.defaultValueDescription : nil
       return ArgumentSet(alternatives: [arg])
     })
   }
