@@ -13,14 +13,8 @@ extension Sequence where Element: Hashable {
   /// Returns an array with only the unique elements of this sequence, in the
   /// order of the first occurence of each unique element.
   func uniquing() -> [Element] {
-    var seen: Set<Element> = []
-    var result: [Element] = []
-    for element in self {
-      if seen.insert(element).inserted {
-        result.append(element)
-      }
-    }
-    return result
+    var seen = Set<Element>()
+    return self.filter { seen.insert($0).0 }
   }
 
   /// Returns an array, collapsing runs of consecutive equal elements into

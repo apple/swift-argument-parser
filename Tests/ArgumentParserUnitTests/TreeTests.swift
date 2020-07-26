@@ -53,3 +53,20 @@ extension TreeTests {
     XCTAssertTrue(tree.path(toFirstWhere: { $0 < 0 }).isEmpty)
   }
 }
+
+extension TreeTests {
+  struct A: ParsableCommand {
+    static let configuration = CommandConfiguration(subcommands: [A.self])
+  }
+  struct Root: ParsableCommand {
+    static let configuration = CommandConfiguration(subcommands: [Sub.self])
+  }
+  struct Sub: ParsableCommand {
+    static let configuration = CommandConfiguration(subcommands: [Sub.self])
+  }
+    
+  func testInitializationWithRecursiveSubcommand() {
+    XCTAssertThrowsError(try Tree(root: A.asCommand))
+    XCTAssertThrowsError(try Tree(root: Root.asCommand))
+  }
+}

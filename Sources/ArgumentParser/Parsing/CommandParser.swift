@@ -35,7 +35,13 @@ struct CommandParser {
   }
   
   init(_ rootCommand: ParsableCommand.Type) {
-    self.commandTree = Tree(root: rootCommand)
+    do {
+      self.commandTree = try Tree(root: rootCommand)
+    } catch Tree<ParsableCommand.Type>.InitializationError.recursiveSubcommand(let command) {
+      fatalError("The ParsableCommand \"\(command)\" can't have itself as its own subcommand.")
+    } catch {
+      fatalError("Unexpected error: \(error).")
+    }
     self.currentNode = commandTree
     
     // A command tree that has a depth greater than zero gets a `help`
