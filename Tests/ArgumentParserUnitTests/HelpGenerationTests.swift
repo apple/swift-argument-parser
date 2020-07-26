@@ -401,4 +401,38 @@ extension HelpGenerationTests {
       See 'n help <subcommand>' for detailed help.
     """)
   }
+
+  enum O: String, ExpressibleByArgument {
+    case small
+    case medium
+    case large
+
+    init?(argument: String) {
+      guard let result = Self(rawValue: argument) else {
+        return nil
+      }
+      self = result
+    }
+  }
+  struct P: ParsableArguments {
+    @Option(name: [.short], help: "Help Message")
+    var o: [O] = [.small, .medium]
+
+    @Argument(help: "Help Message")
+    var remainder: [O] = [.large]
+  }
+
+  func testHelpWithDefaultValueForArray() {
+    AssertHelp(for: P.self, equals: """
+    USAGE: p [-o <o> ...] [<remainder> ...]
+
+    ARGUMENTS:
+      <remainder>             Help Message (default: [large])
+
+    OPTIONS:
+      -o <o>                  Help Message (default: [small, medium])
+      -h, --help              Show help information.
+
+    """)
+  }
 }
