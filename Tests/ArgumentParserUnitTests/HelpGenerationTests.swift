@@ -427,10 +427,10 @@ extension HelpGenerationTests {
     USAGE: p [-o <o> ...] [<remainder> ...]
 
     ARGUMENTS:
-      <remainder>             Help Message (default: [large])
+      <remainder>             Help Message (default: large)
 
     OPTIONS:
-      -o <o>                  Help Message (default: [small, medium])
+      -o <o>                  Help Message (default: small, medium)
       -h, --help              Show help information.
 
     """)
