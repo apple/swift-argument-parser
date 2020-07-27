@@ -18,16 +18,12 @@
 ///         @Flag(name: .shortAndLong)
 ///         var verbose: Bool
 ///
-///         @Argument()
-///         var values: [Int]
+///         @Argument var values: [Int]
 ///     }
 ///
 ///     struct Options: ParsableArguments {
-///         @Option()
-///         var name: String
-///
-///         @OptionGroup()
-///         var globals: GlobalOptions
+///         @Option var name: String
+///         @OptionGroup var globals: GlobalOptions
 ///     }
 ///
 /// The flag and positional arguments declared as part of `GlobalOptions` are
@@ -58,7 +54,14 @@ public struct OptionGroup<Value: ParsableArguments>: Decodable, ParsedWrapper {
       throw ParserError.userValidationError(error)
     }
   }
-  
+
+  /// Creates a property that represents another parsable type.
+  public init() {
+    self.init(_parsedValue: .init { _ in
+      ArgumentSet(Value.self)
+    })
+  }
+
   /// The value presented by this property wrapper.
   public var wrappedValue: Value {
     get {
@@ -83,14 +86,5 @@ extension OptionGroup: CustomStringConvertible {
     case .definition:
       return "OptionGroup(*definition*)"
     }
-  }
-}
-
-extension OptionGroup {
-  /// Creates a property that represents another parsable type.
-  public init() {
-    self.init(_parsedValue: .init { _ in
-      ArgumentSet(Value.self)
-      })
   }
 }

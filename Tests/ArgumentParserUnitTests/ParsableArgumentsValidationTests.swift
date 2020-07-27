@@ -167,6 +167,17 @@ final class ParsableArgumentsValidationTests: XCTestCase {
     var options: Options
   }
 
+  private struct L: ParsableArguments {
+    struct Options: ParsableArguments {
+      @Argument var items: [Int] = []
+    }
+
+    @Argument var foo: String
+    @Option var bar: String
+    @OptionGroup var options: Options
+    @Flag var flag: Bool
+  }
+
   func testPositionalArgumentsValidation() throws {
     XCTAssertNil(PositionalArgumentsValidator.validate(A.self))
     XCTAssertNil(PositionalArgumentsValidator.validate(F.self))
