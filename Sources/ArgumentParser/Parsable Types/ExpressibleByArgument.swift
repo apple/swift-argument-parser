@@ -92,3 +92,9 @@ extension Float: ExpressibleByArgument {}
 extension Double: ExpressibleByArgument {}
 
 extension Bool: ExpressibleByArgument {}
+
+extension Array where Element: ExpressibleByArgument {
+  var defaultValueDescription: String {
+    return map { $0.defaultValueDescription }.joined(separator: ", ")
+  }
+}

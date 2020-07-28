@@ -34,9 +34,9 @@ package updates, you can specify your package dependency using
   
   ```swift
   // old
-  @Flag() var verbose: Bool
+  @Flag var verbose: Bool
   // new
-  @Flag() var verbose = false
+  @Flag var verbose = false
   ```
   
   **_Important:_** There is a semantic change for flags with inversions that do
@@ -198,7 +198,7 @@ The 0.0.5 release includes contributions from [kennyyork], [natecook1000],
   properly constrained.
 - The parser no longer treats passing the same exclusive flag more than once as
   an error.
-- `ParsableArguments` types that are declared as `@OptionGroup()` properties on
+- `ParsableArguments` types that are declared as `@OptionGroup` properties on
   commands can now also be declared on subcommands. Previosuly, the parent 
   command's declaration would prevent subcommands from seeing the user-supplied 
   arguments.

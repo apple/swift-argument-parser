@@ -63,7 +63,7 @@ struct Options: ParsableArguments {
 }
 ```
 
-It's time to define our first two subcommands: `Add` and `Multiply`. Both of these subcommands include the arguments defined in the `Options` type by denoting that property with the `@OptionGroup()` property wrapper. `@OptionGroup` doesn't define any new arguments for a command; instead, it splats in the arguments defined by another `ParsableArguments` type.
+It's time to define our first two subcommands: `Add` and `Multiply`. Both of these subcommands include the arguments defined in the `Options` type by denoting that property with the `@OptionGroup` property wrapper. `@OptionGroup` doesn't define any new arguments for a command; instead, it splats in the arguments defined by another `ParsableArguments` type.
 
 ```swift
 extension Math {
@@ -71,8 +71,7 @@ extension Math {
         static var configuration
             = CommandConfiguration(abstract: "Print the sum of the values.")
 
-        @OptionGroup()
-        var options: Math.Options
+        @OptionGroup var options: Math.Options
 
         mutating func run() {
             let result = options.values.reduce(0, +)
@@ -84,8 +83,7 @@ extension Math {
         static var configuration
             = CommandConfiguration(abstract: "Print the product of the values.")
 
-        @OptionGroup()
-        var options: Math.Options
+        @OptionGroup var options: Math.Options
 
         mutating func run() {
             let result = options.values.reduce(1, *)

@@ -105,8 +105,7 @@ extension Argument where Value: ExpressibleByArgument {
   /// ```diff
   /// -@Argument(default: "bar")
   /// -var foo: String
-  /// +@Argument()
-  /// +var foo: String = "bar"
+  /// +@Argument var foo: String = "bar"
   /// ```
   ///
   /// - Parameters:
@@ -177,7 +176,7 @@ public enum ArgumentArrayParsingStrategy {
   /// For example, for a parsable type defined as following:
   ///
   ///     struct Options: ParsableArguments {
-  ///         @Flag() var verbose: Bool
+  ///         @Flag var verbose: Bool
   ///         @Argument(parsing: .remaining) var words: [String]
   ///     }
   ///
@@ -194,7 +193,7 @@ public enum ArgumentArrayParsingStrategy {
   /// For example, for a parsable type defined as following:
   ///
   ///     struct Options: ParsableArguments {
-  ///         @Flag() var verbose: Bool
+  ///         @Flag var verbose: Bool
   ///         @Argument(parsing: .unconditionalRemaining) var words: [String]
   ///     }
   ///
@@ -395,7 +394,7 @@ extension Argument {
         initial: { origin, values in
           values.set(wrappedValue, forKey: key, inputOrigin: origin)
         })
-      arg.help.defaultValue = !wrappedValue.isEmpty ? "\(wrappedValue)" : nil
+      arg.help.defaultValue = !wrappedValue.isEmpty ? wrappedValue.defaultValueDescription : nil
       return ArgumentSet(alternatives: [arg])
     })
   }

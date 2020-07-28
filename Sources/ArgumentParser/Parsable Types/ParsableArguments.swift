@@ -52,8 +52,7 @@ struct _WrappedParsableCommand<P: ParsableArguments>: ParsableCommand {
     }
   }
   
-  @OptionGroup()
-  var options: P
+  @OptionGroup var options: P
 }
 
 struct StandardError: TextOutputStream {

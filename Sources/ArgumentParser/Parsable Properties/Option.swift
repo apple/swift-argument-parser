@@ -298,11 +298,8 @@ public enum ArrayParsingStrategy {
   /// through the terminator `--`. That is the more common approach. For example:
   /// ```swift
   /// struct Options: ParsableArguments {
-  ///     @Option()
-  ///     var name: String
-  ///
-  ///     @Argument()
-  ///     var remainder: [String]
+  ///     @Option var name: String
+  ///     @Argument var remainder: [String]
   /// }
   /// ```
   /// would parse the input `--name Foo -- Bar --baz` such that the `remainder`
@@ -530,7 +527,7 @@ extension Option {
           values.set(wrappedValue, forKey: key, inputOrigin: origin)
         }
       )
-      arg.help.defaultValue = !wrappedValue.isEmpty ? "\(wrappedValue)" : nil
+      arg.help.defaultValue = !wrappedValue.isEmpty ? wrappedValue.defaultValueDescription : nil
       return ArgumentSet(alternatives: [arg])
     })
   }

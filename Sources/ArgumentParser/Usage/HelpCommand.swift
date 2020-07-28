@@ -14,7 +14,7 @@ struct HelpCommand: ParsableCommand {
     commandName: "help",
     abstract: "Show subcommand help information.")
   
-  @Argument() var subcommands: [String] = []
+  @Argument var subcommands: [String] = []
   
   private(set) var commandStack: [ParsableCommand.Type] = []
   
