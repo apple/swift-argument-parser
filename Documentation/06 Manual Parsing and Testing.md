@@ -12,11 +12,8 @@ Let's implement the `Select` command discussed in [Validation and Errors](05%20V
 
 ```swift
 struct SelectOptions: ParsableArguments {
-    @Option()
-    var count: Int = 1
-
-    @Argument()
-    var elements: [String] = []
+    @Option var count: Int = 1
+    @Argument var elements: [String] = []
 }
 ```
 
