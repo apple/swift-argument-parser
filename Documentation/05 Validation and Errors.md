@@ -12,11 +12,8 @@ Here's a command that prints out one or more random elements from the list you p
 
 ```swift
 struct Select: ParsableCommand {
-    @Option
-    var count: Int = 1
-
-    @Argument()
-    var elements: [String] = []
+    @Option var count: Int = 1
+    @Argument var elements: [String] = []
 
     mutating func validate() throws {
         guard count >= 1 else {
@@ -64,7 +61,7 @@ The `ValidationError` type is a special `ArgumentParser` error — a validation 
 
 ```swift
 struct LineCount: ParsableCommand {
-    @Argument() var file: String
+    @Argument var file: String
 
     mutating func run() throws {
         let contents = try String(contentsOfFile: file, encoding: .utf8)
@@ -92,7 +89,7 @@ struct RuntimeError: Error, CustomStringConvertible {
 }
 
 struct Example: ParsableCommand {
-    @Argument() var inputFile: String
+    @Argument var inputFile: String
 
     mutating func run() throws {
         if !ExampleCore.processFile(inputFile) {

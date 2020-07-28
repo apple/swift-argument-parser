@@ -12,7 +12,7 @@
 struct HelpCommand: ParsableCommand {
   static var configuration = CommandConfiguration(commandName: "help")
   
-  @Argument() var subcommands: [String] = []
+  @Argument var subcommands: [String] = []
   
   private(set) var commandStack: [ParsableCommand.Type] = []
   

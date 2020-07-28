@@ -20,7 +20,7 @@
 ///     }
 ///
 ///     struct Example: ParsableCommand {
-///         @Flag() var sizes: [Size]
+///         @Flag var sizes: [Size]
 ///
 ///         mutating func run() {
 ///             print(sizes)

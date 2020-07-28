@@ -54,8 +54,7 @@ extension Math {
 
         // The `@OptionGroup` attribute includes the flags, options, and
         // arguments defined by another `ParsableArguments` type.
-        @OptionGroup()
-        var options: Options
+        @OptionGroup var options: Options
 
         mutating func run() {
             let result = options.values.reduce(0, +)
@@ -67,8 +66,7 @@ extension Math {
         static var configuration =
             CommandConfiguration(abstract: "Print the product of the values.")
 
-        @OptionGroup()
-        var options: Options
+        @OptionGroup var options: Options
 
         mutating func run() {
             let result = options.values.reduce(1, *)

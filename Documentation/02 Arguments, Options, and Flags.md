@@ -26,15 +26,11 @@ The three preceding examples could be calls of this `Example` command:
 
 ```swift
 struct Example: ParsableCommand {
-    @Argument() var files: [String] = []
-
-    @Option() var count: Int?
-
-    @Option() var index = 0
-
-    @Flag() var verbose = false
-
-    @Flag() var stripWhitespace = false
+    @Argument var files: [String] = []
+    @Option var count: Int?
+    @Option var index = 0
+    @Flag var verbose = false
+    @Flag var stripWhitespace = false
 }
 ```
 
@@ -49,11 +45,8 @@ Users must provide values for all properties with no implicit or specified defau
 
 ```swift
 struct Example: ParsableCommand {
-    @Option()
-    var userName: String
-
-    @Argument()
-    var value: Int
+    @Option var userName: String
+    @Argument var value: Int
 }
 ```
 
@@ -74,9 +67,8 @@ When providing a default value for an array property, any user-supplied values r
 
 ```swift
 struct Lucky: ParsableCommand {
-  @Argument()
-  var numbers = [7, 14, 21]
-  
+  @Argument var numbers = [7, 14, 21]
+
   mutating func run() throws {
     print("""
     Your lucky numbers are:
@@ -154,7 +146,7 @@ struct Path: ExpressibleByArgument {
 }
 
 struct Example: ParsableCommand {
-    @Argument() var inputFile: Path
+    @Argument var inputFile: Path
 }
 ```
 
@@ -166,7 +158,7 @@ enum ReleaseMode: String, ExpressibleByArgument {
 }
 
 struct Example: ParsableCommand {
-    @Option() var mode: ReleaseMode
+    @Option var mode: ReleaseMode
 
     mutating func run() throws {
         print(mode)
@@ -251,9 +243,8 @@ enum Color: String, EnumerableFlag {
 }
 
 struct Example: ParsableCommand {
-    @Flag() var cacheMethod: CacheMethod
-
-    @Flag() var colors: [Color] = []
+    @Flag var cacheMethod: CacheMethod
+    @Flag var colors: [Color] = []
 
     mutating func run() throws {
         print(cacheMethod)
@@ -302,9 +293,9 @@ For example, this command defines a `--verbose` flag, a `--name` option, and an 
 
 ```swift
 struct Example: ParsableCommand {
-    @Flag() var verbose = false
-    @Option() var name: String
-    @Argument() var file: String?
+    @Flag var verbose = false
+    @Option var name: String
+    @Argument var file: String?
 
     mutating func run() throws {
         print("Verbose: \(verbose), name: \(name), file: \(file ?? "none")")
@@ -349,8 +340,8 @@ The default strategy for parsing options as arrays is to read each value from a 
 
 ```swift
 struct Example: ParsableCommand {
-    @Option() var file: [String] = []
-    @Flag() var verbose = false
+    @Option var file: [String] = []
+    @Flag var verbose = false
 
     mutating func run() throws {
         print("Verbose: \(verbose), files: \(file)")
@@ -400,8 +391,8 @@ The default strategy for parsing arrays of positional arguments is to ignore  al
 
 ```swift
 struct Example: ParsableCommand {
-    @Flag() var verbose = false
-    @Argument() var files: [String] = []
+    @Flag var verbose = false
+    @Argument var files: [String] = []
 
     mutating func run() throws {
         print("Verbose: \(verbose), files: \(files)")
