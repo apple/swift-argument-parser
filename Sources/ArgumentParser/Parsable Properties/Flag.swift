@@ -47,7 +47,22 @@ public struct Flag<Value>: Decodable, ParsedWrapper {
   public init(from decoder: Decoder) throws {
     try self.init(_decoder: decoder)
   }
-  
+
+  /// This initializer works around a quirk of property wrappers, where the
+  /// compiler will not see no-argument initializers in extensions. Explicitly
+  /// marking this initializer unavailable means that when `Value` is a type
+  /// supported by `Flag` like `Bool` or `EnumerableFlag`, the appropriate
+  /// overload will be selected instead.
+  ///
+  /// ```swift
+  /// @Flag() var flag: Bool  // Syntax without this initializer
+  /// @Flag var flag: Bool    // Syntax with this initializer
+  /// ```
+  @available(*, unavailable, message: "A default value must be provided unless the value type is supported by Flag.")
+  public init() {
+    fatalError("unavailable")
+  }
+
   /// The value presented by this property wrapper.
   public var wrappedValue: Value {
     get {
@@ -222,8 +237,7 @@ extension Flag where Value == Bool {
   /// ```diff
   /// -@Flag(default: true)
   /// -var foo: Bool
-  /// +@Flag()
-  /// +var foo: Bool = true
+  /// +@Flag var foo: Bool = true
   /// ```
   ///
   /// Use this initializer to create a Boolean flag with an on/off pair. With
@@ -245,7 +259,7 @@ extension Flag where Value == Bool {
   ///         case useDevelopmentServer
   ///     }
   ///
-  ///     @Flag() var serverChoice: ServerChoice
+  ///     @Flag var serverChoice: ServerChoice
   ///
   /// - Parameters:
   ///   - name: A specification for what names are allowed for this flag.
@@ -401,10 +415,9 @@ extension Flag where Value: EnumerableFlag {
   ///
   /// Existing usage of the `default` parameter should be replaced such as follows:
   /// ```diff
-  /// -@Argument(default: .baz)
+  /// -@Flag(default: .baz)
   /// -var foo: Bar
-  /// +@Argument()
-  /// +var foo: Bar = baz
+  /// +@Flag var foo: Bar = baz
   /// ```
   ///
   /// - Parameters:
@@ -438,7 +451,7 @@ extension Flag where Value: EnumerableFlag {
   ///   case useDevelopmentServer
   /// }
   ///
-  /// @Flag() var serverChoice: ServerChoice = .useProductionServer
+  /// @Flag var serverChoice: ServerChoice = .useProductionServer
   /// ```
   ///
   /// - Parameters:
@@ -469,7 +482,7 @@ extension Flag where Value: EnumerableFlag {
   ///   case useDevelopmentServer
   /// }
   ///
-  /// @Flag() var serverChoice: ServerChoice
+  /// @Flag var serverChoice: ServerChoice
   /// ```
   ///
   /// - Parameters:
