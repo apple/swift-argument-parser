@@ -174,7 +174,7 @@ extension HelpGenerationTests {
                                       Your middle name. (default: Winston)
               --age <age>             Your age. (default: 20)
               --logging <logging>     Whether logging is enabled. (default: false)
-              --lucky <numbers>       Your lucky numbers. (default: [7, 14])
+              --lucky <numbers>       Your lucky numbers. (default: 7, 14)
               --optional/--required   Vegan diet. (default: optional)
               --degree <degree>       Your degree. (default: bachelor)
               --directory <directory> Directory. (default: current directory)
