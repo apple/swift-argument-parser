@@ -174,7 +174,7 @@ extension HelpGenerationTests {
                                       Your middle name. (default: Winston)
               --age <age>             Your age. (default: 20)
               --logging <logging>     Whether logging is enabled. (default: false)
-              --lucky <numbers>       Your lucky numbers. (default: [7, 14])
+              --lucky <numbers>       Your lucky numbers. (default: 7, 14)
               --optional/--required   Vegan diet. (default: optional)
               --degree <degree>       Your degree. (default: bachelor)
               --directory <directory> Directory. (default: current directory)
@@ -399,6 +399,40 @@ extension HelpGenerationTests {
       m (default)
 
       See 'n help <subcommand>' for detailed help.
+    """)
+  }
+
+  enum O: String, ExpressibleByArgument {
+    case small
+    case medium
+    case large
+
+    init?(argument: String) {
+      guard let result = Self(rawValue: argument) else {
+        return nil
+      }
+      self = result
+    }
+  }
+  struct P: ParsableArguments {
+    @Option(name: [.short], help: "Help Message")
+    var o: [O] = [.small, .medium]
+
+    @Argument(help: "Help Message")
+    var remainder: [O] = [.large]
+  }
+
+  func testHelpWithDefaultValueForArray() {
+    AssertHelp(for: P.self, equals: """
+    USAGE: p [-o <o> ...] [<remainder> ...]
+
+    ARGUMENTS:
+      <remainder>             Help Message (default: large)
+
+    OPTIONS:
+      -o <o>                  Help Message (default: small, medium)
+      -h, --help              Show help information.
+
     """)
   }
 }
