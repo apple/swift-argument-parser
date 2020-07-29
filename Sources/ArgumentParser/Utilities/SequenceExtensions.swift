@@ -10,8 +10,29 @@
 //===----------------------------------------------------------------------===//
 
 extension Sequence where Element: Hashable {
-  func uniquified() -> [Element] {
+  /// Returns an array with only the unique elements of this sequence, in the
+  /// order of the first occurence of each unique element.
+  func uniquing() -> [Element] {
     var seen = Set<Element>()
     return self.filter { seen.insert($0).0 }
+  }
+
+  /// Returns an array, collapsing runs of consecutive equal elements into
+  /// the first element of each run.
+  ///
+  ///     [1, 2, 2, 2, 3, 3, 2, 2, 1, 1, 1].uniquingAdjacentElements()
+  ///     // [1, 2, 3, 2, 1]
+  func uniquingAdjacentElements() -> [Element] {
+    var iterator = makeIterator()
+    guard let first = iterator.next()
+      else { return [] }
+    
+    var result = [first]
+    while let element = iterator.next() {
+      if result.last != element {
+        result.append(element)
+      }
+    }
+    return result
   }
 }

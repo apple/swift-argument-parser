@@ -100,7 +100,7 @@ extension ArgumentSet {
     let defaultValueString = initialValue == true ? "true" : nil
     
     let help = ArgumentDefinition.Help(options: helpOptions, help: help, defaultValue: defaultValueString, key: key)
-    let arg = ArgumentDefinition(kind: .name(key: key, specification: name), help: help, update: .nullary({ (origin, name, values) in
+    let arg = ArgumentDefinition(kind: .name(key: key, specification: name), help: help, completion: .default, update: .nullary({ (origin, name, values) in
       values.set(true, forKey: key, inputOrigin: origin)
     }), initial: { origin, values in
       if let initialValue = initialValue {
@@ -140,14 +140,14 @@ extension ArgumentSet {
     let (enableNames, disableNames) = inversion.enableDisableNamePair(for: key, name: name)
 
     var hasUpdated = false
-    let enableArg = ArgumentDefinition(kind: .named(enableNames),help: help, update: .nullary({ (origin, name, values) in
+    let enableArg = ArgumentDefinition(kind: .named(enableNames),help: help, completion: .default, update: .nullary({ (origin, name, values) in
         hasUpdated = try ArgumentSet.updateFlag(key: key, value: true, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
     }), initial: { origin, values in
       if let initialValue = initialValue {
         values.set(initialValue, forKey: key, inputOrigin: origin)
       }
     })
-    let disableArg = ArgumentDefinition(kind: .named(disableNames), help: ArgumentDefinition.Help(options: [.isOptional], key: key), update: .nullary({ (origin, name, values) in
+    let disableArg = ArgumentDefinition(kind: .named(disableNames), help: ArgumentDefinition.Help(options: [.isOptional], key: key), completion: .default, update: .nullary({ (origin, name, values) in
         hasUpdated = try ArgumentSet.updateFlag(key: key, value: false, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
     }), initial: { _, _ in })
     return ArgumentSet(exclusive: [enableArg, disableArg])
@@ -156,7 +156,7 @@ extension ArgumentSet {
   /// Creates an argument set for an incrementing integer flag.
   static func counter(key: InputKey, name: NameSpecification, help: ArgumentHelp?) -> ArgumentSet {
     let help = ArgumentDefinition.Help(options: [.isOptional, .isRepeating], help: help, key: key)
-    let arg = ArgumentDefinition(kind: .name(key: key, specification: name), help: help, update: .nullary({ (origin, name, values) in
+    let arg = ArgumentDefinition(kind: .name(key: key, specification: name), help: help, completion: .default, update: .nullary({ (origin, name, values) in
       guard let a = values.element(forKey: key)?.value, let b = a as? Int else {
         throw ParserError.invalidState
       }
@@ -172,8 +172,8 @@ extension ArgumentSet {
 
 extension ArgumentSet {
   /// Create a unary / argument that parses the string as `A`.
-  init<A: ExpressibleByArgument>(key: InputKey, kind: ArgumentDefinition.Kind, parsingStrategy: ArgumentDefinition.ParsingStrategy = .nextAsValue, parseType type: A.Type, name: NameSpecification, default initial: A?, help: ArgumentHelp?) {
-    var arg = ArgumentDefinition(key: key, kind: kind, parsingStrategy: parsingStrategy, parser: A.init(argument:), default: initial)
+  init<A: ExpressibleByArgument>(key: InputKey, kind: ArgumentDefinition.Kind, parsingStrategy: ArgumentDefinition.ParsingStrategy = .nextAsValue, parseType type: A.Type, name: NameSpecification, default initial: A?, help: ArgumentHelp?, completion: CompletionKind) {
+    var arg = ArgumentDefinition(key: key, kind: kind, parsingStrategy: parsingStrategy, parser: A.init(argument:), default: initial, completion: completion)
     arg.help.help = help
     arg.help.defaultValue = initial.map { "\($0.defaultValueDescription)" }
     self.init(arg)
@@ -182,7 +182,7 @@ extension ArgumentSet {
 
 extension ArgumentDefinition {
   /// Create a unary / argument that parses using the given closure.
-  init<A>(key: InputKey, kind: ArgumentDefinition.Kind, parsingStrategy: ParsingStrategy = .nextAsValue, parser: @escaping (String) -> A?, parseType type: A.Type = A.self, default initial: A?) {
+  init<A>(key: InputKey, kind: ArgumentDefinition.Kind, parsingStrategy: ParsingStrategy = .nextAsValue, parser: @escaping (String) -> A?, parseType type: A.Type = A.self, default initial: A?, completion: CompletionKind) {
     let initialValueCreator: (InputOrigin, inout ParsedValues) throws -> Void
     if let initialValue = initial {
       initialValueCreator = { origin, values in
@@ -192,7 +192,7 @@ extension ArgumentDefinition {
       initialValueCreator = { _, _ in }
     }
     
-    self.init(kind: kind, help: ArgumentDefinition.Help(key: key), parsingStrategy: parsingStrategy, update: .unary({ (origin, name, value, values) in
+    self.init(kind: kind, help: ArgumentDefinition.Help(key: key), completion: completion, parsingStrategy: parsingStrategy, update: .unary({ (origin, name, value, values) in
       guard let v = parser(value) else {
         throw ParserError.unableToParseValue(origin, name, value, forKey: key)
       }
@@ -336,11 +336,8 @@ extension ArgumentSet {
         // input. If we can't find one, just move on to the next input. We
         // defer catching leftover arguments until we've fully extracted all
         // the information for the selected command.
-        guard
-          let argument: ArgumentDefinition = try? first(matching: parsed, at: origin)
-          else {
-            continue
-          }
+        guard let argument = first(matching: parsed)
+          else { continue }
         
         switch argument.update {
         case let .nullary(update):
@@ -389,13 +386,16 @@ extension ArgumentSet {
   ///   - origin: Where `parsed` came from.
   /// - Returns: The matching definition.
   func first(
-    matching parsed: ParsedArgument,
-    at origin: InputOrigin.Element
-  ) throws -> ArgumentDefinition {
-    guard let match = first(where: { $0.names.contains(parsed.name) }) else {
-      throw ParserError.unknownOption(origin, parsed.name)
-    }
-    return match
+    matching parsed: ParsedArgument
+  ) -> ArgumentDefinition? {
+    return first(where: { $0.names.contains(parsed.name) })
+  }
+  
+  func firstPositional(
+    named name: String
+  ) -> ArgumentDefinition? {
+    let key = InputKey(rawValue: name)
+    return first(where: { $0.help.keys.contains(key) })
   }
   
   func parsePositionalValues(

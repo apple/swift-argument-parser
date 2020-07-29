@@ -1,6 +1,11 @@
 add_library(ArgumentParser
+  Completions/BashCompletionsGenerator.swift
+  Completions/CompletionsGenerator.swift
+  Completions/ZshCompletionsGenerator.swift
+
   "Parsable Properties/Argument.swift"
   "Parsable Properties/ArgumentHelp.swift"
+  "Parsable Properties/CompletionKind.swift"
   "Parsable Properties/Errors.swift"
   "Parsable Properties/Flag.swift"
   "Parsable Properties/NameSpecification.swift"

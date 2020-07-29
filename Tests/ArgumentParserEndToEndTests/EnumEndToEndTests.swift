@@ -51,3 +51,46 @@ extension EnumEndToEndTests {
     XCTAssertThrowsError(try Bar.parse(["--index", "helloo"]))
   }
 }
+
+// MARK: -
+
+fileprivate struct Baz: ParsableArguments {
+  enum Mode: String, CaseIterable, ExpressibleByArgument {
+    case generateBashScript = "generate-bash-script"
+    case generateZshScript
+  }
+  
+  @Option(name: .customLong("mode")) var modeOption: Mode?
+  @Argument() var modeArg: Mode?
+}
+
+extension EnumEndToEndTests {
+  func test_ParsingRawValue_Option() throws {
+    AssertParse(Baz.self, ["--mode", "generate-bash-script"]) { baz in
+      XCTAssertEqual(baz.modeOption, .generateBashScript)
+      XCTAssertNil(baz.modeArg)
+    }
+    AssertParse(Baz.self, ["--mode", "generateZshScript"]) { baz in
+      XCTAssertEqual(baz.modeOption, .generateZshScript)
+      XCTAssertNil(baz.modeArg)
+    }
+  }
+  
+  func test_ParsingRawValue_Argument() throws {
+    AssertParse(Baz.self, ["generate-bash-script"]) { baz in
+      XCTAssertEqual(baz.modeArg, .generateBashScript)
+      XCTAssertNil(baz.modeOption)
+    }
+    AssertParse(Baz.self, ["generateZshScript"]) { baz in
+      XCTAssertEqual(baz.modeArg, .generateZshScript)
+      XCTAssertNil(baz.modeOption)
+    }
+  }
+  
+  func test_ParsingRawValue_Fails() throws {
+    XCTAssertThrowsError(try Baz.parse(["generateBashScript"]))
+    XCTAssertThrowsError(try Baz.parse(["--mode generateBashScript"]))
+    XCTAssertThrowsError(try Baz.parse(["generate-zsh-script"]))
+    XCTAssertThrowsError(try Baz.parse(["--mode generate-zsh-script"]))
+  }
+}

@@ -25,10 +25,12 @@ enum MessageInfo {
       commandStack = e.commandStack
       parserError = e.parserError
 
+      // Exit early on built-in requests
       switch e.parserError {
       case .helpRequested:
         self = .help(text: HelpGenerator(commandStack: e.commandStack).rendered())
         return
+        
       case .versionRequested:
         let versionString = commandStack
           .map { $0.configuration.version }
@@ -36,16 +38,30 @@ enum MessageInfo {
           ?? "Unspecified version"
         self = .help(text: versionString)
         return
+        
+      case .completionScriptRequested(let shell):
+        do {
+          let completionsGenerator = try CompletionsGenerator(command: type.asCommand, shellName: shell)
+          self = .help(text: completionsGenerator.generateCompletionScript())
+          return
+        } catch {
+          self.init(error: error, type: type)
+          return
+        }
+
+      case .completionScriptCustomResponse(let output):
+        self = .help(text: output)
+        return
+        
       default:
         break
       }
+      
     case let e as ParserError:
-      commandStack = [type.asCommand]
-      parserError = e
-      if case .helpRequested = e {
-        self = .help(text: HelpGenerator(commandStack: [type.asCommand]).rendered())
-        return
-      }
+      // Send ParserErrors back through the CommandError path
+      self.init(error: CommandError(commandStack: [type.asCommand], parserError: e), type: type)
+      return
+
     default:
       commandStack = [type.asCommand]
       // if the error wasn't one of our two Error types, wrap it as a userValidationError

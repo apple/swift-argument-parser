@@ -146,6 +146,15 @@ extension ParsableArguments {
   ) -> ExitCode {
     MessageInfo(error: error, type: self).exitCode
   }
+    
+  /// Returns a shell completion script for the specified shell.
+  ///
+  /// - Parameter shell: The shell to generate a completion script for.
+  /// - Returns: The completion script for `shell`.
+  public static func completionScript(for shell: CompletionShell) -> String {
+    let completionsGenerator = try! CompletionsGenerator(command: self.asCommand, shell: shell)
+    return completionsGenerator.generateCompletionScript()
+  }
 
   /// Terminates execution with a message and exit code that is appropriate
   /// for the given error.

@@ -13,6 +13,11 @@
 enum ParserError: Error {
   case helpRequested
   case versionRequested
+  
+  case completionScriptRequested(shell: String?)
+  case completionScriptCustomResponse(String)
+  case unsupportedShell(String? = nil)
+  
   case notImplemented
   case invalidState
   case unknownOption(InputOrigin.Element, Name)

@@ -87,10 +87,11 @@ extension Argument where Value: ExpressibleByArgument {
   /// This private `init` allows us to expose multiple other similar constructors to allow for standard default property initialization while reducing code duplication.
   private init(
     initial: Value?,
-    help: ArgumentHelp?
+    help: ArgumentHelp?,
+    completion: CompletionKind?
   ) {
     self.init(_parsedValue: .init { key in
-      ArgumentSet(key: key, kind: .positional, parseType: Value.self, name: NameSpecification.long, default: initial, help: help)
+      ArgumentSet(key: key, kind: .positional, parseType: Value.self, name: NameSpecification.long, default: initial, help: help, completion: completion ?? Value.defaultCompletionKind)
       })
   }
 
@@ -118,7 +119,8 @@ extension Argument where Value: ExpressibleByArgument {
   ) {
     self.init(
       initial: initial,
-      help: help
+      help: help,
+      completion: nil
     )
   }
 
@@ -134,11 +136,13 @@ extension Argument where Value: ExpressibleByArgument {
   ///   - help: Information about how to use this argument.
   public init(
     wrappedValue: Value,
-    help: ArgumentHelp? = nil
+    help: ArgumentHelp? = nil,
+    completion: CompletionKind? = nil
   ) {
     self.init(
       initial: wrappedValue,
-      help: help
+      help: help,
+      completion: completion
     )
   }
 
@@ -152,11 +156,13 @@ extension Argument where Value: ExpressibleByArgument {
   /// - Parameters:
   ///   - help: Information about how to use this argument.
   public init(
-    help: ArgumentHelp? = nil
+    help: ArgumentHelp? = nil,
+    completion: CompletionKind? = nil
   ) {
     self.init(
       initial: nil,
-      help: help
+      help: help,
+      completion: completion
     )
   }
 }
@@ -212,7 +218,8 @@ extension Argument {
   ///
   /// - Parameter help: Information about how to use this argument.
   public init<T: ExpressibleByArgument>(
-    help: ArgumentHelp? = nil
+    help: ArgumentHelp? = nil,
+    completion: CompletionKind? = nil
   ) where Value == T? {
     self.init(_parsedValue: .init { key in
       var arg = ArgumentDefinition(
@@ -220,7 +227,8 @@ extension Argument {
         kind: .positional,
         parsingStrategy: .nextAsValue,
         parser: T.init(argument:),
-        default: nil)
+        default: nil,
+        completion: completion ?? T.defaultCompletionKind)
       arg.help.help = help
       return ArgumentSet(arg.optional)
     })
@@ -243,7 +251,8 @@ extension Argument {
         parseType: T.self,
         name: .long,
         default: initial,
-        help: help)
+        help: help,
+        completion: T.defaultCompletionKind)
     })
   }
 
@@ -253,11 +262,12 @@ extension Argument {
   private init(
     initial: Value?,
     help: ArgumentHelp?,
+    completion: CompletionKind?,
     transform: @escaping (String) throws -> Value
   ) {
     self.init(_parsedValue: .init { key in
       let help = ArgumentDefinition.Help(options: [], help: help, key: key)
-      let arg = ArgumentDefinition(kind: .positional, help: help, update: .unary({
+      let arg = ArgumentDefinition(kind: .positional, help: help, completion: completion ?? .default, update: .unary({
         (origin, name, valueString, parsedValues) in
         do {
           let transformedValue = try transform(valueString)
@@ -303,6 +313,7 @@ extension Argument {
     self.init(
       initial: initial,
       help: help,
+      completion: nil,
       transform: transform
     )
   }
@@ -322,11 +333,13 @@ extension Argument {
   public init(
     wrappedValue: Value,
     help: ArgumentHelp? = nil,
+    completion: CompletionKind? = nil,
     transform: @escaping (String) throws -> Value
   ) {
     self.init(
       initial: wrappedValue,
       help: help,
+      completion: completion,
       transform: transform
     )
   }
@@ -344,11 +357,13 @@ extension Argument {
   ///   - transform: A closure that converts a string into this property's type or throws an error.
   public init(
     help: ArgumentHelp? = nil,
+    completion: CompletionKind? = nil,
     transform: @escaping (String) throws -> Value
   ) {
     self.init(
       initial: nil,
       help: help,
+      completion: completion,
       transform: transform
     )
   }
@@ -363,7 +378,8 @@ extension Argument {
   public init<Element>(
     wrappedValue: Value,
     parsing parsingStrategy: ArgumentArrayParsingStrategy = .remaining,
-    help: ArgumentHelp? = nil
+    help: ArgumentHelp? = nil,
+    completion: CompletionKind? = nil
   )
     where Element: ExpressibleByArgument, Value == Array<Element>
   {
@@ -372,6 +388,7 @@ extension Argument {
       var arg = ArgumentDefinition(
         kind: .positional,
         help: help,
+        completion: completion ?? Element.defaultCompletionKind,
         parsingStrategy: parsingStrategy == .remaining ? .nextAsValue : .allRemainingInput,
         update: .appendToArray(forType: Element.self, key: key),
         initial: { origin, values in
@@ -396,6 +413,7 @@ extension Argument {
     wrappedValue: Value,
     parsing parsingStrategy: ArgumentArrayParsingStrategy = .remaining,
     help: ArgumentHelp? = nil,
+    completion: CompletionKind? = nil,
     transform: @escaping (String) throws -> Element
   )
     where Value == Array<Element>
@@ -405,6 +423,7 @@ extension Argument {
       var arg = ArgumentDefinition(
         kind: .positional,
         help: help,
+        completion: completion ?? .default,
         parsingStrategy: parsingStrategy == .remaining ? .nextAsValue : .allRemainingInput,
         update: .unary({
           (origin, name, valueString, parsedValues) in

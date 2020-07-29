@@ -14,15 +14,11 @@ enum Parsed<Value> {
   ///
   /// Internally, this wraps an `ArgumentSet`, but that’s not `public` since it’s
   /// an implementation detail.
-  public struct Definition {
-    var makeSet: (InputKey) -> ArgumentSet
-  }
-  
   case value(Value)
-  case definition(Definition)
+  case definition((InputKey) -> ArgumentSet)
   
   internal init(_ makeSet: @escaping (InputKey) -> ArgumentSet) {
-    self = .definition(Definition(makeSet: makeSet))
+    self = .definition(makeSet)
   }
 }
 
@@ -62,7 +58,7 @@ extension ParsedWrapper {
     case .value:
       fatalError("Trying to get the argument set from a resolved/parsed property.")
     case .definition(let a):
-      return a.makeSet(key)
+      return a(key)
     }
   }
 }
