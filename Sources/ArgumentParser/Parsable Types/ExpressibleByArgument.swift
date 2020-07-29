@@ -15,13 +15,20 @@ public protocol ExpressibleByArgument {
   /// argument.
   init?(argument: String)
 
-  /// Default representation value in help.
-  ///
-  /// Implement this method to customize default value representation in help.
+  /// The description of this instance to show as a default value in a
+  /// command-line tool's help screen.
   var defaultValueDescription: String { get }
   
+  /// An array of all possible strings to that can convert to value of this
+  /// type.
+  ///
+  /// The default implementation of this property returns an empty array.
   static var allValueStrings: [String] { get }
 
+  /// The completion kind to use for options or arguments of this type that
+  /// don't explicitly declare a completion kind.
+  ///
+  /// The default implementation of this property returns `.default`.
   static var defaultCompletionKind: CompletionKind { get }
 }
 
