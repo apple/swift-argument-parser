@@ -167,6 +167,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
     var options: Options
   }
 
+  // Compilation test to verify that property wrappers can be written without ()
   private struct L: ParsableArguments {
     struct Options: ParsableArguments {
       @Argument var items: [Int] = []
