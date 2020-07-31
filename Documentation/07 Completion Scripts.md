@@ -28,6 +28,12 @@ The correct method of installing a completion script depends on your shell and y
 
 If you have [`oh-my-zsh`](https://ohmyz.sh) installed, you already have a directory of automatically loading completion scripts — `.oh-my-zsh/completions`. Copy your new completion script to that directory.
 
+```
+$ example --generate-completion-script zsh > ~/.oh-my-zsh/completions/_example
+```
+
+> Your completion script must have the following filename format: `_example`.
+
 Without `oh-my-zsh`, you'll need to add a path for completion scripts to your function path, and turn on completion script autoloading. First, add these lines to `~/.zshrc`:
 
 ```
