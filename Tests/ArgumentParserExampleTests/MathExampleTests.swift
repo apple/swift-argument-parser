@@ -495,7 +495,7 @@ _math_help() {
 
 
 _custom_completion() {
-    local completions=($($*))
+    local completions=("${(@f)$($*)}")
     _describe '' completions
 }
 
