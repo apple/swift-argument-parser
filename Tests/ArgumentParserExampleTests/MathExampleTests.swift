@@ -327,7 +327,7 @@ complete -F _math math
 private let zshCompletionScriptText = """
 #compdef math
 local context state state_descr line
-_math_commandname="math"
+_math_commandname=$words[1]
 typeset -A opt_args
 
 _math() {
@@ -466,14 +466,14 @@ _math_stats_quantiles() {
         ':one-of-four:(alphabet alligator branch braggart)'
         ':custom-arg:{_custom_completion $_math_commandname ---completion stats quantiles -- customArg $words}'
         ':values:'
-        '--test-success-exit-code[]'
-        '--test-failure-exit-code[]'
-        '--test-validation-exit-code[]'
-        '--test-custom-exit-code[]:test-custom-exit-code:'
-        '--file[]:file:_files -g '"'"'*.txt *.md'"'"''
-        '--directory[]:directory:_files -/'
-        '--shell[]:shell:{_describe '' $(head -100 /usr/share/dict/words | tail -50)}'
-        '--custom[]:custom:{_custom_completion $_math_commandname ---completion stats quantiles -- --custom $words}'
+        '--test-success-exit-code'
+        '--test-failure-exit-code'
+        '--test-validation-exit-code'
+        '--test-custom-exit-code:test-custom-exit-code:'
+        '--file:file:_files -g '"'"'*.txt *.md'"'"''
+        '--directory:directory:_files -/'
+        '--shell:shell:{local -a list; list=(${(f)"$(head -100 /usr/share/dict/words | tail -50)"}); _describe '''' list}'
+        '--custom:custom:{_custom_completion $_math_commandname ---completion stats quantiles -- --custom $words}'
         '(-h --help)'{-h,--help}'[Print help information.]'
     )
     _arguments -w -s -S $args[@] && ret=0

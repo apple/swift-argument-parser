@@ -17,7 +17,7 @@ struct ZshCompletionsGenerator {
     return """
     #compdef \(type._commandName)
     local context state state_descr line
-    _\(type._commandName)_commandname="\(type._commandName)"
+    _\(type._commandName)_commandname=$words[1]
     typeset -A opt_args
 
     \(generateCompletionFunction([type]))
@@ -118,8 +118,12 @@ extension String {
 }
 
 extension ArgumentDefinition {
-  var zshCompletionAbstract: String? {
-    help.help?.abstract.zshEscapingSingleQuotes()
+  var zshCompletionAbstract: String {
+    guard
+        let abstract = help.help?.abstract,
+        !abstract.isEmpty
+        else { return "" }
+    return "[\(abstract.zshEscapingSingleQuotes())]"
   }
   
   func zshCompletionString(_ commands: [ParsableCommand.Type]) -> String? {
@@ -137,14 +141,14 @@ extension ArgumentDefinition {
       line = ""
     case 1:
       line = """
-      \(names[0].synopsisString)[\(zshCompletionAbstract ?? "")]
+      \(names[0].synopsisString)\(zshCompletionAbstract)
       """
     default:
       let synopses = names.map { $0.synopsisString }
       line = """
       (\(synopses.joined(separator: " ")))'\
       {\(synopses.joined(separator: ","))}\
-      '[\(zshCompletionAbstract ?? "")]
+      '\(zshCompletionAbstract)
       """
     }
     
@@ -170,7 +174,7 @@ extension ArgumentDefinition {
       return "(" + list.joined(separator: " ") + ")"
       
     case .shellCommand(let command):
-      return "{_describe '' $(\(command))}"
+      return "{local -a list; list=(${(f)\"$(\(command))\"}); _describe '''' list}"
 
     case .custom:
       // Generate a call back into the command to retrieve a completions list
