@@ -50,7 +50,7 @@ struct ZshCompletionsGenerator {
 
       let subcommandModes = subcommands.map {
         """
-        '\($0._commandName):\($0.configuration.abstract)'
+        '\($0._commandName):\($0.configuration.abstract.zshEscaped())'
         """
         .indentingEachLine(by: 12)
       }
@@ -112,8 +112,15 @@ struct ZshCompletionsGenerator {
 
 extension String {
   fileprivate func zshEscapingSingleQuotes() -> String {
-    self.split(separator: "'", omittingEmptySubsequences: false)
-      .joined(separator: #"'"'"'"#)
+    self.replacingOccurrences(of: "'", with: #"'"'"'"#)
+  }
+
+  fileprivate func zshEscapingMetacharacters() -> String {
+    self.replacingOccurrences(of: #"[\\\[\]]"#, with: #"\\$0"#, options: .regularExpression)
+  }
+
+  fileprivate func zshEscaped() -> String {
+    self.zshEscapingSingleQuotes().zshEscapingMetacharacters()
   }
 }
 
@@ -123,7 +130,7 @@ extension ArgumentDefinition {
         let abstract = help.help?.abstract,
         !abstract.isEmpty
         else { return "" }
-    return "[\(abstract.zshEscapingSingleQuotes())]"
+    return "[\(abstract.zshEscaped())]"
   }
   
   func zshCompletionString(_ commands: [ParsableCommand.Type]) -> String? {
@@ -165,7 +172,7 @@ extension ArgumentDefinition {
       let pattern = extensions.isEmpty
         ? ""
         : " -g '\(extensions.map { "*." + $0 }.joined(separator: " "))'"
-      return "_files\(pattern.zshEscapingSingleQuotes())"
+      return "_files\(pattern.zshEscaped())"
       
     case .directory:
       return "_files -/"
