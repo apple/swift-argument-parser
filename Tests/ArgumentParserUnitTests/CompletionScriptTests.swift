@@ -112,7 +112,7 @@ extension CompletionScriptTests {
 private let zshBaseCompletions = """
 #compdef base
 local context state state_descr line
-_base_commandname="base"
+_base_commandname=$words[1]
 typeset -A opt_args
 
 _base() {
@@ -120,11 +120,11 @@ _base() {
     local -a args
     args+=(
         '--name[The user'"'"'s name.]:name:'
-        '--kind[]:kind:(one two custom-three)'
-        '--other-kind[]:other-kind:(1 2 3)'
-        '--path1[]:path1:_files'
-        '--path2[]:path2:_files'
-        '--path3[]:path3:(a b c)'
+        '--kind:kind:(one two custom-three)'
+        '--other-kind:other-kind:(1 2 3)'
+        '--path1:path1:_files'
+        '--path2:path2:_files'
+        '--path3:path3:(a b c)'
         '(-h --help)'{-h,--help}'[Print help information.]'
     )
     _arguments -w -s -S $args[@] && ret=0
