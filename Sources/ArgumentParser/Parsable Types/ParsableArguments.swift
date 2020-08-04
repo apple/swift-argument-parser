@@ -34,6 +34,9 @@ public protocol ParsableArguments: Decodable {
   /// Implement this method to perform validation or other processing after
   /// creating a new instance from command-line arguments.
   mutating func validate() throws
+  
+  /// The label to use for "Error: ..." messages from this type. (experimental)
+  static var _errorLabel: String { get }
 }
 
 /// A type that provides the `ParsableCommand` interface to a `ParsableArguments` type.
@@ -70,6 +73,10 @@ extension ParsableArguments {
   /// `ParsableCommand` wrapper if not.
   internal static var asCommand: ParsableCommand.Type {
     self as? ParsableCommand.Type ?? _WrappedParsableCommand<Self>.self
+  }
+  
+  public static var _errorLabel: String {
+    "Error"
   }
 }
 
@@ -121,7 +128,7 @@ extension ParsableArguments {
   public static func fullMessage(
     for error: Error
   ) -> String {
-    MessageInfo(error: error, type: self).fullText
+    MessageInfo(error: error, type: self).fullText(for: self)
   }
   
   /// Returns the text of the help screen for this type.
@@ -174,11 +181,12 @@ extension ParsableArguments {
     }
     
     let messageInfo = MessageInfo(error: error, type: self)
-    if !messageInfo.fullText.isEmpty {
+    let fullText = messageInfo.fullText(for: self)
+    if !fullText.isEmpty {
       if messageInfo.shouldExitCleanly {
-        print(messageInfo.fullText)
+        print(fullText)
       } else {
-        print(messageInfo.fullText, to: &standardError)
+        print(fullText, to: &standardError)
       }
     }
     _exit(messageInfo.exitCode.rawValue)
