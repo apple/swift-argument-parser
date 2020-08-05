@@ -110,5 +110,3 @@ public struct CommandConfiguration {
     self.helpNames = helpNames
   }
 }
-
-

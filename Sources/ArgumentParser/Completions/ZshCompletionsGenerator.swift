@@ -17,7 +17,7 @@ struct ZshCompletionsGenerator {
     return """
     #compdef \(type._commandName)
     local context state state_descr line
-    _\(type._commandName)_commandname="\(type._commandName)"
+    _\(type._commandName)_commandname=$words[1]
     typeset -A opt_args
 
     \(generateCompletionFunction([type]))
@@ -50,7 +50,7 @@ struct ZshCompletionsGenerator {
 
       let subcommandModes = subcommands.map {
         """
-        '\($0._commandName):\($0.configuration.abstract)'
+        '\($0._commandName):\($0.configuration.abstract.zshEscaped())'
         """
         .indentingEachLine(by: 12)
       }
@@ -112,14 +112,25 @@ struct ZshCompletionsGenerator {
 
 extension String {
   fileprivate func zshEscapingSingleQuotes() -> String {
-    self.split(separator: "'", omittingEmptySubsequences: false)
-      .joined(separator: #"'"'"'"#)
+    self.replacingOccurrences(of: "'", with: #"'"'"'"#)
+  }
+
+  fileprivate func zshEscapingMetacharacters() -> String {
+    self.replacingOccurrences(of: #"[\\\[\]]"#, with: #"\\$0"#, options: .regularExpression)
+  }
+
+  fileprivate func zshEscaped() -> String {
+    self.zshEscapingSingleQuotes().zshEscapingMetacharacters()
   }
 }
 
 extension ArgumentDefinition {
-  var zshCompletionAbstract: String? {
-    help.help?.abstract.zshEscapingSingleQuotes()
+  var zshCompletionAbstract: String {
+    guard
+        let abstract = help.help?.abstract,
+        !abstract.isEmpty
+        else { return "" }
+    return "[\(abstract.zshEscaped())]"
   }
   
   func zshCompletionString(_ commands: [ParsableCommand.Type]) -> String? {
@@ -137,14 +148,14 @@ extension ArgumentDefinition {
       line = ""
     case 1:
       line = """
-      \(names[0].synopsisString)[\(zshCompletionAbstract ?? "")]
+      \(names[0].synopsisString)\(zshCompletionAbstract)
       """
     default:
       let synopses = names.map { $0.synopsisString }
       line = """
       (\(synopses.joined(separator: " ")))'\
       {\(synopses.joined(separator: ","))}\
-      '[\(zshCompletionAbstract ?? "")]
+      '\(zshCompletionAbstract)
       """
     }
     
@@ -161,7 +172,7 @@ extension ArgumentDefinition {
       let pattern = extensions.isEmpty
         ? ""
         : " -g '\(extensions.map { "*." + $0 }.joined(separator: " "))'"
-      return "_files\(pattern.zshEscapingSingleQuotes())"
+      return "_files\(pattern.zshEscaped())"
       
     case .directory:
       return "_files -/"
@@ -170,7 +181,7 @@ extension ArgumentDefinition {
       return "(" + list.joined(separator: " ") + ")"
       
     case .shellCommand(let command):
-      return "{_describe '' $(\(command))}"
+      return "{local -a list; list=(${(f)\"$(\(command))\"}); _describe '''' list}"
 
     case .custom:
       // Generate a call back into the command to retrieve a completions list
