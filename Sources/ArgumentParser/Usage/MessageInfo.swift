@@ -120,15 +120,15 @@ enum MessageInfo {
     }
   }
   
-  var fullText: String {
+  func fullText(for args: ParsableArguments.Type) -> String {
     switch self {
     case .help(text: let text):
       return text
     case .validation(message: let message, usage: let usage):
-      let errorMessage = message.isEmpty ? "" : "Error: \(message)\n"
+      let errorMessage = message.isEmpty ? "" : "\(args._errorLabel): \(message)\n"
       return errorMessage + usage
     case .other(let message, _):
-      return message.isEmpty ? "" : "Error: \(message)"
+      return message.isEmpty ? "" : "\(args._errorLabel): \(message)"
     }
   }
   
