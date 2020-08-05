@@ -22,7 +22,7 @@ struct ZshCompletionsGenerator {
 
     \(generateCompletionFunction([type]))
     _custom_completion() {
-        local completions=($($*))
+        local completions=("${(@f)$($*)}")
         _describe '' completions
     }
 

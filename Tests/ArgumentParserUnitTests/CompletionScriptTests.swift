@@ -154,7 +154,7 @@ _base() {
 
 
 _custom_completion() {
-    local completions=($($*))
+    local completions=("${(@f)$($*)}")
     _describe '' completions
 }
 
@@ -226,7 +226,7 @@ _escaped() {
 
 
 _custom_completion() {
-    local completions=($($*))
+    local completions=("${(@f)$($*)}")
     _describe '' completions
 }
 
