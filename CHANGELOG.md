@@ -14,6 +14,19 @@ package updates, you can specify your package dependency using
 
 *No changes yet.*
 
+---
+
+## [0.2.2] - 2020-08-05
+
+### Fixes
+
+- Zsh completion scripts have improved documentation and better support
+  multi-word completion strings, escaped characters, non-standard executable
+  locations, and empty help strings.
+
+The 0.2.2 release includes contributions from [interstateone], 
+[miguelangel-dev], [natecook1000], [stuartcarnie], and [Wevah]. Thank you!
+
 ## [0.2.1] - 2020-07-30
 
 ### Additions
@@ -290,7 +303,8 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 
 <!-- Link references for releases -->
 
-[Unreleased]: https://github.com/apple/swift-argument-parser/compare/0.2.1...HEAD
+[Unreleased]: https://github.com/apple/swift-argument-parser/compare/0.2.2...HEAD
+[0.2.2]: https://github.com/apple/swift-argument-parser/compare/0.2.1...0.2.2
 [0.2.1]: https://github.com/apple/swift-argument-parser/compare/0.2.0...0.2.1
 [0.2.0]: https://github.com/apple/swift-argument-parser/compare/0.1.0...0.2.0
 [0.1.0]: https://github.com/apple/swift-argument-parser/compare/0.0.6...0.1.0
@@ -321,6 +335,7 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [iainsmith]: https://github.com/apple/swift-argument-parser/commits?author=iainsmith
 [ibrahimoktay]: https://github.com/apple/swift-argument-parser/commits?author=ibrahimoktay
 [IngmarStein]: https://github.com/apple/swift-argument-parser/commits?author=IngmarStein
+[interstateone]: https://github.com/apple/swift-argument-parser/commits?author=interstateone
 [john-mueller]: https://github.com/apple/swift-argument-parser/commits?author=john-mueller
 [jonathanpenn]: https://github.com/apple/swift-argument-parser/commits?author=jonathanpenn
 [kennyyork]: https://github.com/apple/swift-argument-parser/commits?author=kennyyork
@@ -337,9 +352,9 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [sgl0v]: https://github.com/apple/swift-argument-parser/commits?author=sgl0v
 [sharplet]: https://github.com/apple/swift-argument-parser/commits?author=sharplet
 [sjavora]: https://github.com/apple/swift-argument-parser/commits?author=sjavora
+[stuartcarnie]: https://github.com/apple/swift-argument-parser/commits?author=stuartcarnie
 [toddthomas]: https://github.com/apple/swift-argument-parser/commits?author=toddthomas
 [Wevah]: https://github.com/apple/swift-argument-parser/commits?author=Wevah
 [Wildchild9]: https://github.com/apple/swift-argument-parser/commits?author=Wildchild9
 [YuAo]: https://github.com/apple/swift-argument-parser/commits?author=YuAo
 [zntfdr]: https://github.com/apple/swift-argument-parser/commits?author=zntfdr
-
