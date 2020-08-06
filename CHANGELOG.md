@@ -48,7 +48,7 @@ The 0.2.2 release includes contributions from [interstateone],
 - Running a project that defines a command as its own subcommand now fails with
   a useful error message.
 
-The 0.2.0 release includes contributions from [natecook1000], [NicFontana], 
+The 0.2.1 release includes contributions from [natecook1000], [NicFontana],
 [schlagelk], [sharplet], and [Wevah]. Thank you!
 
 [comp-guide]: https://github.com/apple/swift-argument-parser/blob/master/Documentation/07%20Completion%20Scripts.md
