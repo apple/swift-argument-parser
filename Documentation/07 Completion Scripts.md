@@ -4,7 +4,7 @@ Generate customized completion scripts for your shell of choice.
 
 ## Generating and Installing Completion Scripts
 
-Command-line tools that you build with `ArgumentParser` include a built-in option for generating completion scripts, with support for Bash and Z shell. To generate completions, run your command with the `--generate-completion-script` flag to generate completions for the autodetected shell, or with a value to generate completions for a specific shell.
+Command-line tools that you build with `ArgumentParser` include a built-in option for generating completion scripts, with support for Bash, Z shell, and Fish. To generate completions, run your command with the `--generate-completion-script` flag to generate completions for the autodetected shell, or with a value to generate completions for a specific shell.
 
 ```
 $ example --generate-completion-script bash
@@ -53,6 +53,10 @@ Without `bash-completion`, you'll need to source the completion script directly.
 ```
 source ~/.bash_completions/example.bash
 ```
+
+### Installing Fish Completions
+
+Copy the completion script to any path listed in the environment variable `$fish_completion_path`.  For example, a typical location is `~/.config/fish/completions/your_script.fish`.
 
 ## Customizing Completions
 

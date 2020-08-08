@@ -24,7 +24,7 @@ public struct CompletionShell: RawRepresentable, Hashable, CaseIterable {
   /// Creates a new instance from the given string.
   public init?(rawValue: String) {
     switch rawValue {
-    case "zsh", "bash":
+    case "zsh", "bash", "fish":
       self.rawValue = rawValue
     default:
       return nil
@@ -37,6 +37,9 @@ public struct CompletionShell: RawRepresentable, Hashable, CaseIterable {
   /// An instance representing `bash`.
   public static var bash: CompletionShell { CompletionShell(rawValue: "bash")! }
 
+  /// An instance representing `fish`.
+  public static var fish: CompletionShell { CompletionShell(rawValue: "fish")! }
+
   /// Returns an instance representing the current shell, if recognized.
   public static func autodetected() -> CompletionShell? {
     // FIXME: This retrieves the user's preferred shell, not necessarily the one currently in use.
@@ -47,7 +50,7 @@ public struct CompletionShell: RawRepresentable, Hashable, CaseIterable {
   
   /// An array of all supported shells for completion scripts.
   public static var allCases: [CompletionShell] {
-    [.zsh, .bash]
+    [.zsh, .bash, .fish]
   }
 }
 
@@ -82,6 +85,8 @@ struct CompletionsGenerator {
       return ZshCompletionsGenerator.generateCompletionScript(command)
     case .bash:
       return BashCompletionsGenerator.generateCompletionScript(command)
+    case .fish:
+      return FishCompletionsGenerator.generateCompletionScript(command)
     default:
       fatalError("Invalid CompletionShell: \(shell)")
     }
