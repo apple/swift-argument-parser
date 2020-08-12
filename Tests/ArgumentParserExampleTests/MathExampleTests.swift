@@ -185,6 +185,31 @@ extension MathExampleTests {
       command: "math --generate-completion-script zsh",
       expected: zshCompletionScriptText)
   }
+  
+  func testMath_CustomCompletion() {
+    AssertExecuteCommand(
+      command: "math ---completion stats quantiles -- --custom",
+      expected: """
+        hello
+        helicopter
+        heliotrope
+        """)
+    
+    AssertExecuteCommand(
+      command: "math ---completion stats quantiles -- --custom h",
+      expected: """
+        hello
+        helicopter
+        heliotrope
+        """)
+  
+    AssertExecuteCommand(
+      command: "math ---completion stats quantiles -- --custom a",
+      expected: """
+        aardvark
+        aaaaalbert
+        """)
+  }
 }
 
 private let bashCompletionScriptText = """
