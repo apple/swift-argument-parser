@@ -184,6 +184,12 @@ extension MathExampleTests {
     AssertExecuteCommand(
       command: "math --generate-completion-script zsh",
       expected: zshCompletionScriptText)
+    AssertExecuteCommand(
+      command: "math --generate-completion-script=fish",
+      expected: fishCompletionScriptText)
+    AssertExecuteCommand(
+      command: "math --generate-completion-script fish",
+      expected: fishCompletionScriptText)
   }
 }
 
@@ -500,4 +506,43 @@ _custom_completion() {
 }
 
 _math
+"""
+
+private let fishCompletionScriptText = """
+function __fish_math_using_command
+    set cmd (commandline -opc)
+    if [ (count $cmd) -eq (count $argv) ]
+        for i in (seq (count $argv))
+            if [ $cmd[$i] != $argv[$i] ]
+                return 1
+            end
+        end
+        return 0
+    end
+    return 1
+end
+complete -c math -n '__fish_math_using_command math' -f -a 'add' -d 'Print the sum of the values.'
+complete -c math -n '__fish_math_using_command math' -f -a 'multiply' -d 'Print the product of the values.'
+complete -c math -n '__fish_math_using_command math' -f -a 'stats' -d 'Calculate descriptive statistics.'
+complete -c math -n '__fish_math_using_command math' -f -a 'help' -d 'Show subcommand help information.'
+complete -c math -n '__fish_math_using_command math add' -f -l hex-output -s x -d 'Use hexadecimal notation for the result.'
+complete -c math -n '__fish_math_using_command math multiply' -f -l hex-output -s x -d 'Use hexadecimal notation for the result.'
+complete -c math -n '__fish_math_using_command math stats' -f -a 'average' -d 'Print the average of the values.'
+complete -c math -n '__fish_math_using_command math stats' -f -a 'stdev' -d 'Print the standard deviation of the values.'
+complete -c math -n '__fish_math_using_command math stats' -f -a 'quantiles' -d 'Print the quantiles of the values (TBD).'
+complete -c math -n '__fish_math_using_command math stats' -f -a 'help' -d 'Show subcommand help information.'
+complete -c math -n '__fish_math_using_command math stats average' -f -r -l kind -d 'The kind of average to provide.'
+complete -c math -n '__fish_math_using_command math stats average --kind' -f -k -a 'mean median mode'
+complete -c math -n '__fish_math_using_command math stats quantiles' -f -l test-success-exit-code
+complete -c math -n '__fish_math_using_command math stats quantiles' -f -l test-failure-exit-code
+complete -c math -n '__fish_math_using_command math stats quantiles' -f -l test-validation-exit-code
+complete -c math -n '__fish_math_using_command math stats quantiles' -f -r -l test-custom-exit-code
+complete -c math -n '__fish_math_using_command math stats quantiles' -f -r -l file
+complete -c math -n '__fish_math_using_command math stats quantiles --file' -f -a '(for i in *.{txt,md}; echo $i;end)'
+complete -c math -n '__fish_math_using_command math stats quantiles' -f -r -l directory
+complete -c math -n '__fish_math_using_command math stats quantiles --directory' -f -a '(__fish_complete_directories)'
+complete -c math -n '__fish_math_using_command math stats quantiles' -f -r -l shell
+complete -c math -n '__fish_math_using_command math stats quantiles --shell' -f -a '(head -100 /usr/share/dict/words | tail -50)'
+complete -c math -n '__fish_math_using_command math stats quantiles' -f -r -l custom
+complete -c math -n '__fish_math_using_command math stats quantiles --custom' -f -a '(command math ---completion stats quantiles -- --custom (commandline -opc)[1..-1])'
 """

@@ -69,6 +69,19 @@ extension CompletionScriptTests {
     let script3 = Base.completionScript(for: .bash)
     XCTAssertEqual(bashBaseCompletions, script3)
   }
+
+  func testBase_Fish() throws {
+    let script1 = try CompletionsGenerator(command: Base.self, shell: .fish)
+          .generateCompletionScript()
+    XCTAssertEqual(fishBaseCompletions, script1)
+    
+    let script2 = try CompletionsGenerator(command: Base.self, shellName: "fish")
+          .generateCompletionScript()
+    XCTAssertEqual(fishBaseCompletions, script2)
+    
+    let script3 = Base.completionScript(for: .fish)
+    XCTAssertEqual(fishBaseCompletions, script3)
+  }
 }
 
 extension CompletionScriptTests {
@@ -233,4 +246,28 @@ _custom_completion() {
 _escaped
 """
 
-
+private let fishBaseCompletions = """
+function __fish_base_using_command
+    set cmd (commandline -opc)
+    if [ (count $cmd) -eq (count $argv) ]
+        for i in (seq (count $argv))
+            if [ $cmd[$i] != $argv[$i] ]
+                return 1
+            end
+        end
+        return 0
+    end
+    return 1
+end
+complete -c base -n '__fish_base_using_command base' -f -r -l name -d 'The user\\'s name.'
+complete -c base -n '__fish_base_using_command base' -f -r -l kind
+complete -c base -n '__fish_base_using_command base --kind' -f -k -a 'one two custom-three'
+complete -c base -n '__fish_base_using_command base' -f -r -l other-kind
+complete -c base -n '__fish_base_using_command base --other-kind' -f -k -a '1 2 3'
+complete -c base -n '__fish_base_using_command base' -f -r -l path1
+complete -c base -n '__fish_base_using_command base --path1' -f -a '(for i in *.{}; echo $i;end)'
+complete -c base -n '__fish_base_using_command base' -f -r -l path2
+complete -c base -n '__fish_base_using_command base --path2' -f -a '(for i in *.{}; echo $i;end)'
+complete -c base -n '__fish_base_using_command base' -f -r -l path3
+complete -c base -n '__fish_base_using_command base --path3' -f -k -a 'a b c'
+"""
