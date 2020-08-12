@@ -133,7 +133,7 @@ extension ArgumentDefinition {
         results.append((ancestors, "-f -k -a '\(list.joined(separator: " "))'"))
       case .file(let extensions):
         let pattern = "*.{\(extensions.joined(separator: ","))}"
-        results.append((ancestors, "-f -a '(__fish_complete_path \(pattern))'"))
+        results.append((ancestors, "-f -a '(for i in \(pattern); echo $i;end)'"))
       case .directory:
         results.append((ancestors, "-f -a '(__fish_complete_directories)'"))
       case .shellCommand(let shellCommand):
