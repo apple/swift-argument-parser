@@ -116,16 +116,7 @@ extension CompletionScriptTests {
   }
 
   func testEscaped_Zsh() throws {
-    let script1 = try CompletionsGenerator(command: Escaped.self, shell: .zsh)
-          .generateCompletionScript()
-    XCTAssertEqual(zshEscapedCompletion, script1)
-
-    let script2 = try CompletionsGenerator(command: Escaped.self, shellName: "zsh")
-          .generateCompletionScript()
-    XCTAssertEqual(zshEscapedCompletion, script2)
-
-    let script3 = Escaped.completionScript(for: .zsh)
-    XCTAssertEqual(zshEscapedCompletion, script3)
+    XCTAssertEqual(zshEscapedCompletion, Escaped.completionScript(for: .zsh))
   }
 }
 
