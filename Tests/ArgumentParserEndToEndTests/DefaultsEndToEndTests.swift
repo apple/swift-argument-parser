@@ -674,6 +674,11 @@ fileprivate struct RequiredArray_Argument_Transform: ParsableArguments {
   var array: [String]
 }
 
+fileprivate struct RequiredArray_Flag: ParsableArguments {
+  @Flag
+  var array: [HasData]
+}
+
 extension DefaultsEndToEndTests {
   /// Tests that not providing an argument for a required array option produces an error.
   func testParsing_RequiredArray_Option_NoTransform_NoInput() {
@@ -749,6 +754,26 @@ extension DefaultsEndToEndTests {
   func testParsing_RequiredArray_Argument_Transform_MultipleInput() {
     AssertParse(RequiredArray_Argument_Transform.self, ["2", "3"]) { arguments in
       XCTAssertEqual(arguments.array, ["2!", "3!"])
+    }
+  }
+
+
+  /// Tests that not providing an argument for a required array flag produces an error.
+  func testParsing_RequiredArray_Flag_NoInput() {
+    XCTAssertThrowsError(try RequiredArray_Flag.parse([]))
+  }
+
+  /// Tests that providing a single argument for a required array flag parses that value correctly.
+  func testParsing_RequiredArray_Flag_SingleInput() {
+    AssertParse(RequiredArray_Flag.self, ["--data"]) { arguments in
+      XCTAssertEqual(arguments.array, [.data])
+    }
+  }
+
+  /// Tests that providing multiple arguments for a required array flag parses those values correctly.
+  func testParsing_RequiredArray_Flag_MultipleInput() {
+    AssertParse(RequiredArray_Flag.self, ["--data", "--no-data"]) { arguments in
+      XCTAssertEqual(arguments.array, [.data, .noData])
     }
   }
 }
