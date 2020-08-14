@@ -530,7 +530,33 @@ extension Flag {
         : ArgumentSet(additive: args)
       })
   }
-  
+
+  /// Creates an array property with an optional default value, intended to be called by other constructors to centralize logic.
+  ///
+  /// This private `init` allows us to expose multiple other similar constructors to allow for standard default property initialization while reducing code duplication.
+  private init<Element>(
+    initial: [Element]?,
+    help: ArgumentHelp? = nil
+  ) where Value == Array<Element>, Element: EnumerableFlag {
+    self.init(_parsedValue: .init { key in
+      let caseHelps = Element.allCases.map { Element.help(for: $0) }
+      let hasCustomCaseHelp = caseHelps.contains(where: { $0 != nil })
+
+      let args = Element.allCases.enumerated().map { (i, value) -> ArgumentDefinition in
+        let caseKey = InputKey(rawValue: String(describing: value))
+        let name = Element.name(for: value)
+        let helpForCase = hasCustomCaseHelp ? (caseHelps[i] ?? help) : help
+        let help = ArgumentDefinition.Help(options: .isOptional, help: helpForCase, key: key, isComposite: !hasCustomCaseHelp)
+        return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .nextAsValue, initialValue: initial, update: .nullary({ (origin, name, values) in
+          values.update(forKey: key, inputOrigin: origin, initial: [Element](), closure: {
+            $0.append(value)
+          })
+        }))
+      }
+      return ArgumentSet(additive: args)
+    })
+  }
+
   /// Creates an array property that gets its values from the presence of
   /// zero or more flags, where the allowed flags are defined by an
   /// `EnumerableFlag` type.
@@ -544,30 +570,29 @@ extension Flag {
     wrappedValue: [Element],
     help: ArgumentHelp? = nil
   ) where Value == Array<Element>, Element: EnumerableFlag {
-    self.init(_parsedValue: .init { key in
-      let caseHelps = Element.allCases.map { Element.help(for: $0) }
-      let hasCustomCaseHelp = caseHelps.contains(where: { $0 != nil })
-
-      let args = Element.allCases.enumerated().map { (i, value) -> ArgumentDefinition in
-        let caseKey = InputKey(rawValue: String(describing: value))
-        let name = Element.name(for: value)
-        let helpForCase = hasCustomCaseHelp ? (caseHelps[i] ?? help) : help
-        let help = ArgumentDefinition.Help(options: .isOptional, help: helpForCase, key: key, isComposite: !hasCustomCaseHelp)
-        return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .nextAsValue, initialValue: wrappedValue, update: .nullary({ (origin, name, values) in
-          values.update(forKey: key, inputOrigin: origin, initial: [Element](), closure: {
-            $0.append(value)
-          })
-        }))
-      }
-      return ArgumentSet(additive: args)
-    })
+    self.init(
+      initial: wrappedValue,
+      help: help
+    )
   }
-  
-  @available(*, deprecated, message: "Provide an empty array literal as a default value.")
+
+  /// Creates an array property with no default value that gets its values from the presence of zero or more flags, where the allowed flags are defined by an `EnumerableFlag` type.
+  ///
+  /// This method is called to initialize an array `Flag` with no default value such as:
+  /// ```swift
+  /// @Flag
+  /// var foo: [CustomFlagType]
+  /// ```
+  ///
+  /// - Parameters:
+  ///   - help: Information about how to use this flag.
   public init<Element>(
     help: ArgumentHelp? = nil
   ) where Value == Array<Element>, Element: EnumerableFlag {
-    self.init(wrappedValue: [], help: help)
+    self.init(
+      initial: nil,
+      help: help
+    )
   }
 }
 
