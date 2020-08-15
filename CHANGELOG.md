@@ -8,13 +8,39 @@ This project follows semantic versioning. While still in major version `0`,
 source-stability is only guaranteed within minor versions (e.g. between
 `0.0.3` and `0.0.4`). If you want to guard against potentially source-breaking
 package updates, you can specify your package dependency using
-`.upToNextMinor(from: "0.2.0")` as the requirement.
+`.upToNextMinor(from: "0.3.0")` as the requirement.
 
 ## [Unreleased]
 
 *No changes yet.*
 
 ---
+
+## [0.3.0] - 2020-08-15
+
+### Additions
+
+- Shell completions scripts are now available for Fish.
+
+### Changes
+
+- Array properties without a default value are now treated as required for the
+  user of a command-line tool. In previous versions of the library, these
+  properties defaulted to an empty array; a deprecation was introduced for this
+  behavior in version 0.2.0.
+
+  *Migration:* Specify an empty array as the default value for properties that
+  should not require user input:
+
+  ```swift
+  // old
+  @Option var names: [String]
+  // new
+  @Option var names: [String] = []
+  ```
+
+The 0.3.0 release includes contributions from [dduan], [MPLew-is], 
+[natecook1000], and [thomasvl]. Thank you!
 
 ## [0.2.2] - 2020-08-05
 
@@ -303,7 +329,8 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 
 <!-- Link references for releases -->
 
-[Unreleased]: https://github.com/apple/swift-argument-parser/compare/0.2.2...HEAD
+[Unreleased]: https://github.com/apple/swift-argument-parser/compare/0.3.0...HEAD
+[0.3.0]: https://github.com/apple/swift-argument-parser/compare/0.2.2...0.3.0
 [0.2.2]: https://github.com/apple/swift-argument-parser/compare/0.2.1...0.2.2
 [0.2.1]: https://github.com/apple/swift-argument-parser/compare/0.2.0...0.2.1
 [0.2.0]: https://github.com/apple/swift-argument-parser/compare/0.1.0...0.2.0
@@ -353,6 +380,7 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [sharplet]: https://github.com/apple/swift-argument-parser/commits?author=sharplet
 [sjavora]: https://github.com/apple/swift-argument-parser/commits?author=sjavora
 [stuartcarnie]: https://github.com/apple/swift-argument-parser/commits?author=stuartcarnie
+[thomasvl]: https://github.com/apple/swift-argument-parser/commits?author=thomasvl
 [toddthomas]: https://github.com/apple/swift-argument-parser/commits?author=toddthomas
 [Wevah]: https://github.com/apple/swift-argument-parser/commits?author=Wevah
 [Wildchild9]: https://github.com/apple/swift-argument-parser/commits?author=Wildchild9
