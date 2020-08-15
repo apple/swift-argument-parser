@@ -19,7 +19,7 @@ import PackageDescription
 let package = Package(
     name: "random",
     dependencies: [
-        .package(url: "https://github.com/apple/swift-argument-parser.git", from: "0.2.0"),
+        .package(url: "https://github.com/apple/swift-argument-parser.git", from: "0.3.0"),
     ],
     targets: [
         .target(
