@@ -245,24 +245,24 @@ extension ErrorMessageGenerator {
   }
 
   var unsupportedAutodetectedShell: String {
-    """
+    NSLocalizedString(String(format: """
     Can't autodetect a supported shell.
     Please use --generate-completion-script=<shell> with one of:
-        \(CompletionShell.allCases.map { $0.rawValue }.joined(separator: " "))
-    """
+        %@
+    """, CompletionShell.allCases.map { $0.rawValue }.joined(separator: " ")), bundle: .module, comment: "Error message")
   }
 
   func unsupportedShell(_ shell: String) -> String {
-    """
-    Can't generate completion scripts for '\(shell)'.
+    NSLocalizedString(String(format: """
+    Can't generate completion scripts for '%@'.
     Please use --generate-completion-script=<shell> with one of:
-        \(CompletionShell.allCases.map { $0.rawValue }.joined(separator: " "))
-    """
+        %@
+    """, shell, CompletionShell.allCases.map { $0.rawValue }.joined(separator: " ")), bundle: .module, comment: "Error message")
   }
 
   func unknownOptionMessage(origin: InputOrigin.Element, name: Name) -> String {
     if case .short = name {
-      return NSLocalizedString(String(format: "Unknown option '%@'", name.synopsisString), bundle: .module, comment: "Error message")
+      return NSLocalizedString(String(format: "Unknown option '%@'.", name.synopsisString), bundle: .module, comment: "Error message")
     }
     
     // An empirically derived magic number

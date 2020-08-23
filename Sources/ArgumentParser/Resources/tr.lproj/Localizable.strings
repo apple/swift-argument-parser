@@ -1,4 +1,3 @@
-
 /* Default value */
 " (default)" = " (öntanımlı)";
 
@@ -21,7 +20,7 @@
 "Missing expected argument" = "Beklenen değişken eksik.";
 
 /* Error message */
-"Missing required subcommand." = "Beklenen altkomut eksik.";
+"Missing required subcommand." = "Gerekli altkomut eksik.";
 
 /* Description */
 "Options" = "Seçenekler";
@@ -75,12 +74,6 @@ KULLANIM: %2$@
 /* Help text */
 "\n  See '%@ --help' for more information." = "\n  Daha fazla bilgi için '%@ --help' yazın.";
 
-/* Error message */
-"Error: %@\n" = "Hata: %@\n";
-
-/* Error message */
-"Error: %@" = "Hata: %@";
-
 /* Command options help */
 "%@ <options>" = "%@ <seçenekler>";
 
@@ -97,19 +90,35 @@ KULLANIM: %2$@
 "Internal error. Invalid state while parsing command-line arguments." = "İç hata. Komut satırı değişkenleri ayrıştırılırken geçersiz durum alındı.";
 
 /* Error message */
-"Unknown option '%@'" = "Bilinmeyen seçenek '%@'";
+"
+Can't autodetect a supported shell.
+Please use --generate-completion-script=<shell> with one of:
+    %@
+" = "
+Desteklenen bir kabuk kendiliğinden algılanamıyor.
+Lütfen aşağıdakilerden biri ile --generate-completion-script=<kabuk> kullanın:
+    %@
+";
+
+/* Error message */
+"
+Can't generate completion scripts for '%@'.
+Please use --generate-completion-script=<shell> with one of:
+    %@
+" = "
+'%@' için tamamlama betikleri oluşturulamıyor.
+Lütfen aşağıdakilerden biri ile --generate-completion-script=<kabuk> kullanın:
+    %@
+";
+
+/* Error message */
+"Unknown option '%@'." = "Bilinmeyen seçenek '%@'.";
 
 /* Error message */
 "Unknown option '%1$@'. Did you mean '%2$@'?" = "Bilinmeyen seçenek '%1$@'. Şunu mu demek istediniz: '%2$@'?";
 
 /* Error message */
-"Unknown option '%@'.";
-
-/* Error message */
 "Missing value for '%1$@ <%2$@>'" = "'%1$@ <%2$@>' için eksik değer";
-
-/* Error message */
-"Missing value for '%@'" = "'%@' için eksik değer";
 
 /* Error message */
 "The option '1$%@' does not take any value, but '%2$@' was specified." = "'1$%@' seçeneği herhangi bir değer almaz, ancak '%2$@' belirtilmiş.";
