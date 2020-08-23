@@ -8,11 +8,76 @@ This project follows semantic versioning. While still in major version `0`,
 source-stability is only guaranteed within minor versions (e.g. between
 `0.0.3` and `0.0.4`). If you want to guard against potentially source-breaking
 package updates, you can specify your package dependency using
-`.upToNextMinor(from: "0.2.0")` as the requirement.
+`.upToNextMinor(from: "0.3.0")` as the requirement.
 
 ## [Unreleased]
 
 *No changes yet.*
+
+---
+
+## [0.3.0] - 2020-08-15
+
+### Additions
+
+- Shell completions scripts are now available for Fish.
+
+### Changes
+
+- Array properties without a default value are now treated as required for the
+  user of a command-line tool. In previous versions of the library, these
+  properties defaulted to an empty array; a deprecation was introduced for this
+  behavior in version 0.2.0.
+
+  *Migration:* Specify an empty array as the default value for properties that
+  should not require user input:
+
+  ```swift
+  // old
+  @Option var names: [String]
+  // new
+  @Option var names: [String] = []
+  ```
+
+The 0.3.0 release includes contributions from [dduan], [MPLew-is], 
+[natecook1000], and [thomasvl]. Thank you!
+
+## [0.2.2] - 2020-08-05
+
+### Fixes
+
+- Zsh completion scripts have improved documentation and better support
+  multi-word completion strings, escaped characters, non-standard executable
+  locations, and empty help strings.
+
+The 0.2.2 release includes contributions from [interstateone], 
+[miguelangel-dev], [natecook1000], [stuartcarnie], and [Wevah]. Thank you!
+
+## [0.2.1] - 2020-07-30
+
+### Additions
+
+- You can now generate Bash and Zsh shell completion scripts for commands, 
+  either by using the `--generate-completion-script` flag when running a 
+  command, or by calling the static `completionScript(for:)` method on a root 
+  `ParsableCommand` type. See the [guide to completion scripts][comp-guide] for 
+  information on customizing and installing the completion script for your 
+  command.
+
+### Fixes
+
+- Property wrappers without parameters can now be written without parentheses
+  — e.g. `@Flag var verbose = false`.
+- When displaying default values for array properties, the help screen now 
+  correctly uses the element type's `ExpressibleByArgument` conformance to 
+  generate the description.
+- Running a project that defines a command as its own subcommand now fails with
+  a useful error message.
+
+The 0.2.1 release includes contributions from [natecook1000], [NicFontana],
+[schlagelk], [sharplet], and [Wevah]. Thank you!
+
+[comp-guide]: https://github.com/apple/swift-argument-parser/blob/master/Documentation/07%20Completion%20Scripts.md
 
 ## [0.2.0] - 2020-06-23
 
@@ -34,9 +99,9 @@ package updates, you can specify your package dependency using
   
   ```swift
   // old
-  @Flag() var verbose: Bool
+  @Flag var verbose: Bool
   // new
-  @Flag() var verbose = false
+  @Flag var verbose = false
   ```
   
   **_Important:_** There is a semantic change for flags with inversions that do
@@ -198,7 +263,7 @@ The 0.0.5 release includes contributions from [kennyyork], [natecook1000],
   properly constrained.
 - The parser no longer treats passing the same exclusive flag more than once as
   an error.
-- `ParsableArguments` types that are declared as `@OptionGroup()` properties on
+- `ParsableArguments` types that are declared as `@OptionGroup` properties on
   commands can now also be declared on subcommands. Previosuly, the parent 
   command's declaration would prevent subcommands from seeing the user-supplied 
   arguments.
@@ -264,7 +329,10 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 
 <!-- Link references for releases -->
 
-[Unreleased]: https://github.com/apple/swift-argument-parser/compare/0.2.0...HEAD
+[Unreleased]: https://github.com/apple/swift-argument-parser/compare/0.3.0...HEAD
+[0.3.0]: https://github.com/apple/swift-argument-parser/compare/0.2.2...0.3.0
+[0.2.2]: https://github.com/apple/swift-argument-parser/compare/0.2.1...0.2.2
+[0.2.1]: https://github.com/apple/swift-argument-parser/compare/0.2.0...0.2.1
 [0.2.0]: https://github.com/apple/swift-argument-parser/compare/0.1.0...0.2.0
 [0.1.0]: https://github.com/apple/swift-argument-parser/compare/0.0.6...0.1.0
 [0.0.6]: https://github.com/apple/swift-argument-parser/compare/0.0.5...0.0.6
@@ -294,6 +362,7 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [iainsmith]: https://github.com/apple/swift-argument-parser/commits?author=iainsmith
 [ibrahimoktay]: https://github.com/apple/swift-argument-parser/commits?author=ibrahimoktay
 [IngmarStein]: https://github.com/apple/swift-argument-parser/commits?author=IngmarStein
+[interstateone]: https://github.com/apple/swift-argument-parser/commits?author=interstateone
 [john-mueller]: https://github.com/apple/swift-argument-parser/commits?author=john-mueller
 [jonathanpenn]: https://github.com/apple/swift-argument-parser/commits?author=jonathanpenn
 [kennyyork]: https://github.com/apple/swift-argument-parser/commits?author=kennyyork
@@ -302,13 +371,18 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [miguelangel-dev]: https://github.com/apple/swift-argument-parser/commits?author=miguelangel-dev
 [MPLew-is]: https://github.com/apple/swift-argument-parser/commits?author=MPLew-is
 [natecook1000]: https://github.com/apple/swift-argument-parser/commits?author=natecook1000
+[NicFontana]: https://github.com/apple/swift-argument-parser/commits?author=NicFontana
 [owenv]: https://github.com/apple/swift-argument-parser/commits?author=owenv
 [rjstelling]: https://github.com/apple/swift-argument-parser/commits?author=rjstelling
 [Sajjon]: https://github.com/apple/swift-argument-parser/commits?author=Sajjon
+[schlagelk]: https://github.com/apple/swift-argument-parser/commits?author=schlagelk
 [sgl0v]: https://github.com/apple/swift-argument-parser/commits?author=sgl0v
+[sharplet]: https://github.com/apple/swift-argument-parser/commits?author=sharplet
 [sjavora]: https://github.com/apple/swift-argument-parser/commits?author=sjavora
+[stuartcarnie]: https://github.com/apple/swift-argument-parser/commits?author=stuartcarnie
+[thomasvl]: https://github.com/apple/swift-argument-parser/commits?author=thomasvl
 [toddthomas]: https://github.com/apple/swift-argument-parser/commits?author=toddthomas
+[Wevah]: https://github.com/apple/swift-argument-parser/commits?author=Wevah
 [Wildchild9]: https://github.com/apple/swift-argument-parser/commits?author=Wildchild9
 [YuAo]: https://github.com/apple/swift-argument-parser/commits?author=YuAo
 [zntfdr]: https://github.com/apple/swift-argument-parser/commits?author=zntfdr
-

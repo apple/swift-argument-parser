@@ -25,10 +25,12 @@ enum MessageInfo {
       commandStack = e.commandStack
       parserError = e.parserError
 
+      // Exit early on built-in requests
       switch e.parserError {
       case .helpRequested:
         self = .help(text: HelpGenerator(commandStack: e.commandStack).rendered())
         return
+        
       case .versionRequested:
         let versionString = commandStack
           .map { $0.configuration.version }
@@ -36,16 +38,30 @@ enum MessageInfo {
           ?? NSLocalizedString("Unspecified version", bundle: .module, comment: "Error message")
         self = .help(text: versionString)
         return
+        
+      case .completionScriptRequested(let shell):
+        do {
+          let completionsGenerator = try CompletionsGenerator(command: type.asCommand, shellName: shell)
+          self = .help(text: completionsGenerator.generateCompletionScript())
+          return
+        } catch {
+          self.init(error: error, type: type)
+          return
+        }
+
+      case .completionScriptCustomResponse(let output):
+        self = .help(text: output)
+        return
+        
       default:
         break
       }
+      
     case let e as ParserError:
-      commandStack = [type.asCommand]
-      parserError = e
-      if case .helpRequested = e {
-        self = .help(text: HelpGenerator(commandStack: [type.asCommand]).rendered())
-        return
-      }
+      // Send ParserErrors back through the CommandError path
+      self.init(error: CommandError(commandStack: [type.asCommand], parserError: e), type: type)
+      return
+
     default:
       commandStack = [type.asCommand]
       // if the error wasn't one of our two Error types, wrap it as a userValidationError
@@ -104,15 +120,15 @@ enum MessageInfo {
     }
   }
   
-  var fullText: String {
+  func fullText(for args: ParsableArguments.Type) -> String {
     switch self {
     case .help(text: let text):
       return text
     case .validation(message: let message, usage: let usage):
-      let errorMessage = message.isEmpty ? "" : NSLocalizedString(String(format: "Error: %@\n", message), bundle: .module, comment: "Error message")
+      let errorMessage = message.isEmpty ? "" : "\(args._errorLabel): \(message)\n"
       return errorMessage + usage
     case .other(let message, _):
-      return message.isEmpty ? "" : NSLocalizedString(String(format: "Error: %@", message), bundle: .module, comment: "Error message")
+      return message.isEmpty ? "" : "\(args._errorLabel): \(message)"
     }
   }
   

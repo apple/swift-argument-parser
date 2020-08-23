@@ -1,6 +1,12 @@
 add_library(ArgumentParser
+  Completions/BashCompletionsGenerator.swift
+  Completions/CompletionsGenerator.swift
+  Completions/FishCompletionsGenerator.swift
+  Completions/ZshCompletionsGenerator.swift
+
   "Parsable Properties/Argument.swift"
   "Parsable Properties/ArgumentHelp.swift"
+  "Parsable Properties/CompletionKind.swift"
   "Parsable Properties/Errors.swift"
   "Parsable Properties/Flag.swift"
   "Parsable Properties/NameSpecification.swift"
@@ -27,6 +33,7 @@ add_library(ArgumentParser
   Parsing/SplitArguments.swift
   
   Resources/en.lproj/Localizable.strings
+  Resources/tr.lproj/Localizable.strings
   
   Usage/HelpCommand.swift
   Usage/HelpGenerator.swift

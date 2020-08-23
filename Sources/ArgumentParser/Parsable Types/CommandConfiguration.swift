@@ -16,6 +16,13 @@ public struct CommandConfiguration {
   /// If `nil`, the command name is derived by converting the name of
   /// the command type to hyphen-separated lowercase words.
   public var commandName: String?
+
+  /// The name of this command's "super-command". (experimental)
+  ///
+  /// Use this when a command is part of a group of commands that are installed
+  /// with a common dash-prefix, like `git`'s and `swift`'s constellation of
+  /// independent commands.
+  public var _superCommandName: String?
   
   /// A one-line description of this command.
   public var abstract: String
@@ -78,6 +85,28 @@ public struct CommandConfiguration {
     self.defaultSubcommand = defaultSubcommand
     self.helpNames = helpNames
   }
+
+  /// Creates the configuration for a command with a "super-command".
+  /// (experimental)
+  public init(
+    commandName: String? = nil,
+    _superCommandName: String,
+    abstract: String = "",
+    discussion: String = "",
+    version: String = "",
+    shouldDisplay: Bool = true,
+    subcommands: [ParsableCommand.Type] = [],
+    defaultSubcommand: ParsableCommand.Type? = nil,
+    helpNames: NameSpecification = [.short, .long]
+  ) {
+    self.commandName = commandName
+    self._superCommandName = _superCommandName
+    self.abstract = abstract
+    self.discussion = discussion
+    self.version = version
+    self.shouldDisplay = shouldDisplay
+    self.subcommands = subcommands
+    self.defaultSubcommand = defaultSubcommand
+    self.helpNames = helpNames
+  }
 }
-
-

@@ -10,9 +10,11 @@
 //===----------------------------------------------------------------------===//
 
 struct HelpCommand: ParsableCommand {
-  static var configuration = CommandConfiguration(commandName: "help")
+  static var configuration = CommandConfiguration(
+    commandName: "help",
+    abstract: "Show subcommand help information.")
   
-  @Argument() var subcommands: [String] = []
+  @Argument var subcommands: [String] = []
   
   private(set) var commandStack: [ParsableCommand.Type] = []
   

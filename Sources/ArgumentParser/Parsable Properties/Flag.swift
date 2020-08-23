@@ -47,7 +47,22 @@ public struct Flag<Value>: Decodable, ParsedWrapper {
   public init(from decoder: Decoder) throws {
     try self.init(_decoder: decoder)
   }
-  
+
+  /// This initializer works around a quirk of property wrappers, where the
+  /// compiler will not see no-argument initializers in extensions. Explicitly
+  /// marking this initializer unavailable means that when `Value` is a type
+  /// supported by `Flag` like `Bool` or `EnumerableFlag`, the appropriate
+  /// overload will be selected instead.
+  ///
+  /// ```swift
+  /// @Flag() var flag: Bool  // Syntax without this initializer
+  /// @Flag var flag: Bool    // Syntax with this initializer
+  /// ```
+  @available(*, unavailable, message: "A default value must be provided unless the value type is supported by Flag.")
+  public init() {
+    fatalError("unavailable")
+  }
+
   /// The value presented by this property wrapper.
   public var wrappedValue: Value {
     get {
@@ -222,8 +237,7 @@ extension Flag where Value == Bool {
   /// ```diff
   /// -@Flag(default: true)
   /// -var foo: Bool
-  /// +@Flag()
-  /// +var foo: Bool = true
+  /// +@Flag var foo: Bool = true
   /// ```
   ///
   /// Use this initializer to create a Boolean flag with an on/off pair. With
@@ -245,7 +259,7 @@ extension Flag where Value == Bool {
   ///         case useDevelopmentServer
   ///     }
   ///
-  ///     @Flag() var serverChoice: ServerChoice
+  ///     @Flag var serverChoice: ServerChoice
   ///
   /// - Parameters:
   ///   - name: A specification for what names are allowed for this flag.
@@ -401,10 +415,9 @@ extension Flag where Value: EnumerableFlag {
   ///
   /// Existing usage of the `default` parameter should be replaced such as follows:
   /// ```diff
-  /// -@Argument(default: .baz)
+  /// -@Flag(default: .baz)
   /// -var foo: Bar
-  /// +@Argument()
-  /// +var foo: Bar = baz
+  /// +@Flag var foo: Bar = baz
   /// ```
   ///
   /// - Parameters:
@@ -438,7 +451,7 @@ extension Flag where Value: EnumerableFlag {
   ///   case useDevelopmentServer
   /// }
   ///
-  /// @Flag() var serverChoice: ServerChoice = .useProductionServer
+  /// @Flag var serverChoice: ServerChoice = .useProductionServer
   /// ```
   ///
   /// - Parameters:
@@ -469,7 +482,7 @@ extension Flag where Value: EnumerableFlag {
   ///   case useDevelopmentServer
   /// }
   ///
-  /// @Flag() var serverChoice: ServerChoice
+  /// @Flag var serverChoice: ServerChoice
   /// ```
   ///
   /// - Parameters:
@@ -517,7 +530,33 @@ extension Flag {
         : ArgumentSet(additive: args)
       })
   }
-  
+
+  /// Creates an array property with an optional default value, intended to be called by other constructors to centralize logic.
+  ///
+  /// This private `init` allows us to expose multiple other similar constructors to allow for standard default property initialization while reducing code duplication.
+  private init<Element>(
+    initial: [Element]?,
+    help: ArgumentHelp? = nil
+  ) where Value == Array<Element>, Element: EnumerableFlag {
+    self.init(_parsedValue: .init { key in
+      let caseHelps = Element.allCases.map { Element.help(for: $0) }
+      let hasCustomCaseHelp = caseHelps.contains(where: { $0 != nil })
+
+      let args = Element.allCases.enumerated().map { (i, value) -> ArgumentDefinition in
+        let caseKey = InputKey(rawValue: String(describing: value))
+        let name = Element.name(for: value)
+        let helpForCase = hasCustomCaseHelp ? (caseHelps[i] ?? help) : help
+        let help = ArgumentDefinition.Help(options: .isOptional, help: helpForCase, key: key, isComposite: !hasCustomCaseHelp)
+        return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .nextAsValue, initialValue: initial, update: .nullary({ (origin, name, values) in
+          values.update(forKey: key, inputOrigin: origin, initial: [Element](), closure: {
+            $0.append(value)
+          })
+        }))
+      }
+      return ArgumentSet(additive: args)
+    })
+  }
+
   /// Creates an array property that gets its values from the presence of
   /// zero or more flags, where the allowed flags are defined by an
   /// `EnumerableFlag` type.
@@ -531,30 +570,29 @@ extension Flag {
     wrappedValue: [Element],
     help: ArgumentHelp? = nil
   ) where Value == Array<Element>, Element: EnumerableFlag {
-    self.init(_parsedValue: .init { key in
-      let caseHelps = Element.allCases.map { Element.help(for: $0) }
-      let hasCustomCaseHelp = caseHelps.contains(where: { $0 != nil })
-
-      let args = Element.allCases.enumerated().map { (i, value) -> ArgumentDefinition in
-        let caseKey = InputKey(rawValue: String(describing: value))
-        let name = Element.name(for: value)
-        let helpForCase = hasCustomCaseHelp ? (caseHelps[i] ?? help) : help
-        let help = ArgumentDefinition.Help(options: .isOptional, help: helpForCase, key: key, isComposite: !hasCustomCaseHelp)
-        return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .nextAsValue, initialValue: wrappedValue, update: .nullary({ (origin, name, values) in
-          values.update(forKey: key, inputOrigin: origin, initial: [Element](), closure: {
-            $0.append(value)
-          })
-        }))
-      }
-      return ArgumentSet(additive: args)
-    })
+    self.init(
+      initial: wrappedValue,
+      help: help
+    )
   }
-  
-  @available(*, deprecated, message: "Provide an empty array literal as a default value.")
+
+  /// Creates an array property with no default value that gets its values from the presence of zero or more flags, where the allowed flags are defined by an `EnumerableFlag` type.
+  ///
+  /// This method is called to initialize an array `Flag` with no default value such as:
+  /// ```swift
+  /// @Flag
+  /// var foo: [CustomFlagType]
+  /// ```
+  ///
+  /// - Parameters:
+  ///   - help: Information about how to use this flag.
   public init<Element>(
     help: ArgumentHelp? = nil
   ) where Value == Array<Element>, Element: EnumerableFlag {
-    self.init(wrappedValue: [], help: help)
+    self.init(
+      initial: nil,
+      help: help
+    )
   }
 }
 
@@ -655,7 +693,7 @@ extension Flag {
 
 extension ArgumentDefinition {
   static func flag<V>(name: NameSpecification, key: InputKey, caseKey: InputKey, help: Help, parsingStrategy: ArgumentDefinition.ParsingStrategy, initialValue: V?, update: Update) -> ArgumentDefinition {
-    return ArgumentDefinition(kind: .name(key: caseKey, specification: name), help: help, parsingStrategy: parsingStrategy, update: update, initial: { origin, values in
+    return ArgumentDefinition(kind: .name(key: caseKey, specification: name), help: help, completion: .default, parsingStrategy: parsingStrategy, update: update, initial: { origin, values in
       if let initial = initialValue {
         values.set(initial, forKey: key, inputOrigin: origin)
       }

@@ -54,8 +54,7 @@ extension Math {
 
         // The `@OptionGroup` attribute includes the flags, options, and
         // arguments defined by another `ParsableArguments` type.
-        @OptionGroup()
-        var options: Options
+        @OptionGroup var options: Options
 
         mutating func run() {
             let result = options.values.reduce(0, +)
@@ -67,8 +66,7 @@ extension Math {
         static var configuration =
             CommandConfiguration(abstract: "Print the product of the values.")
 
-        @OptionGroup()
-        var options: Options
+        @OptionGroup var options: Options
 
         mutating func run() {
             let result = options.values.reduce(1, *)
@@ -95,7 +93,7 @@ extension Math.Statistics {
             abstract: "Print the average of the values.",
             version: "1.5.0-alpha")
 
-        enum Kind: String, ExpressibleByArgument {
+        enum Kind: String, ExpressibleByArgument, CaseIterable {
             case mean, median, mode
         }
 
@@ -128,7 +126,7 @@ extension Math.Statistics {
             let sorted = values.sorted()
             let mid = sorted.count / 2
             if sorted.count.isMultiple(of: 2) {
-                return sorted[mid - 1] + sorted[mid] / 2
+                return (sorted[mid - 1] + sorted[mid]) / 2
             } else {
                 return sorted[mid]
             }
@@ -188,6 +186,12 @@ extension Math.Statistics {
         static var configuration = CommandConfiguration(
             abstract: "Print the quantiles of the values (TBD).")
 
+        @Argument(help: .hidden, completion: .list(["alphabet", "alligator", "branch", "braggart"]))
+        var oneOfFour: String?
+
+        @Argument(help: .hidden, completion: .custom { _ in ["alabaster", "breakfast", "crunch", "crash"] })
+        var customArg: String?
+
         @Argument(help: "A group of floating-point values to operate on.")
         var values: [Double] = []
 
@@ -200,6 +204,20 @@ extension Math.Statistics {
         var testValidationExitCode = false
         @Option(help: .hidden)
         var testCustomExitCode: Int32?
+
+        // These args are for testing custom completion scripts:
+        @Option(help: .hidden, completion: .file(extensions: ["txt", "md"]))
+        var file: String?
+        @Option(help: .hidden, completion: .directory)
+        var directory: String?
+        
+        @Option(
+          help: .hidden,
+          completion: .shellCommand("head -100 /usr/share/dict/words | tail -50"))
+        var shell: String?
+        
+        @Option(help: .hidden, completion: .custom(customCompletion))
+        var custom: String?
 
         func validate() throws {
             if testSuccessExitCode {
@@ -219,6 +237,12 @@ extension Math.Statistics {
             }
         }
     }
+}
+
+func customCompletion(_ s: [String]) -> [String] {
+  return (s.last ?? "").starts(with: "a")
+    ? ["aardvark", "aaaaalbert"]
+    : ["hello", "helicopter", "heliotrope"]
 }
 
 Math.main()

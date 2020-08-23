@@ -19,7 +19,7 @@ import PackageDescription
 let package = Package(
     name: "random",
     dependencies: [
-        .package(url: "https://github.com/apple/swift-argument-parser.git", from: "0.2.0"),
+        .package(url: "https://github.com/apple/swift-argument-parser.git", from: "0.3.0"),
     ],
     targets: [
         .target(
@@ -46,11 +46,8 @@ We'll define the initial version of the command as a type that conforms to the `
 import ArgumentParser
 
 struct Count: ParsableCommand {
-    @Argument()
-    var inputFile: String
-
-    @Argument()
-    var outputFile: String
+    @Argument var inputFile: String
+    @Argument var outputFile: String
     
     mutating func run() throws {
         print("""
@@ -85,11 +82,8 @@ We do this by using the `@Option` property wrapper instead of `@Argument`:
 
 ```swift
 struct Count: ParsableCommand {
-    @Option()
-    var inputFile: String
-
-    @Option()
-    var outputFile: String
+    @Option var inputFile: String
+    @Option var outputFile: String
     
     mutating func run() throws {
         print("""
@@ -126,14 +120,9 @@ Let's change our `Count` type to look like this:
 
 ```swift
 struct Count: ParsableCommand {
-    @Option()
-    var inputFile: String
-
-    @Option()
-    var outputFile: String
-
-    @Flag()
-    var verbose = false
+    @Option var inputFile: String
+    @Option var outputFile: String
+    @Flag var verbose = false
     
     mutating func run() throws {
         if verbose {
