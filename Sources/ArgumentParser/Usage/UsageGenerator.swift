@@ -254,9 +254,9 @@ extension ErrorMessageGenerator {
 
   func unsupportedShell(_ shell: String) -> String {
     NSLocalizedString(String(format: """
-    Can't generate completion scripts for '%@'.
+    Can't generate completion scripts for '%1$@'.
     Please use --generate-completion-script=<shell> with one of:
-        %@
+        %2$@
     """, shell, CompletionShell.allCases.map { $0.rawValue }.joined(separator: " ")), bundle: .module, comment: "Error message")
   }
 
@@ -298,7 +298,7 @@ extension ErrorMessageGenerator {
   }
   
   func unexpectedValueForOptionMessage(origin: InputOrigin.Element, name: Name, value: String) -> String? {
-    return NSLocalizedString(String(format: "The option '1$%@' does not take any value, but '%2$@' was specified.", name.synopsisString, value), bundle: .module, comment: "Error message")
+    return NSLocalizedString(String(format: "The option '%1$@' does not take any value, but '%2$@' was specified.", name.synopsisString, value), bundle: .module, comment: "Error message")
   }
   
   func unexpectedExtraValuesMessage(values: [(InputOrigin, String)]) -> String? {

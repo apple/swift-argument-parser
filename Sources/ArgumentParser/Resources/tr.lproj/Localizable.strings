@@ -102,13 +102,13 @@ Lütfen aşağıdakilerden biri ile --generate-completion-script=<kabuk> kullan�
 
 /* Error message */
 "
-Can't generate completion scripts for '%@'.
+Can't generate completion scripts for '%1$@'.
 Please use --generate-completion-script=<shell> with one of:
-    %@
+    %2$@
 " = "
-'%@' için tamamlama betikleri oluşturulamıyor.
+'%1$@' için tamamlama betikleri oluşturulamıyor.
 Lütfen aşağıdakilerden biri ile --generate-completion-script=<kabuk> kullanın:
-    %@
+    %2$@
 ";
 
 /* Error message */
@@ -121,7 +121,7 @@ Lütfen aşağıdakilerden biri ile --generate-completion-script=<kabuk> kullan�
 "Missing value for '%1$@ <%2$@>'" = "'%1$@ <%2$@>' için eksik değer";
 
 /* Error message */
-"The option '1$%@' does not take any value, but '%2$@' was specified." = "'1$%@' seçeneği herhangi bir değer almaz, ancak '%2$@' belirtilmiş.";
+"The option '%1$@' does not take any value, but '%2$@' was specified." = "'%1$@' seçeneği herhangi bir değer almaz, ancak '%2$@' belirtilmiş.";
 
 /* Error message */
 "Unexpected argument '%@'" = "Beklenmedik değişken '%@'";
