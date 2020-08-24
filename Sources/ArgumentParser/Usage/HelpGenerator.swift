@@ -88,7 +88,8 @@ internal struct HelpGenerator {
       guard !elements.isEmpty else { return "" }
       
       let renderedElements = elements.map { $0.rendered(screenWidth: screenWidth) }.joined()
-      return "\(String(describing: header).uppercased()):\n"
+      let locale = Locale.current
+      return "\(String(describing: header).uppercased(with: locale)):\n"
         + renderedElements
     }
   }
