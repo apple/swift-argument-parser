@@ -89,8 +89,14 @@ internal struct HelpGenerator {
       
       let renderedElements = elements.map { $0.rendered(screenWidth: screenWidth) }.joined()
       let locale = Locale.current
-      return "\(String(describing: header).uppercased(with: locale)):\n"
-        + renderedElements
+        
+      if locale.languageCode == "en" {
+        return "\(String(describing: header).uppercased()):\n"
+          + renderedElements
+      } else {
+        return "\(String(describing: header).uppercased(with: locale)):\n"
+          + renderedElements
+      }
     }
   }
   
