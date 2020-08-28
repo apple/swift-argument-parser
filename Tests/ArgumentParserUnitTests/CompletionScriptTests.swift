@@ -59,7 +59,7 @@ extension CompletionScriptTests {
   func testBase_Bash() throws {
     let script1 = try CompletionsGenerator(command: Base.self, shell: .bash)
           .generateCompletionScript()
-    print(script1)
+
     XCTAssertEqual(bashBaseCompletions, script1)
     
     let script2 = try CompletionsGenerator(command: Base.self, shellName: "bash")
