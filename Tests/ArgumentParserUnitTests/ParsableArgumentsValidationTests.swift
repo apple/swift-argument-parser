@@ -230,7 +230,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
     if let error = ParsableArgumentsUniqueNamesValidator.validate(TwoOfTheSameName.self)
       as? ParsableArgumentsUniqueNamesValidator.Error
     {
-      XCTAssertEqual(error.description, "Multiple (2) `Option` or `Flag` arguments are named \"foo\".")
+      XCTAssertEqual(error.description, "Multiple (2) `Option` or `Flag` arguments are named \"--foo\".")
     } else {
       XCTFail(unexpectedErrorMessage)
     }
@@ -250,7 +250,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
     @Flag(name: .customLong("bar"))
     var notBar: Bool = false
 
-    @Option()
+    @Option(name: [.long, .customLong("help", withSingleDash: true)])
     var help: String
   }
 
@@ -261,12 +261,12 @@ final class ParsableArgumentsValidationTests: XCTestCase {
       XCTAssert(
         /// The `Mirror` reflects the properties `foo` and `bar` in a random order each time it's built.
         error.description == """
-        Multiple (2) `Option` or `Flag` arguments are named \"bar\".
-        Multiple (2) `Option` or `Flag` arguments are named \"foo\".
+        Multiple (2) `Option` or `Flag` arguments are named \"--bar\".
+        Multiple (2) `Option` or `Flag` arguments are named \"--foo\".
         """
         || error.description == """
-        Multiple (2) `Option` or `Flag` arguments are named \"foo\".
-        Multiple (2) `Option` or `Flag` arguments are named \"bar\".
+        Multiple (2) `Option` or `Flag` arguments are named \"--foo\".
+        Multiple (2) `Option` or `Flag` arguments are named \"--bar\".
         """
       )
     } else {
@@ -293,7 +293,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
     if let error = ParsableArgumentsUniqueNamesValidator.validate(MultipleNamesPerArgument.self)
       as? ParsableArgumentsUniqueNamesValidator.Error
     {
-      XCTAssertEqual(error.description, "Multiple (2) `Option` or `Flag` arguments are named \"v\".")
+      XCTAssertEqual(error.description, "Multiple (2) `Option` or `Flag` arguments are named \"-v\".")
     } else {
       XCTFail(unexpectedErrorMessage)
     }
@@ -324,7 +324,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
     if let error = ParsableArgumentsUniqueNamesValidator.validate(FourDuplicateNames.self)
       as? ParsableArgumentsUniqueNamesValidator.Error
     {
-      XCTAssertEqual(error.description, "Multiple (4) `Option` or `Flag` arguments are named \"foo\".")
+      XCTAssertEqual(error.description, "Multiple (4) `Option` or `Flag` arguments are named \"--foo\".")
     } else {
       XCTFail(unexpectedErrorMessage)
     }
@@ -366,7 +366,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
     if let error = ParsableArgumentsUniqueNamesValidator.validate(DuplicatedFirstLettersShortNames.self)
       as? ParsableArgumentsUniqueNamesValidator.Error
     {
-      XCTAssertEqual(error.description, "Multiple (3) `Option` or `Flag` arguments are named \"f\".")
+      XCTAssertEqual(error.description, "Multiple (3) `Option` or `Flag` arguments are named \"-f\".")
     } else {
       XCTFail(unexpectedErrorMessage)
     }
