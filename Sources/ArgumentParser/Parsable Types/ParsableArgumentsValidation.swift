@@ -237,7 +237,7 @@ struct ParsableArgumentsUniqueNamesValidator: ParsableArgumentsValidator {
       switch args.content {
       case .arguments(let defs):
         for name in defs.flatMap({ $0.names }) {
-          countedNames[name.valueString, default: 0] += 1
+          countedNames[name.synopsisString, default: 0] += 1
         }
       default:
         break
