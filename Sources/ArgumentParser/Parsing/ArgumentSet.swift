@@ -316,18 +316,20 @@ extension ArgumentSet {
       }
     }
     
-    var result = ParsedValues(elements: [], originalInput: all.originalInput)
-    var usedOrigins = InputOrigin()
+    var result = ParsedValues(elements: [:], originalInput: all.originalInput)
+    var allUsedOrigins = InputOrigin()
     
     try setInitialValues(into: &result)
     
     // Loop over all arguments:
     while let (origin, next) = inputArguments.popNext() {
+      var usedOrigins = InputOrigin()
       defer {
         inputArguments.removeAll(in: usedOrigins)
+        allUsedOrigins.formUnion(usedOrigins)
       }
       
-      switch next {
+      switch next.value {
       case .value:
         // We'll parse positional values later.
         break
@@ -359,9 +361,9 @@ extension ArgumentSet {
     // We have parsed all non-positional values at this point.
     // Next: parse / consume the positional values.
     var unusedArguments = all
-    unusedArguments.removeAll(in: usedOrigins)
+    unusedArguments.removeAll(in: allUsedOrigins)
     try parsePositionalValues(from: unusedArguments, into: &result)
-    
+
     return result
   }
 }
@@ -407,7 +409,7 @@ extension ArgumentSet {
     var argumentStack = unusedInput.elements.filter {
       $0.index.subIndex == .complete
     }.map {
-      (InputOrigin.Element.argumentIndex($0.index), $0.element)
+      (InputOrigin.Element.argumentIndex($0.index), $0)
     }[...]
     
     guard !argumentStack.isEmpty else { return }
