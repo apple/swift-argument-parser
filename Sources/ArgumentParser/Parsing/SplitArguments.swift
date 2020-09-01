@@ -73,39 +73,66 @@ enum ParsedArgument: Equatable, CustomStringConvertible {
   }
 }
 
-/// A parsed version of command-line arguments.
+/// A collection of parsed command-line arguments.
 ///
 /// This is a flat list of *values* and *options*. E.g. the
 /// arguments `["--foo", "bar"]` would be parsed into
 /// `[.option(.name(.long("foo"))), .value("bar")]`.
 struct SplitArguments {
-  enum Element: Equatable {
-    case option(ParsedArgument)
-    case value(String)
-    /// The `--` marker
-    case terminator
+  struct Element: Equatable {
+    enum Value: Equatable {
+      case option(ParsedArgument)
+      case value(String)
+      /// The `--` marker
+      case terminator
+      
+      var valueString: String? {
+        switch self {
+        case .value(let str):
+          return str
+        case .option, .terminator:
+          return nil
+        }
+      }
+    }
+    
+    var value: Value
+    var index: Index
+
+    static func option(_ arg: ParsedArgument, index: Index) -> Element {
+      Element(value: .option(arg), index: index)
+    }
+    
+    static func value(_ str: String, index: Index) -> Element {
+      Element(value: .value(str), index: index)
+    }
+    
+    static func terminator(index: Index) -> Element {
+      Element(value: .terminator, index: index)
+    }
   }
   
-  /// The index into the (original) input.
+  /// The position of the original input string for an element.
   ///
-  /// E.g. for `["--foo", "-vh"]` there are index positions 0 (`--foo`) and
-  /// 1 (`-vh`).
+  /// For example, if `originalInput` is `["--foo", "-vh"]`, there are index
+  /// positions 0 (`--foo`) and 1 (`-vh`).
   struct InputIndex: RawRepresentable, Hashable, Comparable {
     var rawValue: Int
     
     static func <(lhs: InputIndex, rhs: InputIndex) -> Bool {
       lhs.rawValue < rhs.rawValue
     }
-    
-    var next: InputIndex {
-      InputIndex(rawValue: rawValue + 1)
-    }
   }
   
-  /// The index into an input index position.
+  /// The position within an option for an element.
   ///
-  /// E.g. the input `"-vh"` will be split into the elements `-v`, and `-h`
-  /// each with its own subindex.
+  /// Single-dash prefixed options can be treated as a whole option or as a
+  /// group of individual short options. For example, the input `-vh` is split
+  /// into three elements, with distinct sub-indexes:
+  ///
+  /// - `-vh`: `.complete`
+  /// - `-v`: `.sub(0)`
+  /// - `-h`: `.sub(1)`
   enum SubIndex: Hashable, Comparable {
     case complete
     case sub(Int)
@@ -122,7 +149,7 @@ struct SplitArguments {
     }
   }
   
-  /// Tracks both the index into the original input and the index into the split arguments (array of elements).
+  /// An index into the original input and the sub-index of an element.
   struct Index: Hashable, Comparable {
     static func < (lhs: SplitArguments.Index, rhs: SplitArguments.Index) -> Bool {
       if lhs.inputIndex < rhs.inputIndex {
@@ -138,13 +165,22 @@ struct SplitArguments {
     var subIndex: SubIndex = .complete
   }
   
-  var elements: [(index: Index, element: Element)]
+  /// The parsed arguments. Onl
+  var _elements: [Element] = []
+  var firstUnused: Int = 0
+
+  /// The original array of arguments that was used to generate this instance.
   var originalInput: [String]
+
+  /// The unused arguments represented by this instance.
+  var elements: ArraySlice<Element> {
+    _elements[firstUnused...]
+  }
 }
 
 extension SplitArguments.Element: CustomDebugStringConvertible {
   var debugDescription: String {
-    switch self {
+    switch value {
     case .option(.name(let name)):
       return name.synopsisString
     case .option(.nameWithValue(let name, let value)):
@@ -170,16 +206,16 @@ extension SplitArguments: CustomStringConvertible {
   var description: String {
     guard !isEmpty else { return "<empty>" }
     return elements
-      .map { (index, element) -> String in
-        switch element {
+      .map { element -> String in
+        switch element.value {
         case .option(.name(let name)):
-          return "[\(index)] \(name.synopsisString)"
+          return "[\(element.index)] \(name.synopsisString)"
         case .option(.nameWithValue(let name, let value)):
-          return "[\(index)] \(name.synopsisString)='\(value)'"
+          return "[\(element.index)] \(name.synopsisString)='\(value)'"
         case .value(let value):
-          return "[\(index)] '\(value)'"
+          return "[\(element.index)] '\(value)'"
         case .terminator:
-          return "[\(index)] --"
+          return "[\(element.index)] --"
         }
     }
     .joined(separator: " ")
@@ -188,9 +224,16 @@ extension SplitArguments: CustomStringConvertible {
 
 extension SplitArguments.Element {
   var isValue: Bool {
-    switch self {
+    switch value {
     case .value: return true
     case .option, .terminator: return false
+    }
+  }
+  
+  var isTerminator: Bool {
+    switch value {
+    case .terminator: return true
+    case .option, .value: return false
     }
   }
 }
@@ -201,21 +244,16 @@ extension SplitArguments {
     elements.isEmpty
   }
 
-  /// `true` if the arguments are empty, or if the only remaining argument is the `--` terminator.
+  /// `false` if the arguments are empty, or if the only remaining argument is
+  /// the `--` terminator.
   var containsNonTerminatorArguments: Bool {
     if elements.isEmpty { return false }
     if elements.count > 1 { return true }
     
-    if case .terminator = elements[0].element { return false }
+    if elements.first?.isTerminator == true { return false }
     else { return true }
   }
 
-  subscript(position: Index) -> Element? {
-    return elements.first {
-      $0.0 == position
-      }?.1
-  }
-  
   /// Returns the original input string at the given origin, or `nil` if
   /// `origin` is a sub-index.
   func originalInput(at origin: InputOrigin.Element) -> String? {
@@ -225,15 +263,28 @@ extension SplitArguments {
     return originalInput[index.inputIndex.rawValue]
   }
   
+  /// Returns the position in `elements` of the given input origin.
+  mutating func position(of origin: InputOrigin.Element) -> Int? {
+    guard case let .argumentIndex(index) = origin else { return nil }
+    return elements.firstIndex(where: { $0.index == index })
+  }
+  
+  /// Returns the position in `elements` of the first element after the given
+  /// input origin.
+  mutating func position(after origin: InputOrigin.Element) -> Int? {
+    guard case let .argumentIndex(index) = origin else { return nil }
+    return elements.firstIndex(where: { $0.index > index })
+  }
+  
   mutating func popNext() -> (InputOrigin.Element, Element)? {
-    guard let (index, value) = elements.first else { return nil }
-    elements.remove(at: 0)
-    return (.argumentIndex(index), value)
+    guard let element = elements.first else { return nil }
+    removeFirst()
+    return (.argumentIndex(element.index), element)
   }
   
   func peekNext() -> (InputOrigin.Element, Element)? {
-    guard let (index, value) = elements.first else { return nil }
-    return (.argumentIndex(index), value)
+    guard let element = elements.first else { return nil }
+    return (.argumentIndex(element.index), element)
   }
   
   /// Pops the element immediately after the given index, if it is a `.value`.
@@ -247,17 +298,16 @@ extension SplitArguments {
     // `origin` in the input string. We look at the input index so that
     // packed short options can be followed, in order, by their values.
     // e.g. "-fn f-value n-value"
-    guard
-      case .argumentIndex(let after) = origin,
-      let elementIndex = elements.firstIndex(where: { $0.0.inputIndex > after.inputIndex })
+    guard let start = position(after: origin),
+      let elementIndex = elements[start...].firstIndex(where: { $0.index.subIndex == .complete })
       else { return nil }
     
     // Only succeed if the element is a value (not prefixed with a dash)
-    guard case .value(let value) = elements[elementIndex].1
+    guard case .value(let value) = elements[elementIndex].value
       else { return nil }
-    
-    let matchedArgumentIndex = elements[elementIndex].0
-    elements.remove(at: elementIndex)
+
+    defer { remove(at: elementIndex) }
+    let matchedArgumentIndex = elements[elementIndex].index
     return (.argumentIndex(matchedArgumentIndex), value)
   }
   
@@ -265,16 +315,11 @@ extension SplitArguments {
   ///
   /// This is used to get the next value in `-f -b name` where `name` is the value of `-f`.
   mutating func popNextValue(after origin: InputOrigin.Element) -> (InputOrigin.Element, String)? {
-    guard case .argumentIndex(let after) = origin else { return nil }
-    for (index, element) in elements.enumerated() {
-      guard
-        element.0 > after,
-        case .value(let value) = element.1
-        else { continue }
-      elements.remove(at: index)
-      return (.argumentIndex(element.0), value)
-    }
-    return nil
+    guard let start = position(after: origin) else { return nil }
+    guard let resultIndex = elements[start...].firstIndex(where: { $0.isValue }) else { return nil }
+    
+    defer { remove(at: resultIndex) }
+    return (.argumentIndex(elements[resultIndex].index), elements[resultIndex].value.valueString!)
   }
   
   /// Pops the element after the given index as a value.
@@ -285,15 +330,14 @@ extension SplitArguments {
   /// For an input such as `--a --b foo`, if passed the origin of `--a`,
   /// this will first pop the value `--b`, then the value `foo`.
   mutating func popNextElementAsValue(after origin: InputOrigin.Element) -> (InputOrigin.Element, String)? {
-    guard case .argumentIndex(let after) = origin else { return nil }
+    guard let start = position(after: origin) else { return nil }
     // Elements are sorted by their `InputIndex`. Find the first `InputIndex`
     // after `origin`:
-    guard let unconditionalIndex = elements.first(where: { (index, _) in index.inputIndex > after.inputIndex })?.0.inputIndex else { return nil }
-    let nextIndex = Index(inputIndex: unconditionalIndex, subIndex: .complete)
+    guard let nextIndex = elements[start...].first(where: { $0.index.subIndex == .complete })?.index else { return nil }
     // Remove all elements with this `InputIndex`:
     remove(at: nextIndex)
     // Return the original input
-    return (.argumentIndex(nextIndex), originalInput[unconditionalIndex.rawValue])
+    return (.argumentIndex(nextIndex), originalInput[nextIndex.inputIndex.rawValue])
   }
   
   /// Pops the next element if it is a value.
@@ -301,12 +345,9 @@ extension SplitArguments {
   /// If the current elements are `--b foo`, this will return `nil`. If the
   /// elements are `foo --b`, this will return the value `foo`.
   mutating func popNextElementIfValue() -> (InputOrigin.Element, String)? {
-    guard
-      let (index, element) = elements.first,
-      case .value(let value) = element
-      else { return nil }
-    elements.remove(at: 0)
-    return (.argumentIndex(index), value)
+    guard let element = elements.first, element.isValue else { return nil }
+    removeFirst()
+    return (.argumentIndex(element.index), element.value.valueString!)
   }
   
   /// Finds and "pops" the next element that is a value.
@@ -314,30 +355,53 @@ extension SplitArguments {
   /// If the current elements are `--a --b foo`, this will remove and return
   /// `foo`.
   mutating func popNextValue() -> (Index, String)? {
-    guard let idx = elements.firstIndex(where: {
-      switch $0.element {
-      case .option: return false
-      case .value: return true
-      case .terminator: return false
-      }
-    }) else { return nil }
+    guard let idx = elements.firstIndex(where: { $0.isValue })
+      else { return nil }
     let e = elements[idx]
-    elements.remove(at: idx)
-    guard case let .value(v) = e.element else { fatalError() }
-    return (e.index, v)
+    remove(at: idx)
+    return (e.index, e.value.valueString!)
   }
   
+  /// Finds and returns the next element that is a value.
   func peekNextValue() -> (Index, String)? {
-    guard let idx = elements.firstIndex(where: {
-      switch $0.element {
-      case .option: return false
-      case .value: return true
-      case .terminator: return false
-      }
-    }) else { return nil }
+    guard let idx = elements.firstIndex(where: { $0.isValue })
+      else { return nil }
     let e = elements[idx]
-    guard case let .value(v) = e.element else { fatalError() }
-    return (e.index, v)
+    return (e.index, e.value.valueString!)
+  }
+  
+  /// Removes the first element in `elements`.
+  mutating func removeFirst() {
+    firstUnused += 1
+  }
+  
+  /// Removes the element at the given position.
+  mutating func remove(at position: Int) {
+    guard position >= firstUnused else {
+      return
+    }
+    
+    // This leaves duplicates of still to-be-used arguments in the unused
+    // portion of the _elements array.
+    for i in (firstUnused..<position).reversed() {
+      _elements[i + 1] = _elements[i]
+    }
+    firstUnused += 1
+  }
+  
+  /// Removes the elements in the given subrange.
+  mutating func remove(subrange: Range<Int>) {
+    var lo = subrange.startIndex
+    var hi = subrange.endIndex
+    
+    // This leaves duplicates of still to-be-used arguments in the unused
+    // portion of the _elements array.
+    while lo > firstUnused {
+      hi -= 1
+      lo -= 1
+      _elements[hi] = _elements[lo]
+    }
+    firstUnused += subrange.count
   }
   
   /// Removes the element(s) at the given `Index`.
@@ -350,18 +414,39 @@ extension SplitArguments {
   /// is removed, that will remove the _long with short dash_ as well. Likewise, if the
   /// _long with short dash_ is removed, that will remove both of the _short_ elements.
   mutating func remove(at position: Index) {
+    guard !isEmpty else { return }
+    
+    // Find the first element at the given input index. Since `elements` is
+    // always sorted by input index, we can leave this method if we see a
+    // higher value than `position`.
+    var start = elements.startIndex
+    while start < elements.endIndex {
+      if elements[start].index.inputIndex == position.inputIndex { break }
+      if elements[start].index.inputIndex > position.inputIndex { return }
+      start += 1
+    }
+    
     if case .complete = position.subIndex {
-      // When removing a `.complete`, we need to remove _all_
-      // elements that have the same `InputIndex`.
-      elements.removeAll { (index, _) -> Bool in
-        index.inputIndex == position.inputIndex
-      }
+      // When removing a `.complete` position, we need to remove both the
+      // complete element and any sub-elements with the same input index.
+      
+      // Remove up to the first element where the input index doesn't match.
+      let end = elements[start...].firstIndex(where: { $0.index.inputIndex != position.inputIndex })
+        ?? elements.endIndex
+
+      remove(subrange: start..<end)
     } else {
-      // When removing a `.sub` (i.e. non-`.complete`), we need to
-      // remove any `.complete`.
-      elements.removeAll { (index, _) -> Bool in
-        index == position ||
-          ((index.inputIndex == position.inputIndex) && (index.subIndex == .complete))
+      // When removing a `.sub` (i.e. non-`.complete`) position, we need to
+      // also remove the `.complete` position, if it exists. Since `.complete`
+      // positions always come before sub-positions, if one exists it  will be
+      // the position found as `start`.
+      if elements[start].index.subIndex == .complete {
+        remove(at: start)
+        start += 1
+      }
+      
+      if let sub = elements[start...].firstIndex(where: { $0.index == position }) {
+        remove(at: sub)
       }
     }
   }
@@ -383,48 +468,48 @@ extension SplitArguments {
   func coalescedExtraElements() -> [(InputOrigin, String)] {
     let completeIndexes: [InputIndex] = elements
       .compactMap {
-        guard case .complete = $0.0.subIndex else { return nil }
-        return $0.0.inputIndex
+        guard case .complete = $0.index.subIndex else { return nil }
+        return $0.index.inputIndex
     }
     
     // Now return all elements that are either:
     // 1) `.complete`
     // 2) `.sub` but not in `completeIndexes`
     
-    let extraElements: [(Index, Element)] = elements.filter {
-      switch $0.0.subIndex {
+    let extraElements = elements.filter {
+      switch $0.index.subIndex {
       case .complete:
         return true
       case .sub:
-        return !completeIndexes.contains($0.0.inputIndex)
+        return !completeIndexes.contains($0.index.inputIndex)
       }
     }
-    return extraElements.map { index, element -> (InputOrigin, String) in
+    return extraElements.map { element -> (InputOrigin, String) in
       let input: String
-      switch index.subIndex {
+      switch element.index.subIndex {
       case .complete:
-        input = originalInput[index.inputIndex.rawValue]
+        input = originalInput[element.index.inputIndex.rawValue]
       case .sub:
-        if case .option(let option) = element {
+        if case .option(let option) = element.value {
           input = String(describing: option)
         } else {
           // Odd case. Fall back to entire input at that index:
-          input = originalInput[index.inputIndex.rawValue]
+          input = originalInput[element.index.inputIndex.rawValue]
         }
       }
-      return (.init(argumentIndex: index), input)
+      return (.init(argumentIndex: element.index), input)
     }
   }
 }
 
-func parseIndividualArg(_ arg: String, at position: Int) throws -> [(SplitArguments.Index, SplitArguments.Element)] {
+func parseIndividualArg(_ arg: String, at position: Int) throws -> [SplitArguments.Element] {
   let index = SplitArguments.Index(inputIndex: .init(rawValue: position))
   if let nonDashIdx = arg.firstIndex(where: { $0 != "-" }) {
     let dashCount = arg.distance(from: arg.startIndex, to: nonDashIdx)
     let remainder = arg[nonDashIdx..<arg.endIndex]
     switch dashCount {
     case 0:
-      return [(index, .value(arg))]
+      return [.value(arg, index: index)]
     case 1:
       // Long option:
       let parsed = try ParsedArgument(longArgWithSingleDashRemainder: remainder)
@@ -434,21 +519,21 @@ func parseIndividualArg(_ arg: String, at position: Int) throws -> [(SplitArgume
       switch parts.count {
       case 0:
         // This is a '-name=value' style argument
-        return [(index, .option(parsed))]
+        return [.option(parsed, index: index)]
       case 1:
         // This is a single short '-n' style argument
-        return [(index, .option(.name(.short(remainder.first!))))]
+        return [.option(.name(.short(remainder.first!)), index: index)]
       default:
-        var result: [(SplitArguments.Index, SplitArguments.Element)] = [(index, .option(parsed))]
+        var result: [SplitArguments.Element] = [.option(parsed, index: index)]
         for (sub, a) in parts {
           var i = index
           i.subIndex = .sub(sub)
-          result.append((i, .option(a)))
+          result.append(.option(a, index: i))
         }
         return result
       }
     case 2:
-      return [(index, .option(ParsedArgument(arg)))]
+      return [.option(ParsedArgument(arg), index: index)]
     default:
       throw ParserError.invalidOption(arg)
     }
@@ -458,10 +543,10 @@ func parseIndividualArg(_ arg: String, at position: Int) throws -> [(SplitArgume
     switch dashCount {
     case 0, 1:
       // Empty string or single dash
-      return [(index, .value(arg))]
+      return [.value(arg, index: index)]
     case 2:
       // We found the 1st "--". All the remaining are positional.
-      return [(index, .terminator)]
+      return [.terminator(index: index)]
     default:
       throw ParserError.invalidOption(arg)
     }
@@ -473,24 +558,25 @@ extension SplitArguments {
   ///
   /// - Parameter arguments: The input from the command line.
   init(arguments: [String]) throws {
-    self.init(elements: [], originalInput: arguments)
+    self.init(originalInput: arguments)
     
     var position = 0
-    var args = arguments[arguments.startIndex..<arguments.endIndex]
+    var args = arguments[...]
     argLoop: while let arg = args.popFirst() {
       defer {
         position += 1
       }
       
       let parsedElements = try parseIndividualArg(arg, at: position)
-      elements.append(contentsOf: parsedElements)
-      if parsedElements.first!.1 == .terminator {
+      _elements.append(contentsOf: parsedElements)
+      if parsedElements.first!.isTerminator {
         break
       }
     }
     
     for arg in args {
-      elements.append((Index(inputIndex: InputIndex(rawValue: position)), .value(arg)))
+      let i = Index(inputIndex: InputIndex(rawValue: position))
+      _elements.append(.value(arg, index: i))
       position += 1
     }
   }

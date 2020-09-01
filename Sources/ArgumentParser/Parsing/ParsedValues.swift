@@ -36,7 +36,7 @@ struct ParsedValues {
   }
   
   /// These are the parsed key-value pairs.
-  var elements: [Element] = []
+  var elements: [InputKey: Element] = [:]
   
   /// This is the *original* array of arguments that this was parsed from.
   ///
@@ -50,20 +50,20 @@ extension ParsedValues {
   }
   
   mutating func set(_ element: Element) {
-    if let index = elements.firstIndex(where: { $0.key == element.key }) {
+    if let e = elements[element.key] {
       // Merge the source values. We need to keep track
       // of any previous source indexes we have used for
       // this key.
-      var e = element
-      e.inputOrigin.formUnion(elements[index].inputOrigin)
-      elements[index] = e
+      var element = element
+      element.inputOrigin.formUnion(e.inputOrigin)
+      elements[element.key] = element
     } else {
-      elements.append(element)
+      elements[element.key] = element
     }
   }
   
   func element(forKey key: InputKey) -> Element? {
-    return elements.first(where: { $0.key == key })
+    elements[key]
   }
   
   mutating func update<A>(forKey key: InputKey, inputOrigin: InputOrigin, initial: A, closure: (inout A) -> Void) {

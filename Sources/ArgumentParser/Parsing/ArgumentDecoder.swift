@@ -35,7 +35,7 @@ final class ArgumentDecoder: Decoder {
     self.usedOrigins = InputOrigin()
     
     // Mark the terminator position(s) as used:
-    values.elements.filter { $0.key == .terminator }.forEach {
+    values.elements.values.filter { $0.key == .terminator }.forEach {
       usedOrigins.formUnion($0.inputOrigin)
     }
   }

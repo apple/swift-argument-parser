@@ -20,11 +20,11 @@ extension SplitArguments.InputIndex: ExpressibleByIntegerLiteral {
 }
 
 private func AssertIndexEqual(_ sut: SplitArguments, at index: Int, inputIndex: Int, subIndex: SplitArguments.SubIndex, file: StaticString = #file, line: UInt = #line) {
-  guard index < sut.elements.count else {
+  guard index < sut.elements.endIndex else {
     XCTFail("Element index \(index) is out of range. sur only has \(sut.elements.count) elements.", file: (file), line: line)
     return
   }
-  let splitIndex = sut.elements[index].0
+  let splitIndex = sut.elements[index].index
   let expected = SplitArguments.Index(inputIndex: SplitArguments.InputIndex(rawValue: inputIndex), subIndex: subIndex)
   if splitIndex.inputIndex != expected.inputIndex {
     XCTFail("inputIndex does not match: \(splitIndex.inputIndex.rawValue) != \(expected.inputIndex.rawValue)", file: (file), line: line)
@@ -34,12 +34,12 @@ private func AssertIndexEqual(_ sut: SplitArguments, at index: Int, inputIndex: 
   }
 }
 
-private func AssertElementEqual(_ sut: SplitArguments, at index: Int, _ element: SplitArguments.Element, file: StaticString = #file, line: UInt = #line) {
-  guard index < sut.elements.count else {
+private func AssertElementEqual(_ sut: SplitArguments, at index: Int, _ element: SplitArguments.Element.Value, file: StaticString = #file, line: UInt = #line) {
+  guard index < sut.elements.endIndex else {
     XCTFail("Element index \(index) is out of range. sur only has \(sut.elements.count) elements.", file: (file), line: line)
     return
   }
-  XCTAssertEqual(sut.elements[index].1, element, file: (file), line: line)
+  XCTAssertEqual(sut.elements[index].value, element, file: (file), line: line)
 }
 
 final class SplitArgumentTests: XCTestCase {
@@ -411,16 +411,16 @@ extension SplitArgumentTests {
       sutB.remove(at: SplitArguments.Index(inputIndex: 0, subIndex: .sub(0)))
       
       XCTAssertEqual(sutB.elements.count, 1)
-      AssertIndexEqual(sutB, at: 0, inputIndex: 0, subIndex: .sub(1))
-      AssertElementEqual(sutB, at: 0, .option(.name(.short("b"))))
+      AssertIndexEqual(sutB, at: 2, inputIndex: 0, subIndex: .sub(1))
+      AssertElementEqual(sutB, at: 2, .option(.name(.short("b"))))
     }
     do {
       var sutB = sut
       sutB.remove(at: SplitArguments.Index(inputIndex: 0, subIndex: .sub(1)))
       
       XCTAssertEqual(sutB.elements.count, 1)
-      AssertIndexEqual(sutB, at: 0, inputIndex: 0, subIndex: .sub(0))
-      AssertElementEqual(sutB, at: 0, .option(.name(.short("f"))))
+      AssertIndexEqual(sutB, at: 2, inputIndex: 0, subIndex: .sub(0))
+      AssertElementEqual(sutB, at: 2, .option(.name(.short("f"))))
     }
   }
 }
@@ -433,11 +433,11 @@ extension SplitArgumentTests {
     
     let a = try XCTUnwrap(sut.popNext())
     XCTAssertEqual(a.0, .argumentIndex(SplitArguments.Index(inputIndex: 0, subIndex: .complete)))
-    XCTAssertEqual(a.1, .option(.name(.long("foo"))))
+    XCTAssertEqual(a.1.value, .option(.name(.long("foo"))))
     
     let b = try XCTUnwrap(sut.popNext())
     XCTAssertEqual(b.0, .argumentIndex(SplitArguments.Index(inputIndex: 1, subIndex: .complete)))
-    XCTAssertEqual(b.1, .value("bar"))
+    XCTAssertEqual(b.1.value, .value("bar"))
     
     XCTAssertNil(sut.popNext())
   }
@@ -447,11 +447,11 @@ extension SplitArgumentTests {
     
     let a = try XCTUnwrap(sut.peekNext())
     XCTAssertEqual(a.0, .argumentIndex(SplitArguments.Index(inputIndex: 0, subIndex: .complete)))
-    XCTAssertEqual(a.1, .option(.name(.long("foo"))))
+    XCTAssertEqual(a.1.value, .option(.name(.long("foo"))))
     
     let b = try XCTUnwrap(sut.peekNext())
     XCTAssertEqual(b.0, .argumentIndex(SplitArguments.Index(inputIndex: 0, subIndex: .complete)))
-    XCTAssertEqual(b.1, .option(.name(.long("foo"))))
+    XCTAssertEqual(b.1.value, .option(.name(.long("foo"))))
   }
   
   func testPeekNextWhenEmpty() throws {

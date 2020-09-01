@@ -97,9 +97,9 @@ extension CommandParser {
     // We should have used up all arguments at this point:
     guard !split.containsNonTerminatorArguments else {
       // Check if one of the arguments is an unknown option
-      for (index, element) in split.elements {
-        if case .option(let argument) = element {
-          throw ParserError.unknownOption(InputOrigin.Element.argumentIndex(index), argument.name)
+      for element in split.elements {
+        if case .option(let argument) = element.value {
+          throw ParserError.unknownOption(InputOrigin.Element.argumentIndex(element.index), argument.name)
         }
       }
        
@@ -296,12 +296,12 @@ extension CommandParser {
 
     // Generate the argument set and parse the argument to find in the set
     let argset = ArgumentSet(current.element)
-    let (_, parsedArgument) = try! parseIndividualArg(argToMatch, at: 0).first!
+    let parsedArgument = try! parseIndividualArg(argToMatch, at: 0).first!
     
     // Look up the specified argument and retrieve its custom completion function
     let completionFunction: ([String]) -> [String]
     
-    switch parsedArgument {
+    switch parsedArgument.value {
     case .option(let parsed):
       guard let matchedArgument = argset.first(matching: parsed),
         case .custom(let f) = matchedArgument.completion.kind
@@ -362,7 +362,7 @@ extension CommandParser {
 extension SplitArguments {
   func contains(_ needle: Name) -> Bool {
     self.elements.contains {
-      switch $0.element {
+      switch $0.value {
       case .option(.name(let name)),
            .option(.nameWithValue(let name, _)):
         return name == needle
@@ -374,7 +374,7 @@ extension SplitArguments {
 
   func contains(anyOf names: [Name]) -> Bool {
     self.elements.contains {
-      switch $0.element {
+      switch $0.value {
       case .option(.name(let name)),
            .option(.nameWithValue(let name, _)):
         return names.contains(name)
