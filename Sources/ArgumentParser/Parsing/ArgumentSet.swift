@@ -19,74 +19,38 @@
 /// The `-v | -f` part is one *set* that’s optional, `<input> <output>` is
 /// another. Both of these can then be combined into a third set.
 struct ArgumentSet {
-  enum Content {
-    /// A leaf list of arguments.
-    case arguments([ArgumentDefinition])
-    /// A node with additional `[ArgumentSet]`
-    case sets([ArgumentSet])
-  }
-  var content: Content
-  var kind: Kind
+  var content: [ArgumentDefinition] = []
+  var namePositions: [Name: Int] = [:]
   
-  /// Used to generate _help_ text.
-  enum Kind {
-    /// Independent
-    case additive
-    /// Mutually exclusive
-    case exclusive
-    /// Several ways of achieving the same behavior. Should only display one.
-    case alternatives
+  init<S: Sequence>(_ arguments: S) where S.Element == ArgumentDefinition {
+    self.content = Array(arguments)
+    self.namePositions = Dictionary(
+      content.enumerated().flatMap { i, arg in arg.names.map { ($0, i) } },
+      uniquingKeysWith: { first, _ in first })
   }
   
-  init(arguments: [ArgumentDefinition], kind: Kind) {
-    self.content = .arguments(arguments)
-    self.kind = kind
-  }
+  init() {}
   
-  init(sets: [ArgumentSet], kind: Kind) {
-    self.content = .sets(sets)
-    self.kind = kind
+  init(_ arg: ArgumentDefinition) {
+    self.init([arg])
+  }
+
+  init(sets: [ArgumentSet]) {
+    self.init(sets.joined())
   }
 }
 
 extension ArgumentSet: CustomDebugStringConvertible {
   var debugDescription: String {
-    switch content {
-    case .arguments(let args):
-      return args
-        .map { $0.debugDescription }
-        .joined(separator: " / ")
-    case .sets(let sets):
-      return sets
-        .map { "{\($0.debugDescription)}" }
-        .joined(separator: " / ")
-    }
+    content
+      .map { $0.debugDescription }
+      .joined(separator: " / ")
   }
 }
 
-extension ArgumentSet {
-  init() {
-    self.init(arguments: [], kind: .additive)
-  }
-  
-  init(_ arg: ArgumentDefinition) {
-    self.init(arguments: [arg], kind: .additive)
-  }
-  
-  init(additive args: [ArgumentDefinition]) {
-    self.init(arguments: args, kind: .additive)
-  }
-  
-  init(exclusive args: [ArgumentDefinition]) {
-    self.init(arguments: args, kind: args.count == 1 ? .additive : .exclusive)
-  }
-  
-  init(alternatives args: [ArgumentDefinition]) {
-    self.init(arguments: args, kind: args.count == 1 ? .additive : .alternatives)
-  }
-  
-  init(additive sets: [ArgumentSet]) {
-    self.init(sets: sets, kind: .additive)
+extension ArgumentSet: Sequence {
+  func makeIterator() -> Array<ArgumentDefinition>.Iterator {
+    return content.makeIterator()
   }
 }
 
@@ -150,7 +114,7 @@ extension ArgumentSet {
     let disableArg = ArgumentDefinition(kind: .named(disableNames), help: ArgumentDefinition.Help(options: [.isOptional], key: key), completion: .default, update: .nullary({ (origin, name, values) in
         hasUpdated = try ArgumentSet.updateFlag(key: key, value: false, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
     }), initial: { _, _ in })
-    return ArgumentSet(exclusive: [enableArg, disableArg])
+    return ArgumentSet([enableArg, disableArg])
   }
   
   /// Creates an argument set for an incrementing integer flag.
@@ -390,7 +354,7 @@ extension ArgumentSet {
   func first(
     matching parsed: ParsedArgument
   ) -> ArgumentDefinition? {
-    return first(where: { $0.names.contains(parsed.name) })
+    namePositions[parsed.name].map { content[$0] }
   }
   
   func firstPositional(

@@ -55,21 +55,11 @@ extension ParsableArguments {
 
 fileprivate extension ArgumentSet {
   var firstPositionalArgument: ArgumentDefinition? {
-    switch content {
-    case .arguments(let arguments):
-      return arguments.first(where: { $0.isPositional })
-    case .sets(let sets):
-      return sets.first(where: { $0.firstPositionalArgument != nil })?.firstPositionalArgument
-    }
+    content.first(where: { $0.isPositional })
   }
   
   var firstRepeatedPositionalArgument: ArgumentDefinition? {
-    switch content {
-    case .arguments(let arguments):
-      return arguments.first(where: { $0.isRepeatingPositional })
-    case .sets(let sets):
-      return sets.first(where: { $0.firstRepeatedPositionalArgument != nil })?.firstRepeatedPositionalArgument
-    }
+    content.first(where: { $0.isRepeatingPositional })
   }
 }
 
@@ -234,13 +224,8 @@ struct ParsableArgumentsUniqueNamesValidator: ParsableArgumentsValidator {
     }
 
     let countedNames: [String: Int] = argSets.reduce(into: [:]) { countedNames, args in
-      switch args.content {
-      case .arguments(let defs):
-        for name in defs.flatMap({ $0.names }) {
-          countedNames[name.synopsisString, default: 0] += 1
-        }
-      default:
-        break
+      for name in args.content.flatMap({ $0.names }) {
+        countedNames[name.synopsisString, default: 0] += 1
       }
     }
 

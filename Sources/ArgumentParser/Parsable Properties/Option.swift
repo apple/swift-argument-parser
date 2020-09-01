@@ -391,7 +391,7 @@ extension Option {
       })
       arg.help.options.formUnion(ArgumentDefinition.Help.Options(type: Value.self))
       arg.help.defaultValue = initial.map { "\($0)" }
-      return ArgumentSet(alternatives: [arg])
+      return ArgumentSet(arg)
       })
   }
 
@@ -534,7 +534,7 @@ extension Option {
         initial: setInitialValue
       )
       arg.help.defaultValue = helpDefaultValue
-      return ArgumentSet(alternatives: [arg])
+      return ArgumentSet(arg)
     })
   }
 
@@ -636,7 +636,7 @@ extension Option {
         initial: setInitialValue
       )
       arg.help.defaultValue = helpDefaultValue
-      return ArgumentSet(alternatives: [arg])
+      return ArgumentSet(arg)
     })
   }
 

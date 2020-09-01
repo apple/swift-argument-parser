@@ -23,7 +23,6 @@ add_library(ArgumentParser
   Parsing/ArgumentDecoder.swift
   Parsing/ArgumentDefinition.swift
   Parsing/ArgumentSet.swift
-  Parsing/ArgumentSetSequence.swift
   Parsing/CommandParser.swift
   Parsing/InputOrigin.swift
   Parsing/Name.swift
