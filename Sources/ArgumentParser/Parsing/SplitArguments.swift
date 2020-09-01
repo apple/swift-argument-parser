@@ -73,7 +73,7 @@ enum ParsedArgument: Equatable, CustomStringConvertible {
   }
 }
 
-/// A parsed version of command-line arguments.
+/// A collection of parsed command-line arguments.
 ///
 /// This is a flat list of *values* and *options*. E.g. the
 /// arguments `["--foo", "bar"]` would be parsed into
@@ -112,10 +112,10 @@ struct SplitArguments {
     }
   }
   
-  /// The index into the (original) input.
+  /// The position of the original input string for an element.
   ///
-  /// E.g. for `["--foo", "-vh"]` there are index positions 0 (`--foo`) and
-  /// 1 (`-vh`).
+  /// For example, if `originalInput` is `["--foo", "-vh"]`, there are index
+  /// positions 0 (`--foo`) and 1 (`-vh`).
   struct InputIndex: RawRepresentable, Hashable, Comparable {
     var rawValue: Int
     
@@ -124,10 +124,15 @@ struct SplitArguments {
     }
   }
   
-  /// The index into an input index position.
+  /// The position within an option for an element.
   ///
-  /// E.g. the input `"-vh"` will be split into the elements `-v`, and `-h`
-  /// each with its own subindex.
+  /// Single-dash prefixed options can be treated as a whole option or as a
+  /// group of individual short options. For example, the input `-vh` is split
+  /// into three elements, with distinct sub-indexes:
+  ///
+  /// - `-vh`: `.complete`
+  /// - `-v`: `.sub(0)`
+  /// - `-h`: `.sub(1)`
   enum SubIndex: Hashable, Comparable {
     case complete
     case sub(Int)
@@ -144,7 +149,7 @@ struct SplitArguments {
     }
   }
   
-  /// Tracks both the index into the original input and the index into the split arguments (array of elements).
+  /// An index into the original input and the sub-index of an element.
   struct Index: Hashable, Comparable {
     static func < (lhs: SplitArguments.Index, rhs: SplitArguments.Index) -> Bool {
       if lhs.inputIndex < rhs.inputIndex {
@@ -160,10 +165,14 @@ struct SplitArguments {
     var subIndex: SubIndex = .complete
   }
   
+  /// The parsed arguments. Onl
   var _elements: [Element] = []
-  var originalInput: [String]
   var firstUnused: Int = 0
 
+  /// The original array of arguments that was used to generate this instance.
+  var originalInput: [String]
+
+  /// The unused arguments represented by this instance.
   var elements: ArraySlice<Element> {
     _elements[firstUnused...]
   }
@@ -368,7 +377,7 @@ extension SplitArguments {
   
   /// Removes the element at the given position.
   mutating func remove(at position: Int) {
-    guard position > firstUnused else {
+    guard position >= firstUnused else {
       return
     }
     
@@ -405,19 +414,32 @@ extension SplitArguments {
   /// is removed, that will remove the _long with short dash_ as well. Likewise, if the
   /// _long with short dash_ is removed, that will remove both of the _short_ elements.
   mutating func remove(at position: Index) {
-    guard var start = elements.firstIndex(where: { $0.index.inputIndex == position.inputIndex })
-      else { return }
+    guard !isEmpty else { return }
+    
+    // Find the first element at the given input index. Since `elements` is
+    // always sorted by input index, we can leave this method if we see a
+    // higher value than `position`.
+    var start = elements.startIndex
+    while start < elements.endIndex {
+      if elements[start].index.inputIndex == position.inputIndex { break }
+      if elements[start].index.inputIndex > position.inputIndex { return }
+      start += 1
+    }
     
     if case .complete = position.subIndex {
-      // When removing a `.complete`, we need to remove _all_
-      // elements that have the same `InputIndex`.
+      // When removing a `.complete` position, we need to remove both the
+      // complete element and any sub-elements with the same input index.
+      
+      // Remove up to the first element where the input index doesn't match.
       let end = elements[start...].firstIndex(where: { $0.index.inputIndex != position.inputIndex })
         ?? elements.endIndex
 
       remove(subrange: start..<end)
     } else {
-      // When removing a `.sub` (i.e. non-`.complete`), we need to
-      // remove any `.complete`.
+      // When removing a `.sub` (i.e. non-`.complete`) position, we need to
+      // also remove the `.complete` position, if it exists. Since `.complete`
+      // positions always come before sub-positions, if one exists it  will be
+      // the position found as `start`.
       if elements[start].index.subIndex == .complete {
         remove(at: start)
         start += 1
