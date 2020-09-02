@@ -16,6 +16,23 @@ package updates, you can specify your package dependency using
 
 ---
 
+## [0.3.1] - 2020-09-02
+
+### Fixes
+
+- An option or flag can now declare a name with both single- and double-
+  dash prefixes, such as `-my-flag` and `--my-flag`. Specify both names in the
+  `name` parameter when declaring your property:
+  
+  ```swift
+  @Flag(name: [.long, .customLong("my-flag", withSingleDash: true)])
+  var myFlag = false
+  ```
+
+- Parsing performance improvements.
+
+---
+
 ## [0.3.0] - 2020-08-15
 
 ### Additions
@@ -329,7 +346,8 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 
 <!-- Link references for releases -->
 
-[Unreleased]: https://github.com/apple/swift-argument-parser/compare/0.3.0...HEAD
+[Unreleased]: https://github.com/apple/swift-argument-parser/compare/0.3.1...HEAD
+[0.3.1]: https://github.com/apple/swift-argument-parser/compare/0.3.0...0.3.1
 [0.3.0]: https://github.com/apple/swift-argument-parser/compare/0.2.2...0.3.0
 [0.2.2]: https://github.com/apple/swift-argument-parser/compare/0.2.1...0.2.2
 [0.2.1]: https://github.com/apple/swift-argument-parser/compare/0.2.0...0.2.1
