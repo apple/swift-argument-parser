@@ -237,7 +237,7 @@ extension ArgumentSet {
         let key = InputKey(rawValue: codingKey)
         return parsed.argumentSet(for: key)
     }
-    self.init(additive: a)
+    self.init(sets: a)
   }
 }
 

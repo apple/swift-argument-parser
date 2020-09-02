@@ -27,7 +27,7 @@ extension UsageGenerator {
   }
   
   init(toolName: String, definition: [ArgumentSet]) {
-    self.init(toolName: toolName, definition: ArgumentSet(additive: definition))
+    self.init(toolName: toolName, definition: ArgumentSet(sets: definition))
   }
 }
 

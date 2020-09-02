@@ -400,9 +400,7 @@ extension Flag where Value: EnumerableFlag {
           hasUpdated = try ArgumentSet.updateFlag(key: key, value: value, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
         }))
       }
-      return exclusivity == .exclusive
-        ? ArgumentSet(exclusive: args)
-        : ArgumentSet(additive: args)
+      return ArgumentSet(args)
       })
   }
 
@@ -525,9 +523,7 @@ extension Flag {
         }))
 
       }
-      return exclusivity == .exclusive
-        ? ArgumentSet(exclusive: args)
-        : ArgumentSet(additive: args)
+      return ArgumentSet(args)
       })
   }
 
@@ -553,7 +549,7 @@ extension Flag {
           })
         }))
       }
-      return ArgumentSet(additive: args)
+      return ArgumentSet(args)
     })
   }
 
@@ -628,9 +624,7 @@ extension Flag where Value: CaseIterable, Value: RawRepresentable, Value: Equata
           hasUpdated = try ArgumentSet.updateFlag(key: key, value: value, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
         }))
       }
-      return exclusivity == .exclusive
-        ? ArgumentSet(exclusive: args)
-        : ArgumentSet(additive: args)
+      return ArgumentSet(args)
       })
   }
 }
@@ -656,9 +650,7 @@ extension Flag {
           hasUpdated = try ArgumentSet.updateFlag(key: key, value: value, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
         }))
       }
-      return exclusivity == .exclusive
-        ? ArgumentSet(exclusive: args)
-        : ArgumentSet(additive: args)
+      return ArgumentSet(args)
     })
   }
   
@@ -686,7 +678,7 @@ extension Flag {
           })
         }))
       }
-      return ArgumentSet(additive: args)
+      return ArgumentSet(args)
     })
   }
 }

@@ -9,7 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-enum Name: Equatable {
+enum Name: Hashable {
   /// A name (usually multi-character) prefixed with `--` (2 dashes) or equivalent.
   case long(String)
   /// A single character name prefixed with `-` (1 dash) or equivalent.

@@ -280,8 +280,8 @@ extension Argument {
           values.set(v, forKey: key, inputOrigin: origin)
         }
       })
-      return ArgumentSet(alternatives: [arg])
-      })
+      return ArgumentSet(arg)
+    })
   }
 
   /// Creates a property that reads its value from an argument, parsing with
@@ -403,7 +403,7 @@ extension Argument {
         update: .appendToArray(forType: Element.self, key: key),
         initial: setInitialValue)
       arg.help.defaultValue = helpDefaultValue
-      return ArgumentSet(alternatives: [arg])
+      return ArgumentSet(arg)
     })
   }
 
@@ -501,7 +501,7 @@ extension Argument {
         }),
         initial: setInitialValue)
       arg.help.defaultValue = helpDefaultValue
-      return ArgumentSet(alternatives: [arg])
+      return ArgumentSet(arg)
     })
   }
 
