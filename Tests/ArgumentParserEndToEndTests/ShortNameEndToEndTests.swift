@@ -65,11 +65,11 @@ extension ShortNameEndToEndTests {
   }
 
   func testParsing_combined() throws {
-//    AssertParse(Bar.self, ["-vf", "myfile", "foo"]) { options in
-//      XCTAssertEqual(options.verbose, true)
-//      XCTAssertEqual(options.file, "myfile")
-//      XCTAssertEqual(options.name, "foo")
-//    }
+    AssertParse(Bar.self, ["-vf", "myfile", "foo"]) { options in
+      XCTAssertEqual(options.verbose, true)
+      XCTAssertEqual(options.file, "myfile")
+      XCTAssertEqual(options.name, "foo")
+    }
 
     AssertParse(Bar.self, ["-fv", "myfile", "foo"]) { options in
       XCTAssertEqual(options.verbose, true)
