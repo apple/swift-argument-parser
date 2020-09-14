@@ -22,9 +22,9 @@ endif()
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_Swift_MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/swift)
 
-find_package(dispatch QUIET)
-find_package(Foundation QUIET)
-find_package(XCTest QUIET)
+find_package(dispatch CONFIG)
+find_package(Foundation CONFIG)
+find_package(XCTest CONFIG)
 
 add_subdirectory(Sources)
 if(BUILD_EXAMPLES)
