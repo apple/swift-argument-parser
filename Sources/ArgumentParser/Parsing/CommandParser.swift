@@ -157,6 +157,9 @@ extension CommandParser {
       // after decoding a command, make sure to validate it
       do {
         try parsedCommand.validate()
+        var lastArgument = decodedArguments.removeLast()
+        lastArgument.value = parsedCommand
+        decodedArguments.append(lastArgument)
       } catch {
         try checkForBuiltInFlags(split)
         throw CommandError(commandStack: commandStack, parserError: ParserError.userValidationError(error))
