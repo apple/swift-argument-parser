@@ -15,7 +15,7 @@ enum Name: Hashable {
   /// A single character name prefixed with `-` (1 dash) or equivalent.
   ///
   /// Usually supports mixing multiple short names with a single dash, i.e. `-ab` is equivalent to `-a -b`.
-  case short(Character)
+  case short(Character, allowingJoined: Bool = false)
   /// A name (usually multi-character) prefixed with `-` (1 dash).
   case longWithSingleDash(String)
   
@@ -36,7 +36,7 @@ extension Name {
     switch self {
     case .long(let n):
       return "--\(n)"
-    case .short(let n):
+    case .short(let n, _):
       return "-\(n)"
     case .longWithSingleDash(let n):
       return "-\(n)"
@@ -47,7 +47,7 @@ extension Name {
     switch self {
     case .long(let n):
       return n
-    case .short(let n):
+    case .short(let n, _):
       return String(n)
     case .longWithSingleDash(let n):
       return n
@@ -60,6 +60,24 @@ extension Name {
       return true
     default:
       return false
+    }
+  }
+  
+  var allowsJoined: Bool {
+    switch self {
+    case .short(_, let allowingJoined):
+      return allowingJoined
+    default:
+      return false
+    }
+  }
+  
+  /// The instance to match against user input -- this always has
+  /// `allowingJoined` as `false`, since that's the way input is parsed.
+  var nameToMatch: Name {
+    switch self {
+    case .long, .longWithSingleDash: return self
+    case .short(let c, _): return .short(c)
     }
   }
 }

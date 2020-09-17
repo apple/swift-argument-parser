@@ -163,6 +163,10 @@ struct SplitArguments {
     
     var inputIndex: InputIndex
     var subIndex: SubIndex = .complete
+    
+    var completeIndex: Index {
+      return Index(inputIndex: inputIndex)
+    }
   }
   
   /// The parsed arguments. Onl
@@ -285,6 +289,25 @@ extension SplitArguments {
   func peekNext() -> (InputOrigin.Element, Element)? {
     guard let element = elements.first else { return nil }
     return (.argumentIndex(element.index), element)
+  }
+  
+  mutating func extractJoinedElement(at origin: InputOrigin.Element) -> (InputOrigin.Element, String)? {
+    guard case let .argumentIndex(index) = origin else { return nil }
+    
+    // Joined arguments only apply when parsing the first sub-element of a
+    // larger input argument.
+    guard index.subIndex == .sub(0) else { return nil }
+
+    // Rebuild the origin position for the full argument string, e.g. `-Ddebug`
+    // instead of just the `-D` portion.
+    let completeOrigin = InputOrigin.Element.argumentIndex(index.completeIndex)
+    
+    // Get the value from the original string, following the dash and short
+    // option name. For example, for `-Ddebug`, drop the `-D`, leaving `debug`
+    // as the value.
+    let value = String(originalInput(at: completeOrigin)!.dropFirst(2))
+    
+    return (completeOrigin, value)
   }
   
   /// Pops the element immediately after the given index, if it is a `.value`.
@@ -425,6 +448,7 @@ extension SplitArguments {
       if elements[start].index.inputIndex > position.inputIndex { return }
       start += 1
     }
+    guard start < elements.endIndex else { return }
     
     if case .complete = position.subIndex {
       // When removing a `.complete` position, we need to remove both the

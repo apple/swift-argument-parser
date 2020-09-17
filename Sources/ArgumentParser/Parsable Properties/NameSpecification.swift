@@ -36,7 +36,7 @@ public struct NameSpecification: ExpressibleByArrayLiteral {
     /// Use the given character as a short option label.
     ///
     /// Short labels can be combined into groups.
-    case customShort(Character)
+    case customShort(Character, allowingJoined: Bool = false)
   }
   var elements: [Element]
   
@@ -75,8 +75,8 @@ extension NameSpecification {
   /// Use the given character as a short option label.
   ///
   /// Short labels can be combined into groups.
-  public static func customShort(_ char: Character) -> NameSpecification {
-    [.customShort(char)]
+  public static func customShort(_ char: Character, allowingJoined: Bool = false) -> NameSpecification {
+    [.customShort(char, allowingJoined: allowingJoined)]
   }
   
   /// Combine the `.short` and `.long` specifications to allow both long
@@ -100,8 +100,8 @@ extension NameSpecification.Element {
       return withSingleDash
         ? .longWithSingleDash(name)
         : .long(name)
-    case .customShort(let name):
-      return .short(name)
+    case .customShort(let name, let allowingJoined):
+      return .short(name, allowingJoined: allowingJoined)
     }
   }
 }
