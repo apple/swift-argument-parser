@@ -146,3 +146,28 @@ extension ValidationEndToEndTests {
     AssertFullErrorMessage(Foo.self, ["--fail-silently", "Joe"], "")
   }
 }
+
+fileprivate struct FooCommand: ParsableCommand {
+  @Flag(help: .hidden)
+  var foo = false
+  @Flag(help: .hidden)
+  var bar = false
+
+  mutating func validate() throws {
+    if foo {
+      // --foo implies --bar
+      bar = true
+    }
+  }
+
+  func run() throws {
+    XCTAssertEqual(foo, bar)
+  }
+}
+
+extension ValidationEndToEndTests {
+  func testMutationsPreserved() throws {
+    var foo = try FooCommand.parseAsRoot(["--foo"])
+    try foo.run()
+  }
+}
