@@ -67,7 +67,7 @@ OPTIONS:
   -h, --help              Show help for this command.
 ```
 
-For more information and documentation about all supported options, see [the `Documentation` folder at the root of the repository](https://github.com/apple/swift-argument-parser/tree/master/Documentation).
+For more information and documentation about all supported options, see [the `Documentation` folder at the root of the repository](https://github.com/apple/swift-argument-parser/tree/main/Documentation).
 
 ## Examples
 

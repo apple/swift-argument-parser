@@ -16,11 +16,11 @@ about: Something isn't working as expected
 
 Replace this paragraph with a short description of the incorrect incorrect behavior. If this is a regression, please note the last version that the behavior was correct in addition to your current version.
 
-**ArgumentParser version:** `0.1.0` or the `master` branch, for example.
+**ArgumentParser version:** `0.1.0` or the `main` branch, for example.
 **Swift version:** Paste the output of `swift --version` here.
 
 ### Checklist
-- [ ] If possible, I've reproduced the issue using the `master` branch of this package
+- [ ] If possible, I've reproduced the issue using the `main` branch of this package
 - [ ] I've searched for [existing GitHub issues](https://github.com/apple/swift-argument-parser/issues)
 
 ### Steps to Reproduce
