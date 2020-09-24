@@ -175,4 +175,4 @@ Last but not least, we kick off parsing and execution with a call to the static 
 Math.main()
 ```
 
-That's it for this doubly-nested `math` command! This example is also provided as a part of the `swift-argument-parser` repository, so you can see it all together and experiment with it [here](https://github.com/apple/swift-argument-parser/blob/master/Examples/math/main.swift).
+That's it for this doubly-nested `math` command! This example is also provided as a part of the `swift-argument-parser` repository, so you can see it all together and experiment with it [here](https://github.com/apple/swift-argument-parser/blob/main/Examples/math/main.swift).
