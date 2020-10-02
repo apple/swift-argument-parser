@@ -19,11 +19,19 @@ var package = Package(
             name: "ArgumentParser",
             targets: ["ArgumentParser"]),
     ],
-    dependencies: [],
+    dependencies: [
+      .package(
+        url: "https://github.com/apple/swift-tools-support-core",
+        from: "0.1.10")
+    ],
     targets: [
         .target(
             name: "ArgumentParser",
-            dependencies: []),
+            dependencies: [
+                .product(
+                    name: "SwiftToolsSupport",
+                    package: "swift-tools-support-core")
+            ]),
         .target(
             name: "ArgumentParserTestHelpers",
             dependencies: ["ArgumentParser"]),
