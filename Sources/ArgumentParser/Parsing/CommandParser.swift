@@ -236,7 +236,7 @@ extension CommandParser {
     }
   }
   
-  func createCustomCommand(extraValues: __shared [(InputOrigin, String)]) -> Result<UserCustomCommand, CommandError> {
+  func createCustomCommand(extraValues: __shared [(InputOrigin, String)]) -> Result<CustomCommand, CommandError> {
     let parserError = ParserError.unexpectedExtraValues(extraValues)
     // remove default subcommand
     var stack = commandStack
@@ -257,7 +257,7 @@ extension CommandParser {
     }
     let commandName = stack.map { $0._commandName }.joined(separator: "-") + "-" + name
     let arguments = extraValues.dropFirst().map(\.1)
-    let customCommand = UserCustomCommand(commandName: commandName, arguments: arguments, parserError: parserError)
+    let customCommand = CustomCommand(commandName: commandName, arguments: arguments, parserError: parserError)
     return .success(customCommand)
   }
 }

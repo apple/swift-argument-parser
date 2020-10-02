@@ -9,25 +9,31 @@
 //
 //===----------------------------------------------------------------------===//
 
-struct UserCustomCommand: ParsableCommand {
+import TSCBasic
+
+struct CustomCommand: ParsableCommand {
   var commandName: String
   var arguments: [String]
   var parserError: ParserError
   
   func run() throws {
-    print(commandName, "is called")
+    guard let path = Process.findExecutable(commandName),
+          localFileSystem.exists(path) else {
+      throw parserError
+    }
+    try exec(path: path.pathString, args: arguments)
   }
 }
 
-extension UserCustomCommand {
-  /// UserCustomCommand does not confirm Decodable
+extension CustomCommand {
+  /// CustomCommand does not confirm Decodable
   /// - Throws: ValidationError
   init(from decoder: Decoder) throws {
     throw ValidationError("UserCustomCommand does not confirm Decodable")
   }
 }
 
-extension UserCustomCommand {
+extension CustomCommand {
   init() {
     commandName = ""
     arguments = []
