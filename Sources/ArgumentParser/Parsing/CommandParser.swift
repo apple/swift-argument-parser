@@ -223,6 +223,9 @@ extension CommandParser {
       return .success(result)
     } catch let error as CommandError {
       return .failure(error)
+    } catch ParserError.unexpectedExtraValues(let values) {
+      return createCustomCommand(extraValues: values)
+        .map { $0 as ParsableCommand }
     } catch let error as ParserError {
       let error = arguments.isEmpty ? ParserError.noArguments(error) : error
       return .failure(CommandError(commandStack: commandStack, parserError: error))
@@ -231,6 +234,31 @@ extension CommandParser {
     } catch {
       return .failure(CommandError(commandStack: commandStack, parserError: .invalidState))
     }
+  }
+  
+  func createCustomCommand(extraValues: __shared [(InputOrigin, String)]) -> Result<UserCustomCommand, CommandError> {
+    let parserError = ParserError.unexpectedExtraValues(extraValues)
+    // remove default subcommand
+    var stack = commandStack
+    var index = 0
+    while index < stack.count {
+      guard let subcommand = stack[index].configuration.defaultSubcommand else {
+        index += 1
+        continue
+      }
+      if subcommand == stack[index + 1] {
+        stack.remove(at: index + 1)
+      }
+      index += 1
+    }
+    
+    guard let name = extraValues.first?.1 else {
+      return .failure(CommandError(commandStack: commandStack, parserError: parserError))
+    }
+    let commandName = stack.map { $0._commandName }.joined(separator: "-") + "-" + name
+    let arguments = extraValues.dropFirst().map(\.1)
+    let customCommand = UserCustomCommand(commandName: commandName, arguments: arguments, parserError: parserError)
+    return .success(customCommand)
   }
 }
 
