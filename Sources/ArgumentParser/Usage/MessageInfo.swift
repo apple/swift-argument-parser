@@ -63,7 +63,7 @@ enum MessageInfo {
       return
 
     case let e as CustomNSError:
-      // Send ParserErrors back through the CommandError path
+      // Send CustomNSError back through the CommandError path
       self.init(
         error: CommandError(
           commandStack: [type.asCommand],
