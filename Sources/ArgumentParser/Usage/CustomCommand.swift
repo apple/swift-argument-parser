@@ -12,31 +12,34 @@
 import TSCBasic
 
 struct CustomCommand: ParsableCommand {
-  var commandName: String
+  var commandPath: AbsolutePath
   var arguments: [String]
-  var parserError: ParserError
   
   func run() throws {
-    guard let path = Process.findExecutable(commandName),
-          localFileSystem.exists(path) else {
-      throw parserError
-    }
-    try exec(path: path.pathString, args: arguments)
+    try exec(path: commandPath.pathString, args: arguments)
   }
 }
 
 extension CustomCommand {
   /// CustomCommand does not confirm Decodable
-  /// - Throws: ValidationError
-  init(from decoder: Decoder) throws {
-    throw ValidationError("UserCustomCommand does not confirm Decodable")
+  init(from decoder: Decoder) {
+    fatalError("CustomCommand does not confirm Decodable")
   }
 }
 
 extension CustomCommand {
   init() {
-    commandName = ""
-    arguments = []
-    parserError = .invalidState
+    fatalError("CustomCommand can't initialize")
+  }
+}
+
+extension CustomCommand {
+  init?(commandName: String, arguments: [String]) {
+    guard let path = Process.findExecutable(commandName),
+          localFileSystem.exists(path) else {
+      return nil
+    }
+    self.commandPath = path
+    self.arguments = arguments
   }
 }
