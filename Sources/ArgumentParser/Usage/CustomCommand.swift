@@ -11,6 +11,7 @@
 
 import TSCBasic
 
+/// CustomCommand is for calling other executables.
 struct CustomCommand: ParsableCommand {
   var commandPath: AbsolutePath
   var arguments: [String]
@@ -21,19 +22,22 @@ struct CustomCommand: ParsableCommand {
 }
 
 extension CustomCommand {
-  /// CustomCommand does not confirm Decodable
+  /// **NOT SUPPORTED**
   init(from decoder: Decoder) {
     fatalError("CustomCommand does not confirm Decodable")
   }
-}
-
-extension CustomCommand {
+  
+  /// **NOT SUPPORTED**
   init() {
     fatalError("CustomCommand can't initialize")
   }
 }
 
 extension CustomCommand {
+  /// Find executable command's path and if it not exist, return nil.
+  /// - Parameters:
+  ///   - commandName: command name to call
+  ///   - arguments: arguments to provide to the command
   init?(commandName: String, arguments: [String]) {
     guard let path = Process.findExecutable(commandName),
           localFileSystem.exists(path) else {
