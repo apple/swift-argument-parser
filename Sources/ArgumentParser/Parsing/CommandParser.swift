@@ -236,12 +236,13 @@ extension CommandParser {
     }
   }
   
+  /// Create CustomCommand from unexpected extra values and `commandStack`.
+  /// It should called when parse failed.
+  ///
+  /// - Parameter extraValues: The array of unexpected extra arguments.
   func createCustomCommand(extraValues: __shared [(InputOrigin, String)]) -> Result<CustomCommand, CommandError> {
     var error: CommandError {
-      CommandError(
-        commandStack: commandStack,
-        parserError: .unexpectedExtraValues(extraValues)
-      )
+      CommandError(commandStack: commandStack, parserError: .unexpectedExtraValues(extraValues))
     }
     // remove default subcommand
     var stack = commandStack
