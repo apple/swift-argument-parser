@@ -23,13 +23,8 @@ struct CustomCommand: ParsableCommand {
 
 extension CustomCommand {
   /// **NOT SUPPORTED**
-  init(from decoder: Decoder) {
-    fatalError("CustomCommand does not confirm Decodable")
-  }
-  
-  /// **NOT SUPPORTED**
   init() {
-    fatalError("CustomCommand can't initialize")
+    fatalError("CustomCommand.init is not supported")
   }
 }
 
