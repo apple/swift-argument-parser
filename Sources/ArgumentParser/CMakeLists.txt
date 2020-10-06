@@ -30,7 +30,10 @@ add_library(ArgumentParser
   Parsing/ParsedValues.swift
   Parsing/ParserError.swift
   Parsing/SplitArguments.swift
-
+  
+  Resources/en.lproj/Localizable.strings
+  Resources/tr.lproj/Localizable.strings
+  
   Usage/HelpCommand.swift
   Usage/HelpGenerator.swift
   Usage/MessageInfo.swift

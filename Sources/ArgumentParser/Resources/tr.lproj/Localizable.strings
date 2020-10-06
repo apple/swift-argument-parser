@@ -1,0 +1,154 @@
+/* Default value */
+" (default)" = " (öntanımlı)";
+
+/* Command placeholder */
+"<command>" = "<komut>";
+
+/* Subcommand placeholder */
+"<subcommand>" = "<altkomut>";
+
+/* Description */
+"Arguments" = "Değişkenler";
+
+/* Error message */
+"Internal error. Invalid state while parsing command-line arguments." = "İç hata. Komut satırı değişkenleri ayrıştırılırken geçersiz durum alındı.";
+
+/* Error message */
+"Internal error. Parsing command-line arguments hit unimplemented code path." = "İç hata. Komut satırı değişkenleri ayrıştırımı henüz eklenmemiş kod yoluna çarptı.";
+
+/* Error message */
+"Missing expected argument" = "Beklenen değişken eksik.";
+
+/* Error message */
+"Missing required subcommand." = "Gerekli altkomut eksik.";
+
+/* Description */
+"Options" = "Seçenekler";
+
+/* Help text */
+"Show help information." = "Yardım bilgisini göster.";
+
+/* Help text */
+"Show the version." = "Sürümü göster.";
+
+/* Description */
+"Subcommands" = "Altkomutlar";
+
+/* Error message */
+"Unspecified version" = "Belirtilmemiş sürüm";
+
+/* Placeholder */
+"value" = "değer";
+
+/* Default value */
+"(default: %@)" = "(öntanımlı: %@)";
+
+/* Usage help */
+"Usage: %@" = "Kullanım: %@";
+
+/* Abstract */
+"OVERVIEW: %@" = "GENEL BAKIŞ: %@";
+
+/* Help text */
+"
+
+  See '%@ <subcommand>' for detailed help.
+" = "
+
+  Ayrıntılı yardım için '%@ <altkomut>' yazın.
+";
+
+/* Help text */
+"
+%1$@\
+USAGE: %2$@
+
+%3$@%4$@
+" = "
+%1$@\
+KULLANIM: %2$@
+
+%3$@%4$@
+";
+
+/* Help text */
+"\n  See '%@ --help' for more information." = "\n  Daha fazla bilgi için '%@ --help' yazın.";
+
+/* Command options help */
+"%@ <options>" = "%@ <seçenekler>";
+
+/* Error message */
+"Invalid option: %@" = "Geçersiz seçenek: %@";
+
+/* Error message */
+"Invalid option: -%@" = "Geçersiz seçenek: -%@";
+
+/* Error message */
+"Internal error. Parsing command-line arguments hit unimplemented code path." = "İç hata. Komut satırı değişkenleri ayrıştırımı henüz eklenmemiş kod yoluna çarptı.";
+
+/* Error message */
+"Internal error. Invalid state while parsing command-line arguments." = "İç hata. Komut satırı değişkenleri ayrıştırılırken geçersiz durum alındı.";
+
+/* Error message */
+"
+Can't autodetect a supported shell.
+Please use --generate-completion-script=<shell> with one of:
+    %@
+" = "
+Desteklenen bir kabuk kendiliğinden algılanamıyor.
+Lütfen aşağıdakilerden biri ile --generate-completion-script=<kabuk> kullanın:
+    %@
+";
+
+/* Error message */
+"
+Can't generate completion scripts for '%1$@'.
+Please use --generate-completion-script=<shell> with one of:
+    %2$@
+" = "
+'%1$@' için tamamlama betikleri oluşturulamıyor.
+Lütfen aşağıdakilerden biri ile --generate-completion-script=<kabuk> kullanın:
+    %2$@
+";
+
+/* Error message */
+"Unknown option '%@'." = "Bilinmeyen seçenek '%@'.";
+
+/* Error message */
+"Unknown option '%1$@'. Did you mean '%2$@'?" = "Bilinmeyen seçenek '%1$@'. Şunu mu demek istediniz: '%2$@'?";
+
+/* Error message */
+"Missing value for '%1$@ <%2$@>'" = "'%1$@ <%2$@>' için eksik değer";
+
+/* Error message */
+"The option '%1$@' does not take any value, but '%2$@' was specified." = "'%1$@' seçeneği herhangi bir değer almaz, ancak '%2$@' belirtilmiş.";
+
+/* Error message */
+"Unexpected argument '%@'" = "Beklenmedik değişken '%@'";
+
+/* Error message */
+"%1$@ unexpected arguments: '%2$@'" = "%1$@ beklenmedik değişken: '%2$@'";
+
+/* Position message */
+"position %@" = "%@ konumu";
+
+/* Error message, uses above string as argument */
+"Value to be set with %1$@ had already been set with %2$@" = "%1$@ ile ayarlanacak değer %2$@ ile zaten ayarlanmış";
+
+/* Error message */
+"Missing expected argument '%@'" = "Beklenen değişken '%@' eksik";
+
+/* Error message */
+"Missing one of: '%@'" = "Şunlardan biri eksik: '%@'";
+
+/* Error message */
+"The value '%1$@' is invalid for '%2$@ <%3$@>'%4$@" = "'%1$@' değeri '%2$@ <%3$@>' için geçersiz (%4$@)";
+
+/* Error message */
+"The value '%1$@' is invalid for '<%2$@>'%3$@" = "'%1$@' değeri '<%2$@>' için geçersiz (%3$@)";
+
+/* Error message */
+"The value '%1$@' is invalid for '%2$@'%3$@" = "'%1$@' değeri '%2$@' için geçersiz (%3$@)";
+
+/* Error message */
+"The value '%1$@' is invalid.%2$@" = "'%1$@' değeri geçersiz (%2$@).";

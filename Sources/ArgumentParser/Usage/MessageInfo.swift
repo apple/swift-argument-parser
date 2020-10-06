@@ -35,7 +35,7 @@ enum MessageInfo {
         let versionString = commandStack
           .map { $0.configuration.version }
           .last(where: { !$0.isEmpty })
-          ?? "Unspecified version"
+          ?? NSLocalizedString("Unspecified version", bundle: .module, comment: "Error message")
         self = .help(text: versionString)
         return
         
@@ -71,7 +71,7 @@ enum MessageInfo {
     
     let commandNames = commandStack.map { $0._commandName }.joined(separator: " ")
     let usage = HelpGenerator(commandStack: commandStack).usageMessage()
-      + "\n  See '\(commandNames) --help' for more information."
+      + NSLocalizedString(String(format: "\n  See '%@ --help' for more information.", commandNames), bundle: .module, comment: "Help text")
     
     // Parsing errors and user-thrown validation errors have the usage
     // string attached. Other errors just get the error message.
