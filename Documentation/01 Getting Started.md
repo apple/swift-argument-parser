@@ -223,6 +223,9 @@ OPTIONS:
 As promised, here's the complete `count` command, for your experimentation:
 
 ```swift
+import ArgumentParser
+import Foundation
+
 struct Count: ParsableCommand {
     static let configuration = CommandConfiguration(abstract: "Word counter.")
     
