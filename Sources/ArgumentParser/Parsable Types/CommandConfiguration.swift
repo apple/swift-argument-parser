@@ -47,6 +47,13 @@ public struct CommandConfiguration {
   /// Flag names to be used for help.
   public var helpNames: NameSpecification
   
+  public enum AllowingExternalCommands {
+    case none, all
+    case list([String])
+  }
+  /// Allow that call `main-sub` when user enters `main sub`
+  public var allowingExternalCommands: AllowingExternalCommands
+
   /// Creates the configuration for a command.
   ///
   /// - Parameters:
@@ -66,6 +73,7 @@ public struct CommandConfiguration {
   ///     is given.
   ///   - helpNames: The flag names to use for requesting help, simulating
   ///     a Boolean property named `help`.
+  ///   - allowingExternalCommands: Allow that call `main-sub` when user enters `main sub`
   public init(
     commandName: String? = nil,
     abstract: String = "",
@@ -74,6 +82,7 @@ public struct CommandConfiguration {
     shouldDisplay: Bool = true,
     subcommands: [ParsableCommand.Type] = [],
     defaultSubcommand: ParsableCommand.Type? = nil,
+    allowingExternalCommands: AllowingExternalCommands = .none,
     helpNames: NameSpecification = [.short, .long]
   ) {
     self.commandName = commandName
@@ -83,6 +92,7 @@ public struct CommandConfiguration {
     self.shouldDisplay = shouldDisplay
     self.subcommands = subcommands
     self.defaultSubcommand = defaultSubcommand
+    self.allowingExternalCommands = allowingExternalCommands
     self.helpNames = helpNames
   }
 
@@ -97,6 +107,7 @@ public struct CommandConfiguration {
     shouldDisplay: Bool = true,
     subcommands: [ParsableCommand.Type] = [],
     defaultSubcommand: ParsableCommand.Type? = nil,
+    allowingExternalCommands: AllowingExternalCommands = .none,
     helpNames: NameSpecification = [.short, .long]
   ) {
     self.commandName = commandName
@@ -107,6 +118,7 @@ public struct CommandConfiguration {
     self.shouldDisplay = shouldDisplay
     self.subcommands = subcommands
     self.defaultSubcommand = defaultSubcommand
+    self.allowingExternalCommands = allowingExternalCommands
     self.helpNames = helpNames
   }
 }

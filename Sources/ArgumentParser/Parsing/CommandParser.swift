@@ -224,7 +224,7 @@ extension CommandParser {
     } catch let error as CommandError {
       return .failure(error)
     } catch ParserError.unexpectedExtraValues(let values) {
-      return createCustomCommand(extraValues: values)
+      return createExternalCommand(extraValues: values)
         .map { $0 as ParsableCommand }
     } catch let error as ParserError {
       let error = arguments.isEmpty ? ParserError.noArguments(error) : error
@@ -235,15 +235,20 @@ extension CommandParser {
       return .failure(CommandError(commandStack: commandStack, parserError: .invalidState))
     }
   }
-  
+}
+
+// MARK: External Commands
+
+extension CommandParser {
   /// Create CustomCommand from unexpected extra values and `commandStack`.
   /// It should called when parse failed.
   ///
   /// - Parameter extraValues: The array of unexpected extra arguments.
-  func createCustomCommand(extraValues: __shared [(InputOrigin, String)]) -> Result<CustomCommand, CommandError> {
+  func createExternalCommand(extraValues: __shared [(InputOrigin, String)]) -> Result<ExternalCommand, CommandError> {
     var error: CommandError {
       CommandError(commandStack: commandStack, parserError: .unexpectedExtraValues(extraValues))
     }
+    
     // remove default subcommand
     var stack = commandStack
     var index = 0
@@ -261,9 +266,20 @@ extension CommandParser {
     guard let name = extraValues.first?.1 else {
       return .failure(error)
     }
+    switch stack.last?.configuration.allowingExternalCommands {
+    case nil, .some(.none): return .failure(error)
+    case .some(.all):  break
+    case .some(.list(let list)):
+      if list.contains(name) {
+        break
+      } else {
+        return .failure(error)
+      }
+    }
+    
     let commandName = stack.map { $0._commandName }.joined(separator: "-") + "-" + name
     let arguments = extraValues.dropFirst().map(\.1)
-    if let customCommand = CustomCommand(commandName: commandName, arguments: arguments) {
+    if let customCommand = ExternalCommand(commandName: commandName, arguments: arguments) {
       return .success(customCommand)
     } else {
       return .failure(error)

@@ -166,6 +166,9 @@ extension ErrorMessageGenerator {
     case .unsupportedShell:
       return unsupportedAutodetectedShell
       
+    case .failedExecuteExternalCommand:
+      return notImplementedMessage
+      
     case .notImplemented:
       return notImplementedMessage
     case .invalidState:

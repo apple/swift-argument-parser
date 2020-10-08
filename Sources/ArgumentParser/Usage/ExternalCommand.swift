@@ -12,7 +12,7 @@
 import TSCBasic
 
 /// CustomCommand is for calling other executables.
-struct CustomCommand: ParsableCommand {
+struct ExternalCommand: ParsableCommand {
   var commandPath: AbsolutePath
   var arguments: [String]
   
@@ -21,14 +21,14 @@ struct CustomCommand: ParsableCommand {
   }
 }
 
-extension CustomCommand {
+extension ExternalCommand {
   /// **NOT SUPPORTED**
   init() {
-    fatalError("CustomCommand.init is not supported")
+    fatalError("unavailable")
   }
 }
 
-extension CustomCommand {
+extension ExternalCommand {
   /// Find executable command's path and if it not exist, return nil.
   /// - Parameters:
   ///   - commandName: command name to call

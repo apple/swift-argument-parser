@@ -18,6 +18,8 @@ enum ParserError: Error {
   case completionScriptCustomResponse(String)
   case unsupportedShell(String? = nil)
   
+  case failedExecuteExternalCommand
+  
   case notImplemented
   case invalidState
   case unknownOption(InputOrigin.Element, Name)
