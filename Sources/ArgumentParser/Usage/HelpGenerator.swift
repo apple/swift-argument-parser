@@ -298,8 +298,8 @@ func ioctl(_ a: Int32, _ b: Int32, _ p: UnsafeMutableRawPointer) -> Int32 {
 }
 #elseif canImport(Darwin)
 import Darwin
-#elseif canImport(MSVCRT)
-import MSVCRT
+#elseif canImport(CRT)
+import CRT
 import WinSDK
 #endif
 

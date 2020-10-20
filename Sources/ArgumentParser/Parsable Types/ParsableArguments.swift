@@ -15,8 +15,8 @@ let _exit: (Int32) -> Never = Glibc.exit
 #elseif canImport(Darwin)
 import Darwin
 let _exit: (Int32) -> Never = Darwin.exit
-#elseif canImport(MSVCRT)
-import MSVCRT
+#elseif canImport(CRT)
+import CRT
 let _exit: (Int32) -> Never = ucrt._exit
 #endif
 

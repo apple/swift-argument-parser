@@ -13,8 +13,8 @@
 import Glibc
 #elseif canImport(Darwin)
 import Darwin
-#elseif canImport(MSVCRT)
-import MSVCRT
+#elseif canImport(CRT)
+import CRT
 #endif
 
 #if os(Windows)
