@@ -210,7 +210,6 @@ internal struct HelpGenerator {
     }
 
     let helpLabels = commandStack
-      .first!
       .getHelpNames()
       .map { $0.synopsisString }
       .joined(separator: ", ")
@@ -282,12 +281,25 @@ internal struct HelpGenerator {
   }
 }
 
-internal extension ParsableCommand {
-  static func getHelpNames() -> [Name] {
-    return self.configuration
-      .helpNames
-      .makeNames(InputKey(rawValue: "help"))
-      .sorted(by: >)
+fileprivate extension CommandConfiguration {
+  static var defaultHelpNames: NameSpecification { [.short, .long] }
+}
+
+fileprivate extension NameSpecification {
+  func generateHelpNames() -> [Name] {
+    return self.makeNames(InputKey(rawValue: "help")).sorted(by: >)
+  }
+}
+
+internal extension Array where Element == ParsableCommand.Type {
+  func getHelpNames() -> [Name] {
+    if(count == 0){
+      return CommandConfiguration.defaultHelpNames.generateHelpNames()
+    } else if let helpNames = self.last!.configuration.helpNames {
+      return helpNames.generateHelpNames()
+    } else {
+      return self.dropLast().getHelpNames()
+    }
   }
 }
 

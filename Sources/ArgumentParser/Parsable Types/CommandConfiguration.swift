@@ -45,7 +45,7 @@ public struct CommandConfiguration {
   public var defaultSubcommand: ParsableCommand.Type?
   
   /// Flag names to be used for help.
-  public var helpNames: NameSpecification
+  public var helpNames: NameSpecification?
   
   /// Creates the configuration for a command.
   ///
@@ -74,7 +74,7 @@ public struct CommandConfiguration {
     shouldDisplay: Bool = true,
     subcommands: [ParsableCommand.Type] = [],
     defaultSubcommand: ParsableCommand.Type? = nil,
-    helpNames: NameSpecification = [.short, .long]
+    helpNames: NameSpecification? = nil
   ) {
     self.commandName = commandName
     self.abstract = abstract
@@ -97,7 +97,7 @@ public struct CommandConfiguration {
     shouldDisplay: Bool = true,
     subcommands: [ParsableCommand.Type] = [],
     defaultSubcommand: ParsableCommand.Type? = nil,
-    helpNames: NameSpecification = [.short, .long]
+    helpNames: NameSpecification? = nil
   ) {
     self.commandName = commandName
     self._superCommandName = _superCommandName
