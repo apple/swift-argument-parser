@@ -64,8 +64,9 @@ public struct CommandConfiguration {
   ///     command.
   ///   - defaultSubcommand: The default command type to run if no subcommand
   ///     is given.
-  ///   - helpNames: The flag names to use for requesting help, simulating
-  ///     a Boolean property named `help`.
+  ///   - helpNames: The flag names to use for requesting help. If `helpNames`
+  ///     is `nil`, the flag names are derived by simulating a Boolean property
+  ///     named `help`.
   public init(
     commandName: String? = nil,
     abstract: String = "",

@@ -153,6 +153,34 @@ OPTIONS:
   -?, --help              Show help information.
 ```
 
+If you don't provide alternative help names for Subcommand then it will inherit help names from it's immediate parent.
+
+```swift
+struct Parent: ParsableCommand {
+    static let configuration = CommandConfiguration(
+        subcommands: [Child.self],
+        helpNames: [.long, .customShort("?")])
+
+    struct Child: ParsableCommand {
+        @Option(name: .shortAndLong, help: "The host the server will run on.")
+        var host: String
+    }
+}
+```
+
+When running the command, `-h` matches the short name of the `host` property, and `-?` displays the help screen.
+
+```
+% parent child -h 192.0.0.0
+...
+% parent child -?
+USAGE: parent child --host <host>
+
+OPTIONS:
+  -h, --host <host>       The host the server will run on.
+  -?, --help              Show help information.
+```
+
 ## Hiding Arguments and Commands
 
 You may want to suppress features under development or experimental flags from the generated help screen. You can hide an argument or a subcommand by passing `shouldDisplay: false` to the property wrapper or `CommandConfiguration` initializers, respectively.
