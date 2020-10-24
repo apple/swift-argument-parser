@@ -56,7 +56,7 @@ public struct CommandConfiguration {
   ///   - abstract: A one-line description of the command.
   ///   - discussion: A longer description of the command.
   ///   - version: The version number for this command. When you provide a
-  ///     non-empty string, the arguemnt parser prints it if the user provides
+  ///     non-empty string, the argument parser prints it if the user provides
   ///     a `--version` flag.
   ///   - shouldDisplay: A Boolean value indicating whether the command
   ///     should be shown in the extended help display.
