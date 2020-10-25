@@ -42,6 +42,9 @@ public struct CompletionShell: RawRepresentable, Hashable, CaseIterable {
 
   /// Returns an instance representing the current shell, if recognized.
   public static func autodetected() -> CompletionShell? {
+#if os(Windows)
+    return nil
+#endif
     // FIXME: This retrieves the user's preferred shell, not necessarily the one currently in use.
     guard let shellVar = getenv("SHELL") else { return nil }
     let shellParts = String(cString: shellVar).split(separator: "/")
