@@ -190,15 +190,3 @@ extension ErrorMessageTests {
       "Unknown option '--cont'. Did you mean '--count'?")
   }
 }
-
-// MARK: - CustomNSError tests
-
-extension ErrorMessageTests {
-  func testCustomErrorCodeForTheFirstCase() {
-    AssertExecuteCommand(command: "errors --error-case=101", expected: "Error: My first case localized description", exitCode: ExitCode(rawValue: 101))
-  }
-
-  func testCustomErrorCodeForTheSecondCase() {
-    AssertExecuteCommand(command: "errors --error-case=102", expected: nil, exitCode: ExitCode(rawValue: 102))
-  }
-}

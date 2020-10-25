@@ -29,10 +29,6 @@ var package = Package(
             dependencies: ["ArgumentParser"]),
 
         .target(
-            name: "errors",
-            dependencies: ["ArgumentParser"],
-            path: "Examples/errors"),
-        .target(
             name: "roll",
             dependencies: ["ArgumentParser"],
             path: "Examples/roll"),
