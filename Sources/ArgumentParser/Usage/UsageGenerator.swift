@@ -339,7 +339,7 @@ extension ErrorMessageGenerator {
     }
     switch possibilities.count {
     case 0:
-      return "Missing expected argument"
+      return "No value set for non-argument var \(key). Replace with a static variable, or let constant."
     case 1:
       return "Missing expected argument '\(possibilities.first!)'"
     default:
