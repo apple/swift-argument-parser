@@ -25,6 +25,8 @@ final class MathExampleTests: XCTestCase {
 
         USAGE: math <subcommand>
 
+        VERSION: 1.0.0
+
         OPTIONS:
           --version               Show the version.
           -h, --help              Show help information.
@@ -48,6 +50,8 @@ final class MathExampleTests: XCTestCase {
 
         USAGE: math add [--hex-output] [<values> ...]
 
+        VERSION: 1.0.0
+
         ARGUMENTS:
           <values>                A group of integers to operate on.
 
@@ -68,6 +72,8 @@ final class MathExampleTests: XCTestCase {
 
         USAGE: math stats average [--kind <kind>] [<values> ...]
 
+        VERSION: 1.0.0
+
         ARGUMENTS:
           <values>                A group of floating-point values to operate on.
 
@@ -87,6 +93,8 @@ final class MathExampleTests: XCTestCase {
         OVERVIEW: Print the quantiles of the values (TBD).
 
         USAGE: math stats quantiles [<values> ...]
+
+        VERSION: 1.0.0
 
         ARGUMENTS:
           <values>                A group of floating-point values to operate on.

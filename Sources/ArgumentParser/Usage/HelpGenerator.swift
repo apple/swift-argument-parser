@@ -258,6 +258,10 @@ internal struct HelpGenerator {
     let renderedAbstract = abstract.isEmpty
       ? ""
       : "OVERVIEW: \(abstract)".wrapped(to: screenWidth) + "\n\n"
+
+    let renderedVersion = (commandStack.first?.configuration.version).map { version in
+        version.isEmpty ? "" : "VERSION: \(version)".wrapped(to: screenWidth) + "\n\n"
+    } ?? ""
     
     var helpSubcommandMessage: String = ""
     if includesSubcommands {
@@ -277,6 +281,7 @@ internal struct HelpGenerator {
     \(renderedAbstract)\
     USAGE: \(usage.rendered(screenWidth: screenWidth))
     
+    \(renderedVersion)\
     \(renderedSections)\(helpSubcommandMessage)
     """
   }

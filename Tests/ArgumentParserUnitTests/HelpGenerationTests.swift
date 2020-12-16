@@ -313,6 +313,8 @@ extension HelpGenerationTests {
     AssertHelp(for: I.self, equals: """
     USAGE: i
 
+    VERSION: 1.0.0
+
     OPTIONS:
       --version               Show the version.
       -h, --help              Show help information.
