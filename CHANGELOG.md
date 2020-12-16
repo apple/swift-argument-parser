@@ -12,7 +12,7 @@ package updates, you can specify your package dependency using
 
 ## [Unreleased]
 
-*No changes yet.*
+- The version string is now included in the help output if specified.
 
 ---
 
