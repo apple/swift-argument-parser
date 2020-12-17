@@ -74,7 +74,7 @@ OPTIONS:
 
 ## Customizing Help for Commands
 
-In addition to configuring the command name and subcommands, as described in [Command and Subcommands](03%20Commands%20and%20Subcommands.md), you can also configure a command's help text by providing an abstract and discussion.
+In addition to configuring the command name and subcommands, as described in [Command and Subcommands](03%20Commands%20and%20Subcommands.md), you can also configure a command's help text by providing an abstract, discussion or version number.
 
 ```swift
 struct Repeat: ParsableCommand {
@@ -82,7 +82,9 @@ struct Repeat: ParsableCommand {
         abstract: "Repeats your input phrase.",
         discussion: """
             Prints to stdout forever, or until you halt the program.
-            """)
+            """,
+        version: "1.2.3"
+    )
 
     @Argument(help: "The phrase to repeat.")
     var phrase: String
@@ -102,6 +104,8 @@ OVERVIEW: Repeats your input phrase.
 Prints to stdout forever, or until you halt the program.
 
 USAGE: repeat <phrase>
+
+VERSION: 1.2.3
 
 ARGUMENTS:
   <phrase>                The phrase to repeat.
