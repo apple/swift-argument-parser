@@ -81,7 +81,7 @@ final class RepeatExampleTests: XCTestCase {
     AssertExecuteCommand(
       command: "repeat --version hello",
       expected: """
-            Error: Unknown option '--version'
+            Error: Unknown option '--version'.
             Usage: repeat [--count <count>] [--include-counter] <phrase>
               See 'repeat --help' for more information.
             """,

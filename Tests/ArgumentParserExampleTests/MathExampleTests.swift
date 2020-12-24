@@ -151,7 +151,7 @@ final class MathExampleTests: XCTestCase {
     AssertExecuteCommand(
       command: "math --foo",
       expected: """
-            Error: Unknown option '--foo'
+            Error: Unknown option '--foo'.
             Usage: math add [--hex-output] [<values> ...]
               See 'math add --help' for more information.
             """,
