@@ -32,16 +32,8 @@ struct Author: Codable {
     case htmlURL = "html_url"
   }
   
-  var commitURL: String {
-    "https://github.com/apple/swift-argument-parser/commits?author=\(login)"
-  }
-  
   var inlineLink: String {
     "[\(login)]"
-  }
-  
-  var linkReference: String {
-    "[\(login)]: \(commitURL)"
   }
 }
 
@@ -79,6 +71,9 @@ struct ChangelogAuthors: ParsableCommand {
   
   @Argument(help: "The ending point for the comparison.")
   var endingTag: String?
+  
+  @Option(name: [.short, .customLong("repo")], help: "The GitHub repository to search for changes.")
+  var repository: String = "apple/swift-argument-parser"
 
   func validate() throws {
     func checkTag(_ tag: String) -> Bool {
@@ -109,15 +104,22 @@ struct ChangelogAuthors: ParsableCommand {
     }
   }
   
+  func linkReference(for author: Author) -> String {
+    """
+    [\(author.login)]: \
+    https://github.com/\(repository)/commits?author=\(author.login)
+    """
+  }
+  
   func references(for authors: [Author]) -> String {
     authors
-      .map({ $0.linkReference })
+      .map({ linkReference(for: $0) })
       .joined(separator: "\n")
   }
   
   func comparisonURL() throws -> URL {
     guard let url = URL(
-      string: "https://api.github.com/repos/apple/swift-argument-parser/compare/\(startingTag)...\(endingTag ?? "HEAD")")
+      string: "https://api.github.com/repos/\(repository)/compare/\(startingTag)...\(endingTag ?? "HEAD")")
     else {
       print("Couldn't create url string")
       throw ExitCode.failure
