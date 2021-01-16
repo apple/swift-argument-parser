@@ -158,7 +158,10 @@ extension JoinedEndToEndTests {
   }
   
   func testArrayUpToNextParsing_Fails() throws {
-    // TODO
+    XCTAssertThrowsError(try Baz.parse(["-D", "--other"]))
+    XCTAssertThrowsError(try Baz.parse(["-Ddebug", "--other"]))
+    XCTAssertThrowsError(try Baz.parse(["-Ddebug", "--other"]))
+    XCTAssertThrowsError(try Baz.parse(["-Ddebug", "debug", "--other"]))
   }
 }
 
@@ -179,12 +182,12 @@ extension JoinedEndToEndTests {
       XCTAssertEqual(qux.debug, ["debug1", "debug2"])
     }
     
-    AssertParse(Qux.self, ["-Ddebug1", "debug2", "-Ddebug3", "debug4"]) { qux in
-      XCTAssertEqual(qux.debug, ["debug1", "debug2", "-Ddebug3", "debug4"])
+    AssertParse(Qux.self, ["-Ddebug1", "debug2", "-Ddebug3", "debug4", "--other"]) { qux in
+      XCTAssertEqual(qux.debug, ["debug1", "debug2", "-Ddebug3", "debug4", "--other"])
     }
   }
   
   func testArrayRemainingParsing_Fails() throws {
-    // TODO
+    XCTAssertThrowsError(try Baz.parse(["--other", "-Ddebug", "debug"]))
   }
 }
