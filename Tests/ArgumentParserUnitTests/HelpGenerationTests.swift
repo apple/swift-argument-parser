@@ -139,9 +139,6 @@ extension HelpGenerationTests {
     @Option(help: "Your name.")
     var name: String = "John"
 
-    @Option(default: "Winston", help: "Your middle name.")
-    var middleName: String?
-
     @Option(help: "Your age.")
     var age: Int = 20
 
@@ -163,15 +160,13 @@ extension HelpGenerationTests {
 
   func testHelpWithDefaultValues() {
     AssertHelp(for: D.self, equals: """
-            USAGE: d [<occupation>] [--name <name>] [--middle-name <middle-name>] [--age <age>] [--logging <logging>] [--lucky <numbers> ...] [--optional] [--required] [--degree <degree>] [--directory <directory>]
+            USAGE: d [<occupation>] [--name <name>] [--age <age>] [--logging <logging>] [--lucky <numbers> ...] [--optional] [--required] [--degree <degree>] [--directory <directory>]
 
             ARGUMENTS:
               <occupation>            Your occupation. (default: --)
 
             OPTIONS:
               --name <name>           Your name. (default: John)
-              --middle-name <middle-name>
-                                      Your middle name. (default: Winston)
               --age <age>             Your age. (default: 20)
               --logging <logging>     Whether logging is enabled. (default: false)
               --lucky <numbers>       Your lucky numbers. (default: 7, 14)

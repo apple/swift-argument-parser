@@ -106,41 +106,6 @@ extension Option where Value: ExpressibleByArgument {
     )
   }
 
-  /// Creates a property that reads its value from a labeled option.
-  ///
-  /// This method is deprecated, with usage split into two other methods below:
-  /// - `init(wrappedValue:name:parsing:help:)` for properties with a default value
-  /// - `init(name:parsing:help:)` for properties with no default value
-  ///
-  /// Existing usage of the `default` parameter should be replaced such as follows:
-  /// ```diff
-  /// -@Option(default: "bar")
-  /// -var foo: String
-  /// +@Option var foo: String = "bar"
-  /// ```
-  ///
-  /// - Parameters:
-  ///   - name: A specification for what names are allowed for this flag.
-  ///   - initial: A default value to use for this property. If `initial` is
-  ///     `nil`, this option and value are required from the user.
-  ///   - parsingStrategy: The behavior to use when looking for this option's
-  ///     value.
-  ///   - help: Information about how to use this option.
-  @available(*, deprecated, message: "Use regular property initialization for default values (`var foo: String = \"bar\"`)")
-  public init(
-    name: NameSpecification = .long,
-    default initial: Value?,
-    parsing parsingStrategy: SingleValueParsingStrategy = .next,
-    help: ArgumentHelp? = nil
-  ) {
-    self.init(
-      name: name,
-      initial: initial,
-      parsingStrategy: parsingStrategy,
-      help: help,
-      completion: nil)
-  }
-
   /// Creates a property with a default value provided by standard Swift default value syntax.
   ///
   /// This method is called to initialize an `Option` with a default value such as:
@@ -338,30 +303,6 @@ extension Option {
     })
   }
 
-  @available(*, deprecated, message: """
-    Default values don't make sense for optional properties.
-    Remove the 'default' parameter if its value is nil,
-    or make your property non-optional if it's non-nil.
-    """)
-  public init<T: ExpressibleByArgument>(
-    name: NameSpecification = .long,
-    default initial: T?,
-    parsing parsingStrategy: SingleValueParsingStrategy = .next,
-    help: ArgumentHelp? = nil
-  ) where Value == T? {
-    self.init(_parsedValue: .init { key in
-      var arg = ArgumentDefinition(
-        key: key,
-        kind: .name(key: key, specification: name),
-        parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy),
-        parser: T.init(argument:),
-        default: initial,
-        completion: T.defaultCompletionKind)
-      arg.help.help = help
-      return ArgumentSet(arg.optional)
-    })
-  }
-
   /// Creates a property with an optional default value, intended to be called by other constructors to centralize logic.
   ///
   /// This private `init` allows us to expose multiple other similar constructors to allow for standard default property initialization while reducing code duplication.
@@ -393,48 +334,6 @@ extension Option {
       arg.help.defaultValue = initial.map { "\($0)" }
       return ArgumentSet(arg)
       })
-  }
-
-  /// Creates a property that reads its value from a labeled option, parsing
-  /// with the given closure.
-  ///
-  /// This method is deprecated, with usage split into two other methods below:
-  /// - `init(wrappedValue:name:parsing:help:transform:)` for properties with a default value
-  /// - `init(name:parsing:help:transform:)` for properties with no default value
-  ///
-  /// Existing usage of the `default` parameter should be replaced such as follows:
-  /// ```diff
-  /// -@Option(default: "bar", transform: baz)
-  /// -var foo: String
-  /// +@Option(transform: baz)
-  /// +var foo: String = "bar"
-  /// ```
-  ///
-  /// - Parameters:
-  ///   - name: A specification for what names are allowed for this flag.
-  ///   - initial: A default value to use for this property. If `initial` is
-  ///     `nil`, this option and value are required from the user.
-  ///   - parsingStrategy: The behavior to use when looking for this option's
-  ///     value.
-  ///   - help: Information about how to use this option.
-  ///   - transform: A closure that converts a string into this property's
-  ///     type or throws an error.
-  @available(*, deprecated, message: "Use regular property initialization for default values (`var foo: String = \"bar\"`)")
-  public init(
-    name: NameSpecification = .long,
-    default initial: Value?,
-    parsing parsingStrategy: SingleValueParsingStrategy = .next,
-    help: ArgumentHelp? = nil,
-    transform: @escaping (String) throws -> Value
-  ) {
-     self.init(
-      name: name,
-      initial: initial,
-      parsingStrategy: parsingStrategy,
-      help: help,
-      completion: nil,
-      transform: transform
-    )
   }
 
   /// Creates a property with a default value provided by standard Swift default value syntax, parsing with the given closure.

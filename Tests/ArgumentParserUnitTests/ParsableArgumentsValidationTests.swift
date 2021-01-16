@@ -176,7 +176,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
     @Argument var foo: String
     @Option var bar: String
     @OptionGroup var options: Options
-    @Flag var flag: Bool
+    @Flag var flag = false
   }
 
   func testPositionalArgumentsValidation() throws {

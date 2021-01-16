@@ -95,35 +95,6 @@ extension Argument where Value: ExpressibleByArgument {
       })
   }
 
-  /// Creates a property that reads its value from an argument.
-  ///
-  /// This method is deprecated, with usage split into two other methods below:
-  /// - `init(wrappedValue:help:)` for properties with a default value
-  /// - `init(help:)` for properties with no default value
-  ///
-  /// Existing usage of the `default` parameter should be replaced such as follows:
-  /// ```diff
-  /// -@Argument(default: "bar")
-  /// -var foo: String
-  /// +@Argument var foo: String = "bar"
-  /// ```
-  ///
-  /// - Parameters:
-  ///   - initial: A default value to use for this property. If `initial` is
-  ///     `nil`, the user must supply a value for this argument.
-  ///   - help: Information about how to use this argument.
-  @available(*, deprecated, message: "Use regular property initialization for default values (`var foo: String = \"bar\"`)")
-  public init(
-    default initial: Value?,
-    help: ArgumentHelp? = nil
-  ) {
-    self.init(
-      initial: initial,
-      help: help,
-      completion: nil
-    )
-  }
-
   /// Creates a property with a default value provided by standard Swift default value syntax.
   ///
   /// This method is called to initialize an `Argument` with a default value such as:
@@ -234,28 +205,6 @@ extension Argument {
     })
   }
   
-  @available(*, deprecated, message: """
-    Default values don't make sense for optional properties.
-    Remove the 'default' parameter if its value is nil,
-    or make your property non-optional if it's non-nil.
-    """)
-  public init<T: ExpressibleByArgument>(
-    default initial: T?,
-    help: ArgumentHelp? = nil
-  ) where Value == T? {
-    self.init(_parsedValue: .init { key in
-      ArgumentSet(
-        key: key,
-        kind: .positional,
-        parsingStrategy: .nextAsValue,
-        parseType: T.self,
-        name: .long,
-        default: initial,
-        help: help,
-        completion: T.defaultCompletionKind)
-    })
-  }
-
   /// Creates a property with an optional default value, intended to be called by other constructors to centralize logic.
   ///
   /// This private `init` allows us to expose multiple other similar constructors to allow for standard default property initialization while reducing code duplication.
@@ -282,40 +231,6 @@ extension Argument {
       })
       return ArgumentSet(arg)
     })
-  }
-
-  /// Creates a property that reads its value from an argument, parsing with
-  /// the given closure.
-  ///
-  /// This method is deprecated, with usage split into two other methods below:
-  /// - `init(wrappedValue:help:transform:)` for properties with a default value
-  /// - `init(help:transform:)` for properties with no default value
-  ///
-  /// Existing usage of the `default` parameter should be replaced such as follows:
-  /// ```diff
-  /// -@Argument(default: "bar", transform: baz)
-  /// -var foo: String
-  /// +@Argument(transform: baz)
-  /// +var foo: String = "bar"
-  /// ```
-  ///
-  /// - Parameters:
-  ///   - initial: A default value to use for this property.
-  ///   - help: Information about how to use this argument.
-  ///   - transform: A closure that converts a string into this property's
-  ///     type or throws an error.
-  @available(*, deprecated, message: "Use regular property initialization for default values (`var foo: String = \"bar\"`)")
-  public init(
-    default initial: Value?,
-    help: ArgumentHelp? = nil,
-    transform: @escaping (String) throws -> Value
-  ) {
-    self.init(
-      initial: initial,
-      help: help,
-      completion: nil,
-      transform: transform
-    )
   }
 
   /// Creates a property with a default value provided by standard Swift default value syntax, parsing with the given closure.
