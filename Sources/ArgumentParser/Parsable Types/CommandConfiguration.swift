@@ -45,7 +45,7 @@ public struct CommandConfiguration {
   public var defaultSubcommand: ParsableCommand.Type?
   
   /// Flag names to be used for help.
-  public var helpNames: NameSpecification
+  public var helpNames: NameSpecification?
   
   /// Creates the configuration for a command.
   ///
@@ -64,8 +64,9 @@ public struct CommandConfiguration {
   ///     command.
   ///   - defaultSubcommand: The default command type to run if no subcommand
   ///     is given.
-  ///   - helpNames: The flag names to use for requesting help, simulating
-  ///     a Boolean property named `help`.
+  ///   - helpNames: The flag names to use for requesting help. If `helpNames`
+  ///     is `nil`, the flag names are derived by simulating a Boolean property
+  ///     named `help`.
   public init(
     commandName: String? = nil,
     abstract: String = "",
@@ -74,7 +75,7 @@ public struct CommandConfiguration {
     shouldDisplay: Bool = true,
     subcommands: [ParsableCommand.Type] = [],
     defaultSubcommand: ParsableCommand.Type? = nil,
-    helpNames: NameSpecification = [.short, .long]
+    helpNames: NameSpecification? = nil
   ) {
     self.commandName = commandName
     self.abstract = abstract
@@ -97,7 +98,7 @@ public struct CommandConfiguration {
     shouldDisplay: Bool = true,
     subcommands: [ParsableCommand.Type] = [],
     defaultSubcommand: ParsableCommand.Type? = nil,
-    helpNames: NameSpecification = [.short, .long]
+    helpNames: NameSpecification? = nil
   ) {
     self.commandName = commandName
     self._superCommandName = _superCommandName

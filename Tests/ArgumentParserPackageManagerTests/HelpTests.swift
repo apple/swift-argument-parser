@@ -196,7 +196,7 @@ struct CustomHelp: ParsableCommand {
 
 extension HelpTests {
   func testCustomHelpNames() {
-    let names = CustomHelp.getHelpNames()
+    let names = [CustomHelp.self].getHelpNames()
     XCTAssertEqual(names, [.short("?"), .long("show-help")])
   }
 }
@@ -211,7 +211,7 @@ struct NoHelp: ParsableCommand {
 
 extension HelpTests {
   func testNoHelpNames() {
-    let names = NoHelp.getHelpNames()
+    let names = [NoHelp.self].getHelpNames()
     XCTAssertEqual(names, [])
 
     XCTAssertEqual(
@@ -223,5 +223,46 @@ extension HelpTests {
               --count <count>         How many florps?
 
             """)
+  }
+}
+
+struct SubCommandCustomHelp: ParsableCommand {
+  static var configuration = CommandConfiguration (
+    helpNames: [.customShort("p"), .customLong("parrent-help")]
+  )
+
+  struct InheritHelp: ParsableCommand {
+
+  }
+
+  struct ModifiedHelp: ParsableCommand {
+    static var configuration = CommandConfiguration (
+      helpNames: [.customShort("s"), .customLong("subcommand-help")]
+    )
+
+    struct InheritImmediateParentdHelp: ParsableCommand {
+
+    }
+  }
+}
+
+extension HelpTests {
+  func testSubCommandInheritHelpNames() {
+    let names = [SubCommandCustomHelp.self, SubCommandCustomHelp.InheritHelp.self].getHelpNames()
+    XCTAssertEqual(names, [.short("p"), .long("parrent-help")])
+  }
+
+  func testSubCommandCustomHelpNames() {
+    let names = [SubCommandCustomHelp.self, SubCommandCustomHelp.ModifiedHelp.self].getHelpNames()
+    XCTAssertEqual(names, [.short("s"), .long("subcommand-help")])
+  }
+
+  func testInheritImmediateParentHelpNames() {
+    let names = [
+      SubCommandCustomHelp.self,
+      SubCommandCustomHelp.ModifiedHelp.self,
+      SubCommandCustomHelp.ModifiedHelp.InheritImmediateParentdHelp.self
+    ].getHelpNames()
+    XCTAssertEqual(names, [.short("s"), .long("subcommand-help")])
   }
 }
