@@ -16,6 +16,26 @@ package updates, you can specify your package dependency using
 
 ---
 
+## [0.3.2] - 2021-01-15
+
+### Fixes
+
+- Changes made to a command's properties in its `validate` method are now
+  persisted.
+- The exit code defined by error types that conform to `CustomNSError` are now
+  honored.
+- Improved error message when declaring a command type with an unadorned 
+  mutable property. (See [#256] for more.)
+- Migrated from `CRT` to `MSVCRT` for Windows platforms.
+- Fixes and improvements for building with CMake for Windows and Apple Silicon.
+- Documentation improvements.
+
+The 0.3.2 release includes contributions from [compnerd], [CypherPoet],
+[damuellen], [drewmccormack], [elliottwilliams], [gmittert], [MaxDesiatov],
+[natecook1000], [pegasuze], and [SergeyPetrachkov]. Thank you!
+
+---
+
 ## [0.3.1] - 2020-09-02
 
 ### Fixes
@@ -346,7 +366,8 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 
 <!-- Link references for releases -->
 
-[Unreleased]: https://github.com/apple/swift-argument-parser/compare/0.3.1...HEAD
+[Unreleased]: https://github.com/apple/swift-argument-parser/compare/0.3.2...HEAD
+[0.3.2]: https://github.com/apple/swift-argument-parser/compare/0.3.1...0.3.2
 [0.3.1]: https://github.com/apple/swift-argument-parser/compare/0.3.0...0.3.1
 [0.3.0]: https://github.com/apple/swift-argument-parser/compare/0.2.2...0.3.0
 [0.2.2]: https://github.com/apple/swift-argument-parser/compare/0.2.1...0.2.2
@@ -363,6 +384,7 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 <!-- Link references for pull requests -->
 
 [#65]: https://github.com/apple/swift-argument-parser/pull/65
+[#256]: https://github.com/apple/swift-argument-parser/pull/256
 
 <!-- Link references for contributors -->
 
@@ -372,10 +394,14 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [BradLarson]: https://github.com/apple/swift-argument-parser/commits?author=BradLarson
 [buttaface]: https://github.com/apple/swift-argument-parser/commits?author=buttaface
 [compnerd]: https://github.com/apple/swift-argument-parser/commits?author=compnerd
+[CypherPoet]: https://github.com/apple/swift-argument-parser/commits?author=CypherPoet
+[damuellen]: https://github.com/apple/swift-argument-parser/commits?author=damuellen
 [dduan]: https://github.com/apple/swift-argument-parser/commits?author=dduan
+[drewmccormack]: https://github.com/apple/swift-argument-parser/commits?author=drewmccormack
 [elliottwilliams]: https://github.com/apple/swift-argument-parser/commits?author=elliottwilliams
 [erica]: https://github.com/apple/swift-argument-parser/commits?author=erica
 [glessard]: https://github.com/apple/swift-argument-parser/commits?author=glessard
+[gmittert]: https://github.com/apple/swift-argument-parser/commits?author=gmittert
 [griffin-stewie]: https://github.com/apple/swift-argument-parser/commits?author=griffin-stewie
 [iainsmith]: https://github.com/apple/swift-argument-parser/commits?author=iainsmith
 [ibrahimoktay]: https://github.com/apple/swift-argument-parser/commits?author=ibrahimoktay
@@ -386,14 +412,17 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [kennyyork]: https://github.com/apple/swift-argument-parser/commits?author=kennyyork
 [klaaspieter]: https://github.com/apple/swift-argument-parser/commits?author=klaaspieter
 [Lantua]: https://github.com/apple/swift-argument-parser/commits?author=Lantua
+[MaxDesiatov]: https://github.com/apple/swift-argument-parser/commits?author=MaxDesiatov
 [miguelangel-dev]: https://github.com/apple/swift-argument-parser/commits?author=miguelangel-dev
 [MPLew-is]: https://github.com/apple/swift-argument-parser/commits?author=MPLew-is
 [natecook1000]: https://github.com/apple/swift-argument-parser/commits?author=natecook1000
 [NicFontana]: https://github.com/apple/swift-argument-parser/commits?author=NicFontana
 [owenv]: https://github.com/apple/swift-argument-parser/commits?author=owenv
+[pegasuze]: https://github.com/apple/swift-argument-parser/commits?author=pegasuze
 [rjstelling]: https://github.com/apple/swift-argument-parser/commits?author=rjstelling
 [Sajjon]: https://github.com/apple/swift-argument-parser/commits?author=Sajjon
 [schlagelk]: https://github.com/apple/swift-argument-parser/commits?author=schlagelk
+[SergeyPetrachkov]: https://github.com/apple/swift-argument-parser/commits?author=SergeyPetrachkov
 [sgl0v]: https://github.com/apple/swift-argument-parser/commits?author=sgl0v
 [sharplet]: https://github.com/apple/swift-argument-parser/commits?author=sharplet
 [sjavora]: https://github.com/apple/swift-argument-parser/commits?author=sjavora
