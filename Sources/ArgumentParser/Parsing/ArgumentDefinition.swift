@@ -194,6 +194,10 @@ extension ArgumentDefinition {
       return false
     }
   }
+  
+  var allowsJoinedValue: Bool {
+    names.contains(where: { $0.allowsJoined })
+  }
 }
 
 extension ArgumentDefinition.Kind {

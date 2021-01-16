@@ -3,6 +3,7 @@ add_library(EndToEndTests
   DefaultsEndToEndTests.swift
   EnumEndToEndTests.swift
   FlagsEndToEndTests.swift
+  JoinedEndToEndTests.swift
   LongNameWithShortDashEndToEndTests.swift
   NestedCommandEndToEndTests.swift
   OptionalEndToEndTests.swift

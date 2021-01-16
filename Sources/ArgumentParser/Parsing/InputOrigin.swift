@@ -18,6 +18,23 @@
 struct InputOrigin: Equatable, ExpressibleByArrayLiteral {
   enum Element: Comparable, Hashable {
     case argumentIndex(SplitArguments.Index)
+    
+    var baseIndex: Int? {
+      switch self {
+      case .argumentIndex(let i):
+        return i.inputIndex.rawValue
+      }
+    }
+    
+    var subIndex: Int? {
+      switch self {
+      case .argumentIndex(let i):
+        switch i.subIndex {
+        case .complete: return nil
+        case .sub(let n): return n
+        }
+      }
+    }
   }
   
   private var _elements: Set<Element> = []

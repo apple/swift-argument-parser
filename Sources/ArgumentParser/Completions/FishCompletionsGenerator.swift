@@ -78,7 +78,7 @@ extension Name {
     switch self {
     case .long(let longName):
       return "-l \(longName)"
-    case .short(let shortName):
+    case .short(let shortName, _):
       return "-s \(shortName)"
     case .longWithSingleDash(let dashedName):
       return "-o \(dashedName)"
@@ -89,7 +89,7 @@ extension Name {
     switch self {
     case .long(let longName):
       return "--\(longName)"
-    case .short(let shortName):
+    case .short(let shortName, _):
       return "-\(shortName)"
     case .longWithSingleDash(let dashedName):
       return "-\(dashedName)"
