@@ -291,15 +291,16 @@ fileprivate extension NameSpecification {
   }
 }
 
-internal extension Array where Element == ParsableCommand.Type {
+internal extension BidirectionalCollection where Element == ParsableCommand.Type {
   func getHelpNames() -> [Name] {
-    if(count == 0){
-      return CommandConfiguration.defaultHelpNames.generateHelpNames()
-    } else if let helpNames = self.last!.configuration.helpNames {
-      return helpNames.generateHelpNames()
-    } else {
-      return self.dropLast().getHelpNames()
-    }
+    return self.last(where: { $0.configuration.helpNames != nil })
+      .map { $0.configuration.helpNames!.generateHelpNames() }
+      ?? CommandConfiguration.defaultHelpNames.generateHelpNames()
+  }
+  
+  func getPrimaryHelpName() -> Name? {
+    let names = getHelpNames()
+    return names.first(where: { !$0.isShort }) ?? names.first
   }
 }
 
