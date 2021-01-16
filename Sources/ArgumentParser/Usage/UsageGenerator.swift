@@ -118,7 +118,7 @@ extension ArgumentDefinition {
   }
   
   var preferredNameForSynopsis: Name? {
-    names.first{ !$0.isShort } ?? names.first
+    names.first { !$0.isShort } ?? names.first
   }
   
   var synopsisValueName: String? {

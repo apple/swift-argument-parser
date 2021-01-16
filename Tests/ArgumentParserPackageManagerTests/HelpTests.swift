@@ -198,6 +198,12 @@ extension HelpTests {
   func testCustomHelpNames() {
     let names = [CustomHelp.self].getHelpNames()
     XCTAssertEqual(names, [.short("?"), .long("show-help")])
+    
+    AssertFullErrorMessage(CustomHelp.self, ["--error"], """
+      Error: Unknown option '--error'
+      Usage: custom-help
+        See 'custom-help --show-help' for more information.
+      """)
   }
 }
 
@@ -214,6 +220,11 @@ extension HelpTests {
     let names = [NoHelp.self].getHelpNames()
     XCTAssertEqual(names, [])
 
+    AssertFullErrorMessage(NoHelp.self, ["--error"], """
+      Error: Missing expected argument '--count <count>'
+      Usage: no-help --count <count>
+      """)
+
     XCTAssertEqual(
       NoHelp.message(for: CleanExit.helpRequest()).trimmingLines(),
       """
@@ -228,7 +239,7 @@ extension HelpTests {
 
 struct SubCommandCustomHelp: ParsableCommand {
   static var configuration = CommandConfiguration (
-    helpNames: [.customShort("p"), .customLong("parrent-help")]
+    helpNames: [.customShort("p"), .customLong("parent-help")]
   )
 
   struct InheritHelp: ParsableCommand {
@@ -249,7 +260,7 @@ struct SubCommandCustomHelp: ParsableCommand {
 extension HelpTests {
   func testSubCommandInheritHelpNames() {
     let names = [SubCommandCustomHelp.self, SubCommandCustomHelp.InheritHelp.self].getHelpNames()
-    XCTAssertEqual(names, [.short("p"), .long("parrent-help")])
+    XCTAssertEqual(names, [.short("p"), .long("parent-help")])
   }
 
   func testSubCommandCustomHelpNames() {

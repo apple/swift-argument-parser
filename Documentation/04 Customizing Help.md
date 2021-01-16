@@ -153,7 +153,7 @@ OPTIONS:
   -?, --help              Show help information.
 ```
 
-If you don't provide alternative help names for Subcommand then it will inherit help names from it's immediate parent.
+When not overridden, custom help names are inherited by subcommands. In this example, the parent command defines `--help` and `-?` as its help names:
 
 ```swift
 struct Parent: ParsableCommand {
@@ -168,7 +168,7 @@ struct Parent: ParsableCommand {
 }
 ```
 
-When running the command, `-h` matches the short name of the `host` property, and `-?` displays the help screen.
+The `child` subcommand inherits the parent's help names, allowing the user to distinguish between the host argument (`-h`) and help (`-?`).
 
 ```
 % parent child -h 192.0.0.0
