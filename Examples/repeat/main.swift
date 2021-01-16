@@ -10,6 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 import ArgumentParser
+import _Concurrency
 
 struct Repeat: ParsableCommand {
     @Option(help: "The number of times to repeat 'phrase'.")
@@ -34,4 +35,6 @@ struct Repeat: ParsableCommand {
     }
 }
 
-Repeat.main()
+runAsyncAndBlock {
+  await Repeat.main()
+}

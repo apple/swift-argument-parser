@@ -1,4 +1,4 @@
-// swift-tools-version:5.2
+// swift-tools-version:5.4
 //===----------------------------------------------------------*- swift -*-===//
 //
 // This source file is part of the Swift Argument Parser open source project
@@ -23,28 +23,34 @@ var package = Package(
     targets: [
         .target(
             name: "ArgumentParser",
-            dependencies: []),
+            dependencies: [],
+            swiftSettings: [
+                .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"]),
+            ]),
         .target(
             name: "ArgumentParserTestHelpers",
             dependencies: ["ArgumentParser"]),
 
-        .target(
+        .executableTarget(
             name: "roll",
             dependencies: ["ArgumentParser"],
             path: "Examples/roll"),
-        .target(
+        .executableTarget(
             name: "math",
             dependencies: ["ArgumentParser"],
             path: "Examples/math"),
-        .target(
+        .executableTarget(
             name: "repeat",
             dependencies: ["ArgumentParser"],
             path: "Examples/repeat"),
 
-        .target(
+        .executableTarget(
             name: "changelog-authors",
             dependencies: ["ArgumentParser"],
-            path: "Tools/changelog-authors"),
+            path: "Tools/changelog-authors",
+            swiftSettings: [
+                .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"]),
+            ]),
 
         .testTarget(
             name: "ArgumentParserEndToEndTests",

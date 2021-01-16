@@ -11,58 +11,10 @@
 
 import ArgumentParser
 import Foundation
+import _Concurrency
 
-// MARK: GitHub API response modeling
-
-struct Comparison: Codable {
-  var commits: [Commit]
-}
-
-struct Commit: Codable {
-  var sha: String
-  var author: Author
-}
-
-struct Author: Codable {
-  var login: String
-  var htmlURL: String
-  
-  enum CodingKeys: String, CodingKey {
-    case login
-    case htmlURL = "html_url"
-  }
-  
-  var commitURL: String {
-    "https://github.com/apple/swift-argument-parser/commits?author=\(login)"
-  }
-  
-  var inlineLink: String {
-    "[\(login)]"
-  }
-  
-  var linkReference: String {
-    "[\(login)]: \(commitURL)"
-  }
-}
-
-// MARK: Helpers
-
-extension Sequence {
-  func uniqued<T: Hashable>(by transform: (Element) throws -> T) rethrows -> [Element] {
-    var seen: Set<T> = []
-    var result: [Element] = []
-    
-    for element in self {
-      if try seen.insert(transform(element)).inserted {
-        result.append(element)
-      }
-    }
-    return result
-  }
-}
-
-// MARK: Command
-
+@available(macOS 9999, *)
+@main
 struct ChangelogAuthors: ParsableCommand {
   static var configuration: CommandConfiguration {
     CommandConfiguration(
@@ -126,9 +78,10 @@ struct ChangelogAuthors: ParsableCommand {
     return url
   }
   
-  mutating func run() throws {
-    let data = try Data(contentsOf: try comparisonURL())
+  mutating func run() async throws {
+    let data = try await URLSession.shared.data(from: comparisonURL())
     let comparison = try JSONDecoder().decode(Comparison.self, from: data)
+  
     let authors = comparison.commits.map({ $0.author })
       .uniqued(by: { $0.login })
       .sorted(by: { $0.login.lowercased() < $1.login.lowercased() })
@@ -138,6 +91,3 @@ struct ChangelogAuthors: ParsableCommand {
     print(references(for: authors))
   }
 }
-
-ChangelogAuthors.main()
-

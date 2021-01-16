@@ -28,7 +28,7 @@ public protocol ParsableCommand: ParsableArguments {
   /// application by calling the static `main()` method on the root type.
   /// This method has a default implementation that prints help text
   /// for this command.
-  mutating func run() throws
+  mutating func run() async throws
 }
 
 extension ParsableCommand {
@@ -41,7 +41,7 @@ extension ParsableCommand {
     CommandConfiguration()
   }
   
-  public mutating func run() throws {
+  public mutating func run() async throws {
     throw CleanExit.helpRequest(self)
   }
 }
@@ -89,10 +89,10 @@ extension ParsableCommand {
   ///
   /// - Parameter arguments: An array of arguments to use for parsing. If
   ///   `arguments` is `nil`, this uses the program's command-line arguments.
-  public static func main(_ arguments: [String]?) {
+  public static func main(_ arguments: [String]?) async {
     do {
       var command = try parseAsRoot(arguments)
-      try command.run()
+      try await command.run()
     } catch {
       exit(withError: error)
     }
@@ -101,7 +101,7 @@ extension ParsableCommand {
   /// Parses an instance of this type, or one of its subcommands, from
   /// command-line arguments and calls its `run()` method, exiting with a
   /// relevant error message if necessary.
-  public static func main() {
-    self.main(nil)
+  public static func main() async {
+    await self.main(nil)
   }
 }
