@@ -115,3 +115,45 @@ extension SimpleEndToEndTests {
     XCTAssertThrowsError(try Baz.parse(["--name", "--format", "Bar", "Foo"]))
   }
 }
+
+// MARK: Two values + unparsed variable
+
+fileprivate struct Qux: ParsableArguments {
+  @Option() var name: String
+  @Flag() var verbose = false
+  var count = 0
+}
+
+fileprivate struct Quizzo: ParsableArguments {
+  @Option() var name: String
+  @Flag() var verbose = false
+  let count = 0
+}
+
+extension SimpleEndToEndTests {
+  func testParsing_TwoPlusUnparsed() throws {
+    AssertParse(Qux.self, ["--name", "Qux"]) { qux in
+      XCTAssertEqual(qux.name, "Qux")
+      XCTAssertFalse(qux.verbose)
+      XCTAssertEqual(qux.count, 0)
+    }
+    AssertParse(Qux.self, ["--name", "Qux", "--verbose"]) { qux in
+      XCTAssertEqual(qux.name, "Qux")
+      XCTAssertTrue(qux.verbose)
+      XCTAssertEqual(qux.count, 0)
+    }
+    
+    AssertParse(Quizzo.self, ["--name", "Qux", "--verbose"]) { quizzo in
+      XCTAssertEqual(quizzo.name, "Qux")
+      XCTAssertTrue(quizzo.verbose)
+      XCTAssertEqual(quizzo.count, 0)
+    }
+  }
+  
+  func testParsing_TwoPlusUnparsed_Fails() throws {
+    XCTAssertThrowsError(try Qux.parse([]))
+    XCTAssertThrowsError(try Qux.parse(["--name"]))
+    XCTAssertThrowsError(try Qux.parse(["--name", "Qux", "--count"]))
+    XCTAssertThrowsError(try Qux.parse(["--name", "Qux", "--count", "2"]))
+  }
+}

@@ -17,10 +17,13 @@
 /// In some cases it can be multiple indices.
 struct InputOrigin: Equatable, ExpressibleByArrayLiteral {
   enum Element: Comparable, Hashable {
+    case defaultValue
     case argumentIndex(SplitArguments.Index)
     
     var baseIndex: Int? {
       switch self {
+      case .defaultValue:
+        return nil
       case .argumentIndex(let i):
         return i.inputIndex.rawValue
       }
@@ -28,6 +31,8 @@ struct InputOrigin: Equatable, ExpressibleByArrayLiteral {
     
     var subIndex: Int? {
       switch self {
+      case .defaultValue:
+        return nil
       case .argumentIndex(let i):
         switch i.subIndex {
         case .complete: return nil
@@ -87,6 +92,10 @@ extension InputOrigin.Element {
     switch (lhs, rhs) {
     case (.argumentIndex(let l), .argumentIndex(let r)):
       return l < r
+    case (.argumentIndex, .defaultValue):
+      return true
+    case (.defaultValue, _):
+      return false
     }
   }
 }

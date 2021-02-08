@@ -13,7 +13,22 @@ import XCTest
 import ArgumentParserTestHelpers
 import ArgumentParser
 
+struct Test: ParsableCommand {
+  @Option
+  var boop: String = "boop"
+  var blep: String = "blep"
+  mutating func run() {
+    self.blep += self.boop
+    print(self.blep)
+  }
+}
+
 final class ParsingEndToEndTests: XCTestCase {
+  func testTest() {
+    AssertParse(Test.self, []) { test in
+      
+    }
+  }
 }
 
 struct Name {

@@ -75,6 +75,8 @@ extension ArgumentDefinition {
       }
     case .positional:
       return "<\(valueName)>"
+    case .default:
+      return ""
     }
   }
   
@@ -91,6 +93,8 @@ extension ArgumentDefinition {
       }
     case .positional:
       return "<\(valueName)>"
+    case .default:
+      return ""
     }
   }
   

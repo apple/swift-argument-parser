@@ -23,6 +23,7 @@ struct ArgumentDefinition {
   enum Kind {
     case named([Name])
     case positional
+    case `default`
   }
   
   struct Help {
@@ -84,7 +85,7 @@ struct ArgumentDefinition {
   var names: [Name] {
     switch kind {
     case .named(let n): return n
-    case .positional: return []
+    case .positional, .default: return []
     }
   }
   
@@ -156,6 +157,8 @@ extension ArgumentDefinition: CustomDebugStringConvertible {
         + " <\(valueName)>"
     case (.positional, _):
       return "<\(valueName)>"
+    case (.default, _):
+      return ""
     }
   }
 }

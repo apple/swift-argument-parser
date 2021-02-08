@@ -105,7 +105,7 @@ extension ArgumentDefinition {
     var formattedFlags = [String]()
     var flags = [String]()
     switch self.kind {
-    case .positional:
+    case .positional, .default:
       break
     case .named(let names):
       flags = names.map { $0.asFishSuggestion }
