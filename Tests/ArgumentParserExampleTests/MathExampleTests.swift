@@ -86,12 +86,18 @@ final class MathExampleTests: XCTestCase {
     let helpText = """
         OVERVIEW: Print the quantiles of the values (TBD).
 
-        USAGE: math stats quantiles [<values> ...]
+        USAGE: math stats quantiles [<one-of-four>] [<custom-arg>] [<values> ...] [--file <file>] [--directory <directory>] [--shell <shell>] [--custom <custom>]
 
         ARGUMENTS:
+          <one-of-four>
+          <custom-arg>
           <values>                A group of floating-point values to operate on.
 
         OPTIONS:
+          --file <file>
+          --directory <directory>
+          --shell <shell>
+          --custom <custom>
           --version               Show the version.
           -h, --help              Show help information.
         """
@@ -311,7 +317,7 @@ _math_stats_stdev() {
     COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
 }
 _math_stats_quantiles() {
-    opts="--test-success-exit-code --test-failure-exit-code --test-validation-exit-code --test-custom-exit-code --file --directory --shell --custom -h --help"
+    opts="--file --directory --shell --custom -h --help"
     opts="$opts alphabet alligator branch braggart"
     opts="$opts $(math ---completion stats quantiles -- customArg "$COMP_WORDS")"
     if [[ $COMP_CWORD == "$1" ]]; then
@@ -319,10 +325,6 @@ _math_stats_quantiles() {
         return
     fi
     case $prev in
-        --test-custom-exit-code)
-            
-            return
-        ;;
         --file)
             COMPREPLY=( $(compgen -f -- "$cur") )
             return
@@ -497,10 +499,6 @@ _math_stats_quantiles() {
         ':one-of-four:(alphabet alligator branch braggart)'
         ':custom-arg:{_custom_completion $_math_commandname ---completion stats quantiles -- customArg $words}'
         ':values:'
-        '--test-success-exit-code'
-        '--test-failure-exit-code'
-        '--test-validation-exit-code'
-        '--test-custom-exit-code:test-custom-exit-code:'
         '--file:file:_files -g '"'"'*.txt *.md'"'"''
         '--directory:directory:_files -/'
         '--shell:shell:{local -a list; list=(${(f)"$(head -100 /usr/share/dict/words | tail -50)"}); _describe '''' list}'
@@ -558,10 +556,6 @@ complete -c math -n '__fish_math_using_command math stats' -f -a 'quantiles' -d 
 complete -c math -n '__fish_math_using_command math stats' -f -a 'help' -d 'Show subcommand help information.'
 complete -c math -n '__fish_math_using_command math stats average' -f -r -l kind -d 'The kind of average to provide.'
 complete -c math -n '__fish_math_using_command math stats average --kind' -f -k -a 'mean median mode'
-complete -c math -n '__fish_math_using_command math stats quantiles' -f -l test-success-exit-code
-complete -c math -n '__fish_math_using_command math stats quantiles' -f -l test-failure-exit-code
-complete -c math -n '__fish_math_using_command math stats quantiles' -f -l test-validation-exit-code
-complete -c math -n '__fish_math_using_command math stats quantiles' -f -r -l test-custom-exit-code
 complete -c math -n '__fish_math_using_command math stats quantiles' -f -r -l file
 complete -c math -n '__fish_math_using_command math stats quantiles --file' -f -a '(for i in *.{txt,md}; echo $i;end)'
 complete -c math -n '__fish_math_using_command math stats quantiles' -f -r -l directory

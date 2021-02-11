@@ -41,6 +41,8 @@ extension CompletionScriptTests {
     @Option() var path1: Path
     @Option() var path2: Path?
     @Option(completion: .list(["a", "b", "c"])) var path3: Path
+    
+    @Flag(help: .hidden) var verbose = false
   }
 
   func testBase_Zsh() throws {
