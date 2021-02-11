@@ -99,6 +99,8 @@ extension Name {
 
 extension ArgumentDefinition {
   fileprivate func argumentSegments(_ commandChain: [String]) -> [([String], String)] {
+    guard help.help?.shouldDisplay != false else { return [] }
+
     var results = [([String], String)]()
     var formattedFlags = [String]()
     var flags = [String]()

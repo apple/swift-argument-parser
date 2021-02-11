@@ -134,6 +134,8 @@ extension ArgumentDefinition {
   }
   
   func zshCompletionString(_ commands: [ParsableCommand.Type]) -> String? {
+    guard help.help?.shouldDisplay != false else { return nil }
+    
     var inputs: String
     switch update {
     case .unary:
