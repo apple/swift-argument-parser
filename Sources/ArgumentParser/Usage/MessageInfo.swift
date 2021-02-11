@@ -122,7 +122,7 @@ enum MessageInfo {
       case let error as LocalizedError where error.errorDescription != nil:
         self = .other(message: error.errorDescription!, exitCode: EXIT_FAILURE)
       case let error as NSError:
-        self = .other(message: error.localizedDescription, exitCode: Int32(error.code))
+        self = .other(message: error.localizedDescription, exitCode: EXIT_FAILURE)
       default:
         self = .other(message: String(describing: error), exitCode: EXIT_FAILURE)
       }
