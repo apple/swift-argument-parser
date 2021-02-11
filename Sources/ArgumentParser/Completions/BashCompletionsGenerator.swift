@@ -182,8 +182,6 @@ struct BashCompletionsGenerator {
 extension ArgumentDefinition {
   /// Returns the different completion names for this argument.
   fileprivate func bashCompletionWords() -> [String] {
-//    print(help.help?.shouldDisplay != false, names.map { $0.synopsisString })
-    
     return help.help?.shouldDisplay == false
       ? []
       : names.map { $0.synopsisString }
