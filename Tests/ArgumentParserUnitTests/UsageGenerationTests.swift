@@ -173,4 +173,28 @@ extension UsageGenerationTests {
     let help = UsageGenerator(toolName: "bar", parsable: L())
     XCTAssertEqual(help.synopsis, "bar [-remote <remote>]")
   }
+
+  struct M: ParsableArguments {
+    @Flag var a: Bool = false
+    @Flag var b: Bool = false
+    @Flag var c: Bool = false
+    @Flag var d: Bool = false
+    @Flag var e: Bool = false
+    @Flag var f: Bool = false
+    @Flag var g: Bool = false
+    @Flag var h: Bool = false
+    @Flag var i: Bool = false
+    @Flag var j: Bool = false
+    @Flag var k: Bool = false
+    @Flag var l: Bool = false
+    @Option var option: Bool
+    @Argument var input: String
+    @Argument var output: String
+  }
+
+  func testSynopsisWithTooManyOptions() {
+    let help = UsageGenerator(toolName: "foo", parsable: M())
+    XCTAssertEqual(help.synopsis,
+                   "foo [<options>] --option <option> <input> <output>")
+  }
 }
