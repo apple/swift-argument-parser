@@ -73,17 +73,6 @@ enum MessageInfo {
       )
       return
 
-    case let e as NSError:
-      // Send NSError back through the CommandError path
-      self.init(
-        error: CommandError(
-          commandStack: [type.asCommand],
-          parserError: .userValidationError(e)
-        ),
-        type: type
-      )
-      return
-
     default:
       commandStack = [type.asCommand]
       // if the error wasn't one of our two Error types, wrap it as a userValidationError
@@ -121,10 +110,12 @@ enum MessageInfo {
         self = .other(message: error.localizedDescription, exitCode: Int32(error.errorCode))
       case let error as LocalizedError where error.errorDescription != nil:
         self = .other(message: error.errorDescription!, exitCode: EXIT_FAILURE)
-      case let error as NSError:
-        self = .other(message: error.localizedDescription, exitCode: EXIT_FAILURE)
       default:
-        self = .other(message: String(describing: error), exitCode: EXIT_FAILURE)
+        if Swift.type(of: error) is NSError.Type {
+          self = .other(message: error.localizedDescription, exitCode: EXIT_FAILURE)
+        } else {
+          self = .other(message: String(describing: error), exitCode: EXIT_FAILURE)
+        }
       }
     } else if let parserError = parserError {
       let usage: String = {
