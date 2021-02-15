@@ -165,3 +165,4 @@ extension ParsingEndToEndTests {
     XCTAssertThrowsError(try Qux.parse(["--first-name", "A", "--first-name", "B", "--first-name", "bad", "C", "D"]))
   }
 }
+
