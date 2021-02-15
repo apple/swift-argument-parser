@@ -111,7 +111,11 @@ enum MessageInfo {
       case let error as LocalizedError where error.errorDescription != nil:
         self = .other(message: error.errorDescription!, exitCode: EXIT_FAILURE)
       default:
-        self = .other(message: String(describing: error), exitCode: EXIT_FAILURE)
+        if Swift.type(of: error) is NSError.Type {
+          self = .other(message: error.localizedDescription, exitCode: EXIT_FAILURE)
+        } else {
+          self = .other(message: String(describing: error), exitCode: EXIT_FAILURE)
+        }
       }
     } else if let parserError = parserError {
       let usage: String = {
