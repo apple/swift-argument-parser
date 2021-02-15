@@ -10,19 +10,31 @@
 //===----------------------------------------------------------------------===//
 
 struct ArgumentDefinition {
+  /// A closure that modifies a `ParsedValues` instance to include this
+  /// argument's value.
   enum Update {
     typealias Nullary = (InputOrigin, Name?, inout ParsedValues) throws -> Void
     typealias Unary = (InputOrigin, Name?, String, inout ParsedValues) throws -> Void
     
+    /// An argument that gets its value solely from its presence.
     case nullary(Nullary)
+    
+    /// An argument that takes a string as its value.
     case unary(Unary)
   }
   
   typealias Initial = (InputOrigin, inout ParsedValues) throws -> Void
   
   enum Kind {
+    /// An option or flag, with a name and an optional value.
     case named([Name])
+    
+    /// A positional argument.
     case positional
+    
+    /// A pseudo-argument that takes its value from a property's default value
+    /// instead of from command-line arguments.
+    case `default`
   }
   
   struct Help {
@@ -84,7 +96,7 @@ struct ArgumentDefinition {
   var names: [Name] {
     switch kind {
     case .named(let n): return n
-    case .positional: return []
+    case .positional, .default: return []
     }
   }
   
@@ -156,6 +168,8 @@ extension ArgumentDefinition: CustomDebugStringConvertible {
         + " <\(valueName)>"
     case (.positional, _):
       return "<\(valueName)>"
+    case (.default, _):
+      return ""
     }
   }
 }

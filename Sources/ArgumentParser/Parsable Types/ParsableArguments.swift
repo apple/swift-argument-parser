@@ -226,17 +226,27 @@ extension ArgumentSet {
     let a: [ArgumentSet] = Mirror(reflecting: type.init())
       .children
       .compactMap { child in
-        guard
-          var codingKey = child.label,
-          let parsed = child.value as? ArgumentSetProvider
-          else { return nil }
+        guard var codingKey = child.label else { return nil }
         
-        // Property wrappers have underscore-prefixed names
-        codingKey = String(codingKey.first == "_" ? codingKey.dropFirst(1) : codingKey.dropFirst(0))
-        
-        let key = InputKey(rawValue: codingKey)
-        return parsed.argumentSet(for: key)
-    }
+        if let parsed = child.value as? ArgumentSetProvider {
+          // Property wrappers have underscore-prefixed names
+          codingKey = String(codingKey.first == "_"
+                              ? codingKey.dropFirst(1)
+                              : codingKey.dropFirst(0))
+          let key = InputKey(rawValue: codingKey)
+          return parsed.argumentSet(for: key)
+        } else {
+          // Save a non-wrapped property as is
+          var definition = ArgumentDefinition(
+            key: InputKey(rawValue: codingKey),
+            kind: .default,
+            parser: { _ in nil },
+            default: child.value,
+            completion: .default)
+          definition.help.help = .hidden
+          return ArgumentSet(definition)
+        }
+      }
     self.init(sets: a)
   }
 }
