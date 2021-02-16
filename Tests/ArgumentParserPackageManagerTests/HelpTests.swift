@@ -113,7 +113,7 @@ extension HelpTests {
     XCTAssertEqual(
       getErrorText(Package.self, ["help", "config",  "get-mirror"]).trimmingLines(),
       """
-                USAGE: package config get-mirror <options>
+                USAGE: package config get-mirror [<options>] --package-url <package-url>
 
                 OPTIONS:
                   --build-path <build-path>
