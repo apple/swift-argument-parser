@@ -41,8 +41,10 @@ extension UsageGenerator {
     case 0:
       return toolName
     case let x where x > 12:
+      // When we have too many options, keep required and positional arguments,
+      // but discard the rest.
       let synopsis: [String] = definition.compactMap { argument in
-        guard !argument.help.options.contains(.isOptional) else {
+        guard argument.isPositional || !argument.help.options.contains(.isOptional) else {
           return nil
         }
         return argument.synopsis

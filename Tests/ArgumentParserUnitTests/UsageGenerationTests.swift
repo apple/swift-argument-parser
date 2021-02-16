@@ -189,12 +189,12 @@ extension UsageGenerationTests {
     @Flag var l: Bool = false
     @Option var option: Bool
     @Argument var input: String
-    @Argument var output: String
+    @Argument var output: String?
   }
 
   func testSynopsisWithTooManyOptions() {
     let help = UsageGenerator(toolName: "foo", parsable: M())
     XCTAssertEqual(help.synopsis,
-                   "foo [<options>] --option <option> <input> <output>")
+                   "foo [<options>] --option <option> <input> [<output>]")
   }
 }
