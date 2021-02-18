@@ -77,55 +77,9 @@ extension ExitCodeTests {
   }
 }
 
-// MARK: - CustomNSError tests
+// MARK: - NSError tests
 
 extension ExitCodeTests {
-  enum MyCustomNSError: CustomNSError {
-    case myFirstCase
-    case mySecondCase
-
-    var errorCode: Int {
-      switch self {
-      case .myFirstCase:
-        return 101
-      case .mySecondCase:
-        return 102
-      }
-    }
-
-    var errorUserInfo: [String : Any] {
-      switch self {
-      case .myFirstCase:
-        return [NSLocalizedDescriptionKey: "My first case localized description"]
-      case .mySecondCase:
-        return [:]
-      }
-    }
-  }
-
-  struct CheckFirstCustomNSErrorCommand: ParsableCommand {
-
-    @Option
-    var errorCase: Int
-
-    func run() throws {
-      switch errorCase {
-      case 101:
-        throw MyCustomNSError.myFirstCase
-      default:
-        throw MyCustomNSError.mySecondCase
-      }
-    }
-  }
-  
-  func testCustomErrorCodeForTheFirstCase() {
-    XCTAssertEqual(CheckFirstCustomNSErrorCommand.exitCode(for: MyCustomNSError.myFirstCase), ExitCode(rawValue: 101))
-  }
-
-  func testCustomErrorCodeForTheSecondCase() {
-    XCTAssertEqual(CheckFirstCustomNSErrorCommand.exitCode(for: MyCustomNSError.mySecondCase), ExitCode(rawValue: 102))
-  }
-  
   func testNSErrorIsHandled() {
     struct NSErrorCommand: ParsableCommand {
       static let fileNotFoundNSError = NSError(domain: "", code: 1, userInfo: [NSLocalizedDescriptionKey: "The file “foo/bar” couldn’t be opened because there is no such file"])
