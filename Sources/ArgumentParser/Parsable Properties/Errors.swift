@@ -75,6 +75,17 @@ public struct ExitCode: Error, RawRepresentable, Hashable {
   public var isSuccess: Bool {
     self == Self.success
   }
+  
+  /// The exit code, clamped to the range `0...255`. Any values outside the
+  /// range, including negative values, are converted to `255`.
+  internal var clampedValue: Int32 {
+    switch rawValue {
+    case 0...255:
+      return rawValue
+    default:
+      return 255
+    }
+  }
 }
 
 /// An error type that represents a clean (i.e. non-error state) exit of the

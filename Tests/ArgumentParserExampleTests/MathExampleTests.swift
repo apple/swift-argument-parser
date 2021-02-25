@@ -151,6 +151,12 @@ final class MathExampleTests: XCTestCase {
       command: "math stats quantiles --test-custom-exit-code 42",
       expected: "",
       exitCode: ExitCode(42))
+    
+    // Exit codes outside the range 0...255 are clamped to 255
+    AssertExecuteCommand(
+      command: "math stats quantiles --test-custom-exit-code 500",
+      expected: "",
+      exitCode: ExitCode(255))
   }
   
   func testMath_Fail() throws {

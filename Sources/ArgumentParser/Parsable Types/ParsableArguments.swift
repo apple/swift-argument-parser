@@ -177,7 +177,7 @@ extension ParsableArguments {
     withError error: Error? = nil
   ) -> Never {
     guard let error = error else {
-      _exit(ExitCode.success.rawValue)
+      _exit(ExitCode.success.clampedValue)
     }
     
     let messageInfo = MessageInfo(error: error, type: self)
@@ -189,7 +189,7 @@ extension ParsableArguments {
         print(fullText, to: &standardError)
       }
     }
-    _exit(messageInfo.exitCode.rawValue)
+    _exit(messageInfo.exitCode.clampedValue)
   }
   
   /// Parses a new instance of this type from command-line arguments or exits
