@@ -162,7 +162,15 @@ extension Option where Value: ExpressibleByArgument {
 /// The strategy to use when parsing a single value from `@Option` arguments.
 ///
 /// - SeeAlso: `ArrayParsingStrategy``
-public enum SingleValueParsingStrategy {
+public struct SingleValueParsingStrategy: Hashable {
+  internal enum Representation {
+    case next
+    case unconditional
+    case scanningForValue
+  }
+  
+  internal var base: Representation
+  
   /// Parse the input after the option. Expect it to be a value.
   ///
   /// For inputs such as `--foo foo`, this would parse `foo` as the
@@ -174,7 +182,9 @@ public enum SingleValueParsingStrategy {
   ///     Usage: command [--foo <foo>]
   ///
   /// This is the **default behavior** for `@Option`-wrapped properties.
-  case next
+  public static var next: SingleValueParsingStrategy {
+    self.init(base: .next)
+  }
   
   /// Parse the next input, even if it could be interpreted as an option or
   /// flag.
@@ -188,7 +198,9 @@ public enum SingleValueParsingStrategy {
   /// interpreted as the start of another option.
   ///
   /// - Note: This is usually *not* what users would expect. Use with caution.
-  case unconditional
+  public static var unconditional: SingleValueParsingStrategy {
+    self.init(base: .unconditional)
+  }
   
   /// Parse the next input, as long as that input can't be interpreted as
   /// an option or flag.
@@ -199,12 +211,23 @@ public enum SingleValueParsingStrategy {
   ///
   /// For example, if `--foo` takes a value, then the input `--foo --bar bar`
   /// would be parsed such that the value `bar` is used for `--foo`.
-  case scanningForValue
+  public static var scanningForValue: SingleValueParsingStrategy {
+    self.init(base: .scanningForValue)
+  }
 }
 
 /// The strategy to use when parsing multiple values from `@Option` arguments into an
 /// array.
-public enum ArrayParsingStrategy {
+public struct ArrayParsingStrategy: Hashable {
+  internal enum Representation {
+    case singleValue
+    case unconditionalSingleValue
+    case upToNextOption
+    case remaining
+  }
+  
+  internal var base: Representation
+  
   /// Parse one value per option, joining multiple into an array.
   ///
   /// For example, for a parsable type with a property defined as
@@ -217,7 +240,9 @@ public enum ArrayParsingStrategy {
   ///     such, the value for this option will be the next value (non-option) in the input. For the
   ///     above example, the input `--read --name Foo Bar` would parse `Foo` into
   ///     `read` (and `Bar` into `name`).
-  case singleValue
+  public static var singleValue: ArrayParsingStrategy {
+    self.init(base: .singleValue)
+  }
   
   /// Parse the value immediately after the option while allowing repeating options, joining multiple into an array.
   ///
@@ -232,7 +257,9 @@ public enum ArrayParsingStrategy {
   /// - Note: However, the input `--read --name Foo Bar --read baz` would result in
   /// `read` being set to the array `["--name", "baz"]`. This is usually *not* what users
   /// would expect. Use with caution.
-  case unconditionalSingleValue
+  public static var unconditionalSingleValue: ArrayParsingStrategy {
+    self.init(base: .unconditionalSingleValue)
+  }
   
   /// Parse all values up to the next option.
   ///
@@ -244,8 +271,10 @@ public enum ArrayParsingStrategy {
   /// Parsing stops as soon as there’s another option in the input such that
   /// `--files foo bar --verbose` would also set `files` to the array
   /// `["foo", "bar"]`.
-  case upToNextOption
-  
+  public static var upToNextOption: ArrayParsingStrategy {
+    self.init(base: .upToNextOption)
+  }
+
   /// Parse all remaining arguments into an array.
   ///
   /// `.remaining` can be used for capturing pass-through flags. For example, for
@@ -269,7 +298,9 @@ public enum ArrayParsingStrategy {
   /// ```
   /// would parse the input `--name Foo -- Bar --baz` such that the `remainder`
   /// would hold the value `["Bar", "--baz"]`.
-  case remaining
+  public static var remaining: ArrayParsingStrategy {
+    self.init(base: .remaining)
+  }
 }
 
 extension Option {

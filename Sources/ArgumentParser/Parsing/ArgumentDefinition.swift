@@ -130,7 +130,7 @@ struct ArgumentDefinition {
 
 extension ArgumentDefinition.ParsingStrategy {
   init(_ other: SingleValueParsingStrategy) {
-    switch other {
+    switch other.base {
     case .next:
       self = .nextAsValue
     case .scanningForValue:
@@ -141,7 +141,7 @@ extension ArgumentDefinition.ParsingStrategy {
   }
   
   init(_ other: ArrayParsingStrategy) {
-    switch other {
+    switch other.base {
     case .singleValue:
       self = .scanningForValue
     case .unconditionalSingleValue:

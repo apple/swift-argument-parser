@@ -75,7 +75,7 @@ extension ArgumentSet {
   }
 
   static func updateFlag<Value: Equatable>(key: InputKey, value: Value, origin: InputOrigin, values: inout ParsedValues, hasUpdated: Bool, exclusivity: FlagExclusivity) throws -> Bool {
-    switch (hasUpdated, exclusivity) {
+    switch (hasUpdated, exclusivity.base) {
     case (true, .exclusive):
       // This value has already been set.
       if let previous = values.element(forKey: key) {
