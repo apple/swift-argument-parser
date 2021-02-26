@@ -44,6 +44,9 @@ public struct ValidationError: Error, CustomStringConvertible {
 /// If you're printing custom errors messages yourself, you can throw this error
 /// to specify the exit code without adding any additional output to standard
 /// out or standard error.
+///
+/// Any value outside the range `0...255` will be clamped to `255` when you
+/// call `ParsableArguments.exit(withError:)`. 
 public struct ExitCode: Error, RawRepresentable, Hashable {
   /// The exit code represented by this instance.
   public var rawValue: Int32
