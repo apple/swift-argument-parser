@@ -8,11 +8,65 @@ This project follows semantic versioning. While still in major version `0`,
 source-stability is only guaranteed within minor versions (e.g. between
 `0.0.3` and `0.0.4`). If you want to guard against potentially source-breaking
 package updates, you can specify your package dependency using
-`.upToNextMinor(from: "0.3.0")` as the requirement.
+`.upToNextMinor(from: "0.4.0")` as the requirement.
 
 ## [Unreleased]
 
 *No changes yet.*
+
+---
+
+## [0.4.0] - 2021-03-04
+
+### Additions
+
+- Short options can now support "joined option" syntax, which lets users specify
+  a value appended immediately after the option's short name. For example, in 
+  addition to calling this `example` command with `-D debug` and `-D=debug`,
+  users can now write `-Ddebug` for the same parsed value. ([#240])
+
+  ```swift
+  @main
+  struct Example: ParsableCommand {
+      @Option(name: .customShort("D", allowingJoined: true))
+      var debugValue: String
+    
+      func run() {
+          print(debugValue)
+      }
+  }
+  ```
+
+### Changes
+
+- The `CommandConfiguration.helpNames` property is now optional, to allow the
+  overridden help flags of parent commands to flow down to their children. Most
+  existing code should not be affected, but if you've customized a command's
+  help flags you may see different behavior. ([#251])
+- The `errorCode` property is no longer used as a command's exit code when 
+  `CustomNSError` types are thrown. ([#276])
+
+  *Migration:* Instead of throwing a `CustomNSError` type, print your error
+  manually and throw an `ExitCode` error to customize your command's exit code.
+
+### Removals
+
+- Old, deprecated property wrapper initializers have been removed.
+
+### Fixes
+
+- Validation errors now show the correct help flags when help flags have been 
+  customized.
+- Options, flags, and arguments that are marked as hidden from the help screen
+  are also suppressed from completion scripts.
+- Non-parsed variable properties are now allowed in parsable types.
+- Error messages produced when `NSError` types are thrown have been improved.
+- The usage line for commands with a large number of options includes more 
+  detail about required flags and positional arguments.
+- Support for CMake builds on Apple Silicon is improved.
+
+The 0.4.0 release includes contributions from [CodaFi], [lorentey],
+[natecook1000], [schlagelk], and [Zoha131]. Thank you!
 
 ---
 
@@ -34,8 +88,6 @@ The 0.3.2 release includes contributions from [compnerd], [CypherPoet],
 [damuellen], [drewmccormack], [elliottwilliams], [gmittert], [MaxDesiatov],
 [natecook1000], [pegasuze], and [SergeyPetrachkov]. Thank you!
 
----
-
 ## [0.3.1] - 2020-09-02
 
 ### Fixes
@@ -50,8 +102,6 @@ The 0.3.2 release includes contributions from [compnerd], [CypherPoet],
   ```
 
 - Parsing performance improvements.
-
----
 
 ## [0.3.0] - 2020-08-15
 
@@ -78,6 +128,8 @@ The 0.3.2 release includes contributions from [compnerd], [CypherPoet],
 
 The 0.3.0 release includes contributions from [dduan], [MPLew-is], 
 [natecook1000], and [thomasvl]. Thank you!
+
+---
 
 ## [0.2.2] - 2020-08-05
 
@@ -160,6 +212,8 @@ The 0.2.0 release includes contributions from [artemnovichkov], [compnerd],
 [ibrahimoktay], [john-mueller], [MPLew-is], [natecook1000], and [owenv]. 
 Thank you!
 
+---
+
 ## [0.1.0] - 2020-06-03
 
 ### Additions
@@ -216,6 +270,8 @@ Thank you!
 
 The 0.1.0 release includes contributions from [aleksey-mashanov], [BradLarson],
 [compnerd], [erica], [ibrahimoktay], and [natecook1000]. Thank you!
+
+---
 
 ## [0.0.6] - 2020-05-14
 
@@ -366,7 +422,8 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 
 <!-- Link references for releases -->
 
-[Unreleased]: https://github.com/apple/swift-argument-parser/compare/0.3.2...HEAD
+[Unreleased]: https://github.com/apple/swift-argument-parser/compare/0.4.0...HEAD
+[0.4.0]: https://github.com/apple/swift-argument-parser/compare/0.3.2...0.4.0
 [0.3.2]: https://github.com/apple/swift-argument-parser/compare/0.3.1...0.3.2
 [0.3.1]: https://github.com/apple/swift-argument-parser/compare/0.3.0...0.3.1
 [0.3.0]: https://github.com/apple/swift-argument-parser/compare/0.2.2...0.3.0
@@ -384,7 +441,10 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 <!-- Link references for pull requests -->
 
 [#65]: https://github.com/apple/swift-argument-parser/pull/65
+[#240]: https://github.com/apple/swift-argument-parser/pull/240
+[#251]: https://github.com/apple/swift-argument-parser/pull/251
 [#256]: https://github.com/apple/swift-argument-parser/pull/256
+[#276]: https://github.com/apple/swift-argument-parser/pull/276
 
 <!-- Link references for contributors -->
 
@@ -393,6 +453,7 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [artemnovichkov]: https://github.com/apple/swift-argument-parser/commits?author=artemnovichkov
 [BradLarson]: https://github.com/apple/swift-argument-parser/commits?author=BradLarson
 [buttaface]: https://github.com/apple/swift-argument-parser/commits?author=buttaface
+[CodaFi]: https://github.com/apple/swift-argument-parser/commits?author=CodaFi
 [compnerd]: https://github.com/apple/swift-argument-parser/commits?author=compnerd
 [CypherPoet]: https://github.com/apple/swift-argument-parser/commits?author=CypherPoet
 [damuellen]: https://github.com/apple/swift-argument-parser/commits?author=damuellen
@@ -412,6 +473,7 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [kennyyork]: https://github.com/apple/swift-argument-parser/commits?author=kennyyork
 [klaaspieter]: https://github.com/apple/swift-argument-parser/commits?author=klaaspieter
 [Lantua]: https://github.com/apple/swift-argument-parser/commits?author=Lantua
+[lorentey]: https://github.com/apple/swift-argument-parser/commits?author=lorentey
 [MaxDesiatov]: https://github.com/apple/swift-argument-parser/commits?author=MaxDesiatov
 [miguelangel-dev]: https://github.com/apple/swift-argument-parser/commits?author=miguelangel-dev
 [MPLew-is]: https://github.com/apple/swift-argument-parser/commits?author=MPLew-is
@@ -433,3 +495,4 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [Wildchild9]: https://github.com/apple/swift-argument-parser/commits?author=Wildchild9
 [YuAo]: https://github.com/apple/swift-argument-parser/commits?author=YuAo
 [zntfdr]: https://github.com/apple/swift-argument-parser/commits?author=zntfdr
+[Zoha131]: https://github.com/apple/swift-argument-parser/commits?author=Zoha131
