@@ -18,6 +18,9 @@ var package = Package(
         .library(
             name: "ArgumentParser",
             targets: ["ArgumentParser"]),
+        .executable(
+            name: "generate",
+            targets: ["ArgumentParserGenerators"]),
     ],
     dependencies: [],
     targets: [
@@ -25,13 +28,15 @@ var package = Package(
             name: "ArgumentParser",
             dependencies: []),
         .target(
+            name: "ArgumentParserGenerators",
+            dependencies: ["ArgumentParser", "MDoc"]),
+        .target(
             name: "ArgumentParserTestHelpers",
             dependencies: ["ArgumentParser"]),
-
         .target(
-            name: "roll",
-            dependencies: ["ArgumentParser"],
-            path: "Examples/roll"),
+            name: "MDoc",
+            dependencies: []),
+
         .target(
             name: "math",
             dependencies: ["ArgumentParser"],
@@ -40,6 +45,10 @@ var package = Package(
             name: "repeat",
             dependencies: ["ArgumentParser"],
             path: "Examples/repeat"),
+        .target(
+            name: "roll",
+            dependencies: ["ArgumentParser"],
+            path: "Examples/roll"),
 
         .target(
             name: "changelog-authors",
