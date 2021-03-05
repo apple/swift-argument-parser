@@ -167,6 +167,7 @@ final class MathExampleTests: XCTestCase {
       command: "math ZZZ",
       expected: """
             Error: The value 'ZZZ' is invalid for '<values>'
+            Help: <values> A group of integers to operate on.
             Usage: math add [--hex-output] [<values> ...]
               See 'math add --help' for more information.
             """,

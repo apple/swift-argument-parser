@@ -73,6 +73,7 @@ final class RepeatExampleTests: XCTestCase {
       command: "repeat hello --count ZZZ",
       expected: """
             Error: The value 'ZZZ' is invalid for '--count <count>'
+            Help: --count <count> The number of times to repeat 'phrase'.
             Usage: repeat [--count <count>] [--include-counter] <phrase>
               See 'repeat --help' for more information.
             """,
