@@ -125,13 +125,13 @@ extension CompletionScriptTests {
 }
 
 extension CompletionScriptTests {
-  struct Escaped: ParsableCommand {
+  struct EscapedCommand: ParsableCommand {
     @Option(help: #"Escaped chars: '[]\."#)
     var one: String
   }
 
   func testEscaped_Zsh() throws {
-    XCTAssertEqual(zshEscapedCompletion, Escaped.completionScript(for: .zsh))
+    XCTAssertEqual(zshEscapedCompletion, EscapedCommand.completionScript(for: .zsh))
   }
 }
 
@@ -213,12 +213,12 @@ complete -F _base base
 """
 
 private let zshEscapedCompletion = """
-#compdef escaped
+#compdef escaped-command
 local context state state_descr line
-_escaped_commandname=$words[1]
+_escaped_command_commandname=$words[1]
 typeset -A opt_args
 
-_escaped() {
+_escaped-command() {
     integer ret=1
     local -a args
     args+=(
@@ -236,7 +236,7 @@ _custom_completion() {
     _describe '' completions
 }
 
-_escaped
+_escaped-command
 """
 
 private let fishBaseCompletions = """
