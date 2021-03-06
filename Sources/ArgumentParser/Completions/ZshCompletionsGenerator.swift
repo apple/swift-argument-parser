@@ -17,7 +17,7 @@ struct ZshCompletionsGenerator {
     return """
     #compdef \(type._commandName)
     local context state state_descr line
-    _\(type._commandName)_commandname=$words[1]
+    _\(type._commandName.zshEscapingCommandName())_commandname=$words[1]
     typeset -A opt_args
 
     \(generateCompletionFunction([type]))
@@ -121,6 +121,10 @@ extension String {
 
   fileprivate func zshEscaped() -> String {
     self.zshEscapingSingleQuotes().zshEscapingMetacharacters()
+  }
+  
+  fileprivate func zshEscapingCommandName() -> String {
+    self.replacingOccurrences(of: "-", with: "_")
   }
 }
 
