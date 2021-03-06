@@ -142,10 +142,6 @@ extension ArgumentDefinition {
 }
 
 extension ArgumentSet {
-  func helpMessage(for error: Swift.Error) -> String {
-    return errorDescription(error: error) ?? ""
-  }
-  
   /// Will generate a descriptive help message if possible.
   ///
   /// If no descriptive help message can be generated, `nil` will be returned.
@@ -159,6 +155,19 @@ extension ArgumentSet {
     case let commandError as CommandError:
       return ErrorMessageGenerator(arguments: self, error: commandError.parserError)
         .makeErrorMessage()
+    default:
+      return nil
+    }
+  }
+  
+  func helpDescription(error: Swift.Error) -> String? {
+    switch error {
+    case let parserError as ParserError:
+      return ErrorMessageGenerator(arguments: self, error: parserError)
+        .makeHelpMessage()
+    case let commandError as CommandError:
+      return ErrorMessageGenerator(arguments: self, error: commandError.parserError)
+        .makeHelpMessage()
     default:
       return nil
     }
@@ -221,6 +230,15 @@ extension ErrorMessageGenerator {
       default:
         return String(describing: error)
       }
+    }
+  }
+  
+  func makeHelpMessage() -> String? {
+    switch error {
+    case .unableToParseValue(let o, let n, let v, forKey: let k, originalError: let e):
+      return unableToParseHelpMessage(origin: o, name: n, value: v, key: k, error: e)
+    default:
+      return nil
     }
   }
 }
@@ -360,6 +378,21 @@ extension ErrorMessageGenerator {
     default:
       let p = possibilities.joined(separator: "', '")
       return "Missing one of: '\(p)'"
+    }
+  }
+  
+  func unableToParseHelpMessage(origin: InputOrigin, name: Name?, value: String, key: InputKey, error: Error?) -> String {
+    guard let abstract = help(for: key)?.help?.abstract else { return "" }
+    
+    let valueName = arguments(for: key).first?.valueName
+    
+    switch (name, valueName) {
+    case let (n?, v?):
+      return "\(n.synopsisString) <\(v)>  \(abstract)"
+    case let (_, v?):
+      return "<\(v)>  \(abstract)"
+    case (_, _):
+      return ""
     }
   }
   

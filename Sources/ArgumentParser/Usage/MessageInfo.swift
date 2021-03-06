@@ -13,7 +13,7 @@
 
 enum MessageInfo {
   case help(text: String)
-  case validation(message: String, usage: String)
+  case validation(message: String, usage: String, help: String)
   case other(message: String, exitCode: Int32)
   
   init(error: Error, type: ParsableArguments.Type) {
@@ -82,7 +82,7 @@ enum MessageInfo {
     if case .userValidationError(let error) = parserError {
       switch error {
       case let error as ValidationError:
-        self = .validation(message: error.message, usage: usage)
+        self = .validation(message: error.message, usage: usage, help: "")
       case let error as CleanExit:
         switch error {
         case .helpRequest(let command):
@@ -109,8 +109,10 @@ enum MessageInfo {
         guard case ParserError.noArguments = parserError else { return usage }
         return "\n" + HelpGenerator(commandStack: [type.asCommand]).rendered()
       }()
-      let message = ArgumentSet(commandStack.last!).helpMessage(for: parserError)
-      self = .validation(message: message, usage: usage)
+      let argumentSet = ArgumentSet(commandStack.last!)
+      let message = argumentSet.errorDescription(error: parserError) ?? ""
+      let helpAbstract = argumentSet.helpDescription(error: parserError) ?? ""
+      self = .validation(message: message, usage: usage, help: helpAbstract)
     } else {
       self = .other(message: String(describing: error), exitCode: EXIT_FAILURE)
     }
@@ -120,7 +122,7 @@ enum MessageInfo {
     switch self {
     case .help(text: let text):
       return text
-    case .validation(message: let message, usage: _):
+    case .validation(message: let message, usage: _, help: _):
       return message
     case .other(let message, _):
       return message
@@ -131,9 +133,10 @@ enum MessageInfo {
     switch self {
     case .help(text: let text):
       return text
-    case .validation(message: let message, usage: let usage):
+    case .validation(message: let message, usage: let usage, help: let help):
+      let helpMessage = help.isEmpty ? "" : "Help:  \(help)\n"
       let errorMessage = message.isEmpty ? "" : "\(args._errorLabel): \(message)\n"
-      return errorMessage + usage
+      return errorMessage + helpMessage + usage
     case .other(let message, _):
       return message.isEmpty ? "" : "\(args._errorLabel): \(message)"
     }
