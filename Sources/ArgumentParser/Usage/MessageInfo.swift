@@ -134,7 +134,7 @@ enum MessageInfo {
     case .help(text: let text):
       return text
     case .validation(message: let message, usage: let usage, help: let help):
-      let helpMessage = help.isEmpty ? "" : "Help: \(help)\n"
+      let helpMessage = help.isEmpty ? "" : "Help:  \(help)\n"
       let errorMessage = message.isEmpty ? "" : "\(args._errorLabel): \(message)\n"
       return errorMessage + helpMessage + usage
     case .other(let message, _):

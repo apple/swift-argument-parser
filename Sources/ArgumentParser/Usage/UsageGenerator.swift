@@ -388,9 +388,9 @@ extension ErrorMessageGenerator {
     
     switch (name, valueName) {
     case let (n?, v?):
-      return "\(n.synopsisString) <\(v)> \(abstract)"
+      return "\(n.synopsisString) <\(v)>  \(abstract)"
     case let (_, v?):
-      return "<\(v)> \(abstract)"
+      return "<\(v)>  \(abstract)"
     case (_, _):
       return ""
     }

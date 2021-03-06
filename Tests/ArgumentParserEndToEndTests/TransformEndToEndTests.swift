@@ -40,7 +40,7 @@ fileprivate struct FooOption: Convert, ParsableArguments {
   Usage: foo_option --string <int_str>
     See 'foo_option --help' for more information.
   """
-  static var help: String = "Help: --string <int_str> Convert string to integer\n"
+  static var help: String = "Help:  --string <int_str>  Convert string to integer\n"
   
   @Option(help: ArgumentHelp("Convert string to integer", valueName: "int_str"),
           transform: { try convert($0) })
@@ -53,7 +53,7 @@ fileprivate struct BarOption: Convert, ParsableCommand {
   Usage: bar-option [--strings <int_str> ...]
     See 'bar-option --help' for more information.
   """
-  static var help: String = "Help: --strings <int_str> Convert a list of strings to an array of integers\n"
+  static var help: String = "Help:  --strings <int_str>  Convert a list of strings to an array of integers\n"
     
   @Option(help: ArgumentHelp("Convert a list of strings to an array of integers", valueName: "int_str"),
           transform: { try convert($0) })
@@ -103,7 +103,7 @@ fileprivate struct FooArgument: Convert, ParsableArguments {
   Usage: foo_argument <int_str>
     See 'foo_argument --help' for more information.
   """
-  static var help: String = "Help: <int_str> Convert string to integer\n"
+  static var help: String = "Help:  <int_str>  Convert string to integer\n"
   
   enum FooError: Error {
       case outOfBounds
@@ -120,7 +120,7 @@ fileprivate struct BarArgument: Convert, ParsableCommand {
   Usage: bar-argument [<int_str> ...]
     See 'bar-argument --help' for more information.
   """
-  static var help: String = "Help: <int_str> Convert a list of strings to an array of integers\n"
+  static var help: String = "Help:  <int_str>  Convert a list of strings to an array of integers\n"
   
   @Argument(help: ArgumentHelp("Convert a list of strings to an array of integers", valueName: "int_str"),
             transform: { try convert($0) })
