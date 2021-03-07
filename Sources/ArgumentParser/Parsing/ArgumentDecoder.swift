@@ -112,6 +112,19 @@ final class ParsedArgumentsContainer<K>: KeyedDecodingContainerProtocol where K 
     return try type.init(from: subDecoder)
   }
   
+  func decodeIfPresent<T>(_ type: T.Type, forKey key: KeyedDecodingContainer<K>.Key) throws -> T? where T : Decodable {
+    let subDecoder = SingleValueDecoder(userInfo: decoder.userInfo, underlying: decoder, codingPath: codingPath + [key], key: InputKey(key), parsedElement: element(forKey: key))
+    do {
+      return try type.init(from: subDecoder)
+    } catch let error as ParserError {
+      if case .noValue = error {
+        return nil
+      } else {
+        throw error
+      }
+    }
+  }
+  
   func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type, forKey key: K) throws -> KeyedDecodingContainer<NestedKey> where NestedKey : CodingKey {
     fatalError()
   }
