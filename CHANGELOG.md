@@ -16,6 +16,23 @@ package updates, you can specify your package dependency using
 
 ---
 
+## [0.4.1]
+
+### Additions
+
+- When a user provides an invalid value as an argument or option, the error
+  message now includes the help text for that argument.
+
+### Fixes
+
+- Zsh completion scripts for commands that include a hyphen no longer cause
+  errors.
+- Optional unparsed values are now decoded correctly in `ParsableArguments`
+  types.
+
+The 0.4.0 release includes contributions from [adellibovi] and [natecook1000].
+Thank you!
+
 ## [0.4.0] - 2021-03-04
 
 ### Additions
@@ -422,7 +439,8 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 
 <!-- Link references for releases -->
 
-[Unreleased]: https://github.com/apple/swift-argument-parser/compare/0.4.0...HEAD
+[Unreleased]: https://github.com/apple/swift-argument-parser/compare/0.4.1...HEAD
+[0.4.1]: https://github.com/apple/swift-argument-parser/compare/0.4.0...0.4.1
 [0.4.0]: https://github.com/apple/swift-argument-parser/compare/0.3.2...0.4.0
 [0.3.2]: https://github.com/apple/swift-argument-parser/compare/0.3.1...0.3.2
 [0.3.1]: https://github.com/apple/swift-argument-parser/compare/0.3.0...0.3.1
@@ -448,6 +466,7 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 
 <!-- Link references for contributors -->
 
+[adellibovi]: https://github.com/apple/swift-argument-parser/commits?author=adellibovi
 [aleksey-mashanov]: https://github.com/apple/swift-argument-parser/commits?author=aleksey-mashanov
 [AliSoftware]: https://github.com/apple/swift-argument-parser/commits?author=AliSoftware
 [artemnovichkov]: https://github.com/apple/swift-argument-parser/commits?author=artemnovichkov
