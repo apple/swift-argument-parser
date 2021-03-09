@@ -60,9 +60,19 @@ extension ParsableCommand {
     _ arguments: [String]? = nil
   ) throws -> ParsableCommand {
     var parser = CommandParser(self)
-    let arguments = arguments ?? Array(CommandLine.arguments.dropFirst())
+    var arguments = arguments ?? Array(CommandLine.arguments.dropFirst())
+    arguments = checkForDuplicateHelpCommands(arguments)
     return try parser.parse(arguments: arguments).get()
   }
+    
+    public static func checkForDuplicateHelpCommands(_ arguments: [String]) -> [String] {
+        guard arguments.count >= 2 else { return arguments }
+        let nonOptionalArguments = arguments.compactMap { $0 }
+        if nonOptionalArguments.first == "help" && nonOptionalArguments.contains("--help") {
+            return nonOptionalArguments.filter { $0 != "--help" }
+        }
+        return arguments
+    }
   
   /// Returns the text of the help screen for the given subcommand of this
   /// command.

@@ -60,6 +60,7 @@ final class MathExampleTests: XCTestCase {
     AssertExecuteCommand(command: "math add -h", expected: helpText)
     AssertExecuteCommand(command: "math add --help", expected: helpText)
     AssertExecuteCommand(command: "math help add", expected: helpText)
+    AssertExecuteCommand(command: "math help add --help", expected: helpText)
   }
   
   func testMath_StatsMeanHelp() throws {
@@ -80,6 +81,7 @@ final class MathExampleTests: XCTestCase {
     AssertExecuteCommand(command: "math stats average -h", expected: helpText)
     AssertExecuteCommand(command: "math stats average --help", expected: helpText)
     AssertExecuteCommand(command: "math help stats average", expected: helpText)
+    AssertExecuteCommand(command: "math help stats average --help", expected: helpText)
   }
   
   func testMath_StatsQuantilesHelp() throws {
@@ -109,6 +111,7 @@ final class MathExampleTests: XCTestCase {
     AssertExecuteCommand(command: "math stats quantiles -h", expected: helpText)
     AssertExecuteCommand(command: "math stats quantiles --help", expected: helpText)
     AssertExecuteCommand(command: "math help stats quantiles", expected: helpText)
+    AssertExecuteCommand(command: "math help stats quantiles --help", expected: helpText)
   }
   
   func testMath_CustomValidation() throws {
