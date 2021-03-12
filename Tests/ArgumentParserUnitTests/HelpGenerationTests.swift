@@ -58,6 +58,7 @@ extension HelpGenerationTests {
     @Argument(help: .hidden) var hiddenName: String?
     @Option(help: .hidden) var hiddenTitle: String?
     @Flag(help: .hidden) var hiddenFlag: Bool = false
+    @Flag(inversion: .prefixedNo, help: .hidden) var hiddenInvertedFlag: Bool = true
   }
 
   func testHelpWithHidden() {
