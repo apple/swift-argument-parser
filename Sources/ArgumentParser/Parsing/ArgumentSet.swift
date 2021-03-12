@@ -100,18 +100,20 @@ extension ArgumentSet {
     // The flag is required if initialValue is `nil`, otherwise it's optional
     let helpOptions: ArgumentDefinition.Help.Options = initialValue != nil ? .isOptional : []
     
-    let help = ArgumentDefinition.Help(options: helpOptions, help: help, defaultValue: initialValue.map(String.init), key: key, isComposite: true)
+    let enableHelp = ArgumentDefinition.Help(options: helpOptions, help: help, defaultValue: initialValue.map(String.init), key: key, isComposite: true)
+    let disableHelp = ArgumentDefinition.Help(options: [.isOptional], help: help, key: key)
+
     let (enableNames, disableNames) = inversion.enableDisableNamePair(for: key, name: name)
 
     var hasUpdated = false
-    let enableArg = ArgumentDefinition(kind: .named(enableNames),help: help, completion: .default, update: .nullary({ (origin, name, values) in
+    let enableArg = ArgumentDefinition(kind: .named(enableNames), help: enableHelp, completion: .default, update: .nullary({ (origin, name, values) in
         hasUpdated = try ArgumentSet.updateFlag(key: key, value: true, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
     }), initial: { origin, values in
       if let initialValue = initialValue {
         values.set(initialValue, forKey: key, inputOrigin: origin)
       }
     })
-    let disableArg = ArgumentDefinition(kind: .named(disableNames), help: ArgumentDefinition.Help(options: [.isOptional], key: key), completion: .default, update: .nullary({ (origin, name, values) in
+    let disableArg = ArgumentDefinition(kind: .named(disableNames), help: disableHelp, completion: .default, update: .nullary({ (origin, name, values) in
         hasUpdated = try ArgumentSet.updateFlag(key: key, value: false, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
     }), initial: { _, _ in })
     return ArgumentSet([enableArg, disableArg])
