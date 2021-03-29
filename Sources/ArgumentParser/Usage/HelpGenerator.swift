@@ -325,7 +325,13 @@ func _terminalSize() -> (width: Int, height: Int) {
           height: Int(csbi.srWindow.Bottom - csbi.srWindow.Top) + 1)
 #else
   var w = winsize()
+#if os(OpenBSD)
+  // TIOCGWINSZ is a complex macro, so we need the flattened value.
+  let tiocgwinsz = Int32(0x40087468)
+  let err = ioctl(STDOUT_FILENO, tiocgwinsz, &w)
+#else
   let err = ioctl(STDOUT_FILENO, TIOCGWINSZ, &w)
+#endif
   let width = Int(w.ws_col)
   let height = Int(w.ws_row)
   guard err == 0 else { return (80, 25) }
