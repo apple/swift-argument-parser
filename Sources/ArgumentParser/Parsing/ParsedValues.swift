@@ -29,7 +29,7 @@ struct InputKey: RawRepresentable, Hashable {
 struct ParsedValues {
   struct Element {
     var key: InputKey
-    var value: Any
+    var value: Any?
     /// Where in the input that this came from.
     var inputOrigin: InputOrigin
     fileprivate var shouldClearArrayIfParsed = true
@@ -45,7 +45,7 @@ struct ParsedValues {
 }
 
 extension ParsedValues {
-  mutating func set(_ new: Any, forKey key: InputKey, inputOrigin: InputOrigin) {
+  mutating func set(_ new: Any?, forKey key: InputKey, inputOrigin: InputOrigin) {
     set(Element(key: key, value: new, inputOrigin: inputOrigin))
   }
   

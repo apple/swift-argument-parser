@@ -241,7 +241,7 @@ extension ArgumentSet {
             key: InputKey(rawValue: codingKey),
             kind: .default,
             parser: { _ in nil },
-            default: child.value,
+            default: Mirror.realValue(for: child),
             completion: .default)
           definition.help.help = .hidden
           return ArgumentSet(definition)

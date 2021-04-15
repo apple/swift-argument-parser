@@ -103,6 +103,12 @@ struct InputOrigin: Equatable, ExpressibleByArrayLiteral {
   }
 }
 
+extension InputOrigin {
+  var isDefaultValue: Bool {
+    return _elements.count == 1 && _elements.first == .defaultValue
+  }
+}
+
 extension InputOrigin.Element {
   static func < (lhs: Self, rhs: Self) -> Bool {
     switch (lhs, rhs) {
