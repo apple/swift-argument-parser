@@ -144,8 +144,16 @@ internal struct HelpGenerator {
     var optionElements: [Section.Element] = []
     /// Used to keep track of elements already seen from parent commands.
     var alreadySeenElements = Set<Section.Element>()
-
+    
+    var commandsToShowHelp = [ParsableCommand.Type]()
     for commandType in commandStack {
+      // This will remove all super commands in the event that a subcommand does not
+      // want to include their respective help
+      if !commandType.includeSuperCommandInHelp { commandsToShowHelp.removeAll() }
+      commandsToShowHelp.append(commandType)
+    }
+
+    for commandType in commandsToShowHelp {
       let args = Array(ArgumentSet(commandType))
       
       var i = 0
