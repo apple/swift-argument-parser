@@ -208,6 +208,25 @@ extension ParsableArguments {
   }
 }
 
+/// Unboxes the given value if it is a `nil` value.
+///
+/// If the value passed is the `.none` case of any optional type, this function
+/// returns `nil`.
+///
+///     let intAsAny = (1 as Int?) as Any
+///     let nilAsAny = (nil as Int?) as Any
+///     nilOrValue(intAsAny)      // Optional(1) as Any?
+///     nilOrValue(nilAsAny)      // nil as Any?
+func nilOrValue(_ value: Any) -> Any? {
+  if case Optional<Any>.none = value {
+    return nil
+  } else {
+    return value
+  }
+}
+
+/// Existential protocol for property wrappers, so that they can provide
+/// the argument set that they define.
 protocol ArgumentSetProvider {
   func argumentSet(for key: InputKey) -> ArgumentSet
 }
@@ -241,7 +260,7 @@ extension ArgumentSet {
             key: InputKey(rawValue: codingKey),
             kind: .default,
             parser: { _ in nil },
-            default: Mirror.realValue(for: child),
+            default: nilOrValue(child.value),
             completion: .default)
           definition.help.help = .hidden
           return ArgumentSet(definition)
