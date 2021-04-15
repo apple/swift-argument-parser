@@ -29,7 +29,7 @@ extension MirrorTests {
         }
         XCTAssertEqual(stringValue, expectedString)
       } else {
-        XCTAssertNil(Mirror.realValue(for: child))
+        XCTAssertNil(nilOrValue(child.value))
         // This is why we use `unwrapedOptionalValue` for optionality checks
         // Even though the `value` is `nil` this returns `false`
         XCTAssertFalse(child.value as Any? == nil)
