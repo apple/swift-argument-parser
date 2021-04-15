@@ -193,7 +193,45 @@ struct Example: ParsableCommand {
     var experimentalEnableWidgets: Bool
 }
 ```
+## Excluding Super Commands from printing their help
 
+When printing help for a subcommand you may find it desirable to exclude any help that comes from a super command. You can prevent the help for super commands by adding `includeSuperCommandInHelp = false` to your struct.
+
+```swift
+public struct Foo: ParsableCommand {
+    public static var configuration = CommandConfiguration(
+        commandName: "foo",
+        subcommands: [Bar.self])
+        
+        @OptionGroup()
+        var fooOptions: FooToolOptions
+        
+        public init() {}
+}
+
+extension Foo {
+    struct Bar: ParsableCommand {
+        static let configuration = CommandConfiguration(
+            abstract: "Make Bar")
+            
+        static let includeSuperCommandInHelp = false
+        
+        @Option(name: .customLong("name"), help: "Provide custom name")
+        var barName: String?
+    }
+}
+```
+```
+$ foo bar --help
+OVERVIEW: Make Bar
+
+USAGE: foo bar [--name <name>]
+
+OPTIONS:
+  --name <name>           Provide custom name 
+  --version               Show the version.
+  -help, -h, --help       Show help information.
+```
 ## Generating Help Text Programmatically
 
 The help screen is automatically shown to users when they call your command with the help flag. You can generate the same text from within your program by calling the `helpMessage()` method.
