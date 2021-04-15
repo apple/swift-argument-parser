@@ -47,6 +47,7 @@ public struct CommandConfiguration {
   /// Flag names to be used for help.
   public var helpNames: NameSpecification?
   
+  /// Control flow when deciding to print help for supercommans
   public var includeSuperCommandInHelp: Bool?
   
   /// Creates the configuration for a command.
