@@ -71,6 +71,8 @@ public struct CommandConfiguration {
   ///     with a simulated Boolean property named `help`. If `helpNames` is
   ///     `nil`, the names are inherited from the parent command, if any, or
   ///     `-h` and `--help`.
+  ///   - includeSuperCommandInHelp: When set to false the super command will not be included in
+  ///     the help printout.
   public init(
     commandName: String? = nil,
     abstract: String = "",

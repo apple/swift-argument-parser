@@ -146,11 +146,10 @@ internal struct HelpGenerator {
     var alreadySeenElements = Set<Section.Element>()
     
     var commandsToShowHelp = [ParsableCommand.Type]()
-    for commandType in commandStack {
-      // This will remove all super commands in the event that a subcommand does not
-      // want to include their respective help
-      if !commandType.includeSuperCommandInHelp { commandsToShowHelp.removeAll() }
-      commandsToShowHelp.append(commandType)
+    if let commandType = commandStack.last, !commandType.includeSuperCommandInHelp {
+        commandsToShowHelp.append(commandType)
+    } else {
+        commandsToShowHelp = commandStack
     }
 
     for commandType in commandsToShowHelp {
