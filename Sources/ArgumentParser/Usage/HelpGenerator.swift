@@ -149,7 +149,7 @@ internal struct HelpGenerator {
       return []
     }
     
-    let args = Array(ArgumentSet(commandType))
+    let args = Array(ArgumentSet(commandType, creatingHelp: true))
     
     var i = 0
     while i < args.count {

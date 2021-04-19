@@ -31,6 +31,7 @@
 @propertyWrapper
 public struct OptionGroup<Value: ParsableArguments>: Decodable, ParsedWrapper {
   internal var _parsedValue: Parsed<Value>
+  internal var _hidden: Bool?
   
   internal init(_parsedValue: Parsed<Value>) {
     self._parsedValue = _parsedValue
@@ -84,7 +85,17 @@ extension OptionGroup: CustomStringConvertible {
     case .value(let v):
       return String(describing: v)
     case .definition:
+      if let hidden = _hidden {
+        return "OptionGroup(*definition*) _hidden: \(hidden)"
+      }
       return "OptionGroup(*definition*)"
     }
   }
+}
+
+extension OptionGroup {
+    public init(_hidden: Bool) {
+        self.init()
+        self._hidden = _hidden
+    }
 }

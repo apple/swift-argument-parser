@@ -232,7 +232,7 @@ protocol ArgumentSetProvider {
 }
 
 extension ArgumentSet {
-  init(_ type: ParsableArguments.Type) {
+  init(_ type: ParsableArguments.Type, creatingHelp: Bool = false) {
     
     #if DEBUG
     do {
@@ -246,6 +246,10 @@ extension ArgumentSet {
       .children
       .compactMap { child in
         guard var codingKey = child.label else { return nil }
+        
+        if creatingHelp {
+          guard !String(describing: child.value).contains("_hidden: true") else { return nil }
+        }
         
         if let parsed = child.value as? ArgumentSetProvider {
           // Property wrappers have underscore-prefixed names
