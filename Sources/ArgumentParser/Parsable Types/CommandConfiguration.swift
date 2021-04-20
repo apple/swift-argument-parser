@@ -47,9 +47,6 @@ public struct CommandConfiguration {
   /// Flag names to be used for help.
   public var helpNames: NameSpecification?
   
-  /// Control flow when deciding to print help for supercommans
-  public var includeSuperCommandInHelp: Bool?
-  
   /// Creates the configuration for a command.
   ///
   /// - Parameters:
@@ -71,8 +68,6 @@ public struct CommandConfiguration {
   ///     with a simulated Boolean property named `help`. If `helpNames` is
   ///     `nil`, the names are inherited from the parent command, if any, or
   ///     `-h` and `--help`.
-  ///   - includeSuperCommandInHelp: When set to false the super command will not be included in
-  ///     the help printout.
   public init(
     commandName: String? = nil,
     abstract: String = "",
@@ -81,8 +76,7 @@ public struct CommandConfiguration {
     shouldDisplay: Bool = true,
     subcommands: [ParsableCommand.Type] = [],
     defaultSubcommand: ParsableCommand.Type? = nil,
-    helpNames: NameSpecification? = nil,
-    includeSuperCommandInHelp: Bool? = nil
+    helpNames: NameSpecification? = nil
   ) {
     self.commandName = commandName
     self.abstract = abstract
@@ -92,7 +86,6 @@ public struct CommandConfiguration {
     self.subcommands = subcommands
     self.defaultSubcommand = defaultSubcommand
     self.helpNames = helpNames
-    self.includeSuperCommandInHelp = includeSuperCommandInHelp
   }
 
   /// Creates the configuration for a command with a "super-command".
@@ -106,8 +99,7 @@ public struct CommandConfiguration {
     shouldDisplay: Bool = true,
     subcommands: [ParsableCommand.Type] = [],
     defaultSubcommand: ParsableCommand.Type? = nil,
-    helpNames: NameSpecification? = nil,
-    includeSuperCommandInHelp: Bool? = nil
+    helpNames: NameSpecification? = nil
   ) {
     self.commandName = commandName
     self._superCommandName = _superCommandName
@@ -118,6 +110,5 @@ public struct CommandConfiguration {
     self.subcommands = subcommands
     self.defaultSubcommand = defaultSubcommand
     self.helpNames = helpNames
-    self.includeSuperCommandInHelp = includeSuperCommandInHelp
   }
 }

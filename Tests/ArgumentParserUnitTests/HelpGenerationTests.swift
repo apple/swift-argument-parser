@@ -453,8 +453,6 @@ extension HelpGenerationTests {
       _superCommandName: "foo",
       abstract: "Perform bar operations",
       helpNames: [.short, .long, .customLong("help", withSingleDash: true)])
-        
-    static let includeSuperCommandInHelp: Bool = false
             
     @Option(help: "Bar Strength")
     var barStrength: String?

@@ -145,69 +145,64 @@ internal struct HelpGenerator {
     /// Used to keep track of elements already seen from parent commands.
     var alreadySeenElements = Set<Section.Element>()
     
-    var commandsToShowHelp = [ParsableCommand.Type]()
-    if let commandType = commandStack.last, !commandType.includeSuperCommandInHelp {
-        commandsToShowHelp.append(commandType)
-    } else {
-        commandsToShowHelp = commandStack
+    guard let commandType = commandStack.last else {
+      return []
     }
-
-    for commandType in commandsToShowHelp {
-      let args = Array(ArgumentSet(commandType))
+    
+    let args = Array(ArgumentSet(commandType))
+    
+    var i = 0
+    while i < args.count {
+      defer { i += 1 }
+      let arg = args[i]
       
-      var i = 0
-      while i < args.count {
-        defer { i += 1 }
-        let arg = args[i]
-        
-        guard arg.help.help?.shouldDisplay != false else { continue }
-        
-        let synopsis: String
-        let description: String
-        
-        if args[i].help.isComposite {
-          // If this argument is composite, we have a group of arguments to
-          // output together.
-          var groupedArgs = [arg]
-          let defaultValue = arg.help.defaultValue.map { "(default: \($0))" } ?? ""
-          while i < args.count - 1 && args[i + 1].help.keys == arg.help.keys {
-            groupedArgs.append(args[i + 1])
-            i += 1
-          }
-
-          var synopsisString = ""
-          for arg in groupedArgs {
-            if !synopsisString.isEmpty { synopsisString.append("/") }
-            synopsisString.append("\(arg.synopsisForHelp ?? "")")
-          }
-          synopsis = synopsisString
-
-          var descriptionString: String?
-          for arg in groupedArgs {
-            if let desc = arg.help.help?.abstract {
-              descriptionString = desc
-              break
-            }
-          }
-          description = [descriptionString, defaultValue]
-            .compactMap { $0 }
-            .joined(separator: " ")
-        } else {
-          let defaultValue = arg.help.defaultValue.flatMap { $0.isEmpty ? nil : "(default: \($0))" } ?? ""
-          synopsis = arg.synopsisForHelp ?? ""
-          description = [arg.help.help?.abstract, defaultValue]
-            .compactMap { $0 }
-            .joined(separator: " ")
+      guard arg.help.help?.shouldDisplay != false else { continue }
+      
+      let synopsis: String
+      let description: String
+      
+      if args[i].help.isComposite {
+        // If this argument is composite, we have a group of arguments to
+        // output together.
+        var groupedArgs = [arg]
+        let defaultValue = arg.help.defaultValue.map { "(default: \($0))" } ?? ""
+        while i < args.count - 1 && args[i + 1].help.keys == arg.help.keys {
+          groupedArgs.append(args[i + 1])
+          i += 1
         }
-        
-        let element = Section.Element(label: synopsis, abstract: description, discussion: arg.help.help?.discussion ?? "")
-        if !alreadySeenElements.contains(element) {
-          alreadySeenElements.insert(element)
-          if case .positional = arg.kind {
-            positionalElements.append(element)
-          } else {
-            optionElements.append(element)
+
+        var synopsisString = ""
+        for arg in groupedArgs {
+          if !synopsisString.isEmpty { synopsisString.append("/") }
+          synopsisString.append("\(arg.synopsisForHelp ?? "")")
+        }
+        synopsis = synopsisString
+
+        var descriptionString: String?
+        for arg in groupedArgs {
+          if let desc = arg.help.help?.abstract {
+            descriptionString = desc
+            break
           }
+        }
+        description = [descriptionString, defaultValue]
+          .compactMap { $0 }
+          .joined(separator: " ")
+      } else {
+        let defaultValue = arg.help.defaultValue.flatMap { $0.isEmpty ? nil : "(default: \($0))" } ?? ""
+        synopsis = arg.synopsisForHelp ?? ""
+        description = [arg.help.help?.abstract, defaultValue]
+          .compactMap { $0 }
+          .joined(separator: " ")
+      }
+      
+      let element = Section.Element(label: synopsis, abstract: description, discussion: arg.help.help?.discussion ?? "")
+      if !alreadySeenElements.contains(element) {
+        alreadySeenElements.insert(element)
+        if case .positional = arg.kind {
+          positionalElements.append(element)
+        } else {
+          optionElements.append(element)
         }
       }
     }

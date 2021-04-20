@@ -22,7 +22,6 @@ public protocol ParsableCommand: ParsableArguments {
   /// can pass through the wrapped type's name.
   static var _commandName: String { get }
   
-  static var includeSuperCommandInHelp: Bool { get }
   /// Runs this command.
   ///
   /// After implementing this method, you can run your command-line
@@ -40,10 +39,6 @@ extension ParsableCommand {
   
   public static var configuration: CommandConfiguration {
     CommandConfiguration()
-  }
-  
-  public static var includeSuperCommandInHelp: Bool {
-    configuration.includeSuperCommandInHelp ?? true
   }
     
   public mutating func run() throws {
