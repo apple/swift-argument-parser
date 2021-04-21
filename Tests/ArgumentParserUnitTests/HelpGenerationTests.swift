@@ -485,7 +485,7 @@ extension HelpGenerationTests {
   struct HideDriver: ParsableCommand {
     static let configuration = CommandConfiguration(commandName: "driver", abstract: "Demo hiding option groups")
     
-    @OptionGroup(_hidden: true)
+    @OptionGroup(_hiddenFromHelp: true)
     var hideMe: optionsToHide
     
     @Option(help: "Time to wait before timeout (in seconds)")

@@ -229,6 +229,8 @@ func nilOrValue(_ value: Any) -> Any? {
 /// the argument set that they define.
 protocol ArgumentSetProvider {
   func argumentSet(for key: InputKey) -> ArgumentSet
+    
+  var _hiddenFromHelp: Bool { get }
 }
 
 extension ArgumentSet {
@@ -247,11 +249,11 @@ extension ArgumentSet {
       .compactMap { child in
         guard var codingKey = child.label else { return nil }
         
-        if creatingHelp {
-          guard !String(describing: child.value).contains("_hidden: true") else { return nil }
-        }
-        
         if let parsed = child.value as? ArgumentSetProvider {
+          if creatingHelp {
+            guard !parsed._hiddenFromHelp else { return nil }
+          }
+
           // Property wrappers have underscore-prefixed names
           codingKey = String(codingKey.first == "_"
                               ? codingKey.dropFirst(1)
