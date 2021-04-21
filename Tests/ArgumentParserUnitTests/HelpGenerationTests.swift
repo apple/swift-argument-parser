@@ -431,4 +431,46 @@ extension HelpGenerationTests {
 
     """)
   }
+    
+  struct Foo: ParsableCommand {
+    public static var configuration = CommandConfiguration(
+      commandName: "foo",
+      abstract: "Perform some foo",
+      subcommands: [
+        Bar.self
+      ],
+      helpNames: [.short, .long, .customLong("help", withSingleDash: true)])
+        
+    @Option(help: "Name for foo")
+    var fooName: String?
+        
+    public init() {}
+  }
+
+  struct Bar: ParsableCommand {
+    static let configuration = CommandConfiguration(
+      commandName: "bar",
+      _superCommandName: "foo",
+      abstract: "Perform bar operations",
+      helpNames: [.short, .long, .customLong("help", withSingleDash: true)])
+            
+    @Option(help: "Bar Strength")
+    var barStrength: String?
+        
+    public init() {}
+  }
+
+  func testHelpExcludingSuperCommand() throws {
+    AssertHelp(for: Bar.self, root: Foo.self, equals: """
+    OVERVIEW: Perform bar operations
+
+    USAGE: foo bar [--bar-strength <bar-strength>]
+
+    OPTIONS:
+      --bar-strength <bar-strength>
+                              Bar Strength
+      -help, -h, --help       Show help information.
+    
+    """)
+  }
 }
