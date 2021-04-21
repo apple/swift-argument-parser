@@ -16,7 +16,20 @@ package updates, you can specify your package dependency using
 
 ---
 
-## [0.4.1]
+## [0.4.2] - 2021-04-21
+
+### Fixes
+
+- Both parts of a flag with an inversion are now hidden when specified.
+- Better support for building on OpenBSD.
+- Optional unparsed values are now always properly decoded. ([#290])
+- Help information from super-commands is no longer unnecessarily injected
+  into subcommand help screens. 
+
+The 0.4.2 release includes contributions from [3405691582], [kylemacomber],
+[miggs597], [natecook1000], and [werm098]. Thank you!
+
+## [0.4.1] - 2021-03-08
 
 ### Additions
 
@@ -30,7 +43,7 @@ package updates, you can specify your package dependency using
 - Optional unparsed values are now decoded correctly in `ParsableArguments`
   types.
 
-The 0.4.0 release includes contributions from [adellibovi] and [natecook1000].
+The 0.4.1 release includes contributions from [adellibovi] and [natecook1000].
 Thank you!
 
 ## [0.4.0] - 2021-03-04
@@ -439,7 +452,8 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 
 <!-- Link references for releases -->
 
-[Unreleased]: https://github.com/apple/swift-argument-parser/compare/0.4.1...HEAD
+[Unreleased]: https://github.com/apple/swift-argument-parser/compare/0.4.2...HEAD
+[0.4.2]: https://github.com/apple/swift-argument-parser/compare/0.4.1...0.4.2
 [0.4.1]: https://github.com/apple/swift-argument-parser/compare/0.4.0...0.4.1
 [0.4.0]: https://github.com/apple/swift-argument-parser/compare/0.3.2...0.4.0
 [0.3.2]: https://github.com/apple/swift-argument-parser/compare/0.3.1...0.3.2
@@ -463,9 +477,11 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [#251]: https://github.com/apple/swift-argument-parser/pull/251
 [#256]: https://github.com/apple/swift-argument-parser/pull/256
 [#276]: https://github.com/apple/swift-argument-parser/pull/276
+[#290]: https://github.com/apple/swift-argument-parser/pull/290
 
 <!-- Link references for contributors -->
 
+[3405691582]: https://github.com/apple/swift-argument-parser/commits?author=3405691582
 [adellibovi]: https://github.com/apple/swift-argument-parser/commits?author=adellibovi
 [aleksey-mashanov]: https://github.com/apple/swift-argument-parser/commits?author=aleksey-mashanov
 [AliSoftware]: https://github.com/apple/swift-argument-parser/commits?author=AliSoftware
@@ -491,9 +507,11 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [jonathanpenn]: https://github.com/apple/swift-argument-parser/commits?author=jonathanpenn
 [kennyyork]: https://github.com/apple/swift-argument-parser/commits?author=kennyyork
 [klaaspieter]: https://github.com/apple/swift-argument-parser/commits?author=klaaspieter
+[kylemacomber]: https://github.com/apple/swift-argument-parser/commits?author=kylemacomber
 [Lantua]: https://github.com/apple/swift-argument-parser/commits?author=Lantua
 [lorentey]: https://github.com/apple/swift-argument-parser/commits?author=lorentey
 [MaxDesiatov]: https://github.com/apple/swift-argument-parser/commits?author=MaxDesiatov
+[miggs597]: https://github.com/apple/swift-argument-parser/commits?author=miggs597
 [miguelangel-dev]: https://github.com/apple/swift-argument-parser/commits?author=miguelangel-dev
 [MPLew-is]: https://github.com/apple/swift-argument-parser/commits?author=MPLew-is
 [natecook1000]: https://github.com/apple/swift-argument-parser/commits?author=natecook1000
@@ -510,6 +528,7 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [stuartcarnie]: https://github.com/apple/swift-argument-parser/commits?author=stuartcarnie
 [thomasvl]: https://github.com/apple/swift-argument-parser/commits?author=thomasvl
 [toddthomas]: https://github.com/apple/swift-argument-parser/commits?author=toddthomas
+[werm098]: https://github.com/apple/swift-argument-parser/commits?author=werm098
 [Wevah]: https://github.com/apple/swift-argument-parser/commits?author=Wevah
 [Wildchild9]: https://github.com/apple/swift-argument-parser/commits?author=Wildchild9
 [YuAo]: https://github.com/apple/swift-argument-parser/commits?author=YuAo
