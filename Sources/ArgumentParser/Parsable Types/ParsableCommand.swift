@@ -40,7 +40,7 @@ extension ParsableCommand {
   public static var configuration: CommandConfiguration {
     CommandConfiguration()
   }
-    
+  
   public mutating func run() throws {
     throw CleanExit.helpRequest(self)
   }

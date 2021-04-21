@@ -194,7 +194,6 @@ struct Example: ParsableCommand {
 }
 ```
 
-    public static var configuration = CommandConfiguration(
 ## Generating Help Text Programmatically
 
 The help screen is automatically shown to users when they call your command with the help flag. You can generate the same text from within your program by calling the `helpMessage()` method.
