@@ -18,6 +18,9 @@ var package = Package(
         .library(
             name: "ArgumentParser",
             targets: ["ArgumentParser"]),
+        .library(
+            name: "ArgumentParserTestHelpers",
+            targets: ["ArgumentParserTestHelpers"]),
     ],
     dependencies: [],
     targets: [
