@@ -473,4 +473,36 @@ extension HelpGenerationTests {
     
     """)
   }
+    
+  struct optionsToHide: ParsableArguments {
+    @Flag(help: "Verbose")
+    var verbose: Bool = false
+    
+    @Option(help: "Custom Name")
+    var customName: String?
+  }
+    
+  struct HideDriver: ParsableCommand {
+    static let configuration = CommandConfiguration(commandName: "driver", abstract: "Demo hiding option groups")
+    
+    @OptionGroup(_hiddenFromHelp: true)
+    var hideMe: optionsToHide
+    
+    @Option(help: "Time to wait before timeout (in seconds)")
+    var timeout: Int?
+  }
+    
+  func testHidingOptionGroup() throws {
+    AssertHelp(for: HideDriver.self, equals: """
+        OVERVIEW: Demo hiding option groups
+
+        USAGE: driver [--verbose] [--custom-name <custom-name>] [--timeout <timeout>]
+
+        OPTIONS:
+          --timeout <timeout>     Time to wait before timeout (in seconds)
+          -h, --help              Show help information.
+        
+        """
+    )
+  }
 }
