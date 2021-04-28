@@ -16,6 +16,15 @@ package updates, you can specify your package dependency using
 
 ---
 
+## [0.4.3] - 2021-04-28
+
+### Additions
+
+- Experimental API for hiding `@OptionGroup`-declared properties from
+  the help screen.
+
+The 0.4.3 release includes a contribution from [miggs597]. Thank you!
+
 ## [0.4.2] - 2021-04-21
 
 ### Fixes
@@ -452,7 +461,8 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 
 <!-- Link references for releases -->
 
-[Unreleased]: https://github.com/apple/swift-argument-parser/compare/0.4.2...HEAD
+[Unreleased]: https://github.com/apple/swift-argument-parser/compare/0.4.3...HEAD
+[0.4.3]: https://github.com/apple/swift-argument-parser/compare/0.4.2...0.4.3
 [0.4.2]: https://github.com/apple/swift-argument-parser/compare/0.4.1...0.4.2
 [0.4.1]: https://github.com/apple/swift-argument-parser/compare/0.4.0...0.4.1
 [0.4.0]: https://github.com/apple/swift-argument-parser/compare/0.3.2...0.4.0
