@@ -175,18 +175,16 @@ extension RepeatingEndToEndTests {
       XCTAssertNil(qux.extra)
     }
 
-    // TODO: Is this the right behavior? Or should an option always consume
-    // _at least one_ value even if it's set to `upToNextOption`.
-    AssertParse(Qux.self, ["--names", "--verbose"]) { qux in
+    AssertParse(Qux.self, ["--names", "one", "two", "--verbose", "--names", "three", "--names", "four"]) { qux in
       XCTAssertTrue(qux.verbose)
-      XCTAssertTrue(qux.names.isEmpty)
+      XCTAssertEqual(qux.names, ["one", "two", "three", "four"])
       XCTAssertNil(qux.extra)
     }
 
-    AssertParse(Qux.self, ["--names", "--verbose", "three"]) { qux in
+    AssertParse(Qux.self, ["extra", "--names", "one", "--names", "two", "--verbose", "--names", "three", "four"]) { qux in
       XCTAssertTrue(qux.verbose)
-      XCTAssertTrue(qux.names.isEmpty)
-      XCTAssertEqual(qux.extra, "three")
+      XCTAssertEqual(qux.names, ["one", "two", "three", "four"])
+      XCTAssertEqual(qux.extra, "extra")
     }
 
     AssertParse(Qux.self, ["--names", "one", "two"]) { qux in
@@ -217,8 +215,9 @@ extension RepeatingEndToEndTests {
   func testParsing_repeatingStringUpToNext_Fails() throws {
     XCTAssertThrowsError(try Qux.parse(["--names", "one", "--other"]))
     XCTAssertThrowsError(try Qux.parse(["--names", "one", "two", "--other"]))
-    // TODO: See above
     XCTAssertThrowsError(try Qux.parse(["--names", "--other"]))
+    XCTAssertThrowsError(try Qux.parse(["--names", "--verbose"]))
+    XCTAssertThrowsError(try Qux.parse(["--names", "--verbose", "three"]))
   }
 }
 

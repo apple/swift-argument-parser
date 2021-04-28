@@ -287,9 +287,6 @@ extension ArgumentSet {
         }
         
       case .upToNextOption:
-        // Reset initial value with the found source index
-        try argument.initial(origin, &result)
-        
         // Use an attached value if it exists...
         if let value = parsed.value {
           // This was `--foo=bar` style:

@@ -153,7 +153,7 @@ extension JoinedEndToEndTests {
     }
     
     AssertParse(Baz.self, ["-Ddebug1", "debug2", "-Ddebug3", "debug4"]) { baz in
-      XCTAssertEqual(baz.debug, ["debug3", "debug4"])
+      XCTAssertEqual(baz.debug, ["debug1", "debug2", "debug3", "debug4"])
     }
   }
   
