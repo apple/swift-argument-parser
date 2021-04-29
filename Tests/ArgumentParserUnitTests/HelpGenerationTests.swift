@@ -474,6 +474,33 @@ extension HelpGenerationTests {
     """)
   }
     
+  struct Baz: ParsableCommand {
+
+    struct Cmd: ParsableCommand {
+      static var configuration: CommandConfiguration = CommandConfiguration(abstract: "Command name.")
+    }
+
+    static var configuration = CommandConfiguration(
+      commandName: "baz",
+      _superCommandName: "foo",
+      subcommands: [Cmd.self]
+    )
+  }
+
+  func testHelpWithSuperCommand() {
+    AssertHelp(for: Baz.self, equals: """
+    USAGE: foo baz <subcommand>
+
+    OPTIONS:
+      -h, --help              Show help information.
+
+    SUBCOMMANDS:
+      cmd                     Command name.
+
+      See 'foo baz help <subcommand>' for detailed help.
+    """)
+  }
+
   struct optionsToHide: ParsableArguments {
     @Flag(help: "Verbose")
     var verbose: Bool = false

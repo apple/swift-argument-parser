@@ -263,10 +263,10 @@ internal struct HelpGenerator {
     var helpSubcommandMessage: String = ""
     if includesSubcommands {
       var names = commandStack.map { $0._commandName }
+      names.insert("help", at: 1)
       if let superName = commandStack.first!.configuration._superCommandName {
         names.insert(superName, at: 0)
       }
-      names.insert("help", at: 1)
 
       helpSubcommandMessage = """
 
