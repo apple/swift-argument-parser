@@ -95,6 +95,8 @@ extension ParsableArguments {
     switch try self.asCommand.parseAsRoot(arguments) {
     case is HelpCommand:
       throw ParserError.helpRequested
+    case is DumpHelpInfoCommand:
+      throw ParserError.dumpHelpRequested
     case let result as _WrappedParsableCommand<Self>:
       return result.options
     case var result as Self:

@@ -13,6 +13,7 @@
 enum ParserError: Error {
   case helpRequested
   case versionRequested
+  case dumpHelpRequested
   
   case completionScriptRequested(shell: String?)
   case completionScriptCustomResponse(String)

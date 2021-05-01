@@ -94,11 +94,14 @@ public enum CleanExit: Error, CustomStringConvertible {
   
   /// Treat this error as a clean exit with the given message.
   case message(String)
+    
+  case dumpRequest(ParsableCommand.Type? = nil)
   
   public var description: String {
     switch self {
     case .helpRequest: return "--help"
     case .message(let message): return message
+    case .dumpRequest: return "--dump-help"
     }
   }
   
@@ -111,5 +114,9 @@ public enum CleanExit: Error, CustomStringConvertible {
   ///   the root command.
   public static func helpRequest(_ command: ParsableCommand) -> CleanExit {
     return .helpRequest(type(of: command))
+  }
+    
+  public static func dumpHelpRequest(_ command: ParsableCommand) -> CleanExit {
+    return .dumpRequest(type(of: command))
   }
 }

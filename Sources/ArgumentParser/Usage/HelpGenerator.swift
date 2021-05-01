@@ -218,6 +218,8 @@ internal struct HelpGenerator {
     if !helpLabels.isEmpty {
       optionElements.append(.init(label: helpLabels, abstract: "Show help information."))
     }
+    
+    optionElements.append(.init(label: "--dump-help", abstract: "Dump help information."))
 
     let configuration = commandStack.last!.configuration
     let subcommandElements: [Section.Element] =

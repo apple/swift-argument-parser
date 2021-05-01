@@ -16,6 +16,8 @@ struct CommandError: Error {
 
 struct HelpRequested: Error {}
 
+struct DumpHelpInfoRequested: Error {}
+
 struct CommandParser {
   let commandTree: Tree<ParsableCommand.Type>
   var currentNode: Tree<ParsableCommand.Type>
@@ -77,6 +79,11 @@ extension CommandParser {
     // Look for help flags
     guard !split.contains(anyOf: self.commandStack.getHelpNames()) else {
       throw HelpRequested()
+    }
+    
+    // Look for `--dump-help`
+    guard !split.contains(Name.long("dump-help")) else {
+      throw DumpHelpInfoRequested()
     }
 
     // Look for --version if any commands in the stack define a version
@@ -228,6 +235,8 @@ extension CommandParser {
       return .failure(CommandError(commandStack: commandStack, parserError: error))
     } catch is HelpRequested {
       return .success(HelpCommand(commandStack: commandStack))
+    } catch is DumpHelpInfoRequested {
+        return .success(DumpHelpInfoCommand(commandStack: commandStack))
     } catch {
       return .failure(CommandError(commandStack: commandStack, parserError: .invalidState))
     }
