@@ -140,17 +140,14 @@ internal struct HelpGenerator {
   }
 
   static func generateSections(commandStack: [ParsableCommand.Type]) -> [Section] {
+    guard !commandStack.isEmpty else { return [] }
+    
     var positionalElements: [Section.Element] = []
     var optionElements: [Section.Element] = []
-    
-    guard let commandType = commandStack.last else {
-      return []
-    }
-    
-    var argset = ArgumentSet(commandType, creatingHelp: true)
-    commandStack.versionArgumentDefintion().map { argset.append($0) }
-    commandStack.helpArgumentDefinition().map { argset.append($0) }
-    var args = argset[...]
+
+    /// Start with a full slice of the ArgumentSet so we can peel off one or
+    /// more elements at a time.
+    var args = commandStack.argumentsForHelp()[...]
     
     while let arg = args.popFirst() {
       guard arg.help.help?.shouldDisplay != false else { continue }
@@ -173,8 +170,9 @@ internal struct HelpGenerator {
           .compactMap { $0 }
           .joined(separator: " ")
       } else {
-        let defaultValue = arg.help.defaultValue.flatMap { $0.isEmpty ? nil : "(default: \($0))" }
         synopsis = arg.synopsisForHelp ?? ""
+
+        let defaultValue = arg.help.defaultValue.flatMap { $0.isEmpty ? nil : "(default: \($0))" }
         description = [arg.help.help?.abstract, defaultValue]
           .compactMap { $0 }
           .joined(separator: " ")
@@ -294,6 +292,16 @@ internal extension BidirectionalCollection where Element == ParsableCommand.Type
       completion: .default,
       update: .nullary({ _, _, _ in })
     )
+  }
+  
+  /// Returns the ArgumentSet for the last command in this stack, including
+  /// help and version flags, when appropriate.
+  func argumentsForHelp() -> ArgumentSet {
+    guard var arguments = self.last.map({ ArgumentSet($0, creatingHelp: true) })
+      else { return ArgumentSet() }
+    self.versionArgumentDefintion().map { arguments.append($0) }
+    self.helpArgumentDefinition().map { arguments.append($0) }
+    return arguments
   }
 }
 
