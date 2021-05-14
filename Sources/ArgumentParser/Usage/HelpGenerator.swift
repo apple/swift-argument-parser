@@ -142,8 +142,6 @@ internal struct HelpGenerator {
   static func generateSections(commandStack: [ParsableCommand.Type]) -> [Section] {
     var positionalElements: [Section.Element] = []
     var optionElements: [Section.Element] = []
-    /// Used to keep track of elements already seen from parent commands.
-    var alreadySeenElements = Set<Section.Element>()
     
     guard let commandType = commandStack.last else {
       return []
@@ -152,42 +150,25 @@ internal struct HelpGenerator {
     var argset = ArgumentSet(commandType, creatingHelp: true)
     commandStack.versionArgumentDefintion().map { argset.append($0) }
     commandStack.helpArgumentDefinition().map { argset.append($0) }
-    let args = Array(argset)
+    var args = argset[...]
     
-    var i = 0
-    while i < args.count {
-      defer { i += 1 }
-      let arg = args[i]
-      
+    while let arg = args.popFirst() {
       guard arg.help.help?.shouldDisplay != false else { continue }
       
       let synopsis: String
       let description: String
       
-      if args[i].help.isComposite {
+      if arg.help.isComposite {
         // If this argument is composite, we have a group of arguments to
         // output together.
-        var groupedArgs = [arg]
+        let groupEnd = args.firstIndex(where: { $0.help.keys != arg.help.keys }) ?? args.endIndex
+        let groupedArgs = [arg] + args[..<groupEnd]
+        args = args[groupEnd...]
+        
+        synopsis = groupedArgs.compactMap { $0.synopsisForHelp }.joined(separator: "/")
+
         let defaultValue = arg.help.defaultValue.map { "(default: \($0))" } ?? ""
-        while i < args.count - 1 && args[i + 1].help.keys == arg.help.keys {
-          groupedArgs.append(args[i + 1])
-          i += 1
-        }
-
-        var synopsisString = ""
-        for arg in groupedArgs {
-          if !synopsisString.isEmpty { synopsisString.append("/") }
-          synopsisString.append("\(arg.synopsisForHelp ?? "")")
-        }
-        synopsis = synopsisString
-
-        var descriptionString: String?
-        for arg in groupedArgs {
-          if let desc = arg.help.help?.abstract {
-            descriptionString = desc
-            break
-          }
-        }
+        let descriptionString = groupedArgs.lazy.compactMap({ $0.help.help?.abstract }).first
         description = [descriptionString, defaultValue]
           .compactMap { $0 }
           .joined(separator: " ")
@@ -200,13 +181,10 @@ internal struct HelpGenerator {
       }
       
       let element = Section.Element(label: synopsis, abstract: description, discussion: arg.help.help?.discussion ?? "")
-      if !alreadySeenElements.contains(element) {
-        alreadySeenElements.insert(element)
-        if case .positional = arg.kind {
-          positionalElements.append(element)
-        } else {
-          optionElements.append(element)
-        }
+      if case .positional = arg.kind {
+        positionalElements.append(element)
+      } else {
+        optionElements.append(element)
       }
     }
     
