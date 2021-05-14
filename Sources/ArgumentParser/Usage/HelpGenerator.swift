@@ -149,7 +149,10 @@ internal struct HelpGenerator {
       return []
     }
     
-    let args = Array(ArgumentSet(commandType, creatingHelp: true))
+    var argset = ArgumentSet(commandType, creatingHelp: true)
+    commandStack.versionArgumentDefintion().map { argset.append($0) }
+    commandStack.helpArgumentDefinition().map { argset.append($0) }
+    let args = Array(argset)
     
     var i = 0
     while i < args.count {
@@ -189,7 +192,7 @@ internal struct HelpGenerator {
           .compactMap { $0 }
           .joined(separator: " ")
       } else {
-        let defaultValue = arg.help.defaultValue.flatMap { $0.isEmpty ? nil : "(default: \($0))" } ?? ""
+        let defaultValue = arg.help.defaultValue.flatMap { $0.isEmpty ? nil : "(default: \($0))" }
         synopsis = arg.synopsisForHelp ?? ""
         description = [arg.help.help?.abstract, defaultValue]
           .compactMap { $0 }
@@ -207,18 +210,6 @@ internal struct HelpGenerator {
       }
     }
     
-    if commandStack.contains(where: { !$0.configuration.version.isEmpty }) {
-      optionElements.append(.init(label: "--version", abstract: "Show the version."))
-    }
-
-    let helpLabels = commandStack
-      .getHelpNames()
-      .map { $0.synopsisString }
-      .joined(separator: ", ")
-    if !helpLabels.isEmpty {
-      optionElements.append(.init(label: helpLabels, abstract: "Show help information."))
-    }
-
     let configuration = commandStack.last!.configuration
     let subcommandElements: [Section.Element] =
       configuration.subcommands.compactMap { command in
@@ -303,6 +294,28 @@ internal extension BidirectionalCollection where Element == ParsableCommand.Type
   func getPrimaryHelpName() -> Name? {
     let names = getHelpNames()
     return names.first(where: { !$0.isShort }) ?? names.first
+  }
+  
+  func versionArgumentDefintion() -> ArgumentDefinition? {
+    guard contains(where: { !$0.configuration.version.isEmpty })
+      else { return nil }
+    return ArgumentDefinition(
+      kind: .named([.long("version")]),
+      help: .init(help: "Show the version.", key: InputKey(rawValue: "")),
+      completion: .default,
+      update: .nullary({ _, _, _ in })
+    )
+  }
+  
+  func helpArgumentDefinition() -> ArgumentDefinition? {
+    let names = getHelpNames()
+    guard !names.isEmpty else { return nil }
+    return ArgumentDefinition(
+      kind: .named(names),
+      help: .init(help: "Show help information.", key: InputKey(rawValue: "")),
+      completion: .default,
+      update: .nullary({ _, _, _ in })
+    )
   }
 }
 
