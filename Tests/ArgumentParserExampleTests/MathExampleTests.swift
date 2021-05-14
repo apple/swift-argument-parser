@@ -60,6 +60,11 @@ final class MathExampleTests: XCTestCase {
     AssertExecuteCommand(command: "math add -h", expected: helpText)
     AssertExecuteCommand(command: "math add --help", expected: helpText)
     AssertExecuteCommand(command: "math help add", expected: helpText)
+    
+    // Verify that extra help flags are ignored.
+    AssertExecuteCommand(command: "math help add -h", expected: helpText)
+    AssertExecuteCommand(command: "math help add -help", expected: helpText)
+    AssertExecuteCommand(command: "math help add --help", expected: helpText)
   }
   
   func testMath_StatsMeanHelp() throws {
@@ -346,7 +351,7 @@ _math_stats_quantiles() {
     COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
 }
 _math_help() {
-    opts="--version -h --help"
+    opts="--version"
     if [[ $COMP_CWORD == "$1" ]]; then
         COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
         return
@@ -524,7 +529,6 @@ _math_help() {
     args+=(
         ':subcommands:'
         '--version[Show the version.]'
-        '(-h --help)'{-h,--help}'[Show help information.]'
     )
     _arguments -w -s -S $args[@] && ret=0
 
@@ -582,6 +586,4 @@ complete -c math -n '__fish_math_using_command math stats quantiles --shell' -f 
 complete -c math -n '__fish_math_using_command math stats quantiles' -f -r -l custom
 complete -c math -n '__fish_math_using_command math stats quantiles --custom' -f -a '(command math ---completion stats quantiles -- --custom (commandline -opc)[1..-1])'
 complete -c math -n '__fish_math_using_command math stats quantiles' -f -s h -l help -d 'Show help information.'
-complete -c math -n '__fish_math_using_command math stats help' -f -s h -l help -d 'Show help information.'
-complete -c math -n '__fish_math_using_command math help' -f -s h -l help -d 'Show help information.'
 """
