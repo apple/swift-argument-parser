@@ -141,12 +141,7 @@ extension Argument where Value: ExpressibleByArgument {
 /// The strategy to use when parsing multiple values from `@Option` arguments
 /// into an array.
 public struct ArgumentArrayParsingStrategy: Hashable {
-  internal enum Representation {
-    case remaining
-    case unconditionalRemaining
-  }
-  
-  internal var base: Representation
+  internal var base: ArgumentDefinition.ParsingStrategy
   
   /// Parse only unprefixed values from the command-line input, ignoring
   /// any inputs that have a dash prefix.
@@ -164,7 +159,7 @@ public struct ArgumentArrayParsingStrategy: Hashable {
   ///
   /// This is the default strategy for parsing argument arrays.
   public static var remaining: ArgumentArrayParsingStrategy {
-    self.init(base: .remaining)
+    self.init(base: .default)
   }
   
   /// Parse all remaining inputs after parsing any known options or flags,
@@ -188,7 +183,7 @@ public struct ArgumentArrayParsingStrategy: Hashable {
   ///   `--verbose -- one two --other` would have the same result as the above
   ///   example: `Options(verbose: true, words: ["one", "two", "--other"])`.
   public static var unconditionalRemaining: ArgumentArrayParsingStrategy {
-    self.init(base: .unconditionalRemaining)
+    self.init(base: .allRemainingInput)
   }
 }
 
@@ -207,7 +202,7 @@ extension Argument {
       var arg = ArgumentDefinition(
         key: key,
         kind: .positional,
-        parsingStrategy: .nextAsValue,
+        parsingStrategy: .default,
         parser: T.init(argument:),
         default: nil,
         completion: completion ?? T.defaultCompletionKind)
@@ -325,7 +320,7 @@ extension Argument {
         kind: .positional,
         help: help,
         completion: completion ?? Element.defaultCompletionKind,
-        parsingStrategy: parsingStrategy == .remaining ? .nextAsValue : .allRemainingInput,
+        parsingStrategy: parsingStrategy.base,
         update: .appendToArray(forType: Element.self, key: key),
         initial: setInitialValue)
       arg.help.defaultValue = helpDefaultValue
@@ -413,7 +408,7 @@ extension Argument {
         kind: .positional,
         help: help,
         completion: completion ?? .default,
-        parsingStrategy: parsingStrategy == .remaining ? .nextAsValue : .allRemainingInput,
+        parsingStrategy: parsingStrategy.base,
         update: .unary({
           (origin, name, valueString, parsedValues) in
           do {

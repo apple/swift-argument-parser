@@ -98,7 +98,7 @@ extension Option where Value: ExpressibleByArgument {
       ArgumentSet(
         key: key,
         kind: .name(key: key, specification: name),
-        parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy),
+        parsingStrategy: parsingStrategy.base,
         parseType: Value.self,
         name: name,
         default: initial, help: help, completion: completion ?? Value.defaultCompletionKind)
@@ -162,14 +162,8 @@ extension Option where Value: ExpressibleByArgument {
 /// The strategy to use when parsing a single value from `@Option` arguments.
 ///
 /// - SeeAlso: `ArrayParsingStrategy``
-public struct SingleValueParsingStrategy: Hashable {
-  internal enum Representation {
-    case next
-    case unconditional
-    case scanningForValue
-  }
-  
-  internal var base: Representation
+public struct SingleValueParsingStrategy: Hashable {  
+  internal var base: ArgumentDefinition.ParsingStrategy
   
   /// Parse the input after the option. Expect it to be a value.
   ///
@@ -183,7 +177,7 @@ public struct SingleValueParsingStrategy: Hashable {
   ///
   /// This is the **default behavior** for `@Option`-wrapped properties.
   public static var next: SingleValueParsingStrategy {
-    self.init(base: .next)
+    self.init(base: .default)
   }
   
   /// Parse the next input, even if it could be interpreted as an option or
@@ -219,14 +213,7 @@ public struct SingleValueParsingStrategy: Hashable {
 /// The strategy to use when parsing multiple values from `@Option` arguments into an
 /// array.
 public struct ArrayParsingStrategy: Hashable {
-  internal enum Representation {
-    case singleValue
-    case unconditionalSingleValue
-    case upToNextOption
-    case remaining
-  }
-  
-  internal var base: Representation
+  internal var base: ArgumentDefinition.ParsingStrategy
   
   /// Parse one value per option, joining multiple into an array.
   ///
@@ -241,7 +228,7 @@ public struct ArrayParsingStrategy: Hashable {
   ///     above example, the input `--read --name Foo Bar` would parse `Foo` into
   ///     `read` (and `Bar` into `name`).
   public static var singleValue: ArrayParsingStrategy {
-    self.init(base: .singleValue)
+    self.init(base: .default)
   }
   
   /// Parse the value immediately after the option while allowing repeating options, joining multiple into an array.
@@ -258,7 +245,7 @@ public struct ArrayParsingStrategy: Hashable {
   /// `read` being set to the array `["--name", "baz"]`. This is usually *not* what users
   /// would expect. Use with caution.
   public static var unconditionalSingleValue: ArrayParsingStrategy {
-    self.init(base: .unconditionalSingleValue)
+    self.init(base: .unconditional)
   }
   
   /// Parse all values up to the next option.
@@ -299,7 +286,7 @@ public struct ArrayParsingStrategy: Hashable {
   /// would parse the input `--name Foo -- Bar --baz` such that the `remainder`
   /// would hold the value `["Bar", "--baz"]`.
   public static var remaining: ArrayParsingStrategy {
-    self.init(base: .remaining)
+    self.init(base: .allRemainingInput)
   }
 }
 
@@ -325,7 +312,7 @@ extension Option {
       var arg = ArgumentDefinition(
         key: key,
         kind: .name(key: key, specification: name),
-        parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy),
+        parsingStrategy: parsingStrategy.base,
         parser: T.init(argument:),
         default: nil,
         completion: completion ?? T.defaultCompletionKind)
@@ -348,7 +335,7 @@ extension Option {
     self.init(_parsedValue: .init { key in
       let kind = ArgumentDefinition.Kind.name(key: key, specification: name)
       let help = ArgumentDefinition.Help(options: initial != nil ? .isOptional : [], help: help, key: key)
-      var arg = ArgumentDefinition(kind: kind, help: help, completion: completion ?? .default, parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy), update: .unary({
+      var arg = ArgumentDefinition(kind: kind, help: help, completion: completion ?? .default, parsingStrategy: parsingStrategy.base, update: .unary({
         (origin, name, valueString, parsedValues) in
         do {
           let transformedValue = try transform(valueString)
@@ -459,7 +446,7 @@ extension Option {
         kind: kind,
         help: help,
         completion: completion ?? Element.defaultCompletionKind,
-        parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy),
+        parsingStrategy: parsingStrategy.base,
         update: .appendToArray(forType: Element.self, key: key),
         initial: setInitialValue
       )
@@ -552,7 +539,7 @@ extension Option {
         kind: kind,
         help: help,
         completion: completion ?? .default,
-        parsingStrategy: ArgumentDefinition.ParsingStrategy(parsingStrategy),
+        parsingStrategy: parsingStrategy.base,
         update: .unary({ (origin, name, valueString, parsedValues) in
           do {
             let transformedElement = try transform(valueString)
