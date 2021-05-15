@@ -75,7 +75,7 @@ struct ArgumentDefinition {
   enum ParsingStrategy {
     /// Expect the next `SplitArguments.Element` to be a value and parse it. Will fail if the next
     /// input is an option.
-    case nextAsValue
+    case `default`
     /// Parse the next `SplitArguments.Element.value`
     case scanningForValue
     /// Parse the next `SplitArguments.Element` as a value, regardless of its type.
@@ -111,7 +111,7 @@ struct ArgumentDefinition {
     kind: Kind,
     help: Help,
     completion: CompletionKind,
-    parsingStrategy: ParsingStrategy = .nextAsValue,
+    parsingStrategy: ParsingStrategy = .default,
     update: Update,
     initial: @escaping Initial = { _, _ in }
   ) {
@@ -125,32 +125,6 @@ struct ArgumentDefinition {
     self.parsingStrategy = parsingStrategy
     self.update = update
     self.initial = initial
-  }
-}
-
-extension ArgumentDefinition.ParsingStrategy {
-  init(_ other: SingleValueParsingStrategy) {
-    switch other {
-    case .next:
-      self = .nextAsValue
-    case .scanningForValue:
-      self = .scanningForValue
-    case .unconditional:
-      self = .unconditional
-    }
-  }
-  
-  init(_ other: ArrayParsingStrategy) {
-    switch other {
-    case .singleValue:
-      self = .scanningForValue
-    case .unconditionalSingleValue:
-      self = .unconditional
-    case .upToNextOption:
-      self = .upToNextOption
-    case .remaining:
-      self = .allRemainingInput
-    }
   }
 }
 

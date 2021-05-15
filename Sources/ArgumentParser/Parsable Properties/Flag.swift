@@ -94,7 +94,14 @@ extension Flag: CustomStringConvertible {
 extension Flag: DecodableParsedWrapper where Value: Decodable {}
 
 /// The options for converting a Boolean flag into a `true`/`false` pair.
-public enum FlagInversion {
+public struct FlagInversion: Hashable {
+  internal enum Representation {
+    case prefixedNo
+    case prefixedEnableDisable
+  }
+  
+  internal var base: Representation
+  
   /// Adds a matching flag with a `no-` prefix to represent `false`.
   ///
   /// For example, the `shouldRender` property in this declaration is set to
@@ -103,7 +110,9 @@ public enum FlagInversion {
   ///
   ///     @Flag(name: .customLong("render"), inversion: .prefixedNo)
   ///     var shouldRender: Bool
-  case prefixedNo
+  public static var prefixedNo: FlagInversion {
+    self.init(base: .prefixedNo)
+  }
   
   /// Uses matching flags with `enable-` and `disable-` prefixes.
   ///
@@ -113,19 +122,35 @@ public enum FlagInversion {
   ///
   ///     @Flag(inversion: .prefixedEnableDisable)
   ///     var extraOutput: Bool
-  case prefixedEnableDisable
+  public static var prefixedEnableDisable: FlagInversion {
+    self.init(base: .prefixedEnableDisable)
+  }
 }
 
 /// The options for treating enumeration-based flags as exclusive.
-public enum FlagExclusivity {
+public struct FlagExclusivity: Hashable {
+  internal enum Representation {
+    case exclusive
+    case chooseFirst
+    case chooseLast
+  }
+  
+  internal var base: Representation
+  
   /// Only one of the enumeration cases may be provided.
-  case exclusive
+  public static var exclusive: FlagExclusivity {
+    self.init(base: .exclusive)
+  }
   
   /// The first enumeration case that is provided is used.
-  case chooseFirst
+  public static var chooseFirst: FlagExclusivity {
+    self.init(base: .chooseFirst)
+  }
   
   /// The last enumeration case that is provided is used.
-  case chooseLast
+  public static var chooseLast: FlagExclusivity {
+    self.init(base: .chooseLast)
+  }
 }
 
 extension Flag where Value == Optional<Bool> {
@@ -315,7 +340,7 @@ extension Flag where Value: EnumerableFlag {
         let name = Value.name(for: value)
         let helpForCase = hasCustomCaseHelp ? (caseHelps[i] ?? help) : help
         let help = ArgumentDefinition.Help(options: initial != nil ? .isOptional : [], help: helpForCase, defaultValue: defaultValue, key: key, isComposite: !hasCustomCaseHelp)
-        return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .nextAsValue, initialValue: initial, update: .nullary({ (origin, name, values) in
+        return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .default, initialValue: initial, update: .nullary({ (origin, name, values) in
           hasUpdated = try ArgumentSet.updateFlag(key: key, value: value, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
         }))
       }
@@ -404,7 +429,7 @@ extension Flag {
         let name = Element.name(for: value)
         let helpForCase = hasCustomCaseHelp ? (caseHelps[i] ?? help) : help
         let help = ArgumentDefinition.Help(options: .isOptional, help: helpForCase, key: key, isComposite: !hasCustomCaseHelp)
-        return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .nextAsValue, initialValue: nil as Element?, update: .nullary({ (origin, name, values) in
+        return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .default, initialValue: nil as Element?, update: .nullary({ (origin, name, values) in
           hasUpdated = try ArgumentSet.updateFlag(key: key, value: value, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
         }))
 
@@ -429,7 +454,7 @@ extension Flag {
         let name = Element.name(for: value)
         let helpForCase = hasCustomCaseHelp ? (caseHelps[i] ?? help) : help
         let help = ArgumentDefinition.Help(options: .isOptional, help: helpForCase, key: key, isComposite: !hasCustomCaseHelp)
-        return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .nextAsValue, initialValue: initial, update: .nullary({ (origin, name, values) in
+        return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .default, initialValue: initial, update: .nullary({ (origin, name, values) in
           values.update(forKey: key, inputOrigin: origin, initial: [Element](), closure: {
             $0.append(value)
           })
@@ -506,7 +531,7 @@ extension Flag where Value: CaseIterable, Value: RawRepresentable, Value: Equata
       let args = Value.allCases.map { value -> ArgumentDefinition in
         let caseKey = InputKey(rawValue: value.rawValue)
         let help = ArgumentDefinition.Help(options: initial != nil ? .isOptional : [], help: help, defaultValue: defaultValue, key: key, isComposite: true)
-        return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .nextAsValue, initialValue: initial, update: .nullary({ (origin, name, values) in
+        return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .default, initialValue: initial, update: .nullary({ (origin, name, values) in
           hasUpdated = try ArgumentSet.updateFlag(key: key, value: value, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
         }))
       }
@@ -532,7 +557,7 @@ extension Flag {
       let args = Element.allCases.map { value -> ArgumentDefinition in
         let caseKey = InputKey(rawValue: value.rawValue)
         let help = ArgumentDefinition.Help(options: .isOptional, help: help, key: key, isComposite: true)
-        return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .nextAsValue, initialValue: nil as Element?, update: .nullary({ (origin, name, values) in
+        return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .default, initialValue: nil as Element?, update: .nullary({ (origin, name, values) in
           hasUpdated = try ArgumentSet.updateFlag(key: key, value: value, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
         }))
       }
@@ -558,7 +583,7 @@ extension Flag {
       let args = Element.allCases.map { value -> ArgumentDefinition in
         let caseKey = InputKey(rawValue: value.rawValue)
         let help = ArgumentDefinition.Help(options: .isOptional, help: help, key: key, isComposite: true)
-        return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .nextAsValue, initialValue: [Element](), update: .nullary({ (origin, name, values) in
+        return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .default, initialValue: [Element](), update: .nullary({ (origin, name, values) in
           values.update(forKey: key, inputOrigin: origin, initial: [Element](), closure: {
             $0.append(value)
           })

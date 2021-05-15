@@ -84,7 +84,7 @@ enum MessageInfo {
       case let error as ValidationError:
         self = .validation(message: error.message, usage: usage, help: "")
       case let error as CleanExit:
-        switch error {
+        switch error.base {
         case .helpRequest(let command):
           if let command = command {
             commandStack = CommandParser(type.asCommand).commandStack(for: command)
