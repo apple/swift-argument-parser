@@ -431,4 +431,78 @@ extension HelpGenerationTests {
 
     """)
   }
+    
+  struct Foo: ParsableCommand {
+    public static var configuration = CommandConfiguration(
+      commandName: "foo",
+      abstract: "Perform some foo",
+      subcommands: [
+        Bar.self
+      ],
+      helpNames: [.short, .long, .customLong("help", withSingleDash: true)])
+        
+    @Option(help: "Name for foo")
+    var fooName: String?
+        
+    public init() {}
+  }
+
+  struct Bar: ParsableCommand {
+    static let configuration = CommandConfiguration(
+      commandName: "bar",
+      _superCommandName: "foo",
+      abstract: "Perform bar operations",
+      helpNames: [.short, .long, .customLong("help", withSingleDash: true)])
+            
+    @Option(help: "Bar Strength")
+    var barStrength: String?
+        
+    public init() {}
+  }
+
+  func testHelpExcludingSuperCommand() throws {
+    AssertHelp(for: Bar.self, root: Foo.self, equals: """
+    OVERVIEW: Perform bar operations
+
+    USAGE: foo bar [--bar-strength <bar-strength>]
+
+    OPTIONS:
+      --bar-strength <bar-strength>
+                              Bar Strength
+      -h, -help, --help       Show help information.
+    
+    """)
+  }
+    
+  struct optionsToHide: ParsableArguments {
+    @Flag(help: "Verbose")
+    var verbose: Bool = false
+    
+    @Option(help: "Custom Name")
+    var customName: String?
+  }
+    
+  struct HideDriver: ParsableCommand {
+    static let configuration = CommandConfiguration(commandName: "driver", abstract: "Demo hiding option groups")
+    
+    @OptionGroup(_hiddenFromHelp: true)
+    var hideMe: optionsToHide
+    
+    @Option(help: "Time to wait before timeout (in seconds)")
+    var timeout: Int?
+  }
+    
+  func testHidingOptionGroup() throws {
+    AssertHelp(for: HideDriver.self, equals: """
+        OVERVIEW: Demo hiding option groups
+
+        USAGE: driver [--verbose] [--custom-name <custom-name>] [--timeout <timeout>]
+
+        OPTIONS:
+          --timeout <timeout>     Time to wait before timeout (in seconds)
+          -h, --help              Show help information.
+        
+        """
+    )
+  }
 }

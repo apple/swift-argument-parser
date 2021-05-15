@@ -38,6 +38,14 @@ struct ArgumentSet {
   init(sets: [ArgumentSet]) {
     self.init(sets.joined())
   }
+  
+  mutating func append(_ arg: ArgumentDefinition) {
+    let newPosition = content.count
+    content.append(arg)
+    for name in arg.names where namePositions[name.nameToMatch] == nil {
+      namePositions[name.nameToMatch] = newPosition
+    }
+  }
 }
 
 extension ArgumentSet: CustomDebugStringConvertible {
@@ -48,9 +56,11 @@ extension ArgumentSet: CustomDebugStringConvertible {
   }
 }
 
-extension ArgumentSet: Sequence {
-  func makeIterator() -> Array<ArgumentDefinition>.Iterator {
-    return content.makeIterator()
+extension ArgumentSet: RandomAccessCollection {
+  var startIndex: Int { content.startIndex }
+  var endIndex: Int { content.endIndex }
+  subscript(position: Int) -> ArgumentDefinition {
+    content[position]
   }
 }
 
@@ -163,7 +173,14 @@ extension ArgumentDefinition {
         throw ParserError.unableToParseValue(origin, name, value, forKey: key)
       }
       values.set(v, forKey: key, inputOrigin: origin)
-    }), initial: initialValueCreator)
+    }), initial: { origin, values in
+      switch kind {
+      case .default:
+        values.set(initial, forKey: key, inputOrigin: InputOrigin(element: .defaultValue))
+      case .named, .positional:
+        values.set(initial, forKey: key, inputOrigin: origin)
+      }
+    })
     
     help.options.formUnion(ArgumentDefinition.Help.Options(type: type))
     help.defaultValue = initial.map { "\($0)" }
@@ -289,9 +306,6 @@ extension ArgumentSet {
         }
         
       case .upToNextOption:
-        // Reset initial value with the found source index
-        try argument.initial(origin, &result)
-        
         // Use an attached value if it exists...
         if let value = parsed.value {
           // This was `--foo=bar` style:

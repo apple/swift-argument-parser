@@ -104,7 +104,7 @@ final class ParsedArgumentsContainer<K>: KeyedDecodingContainerProtocol where K 
   }
   
   func decodeNil(forKey key: K) throws -> Bool {
-    return !contains(key)
+    return element(forKey: key)?.value == nil
   }
   
   func decode<T>(_ type: T.Type, forKey key: K) throws -> T where T : Decodable {
@@ -113,7 +113,11 @@ final class ParsedArgumentsContainer<K>: KeyedDecodingContainerProtocol where K 
   }
   
   func decodeIfPresent<T>(_ type: T.Type, forKey key: KeyedDecodingContainer<K>.Key) throws -> T? where T : Decodable {
-    let subDecoder = SingleValueDecoder(userInfo: decoder.userInfo, underlying: decoder, codingPath: codingPath + [key], key: InputKey(key), parsedElement: element(forKey: key))
+    let parsedElement = element(forKey: key)
+    if let parsedElement = parsedElement, parsedElement.inputOrigin.isDefaultValue {
+      return parsedElement.value as? T
+    }
+    let subDecoder = SingleValueDecoder(userInfo: decoder.userInfo, underlying: decoder, codingPath: codingPath + [key], key: InputKey(key), parsedElement: parsedElement)
     do {
       return try type.init(from: subDecoder)
     } catch let error as ParserError {
