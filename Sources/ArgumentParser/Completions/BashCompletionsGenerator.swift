@@ -46,6 +46,7 @@ struct BashCompletionsGenerator {
       + subcommands.map { $0._commandName }
       // FIXME: These shouldn't be hard-coded, since they're overridable
       + ["-h", "--help"]
+      + ["--dump-help"]
     
     // Generate additional top-level completions — these are completion lists
     // or custom function-based word lists from positional arguments.
