@@ -69,6 +69,10 @@ internal struct DumpHelpInfoGenerator {
     self.optInfo = DumpHelpInfoGenerator.getOptionInfo(commandStack: commandStack)
   }
   
+  init(_ type: ParsableArguments.Type) {
+    self.init(commandStack: [type.asCommand])
+  }
+  
   
   static func getSubcommandNames(commandStack: [ParsableCommand.Type]) -> [CommandInfo]? {
     let superCommand = commandStack.first!
@@ -86,8 +90,7 @@ internal struct DumpHelpInfoGenerator {
       }
   }
   
-  static func getHelpInfo(commandStack: [ParsableCommand.Type]) -> [CommandInfo.ArgumentInfo] {
-    //var helpInfoArray: [HelpInfo.Info] = []
+  static func getHelpInfo(commandStack: [ParsableCommand.Type], isPositional: Bool) -> [CommandInfo.ArgumentInfo] {
     guard let commandType = commandStack.last else { return [] }
     let args = Array(ArgumentSet(commandType, creatingHelp: true))
     
@@ -124,13 +127,14 @@ internal struct DumpHelpInfoGenerator {
       
       let name:[String]? = arg.preferredNameForSynopsis?.synopsisString.split(separator: ",").compactMap { String($0) }
       
-      return CommandInfo.ArgumentInfo(name: name, abstract: description, discussion: arg.help.help?.discussion ?? "", isRequired: arg.isPositional, defaultValue: arg.help.defaultValue, valueName: arg.valueName)
+      guard arg.isPositional == isPositional else { return nil }
+      return CommandInfo.ArgumentInfo(name: name, abstract: description, discussion: arg.help.help?.discussion ?? "", isRequired: !arg.help.options.contains(.isOptional), defaultValue: arg.help.defaultValue, valueName: arg.valueName)
     }
   }
   
   static func getArgumentInfo(commandStack: [ParsableCommand.Type]) -> [CommandInfo.ArgumentInfo]? {
     var alreadySeenElements = Set<CommandInfo.ArgumentInfo>()
-    let helpInfo = DumpHelpInfoGenerator.getHelpInfo(commandStack: commandStack)
+    let helpInfo = DumpHelpInfoGenerator.getHelpInfo(commandStack: commandStack, isPositional: true)
     
     let helpInfoArray = helpInfo
       .filter { !alreadySeenElements.contains($0) }
@@ -138,13 +142,13 @@ internal struct DumpHelpInfoGenerator {
         alreadySeenElements.insert(info)
         return info
       }
-      .filter { $0.isRequired == true }
+
     return helpInfoArray.count > 0 ? helpInfoArray : nil
   }
   
   static func getOptionInfo(commandStack: [ParsableCommand.Type]) -> [CommandInfo.ArgumentInfo]? {
     var alreadySeenElements = Set<CommandInfo.ArgumentInfo>()
-    let helpInfo = DumpHelpInfoGenerator.getHelpInfo(commandStack: commandStack)
+    let helpInfo = DumpHelpInfoGenerator.getHelpInfo(commandStack: commandStack, isPositional: false)
     
     var helpInfoArray = helpInfo
       .filter { !alreadySeenElements.contains($0) }
@@ -152,7 +156,6 @@ internal struct DumpHelpInfoGenerator {
         alreadySeenElements.insert(info)
         return info
       }
-      .filter { $0.isRequired != true }
 
     if commandStack.contains(where: { !$0.configuration.version.isEmpty }) {
       helpInfoArray.append(CommandInfo.ArgumentInfo(name: ["--version"], abstract: "Show the version.", discussion: "",isRequired: false))
