@@ -49,6 +49,7 @@ extension HelpTests {
 
                 OPTIONS:
                   -h, --help              Show help information.
+                  --dump-help             Dump help information.
 
                 SUBCOMMANDS:
                   clean
@@ -68,6 +69,7 @@ extension HelpTests {
 
                 OPTIONS:
                   -h, --help              Show help information.
+                  --dump-help             Dump help information.
 
                 SUBCOMMANDS:
                   clean
@@ -96,6 +98,7 @@ extension HelpTests {
 
                 OPTIONS:
                   -h, --help              Show help information.
+                  --dump-help             Dump help information.
 
                 SUBCOMMANDS:
                   get-mirror
@@ -153,6 +156,7 @@ extension HelpTests {
                   --package-url <package-url>
                                           The package dependency URL
                   -h, --help              Show help information.
+                  --dump-help             Dump help information.
 
                 """.trimmingLines())
   }
@@ -173,6 +177,7 @@ struct Simple: ParsableArguments {
           --verbose
           --min <min>
           -h, --help              Show help information.
+          --dump-help             Dump help information.
 
         """.trimmingLines()
 }
@@ -232,6 +237,7 @@ extension HelpTests {
 
             OPTIONS:
               --count <count>         How many florps?
+              --dump-help             Dump help information.
 
             """)
   }

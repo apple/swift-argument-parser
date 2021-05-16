@@ -28,6 +28,7 @@ final class MathExampleTests: XCTestCase {
         OPTIONS:
           --version               Show the version.
           -h, --help              Show help information.
+          --dump-help             Dump help information.
 
         SUBCOMMANDS:
           add (default)           Print the sum of the values.
@@ -55,6 +56,7 @@ final class MathExampleTests: XCTestCase {
           -x, --hex-output        Use hexadecimal notation for the result.
           --version               Show the version.
           -h, --help              Show help information.
+          --dump-help             Dump help information.
         """
     
     AssertExecuteCommand(command: "math add -h", expected: helpText)
@@ -75,6 +77,7 @@ final class MathExampleTests: XCTestCase {
           --kind <kind>           The kind of average to provide. (default: mean)
           --version               Show the version.
           -h, --help              Show help information.
+          --dump-help             Dump help information.
         """
     
     AssertExecuteCommand(command: "math stats average -h", expected: helpText)
@@ -100,6 +103,7 @@ final class MathExampleTests: XCTestCase {
           --custom <custom>
           --version               Show the version.
           -h, --help              Show help information.
+          --dump-help             Dump help information.
         """
     
     // The "quantiles" subcommand's run() method is unimplemented, so it
