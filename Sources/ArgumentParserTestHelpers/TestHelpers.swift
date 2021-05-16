@@ -138,6 +138,24 @@ public func AssertHelp<T: ParsableCommand, U: ParsableCommand>(
     helpString, expected, file: file, line: line)
 }
 
+public func AssertDump<T: ParsableArguments>(
+  for _: T.Type, equals expected: String,
+  file: StaticString = #file, line: UInt = #line
+) {
+  do {
+    _ = try T.parse(["--dump-help"])
+    XCTFail(file: (file), line: line)
+  } catch {
+    let helpString = T.fullMessage(for: error)
+    AssertEqualStringsIgnoringTrailingWhitespace(
+      helpString, expected, file: file, line: line)
+  }
+  
+  let dumpString = T.dumpMessage()
+  AssertEqualStringsIgnoringTrailingWhitespace(
+    dumpString, expected, file: file, line: line)
+}
+
 extension XCTest {
   public var debugURL: URL {
     let bundleURL = Bundle(for: type(of: self)).bundleURL
