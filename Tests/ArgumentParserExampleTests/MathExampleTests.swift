@@ -236,7 +236,7 @@ _math() {
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
     COMPREPLY=()
-    opts="add multiply stats help -h --help"
+    opts="add multiply stats help -h --help --dump-help"
     if [[ $COMP_CWORD == "1" ]]; then
         COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
         return
@@ -262,7 +262,7 @@ _math() {
     COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
 }
 _math_add() {
-    opts="--hex-output -x -h --help"
+    opts="--hex-output -x -h --help --dump-help"
     if [[ $COMP_CWORD == "$1" ]]; then
         COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
         return
@@ -270,7 +270,7 @@ _math_add() {
     COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
 }
 _math_multiply() {
-    opts="--hex-output -x -h --help"
+    opts="--hex-output -x -h --help --dump-help"
     if [[ $COMP_CWORD == "$1" ]]; then
         COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
         return
@@ -278,7 +278,7 @@ _math_multiply() {
     COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
 }
 _math_stats() {
-    opts="average stdev quantiles -h --help"
+    opts="average stdev quantiles -h --help --dump-help"
     if [[ $COMP_CWORD == "$1" ]]; then
         COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
         return
@@ -300,7 +300,7 @@ _math_stats() {
     COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
 }
 _math_stats_average() {
-    opts="--kind -h --help"
+    opts="--kind -h --help --dump-help"
     if [[ $COMP_CWORD == "$1" ]]; then
         COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
         return
@@ -314,7 +314,7 @@ _math_stats_average() {
     COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
 }
 _math_stats_stdev() {
-    opts="-h --help"
+    opts="-h --help --dump-help"
     if [[ $COMP_CWORD == "$1" ]]; then
         COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
         return
@@ -322,7 +322,7 @@ _math_stats_stdev() {
     COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
 }
 _math_stats_quantiles() {
-    opts="--file --directory --shell --custom -h --help"
+    opts="--file --directory --shell --custom -h --help --dump-help"
     opts="$opts alphabet alligator branch braggart"
     opts="$opts $(math ---completion stats quantiles -- customArg "$COMP_WORDS")"
     if [[ $COMP_CWORD == "$1" ]]; then
@@ -350,7 +350,7 @@ _math_stats_quantiles() {
     COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
 }
 _math_help() {
-    opts="-h --help"
+    opts="-h --help --dump-help"
     if [[ $COMP_CWORD == "$1" ]]; then
         COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
         return
@@ -373,6 +373,7 @@ _math() {
     local -a args
     args+=(
         '(-h --help)'{-h,--help}'[Print help information.]'
+        '(--dump-help)'{--dump-help}'[Dump help information.]'
         '(-): :->command'
         '(-)*:: :->arg'
     )
@@ -416,6 +417,7 @@ _math_add() {
         '(--hex-output -x)'{--hex-output,-x}'[Use hexadecimal notation for the result.]'
         ':values:'
         '(-h --help)'{-h,--help}'[Print help information.]'
+        '(--dump-help)'{--dump-help}'[Dump help information.]'
     )
     _arguments -w -s -S $args[@] && ret=0
 
@@ -429,6 +431,7 @@ _math_multiply() {
         '(--hex-output -x)'{--hex-output,-x}'[Use hexadecimal notation for the result.]'
         ':values:'
         '(-h --help)'{-h,--help}'[Print help information.]'
+        '(--dump-help)'{--dump-help}'[Dump help information.]'
     )
     _arguments -w -s -S $args[@] && ret=0
 
@@ -440,6 +443,7 @@ _math_stats() {
     local -a args
     args+=(
         '(-h --help)'{-h,--help}'[Print help information.]'
+        '(--dump-help)'{--dump-help}'[Dump help information.]'
         '(-): :->command'
         '(-)*:: :->arg'
     )
@@ -479,6 +483,7 @@ _math_stats_average() {
         '--kind[The kind of average to provide.]:kind:(mean median mode)'
         ':values:'
         '(-h --help)'{-h,--help}'[Print help information.]'
+        '(--dump-help)'{--dump-help}'[Dump help information.]'
     )
     _arguments -w -s -S $args[@] && ret=0
 
@@ -491,6 +496,7 @@ _math_stats_stdev() {
     args+=(
         ':values:'
         '(-h --help)'{-h,--help}'[Print help information.]'
+        '(--dump-help)'{--dump-help}'[Dump help information.]'
     )
     _arguments -w -s -S $args[@] && ret=0
 
@@ -509,6 +515,7 @@ _math_stats_quantiles() {
         '--shell:shell:{local -a list; list=(${(f)"$(head -100 /usr/share/dict/words | tail -50)"}); _describe '''' list}'
         '--custom:custom:{_custom_completion $_math_commandname ---completion stats quantiles -- --custom $words}'
         '(-h --help)'{-h,--help}'[Print help information.]'
+        '(--dump-help)'{--dump-help}'[Dump help information.]'
     )
     _arguments -w -s -S $args[@] && ret=0
 
@@ -521,6 +528,7 @@ _math_help() {
     args+=(
         ':subcommands:'
         '(-h --help)'{-h,--help}'[Print help information.]'
+        '(--dump-help)'{--dump-help}'[Dump help information.]'
     )
     _arguments -w -s -S $args[@] && ret=0
 
