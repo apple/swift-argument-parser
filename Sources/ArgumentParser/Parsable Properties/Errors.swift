@@ -103,7 +103,6 @@ public struct CleanExit: Error, CustomStringConvertible {
   }
   
   /// Treat this error as a clean exit with the given message.
-
   public static func message(_ text: String) -> CleanExit {
     self.init(base: .message(text))
   }
@@ -118,6 +117,7 @@ public struct CleanExit: Error, CustomStringConvertible {
   public static func helpRequest(_ command: ParsableCommand) -> CleanExit {
     return .helpRequest(type(of: command))
   }
+
   public var description: String {
     switch self.base {
     case .helpRequest: return "--help"
