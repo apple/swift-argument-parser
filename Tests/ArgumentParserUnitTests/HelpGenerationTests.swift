@@ -485,7 +485,7 @@ extension HelpGenerationTests {
     OPTIONS:
       --bar-strength <bar-strength>
                               Bar Strength
-      -help, -h, --help       Show help information.
+      -h, -help, --help       Show help information.
       --dump-help             Dump help information.
     
     """)

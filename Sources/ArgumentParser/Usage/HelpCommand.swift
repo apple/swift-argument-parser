@@ -12,9 +12,15 @@
 struct HelpCommand: ParsableCommand {
   static var configuration = CommandConfiguration(
     commandName: "help",
-    abstract: "Show subcommand help information.")
+    abstract: "Show subcommand help information.",
+    helpNames: [])
   
+  /// Any subcommand names provided after the `help` subcommand.
   @Argument var subcommands: [String] = []
+  
+  /// Capture and ignore any extra help flags given by the user.
+  @Flag(name: [.short, .long, .customLong("help", withSingleDash: true)], help: .hidden)
+  var help = false
   
   private(set) var commandStack: [ParsableCommand.Type] = []
   
@@ -34,15 +40,18 @@ struct HelpCommand: ParsableCommand {
   
   enum CodingKeys: CodingKey {
     case subcommands
+    case help
   }
   
   init(from decoder: Decoder) throws {
     let container = try decoder.container(keyedBy: CodingKeys.self)
-    self._subcommands = Argument(_parsedValue: .value(try container.decode([String].self, forKey: .subcommands)))
+    self.subcommands = try container.decode([String].self, forKey: .subcommands)
+    self.help = try container.decode(Bool.self, forKey: .help)
   }
   
   init(commandStack: [ParsableCommand.Type]) {
     self.commandStack = commandStack
-    self._subcommands = Argument(_parsedValue: .value(commandStack.map { $0._commandName }))
+    self.subcommands = commandStack.map { $0._commandName }
+    self.help = false
   }
 }

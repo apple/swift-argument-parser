@@ -38,6 +38,14 @@ struct ArgumentSet {
   init(sets: [ArgumentSet]) {
     self.init(sets.joined())
   }
+  
+  mutating func append(_ arg: ArgumentDefinition) {
+    let newPosition = content.count
+    content.append(arg)
+    for name in arg.names where namePositions[name.nameToMatch] == nil {
+      namePositions[name.nameToMatch] = newPosition
+    }
+  }
 }
 
 extension ArgumentSet: CustomDebugStringConvertible {
@@ -48,9 +56,11 @@ extension ArgumentSet: CustomDebugStringConvertible {
   }
 }
 
-extension ArgumentSet: Sequence {
-  func makeIterator() -> Array<ArgumentDefinition>.Iterator {
-    return content.makeIterator()
+extension ArgumentSet: RandomAccessCollection {
+  var startIndex: Int { content.startIndex }
+  var endIndex: Int { content.endIndex }
+  subscript(position: Int) -> ArgumentDefinition {
+    content[position]
   }
 }
 
@@ -75,7 +85,7 @@ extension ArgumentSet {
   }
 
   static func updateFlag<Value: Equatable>(key: InputKey, value: Value, origin: InputOrigin, values: inout ParsedValues, hasUpdated: Bool, exclusivity: FlagExclusivity) throws -> Bool {
-    switch (hasUpdated, exclusivity) {
+    switch (hasUpdated, exclusivity.base) {
     case (true, .exclusive):
       // This value has already been set.
       if let previous = values.element(forKey: key) {
@@ -138,7 +148,7 @@ extension ArgumentSet {
 
 extension ArgumentSet {
   /// Create a unary / argument that parses the string as `A`.
-  init<A: ExpressibleByArgument>(key: InputKey, kind: ArgumentDefinition.Kind, parsingStrategy: ArgumentDefinition.ParsingStrategy = .nextAsValue, parseType type: A.Type, name: NameSpecification, default initial: A?, help: ArgumentHelp?, completion: CompletionKind) {
+  init<A: ExpressibleByArgument>(key: InputKey, kind: ArgumentDefinition.Kind, parsingStrategy: ArgumentDefinition.ParsingStrategy = .default, parseType type: A.Type, name: NameSpecification, default initial: A?, help: ArgumentHelp?, completion: CompletionKind) {
     var arg = ArgumentDefinition(key: key, kind: kind, parsingStrategy: parsingStrategy, parser: A.init(argument:), default: initial, completion: completion)
     arg.help.help = help
     arg.help.defaultValue = initial.map { "\($0.defaultValueDescription)" }
@@ -148,7 +158,16 @@ extension ArgumentSet {
 
 extension ArgumentDefinition {
   /// Create a unary / argument that parses using the given closure.
-  init<A>(key: InputKey, kind: ArgumentDefinition.Kind, parsingStrategy: ParsingStrategy = .nextAsValue, parser: @escaping (String) -> A?, parseType type: A.Type = A.self, default initial: A?, completion: CompletionKind) {    
+  init<A>(key: InputKey, kind: ArgumentDefinition.Kind, parsingStrategy: ParsingStrategy = .default, parser: @escaping (String) -> A?, parseType type: A.Type = A.self, default initial: A?, completion: CompletionKind) {
+    let initialValueCreator: (InputOrigin, inout ParsedValues) throws -> Void
+    if let initialValue = initial {
+      initialValueCreator = { origin, values in
+        values.set(initialValue, forKey: key, inputOrigin: origin)
+      }
+    } else {
+      initialValueCreator = { _, _ in }
+    }
+    
     self.init(kind: kind, help: ArgumentDefinition.Help(key: key), completion: completion, parsingStrategy: parsingStrategy, update: .unary({ (origin, name, value, values) in
       guard let v = parser(value) else {
         throw ParserError.unableToParseValue(origin, name, value, forKey: key)
@@ -197,7 +216,7 @@ extension ArgumentSet {
     ) throws {
       let origin = InputOrigin(elements: [originElement])
       switch argument.parsingStrategy {
-      case .nextAsValue:
+      case .default:
         // We need a value for this option.
         if let value = parsed.value {
           // This was `--foo=bar` style:
@@ -287,9 +306,6 @@ extension ArgumentSet {
         }
         
       case .upToNextOption:
-        // Reset initial value with the found source index
-        try argument.initial(origin, &result)
-        
         // Use an attached value if it exists...
         if let value = parsed.value {
           // This was `--foo=bar` style:

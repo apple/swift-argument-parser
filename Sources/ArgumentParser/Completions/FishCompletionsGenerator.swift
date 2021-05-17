@@ -55,7 +55,8 @@ struct FishCompletionsGenerator {
       return complete(ancestors: commandChain, suggestion: suggestion)
     }
 
-    let argumentCompletions = ArgumentSet(type)
+    let argumentCompletions = commands
+      .argumentsForHelp()
       .flatMap { $0.argumentSegments(commandChain) }
       .map { complete(ancestors: $0, suggestion: $1) }
 

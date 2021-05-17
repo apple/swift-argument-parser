@@ -44,8 +44,6 @@ struct BashCompletionsGenerator {
     // as all the subcommand names.
     let completionWords = generateArgumentWords(commands)
       + subcommands.map { $0._commandName }
-      // FIXME: These shouldn't be hard-coded, since they're overridable
-      + ["-h", "--help"]
       + ["--dump-help"]
     
     // Generate additional top-level completions — these are completion lists
@@ -125,8 +123,7 @@ struct BashCompletionsGenerator {
 
   /// Returns the option and flag names that can be top-level completions.
   fileprivate static func generateArgumentWords(_ commands: [ParsableCommand.Type]) -> [String] {
-    ArgumentSet(commands.last!)
-      .flatMap { $0.bashCompletionWords() }
+    commands.argumentsForHelp().flatMap { $0.bashCompletionWords() }
   }
 
   /// Returns additional top-level completions from positional arguments.

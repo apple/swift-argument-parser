@@ -140,87 +140,53 @@ internal struct HelpGenerator {
   }
 
   static func generateSections(commandStack: [ParsableCommand.Type]) -> [Section] {
+    guard !commandStack.isEmpty else { return [] }
+    
     var positionalElements: [Section.Element] = []
     var optionElements: [Section.Element] = []
-    /// Used to keep track of elements already seen from parent commands.
-    var alreadySeenElements = Set<Section.Element>()
+
+    /// Start with a full slice of the ArgumentSet so we can peel off one or
+    /// more elements at a time.
+    var args = commandStack.argumentsForHelp()[...]
     
-    guard let commandType = commandStack.last else {
-      return []
-    }
-    
-    let args = Array(ArgumentSet(commandType, creatingHelp: true))
-    
-    var i = 0
-    while i < args.count {
-      defer { i += 1 }
-      let arg = args[i]
-      
+    while let arg = args.popFirst() {
       guard arg.help.help?.shouldDisplay != false else { continue }
       
       let synopsis: String
       let description: String
       
-      if args[i].help.isComposite {
+      if arg.help.isComposite {
         // If this argument is composite, we have a group of arguments to
         // output together.
-        var groupedArgs = [arg]
+        let groupEnd = args.firstIndex(where: { $0.help.keys != arg.help.keys }) ?? args.endIndex
+        let groupedArgs = [arg] + args[..<groupEnd]
+        args = args[groupEnd...]
+        
+        synopsis = groupedArgs.compactMap { $0.synopsisForHelp }.joined(separator: "/")
+
         let defaultValue = arg.help.defaultValue.map { "(default: \($0))" } ?? ""
-        while i < args.count - 1 && args[i + 1].help.keys == arg.help.keys {
-          groupedArgs.append(args[i + 1])
-          i += 1
-        }
-
-        var synopsisString = ""
-        for arg in groupedArgs {
-          if !synopsisString.isEmpty { synopsisString.append("/") }
-          synopsisString.append("\(arg.synopsisForHelp ?? "")")
-        }
-        synopsis = synopsisString
-
-        var descriptionString: String?
-        for arg in groupedArgs {
-          if let desc = arg.help.help?.abstract {
-            descriptionString = desc
-            break
-          }
-        }
+        let descriptionString = groupedArgs.lazy.compactMap({ $0.help.help?.abstract }).first
         description = [descriptionString, defaultValue]
           .compactMap { $0 }
           .joined(separator: " ")
       } else {
-        let defaultValue = arg.help.defaultValue.flatMap { $0.isEmpty ? nil : "(default: \($0))" } ?? ""
         synopsis = arg.synopsisForHelp ?? ""
+
+        let defaultValue = arg.help.defaultValue.flatMap { $0.isEmpty ? nil : "(default: \($0))" }
         description = [arg.help.help?.abstract, defaultValue]
           .compactMap { $0 }
           .joined(separator: " ")
       }
       
       let element = Section.Element(label: synopsis, abstract: description, discussion: arg.help.help?.discussion ?? "")
-      if !alreadySeenElements.contains(element) {
-        alreadySeenElements.insert(element)
-        if case .positional = arg.kind {
-          positionalElements.append(element)
-        } else {
-          optionElements.append(element)
-        }
+      if case .positional = arg.kind {
+        positionalElements.append(element)
+      } else {
+        optionElements.append(element)
       }
     }
-    
-    if commandStack.contains(where: { !$0.configuration.version.isEmpty }) {
-      optionElements.append(.init(label: "--version", abstract: "Show the version."))
-    }
-
-    let helpLabels = commandStack
-      .getHelpNames()
-      .map { $0.synopsisString }
-      .joined(separator: ", ")
-    if !helpLabels.isEmpty {
-      optionElements.append(.init(label: helpLabels, abstract: "Show help information."))
-    }
-    
     optionElements.append(.init(label: "--dump-help", abstract: "Dump help information."))
-
+    
     let configuration = commandStack.last!.configuration
     let subcommandElements: [Section.Element] =
       configuration.subcommands.compactMap { command in
@@ -305,6 +271,38 @@ internal extension BidirectionalCollection where Element == ParsableCommand.Type
   func getPrimaryHelpName() -> Name? {
     let names = getHelpNames()
     return names.first(where: { !$0.isShort }) ?? names.first
+  }
+  
+  func versionArgumentDefintion() -> ArgumentDefinition? {
+    guard contains(where: { !$0.configuration.version.isEmpty })
+      else { return nil }
+    return ArgumentDefinition(
+      kind: .named([.long("version")]),
+      help: .init(help: "Show the version.", key: InputKey(rawValue: "")),
+      completion: .default,
+      update: .nullary({ _, _, _ in })
+    )
+  }
+  
+  func helpArgumentDefinition() -> ArgumentDefinition? {
+    let names = getHelpNames()
+    guard !names.isEmpty else { return nil }
+    return ArgumentDefinition(
+      kind: .named(names),
+      help: .init(help: "Show help information.", key: InputKey(rawValue: "")),
+      completion: .default,
+      update: .nullary({ _, _, _ in })
+    )
+  }
+  
+  /// Returns the ArgumentSet for the last command in this stack, including
+  /// help and version flags, when appropriate.
+  func argumentsForHelp() -> ArgumentSet {
+    guard var arguments = self.last.map({ ArgumentSet($0, creatingHelp: true) })
+      else { return ArgumentSet() }
+    self.versionArgumentDefintion().map { arguments.append($0) }
+    self.helpArgumentDefinition().map { arguments.append($0) }
+    return arguments
   }
 }
 
