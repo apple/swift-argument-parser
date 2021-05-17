@@ -107,11 +107,14 @@ public struct CleanExit: Error, CustomStringConvertible {
   public static func message(_ text: String) -> CleanExit {
     self.init(base: .message(text))
   }
-  
-//  public static func dumpHelpRequest(_ type: ParsableCommand.Type? = nil) -> CleanExit {
-//    return self.init(base: .dumpRequest(type))
-//  }
-  
+
+  /// Treat this error as a help request and display the full help message.
+  ///
+  /// You can use this case to simulate the user specifying one of the help
+  /// flags or subcommands.
+  ///
+  /// - Parameter command: A command to offer help for, if different from
+  ///   the root command.
   public static func helpRequest(_ command: ParsableCommand) -> CleanExit {
     return .helpRequest(type(of: command))
   }
