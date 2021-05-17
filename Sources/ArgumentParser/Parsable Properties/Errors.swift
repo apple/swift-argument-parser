@@ -106,7 +106,7 @@ public struct CleanExit: Error, CustomStringConvertible {
   public static func message(_ text: String) -> CleanExit {
     self.init(base: .message(text))
   }
-
+  
   /// Treat this error as a help request and display the full help message.
   ///
   /// You can use this case to simulate the user specifying one of the help
@@ -117,7 +117,7 @@ public struct CleanExit: Error, CustomStringConvertible {
   public static func helpRequest(_ command: ParsableCommand) -> CleanExit {
     return .helpRequest(type(of: command))
   }
-
+  
   public var description: String {
     switch self.base {
     case .helpRequest: return "--help"
