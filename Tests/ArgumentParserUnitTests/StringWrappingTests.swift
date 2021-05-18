@@ -164,4 +164,41 @@ extension StringWrappingTests {
                       }
             """)
   }
+  
+  func testIndent() {
+    XCTAssertEqual(
+      shortSample.wrapped(to: 40).indentingEachLine(by: 10),
+      shortSample.wrapped(to: 50, wrappingIndent: 10))
+    XCTAssertEqual(
+      longSample.wrapped(to: 40).indentingEachLine(by: 10),
+      longSample.wrapped(to: 50, wrappingIndent: 10))
+
+    XCTAssertEqual("".indentingEachLine(by: 10), "")
+    XCTAssertEqual("\n".indentingEachLine(by: 10), "\n")
+    XCTAssertEqual("a\n".indentingEachLine(by: 10), "          a\n")
+    XCTAssertEqual("\na\n".indentingEachLine(by: 10), "\n          a\n")
+    XCTAssertEqual("a\n\nb\n".indentingEachLine(by: 10),
+                   "          a\n\n          b\n")
+    XCTAssertEqual("\na\n\nb\n".indentingEachLine(by: 10),
+                   "\n          a\n\n          b\n")
+  }
+  
+  func testHangingIndent() {
+    XCTAssertEqual(
+      shortSample.wrapped(to: 40).hangingIndentingEachLine(by: 10),
+      String(shortSample.wrapped(to: 50, wrappingIndent: 10).dropFirst(10)))
+    XCTAssertEqual(
+      longSample.wrapped(to: 40).hangingIndentingEachLine(by: 10),
+      String(longSample.wrapped(to: 50, wrappingIndent: 10).dropFirst(10)))
+    
+    XCTAssertEqual("".hangingIndentingEachLine(by: 10), "")
+    XCTAssertEqual("\n".hangingIndentingEachLine(by: 10), "\n")
+    XCTAssertEqual("a\n".hangingIndentingEachLine(by: 10), "a\n")
+    XCTAssertEqual("\na\n".hangingIndentingEachLine(by: 10), "\n          a\n")
+    XCTAssertEqual("a\n\nb\n".hangingIndentingEachLine(by: 10),
+                   "a\n\n          b\n")
+    XCTAssertEqual("\na\n\nb\n".hangingIndentingEachLine(by: 10),
+                   "\n          a\n\n          b\n")
+
+  }
 }

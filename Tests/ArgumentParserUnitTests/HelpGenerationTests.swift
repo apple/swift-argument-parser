@@ -585,4 +585,54 @@ extension HelpGenerationTests {
 
       """)
   }
+
+  struct CustomUsageShort: ParsableCommand {
+    static var configuration: CommandConfiguration {
+      CommandConfiguration(usage: """
+        example [--verbose] <file-name>
+        """)
+    }
+    
+    @Argument var file: String
+    @Flag var verboseMode = false
+  }
+  
+  struct CustomUsageLong: ParsableCommand {
+    static var configuration: CommandConfiguration {
+      CommandConfiguration(usage: """
+        example <file-name>
+        example --verbose <file-name>
+        """)
+    }
+    
+    @Argument var file: String
+    @Flag var verboseMode = false
+  }
+
+  func testCustomUsage() {
+    XCTAssertEqual(CustomUsageShort.helpMessage(columns: 80), """
+      USAGE: example [--verbose] <file-name>
+
+      ARGUMENTS:
+        <file>
+
+      OPTIONS:
+        --verbose-mode
+        -h, --help              Show help information.
+      
+      """)
+    
+    XCTAssertEqual(CustomUsageLong.helpMessage(columns: 80), """
+      USAGE: example <file-name>
+             example --verbose <file-name>
+
+      ARGUMENTS:
+        <file>
+
+      OPTIONS:
+        --verbose-mode
+        -h, --help              Show help information.
+      
+      """)
+  }
 }

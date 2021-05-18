@@ -18,15 +18,6 @@ internal struct HelpGenerator {
   
   internal static var _screenWidthOverride: Int? = nil
   
-  struct Usage {
-    var components: [String]
-    
-    func rendered(screenWidth: Int) -> String {
-      components
-        .joined(separator: "\n")
-    }
-  }
-  
   struct Section {
     struct Element: Hashable {
       var label: String
@@ -98,7 +89,7 @@ internal struct HelpGenerator {
   
   var commandStack: [ParsableCommand.Type]
   var abstract: String
-  var usage: Usage
+  var usage: String
   var sections: [Section]
   var discussionSections: [DiscussionSection]
   
@@ -116,10 +107,13 @@ internal struct HelpGenerator {
       toolName = "\(superName) \(toolName)"
     }
 
-    var usageString = UsageGenerator(toolName: toolName, definition: [currentArgSet]).synopsis
-    if !currentCommand.configuration.subcommands.isEmpty {
-      if usageString.last != " " { usageString += " " }
-      usageString += "<subcommand>"
+    self.usage = currentCommand.configuration.usage
+    if self.usage.isEmpty {
+      self.usage = UsageGenerator(toolName: toolName, definition: [currentArgSet]).synopsis
+      if !currentCommand.configuration.subcommands.isEmpty {
+        if self.usage.last != " " { self.usage += " " }
+        self.usage += "<subcommand>"
+      }
     }
     
     self.abstract = currentCommand.configuration.abstract
@@ -130,7 +124,6 @@ internal struct HelpGenerator {
       self.abstract += "\n\(currentCommand.configuration.discussion)"
     }
     
-    self.usage = Usage(components: [usageString])
     self.sections = HelpGenerator.generateSections(commandStack: commandStack)
     self.discussionSections = []
   }
@@ -223,8 +216,7 @@ internal struct HelpGenerator {
   }
   
   func usageMessage(screenWidth: Int? = nil) -> String {
-    let screenWidth = screenWidth ?? HelpGenerator.systemScreenWidth
-    return "Usage: \(usage.rendered(screenWidth: screenWidth))"
+    return "Usage: \(usage.hangingIndentingEachLine(by: 7))"
   }
   
   var includesSubcommands: Bool {
@@ -259,7 +251,7 @@ internal struct HelpGenerator {
     
     return """
     \(renderedAbstract)\
-    USAGE: \(usage.rendered(screenWidth: screenWidth))
+    USAGE: \(usage.hangingIndentingEachLine(by: 7))
     
     \(renderedSections)\(helpSubcommandMessage)
     """
