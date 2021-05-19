@@ -68,9 +68,7 @@ extension ArgumentSet {
 
 extension ArgumentDefinition {
   var synopsisForHelp: String? {
-    guard help.help?.shouldDisplay != false else {
-      return nil
-    }
+    guard help.shouldDisplay else { return nil }
     
     switch kind {
     case .named:
@@ -110,9 +108,7 @@ extension ArgumentDefinition {
   }
   
   var synopsis: String? {
-    guard help.help?.shouldDisplay != false else {
-      return nil
-    }
+    guard help.shouldDisplay else { return nil }
     
     guard !help.options.contains(.isOptional) else {
       var n = self
@@ -382,7 +378,7 @@ extension ErrorMessageGenerator {
   }
   
   func unableToParseHelpMessage(origin: InputOrigin, name: Name?, value: String, key: InputKey, error: Error?) -> String {
-    guard let abstract = help(for: key)?.help?.abstract else { return "" }
+    guard let abstract = help(for: key)?.abstract else { return "" }
     
     let valueName = arguments(for: key).first?.valueName
     

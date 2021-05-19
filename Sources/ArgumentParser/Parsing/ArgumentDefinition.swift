@@ -39,8 +39,13 @@ struct ArgumentDefinition {
   
   struct Help {
     var options: Options
-    var help: ArgumentHelp?
-    var discussion: String?
+
+    // `ArgumentHelp` members
+    var abstract: String = ""
+    var discussion: String = ""
+    var valueName: String = ""
+    var shouldDisplay: Bool = true
+
     var defaultValue: String?
     var keys: [InputKey]
     var allValues: [String] = []
@@ -55,18 +60,26 @@ struct ArgumentDefinition {
     
     init(options: Options = [], help: ArgumentHelp? = nil, defaultValue: String? = nil, key: InputKey, isComposite: Bool = false) {
       self.options = options
-      self.help = help
       self.defaultValue = defaultValue
       self.keys = [key]
       self.isComposite = isComposite
+      updateArgumentHelp(help: help)
     }
     
     init<T: ExpressibleByArgument>(type: T.Type, options: Options = [], help: ArgumentHelp? = nil, defaultValue: String? = nil, key: InputKey) {
       self.options = options
-      self.help = help
+
       self.defaultValue = defaultValue
       self.keys = [key]
       self.allValues = type.allValueStrings
+      updateArgumentHelp(help: help)
+    }
+
+    mutating func updateArgumentHelp(help: ArgumentHelp?) {
+      self.abstract = help?.abstract ?? ""
+      self.discussion = help?.discussion ?? ""
+      self.valueName = help?.valueName ?? ""
+      self.shouldDisplay = help?.shouldDisplay ?? true
     }
   }
   
@@ -101,12 +114,13 @@ struct ArgumentDefinition {
   }
   
   var valueName: String {
-    return help.help?.valueName
-      ?? preferredNameForSynopsis?.valueString
-      ?? help.keys.first?.rawValue.convertedToSnakeCase(separator: "-")
-      ?? "value"
+    help.valueName.mapEmpty {
+      preferredNameForSynopsis?.valueString
+        ?? help.keys.first?.rawValue.convertedToSnakeCase(separator: "-")
+        ?? "value"
+    }
   }
-  
+
   init(
     kind: Kind,
     help: Help,

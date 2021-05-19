@@ -100,7 +100,7 @@ extension Name {
 
 extension ArgumentDefinition {
   fileprivate func argumentSegments(_ commandChain: [String]) -> [([String], String)] {
-    guard help.help?.shouldDisplay != false else { return [] }
+    guard help.shouldDisplay else { return [] }
 
     var results = [([String], String)]()
     var formattedFlags = [String]()
@@ -114,8 +114,8 @@ extension ArgumentDefinition {
       if !flags.isEmpty {
         // add these flags to suggestions
         var suggestion = "-f\(isNullary ? "" : " -r") \(flags.joined(separator: " "))"
-        if let abstract = help.help?.abstract, !abstract.isEmpty {
-          suggestion += " -d '\(abstract.fishEscape())'"
+        if !help.abstract.isEmpty {
+          suggestion += " -d '\(help.abstract.fishEscape())'"
         }
 
         results.append((commandChain, suggestion))

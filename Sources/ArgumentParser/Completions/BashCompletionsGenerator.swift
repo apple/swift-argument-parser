@@ -179,9 +179,9 @@ struct BashCompletionsGenerator {
 extension ArgumentDefinition {
   /// Returns the different completion names for this argument.
   fileprivate func bashCompletionWords() -> [String] {
-    return help.help?.shouldDisplay == false
-      ? []
-      : names.map { $0.synopsisString }
+    return help.shouldDisplay
+      ? names.map { $0.synopsisString }
+      : []
   }
 
   /// Returns the bash completions that can follow this argument's `--name`.

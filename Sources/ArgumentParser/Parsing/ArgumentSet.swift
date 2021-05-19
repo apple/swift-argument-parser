@@ -150,7 +150,7 @@ extension ArgumentSet {
   /// Create a unary / argument that parses the string as `A`.
   init<A: ExpressibleByArgument>(key: InputKey, kind: ArgumentDefinition.Kind, parsingStrategy: ArgumentDefinition.ParsingStrategy = .default, parseType type: A.Type, name: NameSpecification, default initial: A?, help: ArgumentHelp?, completion: CompletionKind) {
     var arg = ArgumentDefinition(key: key, kind: kind, parsingStrategy: parsingStrategy, parser: A.init(argument:), default: initial, completion: completion)
-    arg.help.help = help
+    arg.help.updateArgumentHelp(help: help)
     arg.help.defaultValue = initial.map { "\($0.defaultValueDescription)" }
     self.init(arg)
   }
