@@ -115,7 +115,7 @@ struct ArgumentDefinition {
   
   var valueName: String {
     help.valueName.mapEmpty {
-      preferredNameForSynopsis?.valueString
+      names.preferredName?.valueString
         ?? help.keys.first?.rawValue.convertedToSnakeCase(separator: "-")
         ?? "value"
     }
@@ -165,7 +165,6 @@ extension ArgumentDefinition: CustomDebugStringConvertible {
 extension ArgumentDefinition {
   var optional: ArgumentDefinition {
     var result = self
-    
     result.help.options.insert(.isOptional)
     return result
   }

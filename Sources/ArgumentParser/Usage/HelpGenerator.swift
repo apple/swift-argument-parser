@@ -161,10 +161,16 @@ internal struct HelpGenerator {
         let groupEnd = args.firstIndex(where: { $0.help.keys != arg.help.keys }) ?? args.endIndex
         let groupedArgs = [arg] + args[..<groupEnd]
         args = args[groupEnd...]
-        
-        synopsis = groupedArgs.compactMap { $0.synopsisForHelp }.joined(separator: "/")
 
-        let defaultValue = arg.help.defaultValue.map { "(default: \($0))" } ?? ""
+        synopsis = groupedArgs
+          .lazy
+          .filter { $0.help.shouldDisplay }
+          .map { $0.synopsisForHelp }
+          .joined(separator: "/")
+
+        let defaultValue = arg.help.defaultValue
+          .map { "(default: \($0))" } ?? ""
+
         let descriptionString = groupedArgs
           .lazy
           .map { $0.help.abstract }
@@ -176,7 +182,9 @@ internal struct HelpGenerator {
           .filter { !$0.isEmpty }
           .joined(separator: " ")
       } else {
-        synopsis = arg.synopsisForHelp ?? ""
+        synopsis = arg.help.shouldDisplay
+          ? arg.synopsisForHelp
+          : ""
 
         let defaultValue = arg.help.defaultValue.flatMap { $0.isEmpty ? nil : "(default: \($0))" }
         description = [arg.help.abstract, defaultValue]
@@ -276,8 +284,7 @@ internal extension BidirectionalCollection where Element == ParsableCommand.Type
   }
   
   func getPrimaryHelpName() -> Name? {
-    let names = getHelpNames()
-    return names.first(where: { !$0.isShort }) ?? names.first
+    getHelpNames().preferredName
   }
   
   func versionArgumentDefintion() -> ArgumentDefinition? {
