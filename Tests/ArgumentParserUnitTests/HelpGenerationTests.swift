@@ -558,6 +558,7 @@ extension HelpGenerationTests {
       OPTIONS:
         --example               example flag
         -h, --help              Show help information.
+        --dump-help             Dump help information.
 
       """)
   }
