@@ -524,3 +524,41 @@ extension HelpGenerationTests {
     )
   }
 }
+
+// MARK: - Issue #278 https://github.com/apple/swift-argument-parser/issues/278
+
+extension HelpGenerationTests {
+  private struct ParserBug: ParsableCommand {
+    static let configuration = CommandConfiguration(
+      commandName: "parserBug",
+      subcommands: [Sub.self])
+    
+    struct CommonOptions: ParsableCommand {
+      @Flag(help: "example flag")
+      var example: Bool = false
+    }
+
+    struct Sub: ParsableCommand {
+      @OptionGroup()
+      var commonOptions: CommonOptions
+      
+      @Argument(help: "Non-mandatory argument")
+      var argument: String?
+    }
+  }
+  
+  func testIssue278() {
+    print(ParserBug.helpMessage(for: ParserBug.Sub.self))
+    AssertHelp(for: ParserBug.Sub.self, root: ParserBug.self, equals: """
+      USAGE: parserBug sub [--example] [<argument>]
+
+      ARGUMENTS:
+        <argument>              Non-mandatory argument
+
+      OPTIONS:
+        --example               example flag
+        -h, --help              Show help information.
+
+      """)
+  }
+}
