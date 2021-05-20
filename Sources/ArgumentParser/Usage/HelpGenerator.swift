@@ -185,7 +185,6 @@ internal struct HelpGenerator {
         optionElements.append(element)
       }
     }
-    optionElements.append(.init(label: "--dump-help", abstract: "Dump help information."))
     
     let configuration = commandStack.last!.configuration
     let subcommandElements: [Section.Element] =
