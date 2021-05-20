@@ -338,6 +338,7 @@ extension Option {
       let help = ArgumentDefinition.Help(options: initial != nil ? .isOptional : [], help: help, key: key)
       var arg = ArgumentDefinition(kind: kind, help: help, completion: completion ?? .default, parsingStrategy: parsingStrategy.base, update: .unary({
         (origin, name, valueString, parsedValues) in
+        guard let valueString = valueString else { return } /* That's okay. Just skip nil value here */
         do {
           let transformedValue = try transform(valueString)
           parsedValues.set(transformedValue, forKey: key, inputOrigin: origin)
@@ -542,6 +543,7 @@ extension Option {
         completion: completion ?? .default,
         parsingStrategy: parsingStrategy.base,
         update: .unary({ (origin, name, valueString, parsedValues) in
+            guard let valueString = valueString else { return } /* That's okay. Just skip nil value here */
           do {
             let transformedElement = try transform(valueString)
             parsedValues.update(forKey: key, inputOrigin: origin, initial: [Element](), closure: {

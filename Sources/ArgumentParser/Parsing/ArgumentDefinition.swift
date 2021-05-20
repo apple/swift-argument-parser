@@ -14,7 +14,7 @@ struct ArgumentDefinition {
   /// argument's value.
   enum Update {
     typealias Nullary = (InputOrigin, Name?, inout ParsedValues) throws -> Void
-    typealias Unary = (InputOrigin, Name?, String, inout ParsedValues) throws -> Void
+    typealias Unary = (InputOrigin, Name?, String?, inout ParsedValues) throws -> Void
     
     /// An argument that gets its value solely from its presence.
     case nullary(Nullary)
@@ -202,9 +202,9 @@ extension ArgumentDefinition.Update {
       guard let v = A(argument: value) else {
         throw ParserError.unableToParseValue(origin, name, value, forKey: key)
       }
-      values.update(forKey: key, inputOrigin: origin, initial: [A](), closure: {
+      values.update(forKey: key, inputOrigin: origin, initial: [A]()) {
         $0.append(v)
-      })
+      }
     }
   }
 }
