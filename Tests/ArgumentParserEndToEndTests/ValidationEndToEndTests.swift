@@ -44,7 +44,6 @@ fileprivate struct Foo: ParsableArguments {
       --version
       --throw
       -h, --help              Show help information.
-      --dump-help             Dump help information.
     """
 
   @Option()

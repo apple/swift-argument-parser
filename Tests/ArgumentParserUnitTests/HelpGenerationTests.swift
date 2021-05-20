@@ -47,7 +47,6 @@ extension HelpGenerationTests {
               --name <name>           Your name
               --title <title>         Your title
               -h, --help              Show help information.
-              --dump-help             Dump help information.
 
             """)
   }
@@ -70,7 +69,6 @@ extension HelpGenerationTests {
               --name <name>           Your name
               --title <title>         Your title
               -h, --help              Show help information.
-              --dump-help             Dump help information.
 
             """)
   }
@@ -89,7 +87,6 @@ extension HelpGenerationTests {
               --name <name>           Your name.
                     Your name is used to greet you and say hello.
               -h, --help              Show help information.
-              --dump-help             Dump help information.
 
             """)
   }
@@ -115,7 +112,6 @@ extension HelpGenerationTests {
               --four <four>           A fourth option
               --five <five>           A fifth option
               -h, --help              Show help information.
-              --dump-help             Dump help information.
 
             """)
   }
@@ -179,7 +175,6 @@ extension HelpGenerationTests {
               --degree <degree>       Your degree. (default: bachelor)
               --directory <directory> Directory. (default: current directory)
               -h, --help              Show help information.
-              --dump-help             Dump help information.
 
             """)
   }
@@ -223,7 +218,6 @@ extension HelpGenerationTests {
                  -s, --stats/-c, --count/-l, --list
                                          Change the program output
                  -h, --help              Show help information.
-                 --dump-help             Dump help information.
 
                """)
 
@@ -233,7 +227,6 @@ extension HelpGenerationTests {
                OPTIONS:
                  -s/-c/-l                Change the program output (default: list)
                  -h, --help              Show help information.
-                 --dump-help             Dump help information.
 
                """)
 
@@ -243,7 +236,6 @@ extension HelpGenerationTests {
                OPTIONS:
                  --flag/--no-flag        Whether to flag (default: false)
                  -h, --help              Show help information.
-                 --dump-help             Dump help information.
 
                """)
   }
@@ -281,7 +273,6 @@ extension HelpGenerationTests {
 
     OPTIONS:
       -h, --help              Show help information.
-      --dump-help             Dump help information.
 
     SUBCOMMANDS:
       command-with-very-long-name
@@ -306,7 +297,6 @@ extension HelpGenerationTests {
       --some-option-with-very-long-name <some-option-with-very-long-name>
       --option <option>
       -h, --help              Show help information.
-      --dump-help             Dump help information.
 
     """)
   }
@@ -322,7 +312,6 @@ extension HelpGenerationTests {
     OPTIONS:
       --version               Show the version.
       -h, --help              Show help information.
-      --dump-help             Dump help information.
 
     """)
 
@@ -342,7 +331,6 @@ extension HelpGenerationTests {
 
     OPTIONS:
       -h, --help              Show help information.
-      --dump-help             Dump help information.
 
     """)
   }
@@ -367,7 +355,6 @@ extension HelpGenerationTests {
 
     OPTIONS:
       -h, --help              Show help information.
-      --dump-help             Dump help information.
 
     """)
   }
@@ -387,7 +374,6 @@ extension HelpGenerationTests {
       -t, -x, -y, --remote, --when, --time, -other, --there <remote>
                               Help Message
       -h, --help              Show help information.
-      --dump-help             Dump help information.
 
     """)
   }
@@ -404,7 +390,6 @@ extension HelpGenerationTests {
 
     OPTIONS:
       -h, --help              Show help information.
-      --dump-help             Dump help information.
 
     SUBCOMMANDS:
       m (default)
@@ -443,7 +428,6 @@ extension HelpGenerationTests {
     OPTIONS:
       -o <o>                  Help Message (default: small, medium)
       -h, --help              Show help information.
-      --dump-help             Dump help information.
 
     """)
   }
@@ -486,7 +470,6 @@ extension HelpGenerationTests {
       --bar-strength <bar-strength>
                               Bar Strength
       -h, -help, --help       Show help information.
-      --dump-help             Dump help information.
     
     """)
   }
@@ -518,7 +501,6 @@ extension HelpGenerationTests {
         OPTIONS:
           --timeout <timeout>     Time to wait before timeout (in seconds)
           -h, --help              Show help information.
-          --dump-help             Dump help information.
         
         """
     )
@@ -558,7 +540,6 @@ extension HelpGenerationTests {
       OPTIONS:
         --example               example flag
         -h, --help              Show help information.
-        --dump-help             Dump help information.
 
       """)
   }

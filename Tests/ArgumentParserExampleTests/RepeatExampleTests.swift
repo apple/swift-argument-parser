@@ -36,7 +36,6 @@ final class RepeatExampleTests: XCTestCase {
           --count <count>         The number of times to repeat 'phrase'.
           --include-counter       Include a counter with each repetition.
           -h, --help              Show help information.
-          --dump-help             Dump help information.
         """
     
     AssertExecuteCommand(command: "repeat -h", expected: helpText)
@@ -58,7 +57,6 @@ final class RepeatExampleTests: XCTestCase {
               --count <count>         The number of times to repeat 'phrase'.
               --include-counter       Include a counter with each repetition.
               -h, --help              Show help information.
-              --dump-help             Dump help information.
             """,
       exitCode: .validationFailure)
 

@@ -76,7 +76,6 @@ extension SubcommandEndToEndTests {
             OPTIONS:
               --name <name>
               -h, --help              Show help information.
-              --dump-help             Dump help information.
 
             SUBCOMMANDS:
               a
@@ -91,7 +90,6 @@ extension SubcommandEndToEndTests {
               --name <name>
               --bar <bar>
               -h, --help              Show help information.
-              --dump-help             Dump help information.
 
             """, helpA)
     AssertEqualStringsIgnoringTrailingWhitespace("""
@@ -101,7 +99,6 @@ extension SubcommandEndToEndTests {
               --name <name>
               --baz <baz>
               -h, --help              Show help information.
-              --dump-help             Dump help information.
 
             """, helpB)
   }

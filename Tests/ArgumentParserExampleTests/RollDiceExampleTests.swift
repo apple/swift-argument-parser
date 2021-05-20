@@ -29,7 +29,6 @@ final class RollDiceExampleTests: XCTestCase {
           --seed <seed>           A seed to use for repeatable random generation.
           -v, --verbose           Show all roll results.
           -h, --help              Show help information.
-          --dump-help             Dump help information.
         """
     
     AssertExecuteCommand(command: "roll -h", expected: helpText)
