@@ -10,51 +10,52 @@
 //===----------------------------------------------------------------------===//
 @_implementationOnly import Foundation
 
-internal struct DumpHelpInfoGenerator {
-  struct CommandInfo: Codable {
-    internal init(command: DumpHelpInfoGenerator.CommandInfo.ArgumentInfo, subcommands: [DumpHelpInfoGenerator.CommandInfo]?, arguments: [DumpHelpInfoGenerator.CommandInfo.ArgumentInfo]?, options: [DumpHelpInfoGenerator.CommandInfo.ArgumentInfo]?) {
-      self.command = command
-      self.subcommands = subcommands
-      self.arguments = arguments
-      self.options = options
-    }
-    
-    struct ArgumentInfo: Codable, Hashable {
-      internal init(name: [String]? = nil, abstract: String, discussion: String, isRequired: Bool? = nil, defaultValue: String? = nil, valueName: String? = nil, isDefault: Bool? = nil) {
-        self.name = name
-        self.abstract = abstract
-        self.discussion = discussion
-        self.isRequired = isRequired
-        self.defaultValue = defaultValue
-        self.valueName = valueName
-        self.isDefault = isDefault
-      }
-      
-      // Only for options and commands
-      var name: [String]?
-      
-      // Shared properties
-      var abstract: String
-      var discussion: String
-      
-      // Used only for arguments and options
-      var isRequired: Bool?
-      var defaultValue: String?
-      var valueName: String?
-      
-      // Used only for subcommands
-      var isDefault: Bool?
-    }
-    
-    var command: ArgumentInfo
-    var subcommands: [CommandInfo]?
-    var arguments: [ArgumentInfo]?
-    var options: [ArgumentInfo]?
+struct CommandInfo: Codable {
+  internal init(command: ArgumentInfo, subcommands: [CommandInfo]? = nil, arguments: [ArgumentInfo]? = nil, options: [ArgumentInfo]? = nil) {
+    self.command = command
+    self.subcommands = subcommands
+    self.arguments = arguments
+    self.options = options
   }
-  var commandInfo: CommandInfo.ArgumentInfo
+  
+  var command: ArgumentInfo
+  var subcommands: [CommandInfo]?
+  var arguments: [ArgumentInfo]?
+  var options: [ArgumentInfo]?
+}
+
+struct ArgumentInfo: Codable, Hashable {
+  internal init(name: [String]? = nil, abstract: String, discussion: String, isRequired: Bool? = nil, defaultValue: String? = nil, valueName: String? = nil, isDefault: Bool? = nil) {
+    self.name = name
+    self.abstract = abstract
+    self.discussion = discussion
+    self.isRequired = isRequired
+    self.defaultValue = defaultValue
+    self.valueName = valueName
+    self.isDefault = isDefault
+  }
+  
+  // Only for options and commands
+  var name: [String]?
+  
+  // Shared properties
+  var abstract: String
+  var discussion: String
+  
+  // Used only for arguments and options
+  var isRequired: Bool?
+  var defaultValue: String?
+  var valueName: String?
+  
+  // Used only for subcommands
+  var isDefault: Bool?
+}
+
+internal struct DumpHelpInfoGenerator {
+  var commandInfo: ArgumentInfo
   var subcommandsInfo: [CommandInfo]?
-  var argInfo: [CommandInfo.ArgumentInfo]?
-  var optInfo: [CommandInfo.ArgumentInfo]?
+  var argInfo: [ArgumentInfo]?
+  var optInfo: [ArgumentInfo]?
   
   init(commandStack: [ParsableCommand.Type]) {
     var toolName = commandStack.map { $0._commandName }.joined(separator: " ")
@@ -63,7 +64,7 @@ internal struct DumpHelpInfoGenerator {
     }
     let toolAbstract = commandStack.last!.configuration.abstract
     let toolDiscussion = commandStack.last!.configuration.discussion
-    self.commandInfo = CommandInfo.ArgumentInfo(name: [toolName], abstract: toolAbstract, discussion: toolDiscussion)
+    self.commandInfo = ArgumentInfo(name: [toolName], abstract: toolAbstract, discussion: toolDiscussion)
     self.subcommandsInfo = DumpHelpInfoGenerator.getSubcommandNames(commandStack: commandStack)
     self.argInfo = DumpHelpInfoGenerator.getArgumentInfo(commandStack: commandStack)
     self.optInfo = DumpHelpInfoGenerator.getOptionInfo(commandStack: commandStack)
@@ -83,14 +84,14 @@ internal struct DumpHelpInfoGenerator {
     guard !subcommandsToShow.isEmpty else { return nil }
     
     return subcommandsToShow
-      .compactMap { CommandInfo(command: CommandInfo.ArgumentInfo(name: [$0._commandName], abstract: $0.configuration.abstract, discussion:$0.configuration.discussion, isDefault: $0 == defaultSubcommand),
-                             subcommands: getSubcommandNames(commandStack: [superCommand, $0]),
-                             arguments: getArgumentInfo(commandStack: [superCommand, $0]),
-                             options: getOptionInfo(commandStack: [superCommand, $0]))
+      .compactMap { CommandInfo(command: ArgumentInfo(name: [$0._commandName], abstract: $0.configuration.abstract, discussion:$0.configuration.discussion, isDefault: $0 == defaultSubcommand),
+                                subcommands: getSubcommandNames(commandStack: [superCommand, $0]),
+                                arguments: getArgumentInfo(commandStack: [superCommand, $0]),
+                                options: getOptionInfo(commandStack: [superCommand, $0]))
       }
   }
   
-  static func getHelpInfo(commandStack: [ParsableCommand.Type], isPositional: Bool) -> [CommandInfo.ArgumentInfo] {
+  static func getHelpInfo(commandStack: [ParsableCommand.Type], isPositional: Bool) -> [ArgumentInfo] {
     guard let commandType = commandStack.last else { return [] }
     let args = Array(ArgumentSet(commandType, creatingHelp: true))
     
@@ -128,50 +129,50 @@ internal struct DumpHelpInfoGenerator {
       let name:[String]? = arg.preferredNameForSynopsis?.synopsisString.split(separator: ",").compactMap { String($0) }
       
       guard arg.isPositional == isPositional else { return nil }
-      return CommandInfo.ArgumentInfo(name: name, abstract: description, discussion: arg.help.help?.discussion ?? "", isRequired: !arg.help.options.contains(.isOptional), defaultValue: arg.help.defaultValue, valueName: arg.valueName)
+      return ArgumentInfo(name: name, abstract: description, discussion: arg.help.help?.discussion ?? "", isRequired: !arg.help.options.contains(.isOptional), defaultValue: arg.help.defaultValue, valueName: arg.valueName)
     }
   }
   
-  static func getArgumentInfo(commandStack: [ParsableCommand.Type]) -> [CommandInfo.ArgumentInfo]? {
-    var alreadySeenElements = Set<CommandInfo.ArgumentInfo>()
+  static func getArgumentInfo(commandStack: [ParsableCommand.Type]) -> [ArgumentInfo]? {
+    var alreadySeenElements = Set<ArgumentInfo>()
     let helpInfo = DumpHelpInfoGenerator.getHelpInfo(commandStack: commandStack, isPositional: true)
     
     let helpInfoArray = helpInfo
       .filter { !alreadySeenElements.contains($0) }
-      .map { (info) -> CommandInfo.ArgumentInfo in
+      .map { (info) -> ArgumentInfo in
         alreadySeenElements.insert(info)
         return info
       }
-
+    
     return helpInfoArray.count > 0 ? helpInfoArray : nil
   }
   
-  static func getOptionInfo(commandStack: [ParsableCommand.Type]) -> [CommandInfo.ArgumentInfo]? {
-    var alreadySeenElements = Set<CommandInfo.ArgumentInfo>()
+  static func getOptionInfo(commandStack: [ParsableCommand.Type]) -> [ArgumentInfo]? {
+    var alreadySeenElements = Set<ArgumentInfo>()
     let helpInfo = DumpHelpInfoGenerator.getHelpInfo(commandStack: commandStack, isPositional: false)
     
     var helpInfoArray = helpInfo
       .filter { !alreadySeenElements.contains($0) }
-      .map { (info) -> CommandInfo.ArgumentInfo in
+      .map { (info) -> ArgumentInfo in
         alreadySeenElements.insert(info)
         return info
       }
-
+    
     if commandStack.contains(where: { !$0.configuration.version.isEmpty }) {
-      helpInfoArray.append(CommandInfo.ArgumentInfo(name: ["--version"], abstract: "Show the version.", discussion: "",isRequired: false))
+      helpInfoArray.append(ArgumentInfo(name: ["--version"], abstract: "Show the version.", discussion: "",isRequired: false))
     }
     
     let helpLabels = commandStack
       .getHelpNames()
       .map { $0.synopsisString }
-
+    
     if !helpLabels.isEmpty {
-      helpInfoArray.append(CommandInfo.ArgumentInfo(name: helpLabels, abstract: "Show help information.", discussion: "",isRequired: false))
+      helpInfoArray.append(ArgumentInfo(name: helpLabels, abstract: "Show help information.", discussion: "",isRequired: false))
     }
-
+    
     return helpInfoArray.count > 0 ? helpInfoArray : nil
   }
-
+  
   func generateHelpInfo() -> CommandInfo {
     return CommandInfo(command: self.commandInfo, subcommands: self.subcommandsInfo, arguments:self.argInfo, options: self.optInfo)
   }
