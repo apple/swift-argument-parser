@@ -216,6 +216,10 @@ extension ArgumentSet {
       _ usedOrigins: inout InputOrigin
     ) throws {
       let origin = InputOrigin(elements: [originElement])
+
+      // We always need to create an empty array if the argument is presented.
+      try update(origin, parsed.name, nil, &result)
+
       switch argument.parsingStrategy {
       case .default:
         // We need a value for this option.

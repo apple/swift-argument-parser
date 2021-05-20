@@ -199,6 +199,9 @@ extension ArgumentDefinition.Update {
   static func appendToArray<A: ExpressibleByArgument>(forType type: A.Type, key: InputKey) -> ArgumentDefinition.Update {
     return ArgumentDefinition.Update.unary {
       (origin, name, value, values) in
+      // First of all we need to create empty array.
+      values.update(forKey: key, inputOrigin: origin, initial: [A]()) { _ in }
+      guard let value = value else { return } /* That's okay. Just skip nil value here */
       guard let v = A(argument: value) else {
         throw ParserError.unableToParseValue(origin, name, value, forKey: key)
       }
