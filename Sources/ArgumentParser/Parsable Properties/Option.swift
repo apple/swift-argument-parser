@@ -457,6 +457,45 @@ extension Option {
     })
   }
 
+  /// Creates an array property with an optional value, intended to be called by other constructors to centralize logic.
+  ///
+  /// This private `init` allows us to expose multiple other similar constructors to allow for standard default property initialization while reducing code duplication.
+  private init<Element>(
+    initial: [Element]?,
+    name: NameSpecification,
+    parsingStrategy: ArrayParsingStrategy,
+    help: ArgumentHelp?,
+    completion: CompletionKind?
+  ) where Element: ExpressibleByArgument, Value == Array<Element>? {
+    self.init(_parsedValue: .init { key in
+      // Assign the initial-value setter and help text for default value based on if an initial value was provided.
+      let setInitialValue: ArgumentDefinition.Initial
+      let helpDefaultValue: String?
+      if let initial = initial {
+        setInitialValue = { origin, values in
+          values.set(initial, forKey: key, inputOrigin: origin)
+        }
+        helpDefaultValue = !initial.isEmpty ? initial.defaultValueDescription : nil
+      } else {
+        setInitialValue = { _, _ in }
+        helpDefaultValue = nil
+      }
+
+      let kind = ArgumentDefinition.Kind.name(key: key, specification: name)
+      let help = ArgumentDefinition.Help(options: [.isOptional, .isRepeating], help: help, key: key)
+      var arg = ArgumentDefinition(
+        kind: kind,
+        help: help,
+        completion: completion ?? Element.defaultCompletionKind,
+        parsingStrategy: parsingStrategy.base,
+        update: .appendToArray(forType: Element.self, key: key),
+        initial: setInitialValue
+      )
+      arg.help.defaultValue = helpDefaultValue
+      return ArgumentSet(arg)
+    })
+  }
+
   /// Creates an array property that reads its values from zero or more
   /// labeled options.
   ///
@@ -509,6 +548,29 @@ extension Option {
     )
   }
 
+  /// Creates an optional array property that reads its values from zero or more
+  /// labeled options.
+  ///
+  /// - Parameters:
+  ///   - name: A specification for what names are allowed for this flag.
+  ///   - initial: A default value to use for this property.
+  ///   - parsingStrategy: The behavior to use when parsing multiple values
+  ///     from the command-line arguments.
+  ///   - help: Information about how to use this option.
+  public init<Element>(
+    name: NameSpecification = .long,
+    parsing parsingStrategy: ArrayParsingStrategy = .singleValue,
+    help: ArgumentHelp? = nil,
+    completion: CompletionKind? = nil
+  ) where Element: ExpressibleByArgument, Value == Array<Element>? {
+    self.init(
+      initial: nil,
+      name: name,
+      parsingStrategy: parsingStrategy,
+      help: help,
+      completion: completion
+    )
+  }
 
   /// Creates an array property with an optional default value, intended to be called by other constructors to centralize logic.
   ///
