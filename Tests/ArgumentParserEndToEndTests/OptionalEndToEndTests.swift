@@ -24,6 +24,7 @@ fileprivate struct Foo: ParsableArguments {
   }
   @Option() var name: Name?
   @Option() var max: Int?
+  @Option(parsing: .upToNextOption) var array: [String]?
 }
 
 extension OptionalEndToEndTests {
@@ -31,6 +32,7 @@ extension OptionalEndToEndTests {
     AssertParse(Foo.self, []) { foo in
       XCTAssertNil(foo.name)
       XCTAssertNil(foo.max)
+      XCTAssertNil(foo.array)
     }
     
     AssertParse(Foo.self, ["--name", "A"]) { foo in
@@ -46,6 +48,14 @@ extension OptionalEndToEndTests {
     AssertParse(Foo.self, ["--max", "3", "--name", "A"]) { foo in
       XCTAssertEqual(foo.name?.rawValue, "A")
       XCTAssertEqual(foo.max, 3)
+    }
+
+    AssertParse(Foo.self, ["--array"]) { foo in
+      XCTAssertEqual(foo.array, [])
+    }
+
+    AssertParse(Foo.self, ["--array", "a", "b", "c"]) { foo in
+      XCTAssertEqual(foo.array, ["a", "b", "c"])
     }
   }
 }
