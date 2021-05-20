@@ -216,8 +216,6 @@ extension RepeatingEndToEndTests {
     XCTAssertThrowsError(try Qux.parse(["--names", "one", "--other"]))
     XCTAssertThrowsError(try Qux.parse(["--names", "one", "two", "--other"]))
     XCTAssertThrowsError(try Qux.parse(["--names", "--other"]))
-    XCTAssertThrowsError(try Qux.parse(["--names", "--verbose"]))
-    XCTAssertThrowsError(try Qux.parse(["--names", "--verbose", "three"]))
   }
 }
 
