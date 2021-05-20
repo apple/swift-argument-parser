@@ -11,17 +11,23 @@
 @_implementationOnly import Foundation
 
 struct CommandInfo: Codable {
-  internal init(command: ArgumentInfo, subcommands: [CommandInfo]? = nil, arguments: [ArgumentInfo]? = nil, options: [ArgumentInfo]? = nil) {
-    self.command = command
+  internal init(name: [String]? = nil, abstract: String, discussion: String, isDefault: Bool? = nil, subcommands: [CommandInfo]? = nil, arguments: [ArgumentInfo]? = nil, options: [ArgumentInfo]? = nil) {
+    self.name = name
+    self.abstract = abstract
+    self.discussion = discussion
+    self.isDefault = isDefault
     self.subcommands = subcommands
     self.arguments = arguments
     self.options = options
   }
-  
-  var command: ArgumentInfo
+
+  var name: [String]?
+  var abstract: String
+  var discussion: String
   var subcommands: [CommandInfo]?
   var arguments: [ArgumentInfo]?
   var options: [ArgumentInfo]?
+  var isDefault: Bool?
 }
 
 struct ArgumentInfo: Codable, Hashable {
@@ -52,10 +58,7 @@ struct ArgumentInfo: Codable, Hashable {
 }
 
 internal struct DumpHelpInfoGenerator {
-  var commandInfo: ArgumentInfo
-  var subcommandsInfo: [CommandInfo]?
-  var argInfo: [ArgumentInfo]?
-  var optInfo: [ArgumentInfo]?
+  var commandInfo: CommandInfo
   
   init(commandStack: [ParsableCommand.Type]) {
     var toolName = commandStack.map { $0._commandName }.joined(separator: " ")
@@ -64,10 +67,10 @@ internal struct DumpHelpInfoGenerator {
     }
     let toolAbstract = commandStack.last!.configuration.abstract
     let toolDiscussion = commandStack.last!.configuration.discussion
-    self.commandInfo = ArgumentInfo(name: [toolName], abstract: toolAbstract, discussion: toolDiscussion)
-    self.subcommandsInfo = DumpHelpInfoGenerator.getSubcommandNames(commandStack: commandStack)
-    self.argInfo = DumpHelpInfoGenerator.getArgumentInfo(commandStack: commandStack)
-    self.optInfo = DumpHelpInfoGenerator.getOptionInfo(commandStack: commandStack)
+    self.commandInfo = CommandInfo(name: [toolName], abstract: toolAbstract, discussion: toolDiscussion,
+                                   subcommands: DumpHelpInfoGenerator.getSubcommandNames(commandStack: commandStack),
+                                   arguments: DumpHelpInfoGenerator.getArgumentInfo(commandStack: commandStack),
+                                   options: DumpHelpInfoGenerator.getOptionInfo(commandStack: commandStack))
   }
   
   init(_ type: ParsableArguments.Type) {
@@ -84,10 +87,9 @@ internal struct DumpHelpInfoGenerator {
     guard !subcommandsToShow.isEmpty else { return nil }
     
     return subcommandsToShow
-      .compactMap { CommandInfo(command: ArgumentInfo(name: [$0._commandName], abstract: $0.configuration.abstract, discussion:$0.configuration.discussion, isDefault: $0 == defaultSubcommand),
-                                subcommands: getSubcommandNames(commandStack: [superCommand, $0]),
-                                arguments: getArgumentInfo(commandStack: [superCommand, $0]),
-                                options: getOptionInfo(commandStack: [superCommand, $0]))
+      .compactMap { CommandInfo(name: [$0._commandName], abstract: $0.configuration.abstract, discussion: $0.configuration.discussion,
+                                isDefault: $0 == defaultSubcommand, subcommands: getSubcommandNames(commandStack: [superCommand, $0]),
+                                arguments: getArgumentInfo(commandStack: [superCommand, $0]),options: getOptionInfo(commandStack: [superCommand, $0]))
       }
   }
   
@@ -173,15 +175,11 @@ internal struct DumpHelpInfoGenerator {
     return helpInfoArray.count > 0 ? helpInfoArray : nil
   }
   
-  func generateHelpInfo() -> CommandInfo {
-    return CommandInfo(command: self.commandInfo, subcommands: self.subcommandsInfo, arguments:self.argInfo, options: self.optInfo)
-  }
-  
   func rendered() -> String {
     let encoder = JSONEncoder()
     encoder.outputFormatting = .prettyPrinted
     
-    guard let encoded = try? encoder.encode(generateHelpInfo()) else { return "" }
+    guard let encoded = try? encoder.encode(self.commandInfo) else { return "" }
     return String(data: encoded, encoding: .utf8) ?? ""
   }
 }
