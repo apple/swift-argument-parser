@@ -11,34 +11,27 @@
 @_implementationOnly import Foundation
 
 struct CommandInfo: Codable {
-  internal init(name: [String]? = nil, abstract: String, discussion: String, isDefault: Bool? = nil, subcommands: [CommandInfo]? = nil, arguments: [ArgumentInfo]? = nil, options: [ArgumentInfo]? = nil) {
+  internal init(name: [String]? = nil, abstract: String, discussion: String, isDefault: Bool? = nil) {
     self.name = name
     self.abstract = abstract
     self.discussion = discussion
     self.isDefault = isDefault
-    self.subcommands = subcommands
-    self.arguments = arguments
-    self.options = options
   }
 
   var name: [String]?
   var abstract: String
   var discussion: String
-  var subcommands: [CommandInfo]?
-  var arguments: [ArgumentInfo]?
-  var options: [ArgumentInfo]?
   var isDefault: Bool?
 }
 
 struct ArgumentInfo: Codable, Hashable {
-  internal init(name: [String]? = nil, abstract: String, discussion: String, isRequired: Bool? = nil, defaultValue: String? = nil, valueName: String? = nil, isDefault: Bool? = nil) {
+  internal init(name: [String]? = nil, abstract: String, discussion: String, isRequired: Bool? = nil, defaultValue: String? = nil, valueName: String? = nil) {
     self.name = name
     self.abstract = abstract
     self.discussion = discussion
     self.isRequired = isRequired
     self.defaultValue = defaultValue
     self.valueName = valueName
-    self.isDefault = isDefault
   }
   
   // Only for options and commands
@@ -52,13 +45,23 @@ struct ArgumentInfo: Codable, Hashable {
   var isRequired: Bool?
   var defaultValue: String?
   var valueName: String?
-  
-  // Used only for subcommands
-  var isDefault: Bool?
 }
 
 internal struct DumpHelpInfoGenerator {
-  var commandInfo: CommandInfo
+  struct HelpInfo: Codable {
+    internal init(command: CommandInfo, subcommands: [HelpInfo]? = nil, arguments: [ArgumentInfo]? = nil, options: [ArgumentInfo]? = nil) {
+      self.command = command
+      self.subcommands = subcommands
+      self.arguments = arguments
+      self.options = options
+    }
+    
+    var command : CommandInfo
+    var subcommands: [HelpInfo]?
+    var arguments: [ArgumentInfo]?
+    var options: [ArgumentInfo]?
+  }
+  var helpInfo: HelpInfo
   
   init(commandStack: [ParsableCommand.Type]) {
     var toolName = commandStack.map { $0._commandName }.joined(separator: " ")
@@ -67,10 +70,10 @@ internal struct DumpHelpInfoGenerator {
     }
     let toolAbstract = commandStack.last!.configuration.abstract
     let toolDiscussion = commandStack.last!.configuration.discussion
-    self.commandInfo = CommandInfo(name: [toolName], abstract: toolAbstract, discussion: toolDiscussion,
-                                   subcommands: DumpHelpInfoGenerator.getSubcommandNames(commandStack: commandStack),
-                                   arguments: DumpHelpInfoGenerator.getArgumentInfo(commandStack: commandStack),
-                                   options: DumpHelpInfoGenerator.getOptionInfo(commandStack: commandStack))
+    self.helpInfo = HelpInfo(command: CommandInfo(name: [toolName], abstract: toolAbstract, discussion: toolDiscussion),
+                             subcommands: DumpHelpInfoGenerator.getSubcommandNames(commandStack: commandStack),
+                             arguments: DumpHelpInfoGenerator.getArgumentInfo(commandStack: commandStack),
+                             options: DumpHelpInfoGenerator.getOptionInfo(commandStack: commandStack))
   }
   
   init(_ type: ParsableArguments.Type) {
@@ -78,7 +81,7 @@ internal struct DumpHelpInfoGenerator {
   }
   
   
-  static func getSubcommandNames(commandStack: [ParsableCommand.Type]) -> [CommandInfo]? {
+  static func getSubcommandNames(commandStack: [ParsableCommand.Type]) -> [HelpInfo]? {
     let superCommand = commandStack.first!
     let defaultSubcommand = commandStack.last!.configuration.defaultSubcommand
     let subcommandsToShow = commandStack.last!.configuration.subcommands
@@ -87,9 +90,11 @@ internal struct DumpHelpInfoGenerator {
     guard !subcommandsToShow.isEmpty else { return nil }
     
     return subcommandsToShow
-      .compactMap { CommandInfo(name: [$0._commandName], abstract: $0.configuration.abstract, discussion: $0.configuration.discussion,
-                                isDefault: $0 == defaultSubcommand, subcommands: getSubcommandNames(commandStack: [superCommand, $0]),
-                                arguments: getArgumentInfo(commandStack: [superCommand, $0]),options: getOptionInfo(commandStack: [superCommand, $0]))
+      .compactMap { HelpInfo(command: CommandInfo(name: [$0._commandName], abstract: $0.configuration.abstract, discussion: $0.configuration.discussion, isDefault: $0 == defaultSubcommand),
+                             subcommands: getSubcommandNames(commandStack: [superCommand, $0]),
+                             arguments: getArgumentInfo(commandStack: [superCommand, $0]),
+                             options: getOptionInfo(commandStack: [superCommand, $0]))
+        
       }
   }
   
@@ -179,7 +184,7 @@ internal struct DumpHelpInfoGenerator {
     let encoder = JSONEncoder()
     encoder.outputFormatting = .prettyPrinted
     
-    guard let encoded = try? encoder.encode(self.commandInfo) else { return "" }
+    guard let encoded = try? encoder.encode(self.helpInfo) else { return "" }
     return String(data: encoded, encoding: .utf8) ?? ""
   }
 }
