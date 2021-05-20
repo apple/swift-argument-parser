@@ -16,8 +16,6 @@ struct CommandError: Error {
 
 struct HelpRequested: Error {}
 
-struct DumpHelpInfoRequested: Error {}
-
 struct CommandParser {
   let commandTree: Tree<ParsableCommand.Type>
   var currentNode: Tree<ParsableCommand.Type>
@@ -235,8 +233,6 @@ extension CommandParser {
       return .failure(CommandError(commandStack: commandStack, parserError: error))
     } catch is HelpRequested {
       return .success(HelpCommand(commandStack: commandStack))
-    } catch is DumpHelpInfoRequested {
-        return .success(DumpHelpInfoCommand(commandStack: commandStack))
     } catch {
       return .failure(CommandError(commandStack: commandStack, parserError: .invalidState))
     }
