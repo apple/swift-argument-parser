@@ -150,7 +150,7 @@ internal struct HelpGenerator {
     var args = commandStack.argumentsForHelp()[...]
     
     while let arg = args.popFirst() {
-      guard arg.help.help?.shouldDisplay != false else { continue }
+      guard arg.help.shouldDisplay else { continue }
       
       let synopsis: String
       let description: String
@@ -165,20 +165,28 @@ internal struct HelpGenerator {
         synopsis = groupedArgs.compactMap { $0.synopsisForHelp }.joined(separator: "/")
 
         let defaultValue = arg.help.defaultValue.map { "(default: \($0))" } ?? ""
-        let descriptionString = groupedArgs.lazy.compactMap({ $0.help.help?.abstract }).first
+        let descriptionString = groupedArgs
+          .lazy
+          .map { $0.help.abstract }
+          .first { !$0.isEmpty }
+
         description = [descriptionString, defaultValue]
+          .lazy
           .compactMap { $0 }
+          .filter { !$0.isEmpty }
           .joined(separator: " ")
       } else {
         synopsis = arg.synopsisForHelp ?? ""
 
         let defaultValue = arg.help.defaultValue.flatMap { $0.isEmpty ? nil : "(default: \($0))" }
-        description = [arg.help.help?.abstract, defaultValue]
+        description = [arg.help.abstract, defaultValue]
+          .lazy
           .compactMap { $0 }
+          .filter { !$0.isEmpty }
           .joined(separator: " ")
       }
       
-      let element = Section.Element(label: synopsis, abstract: description, discussion: arg.help.help?.discussion ?? "")
+      let element = Section.Element(label: synopsis, abstract: description, discussion: arg.help.discussion)
       if case .positional = arg.kind {
         positionalElements.append(element)
       } else {

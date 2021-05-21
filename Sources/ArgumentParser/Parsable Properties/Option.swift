@@ -317,7 +317,7 @@ extension Option {
         parser: T.init(argument:),
         default: nil,
         completion: completion ?? T.defaultCompletionKind)
-      arg.help.help = help
+      arg.help.updateArgumentHelp(help: help)
       return ArgumentSet(arg.optional)
     })
   }
