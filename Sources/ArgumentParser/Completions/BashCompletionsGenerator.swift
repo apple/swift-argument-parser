@@ -145,7 +145,7 @@ struct BashCompletionsGenerator {
           let commandName = commands.first!._commandName
           let subcommandNames = commands.dropFirst().map { $0._commandName }.joined(separator: " ")
           // TODO: Make this work for @Arguments
-          let argumentName = arg.preferredNameForSynopsis?.synopsisString
+          let argumentName = arg.names.preferredName?.synopsisString
                 ?? arg.help.keys.first?.rawValue ?? "---"
           
           return """
