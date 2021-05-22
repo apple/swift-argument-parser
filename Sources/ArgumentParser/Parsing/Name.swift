@@ -109,7 +109,7 @@ extension BidirectionalCollection where Element == Name {
     first { $0.case != .short } ?? first
   }
 
-  var paritioned: [Name] {
+  var partitioned: [Name] {
     filter { $0.case == .short } + filter { $0.case != .short }
   }
 }

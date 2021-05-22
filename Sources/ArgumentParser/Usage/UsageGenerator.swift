@@ -71,7 +71,7 @@ extension ArgumentDefinition {
     switch kind {
     case .named:
       let joinedSynopsisString = names
-        .paritioned
+        .partitioned
         .map { $0.synopsisString }
         .joined(separator: ", ")
 
