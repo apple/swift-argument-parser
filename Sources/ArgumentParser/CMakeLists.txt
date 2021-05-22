@@ -36,6 +36,7 @@ add_library(ArgumentParser
   Usage/MessageInfo.swift
   Usage/UsageGenerator.swift
 
+  Utilities/CollectionExtensions.swift
   Utilities/SequenceExtensions.swift
   Utilities/StringExtensions.swift
   Utilities/Tree.swift)
