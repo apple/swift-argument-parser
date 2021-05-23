@@ -218,7 +218,7 @@ extension ArgumentSet {
     ) throws {
       let origin = InputOrigin(elements: [originElement])
 
-      // We always need to create an empty array if the argument is presented.
+      // Try to update with default value if argument presented. For example, init an empty array.
       let updated = try update(origin, parsed.name, nil, &result)
 
       switch argument.parsingStrategy {
