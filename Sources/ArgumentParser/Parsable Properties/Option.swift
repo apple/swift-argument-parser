@@ -627,6 +627,60 @@ extension Option {
     })
   }
 
+  /// Creates an array property with an optional default value, intended to be called by other constructors to centralize logic.
+  ///
+  /// This private `init` allows us to expose multiple other similar constructors to allow for standard default property initialization while reducing code duplication.
+  private init<Element>(
+    initial: [Element]?,
+    name: NameSpecification,
+    parsingStrategy: ArrayParsingStrategy,
+    help: ArgumentHelp?,
+    completion: CompletionKind?,
+    transform: @escaping (String) throws -> Element
+  ) where Value == Array<Element>? {
+    self.init(_parsedValue: .init { key in
+      // Assign the initial-value setter and help text for default value based on if an initial value was provided.
+      let setInitialValue: ArgumentDefinition.Initial
+      let helpDefaultValue: String?
+      if let initial = initial {
+        setInitialValue = { origin, values in
+          values.set(initial, forKey: key, inputOrigin: origin)
+        }
+        helpDefaultValue = !initial.isEmpty ? "\(initial)" : nil
+      } else {
+        setInitialValue = { _, _ in }
+        helpDefaultValue = nil
+      }
+
+      let kind = ArgumentDefinition.Kind.name(key: key, specification: name)
+      let help = ArgumentDefinition.Help(options: [.isOptional, .isRepeating], help: help, key: key)
+      var arg = ArgumentDefinition(
+        kind: kind,
+        help: help,
+        completion: completion ?? .default,
+        parsingStrategy: parsingStrategy.base,
+        update: .unary({ (origin, name, valueString, parsedValues) in
+          // First of all we need to create an empty array.
+          parsedValues.update(forKey: key, inputOrigin: origin, initial: [Element]()) { _ in }
+          // Returns true anyway, because we always create an empty array above.
+          guard let valueString = valueString else { return true }
+          do {
+            let transformedElement = try transform(valueString)
+            parsedValues.update(forKey: key, inputOrigin: origin, initial: [Element](), closure: {
+                  $0.append(transformedElement)
+            })
+          } catch {
+            throw ParserError.unableToParseValue(origin, name, valueString, forKey: key, originalError: error)
+          }
+          return true
+        }),
+        initial: setInitialValue
+      )
+      arg.help.defaultValue = helpDefaultValue
+      return ArgumentSet(arg)
+    })
+  }
+
   /// Creates an array property that reads its values from zero or more
   /// labeled options, parsing with the given closure.
   ///
@@ -643,7 +697,7 @@ extension Option {
   ///   - transform: A closure that converts a string into this property's
   ///     element type or throws an error.
   public init<Element>(
-    wrappedValue: [Element],
+    wrappedValue: [Element]?,
     name: NameSpecification = .long,
     parsing parsingStrategy: ArrayParsingStrategy = .singleValue,
     help: ArgumentHelp? = nil,
@@ -652,6 +706,38 @@ extension Option {
   ) where Value == Array<Element> {
     self.init(
       initial: wrappedValue,
+      name: name,
+      parsingStrategy: parsingStrategy,
+      help: help,
+      completion: completion,
+      transform: transform
+    )
+  }
+
+  /// Creates an optional array property that reads its values from zero or more
+  /// labeled options, parsing with the given closure.
+  ///
+  /// This property defaults to an empty array if the `initial` parameter
+  /// is not specified.
+  ///
+  /// - Parameters:
+  ///   - name: A specification for what names are allowed for this flag.
+  ///   - initial: A default value to use for this property. If `initial` is
+  ///     `nil`, this option defaults to an empty array.
+  ///   - parsingStrategy: The behavior to use when parsing multiple values
+  ///     from the command-line arguments.
+  ///   - help: Information about how to use this option.
+  ///   - transform: A closure that converts a string into this property's
+  ///     element type or throws an error.
+  public init<Element>(
+    name: NameSpecification = .long,
+    parsing parsingStrategy: ArrayParsingStrategy = .singleValue,
+    help: ArgumentHelp? = nil,
+    completion: CompletionKind? = nil,
+    transform: @escaping (String) throws -> Element
+  ) where Value == Array<Element>? {
+    self.init(
+      initial: nil,
       name: name,
       parsingStrategy: parsingStrategy,
       help: help,
