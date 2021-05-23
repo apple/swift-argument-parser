@@ -169,11 +169,12 @@ extension ArgumentDefinition {
     }
     
     self.init(kind: kind, help: ArgumentDefinition.Help(key: key), completion: completion, parsingStrategy: parsingStrategy, update: .unary({ (origin, name, value, values) in
-      guard let value = value else { return } /* That's okay. Just skip nil value here */
+      guard let value = value else { return false }
       guard let v = parser(value) else {
         throw ParserError.unableToParseValue(origin, name, value, forKey: key)
       }
       values.set(v, forKey: key, inputOrigin: origin)
+      return true
     }), initial: { origin, values in
       switch kind {
       case .default:
@@ -218,28 +219,28 @@ extension ArgumentSet {
       let origin = InputOrigin(elements: [originElement])
 
       // We always need to create an empty array if the argument is presented.
-      try update(origin, parsed.name, nil, &result)
+      let updated = try update(origin, parsed.name, nil, &result)
 
       switch argument.parsingStrategy {
       case .default:
         // We need a value for this option.
         if let value = parsed.value {
           // This was `--foo=bar` style:
-          try update(origin, parsed.name, value, &result)
+          _ = try update(origin, parsed.name, value, &result)
         } else if argument.allowsJoinedValue,
            let (origin2, value) = inputArguments.extractJoinedElement(at: originElement)
         {
           // Found a joined argument
           let origins = origin.inserting(origin2)
-          try update(origins, parsed.name, String(value), &result)
+          _ = try update(origins, parsed.name, String(value), &result)
           usedOrigins.formUnion(origins)
         } else if let (origin2, value) = inputArguments.popNextElementIfValue(after: originElement) {
           // Use `popNextElementIfValue(after:)` to handle cases where short option
           // labels are combined
           let origins = origin.inserting(origin2)
-          try update(origins, parsed.name, value, &result)
+          _ = try update(origins, parsed.name, value, &result)
           usedOrigins.formUnion(origins)
-        } else {
+        } else if !updated {
           throw ParserError.missingValueForOption(origin, parsed.name)
         }
         
@@ -247,20 +248,20 @@ extension ArgumentSet {
         // We need a value for this option.
         if let value = parsed.value {
           // This was `--foo=bar` style:
-          try update(origin, parsed.name, value, &result)
+          _ = try update(origin, parsed.name, value, &result)
         } else if argument.allowsJoinedValue,
             let (origin2, value) = inputArguments.extractJoinedElement(at: originElement) {
           // Found a joined argument
           let origins = origin.inserting(origin2)
-          try update(origins, parsed.name, String(value), &result)
+          _ = try update(origins, parsed.name, String(value), &result)
           usedOrigins.formUnion(origins)
         } else if let (origin2, value) = inputArguments.popNextValue(after: originElement) {
           // Use `popNext(after:)` to handle cases where short option
           // labels are combined
           let origins = origin.inserting(origin2)
-          try update(origins, parsed.name, value, &result)
+          _ = try update(origins, parsed.name, value, &result)
           usedOrigins.formUnion(origins)
-        } else {
+        } else if !updated {
           throw ParserError.missingValueForOption(origin, parsed.name)
         }
         
@@ -268,21 +269,20 @@ extension ArgumentSet {
         // Use an attached value if it exists...
         if let value = parsed.value {
           // This was `--foo=bar` style:
-          try update(origin, parsed.name, value, &result)
+          _ = try update(origin, parsed.name, value, &result)
           usedOrigins.formUnion(origin)
         } else if argument.allowsJoinedValue,
-            let (origin2, value) = inputArguments.extractJoinedElement(at: originElement) {
+          let (origin2, value) = inputArguments.extractJoinedElement(at: originElement) {
           // Found a joined argument
           let origins = origin.inserting(origin2)
-          try update(origins, parsed.name, String(value), &result)
+          _ = try update(origins, parsed.name, String(value), &result)
           usedOrigins.formUnion(origins)
         } else {
-          guard let (origin2, value) = inputArguments.popNextElementAsValue(after: originElement) else {
-            throw ParserError.missingValueForOption(origin, parsed.name)
+          if let (origin2, value) = inputArguments.popNextElementAsValue(after: originElement) {
+            let origins = origin.inserting(origin2)
+            _ = try update(origins, parsed.name, value, &result)
+            usedOrigins.formUnion(origins)
           }
-          let origins = origin.inserting(origin2)
-          try update(origins, parsed.name, value, &result)
-          usedOrigins.formUnion(origins)
         }
         
       case .allRemainingInput:
@@ -292,13 +292,13 @@ extension ArgumentSet {
         // Use an attached value if it exists...
         if let value = parsed.value {
           // This was `--foo=bar` style:
-          try update(origin, parsed.name, value, &result)
+          _ = try update(origin, parsed.name, value, &result)
           usedOrigins.formUnion(origin)
         } else if argument.allowsJoinedValue,
             let (origin2, value) = inputArguments.extractJoinedElement(at: originElement) {
           // Found a joined argument
           let origins = origin.inserting(origin2)
-          try update(origins, parsed.name, String(value), &result)
+          _ = try update(origins, parsed.name, String(value), &result)
           usedOrigins.formUnion(origins)
           inputArguments.removeAll(in: usedOrigins)
         }
@@ -306,7 +306,7 @@ extension ArgumentSet {
         // ...and then consume the rest of the arguments
         while let (origin2, value) = inputArguments.popNextElementAsValue(after: originElement) {
           let origins = origin.inserting(origin2)
-          try update(origins, parsed.name, value, &result)
+          _ = try update(origins, parsed.name, value, &result)
           usedOrigins.formUnion(origins)
         }
         
@@ -314,13 +314,13 @@ extension ArgumentSet {
         // Use an attached value if it exists...
         if let value = parsed.value {
           // This was `--foo=bar` style:
-          try update(origin, parsed.name, value, &result)
+          _ = try update(origin, parsed.name, value, &result)
           usedOrigins.formUnion(origin)
         } else if argument.allowsJoinedValue,
             let (origin2, value) = inputArguments.extractJoinedElement(at: originElement) {
           // Found a joined argument
           let origins = origin.inserting(origin2)
-          try update(origins, parsed.name, String(value), &result)
+          _ = try update(origins, parsed.name, String(value), &result)
           usedOrigins.formUnion(origins)
           inputArguments.removeAll(in: usedOrigins)
         }
@@ -328,7 +328,7 @@ extension ArgumentSet {
         // ...and then consume the arguments until hitting an option
         while let (origin2, value) = inputArguments.popNextElementIfValue() {
           let origins = origin.inserting(origin2)
-          try update(origins, parsed.name, value, &result)
+          _ = try update(origins, parsed.name, value, &result)
           usedOrigins.formUnion(origins)
         }
       }
@@ -463,7 +463,7 @@ extension ArgumentSet {
           break ArgumentLoop
         }
         let value = unusedInput.originalInput(at: origin)!
-        try update([origin], nil, value, &result)
+        _ = try update([origin], nil, value, &result)
       } while argumentDefinition.isRepeatingPositional
     }
   }

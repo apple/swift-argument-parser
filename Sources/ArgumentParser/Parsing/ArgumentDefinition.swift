@@ -14,7 +14,8 @@ struct ArgumentDefinition {
   /// argument's value.
   enum Update {
     typealias Nullary = (InputOrigin, Name?, inout ParsedValues) throws -> Void
-    typealias Unary = (InputOrigin, Name?, String?, inout ParsedValues) throws -> Void
+    /// - Returns: true if value was updated, otherwise false
+    typealias Unary = (InputOrigin, Name?, String?, inout ParsedValues) throws -> Bool
     
     /// An argument that gets its value solely from its presence.
     case nullary(Nullary)
@@ -199,15 +200,18 @@ extension ArgumentDefinition.Update {
   static func appendToArray<A: ExpressibleByArgument>(forType type: A.Type, key: InputKey) -> ArgumentDefinition.Update {
     return ArgumentDefinition.Update.unary {
       (origin, name, value, values) in
-      // First of all we need to create empty array.
+      // First of all we need to create an empty array.
       values.update(forKey: key, inputOrigin: origin, initial: [A]()) { _ in }
-      guard let value = value else { return } /* That's okay. Just skip nil value here */
+      // Returns true anyway, because we always create an empty array above.
+      guard let value = value else { return true }
+      
       guard let v = A(argument: value) else {
         throw ParserError.unableToParseValue(origin, name, value, forKey: key)
       }
       values.update(forKey: key, inputOrigin: origin, initial: [A]()) {
         $0.append(v)
       }
+      return true
     }
   }
 }

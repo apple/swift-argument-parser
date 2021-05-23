@@ -338,13 +338,14 @@ extension Option {
       let help = ArgumentDefinition.Help(options: initial != nil ? .isOptional : [], help: help, key: key)
       var arg = ArgumentDefinition(kind: kind, help: help, completion: completion ?? .default, parsingStrategy: parsingStrategy.base, update: .unary({
         (origin, name, valueString, parsedValues) in
-        guard let valueString = valueString else { return } /* That's okay. Just skip nil value here */
+        guard let valueString = valueString else { return false }
         do {
           let transformedValue = try transform(valueString)
           parsedValues.set(transformedValue, forKey: key, inputOrigin: origin)
         } catch {
           throw ParserError.unableToParseValue(origin, name, valueString, forKey: key, originalError: error)
         }
+        return true
       }), initial: { origin, values in
         if let v = initial {
           values.set(v, forKey: key, inputOrigin: origin)
@@ -605,7 +606,10 @@ extension Option {
         completion: completion ?? .default,
         parsingStrategy: parsingStrategy.base,
         update: .unary({ (origin, name, valueString, parsedValues) in
-            guard let valueString = valueString else { return } /* That's okay. Just skip nil value here */
+          // First of all we need to create an empty array.
+          parsedValues.update(forKey: key, inputOrigin: origin, initial: [Element]()) { _ in }
+          // Returns true anyway, because we always create an empty array above.
+          guard let valueString = valueString else { return true }
           do {
             let transformedElement = try transform(valueString)
             parsedValues.update(forKey: key, inputOrigin: origin, initial: [Element](), closure: {
@@ -614,6 +618,7 @@ extension Option {
           } catch {
             throw ParserError.unableToParseValue(origin, name, valueString, forKey: key, originalError: error)
           }
+          return true
         }),
         initial: setInitialValue
       )
