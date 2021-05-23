@@ -287,7 +287,7 @@ extension ArgumentSet {
         
       case .allRemainingInput:
         // Reset initial value with the found input origins:
-        try argument.initial(origin, &result)
+        if !updated { try argument.initial(origin, &result) }
         
         // Use an attached value if it exists...
         if let value = parsed.value {
