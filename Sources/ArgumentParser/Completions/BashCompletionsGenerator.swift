@@ -34,7 +34,7 @@ struct BashCompletionsGenerator {
     let subcommandArgument = isRootCommand ? "2" : "$(($1+1))"
   
     // Include 'help' in the list of subcommands for the root command.
-    var subcommands = type.configuration.subcommands
+    var subcommands = type.subcommands
     if !subcommands.isEmpty && isRootCommand {
       subcommands.append(HelpCommand.self)
     }

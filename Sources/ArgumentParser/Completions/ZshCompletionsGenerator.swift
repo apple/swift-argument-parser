@@ -37,7 +37,7 @@ struct ZshCompletionsGenerator {
     
     var args = generateCompletionArguments(commands)
     
-    var subcommands = type.configuration.subcommands
+    var subcommands = type.subcommands
     var subcommandHandler = ""
     if !subcommands.isEmpty {
       args.append("'(-): :->command'")

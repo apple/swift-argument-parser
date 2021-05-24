@@ -19,9 +19,6 @@ final class NestedCommandEndToEndTests: XCTestCase {
 // MARK: Single value String
 
 fileprivate struct Foo: ParsableCommand {
-  static var configuration =
-    CommandConfiguration(subcommands: [Build.self, Package.self])
-
   @Flag(name: .short)
   var verbose: Bool = false
 
@@ -33,9 +30,6 @@ fileprivate struct Foo: ParsableCommand {
   }
 
   struct Package: ParsableCommand {
-    static var configuration =
-      CommandConfiguration(subcommands: [Clean.self, Config.self])
-
     @Flag(name: .short)
     var force: Bool = false
 
@@ -152,10 +146,6 @@ private struct UniqueOptions: ParsableArguments {
 }
 
 private struct Super: ParsableCommand {
-  static var configuration: CommandConfiguration {
-    .init(subcommands: [Sub1.self, Sub2.self])
-  }
-
   @OptionGroup() var options: Options
 
   struct Sub1: ParsableCommand {

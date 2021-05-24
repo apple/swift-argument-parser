@@ -90,7 +90,7 @@ extension Tree where Element == ParsableCommand.Type {
   
   convenience init(root command: ParsableCommand.Type) throws {
     self.init(command)
-    for subcommand in command.configuration.subcommands {
+    for subcommand in command.subcommands {
       if subcommand == command {
         throw InitializationError.recursiveSubcommand(subcommand)
       }

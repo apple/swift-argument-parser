@@ -155,8 +155,7 @@ struct BaseCommand: ParsableCommand {
   static let baseFlagValue = "base"
 
   static var configuration = CommandConfiguration(
-    commandName: "base",
-    subcommands: [SubCommand.self]
+    commandName: "base"
   )
 
   @Option()
@@ -174,8 +173,7 @@ extension BaseCommand {
     static let subFlagValue = "sub"
 
     static var configuration = CommandConfiguration(
-      commandName: "sub",
-      subcommands: [SubSubCommand.self]
+      commandName: "sub"
     )
 
     @Option()
@@ -239,8 +237,7 @@ extension SubcommandEndToEndTests {
 
 private struct A: ParsableCommand {
   static var configuration = CommandConfiguration(
-    version: "1.0.0",
-    subcommands: [HasVersionFlag.self, NoVersionFlag.self])
+    version: "1.0.0")
 
   struct HasVersionFlag: ParsableCommand {
     @Flag var version: Bool = false

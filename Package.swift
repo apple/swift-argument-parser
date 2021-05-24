@@ -22,8 +22,14 @@ var package = Package(
     dependencies: [],
     targets: [
         .target(
-            name: "ArgumentParser",
+            name: "_CRuntime",
             dependencies: []),
+        .target(
+            name: "_Runtime",
+            dependencies: ["_CRuntime"]),
+        .target(
+            name: "ArgumentParser",
+            dependencies: ["_Runtime"]),
         .target(
             name: "ArgumentParserTestHelpers",
             dependencies: ["ArgumentParser"]),

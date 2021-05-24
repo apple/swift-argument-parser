@@ -87,10 +87,7 @@ struct Options: ParsableArguments {
   var swiftCompilerFlags: [String] = []
 }
 
-struct Package: ParsableCommand {
-  static var configuration = CommandConfiguration(
-    subcommands: [Clean.self, Config.self, Describe.self, GenerateXcodeProject.self, Hidden.self])
-}
+struct Package: ParsableCommand {}
 
 extension Package {
   struct Hidden: ParsableCommand {
