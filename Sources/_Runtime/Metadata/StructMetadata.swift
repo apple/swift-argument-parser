@@ -9,27 +9,20 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if _ptrauth(_arm64e)
 import _CRuntime
-#endif
 
 public struct StructMetadata: Metadata, PointerView {
-  typealias View = _StructMetadata
+  typealias View = _CRuntime.StructMetadata
 
   public let pointer: UnsafeRawPointer
 
   var descriptor: ContextDescriptor {
     // Type descriptors are signed on arm64e using pointer authentication.
     #if _ptrauth(_arm64e)
-    let signed = __ptrauth_strip_asda(view._descriptor.pointer)
+    let signed = __ptrauth_strip_asda(view.descriptor)!
     return ContextDescriptor(pointer: signed)
     #else
-    return view._descriptor
+    return ContextDescriptor(pointer: view.descriptor)
     #endif
   }
-}
-
-struct _StructMetadata {
-  let _kind: Int
-  let _descriptor: ContextDescriptor
 }

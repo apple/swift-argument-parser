@@ -9,6 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+import _CRuntime
 @_implementationOnly import Foundation
 
 extension NSLock {
@@ -26,10 +27,15 @@ var conformances:
 @_cdecl("registerProtocolConformances")
 func registerProtocolConformances(_ section: UnsafeRawPointer, size: Int) {
   // This section is a list of relative pointers.
-  for i in 0 ..< size / MemoryLayout<Int32>.size {
-    let start = section + MemoryLayout<Int32>.size * i
+  let stride = stride(
+    from: section,
+    to: section + size,
+    by: MemoryLayout<Int32>.stride
+  )
+  
+  for start in stride {
     let address = start.load(
-      as: RelativeDirectPointer<_ConformanceDescriptor>.self
+      as: RelativeDirectPointer<_CRuntime.ConformanceDescriptor>.self
     ).address(from: start)
     let conformance = ConformanceDescriptor(pointer: address)
     

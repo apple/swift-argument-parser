@@ -9,21 +9,28 @@
 //
 //===----------------------------------------------------------------------===//
 
+import _CRuntime
+
 public struct ConformanceDescriptor: PointerView {
-  typealias View = _ConformanceDescriptor
+  typealias View = _CRuntime.ConformanceDescriptor
   
   let pointer: UnsafeRawPointer
   
   public var `protocol`: ContextDescriptor {
-    ContextDescriptor(pointer: view._protocol.address(from: pointer))
+    let _protocol = RelativeIndirectablePointer<_CRuntime.ContextDescriptor>(
+      offset: view.protocol
+    )
+    
+    return ContextDescriptor(pointer: _protocol.address(from: pointer))
   }
   
   public var contextDescriptor: ContextDescriptor? {
     let start = pointer + MemoryLayout<Int32>.size
     let offset = start.load(as: Int32.self)
     let address = start + Int(offset)
+    let _flags = Flags(value: view.flags)
     
-    switch view._flags.typeReferenceKind {
+    switch _flags.typeReferenceKind {
     case .directTypeDescriptor:
       return ContextDescriptor(pointer: address)
     case .indirectTypeDescriptor:
@@ -58,11 +65,4 @@ enum TypeReferenceKind: UInt16 {
     
     self = kind
   }
-}
-
-struct _ConformanceDescriptor {
-  let _protocol: RelativeIndirectablePointer<_ContextDescriptor>
-  let _typeReference: Int32
-  let _witnessTablePattern: RelativeDirectPointer<Void>
-  let _flags: ConformanceDescriptor.Flags
 }

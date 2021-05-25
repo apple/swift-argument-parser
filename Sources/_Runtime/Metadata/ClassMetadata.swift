@@ -9,44 +9,27 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if _ptrauth(_arm64e)
 import _CRuntime
-#endif
 
 public struct ClassMetadata: Metadata, PointerView {
-  typealias View = _ClassMetadata
+  // The ObjC specific properties of class metadata are always present on
+  // ObjC interopt enabled devices or platforms pre Swift 5.4. In 5.4,
+  // those were removed on platforms who do not provide ObjectiveC.
+  #if canImport(ObjectiveC) || swift(<5.4)
+  typealias View = _CRuntime.ClassMetadataObjC
+  #else
+  typealias View = _CRuntime.ClassMetadata
+  #endif
 
   public let pointer: UnsafeRawPointer
 
   var descriptor: ContextDescriptor {
     // Type descriptors are signed on arm64e using pointer authentication.
     #if _ptrauth(_arm64e)
-    let signed = __ptrauth_strip_asda(view._descriptor.pointer)
+    let signed = __ptrauth_strip_asda(view.descriptor)!
     return ContextDescriptor(pointer: signed)
     #else
-    return view._descriptor
+    return ContextDescriptor(pointer: view.descriptor)
     #endif
   }
-}
-
-struct _ClassMetadata {
-  let _kind: Int
-  let _superclass: Any.Type?
-
-  // The following properties are always present on ObjC interopt enabled
-  // devices or platforms pre Swift 5.4. In 5.4, these were removed on platforms
-  // who do not provide ObjectiveC.
-  #if canImport(ObjectiveC) || swift(<5.4)
-  let _cacheData: (Int, Int)
-  let _data: UnsafeRawPointer
-  #endif
-
-  let _flags: UInt32
-  let _instanceAddressPoint: UInt32
-  let _instanceSize: UInt32
-  let _instanceAlignmentMask: UInt16
-  let _runtimeReserved: UInt16
-  let _classSize: UInt32
-  let _classAddressPoint: UInt32
-  let _descriptor: ContextDescriptor
 }

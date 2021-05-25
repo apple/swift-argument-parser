@@ -9,30 +9,30 @@
 //
 //===----------------------------------------------------------------------===//
 
+import _CRuntime
+
 public struct ExistentialMetadata: Metadata, PointerView {
-  typealias View = _ExistentialMetadata
+  typealias View = _CRuntime.ExistentialMetadata
 
   public let pointer: UnsafeRawPointer
 
+  var flags: ExistentialMetadata.Flags {
+    Flags(value: view.flags)
+  }
+  
   public var protocols: UnsafeBufferPointer<ContextDescriptor> {
     var start = trailing
 
     // The first trailing object is the superclass metadata, if there is any.
-    if view._flags.hasSuperclassConstraint {
+    if flags.hasSuperclassConstraint {
       start += MemoryLayout<Int>.size
     }
 
     return UnsafeBufferPointer(
       start: UnsafePointer<ContextDescriptor>(start._rawValue),
-      count: Int(view._numProtocols)
+      count: Int(view.numProtocols)
     )
   }
-}
-
-struct _ExistentialMetadata {
-  let kind: Int
-  let _flags: ExistentialMetadata.Flags
-  let _numProtocols: UInt32
 }
 
 extension ExistentialMetadata {

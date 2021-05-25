@@ -9,34 +9,43 @@
 //
 //===----------------------------------------------------------------------===//
 
+import _CRuntime
+
 // We really don't care about any of the various context descriptor properties,
 // thus this design is a single abstraction for all context descriptors.
 
 public struct ContextDescriptor: PointerView {
-  typealias View = _ContextDescriptor
+  typealias View = _CRuntime.ContextDescriptor
 
   let pointer: UnsafeRawPointer
 
   public var flags: Flags {
-    view._flags
+    Flags(value: view.flags)
   }
 
   public var parent: ContextDescriptor? {
-    guard view._parent.offset != 0 else {
+    let _parent = RelativeIndirectablePointer<_CRuntime.ContextDescriptor>(
+      offset: view.parent
+    )
+    
+    guard _parent.offset != 0 else {
       return nil
     }
 
     let start = pointer + MemoryLayout<Int32>.size
-    let address = view._parent.address(from: start)
+    let address = _parent.address(from: start)
     return ContextDescriptor(pointer: address)
   }
 
   public var accessor: MetadataAccessFunction {
     switch flags.kind {
     case .class, .struct, .enum:
-      let typeDescriptor = pointer.load(as: _TypeContextDescriptor.self)
+      let typeDescriptor = pointer.load(as: _CRuntime.TypeContextDescriptor.self)
       let start = pointer + MemoryLayout<Int32>.size * 3
-      let address = typeDescriptor._accessor.address(from: start)
+      let _accessor = RelativeDirectPointer<Void>(
+        offset: typeDescriptor.accessor
+      )
+      let address = _accessor.address(from: start)
       return MetadataAccessFunction(pointer: address)
     default:
       fatalError("Context descriptor kind: \(flags.kind), has no type accessor")
@@ -74,15 +83,4 @@ extension ContextDescriptor {
     case `enum` = 0x13
     case other = 0xFF
   }
-}
-
-struct _ContextDescriptor {
-  let _flags: ContextDescriptor.Flags
-  let _parent: RelativeIndirectablePointer<_ContextDescriptor>
-}
-
-struct _TypeContextDescriptor {
-  let _base: _ContextDescriptor
-  let _name: RelativeDirectPointer<CChar>
-  let _accessor: RelativeDirectPointer<Void>
 }

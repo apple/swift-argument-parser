@@ -9,26 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-protocol RelativePointer {
-  associatedtype Pointee
-
-  var offset: Int32 { get }
-
-  func address(from pointer: UnsafeRawPointer) -> UnsafeRawPointer
-  func pointee(from pointer: UnsafeRawPointer) -> Pointee?
-}
-
-extension RelativePointer {
-  func pointee(from pointer: UnsafeRawPointer) -> Pointee? {
-    if offset == 0 {
-      return nil
-    }
-
-    return address(from: pointer).load(as: Pointee.self)
-  }
-}
-
-struct RelativeDirectPointer<Pointee>: RelativePointer {
+struct RelativeDirectPointer<Pointee> {
   let offset: Int32
 
   func address(from pointer: UnsafeRawPointer) -> UnsafeRawPointer {
@@ -36,7 +17,7 @@ struct RelativeDirectPointer<Pointee>: RelativePointer {
   }
 }
 
-struct RelativeIndirectablePointer<Pointee>: RelativePointer {
+struct RelativeIndirectablePointer<Pointee> {
   let offset: Int32
 
   func address(from pointer: UnsafeRawPointer) -> UnsafeRawPointer {

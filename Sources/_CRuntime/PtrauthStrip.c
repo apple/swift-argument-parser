@@ -9,7 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "Ptrauth.h"
+#include "PtrauthStrip.h"
 
 #if defined(__arm64e__)
 #include <ptrauth.h>

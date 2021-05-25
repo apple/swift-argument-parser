@@ -42,7 +42,7 @@ func discoverSubcommands(for type: Any.Type) -> [ParsableCommand.Type] {
   }
   
   guard !discoveredSubcommands.keys.contains(selfMetadata.pointer) else {
-    return discoveredSubcommands[selfMetadata.pointer].unsafelyUnwrapped
+    return discoveredSubcommands[selfMetadata.pointer]!
   }
   
   let module = getModuleDescriptor(from: selfMetadata.descriptor)
@@ -79,7 +79,7 @@ func discoverSubcommands(for type: Any.Type) -> [ParsableCommand.Type] {
     // This is okay because modules can't conform to protocols, so the type
     // being referenced here is at least a child deep in the declaration context
     // tree.
-    let parent = descriptor.parent.unsafelyUnwrapped
+    let parent = descriptor.parent!
     
     // We're only interested in conformances where the parent is ourselves
     // (the parent ParsableCommand).
