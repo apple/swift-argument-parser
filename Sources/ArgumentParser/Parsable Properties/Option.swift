@@ -697,7 +697,7 @@ extension Option {
   ///   - transform: A closure that converts a string into this property's
   ///     element type or throws an error.
   public init<Element>(
-    wrappedValue: [Element]?,
+    wrappedValue: [Element],
     name: NameSpecification = .long,
     parsing parsingStrategy: ArrayParsingStrategy = .singleValue,
     help: ArgumentHelp? = nil,
