@@ -258,3 +258,75 @@ extension SubcommandEndToEndTests {
     }
   }
 }
+
+// MARK: Subcommand Autodiscovery
+
+fileprivate struct Swift: ParsableCommand {
+  // Test Build and Package are treated as automatic subcommands.
+  
+  struct Build: ParsableCommand {
+    // Test that DontBuild is not picked up as a subcommand by explictly using
+    // an empty subcommand array.
+    
+    static var configuration = CommandConfiguration(
+      subcommands: []
+    )
+    
+    struct DontBuild: ParsableCommand {}
+  }
+  
+  struct Package: ParsableCommand {
+    // Test that Init is treated as a subcommand, but Destroy is not.
+    
+    static var configuration = CommandConfiguration(
+      subcommands: [Init.self]
+    )
+    
+    struct Init: ParsableCommand {}
+    
+    struct Destroy: ParsableCommand {}
+  }
+}
+
+extension SubcommandEndToEndTests {
+  func testAutodiscovery() throws {
+    let swiftHelp = Swift.helpMessage()
+    
+    AssertEqualStringsIgnoringTrailingWhitespace("""
+        USAGE: swift <subcommand>
+
+        OPTIONS:
+          -h, --help              Show help information.
+
+        SUBCOMMANDS:
+          package
+          build
+
+          See 'swift help <subcommand>' for detailed help.
+        """, swiftHelp)
+    
+    let buildHelp = Swift.Build.helpMessage()
+    
+    AssertEqualStringsIgnoringTrailingWhitespace("""
+        USAGE: build
+
+        OPTIONS:
+          -h, --help              Show help information.
+
+        """, buildHelp)
+    
+    let packageHelp = Swift.Package.helpMessage()
+    
+    AssertEqualStringsIgnoringTrailingWhitespace("""
+        USAGE: package <subcommand>
+
+        OPTIONS:
+          -h, --help              Show help information.
+
+        SUBCOMMANDS:
+          init
+
+          See 'package help <subcommand>' for detailed help.
+        """, packageHelp)
+  }
+}
