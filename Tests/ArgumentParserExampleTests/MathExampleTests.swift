@@ -325,7 +325,7 @@ _math_stats_stdev() {
 _math_stats_quantiles() {
     opts="--file --directory --shell --custom --version -h --help"
     opts="$opts alphabet alligator branch braggart"
-    opts="$opts $(math ---completion stats quantiles -- customArg "$COMP_WORDS")"
+    opts="$opts $(math ---completion stats quantiles -- customArg "${COMP_WORDS[@]}")"
     if [[ $COMP_CWORD == "$1" ]]; then
         COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
         return
@@ -344,7 +344,7 @@ _math_stats_quantiles() {
             return
         ;;
         --custom)
-            COMPREPLY=( $(compgen -W "$(math ---completion stats quantiles -- --custom "$COMP_WORDS")" -- "$cur") )
+            COMPREPLY=( $(compgen -W "$(math ---completion stats quantiles -- --custom "${COMP_WORDS[@]}")" -- "$cur") )
             return
         ;;
     esac

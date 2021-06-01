@@ -149,7 +149,7 @@ struct BashCompletionsGenerator {
                 ?? arg.help.keys.first?.rawValue ?? "---"
           
           return """
-            $(\(commandName) ---completion \(subcommandNames) -- \(argumentName) "$COMP_WORDS")
+            $(\(commandName) ---completion \(subcommandNames) -- \(argumentName) "${COMP_WORDS[@]}")
             """
         }
       }
@@ -207,7 +207,7 @@ extension ArgumentDefinition {
     case .custom:
       // Generate a call back into the command to retrieve a completions list
       let commandName = commands.first!._commandName      
-      return #"COMPREPLY=( $(compgen -W "$(\#(commandName) \#(customCompletionCall(commands)) "$COMP_WORDS")" -- "$cur") )"#
+      return #"COMPREPLY=( $(compgen -W "$(\#(commandName) \#(customCompletionCall(commands)) "${COMP_WORDS[@]}")" -- "$cur") )"#
     }
   }
 }
