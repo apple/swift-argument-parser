@@ -25,7 +25,7 @@ extension URL: ExpressibleByArgument {
   }
 
   public var defaultValueDescription: String {
-    self.absoluteString == FileManager.default.currentDirectoryPath
+    self.path == FileManager.default.currentDirectoryPath && self.isFileURL
       ? "current directory"
       : String(describing: self)
   }
@@ -156,7 +156,7 @@ extension HelpGenerationTests {
     var degree: Degree = .bachelor
 
     @Option(help: "Directory.")
-    var directory: URL = URL(string: FileManager.default.currentDirectoryPath)!
+    var directory: URL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
   }
 
   func testHelpWithDefaultValues() {
