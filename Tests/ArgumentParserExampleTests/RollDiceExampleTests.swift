@@ -40,6 +40,7 @@ final class RollDiceExampleTests: XCTestCase {
       command: "roll --times",
       expected: """
             Error: Missing value for '--times <n>'
+            Help:  --times <n>  Rolls the dice <n> times.
             Usage: roll [--times <n>] [--sides <m>] [--seed <seed>] [--verbose]
               See 'roll --help' for more information.
             """,
