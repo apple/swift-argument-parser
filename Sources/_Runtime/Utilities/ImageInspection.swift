@@ -25,7 +25,10 @@ var conformances:
   [ContextDescriptor: [ContextDescriptor: [ConformanceDescriptor]]] = [:]
 
 @_cdecl("registerProtocolConformances")
-func registerProtocolConformances(_ section: UnsafeRawPointer, size: Int) {
+public func registerProtocolConformances(
+  _ section: UnsafeRawPointer,
+  size: Int
+) {
   // This section is a list of relative pointers.
   let stride = stride(
     from: section,
@@ -103,7 +106,7 @@ typealias mach_header_platform = mach_header
 #endif
 
 @_cdecl("lookupSection")
-func lookupSection(
+public func lookupSection(
   _ header: UnsafePointer<mach_header>?,
   segment: UnsafePointer<CChar>?,
   section: UnsafePointer<CChar>?,
