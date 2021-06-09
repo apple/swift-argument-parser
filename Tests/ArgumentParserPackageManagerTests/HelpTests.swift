@@ -222,6 +222,7 @@ extension HelpTests {
 
     AssertFullErrorMessage(NoHelp.self, ["--error"], """
       Error: Missing expected argument '--count <count>'
+      Help:  --count <count>  How many florps?
       Usage: no-help --count <count>
       """)
 
