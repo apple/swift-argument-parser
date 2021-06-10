@@ -8,43 +8,47 @@ Text...
 
 ## Topics
 
-### Guides
+### Getting Started
 
 - <doc:/tutorials/ArgumentParser>
 - <doc:GettingStarted>
 
-### Parsable Properties
+### Commands and Subcommands
+
+- <doc:CommandsAndSubcommands>
+- ``ParsableCommand``
+- ``CommandConfiguration``  
+
+### Arguments, Options, and Flags
+
+Declare properties of commands using the `@Argument`, `@Option`, and `@Flag`
+property wrappers.
 
 - ``Argument``
 - ``Option``
 - ``Flag``
-
-### Parsable Types
-
-- ``ParsableCommand``
-- ``ParsableArguments``
 - ``OptionGroup``
-- ``EnumerableFlag``
+- ``ParsableArguments``
 
-### Customization
+### Property Customization
 
 - ``ArgumentHelp``
 - ``NameSpecification``
-- ``CommandConfiguration``  
-- ``FlagInversion``
-- ``FlagExclusivity``
-- ``SingleValueParsingStrategy``
-- ``ArrayParsingStrategy``
-- ``ArgumentArrayParsingStrategy``
-- ``CompletionKind``
-- ``CompletionShell``
 
-### Validation and Errors
+### Custom Types
+
+- ``ExpressibleByArgument``
+- ``EnumerableFlag``
+
+### Errors and Validation
 
 - ``ValidationError``
 - ``CleanExit``
 - ``ExitCode``
 
-### Expressible Types
+### Shell Completion Scripts
 
-- ``ExpressibleByArgument``
+- <doc:InstallingCompletionScripts>
+- <doc:CustomizingCompletions>
+- ``CompletionKind``
+- ``CompletionShell``
