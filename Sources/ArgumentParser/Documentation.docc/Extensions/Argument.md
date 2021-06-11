@@ -16,17 +16,10 @@
 - ``init(parsing:help:completion:transform:)``
 - ``init(wrappedValue:parsing:help:completion:)``
 - ``init(wrappedValue:parsing:help:completion:transform:)``
+- ``ArgumentArrayParsingStrategy``
 
 ### Infrequently Used APIs
 
 - ``init()``
 - ``init(from:)``
 - ``wrappedValue``
-
-### Supporting Types
-
-- ``FlagInversion``
-- ``FlagExclusivity``
-- ``SingleValueParsingStrategy``
-- ``ArrayParsingStrategy``
-- ``ArgumentArrayParsingStrategy``

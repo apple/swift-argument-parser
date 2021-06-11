@@ -1,4 +1,4 @@
-# Validation and Errors
+# Providing Custom Validation
 
 Provide helpful feedback to users when things go wrong.
 

@@ -8,15 +8,11 @@ Text...
 
 ## Topics
 
-### Getting Started
+### Essentials
 
 - <doc:GettingStarted>
-
-### Commands and Subcommands
-
 - <doc:CommandsAndSubcommands>
 - ``ParsableCommand``
-- ``CommandConfiguration``  
 
 ### Arguments, Options, and Flags
 
@@ -39,8 +35,9 @@ property wrappers.
 - ``ExpressibleByArgument``
 - ``EnumerableFlag``
 
-### Errors and Validation
+### Validation and Errors
 
+- <doc:Validation>
 - ``ValidationError``
 - ``CleanExit``
 - ``ExitCode``
@@ -50,4 +47,3 @@ property wrappers.
 - <doc:InstallingCompletionScripts>
 - <doc:CustomizingCompletions>
 - ``CompletionKind``
-- ``CompletionShell``
