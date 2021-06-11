@@ -10,7 +10,6 @@ Text...
 
 ### Getting Started
 
-- <doc:/tutorials/ArgumentParser>
 - <doc:GettingStarted>
 
 ### Commands and Subcommands
