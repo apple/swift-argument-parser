@@ -131,8 +131,7 @@ internal struct DumpHelpInfoGenerator {
           .joined(separator: " ")
       }
       
-      let name:[String]? = arg.valueName.split(separator: ",").compactMap { String($0) }
-      
+      let name:[String]? = arg.isPositional ? nil : arg.valueName.split(separator: ",").compactMap { String($0) }
       guard arg.isPositional == isPositional else { return nil }
       return ArgumentInfo(name: name, abstract: description, discussion: arg.help.discussion, isRequired: !arg.help.options.contains(.isOptional), defaultValue: arg.help.defaultValue, valueName: arg.valueName)
     }
