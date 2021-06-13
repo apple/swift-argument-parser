@@ -105,7 +105,7 @@ internal struct DumpHelpInfoGenerator {
     var i = 0
     return args.compactMap { arg in
       defer { i += 1 }
-      guard arg.help.help?.shouldDisplay != false else { return nil }
+      guard arg.help.shouldDisplay != false else { return nil }
       let description: String
       
       if arg.help.isComposite {
@@ -117,10 +117,8 @@ internal struct DumpHelpInfoGenerator {
         }
         var descriptionString: String?
         for arg in groupedArgs {
-          if let desc = arg.help.help?.abstract {
-            descriptionString = desc
-            break
-          }
+          descriptionString = arg.help.abstract
+          break
         }
         description = [descriptionString, defaultValue]
           .compactMap { $0 }
@@ -128,15 +126,15 @@ internal struct DumpHelpInfoGenerator {
       } else {
         let defaultValue = arg.help.defaultValue.flatMap { $0.isEmpty ? nil : "(default: \($0))" } ?? ""
         //synopsis = arg.synopsisForHelp ?? ""
-        description = [arg.help.help?.abstract, defaultValue]
+        description = [arg.help.abstract, defaultValue]
           .compactMap { $0 }
           .joined(separator: " ")
       }
       
-      let name:[String]? = arg.preferredNameForSynopsis?.synopsisString.split(separator: ",").compactMap { String($0) }
+      let name:[String]? = arg.valueName.split(separator: ",").compactMap { String($0) }
       
       guard arg.isPositional == isPositional else { return nil }
-      return ArgumentInfo(name: name, abstract: description, discussion: arg.help.help?.discussion ?? "", isRequired: !arg.help.options.contains(.isOptional), defaultValue: arg.help.defaultValue, valueName: arg.valueName)
+      return ArgumentInfo(name: name, abstract: description, discussion: arg.help.discussion, isRequired: !arg.help.options.contains(.isOptional), defaultValue: arg.help.defaultValue, valueName: arg.valueName)
     }
   }
   
