@@ -14,9 +14,9 @@ import ArgumentParserTestHelpers
 
 final class DumpHelpGenerationTests: XCTestCase {
   public static let allTests = [
-    ("testDumpExampleCommands", testDumpExampleCommands)
+    ("testDumpExampleCommands", testDumpExampleCommands),
+    ("testDumpA", testDumpA)
   ]
-  
 }
 
 extension DumpHelpGenerationTests {
