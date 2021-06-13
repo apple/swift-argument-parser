@@ -129,15 +129,12 @@ extension String {
 
 extension ArgumentDefinition {
   var zshCompletionAbstract: String {
-    guard
-        let abstract = help.help?.abstract,
-        !abstract.isEmpty
-        else { return "" }
-    return "[\(abstract.zshEscaped())]"
+    guard !help.abstract.isEmpty else { return "" }
+    return "[\(help.abstract.zshEscaped())]"
   }
   
   func zshCompletionString(_ commands: [ParsableCommand.Type]) -> String? {
-    guard help.help?.shouldDisplay != false else { return nil }
+    guard help.shouldDisplay else { return nil }
     
     var inputs: String
     switch update {

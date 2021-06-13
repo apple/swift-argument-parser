@@ -272,7 +272,7 @@ extension ArgumentSet {
             parser: { _ in nil },
             default: nilOrValue(child.value),
             completion: .default)
-          definition.help.help = .hidden
+          definition.help.updateArgumentHelp(help: .hidden)
           return ArgumentSet(definition)
         }
       }

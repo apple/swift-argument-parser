@@ -150,7 +150,7 @@ extension ArgumentSet {
   /// Create a unary / argument that parses the string as `A`.
   init<A: ExpressibleByArgument>(key: InputKey, kind: ArgumentDefinition.Kind, parsingStrategy: ArgumentDefinition.ParsingStrategy = .default, parseType type: A.Type, name: NameSpecification, default initial: A?, help: ArgumentHelp?, completion: CompletionKind) {
     var arg = ArgumentDefinition(key: key, kind: kind, parsingStrategy: parsingStrategy, parser: A.init(argument:), default: initial, completion: completion)
-    arg.help.help = help
+    arg.help.updateArgumentHelp(help: help)
     arg.help.defaultValue = initial.map { "\($0.defaultValueDescription)" }
     self.init(arg)
   }
@@ -159,15 +159,6 @@ extension ArgumentSet {
 extension ArgumentDefinition {
   /// Create a unary / argument that parses using the given closure.
   init<A>(key: InputKey, kind: ArgumentDefinition.Kind, parsingStrategy: ParsingStrategy = .default, parser: @escaping (String) -> A?, parseType type: A.Type = A.self, default initial: A?, completion: CompletionKind) {
-    let initialValueCreator: (InputOrigin, inout ParsedValues) throws -> Void
-    if let initialValue = initial {
-      initialValueCreator = { origin, values in
-        values.set(initialValue, forKey: key, inputOrigin: origin)
-      }
-    } else {
-      initialValueCreator = { _, _ in }
-    }
-    
     self.init(kind: kind, help: ArgumentDefinition.Help(key: key), completion: completion, parsingStrategy: parsingStrategy, update: .unary({ (origin, name, value, values) in
       guard let v = parser(value) else {
         throw ParserError.unableToParseValue(origin, name, value, forKey: key)

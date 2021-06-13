@@ -36,51 +36,48 @@ extension UsageGenerator {
   ///
   /// In `roff`.
   var synopsis: String {
-    let definitionSynopsis = definition.synopsis
-    switch definitionSynopsis.count {
+    // Filter out options that should not be displayed.
+    var options = definition
+      .filter { $0.help.shouldDisplay }
+    switch options.count {
     case 0:
       return toolName
     case let x where x > 12:
       // When we have too many options, keep required and positional arguments,
       // but discard the rest.
-      let synopsis: [String] = definition.compactMap { argument in
-        guard argument.isPositional || !argument.help.options.contains(.isOptional) else {
-          return nil
-        }
-        return argument.synopsis
+      options = options.filter {
+        $0.isPositional || !$0.help.options.contains(.isOptional)
       }
-      if !synopsis.isEmpty, synopsis.count <= 12 {
-        return "\(toolName) [<options>] \(synopsis.joined(separator: " "))"
+      // If there are between 1 and 12 options left, print them, otherwise print
+      // a simplified usage string.
+      if !options.isEmpty, options.count <= 12 {
+        let synopsis = options
+          .map { $0.synopsis }
+          .joined(separator: " ")
+        return "\(toolName) [<options>] \(synopsis)"
       }
       return "\(toolName) <options>"
     default:
-      return "\(toolName) \(definition.synopsis.joined(separator: " "))"
+      let synopsis = options
+        .map { $0.synopsis }
+        .joined(separator: " ")
+      return "\(toolName) \(synopsis)"
     }
-  }
-}
-
-extension ArgumentSet {
-  var synopsis: [String] {
-    return self
-      .compactMap { $0.synopsis }
   }
 }
 
 extension ArgumentDefinition {
-  var synopsisForHelp: String? {
-    guard help.help?.shouldDisplay != false else {
-      return nil
-    }
-    
+  var synopsisForHelp: String {
     switch kind {
     case .named:
-      let joinedSynopsisString = partitionedNames
+      let joinedSynopsisString = names
+        .partitioned
         .map { $0.synopsisString }
         .joined(separator: ", ")
-      
+
       switch update {
       case .unary:
-        return "\(joinedSynopsisString) <\(synopsisValueName ?? "")>"
+        return "\(joinedSynopsisString) <\(valueName)>"
       case .nullary:
         return joinedSynopsisString
       }
@@ -90,15 +87,17 @@ extension ArgumentDefinition {
       return ""
     }
   }
-  
-  var unadornedSynopsis: String? {
+
+  var unadornedSynopsis: String {
     switch kind {
     case .named:
-      guard let name = preferredNameForSynopsis else { return nil }
-      
+      guard let name = names.preferredName else {
+        fatalError("preferredName cannot be nil for named arguments")
+      }
+
       switch update {
       case .unary:
-        return "\(name.synopsisString) <\(synopsisValueName ?? "value")>"
+        return "\(name.synopsisString) <\(valueName)>"
       case .nullary:
         return name.synopsisString
       }
@@ -108,36 +107,16 @@ extension ArgumentDefinition {
       return ""
     }
   }
-  
-  var synopsis: String? {
-    guard help.help?.shouldDisplay != false else {
-      return nil
+
+  var synopsis: String {
+    var synopsis = unadornedSynopsis
+    if help.options.contains(.isRepeating) {
+      synopsis += " ..."
     }
-    
-    guard !help.options.contains(.isOptional) else {
-      var n = self
-      n.help.options.remove(.isOptional)
-      return n.synopsis.flatMap { "[\($0)]" }
+    if help.options.contains(.isOptional) {
+      synopsis = "[\(synopsis)]"
     }
-    guard !help.options.contains(.isRepeating) else {
-      var n = self
-      n.help.options.remove(.isRepeating)
-      return n.synopsis.flatMap { "\($0) ..." }
-    }
-    
-    return unadornedSynopsis
-  }
-  
-  var partitionedNames: [Name] {
-    return names.filter{ $0.isShort } + names.filter{ !$0.isShort }
-  }
-  
-  var preferredNameForSynopsis: Name? {
-    names.first { !$0.isShort } ?? names.first
-  }
-  
-  var synopsisValueName: String? {
-    valueName
+    return synopsis
   }
 }
 
@@ -237,6 +216,10 @@ extension ErrorMessageGenerator {
     switch error {
     case .unableToParseValue(let o, let n, let v, forKey: let k, originalError: let e):
       return unableToParseHelpMessage(origin: o, name: n, value: v, key: k, error: e)
+    case .missingValueForOption(_, let n):
+      return missingValueForOptionHelpMessage(name: n)
+    case .noValue(let k):
+      return noValueHelpMessage(key: k)
     default:
       return nil
     }
@@ -245,27 +228,20 @@ extension ErrorMessageGenerator {
 
 extension ErrorMessageGenerator {
   func arguments(for key: InputKey) -> [ArgumentDefinition] {
-    return arguments
-      .filter {
-        $0.help.keys.contains(key)
-    }
+    arguments
+      .filter { $0.help.keys.contains(key) }
   }
   
   func help(for key: InputKey) -> ArgumentDefinition.Help? {
-    return arguments
+    arguments
       .first { $0.help.keys.contains(key) }
       .map { $0.help }
   }
   
   func valueName(for name: Name) -> String? {
-    for arg in arguments {
-      guard
-        arg.names.contains(name),
-        let v = arg.synopsisValueName
-        else { continue }
-      return v
-    }
-    return nil
+    arguments
+      .first { $0.names.contains(name) }
+      .map { $0.valueName }
   }
 }
 
@@ -317,7 +293,7 @@ extension ErrorMessageGenerator {
       })
     
     if let suggestion = suggestion {
-        return "Unknown option '\(name.synopsisString)'. Did you mean '\(suggestion.synopsisString)'?"
+      return "Unknown option '\(name.synopsisString)'. Did you mean '\(suggestion.synopsisString)'?"
     }
     return "Unknown option '\(name.synopsisString)'"
   }
@@ -367,8 +343,10 @@ extension ErrorMessageGenerator {
   
   func noValueMessage(key: InputKey) -> String? {
     let args = arguments(for: key)
-    let possibilities = args.compactMap {
-      $0.nonOptional.synopsis
+    let possibilities: [String] = args.compactMap {
+      $0.help.shouldDisplay
+        ? $0.nonOptional.synopsis
+        : nil
     }
     switch possibilities.count {
     case 0:
@@ -382,7 +360,7 @@ extension ErrorMessageGenerator {
   }
   
   func unableToParseHelpMessage(origin: InputOrigin, name: Name?, value: String, key: InputKey, error: Error?) -> String {
-    guard let abstract = help(for: key)?.help?.abstract else { return "" }
+    guard let abstract = help(for: key)?.abstract else { return "" }
     
     let valueName = arguments(for: key).first?.valueName
     
@@ -394,6 +372,25 @@ extension ErrorMessageGenerator {
     case (_, _):
       return ""
     }
+  }
+
+  func missingValueForOptionHelpMessage(name: Name) -> String {
+    guard let arg = arguments.first(where: { $0.names.contains(name) }) else {
+      return ""
+    }
+
+    let help = arg.help.abstract
+    return "\(name.synopsisString) <\(arg.valueName)>  \(help)"
+  }
+
+  func noValueHelpMessage(key: InputKey) -> String {
+    guard let abstract = help(for: key)?.abstract else { return "" }
+    guard let arg = arguments(for: key).first else { return "" }
+
+    if let synopsisString = arg.names.first?.synopsisString {
+      return "\(synopsisString) <\(arg.valueName)>  \(abstract)"
+    }
+    return "<\(arg.valueName)>  \(abstract)"
   }
   
   func unableToParseValueMessage(origin: InputOrigin, name: Name?, value: String, key: InputKey, error: Error?) -> String {
