@@ -61,7 +61,7 @@ extension DumpHelpGenerationTests {
                   "valueName" : "arg-with-help",
                   "isRequired" : true,
                   "discussion" : "",
-                  "abstract" : "argument with help "
+                  "abstract" : "argument with help"
                 },
                 {
                   "defaultValue" : "1",
@@ -88,7 +88,7 @@ extension DumpHelpGenerationTests {
                     "--int-option"
                   ],
                   "discussion" : "",
-                  "abstract" : "int value option "
+                  "abstract" : "int value option"
                 },
                 {
                   "defaultValue" : "0",
@@ -160,7 +160,7 @@ extension DumpHelpGenerationTests {
             "valueName" : "values",
             "isRequired" : false,
             "discussion" : "",
-            "abstract" : "A group of integers to operate on. "
+            "abstract" : "A group of integers to operate on."
           }
         ],
         "options" : [
@@ -168,10 +168,11 @@ extension DumpHelpGenerationTests {
             "valueName" : "hex-output",
             "isRequired" : false,
             "name" : [
-              "--hex-output"
+              "--hex-output",
+              "-x"
             ],
             "discussion" : "",
-            "abstract" : "Use hexadecimal notation for the result. "
+            "abstract" : "Use hexadecimal notation for the result."
           },
           {
             "isRequired" : false,
@@ -206,7 +207,7 @@ extension DumpHelpGenerationTests {
             "valueName" : "values",
             "isRequired" : false,
             "discussion" : "",
-            "abstract" : "A group of integers to operate on. "
+            "abstract" : "A group of integers to operate on."
           }
         ],
         "options" : [
@@ -214,10 +215,11 @@ extension DumpHelpGenerationTests {
             "valueName" : "hex-output",
             "isRequired" : false,
             "name" : [
-              "--hex-output"
+              "--hex-output",
+              "-x"
             ],
             "discussion" : "",
-            "abstract" : "Use hexadecimal notation for the result. "
+            "abstract" : "Use hexadecimal notation for the result."
           },
           {
             "isRequired" : false,
@@ -262,7 +264,7 @@ extension DumpHelpGenerationTests {
                 "valueName" : "values",
                 "isRequired" : false,
                 "discussion" : "",
-                "abstract" : "A group of floating-point values to operate on. "
+                "abstract" : "A group of floating-point values to operate on."
               }
             ],
             "options" : [
@@ -309,7 +311,7 @@ extension DumpHelpGenerationTests {
                 "valueName" : "values",
                 "isRequired" : false,
                 "discussion" : "",
-                "abstract" : "A group of floating-point values to operate on. "
+                "abstract" : "A group of floating-point values to operate on."
               }
             ],
             "options" : [
@@ -358,7 +360,7 @@ extension DumpHelpGenerationTests {
                 "valueName" : "values",
                 "isRequired" : false,
                 "discussion" : "",
-                "abstract" : "A group of floating-point values to operate on. "
+                "abstract" : "A group of floating-point values to operate on."
               }
             ],
             "options" : [
@@ -486,7 +488,7 @@ extension DumpHelpGenerationTests {
             "valueName" : "values",
             "isRequired" : false,
             "discussion" : "",
-            "abstract" : "A group of floating-point values to operate on. "
+            "abstract" : "A group of floating-point values to operate on."
           }
         ],
         "options" : [
@@ -533,7 +535,7 @@ extension DumpHelpGenerationTests {
             "valueName" : "values",
             "isRequired" : false,
             "discussion" : "",
-            "abstract" : "A group of floating-point values to operate on. "
+            "abstract" : "A group of floating-point values to operate on."
           }
         ],
         "options" : [
@@ -582,7 +584,7 @@ extension DumpHelpGenerationTests {
             "valueName" : "values",
             "isRequired" : false,
             "discussion" : "",
-            "abstract" : "A group of floating-point values to operate on. "
+            "abstract" : "A group of floating-point values to operate on."
           }
         ],
         "options" : [
@@ -679,7 +681,7 @@ extension DumpHelpGenerationTests {
         "valueName" : "values",
         "isRequired" : false,
         "discussion" : "",
-        "abstract" : "A group of integers to operate on. "
+        "abstract" : "A group of integers to operate on."
       }
     ],
     "options" : [
@@ -687,10 +689,11 @@ extension DumpHelpGenerationTests {
         "valueName" : "hex-output",
         "isRequired" : false,
         "name" : [
-          "--hex-output"
+          "--hex-output",
+          "-x"
         ],
         "discussion" : "",
-        "abstract" : "Use hexadecimal notation for the result. "
+        "abstract" : "Use hexadecimal notation for the result."
       },
       {
         "isRequired" : false,
@@ -728,7 +731,7 @@ extension DumpHelpGenerationTests {
         "valueName" : "values",
         "isRequired" : false,
         "discussion" : "",
-        "abstract" : "A group of integers to operate on. "
+        "abstract" : "A group of integers to operate on."
       }
     ],
     "options" : [
@@ -736,10 +739,11 @@ extension DumpHelpGenerationTests {
         "valueName" : "hex-output",
         "isRequired" : false,
         "name" : [
-          "--hex-output"
+          "--hex-output",
+          "-x"
         ],
         "discussion" : "",
-        "abstract" : "Use hexadecimal notation for the result. "
+        "abstract" : "Use hexadecimal notation for the result."
       },
       {
         "isRequired" : false,
