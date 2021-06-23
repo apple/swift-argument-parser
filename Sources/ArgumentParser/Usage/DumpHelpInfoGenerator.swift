@@ -110,28 +110,29 @@ internal struct DumpHelpInfoGenerator {
       
       if arg.help.isComposite {
         var groupedArgs = [arg]
-        let defaultValue = arg.help.defaultValue.map { "(default: \($0))" } ?? ""
+        let defaultValue: String? = arg.help.defaultValue.map { "(default: \($0))" }
         while i < args.count - 1 && args[i + 1].help.keys == arg.help.keys {
           groupedArgs.append(args[i + 1])
           i += 1
         }
         var descriptionString: String?
         for arg in groupedArgs {
-          descriptionString = arg.help.abstract
+          descriptionString = arg.help.abstract.count > 0 ? arg.help.abstract : nil
           break
         }
         description = [descriptionString, defaultValue]
           .compactMap { $0 }
           .joined(separator: " ")
       } else {
-        let defaultValue = arg.help.defaultValue.flatMap { $0.isEmpty ? nil : "(default: \($0))" } ?? ""
-        //synopsis = arg.synopsisForHelp ?? ""
+        let defaultValue = arg.help.defaultValue.flatMap { $0.isEmpty ? nil : "(default: \($0))" }
         description = [arg.help.abstract, defaultValue]
           .compactMap { $0 }
           .joined(separator: " ")
       }
-      
-      let name:[String]? = arg.isPositional ? nil : arg.valueName.split(separator: ",").compactMap { String($0) }
+        var name:[String]? = nil
+        if case .named(let names) = arg.kind {
+            name = arg.isPositional ? nil : names.map{ $0.synopsisString }.compactMap { String(describing: $0) }
+        }
       guard arg.isPositional == isPositional else { return nil }
       return ArgumentInfo(name: name, abstract: description, discussion: arg.help.discussion, isRequired: !arg.help.options.contains(.isOptional), defaultValue: arg.help.defaultValue, valueName: arg.valueName)
     }
