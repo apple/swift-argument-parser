@@ -92,7 +92,7 @@ add the following line to the dependencies in your `Package.swift` file:
 ```
 
 Because `ArgumentParser` is under active development,
-source-stability is only guaranteed within minor versions (e.g. between `0.0.3` and `0.0.4`).
+source-stability is only guaranteed within patch versions (e.g. between `0.0.3` and `0.0.4`).
 If you don't want potentially source-breaking package updates,
 use this dependency specification instead:
 
