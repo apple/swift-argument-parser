@@ -40,8 +40,8 @@ extension DumpHelpGenerationTests {
     var argWithDefaultValue: Int = 1
   }
   
-  public func testDumpA() {
-    AssertDump(for: A.self, equals: """
+  public func testDumpA() throws {
+    try AssertDump(for: A.self, equals: """
             {
               "command" : {
                 "name" : [
@@ -114,7 +114,7 @@ extension DumpHelpGenerationTests {
             """)
   }
   
-  public func testDumpExampleCommands() {
+  public func testDumpExampleCommands() throws {
     struct TestCase {
       let expected: String
       let commandToDump: String
@@ -127,9 +127,9 @@ extension DumpHelpGenerationTests {
       #line : .init(expected: DumpHelpGenerationTests.mathStatsDumpText, commandToDump: "math stats --dump-help")
     ]
     
-    testCases.forEach { keyAndValue in
+    try testCases.forEach { keyAndValue in
       let (key: line, value: testCase) = keyAndValue
-      AssertExecuteCommand(command: testCase.commandToDump, expected: testCase.expected, line: line)
+      try AssertJSONOutputEqual(command: testCase.commandToDump, expected: testCase.expected, line: line)
     }
   }
 }

@@ -10,7 +10,7 @@
 //===----------------------------------------------------------------------===//
 @_implementationOnly import Foundation
 
-struct CommandInfo: Codable {
+public struct CommandInfo: Codable, Equatable {
   internal init(name: [String]? = nil, abstract: String, discussion: String, isDefault: Bool? = nil) {
     self.name = name
     self.abstract = abstract
@@ -24,7 +24,7 @@ struct CommandInfo: Codable {
   var isDefault: Bool?
 }
 
-struct ArgumentInfo: Codable, Hashable {
+public struct ArgumentInfo: Codable, Hashable, Equatable {
   internal init(name: [String]? = nil, abstract: String, discussion: String, isRequired: Bool? = nil, defaultValue: String? = nil, valueName: String? = nil) {
     self.name = name
     self.abstract = abstract
@@ -47,8 +47,7 @@ struct ArgumentInfo: Codable, Hashable {
   var valueName: String?
 }
 
-internal struct DumpHelpInfoGenerator {
-  struct HelpInfo: Codable {
+public struct HelpInfo: Codable, Equatable {
     internal init(command: CommandInfo, subcommands: [HelpInfo]? = nil, arguments: [ArgumentInfo]? = nil, options: [ArgumentInfo]? = nil) {
       self.command = command
       self.subcommands = subcommands
@@ -60,7 +59,9 @@ internal struct DumpHelpInfoGenerator {
     var subcommands: [HelpInfo]?
     var arguments: [ArgumentInfo]?
     var options: [ArgumentInfo]?
-  }
+}
+
+internal struct DumpHelpInfoGenerator {
   var helpInfo: HelpInfo
   
   init(commandStack: [ParsableCommand.Type]) {
