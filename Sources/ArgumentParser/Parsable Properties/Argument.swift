@@ -139,13 +139,13 @@ extension Argument where Value: ExpressibleByArgument {
   }
 }
 
-/// The strategy to use when parsing multiple values from `@Option` arguments
+/// The strategy to use when parsing multiple values from positional arguments
 /// into an array.
 public struct ArgumentArrayParsingStrategy: Hashable {
   internal var base: ArgumentDefinition.ParsingStrategy
   
   /// Parse only unprefixed values from the command-line input, ignoring
-  /// any inputs that have a dash prefix.
+  /// any inputs that have a dash prefix. This is the default strategy.
   ///
   /// For example, for a parsable type defined as following:
   ///
@@ -166,23 +166,29 @@ public struct ArgumentArrayParsingStrategy: Hashable {
   /// Parse all remaining inputs after parsing any known options or flags,
   /// including dash-prefixed inputs and the `--` terminator.
   ///
-  /// For example, for a parsable type defined as following:
+  /// When you use the `unconditionalRemaining` parsing strategy, the parser
+  /// stops parsing flags and options as soon as it encounters a positional
+  /// argument or an unrecognized flag. For example, for a parsable type
+  /// defined as following:
   ///
   ///     struct Options: ParsableArguments {
-  ///         @Flag var verbose: Bool
-  ///         @Argument(parsing: .unconditionalRemaining) var words: [String]
+  ///         @Flag
+  ///         var verbose: Bool = false
+  ///
+  ///         @Argument(parsing: .unconditionalRemaining)
+  ///         var words: [String] = []
   ///     }
   ///
-  /// Parsing the input `--verbose one two --other` would include the `--other`
-  /// flag in `words`, resulting in
-  /// `Options(verbose: true, words: ["one", "two", "--other"])`.
+  /// Parsing the input `--verbose one two --verbose` includes the second
+  /// `--verbose` flag in `words`, resulting in
+  /// `Options(verbose: true, words: ["one", "two", "--verbose"])`.
   ///
   /// - Note: This parsing strategy can be surprising for users, particularly
   ///   when combined with options and flags. Prefer `remaining` whenever
   ///   possible, since users can always terminate options and flags with
   ///   the `--` terminator. With the `remaining` parsing strategy, the input
-  ///   `--verbose -- one two --other` would have the same result as the above
-  ///   example: `Options(verbose: true, words: ["one", "two", "--other"])`.
+  ///   `--verbose -- one two --verbose` would have the same result as the above
+  ///   example: `Options(verbose: true, words: ["one", "two", "--verbose"])`.
   public static var unconditionalRemaining: ArgumentArrayParsingStrategy {
     self.init(base: .allRemainingInput)
   }

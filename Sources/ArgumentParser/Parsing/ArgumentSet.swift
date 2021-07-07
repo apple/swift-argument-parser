@@ -320,12 +320,21 @@ extension ArgumentSet {
       }
     }
     
+    // If this argument set includes a positional argument that unconditionally
+    // captures all remaining input, we use a different behavior, where we
+    // shortcut out at the first sign of a positional argument or unrecognized
+    // option/flag label.
+    let capturesAll = self.contains(where: { arg in
+      arg.isRepeatingPositional && arg.parsingStrategy == .allRemainingInput
+    })
+    
     var result = ParsedValues(elements: [:], originalInput: all.originalInput)
     var allUsedOrigins = InputOrigin()
     
     try setInitialValues(into: &result)
     
     // Loop over all arguments:
+    ArgumentLoop:
     while let (origin, next) = inputArguments.popNext() {
       var usedOrigins = InputOrigin()
       defer {
@@ -335,6 +344,9 @@ extension ArgumentSet {
       
       switch next.value {
       case .value:
+        // If we're capturing all, the first positional value represents the
+        // start of positional input.
+        if capturesAll { break ArgumentLoop }
         // We'll parse positional values later.
         break
       case let .option(parsed):
@@ -342,8 +354,19 @@ extension ArgumentSet {
         // input. If we can't find one, just move on to the next input. We
         // defer catching leftover arguments until we've fully extracted all
         // the information for the selected command.
-        guard let argument = first(matching: parsed)
-          else { continue }
+        guard let argument = first(matching: parsed) else
+        {
+          // If we're capturing all, an unrecognized option/flag is the start
+          // of positional input. However, the first time we see an option
+          // pack (like `-fi`) it looks like a long name with a single-dash
+          // prefix, which may not match an argument even if its subcomponents
+          // will match.
+          if capturesAll && parsed.subarguments.isEmpty { break ArgumentLoop }
+          
+          // Otherwise, continue parsing. This option/flag may get picked up
+          // by a child command.
+          continue
+        }
         
         switch argument.update {
         case let .nullary(update):
