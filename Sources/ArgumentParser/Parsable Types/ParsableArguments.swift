@@ -140,6 +140,10 @@ extension ParsableArguments {
   public static func helpMessage(columns: Int? = nil) -> String {
     HelpGenerator(self).rendered(screenWidth: columns)
   }
+  
+  public static func dumpMessage(columns: Int? = nil) -> String {
+    DumpHelpInfoGenerator(self).rendered()
+  }
 
   /// Returns the exit code for the given error.
   ///

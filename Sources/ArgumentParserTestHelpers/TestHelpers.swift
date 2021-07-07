@@ -138,6 +138,30 @@ public func AssertHelp<T: ParsableCommand, U: ParsableCommand>(
     helpString, expected, file: file, line: line)
 }
 
+public func AssertDump<T: ParsableArguments>(
+  for _: T.Type, equals expected: String,
+  file: StaticString = #file, line: UInt = #line
+) throws {
+  do {
+    _ = try T.parse(["--dump-help"])
+    XCTFail(file: (file), line: line)
+  } catch {
+    let dumpString = T.fullMessage(for: error)
+    try AssertJSONEqualFromString(actual: dumpString, expected: expected, for: HelpInfo.self)
+  }
+   
+  try AssertJSONEqualFromString(actual: T.dumpMessage(), expected: expected, for: HelpInfo.self)
+}
+
+public func AssertJSONEqualFromString<T: Codable & Equatable>(actual: String, expected: String, for type: T.Type) throws {
+  let actualJSONData = try XCTUnwrap(actual.data(using: .utf8))
+  let actualDumpJSON = try XCTUnwrap(JSONDecoder().decode(type, from: actualJSONData))
+  
+  let expectedJSONData = try XCTUnwrap(expected.data(using: .utf8))
+  let expectedDumpJSON = try XCTUnwrap(JSONDecoder().decode(type, from: expectedJSONData))
+  XCTAssertEqual(actualDumpJSON, expectedDumpJSON)
+}
+
 extension XCTest {
   public var debugURL: URL {
     let bundleURL = Bundle(for: type(of: self)).bundleURL
@@ -197,5 +221,50 @@ extension XCTest {
     }
 
     XCTAssertEqual(process.terminationStatus, exitCode.rawValue, file: (file), line: line)
+  }
+  
+  public func AssertJSONOutputEqual(
+    command: String,
+    expected: String,
+    file: StaticString = #file, line: UInt = #line
+  ) throws {
+    
+    let splitCommand = command.split(separator: " ")
+    let arguments = splitCommand.dropFirst().map(String.init)
+    
+    let commandName = String(splitCommand.first!)
+    let commandURL = debugURL.appendingPathComponent(commandName)
+    guard (try? commandURL.checkResourceIsReachable()) ?? false else {
+      XCTFail("No executable at '\(commandURL.standardizedFileURL.path)'.",
+              file: (file), line: line)
+      return
+    }
+    
+    let process = Process()
+    if #available(macOS 10.13, *) {
+      process.executableURL = commandURL
+    } else {
+      process.launchPath = commandURL.path
+    }
+    process.arguments = arguments
+    
+    let output = Pipe()
+    process.standardOutput = output
+    let error = Pipe()
+    process.standardError = error
+    
+    if #available(macOS 10.13, *) {
+      guard (try? process.run()) != nil else {
+        XCTFail("Couldn't run command process.", file: (file), line: line)
+        return
+      }
+    } else {
+      process.launch()
+    }
+    process.waitUntilExit()
+    
+    let outputString = try XCTUnwrap(String(data: output.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8))
+    XCTAssertTrue(error.fileHandleForReading.readDataToEndOfFile().isEmpty, "Error occured with `--dump-help`")
+    try AssertJSONEqualFromString(actual: outputString, expected: expected, for: HelpInfo.self)
   }
 }

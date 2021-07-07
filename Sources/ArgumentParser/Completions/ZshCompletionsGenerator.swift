@@ -36,6 +36,7 @@ struct ZshCompletionsGenerator {
     let isRootCommand = commands.count == 1
     
     var args = generateCompletionArguments(commands)
+    args.append("'(--dump-help)'{--dump-help}'[Dump help information.]'")
     
     var subcommands = type.configuration.subcommands
     var subcommandHandler = ""
