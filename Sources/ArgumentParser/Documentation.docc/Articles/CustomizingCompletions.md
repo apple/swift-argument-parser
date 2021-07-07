@@ -1,6 +1,6 @@
 # Customizing Completions
 
-Summary
+Provide custom shell completions for your command-line tool's arguments and options.
 
 ## Overview
 

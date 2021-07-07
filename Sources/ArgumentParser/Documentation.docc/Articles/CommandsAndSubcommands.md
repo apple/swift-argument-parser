@@ -1,5 +1,9 @@
 # Defining Commands and Subcommands
 
+Break complex command-line tools into a tree of subcommands.
+
+## Overview
+
 When command-line programs grow larger, it can be useful to divide them into a group of smaller programs, providing an interface through subcommands. Utilities such as `git` and the Swift package manager are able to provide varied interfaces for each of their sub-functions by implementing subcommands such as `git branch` or `swift package init`.
 
 Generally, these subcommands each have their own configuration options, as well as options that are shared across several or all aspects of the larger program.
