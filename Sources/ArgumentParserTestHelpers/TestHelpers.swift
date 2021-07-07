@@ -9,8 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+@_spi(ToolInfo) import ArgumentParser
 import XCTest
-import ArgumentParser
 
 // extensions to the ParsableArguments protocol to facilitate XCTestExpectation support
 public protocol TestableParsableArguments: ParsableArguments {
@@ -147,16 +147,16 @@ public func AssertDump<T: ParsableArguments>(
     XCTFail(file: (file), line: line)
   } catch {
     let dumpString = T.fullMessage(for: error)
-    try AssertJSONEqualFromString(actual: dumpString, expected: expected, for: HelpInfo.self)
+    try AssertJSONEqualFromString(actual: dumpString, expected: expected, for: ToolInfoV0.self)
   }
-   
-  try AssertJSONEqualFromString(actual: T.dumpMessage(), expected: expected, for: HelpInfo.self)
+
+  try AssertJSONEqualFromString(actual: T.dumpMessage(), expected: expected, for: ToolInfoV0.self)
 }
 
 public func AssertJSONEqualFromString<T: Codable & Equatable>(actual: String, expected: String, for type: T.Type) throws {
   let actualJSONData = try XCTUnwrap(actual.data(using: .utf8))
   let actualDumpJSON = try XCTUnwrap(JSONDecoder().decode(type, from: actualJSONData))
-  
+
   let expectedJSONData = try XCTUnwrap(expected.data(using: .utf8))
   let expectedDumpJSON = try XCTUnwrap(JSONDecoder().decode(type, from: expectedJSONData))
   XCTAssertEqual(actualDumpJSON, expectedDumpJSON)
@@ -222,16 +222,16 @@ extension XCTest {
 
     XCTAssertEqual(process.terminationStatus, exitCode.rawValue, file: (file), line: line)
   }
-  
+
   public func AssertJSONOutputEqual(
     command: String,
     expected: String,
     file: StaticString = #file, line: UInt = #line
   ) throws {
-    
+
     let splitCommand = command.split(separator: " ")
     let arguments = splitCommand.dropFirst().map(String.init)
-    
+
     let commandName = String(splitCommand.first!)
     let commandURL = debugURL.appendingPathComponent(commandName)
     guard (try? commandURL.checkResourceIsReachable()) ?? false else {
@@ -239,7 +239,7 @@ extension XCTest {
               file: (file), line: line)
       return
     }
-    
+
     let process = Process()
     if #available(macOS 10.13, *) {
       process.executableURL = commandURL
@@ -247,12 +247,12 @@ extension XCTest {
       process.launchPath = commandURL.path
     }
     process.arguments = arguments
-    
+
     let output = Pipe()
     process.standardOutput = output
     let error = Pipe()
     process.standardError = error
-    
+
     if #available(macOS 10.13, *) {
       guard (try? process.run()) != nil else {
         XCTFail("Couldn't run command process.", file: (file), line: line)
@@ -262,9 +262,9 @@ extension XCTest {
       process.launch()
     }
     process.waitUntilExit()
-    
+
     let outputString = try XCTUnwrap(String(data: output.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8))
-    XCTAssertTrue(error.fileHandleForReading.readDataToEndOfFile().isEmpty, "Error occured with `--dump-help`")
-    try AssertJSONEqualFromString(actual: outputString, expected: expected, for: HelpInfo.self)
+    XCTAssertTrue(error.fileHandleForReading.readDataToEndOfFile().isEmpty, "Error occurred with `--dump-help`")
+    try AssertJSONEqualFromString(actual: outputString, expected: expected, for: ToolInfoV0.self)
   }
 }
