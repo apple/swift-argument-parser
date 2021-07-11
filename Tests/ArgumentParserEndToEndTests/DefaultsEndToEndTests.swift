@@ -614,7 +614,6 @@ extension DefaultsEndToEndTests {
 
 fileprivate struct Main: ParsableCommand {
   static var configuration = CommandConfiguration(
-    subcommands: [Sub.self],
     defaultSubcommand: Sub.self
   )
   

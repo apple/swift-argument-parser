@@ -44,6 +44,10 @@ extension ParsableCommand {
   public mutating func run() throws {
     throw CleanExit.helpRequest(self)
   }
+  
+  static var subcommands: [ParsableCommand.Type] {
+    configuration.subcommands ?? discoverSubcommands(for: Self.self)
+  }
 }
 
 // MARK: - API

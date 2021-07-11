@@ -21,11 +21,6 @@ struct Math: ParsableCommand {
         // Commands can define a version for automatic '--version' support.
         version: "1.0.0",
 
-        // Pass an array to `subcommands` to set up a nested tree of subcommands.
-        // With language support for type-level introspection, this could be
-        // provided by automatically finding nested `ParsableCommand` types.
-        subcommands: [Add.self, Multiply.self, Statistics.self],
-
         // A default subcommand, when provided, is automatically selected if a
         // subcommand is not given on the command line.
         defaultSubcommand: Add.self)
@@ -82,8 +77,7 @@ extension Math {
             // Command names are automatically generated from the type name
             // by default; you can specify an override here.
             commandName: "stats",
-            abstract: "Calculate descriptive statistics.",
-            subcommands: [Average.self, StandardDeviation.self, Quantiles.self])
+            abstract: "Calculate descriptive statistics.")
     }
 }
 

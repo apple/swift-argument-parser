@@ -39,7 +39,10 @@ public struct CommandConfiguration {
   public var shouldDisplay: Bool
   
   /// An array of the types that define subcommands for this command.
-  public var subcommands: [ParsableCommand.Type]
+  ///
+  /// If `nil`, the argument parser will automatically discover nested
+  /// types who conform to `ParsableCommand` and use them as subcommands.
+  public var subcommands: [ParsableCommand.Type]?
   
   /// The default command type to run if no subcommand is given.
   public var defaultSubcommand: ParsableCommand.Type?
@@ -74,7 +77,7 @@ public struct CommandConfiguration {
     discussion: String = "",
     version: String = "",
     shouldDisplay: Bool = true,
-    subcommands: [ParsableCommand.Type] = [],
+    subcommands: [ParsableCommand.Type]? = nil,
     defaultSubcommand: ParsableCommand.Type? = nil,
     helpNames: NameSpecification? = nil
   ) {
@@ -97,7 +100,7 @@ public struct CommandConfiguration {
     discussion: String = "",
     version: String = "",
     shouldDisplay: Bool = true,
-    subcommands: [ParsableCommand.Type] = [],
+    subcommands: [ParsableCommand.Type]? = nil,
     defaultSubcommand: ParsableCommand.Type? = nil,
     helpNames: NameSpecification? = nil
   ) {

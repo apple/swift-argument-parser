@@ -117,7 +117,7 @@ internal struct HelpGenerator {
     }
 
     var usageString = UsageGenerator(toolName: toolName, definition: [currentArgSet]).synopsis
-    if !currentCommand.configuration.subcommands.isEmpty {
+    if !currentCommand.subcommands.isEmpty {
       if usageString.last != " " { usageString += " " }
       usageString += "<subcommand>"
     }
@@ -202,9 +202,10 @@ internal struct HelpGenerator {
       }
     }
     
-    let configuration = commandStack.last!.configuration
+    let command = commandStack.last!
+    let configuration = command.configuration
     let subcommandElements: [Section.Element] =
-      configuration.subcommands.compactMap { command in
+      command.subcommands.compactMap { command in
         guard command.configuration.shouldDisplay else { return nil }
         var label = command._commandName
         if command == configuration.defaultSubcommand {

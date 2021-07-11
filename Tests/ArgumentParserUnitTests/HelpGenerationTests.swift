@@ -264,7 +264,6 @@ extension HelpGenerationTests {
       @Argument
       var argument: String = ""
     }
-    static var configuration = CommandConfiguration(subcommands: [CommandWithVeryLongName.self,ShortCommand.self,AnotherCommandWithVeryLongName.self,AnotherCommand.self])
   }
 
   func testHelpWithSubcommands() {
@@ -512,8 +511,7 @@ extension HelpGenerationTests {
 extension HelpGenerationTests {
   private struct ParserBug: ParsableCommand {
     static let configuration = CommandConfiguration(
-      commandName: "parserBug",
-      subcommands: [Sub.self])
+      commandName: "parserBug")
     
     struct CommonOptions: ParsableCommand {
       @Flag(help: "example flag")
