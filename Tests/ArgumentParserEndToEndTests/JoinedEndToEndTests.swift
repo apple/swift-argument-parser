@@ -122,7 +122,6 @@ extension JoinedEndToEndTests {
   }
   
   func testArrayValueParsing_Fails() throws {
-    XCTAssertThrowsError(try Bar.parse(["-D"]))
     XCTAssertThrowsError(try Bar.parse(["-Ddebug1", "debug2"]))
   }
 }

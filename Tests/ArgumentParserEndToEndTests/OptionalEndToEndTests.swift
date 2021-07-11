@@ -206,3 +206,158 @@ extension OptionalEndToEndTests {
     XCTAssertThrowsError(try Bar.parse(["-f", "--name", "A"]))
   }
 }
+
+// MARK: -
+
+fileprivate struct ExpressibleByArgumentArrays: ParsableArguments {
+  @Option(parsing: .singleValue) var singleValue: [String]?
+  @Option(parsing: .unconditionalSingleValue) var unconditionalSingleValue: [String]?
+  @Option(parsing: .upToNextOption) var upToNextOption: [String]?
+  @Option(parsing: .remaining) var remaining: [String]?
+}
+
+extension OptionalEndToEndTests {
+  func testParsing_Optional_ExpressibleByArgument_Arrays() throws {
+    AssertParse(ExpressibleByArgumentArrays.self, []) { foo in
+      XCTAssertNil(foo.singleValue)
+      XCTAssertNil(foo.unconditionalSingleValue)
+      XCTAssertNil(foo.upToNextOption)
+      XCTAssertNil(foo.remaining)
+    }
+
+    AssertParse(ExpressibleByArgumentArrays.self, ["--single-value"]) { foo in
+      XCTAssertEqual(foo.singleValue, [])
+      XCTAssertNil(foo.unconditionalSingleValue)
+      XCTAssertNil(foo.upToNextOption)
+      XCTAssertNil(foo.remaining)
+    }
+
+    AssertParse(ExpressibleByArgumentArrays.self, ["--single-value", "a"]) { foo in
+      XCTAssertEqual(foo.singleValue, ["a"])
+      XCTAssertNil(foo.unconditionalSingleValue)
+      XCTAssertNil(foo.upToNextOption)
+      XCTAssertNil(foo.remaining)
+    }
+
+    AssertParse(ExpressibleByArgumentArrays.self, ["--unconditional-single-value"]) { foo in
+      XCTAssertNil(foo.singleValue)
+      XCTAssertEqual(foo.unconditionalSingleValue, [])
+      XCTAssertNil(foo.upToNextOption)
+      XCTAssertNil(foo.remaining)
+    }
+
+    AssertParse(ExpressibleByArgumentArrays.self, ["--unconditional-single-value", "b"]) { foo in
+      XCTAssertNil(foo.singleValue)
+      XCTAssertEqual(foo.unconditionalSingleValue, ["b"])
+      XCTAssertNil(foo.upToNextOption)
+      XCTAssertNil(foo.remaining)
+    }
+
+    AssertParse(ExpressibleByArgumentArrays.self, ["--up-to-next-option"]) { foo in
+      XCTAssertNil(foo.singleValue)
+      XCTAssertNil(foo.unconditionalSingleValue)
+      XCTAssertEqual(foo.upToNextOption, [])
+      XCTAssertNil(foo.remaining)
+    }
+
+    AssertParse(ExpressibleByArgumentArrays.self, ["--up-to-next-option", "c"]) { foo in
+      XCTAssertNil(foo.singleValue)
+      XCTAssertNil(foo.unconditionalSingleValue)
+      XCTAssertEqual(foo.upToNextOption, ["c"])
+      XCTAssertNil(foo.remaining)
+    }
+
+    AssertParse(ExpressibleByArgumentArrays.self, ["--remaining"]) { foo in
+      XCTAssertNil(foo.singleValue)
+      XCTAssertNil(foo.unconditionalSingleValue)
+      XCTAssertNil(foo.upToNextOption)
+      XCTAssertEqual(foo.remaining, [])
+    }
+
+    AssertParse(ExpressibleByArgumentArrays.self, ["--remaining", "d"]) { foo in
+      XCTAssertNil(foo.singleValue)
+      XCTAssertNil(foo.unconditionalSingleValue)
+      XCTAssertNil(foo.upToNextOption)
+      XCTAssertEqual(foo.remaining, ["d"])
+    }
+  }
+}
+
+// MARK: -
+
+fileprivate struct NonExpressibleByArgumentArrays: ParsableArguments {
+  struct Name: RawRepresentable, Equatable {
+    var rawValue: String
+  }
+  @Option(parsing: .singleValue, transform: Name.init) var singleValue: [Name]?
+  @Option(parsing: .unconditionalSingleValue, transform: Name.init) var unconditionalSingleValue: [Name]?
+  @Option(parsing: .upToNextOption, transform: Name.init) var upToNextOption: [Name]?
+  @Option(parsing: .remaining, transform: Name.init) var remaining: [Name]?
+}
+
+extension OptionalEndToEndTests {
+  func testParsing_Optional_NonExpressibleByArgument_Arrays() throws {
+    AssertParse(NonExpressibleByArgumentArrays.self, []) { foo in
+      XCTAssertNil(foo.singleValue)
+      XCTAssertNil(foo.unconditionalSingleValue)
+      XCTAssertNil(foo.upToNextOption)
+      XCTAssertNil(foo.remaining)
+    }
+
+    AssertParse(NonExpressibleByArgumentArrays.self, ["--single-value"]) { foo in
+      XCTAssertEqual(foo.singleValue, [])
+      XCTAssertNil(foo.unconditionalSingleValue)
+      XCTAssertNil(foo.upToNextOption)
+      XCTAssertNil(foo.remaining)
+    }
+
+    AssertParse(NonExpressibleByArgumentArrays.self, ["--single-value", "a"]) { foo in
+      XCTAssertEqual(foo.singleValue, [NonExpressibleByArgumentArrays.Name(rawValue: "a")])
+      XCTAssertNil(foo.unconditionalSingleValue)
+      XCTAssertNil(foo.upToNextOption)
+      XCTAssertNil(foo.remaining)
+    }
+
+    AssertParse(NonExpressibleByArgumentArrays.self, ["--unconditional-single-value"]) { foo in
+      XCTAssertNil(foo.singleValue)
+      XCTAssertEqual(foo.unconditionalSingleValue, [])
+      XCTAssertNil(foo.upToNextOption)
+      XCTAssertNil(foo.remaining)
+    }
+
+    AssertParse(NonExpressibleByArgumentArrays.self, ["--unconditional-single-value", "b"]) { foo in
+      XCTAssertNil(foo.singleValue)
+      XCTAssertEqual(foo.unconditionalSingleValue, [NonExpressibleByArgumentArrays.Name(rawValue: "b")])
+      XCTAssertNil(foo.upToNextOption)
+      XCTAssertNil(foo.remaining)
+    }
+
+    AssertParse(NonExpressibleByArgumentArrays.self, ["--up-to-next-option"]) { foo in
+      XCTAssertNil(foo.singleValue)
+      XCTAssertNil(foo.unconditionalSingleValue)
+      XCTAssertEqual(foo.upToNextOption, [])
+      XCTAssertNil(foo.remaining)
+    }
+
+    AssertParse(NonExpressibleByArgumentArrays.self, ["--up-to-next-option", "c"]) { foo in
+      XCTAssertNil(foo.singleValue)
+      XCTAssertNil(foo.unconditionalSingleValue)
+      XCTAssertEqual(foo.upToNextOption, [NonExpressibleByArgumentArrays.Name(rawValue: "c")])
+      XCTAssertNil(foo.remaining)
+    }
+
+    AssertParse(NonExpressibleByArgumentArrays.self, ["--remaining"]) { foo in
+      XCTAssertNil(foo.singleValue)
+      XCTAssertNil(foo.unconditionalSingleValue)
+      XCTAssertNil(foo.upToNextOption)
+      XCTAssertEqual(foo.remaining, [])
+    }
+
+    AssertParse(NonExpressibleByArgumentArrays.self, ["--remaining", "d"]) { foo in
+      XCTAssertNil(foo.singleValue)
+      XCTAssertNil(foo.unconditionalSingleValue)
+      XCTAssertNil(foo.upToNextOption)
+      XCTAssertEqual(foo.remaining, [NonExpressibleByArgumentArrays.Name(rawValue: "d")])
+    }
+  }
+}

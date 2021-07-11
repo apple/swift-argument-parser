@@ -119,6 +119,14 @@ fileprivate struct AllOptions: ParsableArguments {
   @Option() var e11: [Int] = [1, 2]
   @Option(parsing: .singleValue) var e12: [Int]
   @Option(help: "") var e13: [Int]
+  @Option(name: .long, parsing: .singleValue, help: "") var e14: [Int]?
+  @Option(parsing: .singleValue, help: "") var e15: [Int]?
+  @Option(name: .long, help: "") var e16: [Int]?
+  @Option(help: "") var e17: [Int]?
+  @Option(parsing: .singleValue) var e18: [Int]?
+  @Option(name: .long) var e19: [Int]?
+  @Option() var e20: [Int]?
+  @Option var e21: [Int]?
 
   @Option(name: .long, parsing: .singleValue, help: "", transform: { _ in 0 }) var f: [Int] = [1, 2]
   @Option(parsing: .singleValue, help: "", transform: { _ in 0 }) var f1: [Int] = [1, 2]
@@ -134,6 +142,13 @@ fileprivate struct AllOptions: ParsableArguments {
   @Option(transform: { _ in 0 }) var f11: [Int] = [1, 2]
   @Option(parsing: .singleValue, transform: { _ in 0 }) var f12: [Int]
   @Option(help: "", transform: { _ in 0 }) var f13: [Int]
+  @Option(name: .long, parsing: .singleValue, help: "", transform: { _ in 0 }) var f14: [Int]?
+  @Option(parsing: .singleValue, help: "", transform: { _ in 0 }) var f15: [Int]?
+  @Option(name: .long, help: "", transform: { _ in 0 }) var f16: [Int]?
+  @Option(help: "", transform: { _ in 0 }) var f17: [Int]?
+  @Option(parsing: .singleValue, transform: { _ in 0 }) var f18: [Int]?
+  @Option(name: .long, transform: { _ in 0 }) var f19: [Int]?
+  @Option(transform: { _ in 0 }) var f20: [Int]?
 }
 
 struct AllFlags: ParsableArguments {
