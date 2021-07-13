@@ -10,7 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 import XCTest
-@testable import ArgumentParser
+@testable @_spi(Internals) import ArgumentParser
 
 final class NameSpecificationTests: XCTestCase {
 }

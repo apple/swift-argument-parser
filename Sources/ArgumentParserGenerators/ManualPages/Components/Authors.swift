@@ -1,0 +1,31 @@
+//===----------------------------------------------------------*- swift -*-===//
+//
+// This source file is part of the Swift Argument Parser open source project
+//
+// Copyright (c) 2021 Apple Inc. and the Swift project authors
+// Licensed under Apache License v2.0 with Runtime Library Exception
+//
+// See https://swift.org/LICENSE.txt for license information
+//
+//===----------------------------------------------------------------------===//
+
+@_spi(ToolInfo)
+import ArgumentParser
+import MDoc
+
+struct Authors: MDocComponent {
+  var authors: [AuthorArgument]
+
+  var body: MDocComponent {
+    Section(title: "authors") {
+      if !authors.isEmpty {
+        "The"
+        MDocMacro.DocumentName()
+        "reference was written by"
+        ForEach(authors) { author, last in
+          Author(author: author, trailing: last ? "." : ",")
+        }
+      }
+    }
+  }
+}
