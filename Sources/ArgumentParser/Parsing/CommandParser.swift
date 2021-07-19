@@ -78,6 +78,11 @@ extension CommandParser {
     guard !split.contains(anyOf: self.commandStack.getHelpNames()) else {
       throw HelpRequested()
     }
+    
+    // Look for `--dump-help`
+    guard !split.contains(Name.long("dump-help")) else {
+      throw CommandError(commandStack: commandStack, parserError: .dumpHelpRequested)
+    }
 
     // Look for --version if any commands in the stack define a version
     if commandStack.contains(where: { !$0.configuration.version.isEmpty }) {

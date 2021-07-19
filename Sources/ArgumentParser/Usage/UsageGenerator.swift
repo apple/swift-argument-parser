@@ -161,7 +161,7 @@ struct ErrorMessageGenerator {
 extension ErrorMessageGenerator {
   func makeErrorMessage() -> String? {
     switch error {
-    case .helpRequested, .versionRequested, .completionScriptRequested, .completionScriptCustomResponse:
+    case .helpRequested, .versionRequested, .completionScriptRequested, .completionScriptCustomResponse, .dumpHelpRequested:
       return nil
 
     case .unsupportedShell(let shell?):
@@ -216,6 +216,10 @@ extension ErrorMessageGenerator {
     switch error {
     case .unableToParseValue(let o, let n, let v, forKey: let k, originalError: let e):
       return unableToParseHelpMessage(origin: o, name: n, value: v, key: k, error: e)
+    case .missingValueForOption(_, let n):
+      return missingValueForOptionHelpMessage(name: n)
+    case .noValue(let k):
+      return noValueHelpMessage(key: k)
     default:
       return nil
     }
@@ -368,6 +372,25 @@ extension ErrorMessageGenerator {
     case (_, _):
       return ""
     }
+  }
+
+  func missingValueForOptionHelpMessage(name: Name) -> String {
+    guard let arg = arguments.first(where: { $0.names.contains(name) }) else {
+      return ""
+    }
+
+    let help = arg.help.abstract
+    return "\(name.synopsisString) <\(arg.valueName)>  \(help)"
+  }
+
+  func noValueHelpMessage(key: InputKey) -> String {
+    guard let abstract = help(for: key)?.abstract else { return "" }
+    guard let arg = arguments(for: key).first else { return "" }
+
+    if let synopsisString = arg.names.first?.synopsisString {
+      return "\(synopsisString) <\(arg.valueName)>  \(abstract)"
+    }
+    return "<\(arg.valueName)>  \(abstract)"
   }
   
   func unableToParseValueMessage(origin: InputOrigin, name: Name?, value: String, key: InputKey, error: Error?) -> String {

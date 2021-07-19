@@ -44,6 +44,7 @@ struct BashCompletionsGenerator {
     // as all the subcommand names.
     let completionWords = generateArgumentWords(commands)
       + subcommands.map { $0._commandName }
+      + ["--dump-help"]
     
     // Generate additional top-level completions — these are completion lists
     // or custom function-based word lists from positional arguments.
@@ -142,14 +143,13 @@ struct BashCompletionsGenerator {
           return "$(\(command))"
         case .custom:
           // Generate a call back into the command to retrieve a completions list
-          let commandName = commands.first!._commandName
           let subcommandNames = commands.dropFirst().map { $0._commandName }.joined(separator: " ")
           // TODO: Make this work for @Arguments
           let argumentName = arg.names.preferredName?.synopsisString
                 ?? arg.help.keys.first?.rawValue ?? "---"
           
           return """
-            $(\(commandName) ---completion \(subcommandNames) -- \(argumentName) "${COMP_WORDS[@]}")
+            $("${COMP_WORDS[0]}" ---completion \(subcommandNames) -- \(argumentName) "${COMP_WORDS[@]}")
             """
         }
       }
@@ -206,8 +206,7 @@ extension ArgumentDefinition {
         
     case .custom:
       // Generate a call back into the command to retrieve a completions list
-      let commandName = commands.first!._commandName      
-      return #"COMPREPLY=( $(compgen -W "$(\#(commandName) \#(customCompletionCall(commands)) "${COMP_WORDS[@]}")" -- "$cur") )"#
+      return #"COMPREPLY=( $(compgen -W "$("${COMP_WORDS[0]}" \#(customCompletionCall(commands)) "${COMP_WORDS[@]}")" -- "$cur") )"#
     }
   }
 }

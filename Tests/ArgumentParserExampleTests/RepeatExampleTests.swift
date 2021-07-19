@@ -64,6 +64,7 @@ final class RepeatExampleTests: XCTestCase {
       command: "repeat hello --count",
       expected: """
             Error: Missing value for '--count <count>'
+            Help:  --count <count>  The number of times to repeat 'phrase'.
             Usage: repeat [--count <count>] [--include-counter] <phrase>
               See 'repeat --help' for more information.
             """,

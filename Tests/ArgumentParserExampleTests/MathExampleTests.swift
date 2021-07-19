@@ -237,7 +237,7 @@ _math() {
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
     COMPREPLY=()
-    opts="--version -h --help add multiply stats help"
+    opts="--version -h --help add multiply stats help --dump-help"
     if [[ $COMP_CWORD == "1" ]]; then
         COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
         return
@@ -263,7 +263,7 @@ _math() {
     COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
 }
 _math_add() {
-    opts="--hex-output -x --version -h --help"
+    opts="--hex-output -x --version -h --help --dump-help"
     if [[ $COMP_CWORD == "$1" ]]; then
         COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
         return
@@ -271,7 +271,7 @@ _math_add() {
     COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
 }
 _math_multiply() {
-    opts="--hex-output -x --version -h --help"
+    opts="--hex-output -x --version -h --help --dump-help"
     if [[ $COMP_CWORD == "$1" ]]; then
         COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
         return
@@ -279,7 +279,7 @@ _math_multiply() {
     COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
 }
 _math_stats() {
-    opts="--version -h --help average stdev quantiles"
+    opts="--version -h --help average stdev quantiles --dump-help"
     if [[ $COMP_CWORD == "$1" ]]; then
         COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
         return
@@ -301,7 +301,7 @@ _math_stats() {
     COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
 }
 _math_stats_average() {
-    opts="--kind --version -h --help"
+    opts="--kind --version -h --help --dump-help"
     if [[ $COMP_CWORD == "$1" ]]; then
         COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
         return
@@ -315,7 +315,7 @@ _math_stats_average() {
     COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
 }
 _math_stats_stdev() {
-    opts="--version -h --help"
+    opts="--version -h --help --dump-help"
     if [[ $COMP_CWORD == "$1" ]]; then
         COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
         return
@@ -323,9 +323,9 @@ _math_stats_stdev() {
     COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
 }
 _math_stats_quantiles() {
-    opts="--file --directory --shell --custom --version -h --help"
+    opts="--file --directory --shell --custom --version -h --help --dump-help"
     opts="$opts alphabet alligator branch braggart"
-    opts="$opts $(math ---completion stats quantiles -- customArg "${COMP_WORDS[@]}")"
+    opts="$opts $("${COMP_WORDS[0]}" ---completion stats quantiles -- customArg "${COMP_WORDS[@]}")"
     if [[ $COMP_CWORD == "$1" ]]; then
         COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
         return
@@ -344,14 +344,14 @@ _math_stats_quantiles() {
             return
         ;;
         --custom)
-            COMPREPLY=( $(compgen -W "$(math ---completion stats quantiles -- --custom "${COMP_WORDS[@]}")" -- "$cur") )
+            COMPREPLY=( $(compgen -W "$("${COMP_WORDS[0]}" ---completion stats quantiles -- --custom "${COMP_WORDS[@]}")" -- "$cur") )
             return
         ;;
     esac
     COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
 }
 _math_help() {
-    opts="--version"
+    opts="--version --dump-help"
     if [[ $COMP_CWORD == "$1" ]]; then
         COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
         return
@@ -375,6 +375,7 @@ _math() {
     args+=(
         '--version[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
+        '(--dump-help)'{--dump-help}'[Dump help information.]'
         '(-): :->command'
         '(-)*:: :->arg'
     )
@@ -419,6 +420,7 @@ _math_add() {
         ':values:'
         '--version[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
+        '(--dump-help)'{--dump-help}'[Dump help information.]'
     )
     _arguments -w -s -S $args[@] && ret=0
 
@@ -433,6 +435,7 @@ _math_multiply() {
         ':values:'
         '--version[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
+        '(--dump-help)'{--dump-help}'[Dump help information.]'
     )
     _arguments -w -s -S $args[@] && ret=0
 
@@ -445,6 +448,7 @@ _math_stats() {
     args+=(
         '--version[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
+        '(--dump-help)'{--dump-help}'[Dump help information.]'
         '(-): :->command'
         '(-)*:: :->arg'
     )
@@ -485,6 +489,7 @@ _math_stats_average() {
         ':values:'
         '--version[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
+        '(--dump-help)'{--dump-help}'[Dump help information.]'
     )
     _arguments -w -s -S $args[@] && ret=0
 
@@ -498,6 +503,7 @@ _math_stats_stdev() {
         ':values:'
         '--version[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
+        '(--dump-help)'{--dump-help}'[Dump help information.]'
     )
     _arguments -w -s -S $args[@] && ret=0
 
@@ -517,6 +523,7 @@ _math_stats_quantiles() {
         '--custom:custom:{_custom_completion $_math_commandname ---completion stats quantiles -- --custom $words}'
         '--version[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
+        '(--dump-help)'{--dump-help}'[Dump help information.]'
     )
     _arguments -w -s -S $args[@] && ret=0
 
@@ -529,6 +536,7 @@ _math_help() {
     args+=(
         ':subcommands:'
         '--version[Show the version.]'
+        '(--dump-help)'{--dump-help}'[Dump help information.]'
     )
     _arguments -w -s -S $args[@] && ret=0
 
