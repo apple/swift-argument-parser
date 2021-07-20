@@ -4,8 +4,8 @@ Straightforward, type-safe argument parsing for Swift.
 
 ## Overview
 
-`ArgumentParser` uses the names and types of the properties you declare
-to parse and validate command-line input.
+By using `ArgumentParser`, you can create a command-line interface tool
+by declaring simple Swift types.
 Begin by declaring a type that defines
 the information that you need to collect from the command line.
 Decorate each stored property with one of `ArgumentParser`'s property wrappers,
@@ -17,11 +17,11 @@ import ArgumentParser
 
 @main
 struct Repeat: ParsableCommand {
-    @Option(help: "The number of times to repeat 'phrase'.")
-    var count: Int?
-
     @Argument(help: "The phrase to repeat.")
     var phrase: String
+
+    @Option(help: "The number of times to repeat 'phrase'.")
+    var count: Int?
 
     mutating func run() throws {
         let repeatCount = count ?? .max
