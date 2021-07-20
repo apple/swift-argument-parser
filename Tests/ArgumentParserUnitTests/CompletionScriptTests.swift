@@ -151,7 +151,6 @@ _base() {
         '--path2:path2:_files'
         '--path3:path3:(a b c)'
         '(-h --help)'{-h,--help}'[Show help information.]'
-        '(--dump-help)'{--dump-help}'[Dump help information.]'
     )
     _arguments -w -s -S $args[@] && ret=0
 
@@ -174,7 +173,7 @@ _base() {
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
     COMPREPLY=()
-    opts="--name --kind --other-kind --path1 --path2 --path3 -h --help --dump-help"
+    opts="--name --kind --other-kind --path1 --path2 --path3 -h --help"
     if [[ $COMP_CWORD == "1" ]]; then
         COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
         return
@@ -224,7 +223,6 @@ _escaped-command() {
     args+=(
         '--one[Escaped chars: '"'"'\\[\\]\\\\.]:one:'
         '(-h --help)'{-h,--help}'[Show help information.]'
-        '(--dump-help)'{--dump-help}'[Dump help information.]'
     )
     _arguments -w -s -S $args[@] && ret=0
 
