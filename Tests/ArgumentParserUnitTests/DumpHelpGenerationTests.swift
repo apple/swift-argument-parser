@@ -21,7 +21,14 @@ final class DumpHelpGenerationTests: XCTestCase {
 
 extension DumpHelpGenerationTests {
   struct A: ParsableCommand {
-    @Option()
+    enum TestEnum: String, CaseIterable, ExpressibleByArgument {
+      case a, b, c
+    }
+
+    @Option
+    var enumeratedOption: TestEnum
+
+    @Option
     var noHelpOption: Int
     
     @Option(help: "int value option")
@@ -41,6 +48,7 @@ extension DumpHelpGenerationTests {
   }
   
   public func testDumpA() throws {
+    // NOTE: `Self.aDumpText` will need to be fixed once Issue #340 is resolved.
     try AssertDump(for: A.self, equals: Self.aDumpText)
   }
   
@@ -71,6 +79,23 @@ extension DumpHelpGenerationTests {
 {
   "command" : {
     "arguments" : [
+      {
+        "isOptional" : false,
+        "isRepeating" : false,
+        "kind" : "option",
+        "names" : [
+          {
+            "kind" : "long",
+            "name" : "enumerated-option"
+          }
+        ],
+        "preferredName" : {
+          "kind" : "long",
+          "name" : "enumerated-option"
+        },
+        "shouldDisplay" : true,
+        "valueName" : "enumerated-option"
+      },
       {
         "isOptional" : false,
         "isRepeating" : false,

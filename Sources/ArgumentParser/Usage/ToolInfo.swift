@@ -12,7 +12,7 @@
 @_implementationOnly import Foundation
 
 fileprivate extension Collection {
-  var `optional`: Self? { isEmpty ? nil : self }
+  var nonEmpty: Self? { isEmpty ? nil : self }
 }
 
 @_spi(ToolInfo)
@@ -59,15 +59,15 @@ public struct CommandInfoV0: Codable, Hashable {
     subcommands: [CommandInfoV0],
     arguments: [ArgumentInfoV0]
   ) {
-    self.superCommands = superCommands.optional
+    self.superCommands = superCommands.nonEmpty
 
     self.commandName = commandName
-    self.abstract = abstract.optional
-    self.discussion = discussion.optional
+    self.abstract = abstract.nonEmpty
+    self.discussion = discussion.nonEmpty
 
-    self.defaultSubcommand = defaultSubcommand?.optional
-    self.subcommands = subcommands.optional
-    self.arguments = arguments.optional
+    self.defaultSubcommand = defaultSubcommand?.nonEmpty
+    self.subcommands = subcommands.nonEmpty
+    self.arguments = arguments.nonEmpty
   }
 }
 
@@ -105,6 +105,7 @@ public struct ArgumentInfoV0: Codable, Hashable {
 
   public var valueName: String?
   public var defaultValue: String?
+  public var allValues: [String]?
 
   public var abstract: String?
   public var discussion: String?
@@ -118,6 +119,7 @@ public struct ArgumentInfoV0: Codable, Hashable {
     preferredName: NameInfoV0?,
     valueName: String?,
     defaultValue: String?,
+    allValues: [String]?,
     abstract: String?,
     discussion: String?
   ) {
@@ -127,13 +129,14 @@ public struct ArgumentInfoV0: Codable, Hashable {
     self.isOptional = isOptional
     self.isRepeating = isRepeating
 
-    self.names = names?.optional
+    self.names = names?.nonEmpty
     self.preferredName = preferredName
 
-    self.valueName = valueName?.optional
-    self.defaultValue = defaultValue?.optional
+    self.valueName = valueName?.nonEmpty
+    self.defaultValue = defaultValue?.nonEmpty
+    self.allValues = allValues?.nonEmpty
 
-    self.abstract = abstract?.optional
-    self.discussion = discussion?.optional
+    self.abstract = abstract?.nonEmpty
+    self.discussion = discussion?.nonEmpty
   }
 }

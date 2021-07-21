@@ -130,6 +130,7 @@ fileprivate extension ArgumentInfoV0 {
       preferredName: argument.names.preferredName.map(ArgumentInfoV0.NameInfoV0.init),
       valueName: argument.valueName,
       defaultValue: argument.help.defaultValue,
+      allValues: argument.help.allValues,
       abstract: argument.help.abstract,
       discussion: argument.help.discussion)
   }
