@@ -231,12 +231,14 @@ extension Argument {
       let help = ArgumentDefinition.Help(options: [], help: help, key: key)
       let arg = ArgumentDefinition(kind: .positional, help: help, completion: completion ?? .default, update: .unary({
         (origin, name, valueString, parsedValues) in
+        guard let valueString = valueString else { return false }
         do {
           let transformedValue = try transform(valueString)
           parsedValues.set(transformedValue, forKey: key, inputOrigin: origin)
         } catch {
           throw ParserError.unableToParseValue(origin, name, valueString, forKey: key, originalError: error)
         }
+        return true
       }), initial: { origin, values in
         if let v = initial {
           values.set(v, forKey: key, inputOrigin: origin)
@@ -418,6 +420,7 @@ extension Argument {
         parsingStrategy: parsingStrategy.base,
         update: .unary({
           (origin, name, valueString, parsedValues) in
+          guard let valueString = valueString else { return false }
           do {
               let transformedElement = try transform(valueString)
               parsedValues.update(forKey: key, inputOrigin: origin, initial: [Element](), closure: {
@@ -426,6 +429,7 @@ extension Argument {
             } catch {
               throw ParserError.unableToParseValue(origin, name, valueString, forKey: key, originalError: error)
           }
+          return true
         }),
         initial: setInitialValue)
       arg.help.defaultValue = helpDefaultValue
