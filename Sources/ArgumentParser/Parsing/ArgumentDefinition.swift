@@ -53,22 +53,22 @@ struct ArgumentDefinition {
     
     struct Options: OptionSet {
       var rawValue: UInt
-      
+
       static let isOptional = Options(rawValue: 1 << 0)
       static let isRepeating = Options(rawValue: 1 << 1)
     }
-    
-    init(options: Options = [], help: ArgumentHelp? = nil, defaultValue: String? = nil, key: InputKey, isComposite: Bool = false) {
+
+    init(allValues: [String] = [], options: Options = [], help: ArgumentHelp? = nil, defaultValue: String? = nil, key: InputKey, isComposite: Bool = false) {
       self.options = options
       self.defaultValue = defaultValue
       self.keys = [key]
+      self.allValues = allValues
       self.isComposite = isComposite
       updateArgumentHelp(help: help)
     }
-    
+
     init<T: ExpressibleByArgument>(type: T.Type, options: Options = [], help: ArgumentHelp? = nil, defaultValue: String? = nil, key: InputKey) {
       self.options = options
-
       self.defaultValue = defaultValue
       self.keys = [key]
       self.allValues = type.allValueStrings
