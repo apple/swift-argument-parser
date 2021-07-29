@@ -237,6 +237,10 @@ protocol ArgumentSetProvider {
   var _hiddenFromHelp: Bool { get }
 }
 
+extension ArgumentSetProvider {
+  var _hiddenFromHelp: Bool { false }
+}
+
 extension ArgumentSet {
   init(_ type: ParsableArguments.Type, creatingHelp: Bool = false) {
     
