@@ -33,6 +33,10 @@ public struct OptionGroup<Value: ParsableArguments>: Decodable, ParsedWrapper {
   internal var _parsedValue: Parsed<Value>
   internal var _hiddenFromHelp: Bool = false
   
+  // FIXME: Adding this property works around the crasher described in
+  // https://github.com/apple/swift-argument-parser/issues/338
+  internal var _dummy: Bool = false
+
   internal init(_parsedValue: Parsed<Value>) {
     self._parsedValue = _parsedValue
   }
