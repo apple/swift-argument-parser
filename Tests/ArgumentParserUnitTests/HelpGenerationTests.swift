@@ -505,6 +505,48 @@ extension HelpGenerationTests {
         """
     )
   }
+
+  struct AllValues: ParsableCommand {
+    enum Manual: Int, ExpressibleByArgument {
+      case foo
+      static var allValueStrings = ["bar"]
+    }
+
+    enum UnspecializedSynthesized: Int, CaseIterable, ExpressibleByArgument {
+      case one, two
+    }
+
+    enum SpecializedSynthesized: String, CaseIterable, ExpressibleByArgument {
+      case apple = "Apple", banana = "Banana"
+    }
+
+    @Argument var manualArgument: Manual
+    @Option var manualOption: Manual
+
+    @Argument var unspecializedSynthesizedArgument: UnspecializedSynthesized
+    @Option var unspecializedSynthesizedOption: UnspecializedSynthesized
+
+    @Argument var specializedSynthesizedArgument: SpecializedSynthesized
+    @Option var specializedSynthesizedOption: SpecializedSynthesized
+  }
+
+  func testAllValueStrings() throws {
+    XCTAssertEqual(AllValues.Manual.allValueStrings, ["bar"])
+    XCTAssertEqual(AllValues.UnspecializedSynthesized.allValueStrings, ["one", "two"])
+    XCTAssertEqual(AllValues.SpecializedSynthesized.allValueStrings, ["Apple", "Banana"])
+  }
+
+  func testAllValues() {
+    let opts = ArgumentSet(AllValues.self)
+    XCTAssertEqual(AllValues.Manual.allValueStrings, opts[0].help.allValues)
+    XCTAssertEqual(AllValues.Manual.allValueStrings, opts[1].help.allValues)
+
+    XCTAssertEqual(AllValues.UnspecializedSynthesized.allValueStrings, opts[2].help.allValues)
+    XCTAssertEqual(AllValues.UnspecializedSynthesized.allValueStrings, opts[3].help.allValues)
+
+    XCTAssertEqual(AllValues.SpecializedSynthesized.allValueStrings, opts[4].help.allValues)
+    XCTAssertEqual(AllValues.SpecializedSynthesized.allValueStrings, opts[5].help.allValues)
+  }
 }
 
 // MARK: - Issue #278 https://github.com/apple/swift-argument-parser/issues/278
