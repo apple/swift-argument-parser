@@ -586,21 +586,3 @@ extension HelpGenerationTests {
       """)
   }
 }
-
-// MARK: - Issue #340 https://github.com/apple/swift-argument-parser/issues/340
-
-extension HelpGenerationTests {
-  private struct Issue340: ParsableCommand {
-    enum Fruit: String, CaseIterable, ExpressibleByArgument {
-      case apple, banana
-    }
-
-    @Option var fruit: Fruit
-  }
-
-  func testIssue340() {
-    XCTExpectFailure("Issue 340 has not been resolved")
-    let opt = ArgumentSet(Issue340.self).first!
-    XCTAssertEqual(Issue340.Fruit.allValueStrings, opt.help.allValues)
-  }
-}

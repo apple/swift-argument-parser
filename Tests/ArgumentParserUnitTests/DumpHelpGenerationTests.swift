@@ -48,7 +48,6 @@ extension DumpHelpGenerationTests {
   }
   
   public func testDumpA() throws {
-    // NOTE: `Self.aDumpText` will need to be fixed once Issue #340 is resolved.
     try AssertDump(for: A.self, equals: Self.aDumpText)
   }
   
@@ -80,6 +79,11 @@ extension DumpHelpGenerationTests {
   "command" : {
     "arguments" : [
       {
+        "allValues" : [
+          "a",
+          "b",
+          "c"
+        ],
         "isOptional" : false,
         "isRepeating" : false,
         "kind" : "option",
@@ -460,6 +464,11 @@ extension DumpHelpGenerationTests {
             "arguments" : [
               {
                 "abstract" : "The kind of average to provide.",
+                "allValues" : [
+                  "mean",
+                  "median",
+                  "mode"
+                ],
                 "defaultValue" : "mean",
                 "isOptional" : true,
                 "isRepeating" : false,
@@ -1032,6 +1041,11 @@ extension DumpHelpGenerationTests {
         "arguments" : [
           {
             "abstract" : "The kind of average to provide.",
+            "allValues" : [
+              "mean",
+              "median",
+              "mode"
+            ],
             "defaultValue" : "mean",
             "isOptional" : true,
             "isRepeating" : false,
