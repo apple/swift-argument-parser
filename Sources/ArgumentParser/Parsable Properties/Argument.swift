@@ -27,8 +27,7 @@ public struct Argument<Value>:
   Decodable, ParsedWrapper
 {
   internal var _parsedValue: Parsed<Value>
-  internal var _hiddenFromHelp: Bool = false
-    
+
   internal init(_parsedValue: Parsed<Value>) {
     self._parsedValue = _parsedValue
   }
