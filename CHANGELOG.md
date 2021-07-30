@@ -16,6 +16,13 @@ package updates, you can specify your package dependency using
 
 ---
 
+## [0.4.4] - 2021-07-30
+
+### Fixes
+
+- Includes a workaround for a runtime crash with certain `OptionGroup`
+  configurations when a command is compiled in release mode.
+
 ## [0.4.3] - 2021-04-28
 
 ### Additions
@@ -461,7 +468,8 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 
 <!-- Link references for releases -->
 
-[Unreleased]: https://github.com/apple/swift-argument-parser/compare/0.4.3...HEAD
+[Unreleased]: https://github.com/apple/swift-argument-parser/compare/0.4.4...HEAD
+[0.4.4]: https://github.com/apple/swift-argument-parser/compare/0.4.2...0.4.4
 [0.4.3]: https://github.com/apple/swift-argument-parser/compare/0.4.2...0.4.3
 [0.4.2]: https://github.com/apple/swift-argument-parser/compare/0.4.1...0.4.2
 [0.4.1]: https://github.com/apple/swift-argument-parser/compare/0.4.0...0.4.1
