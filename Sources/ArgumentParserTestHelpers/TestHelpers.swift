@@ -10,6 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 @_spi(ToolInfo) import ArgumentParser
+import ArgumentParserToolInfo
 import XCTest
 
 // extensions to the ParsableArguments protocol to facilitate XCTestExpectation support
