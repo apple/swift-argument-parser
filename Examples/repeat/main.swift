@@ -11,34 +11,27 @@
 
 import ArgumentParser
 
-import Foundation
+struct Repeat: ParsableCommand {
+    @Option(help: "The number of times to repeat 'phrase'.")
+    var count: Int?
 
-struct CustomStruct {
-    let urlValue: URL
-    init?() {
-        return nil
+    @Flag(help: "Include a counter with each repetition.")
+    var includeCounter = false
+
+    @Argument(help: "The phrase to repeat.")
+    var phrase: String
+
+    mutating func run() throws {
+        let repeatCount = count ?? .max
+
+        for i in 1...repeatCount {
+            if includeCounter {
+                print("\(i): \(phrase)")
+            } else {
+                print(phrase)
+            }
+        }
     }
 }
 
-extension CustomStruct: ExpressibleByArgument {
-    init?(argument: String) {
-        _ = CustomStruct()
-        return nil
-    }
-}
-
-struct CustomGroup: ParsableArguments {
-    @Option()
-    var optionalOption: CustomStruct?
-}
-
-struct MainCommand: ParsableCommand {
-    @OptionGroup()
-    var group: CustomGroup
-
-    func run() {
-        print("Hello, world!")
-    }
-}
-
-MainCommand.main()
+Repeat.main()
