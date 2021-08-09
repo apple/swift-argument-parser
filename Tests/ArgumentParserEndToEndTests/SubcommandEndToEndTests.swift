@@ -136,10 +136,10 @@ fileprivate struct Math: ParsableCommand {
 }
 
 extension SubcommandEndToEndTests {
-  func testParsing_SingleCommand() throws {
+  func testParsing_SingleCommand() async throws {
     var mathCommand = try Math.parseAsRoot(["--operation", "multiply", "-v", "5", "11"])
     XCTAssertFalse(mathDidRun)
-    try mathCommand.run()
+    try await mathCommand.run()
     XCTAssertTrue(mathDidRun)
   }
 }

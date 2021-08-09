@@ -175,18 +175,16 @@ extension RepeatingEndToEndTests {
       XCTAssertNil(qux.extra)
     }
 
-    // TODO: Is this the right behavior? Or should an option always consume
-    // _at least one_ value even if it's set to `upToNextOption`.
-    AssertParse(Qux.self, ["--names", "--verbose"]) { qux in
+    AssertParse(Qux.self, ["--names", "one", "two", "--verbose", "--names", "three", "--names", "four"]) { qux in
       XCTAssertTrue(qux.verbose)
-      XCTAssertTrue(qux.names.isEmpty)
+      XCTAssertEqual(qux.names, ["one", "two", "three", "four"])
       XCTAssertNil(qux.extra)
     }
 
-    AssertParse(Qux.self, ["--names", "--verbose", "three"]) { qux in
+    AssertParse(Qux.self, ["extra", "--names", "one", "--names", "two", "--verbose", "--names", "three", "four"]) { qux in
       XCTAssertTrue(qux.verbose)
-      XCTAssertTrue(qux.names.isEmpty)
-      XCTAssertEqual(qux.extra, "three")
+      XCTAssertEqual(qux.names, ["one", "two", "three", "four"])
+      XCTAssertEqual(qux.extra, "extra")
     }
 
     AssertParse(Qux.self, ["--names", "one", "two"]) { qux in
@@ -217,8 +215,9 @@ extension RepeatingEndToEndTests {
   func testParsing_repeatingStringUpToNext_Fails() throws {
     XCTAssertThrowsError(try Qux.parse(["--names", "one", "--other"]))
     XCTAssertThrowsError(try Qux.parse(["--names", "one", "two", "--other"]))
-    // TODO: See above
     XCTAssertThrowsError(try Qux.parse(["--names", "--other"]))
+    XCTAssertThrowsError(try Qux.parse(["--names", "--verbose"]))
+    XCTAssertThrowsError(try Qux.parse(["--names", "--verbose", "three"]))
   }
 }
 
@@ -330,6 +329,7 @@ fileprivate struct Foozle: ParsableArguments {
   @Flag var verbose: Bool = false
   @Flag(name: .customShort("f")) var useFiles: Bool = false
   @Flag(name: .customShort("i")) var useStandardInput: Bool = false
+  @Option var config = "debug"
   @Argument(parsing: .unconditionalRemaining) var names: [String] = []
 }
 
@@ -351,8 +351,8 @@ extension RepeatingEndToEndTests {
     }
 
     AssertParse(Foozle.self, ["one", "two", "three", "--other", "--verbose"]) { foozle in
-      XCTAssertTrue(foozle.verbose)
-      XCTAssertEqual(foozle.names, ["one", "two", "three", "--other"])
+      XCTAssertFalse(foozle.verbose)
+      XCTAssertEqual(foozle.names, ["one", "two", "three", "--other", "--verbose"])
     }
 
     AssertParse(Foozle.self, ["--verbose", "--other", "one", "two", "three"]) { foozle in
@@ -382,11 +382,28 @@ extension RepeatingEndToEndTests {
       XCTAssertEqual(foozle.names, ["-one", "-two", "three"])
     }
 
-    AssertParse(Foozle.self, ["-one", "-two", "three", "-if"]) { foozle in
+    AssertParse(Foozle.self, ["--config", "release", "one", "two", "--config", "debug"]) { foozle in
+      XCTAssertEqual(foozle.config, "release")
+      XCTAssertEqual(foozle.names, ["one", "two", "--config", "debug"])
+    }
+
+    AssertParse(Foozle.self, ["--config", "release", "--config", "debug", "one", "two"]) { foozle in
+      XCTAssertEqual(foozle.config, "debug")
+      XCTAssertEqual(foozle.names, ["one", "two"])
+    }
+
+    AssertParse(Foozle.self, ["-if", "-one", "-two", "three"]) { foozle in
       XCTAssertFalse(foozle.verbose)
       XCTAssertTrue(foozle.useFiles)
       XCTAssertTrue(foozle.useStandardInput)
       XCTAssertEqual(foozle.names, ["-one", "-two", "three"])
+    }
+
+    AssertParse(Foozle.self, ["-one", "-two", "-three", "-if"]) { foozle in
+      XCTAssertFalse(foozle.verbose)
+      XCTAssertFalse(foozle.useFiles)
+      XCTAssertFalse(foozle.useStandardInput)
+      XCTAssertEqual(foozle.names, ["-one", "-two", "-three", "-if"])
     }
   }
 

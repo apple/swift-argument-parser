@@ -38,6 +38,14 @@ struct ArgumentSet {
   init(sets: [ArgumentSet]) {
     self.init(sets.joined())
   }
+  
+  mutating func append(_ arg: ArgumentDefinition) {
+    let newPosition = content.count
+    content.append(arg)
+    for name in arg.names where namePositions[name.nameToMatch] == nil {
+      namePositions[name.nameToMatch] = newPosition
+    }
+  }
 }
 
 extension ArgumentSet: CustomDebugStringConvertible {
@@ -48,9 +56,11 @@ extension ArgumentSet: CustomDebugStringConvertible {
   }
 }
 
-extension ArgumentSet: Sequence {
-  func makeIterator() -> Array<ArgumentDefinition>.Iterator {
-    return content.makeIterator()
+extension ArgumentSet: RandomAccessCollection {
+  var startIndex: Int { content.startIndex }
+  var endIndex: Int { content.endIndex }
+  subscript(position: Int) -> ArgumentDefinition {
+    content[position]
   }
 }
 
@@ -75,7 +85,7 @@ extension ArgumentSet {
   }
 
   static func updateFlag<Value: Equatable>(key: InputKey, value: Value, origin: InputOrigin, values: inout ParsedValues, hasUpdated: Bool, exclusivity: FlagExclusivity) throws -> Bool {
-    switch (hasUpdated, exclusivity) {
+    switch (hasUpdated, exclusivity.base) {
     case (true, .exclusive):
       // This value has already been set.
       if let previous = values.element(forKey: key) {
@@ -138,9 +148,9 @@ extension ArgumentSet {
 
 extension ArgumentSet {
   /// Create a unary / argument that parses the string as `A`.
-  init<A: ExpressibleByArgument>(key: InputKey, kind: ArgumentDefinition.Kind, parsingStrategy: ArgumentDefinition.ParsingStrategy = .nextAsValue, parseType type: A.Type, name: NameSpecification, default initial: A?, help: ArgumentHelp?, completion: CompletionKind) {
+  init<A: ExpressibleByArgument>(key: InputKey, kind: ArgumentDefinition.Kind, parsingStrategy: ArgumentDefinition.ParsingStrategy = .default, parseType type: A.Type, name: NameSpecification, default initial: A?, help: ArgumentHelp?, completion: CompletionKind) {
     var arg = ArgumentDefinition(key: key, kind: kind, parsingStrategy: parsingStrategy, parser: A.init(argument:), default: initial, completion: completion)
-    arg.help.help = help
+    arg.help.updateArgumentHelp(help: help)
     arg.help.defaultValue = initial.map { "\($0.defaultValueDescription)" }
     self.init(arg)
   }
@@ -148,25 +158,32 @@ extension ArgumentSet {
 
 extension ArgumentDefinition {
   /// Create a unary / argument that parses using the given closure.
-  init<A>(key: InputKey, kind: ArgumentDefinition.Kind, parsingStrategy: ParsingStrategy = .nextAsValue, parser: @escaping (String) -> A?, parseType type: A.Type = A.self, default initial: A?, completion: CompletionKind) {
-    let initialValueCreator: (InputOrigin, inout ParsedValues) throws -> Void
-    if let initialValue = initial {
-      initialValueCreator = { origin, values in
-        values.set(initialValue, forKey: key, inputOrigin: origin)
-      }
-    } else {
-      initialValueCreator = { _, _ in }
-    }
-    
-    self.init(kind: kind, help: ArgumentDefinition.Help(key: key), completion: completion, parsingStrategy: parsingStrategy, update: .unary({ (origin, name, value, values) in
+  init<A>(key: InputKey, kind: ArgumentDefinition.Kind, parsingStrategy: ParsingStrategy = .default, parser: @escaping (String) -> A?, parseType type: A.Type = A.self, default initial: A?, completion: CompletionKind) {
+    self.init(key: key, kind: kind, parsingStrategy: parsingStrategy, parser: parser, parseType: type, default: initial, completion: completion, help: ArgumentDefinition.Help(key: key))
+  }
+
+  /// Create a unary / argument that parses using the given closure.
+  init<A: ExpressibleByArgument>(key: InputKey, kind: ArgumentDefinition.Kind, parsingStrategy: ParsingStrategy = .default, parser: @escaping (String) -> A?, parseType type: A.Type = A.self, default initial: A?, completion: CompletionKind) {
+    self.init(key: key, kind: kind, parsingStrategy: parsingStrategy, parser: parser, parseType: type, default: initial, completion: completion, help: ArgumentDefinition.Help(type: A.self, key: key))
+  }
+
+  private init<A>(key: InputKey, kind: ArgumentDefinition.Kind, parsingStrategy: ParsingStrategy = .default, parser: @escaping (String) -> A?, parseType type: A.Type = A.self, default initial: A?, completion: CompletionKind, help: ArgumentDefinition.Help) {
+    self.init(kind: kind, help: help, completion: completion, parsingStrategy: parsingStrategy, update: .unary({ (origin, name, value, values) in
       guard let v = parser(value) else {
         throw ParserError.unableToParseValue(origin, name, value, forKey: key)
       }
       values.set(v, forKey: key, inputOrigin: origin)
-    }), initial: initialValueCreator)
-    
-    help.options.formUnion(ArgumentDefinition.Help.Options(type: type))
-    help.defaultValue = initial.map { "\($0)" }
+    }), initial: { origin, values in
+      switch kind {
+      case .default:
+        values.set(initial, forKey: key, inputOrigin: InputOrigin(element: .defaultValue))
+      case .named, .positional:
+        values.set(initial, forKey: key, inputOrigin: origin)
+      }
+    })
+
+    self.help.options.formUnion(ArgumentDefinition.Help.Options(type: type))
+    self.help.defaultValue = initial.map { "\($0)" }
     if initial != nil {
       self = self.optional
     }
@@ -199,7 +216,7 @@ extension ArgumentSet {
     ) throws {
       let origin = InputOrigin(elements: [originElement])
       switch argument.parsingStrategy {
-      case .nextAsValue:
+      case .default:
         // We need a value for this option.
         if let value = parsed.value {
           // This was `--foo=bar` style:
@@ -289,9 +306,6 @@ extension ArgumentSet {
         }
         
       case .upToNextOption:
-        // Reset initial value with the found source index
-        try argument.initial(origin, &result)
-        
         // Use an attached value if it exists...
         if let value = parsed.value {
           // This was `--foo=bar` style:
@@ -315,12 +329,21 @@ extension ArgumentSet {
       }
     }
     
+    // If this argument set includes a positional argument that unconditionally
+    // captures all remaining input, we use a different behavior, where we
+    // shortcut out at the first sign of a positional argument or unrecognized
+    // option/flag label.
+    let capturesAll = self.contains(where: { arg in
+      arg.isRepeatingPositional && arg.parsingStrategy == .allRemainingInput
+    })
+    
     var result = ParsedValues(elements: [:], originalInput: all.originalInput)
     var allUsedOrigins = InputOrigin()
     
     try setInitialValues(into: &result)
     
     // Loop over all arguments:
+    ArgumentLoop:
     while let (origin, next) = inputArguments.popNext() {
       var usedOrigins = InputOrigin()
       defer {
@@ -330,6 +353,9 @@ extension ArgumentSet {
       
       switch next.value {
       case .value:
+        // If we're capturing all, the first positional value represents the
+        // start of positional input.
+        if capturesAll { break ArgumentLoop }
         // We'll parse positional values later.
         break
       case let .option(parsed):
@@ -337,8 +363,19 @@ extension ArgumentSet {
         // input. If we can't find one, just move on to the next input. We
         // defer catching leftover arguments until we've fully extracted all
         // the information for the selected command.
-        guard let argument = first(matching: parsed)
-          else { continue }
+        guard let argument = first(matching: parsed) else
+        {
+          // If we're capturing all, an unrecognized option/flag is the start
+          // of positional input. However, the first time we see an option
+          // pack (like `-fi`) it looks like a long name with a single-dash
+          // prefix, which may not match an argument even if its subcomponents
+          // will match.
+          if capturesAll && parsed.subarguments.isEmpty { break ArgumentLoop }
+          
+          // Otherwise, continue parsing. This option/flag may get picked up
+          // by a child command.
+          continue
+        }
         
         switch argument.update {
         case let .nullary(update):

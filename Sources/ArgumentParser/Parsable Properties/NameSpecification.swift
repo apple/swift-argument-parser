@@ -12,13 +12,24 @@
 /// A specification for how to represent a property as a command-line argument
 /// label.
 public struct NameSpecification: ExpressibleByArrayLiteral {
-  public enum Element: Hashable {
+  public struct Element: Hashable {
+    internal enum Representation: Hashable {
+      case long
+      case customLong(_ name: String, withSingleDash: Bool)
+      case short
+      case customShort(_ char: Character, allowingJoined: Bool)
+    }
+    
+    internal var base: Representation
+    
     /// Use the property's name, converted to lowercase with words separated by
     /// hyphens.
     ///
     /// For example, a property named `allowLongNames` would be converted to the
     /// label `--allow-long-names`.
-    case long
+    public static var long: Element {
+      self.init(base: .long)
+    }
     
     /// Use the given string instead of the property's name.
     ///
@@ -30,13 +41,17 @@ public struct NameSpecification: ExpressibleByArrayLiteral {
     ///   - name: The name of the option or flag.
     ///   - withSingleDash: A Boolean value indicating whether to use a single
     ///     dash as the prefix. If `false`, the name has a double-dash prefix.
-    case customLong(_ name: String, withSingleDash: Bool = false)
+    public static func customLong(_ name: String, withSingleDash: Bool = false) -> Element {
+      self.init(base: .customLong(name, withSingleDash: withSingleDash))
+    }
     
     /// Use the first character of the property's name as a short option label.
     ///
     /// For example, a property named `verbose` would be converted to the
     /// label `-v`. Short labels can be combined into groups.
-    case short
+    public static var short: Element {
+      self.init(base: .short)
+    }
     
     /// Use the given character as a short option label.
     ///
@@ -49,7 +64,9 @@ public struct NameSpecification: ExpressibleByArrayLiteral {
     ///   - char: The name of the option or flag.
     ///   - allowingJoined: A Boolean value indicating whether this short name
     ///     allows a joined value.
-    case customShort(_ char: Character, allowingJoined: Bool = false)
+    public static func customShort(_ char: Character, allowingJoined: Bool = false) -> Element {
+      self.init(base: .customShort(char, allowingJoined: allowingJoined))
+    }
   }
   var elements: [Element]
   
@@ -116,7 +133,7 @@ extension NameSpecification {
 extension NameSpecification.Element {    
   /// Creates the argument name for this specification element.
   internal func name(for key: InputKey) -> Name? {
-    switch self {
+    switch self.base {
     case .long:
       return .long(key.rawValue.convertedToSnakeCase(separator: "-"))
     case .short:
@@ -145,7 +162,7 @@ extension FlagInversion {
     
     func makeNames(withPrefix prefix: String, includingShort: Bool) -> [Name] {
       return name.elements.compactMap { element -> Name? in
-        switch element {
+        switch element.base {
         case .short, .customShort:
           return includingShort ? element.name(for: key) : nil
         case .long:
@@ -159,7 +176,7 @@ extension FlagInversion {
       }
     }
     
-    switch (self) {
+    switch self.base {
     case .prefixedNo:
       return (
         name.makeNames(key),

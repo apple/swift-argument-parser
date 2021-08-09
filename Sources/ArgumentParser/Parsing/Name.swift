@@ -9,7 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-enum Name: Hashable {
+enum Name {
   /// A name (usually multi-character) prefixed with `--` (2 dashes) or equivalent.
   case long(String)
   /// A single character name prefixed with `-` (1 dash) or equivalent.
@@ -18,7 +18,9 @@ enum Name: Hashable {
   case short(Character, allowingJoined: Bool = false)
   /// A name (usually multi-character) prefixed with `-` (1 dash).
   case longWithSingleDash(String)
-  
+}
+
+extension Name {
   init(_ baseName: Substring) {
     assert(baseName.first == "-", "Attempted to create name for unprefixed argument")
     if baseName.hasPrefix("--") {
@@ -27,6 +29,35 @@ enum Name: Hashable {
       self = .short(baseName.last!)
     } else { // long name with single dash
       self = .longWithSingleDash(String(baseName.dropFirst()))
+    }
+  }
+}
+
+// short argument names based on the synopsisString
+// this will put the single - options before the -- options
+extension Name: Comparable {
+  static func < (lhs: Name, rhs: Name) -> Bool {
+    return lhs.synopsisString < rhs.synopsisString
+  }
+}
+
+extension Name: Hashable { }
+
+extension Name {
+  enum Case: Equatable {
+    case long
+    case short
+    case longWithSingleDash
+  }
+
+  var `case`: Case {
+    switch self {
+    case .short:
+      return .short
+    case .longWithSingleDash:
+      return .longWithSingleDash
+    case .long:
+      return .long
     }
   }
 }
@@ -53,16 +84,7 @@ extension Name {
       return n
     }
   }
-  
-  var isShort: Bool {
-    switch self {
-    case .short:
-      return true
-    default:
-      return false
-    }
-  }
-  
+
   var allowsJoined: Bool {
     switch self {
     case .short(_, let allowingJoined):
@@ -82,10 +104,12 @@ extension Name {
   }
 }
 
-// short argument names based on the synopsisString
-// this will put the single - options before the -- options
-extension Name: Comparable {
-  static func < (lhs: Name, rhs: Name) -> Bool {
-    return lhs.synopsisString < rhs.synopsisString
+extension BidirectionalCollection where Element == Name {
+  var preferredName: Name? {
+    first { $0.case != .short } ?? first
+  }
+
+  var partitioned: [Name] {
+    filter { $0.case == .short } + filter { $0.case != .short }
   }
 }

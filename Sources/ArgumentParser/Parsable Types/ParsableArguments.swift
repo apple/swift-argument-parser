@@ -140,6 +140,10 @@ extension ParsableArguments {
   public static func helpMessage(columns: Int? = nil) -> String {
     HelpGenerator(self).rendered(screenWidth: columns)
   }
+  
+  public static func dumpMessage(columns: Int? = nil) -> String {
+    DumpHelpInfoGenerator(self).rendered()
+  }
 
   /// Returns the exit code for the given error.
   ///
@@ -208,12 +212,37 @@ extension ParsableArguments {
   }
 }
 
+/// Unboxes the given value if it is a `nil` value.
+///
+/// If the value passed is the `.none` case of any optional type, this function
+/// returns `nil`.
+///
+///     let intAsAny = (1 as Int?) as Any
+///     let nilAsAny = (nil as Int?) as Any
+///     nilOrValue(intAsAny)      // Optional(1) as Any?
+///     nilOrValue(nilAsAny)      // nil as Any?
+func nilOrValue(_ value: Any) -> Any? {
+  if case Optional<Any>.none = value {
+    return nil
+  } else {
+    return value
+  }
+}
+
+/// Existential protocol for property wrappers, so that they can provide
+/// the argument set that they define.
 protocol ArgumentSetProvider {
   func argumentSet(for key: InputKey) -> ArgumentSet
+    
+  var _hiddenFromHelp: Bool { get }
+}
+
+extension ArgumentSetProvider {
+  var _hiddenFromHelp: Bool { false }
 }
 
 extension ArgumentSet {
-  init(_ type: ParsableArguments.Type) {
+  init(_ type: ParsableArguments.Type, creatingHelp: Bool = false) {
     
     #if DEBUG
     do {
@@ -229,6 +258,10 @@ extension ArgumentSet {
         guard var codingKey = child.label else { return nil }
         
         if let parsed = child.value as? ArgumentSetProvider {
+          if creatingHelp {
+            guard !parsed._hiddenFromHelp else { return nil }
+          }
+
           // Property wrappers have underscore-prefixed names
           codingKey = String(codingKey.first == "_"
                               ? codingKey.dropFirst(1)
@@ -241,9 +274,9 @@ extension ArgumentSet {
             key: InputKey(rawValue: codingKey),
             kind: .default,
             parser: { _ in nil },
-            default: child.value,
+            default: nilOrValue(child.value),
             completion: .default)
-          definition.help.help = .hidden
+          definition.help.updateArgumentHelp(help: .hidden)
           return ArgumentSet(definition)
         }
       }

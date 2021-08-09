@@ -27,16 +27,8 @@ struct Author: Equatable, Codable {
     case htmlURL = "html_url"
   }
   
-  var commitURL: String {
-    "https://github.com/apple/swift-argument-parser/commits?author=\(login)"
-  }
-  
   var inlineLink: String {
     "[\(login)]"
-  }
-  
-  var linkReference: String {
-    "[\(login)]: \(commitURL)"
   }
 }
 

@@ -31,7 +31,12 @@
 @propertyWrapper
 public struct OptionGroup<Value: ParsableArguments>: Decodable, ParsedWrapper {
   internal var _parsedValue: Parsed<Value>
+  internal var _hiddenFromHelp: Bool = false
   
+  // FIXME: Adding this property works around the crasher described in
+  // https://github.com/apple/swift-argument-parser/issues/338
+  internal var _dummy: Bool = false
+
   internal init(_parsedValue: Parsed<Value>) {
     self._parsedValue = _parsedValue
   }
@@ -87,4 +92,12 @@ extension OptionGroup: CustomStringConvertible {
       return "OptionGroup(*definition*)"
     }
   }
+}
+
+// Experimental use with caution
+extension OptionGroup {
+    public init(_hiddenFromHelp: Bool) {
+        self.init()
+        self._hiddenFromHelp = _hiddenFromHelp
+    }
 }

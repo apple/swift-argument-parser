@@ -13,6 +13,7 @@
 enum ParserError: Error {
   case helpRequested
   case versionRequested
+  case dumpHelpRequested
   
   case completionScriptRequested(shell: String?)
   case completionScriptCustomResponse(String)
@@ -38,7 +39,7 @@ enum ParserError: Error {
 
 /// These are errors used internally to the parsing, and will not be exposed to the help generation.
 enum InternalParseError: Error {
-  case wrongType(Any, forKey: InputKey)
+  case wrongType(Any?, forKey: InputKey)
   case subcommandNameMismatch
   case subcommandLevelMismatch(Int, Int)
   case subcommandLevelMissing(Int)

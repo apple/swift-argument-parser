@@ -28,7 +28,7 @@ The static `parseOrExit()` method either returns a fully initialized instance of
 We can perform validation on the inputs and exit the script if necessary:
 
 ```swift
-guard let options.elements.count >= options.count else {
+guard options.elements.count >= options.count else {
     let error = ValidationError("Please specify a 'count' less than the number of elements.")
     SelectOptions.exit(withError: error)
 }

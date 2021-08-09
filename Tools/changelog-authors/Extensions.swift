@@ -25,24 +25,3 @@ extension Sequence {
     return result
   }
 }
-
-struct NoDataReceived: Error {}
-
-@available(macOS 9999, *)
-extension URLSession {
-  func data(from url: URL) async throws -> Data {
-    try await withUnsafeThrowingContinuation { c in
-      let task = URLSession.shared.dataTask(with: url) { data, _, error in
-        switch (data, error) {
-        case let (_, error?):
-          c.resume(throwing: error)
-        case let (data?, _):
-          c.resume(returning: data)
-        case (nil, nil):
-          c.resume(throwing: NoDataReceived())
-        }
-      }
-      task.resume()
-    }
-  }
-}

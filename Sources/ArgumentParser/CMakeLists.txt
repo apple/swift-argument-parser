@@ -31,11 +31,13 @@ add_library(ArgumentParser
   Parsing/ParserError.swift
   Parsing/SplitArguments.swift
 
+  Usage/DumpHelpInfoGenerator.swift
   Usage/HelpCommand.swift
   Usage/HelpGenerator.swift
   Usage/MessageInfo.swift
   Usage/UsageGenerator.swift
 
+  Utilities/CollectionExtensions.swift
   Utilities/SequenceExtensions.swift
   Utilities/StringExtensions.swift
   Utilities/Tree.swift)

@@ -25,7 +25,7 @@ extension URL: ExpressibleByArgument {
   }
 
   public var defaultValueDescription: String {
-    self.absoluteString == FileManager.default.currentDirectoryPath
+    self.path == FileManager.default.currentDirectoryPath && self.isFileURL
       ? "current directory"
       : String(describing: self)
   }
@@ -156,7 +156,7 @@ extension HelpGenerationTests {
     var degree: Degree = .bachelor
 
     @Option(help: "Directory.")
-    var directory: URL = URL(string: FileManager.default.currentDirectoryPath)!
+    var directory: URL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
   }
 
   func testHelpWithDefaultValues() {
@@ -430,5 +430,159 @@ extension HelpGenerationTests {
       -h, --help              Show help information.
 
     """)
+  }
+    
+  struct Foo: ParsableCommand {
+    public static var configuration = CommandConfiguration(
+      commandName: "foo",
+      abstract: "Perform some foo",
+      subcommands: [
+        Bar.self
+      ],
+      helpNames: [.short, .long, .customLong("help", withSingleDash: true)])
+        
+    @Option(help: "Name for foo")
+    var fooName: String?
+        
+    public init() {}
+  }
+
+  struct Bar: ParsableCommand {
+    static let configuration = CommandConfiguration(
+      commandName: "bar",
+      _superCommandName: "foo",
+      abstract: "Perform bar operations",
+      helpNames: [.short, .long, .customLong("help", withSingleDash: true)])
+            
+    @Option(help: "Bar Strength")
+    var barStrength: String?
+        
+    public init() {}
+  }
+
+  func testHelpExcludingSuperCommand() throws {
+    AssertHelp(for: Bar.self, root: Foo.self, equals: """
+    OVERVIEW: Perform bar operations
+
+    USAGE: foo bar [--bar-strength <bar-strength>]
+
+    OPTIONS:
+      --bar-strength <bar-strength>
+                              Bar Strength
+      -h, -help, --help       Show help information.
+    
+    """)
+  }
+    
+  struct optionsToHide: ParsableArguments {
+    @Flag(help: "Verbose")
+    var verbose: Bool = false
+    
+    @Option(help: "Custom Name")
+    var customName: String?
+  }
+    
+  struct HideDriver: ParsableCommand {
+    static let configuration = CommandConfiguration(commandName: "driver", abstract: "Demo hiding option groups")
+    
+    @OptionGroup(_hiddenFromHelp: true)
+    var hideMe: optionsToHide
+    
+    @Option(help: "Time to wait before timeout (in seconds)")
+    var timeout: Int?
+  }
+    
+  func testHidingOptionGroup() throws {
+    AssertHelp(for: HideDriver.self, equals: """
+        OVERVIEW: Demo hiding option groups
+
+        USAGE: driver [--verbose] [--custom-name <custom-name>] [--timeout <timeout>]
+
+        OPTIONS:
+          --timeout <timeout>     Time to wait before timeout (in seconds)
+          -h, --help              Show help information.
+        
+        """
+    )
+  }
+
+  struct AllValues: ParsableCommand {
+    enum Manual: Int, ExpressibleByArgument {
+      case foo
+      static var allValueStrings = ["bar"]
+    }
+
+    enum UnspecializedSynthesized: Int, CaseIterable, ExpressibleByArgument {
+      case one, two
+    }
+
+    enum SpecializedSynthesized: String, CaseIterable, ExpressibleByArgument {
+      case apple = "Apple", banana = "Banana"
+    }
+
+    @Argument var manualArgument: Manual
+    @Option var manualOption: Manual
+
+    @Argument var unspecializedSynthesizedArgument: UnspecializedSynthesized
+    @Option var unspecializedSynthesizedOption: UnspecializedSynthesized
+
+    @Argument var specializedSynthesizedArgument: SpecializedSynthesized
+    @Option var specializedSynthesizedOption: SpecializedSynthesized
+  }
+
+  func testAllValueStrings() throws {
+    XCTAssertEqual(AllValues.Manual.allValueStrings, ["bar"])
+    XCTAssertEqual(AllValues.UnspecializedSynthesized.allValueStrings, ["one", "two"])
+    XCTAssertEqual(AllValues.SpecializedSynthesized.allValueStrings, ["Apple", "Banana"])
+  }
+
+  func testAllValues() {
+    let opts = ArgumentSet(AllValues.self)
+    XCTAssertEqual(AllValues.Manual.allValueStrings, opts[0].help.allValues)
+    XCTAssertEqual(AllValues.Manual.allValueStrings, opts[1].help.allValues)
+
+    XCTAssertEqual(AllValues.UnspecializedSynthesized.allValueStrings, opts[2].help.allValues)
+    XCTAssertEqual(AllValues.UnspecializedSynthesized.allValueStrings, opts[3].help.allValues)
+
+    XCTAssertEqual(AllValues.SpecializedSynthesized.allValueStrings, opts[4].help.allValues)
+    XCTAssertEqual(AllValues.SpecializedSynthesized.allValueStrings, opts[5].help.allValues)
+  }
+}
+
+// MARK: - Issue #278 https://github.com/apple/swift-argument-parser/issues/278
+
+extension HelpGenerationTests {
+  private struct ParserBug: ParsableCommand {
+    static let configuration = CommandConfiguration(
+      commandName: "parserBug",
+      subcommands: [Sub.self])
+    
+    struct CommonOptions: ParsableCommand {
+      @Flag(help: "example flag")
+      var example: Bool = false
+    }
+
+    struct Sub: ParsableCommand {
+      @OptionGroup()
+      var commonOptions: CommonOptions
+      
+      @Argument(help: "Non-mandatory argument")
+      var argument: String?
+    }
+  }
+  
+  func testIssue278() {
+    print(ParserBug.helpMessage(for: ParserBug.Sub.self))
+    AssertHelp(for: ParserBug.Sub.self, root: ParserBug.self, equals: """
+      USAGE: parserBug sub [--example] [<argument>]
+
+      ARGUMENTS:
+        <argument>              Non-mandatory argument
+
+      OPTIONS:
+        --example               example flag
+        -h, --help              Show help information.
+
+      """)
   }
 }
