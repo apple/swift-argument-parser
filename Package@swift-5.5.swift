@@ -1,4 +1,4 @@
-// swift-tools-version:5.2
+// swift-tools-version:5.5
 //===----------------------------------------------------------*- swift -*-===//
 //
 // This source file is part of the Swift Argument Parser open source project
@@ -23,35 +23,39 @@ var package = Package(
     targets: [
         .target(
             name: "ArgumentParser",
-            dependencies: []),
+            dependencies: [],
+            exclude: ["CMakeLists.txt"]),
         .target(
             name: "ArgumentParserTestHelpers",
-            dependencies: ["ArgumentParser"]),
+            dependencies: ["ArgumentParser"],
+            exclude: ["CMakeLists.txt"]),
 
-        .target(
+        .executableTarget(
             name: "roll",
             dependencies: ["ArgumentParser"],
             path: "Examples/roll"),
-        .target(
+        .executableTarget(
             name: "math",
             dependencies: ["ArgumentParser"],
             path: "Examples/math"),
-        .target(
+        .executableTarget(
             name: "repeat",
             dependencies: ["ArgumentParser"],
             path: "Examples/repeat"),
 
-        .target(
+        .executableTarget(
             name: "changelog-authors",
             dependencies: ["ArgumentParser"],
             path: "Tools/changelog-authors"),
 
         .testTarget(
             name: "ArgumentParserEndToEndTests",
-            dependencies: ["ArgumentParser", "ArgumentParserTestHelpers"]),
+            dependencies: ["ArgumentParser", "ArgumentParserTestHelpers"],
+            exclude: ["CMakeLists.txt"]),
         .testTarget(
             name: "ArgumentParserUnitTests",
-            dependencies: ["ArgumentParser", "ArgumentParserTestHelpers"]),
+            dependencies: ["ArgumentParser", "ArgumentParserTestHelpers"],
+            exclude: ["CMakeLists.txt"]),
         .testTarget(
             name: "ArgumentParserExampleTests",
             dependencies: ["ArgumentParserTestHelpers"]),
@@ -63,5 +67,6 @@ var package = Package(
 package.targets.append(
     .testTarget(
         name: "ArgumentParserPackageManagerTests",
-        dependencies: ["ArgumentParser", "ArgumentParserTestHelpers"]))
+        dependencies: ["ArgumentParser", "ArgumentParserTestHelpers"],
+        exclude: ["CMakeLists.txt"]))
 #endif
