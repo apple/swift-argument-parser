@@ -311,7 +311,7 @@ internal extension BidirectionalCollection where Element == ParsableCommand.Type
   
   func dumpHelpArgumentDefinition() -> ArgumentDefinition {
     return ArgumentDefinition(
-      kind: .named([.long("dump-help")]),
+      kind: .named([.long("experimental-dump-help")]),
       help: .init(
         help: ArgumentHelp("Dump help information as JSON."),
         key: InputKey(rawValue: "")),
