@@ -151,7 +151,7 @@ public func AssertDump<T: ParsableArguments>(
     try AssertJSONEqualFromString(actual: dumpString, expected: expected, for: ToolInfoV0.self)
   }
 
-  try AssertJSONEqualFromString(actual: T.dumpMessage(), expected: expected, for: ToolInfoV0.self)
+  try AssertJSONEqualFromString(actual: T._dumpHelp(), expected: expected, for: ToolInfoV0.self)
 }
 
 public func AssertJSONEqualFromString<T: Codable & Equatable>(actual: String, expected: String, for type: T.Type) throws {

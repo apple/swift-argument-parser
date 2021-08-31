@@ -141,10 +141,8 @@ extension ParsableArguments {
     HelpGenerator(self).rendered(screenWidth: columns)
   }
 
-  /// Returns the json representation of the type.
-  ///
-  /// - Returns: The json representation for this type.
-  public static func dumpMessage() -> String {
+  /// Returns the JSON representation of this type.
+  public static func _dumpHelp() -> String {
     DumpHelpGenerator(self).rendered()
   }
 
