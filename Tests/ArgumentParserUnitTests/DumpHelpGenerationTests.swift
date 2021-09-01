@@ -58,10 +58,10 @@ extension DumpHelpGenerationTests {
     }
     
     let testCases: [UInt : TestCase] = [
-      #line : .init(expected: Self.mathDumpText, command: "math --dump-help"),
-      #line : .init(expected: Self.mathAddDumpText, command: "math add --dump-help"),
-      #line : .init(expected: Self.mathMultiplyDumpText, command: "math multiply --dump-help"),
-      #line : .init(expected: Self.mathStatsDumpText, command: "math stats --dump-help")
+      #line : .init(expected: Self.mathDumpText, command: "math --experimental-dump-help"),
+      #line : .init(expected: Self.mathAddDumpText, command: "math add --experimental-dump-help"),
+      #line : .init(expected: Self.mathMultiplyDumpText, command: "math multiply --experimental-dump-help"),
+      #line : .init(expected: Self.mathStatsDumpText, command: "math stats --experimental-dump-help")
     ]
     
     try testCases.forEach { line, testCase in

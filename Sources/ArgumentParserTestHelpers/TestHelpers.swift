@@ -144,14 +144,14 @@ public func AssertDump<T: ParsableArguments>(
   file: StaticString = #file, line: UInt = #line
 ) throws {
   do {
-    _ = try T.parse(["--dump-help"])
+    _ = try T.parse(["--experimental-dump-help"])
     XCTFail(file: (file), line: line)
   } catch {
     let dumpString = T.fullMessage(for: error)
     try AssertJSONEqualFromString(actual: dumpString, expected: expected, for: ToolInfoV0.self)
   }
 
-  try AssertJSONEqualFromString(actual: T.dumpMessage(), expected: expected, for: ToolInfoV0.self)
+  try AssertJSONEqualFromString(actual: T._dumpHelp(), expected: expected, for: ToolInfoV0.self)
 }
 
 public func AssertJSONEqualFromString<T: Codable & Equatable>(actual: String, expected: String, for type: T.Type) throws {
@@ -265,7 +265,7 @@ extension XCTest {
     process.waitUntilExit()
 
     let outputString = try XCTUnwrap(String(data: output.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8))
-    XCTAssertTrue(error.fileHandleForReading.readDataToEndOfFile().isEmpty, "Error occurred with `--dump-help`")
+    XCTAssertTrue(error.fileHandleForReading.readDataToEndOfFile().isEmpty, "Error occurred with `--experimental-dump-help`")
     try AssertJSONEqualFromString(actual: outputString, expected: expected, for: ToolInfoV0.self)
   }
 }

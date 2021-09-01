@@ -80,7 +80,7 @@ extension CommandParser {
     }
     
     // Look for the "dump help" request
-    guard !split.contains(Name.long("dump-help")) else {
+    guard !split.contains(Name.long("experimental-dump-help")) else {
       throw CommandError(commandStack: commandStack, parserError: .dumpHelpRequested)
     }
 
