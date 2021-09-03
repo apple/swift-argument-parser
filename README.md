@@ -88,7 +88,7 @@ To use the `ArgumentParser` library in a SwiftPM project,
 add the following line to the dependencies in your `Package.swift` file:
 
 ```swift
-.package(url: "https://github.com/apple/swift-argument-parser", from: "0.4.0"),
+.package(url: "https://github.com/apple/swift-argument-parser", from: "0.5.0"),
 ```
 
 Because `ArgumentParser` is under active development,
@@ -97,7 +97,7 @@ If you don't want potentially source-breaking package updates,
 use this dependency specification instead:
 
 ```swift
-.package(url: "https://github.com/apple/swift-argument-parser", .upToNextMinor(from: "0.4.0")),
+.package(url: "https://github.com/apple/swift-argument-parser", .upToNextMinor(from: "0.5.0")),
 ```
 
 Finally, include `"ArgumentParser"` as a dependency for your executable target:
