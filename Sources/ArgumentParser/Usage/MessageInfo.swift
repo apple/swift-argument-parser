@@ -30,12 +30,12 @@ enum MessageInfo {
       case .helpRequested:
         self = .help(text: HelpGenerator(commandStack: e.commandStack).rendered())
         return
-      
-        
+
+
       case .dumpHelpRequested:
-        self = .help(text: DumpHelpInfoGenerator(commandStack: e.commandStack).rendered())
+        self = .help(text: DumpHelpGenerator(commandStack: e.commandStack).rendered())
         return
-        
+
       case .versionRequested:
         let versionString = commandStack
           .map { $0.configuration.version }
@@ -99,7 +99,7 @@ enum MessageInfo {
           if let command = command {
             commandStack = CommandParser(type.asCommand).commandStack(for: command)
           }
-          self = .help(text: DumpHelpInfoGenerator(commandStack: commandStack).rendered())
+          self = .help(text: DumpHelpGenerator(commandStack: commandStack).rendered())
         case .message(let message):
           self = .help(text: message)
         }

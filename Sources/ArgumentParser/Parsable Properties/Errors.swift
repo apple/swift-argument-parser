@@ -122,7 +122,7 @@ public struct CleanExit: Error, CustomStringConvertible {
     switch self.base {
     case .helpRequest: return "--help"
     case .message(let message): return message
-    case .dumpRequest: return "--dump-help"
+    case .dumpRequest: return "--experimental-dump-help"
     }
   }
 }

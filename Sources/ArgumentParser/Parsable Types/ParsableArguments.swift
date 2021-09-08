@@ -140,9 +140,10 @@ extension ParsableArguments {
   public static func helpMessage(columns: Int? = nil) -> String {
     HelpGenerator(self).rendered(screenWidth: columns)
   }
-  
-  public static func dumpMessage(columns: Int? = nil) -> String {
-    DumpHelpInfoGenerator(self).rendered()
+
+  /// Returns the JSON representation of this type.
+  public static func _dumpHelp() -> String {
+    DumpHelpGenerator(self).rendered()
   }
 
   /// Returns the exit code for the given error.
@@ -235,6 +236,10 @@ protocol ArgumentSetProvider {
   func argumentSet(for key: InputKey) -> ArgumentSet
     
   var _hiddenFromHelp: Bool { get }
+}
+
+extension ArgumentSetProvider {
+  var _hiddenFromHelp: Bool { false }
 }
 
 extension ArgumentSet {

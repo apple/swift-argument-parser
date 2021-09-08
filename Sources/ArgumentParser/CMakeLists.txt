@@ -31,6 +31,7 @@ add_library(ArgumentParser
   Parsing/ParserError.swift
   Parsing/SplitArguments.swift
 
+  Usage/DumpHelpGenerator.swift
   Usage/HelpCommand.swift
   Usage/HelpGenerator.swift
   Usage/MessageInfo.swift
@@ -46,7 +47,8 @@ set_target_properties(ArgumentParser PROPERTIES
 target_compile_options(ArgumentParser PRIVATE
   $<$<BOOL:${BUILD_TESTING}>:-enable-testing>)
 target_link_libraries(ArgumentParser PRIVATE
-  $<$<NOT:$<PLATFORM_ID:Darwin>>:Foundation>)
+  $<$<NOT:$<PLATFORM_ID:Darwin>>:Foundation>
+  ArgumentParserToolInfo)
 
 
 _install_target(ArgumentParser)

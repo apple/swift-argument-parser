@@ -44,7 +44,6 @@ struct BashCompletionsGenerator {
     // as all the subcommand names.
     let completionWords = generateArgumentWords(commands)
       + subcommands.map { $0._commandName }
-      + ["--dump-help"]
     
     // Generate additional top-level completions — these are completion lists
     // or custom function-based word lists from positional arguments.

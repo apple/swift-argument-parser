@@ -159,7 +159,16 @@ extension ArgumentSet {
 extension ArgumentDefinition {
   /// Create a unary / argument that parses using the given closure.
   init<A>(key: InputKey, kind: ArgumentDefinition.Kind, parsingStrategy: ParsingStrategy = .default, parser: @escaping (String) -> A?, parseType type: A.Type = A.self, default initial: A?, completion: CompletionKind) {
-    self.init(kind: kind, help: ArgumentDefinition.Help(key: key), completion: completion, parsingStrategy: parsingStrategy, update: .unary({ (origin, name, value, values) in
+    self.init(key: key, kind: kind, parsingStrategy: parsingStrategy, parser: parser, parseType: type, default: initial, completion: completion, help: ArgumentDefinition.Help(key: key))
+  }
+
+  /// Create a unary / argument that parses using the given closure.
+  init<A: ExpressibleByArgument>(key: InputKey, kind: ArgumentDefinition.Kind, parsingStrategy: ParsingStrategy = .default, parser: @escaping (String) -> A?, parseType type: A.Type = A.self, default initial: A?, completion: CompletionKind) {
+    self.init(key: key, kind: kind, parsingStrategy: parsingStrategy, parser: parser, parseType: type, default: initial, completion: completion, help: ArgumentDefinition.Help(type: A.self, key: key))
+  }
+
+  private init<A>(key: InputKey, kind: ArgumentDefinition.Kind, parsingStrategy: ParsingStrategy = .default, parser: @escaping (String) -> A?, parseType type: A.Type = A.self, default initial: A?, completion: CompletionKind, help: ArgumentDefinition.Help) {
+    self.init(kind: kind, help: help, completion: completion, parsingStrategy: parsingStrategy, update: .unary({ (origin, name, value, values) in
       guard let v = parser(value) else {
         throw ParserError.unableToParseValue(origin, name, value, forKey: key)
       }
@@ -172,9 +181,9 @@ extension ArgumentDefinition {
         values.set(initial, forKey: key, inputOrigin: origin)
       }
     })
-    
-    help.options.formUnion(ArgumentDefinition.Help.Options(type: type))
-    help.defaultValue = initial.map { "\($0)" }
+
+    self.help.options.formUnion(ArgumentDefinition.Help.Options(type: type))
+    self.help.defaultValue = initial.map { "\($0)" }
     if initial != nil {
       self = self.optional
     }

@@ -23,10 +23,13 @@ var package = Package(
     targets: [
         .target(
             name: "ArgumentParser",
-            dependencies: []),
+            dependencies: ["ArgumentParserToolInfo"]),
         .target(
             name: "ArgumentParserTestHelpers",
-            dependencies: ["ArgumentParser"]),
+            dependencies: ["ArgumentParser", "ArgumentParserToolInfo"]),
+        .target(
+            name: "ArgumentParserToolInfo",
+            dependencies: []),
 
         .target(
             name: "roll",
