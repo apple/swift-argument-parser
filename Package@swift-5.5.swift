@@ -23,12 +23,15 @@ var package = Package(
     targets: [
         .target(
             name: "ArgumentParser",
-            dependencies: [],
+            dependencies: ["ArgumentParserToolInfo"],
             exclude: ["CMakeLists.txt"]),
         .target(
             name: "ArgumentParserTestHelpers",
-            dependencies: ["ArgumentParser"],
+            dependencies: ["ArgumentParser", "ArgumentParserToolInfo"],
             exclude: ["CMakeLists.txt"]),
+        .target(
+            name: "ArgumentParserToolInfo",
+            dependencies: []),
 
         .executableTarget(
             name: "roll",
