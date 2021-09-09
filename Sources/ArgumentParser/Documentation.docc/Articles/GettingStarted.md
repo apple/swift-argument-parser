@@ -6,7 +6,7 @@ Learn to set up and customize a simple command-line tool.
 
 This guide walks through building an example command. You'll learn about the different tools that `ArgumentParser` provides for defining a command's options, customizing the interface, and providing help text for your user.
 
-## Adding `ArgumentParser` as a Dependency
+## Adding ArgumentParser as a Dependency
 
 Let's write a tool called `count` that reads an input file, counts the words, and writes the result to an output file.
 

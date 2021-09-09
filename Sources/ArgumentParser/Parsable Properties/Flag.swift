@@ -15,7 +15,8 @@
 /// command-line flag. A *flag* is a dash-prefixed label that can be provided on
 /// the command line, such as `-d` and `--debug`.
 ///
-/// For example, the following program
+/// For example, the following program declares a flag that lets a user indicate
+/// that seconds should be included when printing the time.
 ///
 ///     @main
 ///     struct Time: ParsableCommand {
@@ -59,7 +60,7 @@
 /// Instead of using the name of the `operation` property as the flag in this
 /// case, the two cases of the `Operation` enumeration become valid flags.
 /// The `operation` property is neither optional nor given a default value, so
-/// one of the flags is required.
+/// one of the two flags is required.
 ///
 ///     $ math --add
 ///     Time to add!
