@@ -9,7 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-@_spi(ToolInfo) import ArgumentParser
+import ArgumentParser
 import ArgumentParserToolInfo
 import XCTest
 
