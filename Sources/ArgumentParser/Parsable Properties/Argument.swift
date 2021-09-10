@@ -9,19 +9,36 @@
 //
 //===----------------------------------------------------------------------===//
 
-/// A wrapper that represents a positional command-line argument.
+/// A property wrapper that represents a positional command-line argument.
 ///
-/// Positional arguments are specified without a label and must appear in
-/// the command-line arguments in declaration order.
+/// Use the `@Argument` wrapper to define a property of your custom command as
+/// a positional argument. A *positional argument* for a command-line tool is
+/// specified without a label and must appear in declaration order. `@Argument`
+/// properties with `Optional` type or a default value are optional for the user
+/// of your command-line tool.
 ///
-///     struct Options: ParsableArguments {
+/// For example, the following program has two positional arguments. The `name`
+/// argument is required, while `greeting` is optional because it has a default
+/// value.
+///
+///     @main
+///     struct Greet: ParsableCommand {
 ///         @Argument var name: String
-///         @Argument var greeting: String?
+///         @Argument var greeting: String = "Hello"
+///
+///         mutating func run() {
+///             print("\(greeting) \(name)!")
+///         }
 ///     }
 ///
-/// This program has two positional arguments; `name` is required, while
-/// `greeting` is optional. It can be evoked as either `command Joseph Hello`
-/// or simply `command Joseph`.
+/// You can call this program with just a name or with a name and a
+/// greeting. When you supply both arguments, the first argument is always
+/// treated as the name, due to the order of the property declarations.
+///
+///     $ greet Nadia
+///     Hello Nadia!
+///     $ greet Tamara Hi
+///     Hi Tamara!
 @propertyWrapper
 public struct Argument<Value>:
   Decodable, ParsedWrapper

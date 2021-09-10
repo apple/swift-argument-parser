@@ -9,33 +9,63 @@
 //
 //===----------------------------------------------------------------------===//
 
-/// A wrapper that represents a command-line flag.
+/// A property wrapper that represents a command-line flag.
 ///
-/// A flag is a defaulted Boolean or integer value that can be changed by
-/// specifying the flag on the command line. For example:
+/// Use the `@Flag` wrapper to define a property of your custom type as a
+/// command-line flag. A *flag* is a dash-prefixed label that can be provided on
+/// the command line, such as `-d` and `--debug`.
 ///
-///     struct Options: ParsableArguments {
-///         @Flag var verbose: Bool
+/// For example, the following program declares a flag that lets a user indicate
+/// that seconds should be included when printing the time.
+///
+///     @main
+///     struct Time: ParsableCommand {
+///         @Flag var includeSeconds = false
+///
+///         mutating func run() {
+///             if includeSeconds {
+///                 print(Date.now.formatted(.dateTime.hour().minute().second()))
+///             } else {
+///                 print(Date.now.formatted(.dateTime.hour().minute()))
+///             }
+///         }
 ///     }
 ///
-/// `verbose` has a default value of `false`, but becomes `true` if `--verbose`
-/// is provided on the command line.
+/// `includeSeconds` has a default value of `false`, but becomes `true` if
+/// `--include-seconds` is provided on the command line.
+///
+///     $ time
+///     11:09 AM
+///     $ time --include-seconds
+///     11:09:15 AM
 ///
 /// A flag can have a value that is a `Bool`, an `Int`, or any `EnumerableFlag`
 /// type. When using an `EnumerableFlag` type as a flag, the individual cases
 /// form the flags that are used on the command line.
 ///
-///     struct Options {
+///     @main
+///     struct Math: ParsableCommand {
 ///         enum Operation: EnumerableFlag {
 ///             case add
 ///             case multiply
 ///         }
 ///
 ///         @Flag var operation: Operation
+///
+///         mutating func run() {
+///             print("Time to \(operation)!")
+///         }
 ///     }
 ///
-///     // usage: command --add
-///     //    or: command --multiply
+/// Instead of using the name of the `operation` property as the flag in this
+/// case, the two cases of the `Operation` enumeration become valid flags.
+/// The `operation` property is neither optional nor given a default value, so
+/// one of the two flags is required.
+///
+///     $ math --add
+///     Time to add!
+///     $ math
+///     Error: Missing one of: '--add', '--multiply'
 @propertyWrapper
 public struct Flag<Value>: Decodable, ParsedWrapper {
   internal var _parsedValue: Parsed<Value>

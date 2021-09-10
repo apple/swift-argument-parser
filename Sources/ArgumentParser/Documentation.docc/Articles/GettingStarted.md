@@ -1,10 +1,12 @@
-# Getting Started with `ArgumentParser`
+# Getting Started with ArgumentParser
 
 Learn to set up and customize a simple command-line tool.
 
+## Overview
+
 This guide walks through building an example command. You'll learn about the different tools that `ArgumentParser` provides for defining a command's options, customizing the interface, and providing help text for your user.
 
-## Adding `ArgumentParser` as a Dependency
+## Adding ArgumentParser as a Dependency
 
 Let's write a tool called `count` that reads an input file, counts the words, and writes the result to an output file.
 
@@ -19,7 +21,7 @@ import PackageDescription
 let package = Package(
     name: "random",
     dependencies: [
-        .package(url: "https://github.com/apple/swift-argument-parser.git", from: "0.5.0"),
+        .package(url: "https://github.com/apple/swift-argument-parser.git", from: "0.4.0"),
     ],
     targets: [
         .target(
