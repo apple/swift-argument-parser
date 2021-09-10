@@ -1,10 +1,12 @@
-# Validation and Errors
+# Providing Custom Validation
 
 Provide helpful feedback to users when things go wrong.
 
-## Validating Command-Line Input
+## Overview
 
 While `ArgumentParser` validates that the inputs given by your user match the requirements and types that you define in each command, there are some requirements that can't easily be described in Swift's type system, such as the number of elements in an array, or an expected integer value.
+
+### Validating Command-Line Input
 
 To validate your commands properties after parsing, implement the `validate()` method on any `ParsableCommand` or `ParsableArguments` type. Throwing an error from the `validate()` method causes the program to print a message to standard error and exit with an error code, preventing the `run()` method from being called with invalid inputs.
 

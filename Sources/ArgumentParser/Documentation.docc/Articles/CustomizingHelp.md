@@ -2,6 +2,8 @@
 
 Support your users (and yourself) by providing rich help for arguments and commands.
 
+## Overview
+
 You can provide help text when declaring any `@Argument`, `@Option`, or `@Flag` by passing a string literal as the `help` parameter:
 
 ```swift

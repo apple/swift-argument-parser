@@ -9,23 +9,43 @@
 //
 //===----------------------------------------------------------------------===//
 
-/// A wrapper that represents a command-line option.
+/// A property wrapper that represents a command-line option.
 ///
-/// An option is a value that can be specified as a named value on the command
-/// line. An option can have a default values specified as part of its
+/// Use the `@Option` wrapper to define a property of your custom command as a
+/// command-line option. An *option* is a named value passed to a command-line
+/// tool, like `--configuration debug`. Options can be specified in any order.
+///
+/// An option can have a default value specified as part of its
 /// declaration; options with optional `Value` types implicitly have `nil` as
-/// their default value.
+/// their default value. Options that are neither declared as `Optional` nor
+/// given a default value are required for users of your command-line tool.
 ///
-///     struct Options: ParsableArguments {
-///         @Option(default: "Hello") var greeting: String
-///         @Option var name: String
+/// For example, the following program defines three options:
+///
+///     @main
+///     struct Greet: ParsableCommand {
+///         @Option var greeting = "Hello"
 ///         @Option var age: Int?
+///         @Option var name: String
+///
+///         mutating func run() {
+///             print("\(greeting) \(name)!")
+///             if let age = age {
+///                 print("Congrats on making it to the ripe old age of \(age)!")
+///             }
+///         }
 ///     }
 ///
 /// `greeting` has a default value of `"Hello"`, which can be overridden by
-/// providing a different string as an argument. `age` defaults to `nil`, while
-/// `name` is a required argument because it is non-`nil` and has no default
+/// providing a different string as an argument, while `age` defaults to `nil`.
+/// `name` is a required option because it is non-`nil` and has no default
 /// value.
+///
+///     $ greet --name Alicia
+///     Hello Alicia!
+///     $ greet --age 28 --name Seungchin --greeting Hi
+///     Hi Seungchin!
+///     Congrats on making it to the ripe old age of 28!
 @propertyWrapper
 public struct Option<Value>: Decodable, ParsedWrapper {
   internal var _parsedValue: Parsed<Value>

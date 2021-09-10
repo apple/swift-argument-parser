@@ -2,6 +2,8 @@
 
 Provide your own array of command-line inputs and work with parsed results by calling alternatives to `main()`.
 
+## Overview
+
 For most programs, calling the static `main()` method on the root command type is all that's necessary. That single call parses the command-line arguments to find the correct command from your tree of nested subcommands, instantiates and validates the result, and executes the chosen command. For more control, however, you can perform each of those steps manually.
 
 ## Parsing Arguments
@@ -28,7 +30,7 @@ The static `parseOrExit()` method either returns a fully initialized instance of
 We can perform validation on the inputs and exit the script if necessary:
 
 ```swift
-guard options.elements.count >= options.count else {
+guard let options.elements.count >= options.count else {
     let error = ValidationError("Please specify a 'count' less than the number of elements.")
     SelectOptions.exit(withError: error)
 }
@@ -101,12 +103,3 @@ howdy
 howdy
 hi
 ```
-
-
-
-
-
-
-
-
-

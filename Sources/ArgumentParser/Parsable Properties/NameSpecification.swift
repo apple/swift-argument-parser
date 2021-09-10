@@ -12,6 +12,7 @@
 /// A specification for how to represent a property as a command-line argument
 /// label.
 public struct NameSpecification: ExpressibleByArrayLiteral {
+  /// An individual property name translation.
   public struct Element: Hashable {
     internal enum Representation: Hashable {
       case long
