@@ -15,7 +15,7 @@
 
 ### Counted Flags
 
-- ``init(name:help:)-87c7k``
+- ``init(name:help:)``
 
 ### Custom Enumerable Flags
 
@@ -37,7 +37,3 @@
 ### Deprecated APIs
 
 - ``init()``
-- ``init(name:default:exclusivity:help:)``
-- ``init(name:help:)-5iirr``
-- ``init(name:exclusivity:help:)``
-- ``init(name:exclusivity:help:)``

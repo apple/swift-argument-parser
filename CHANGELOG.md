@@ -4,15 +4,27 @@
 Add new items at the end of the relevant section under **Unreleased**.
 -->
 
-This project follows semantic versioning. While still in major version `0`,
-source-stability is only guaranteed within minor versions (e.g. between
-`0.0.3` and `0.0.4`). If you want to guard against potentially source-breaking
-package updates, you can specify your package dependency using
-`.upToNextMinor(from: "0.5.0")` as the requirement.
-
 ## [Unreleased]
 
 *No changes yet.*
+
+---
+
+## [1.0.0] - 2021-09-10
+
+The 1.0 release marks an important milestone —
+`ArgumentParser` is now source stable!
+
+### Changes
+
+- `ArgumentParser` now provides a DocC documentation catalog, so you
+  can view rendered articles and symbol documentation directly within
+  Xcode.
+
+### Fixes
+
+- Parsing works as expected for options with single-dash names that
+  are declared using the `.upToNextOption` parsing strategy.
 
 ---
 
@@ -515,7 +527,8 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 
 <!-- Link references for releases -->
 
-[Unreleased]: https://github.com/apple/swift-argument-parser/compare/0.5.0...HEAD
+[Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.0.0...HEAD
+[1.0.0]: https://github.com/apple/swift-argument-parser/compare/0.5.0...1.0.0
 [0.5.0]: https://github.com/apple/swift-argument-parser/compare/0.4.4...0.5.0
 [0.4.4]: https://github.com/apple/swift-argument-parser/compare/0.4.3...0.4.4
 [0.4.3]: https://github.com/apple/swift-argument-parser/compare/0.4.2...0.4.3
