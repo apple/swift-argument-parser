@@ -221,6 +221,7 @@ extension ArgumentSet {
         if let value = parsed.value {
           // This was `--foo=bar` style:
           try update(origin, parsed.name, value, &result)
+          usedOrigins.formUnion(origin)
         } else if argument.allowsJoinedValue,
            let (origin2, value) = inputArguments.extractJoinedElement(at: originElement)
         {
@@ -243,6 +244,7 @@ extension ArgumentSet {
         if let value = parsed.value {
           // This was `--foo=bar` style:
           try update(origin, parsed.name, value, &result)
+          usedOrigins.formUnion(origin)
         } else if argument.allowsJoinedValue,
             let (origin2, value) = inputArguments.extractJoinedElement(at: originElement) {
           // Found a joined argument
@@ -319,6 +321,11 @@ extension ArgumentSet {
           usedOrigins.formUnion(origins)
           inputArguments.removeAll(in: usedOrigins)
         }
+        
+        // Clear out the initial origin first, since it can include
+        // the exploded elements of an options group (see issue #327).
+        usedOrigins.formUnion(origin)
+        inputArguments.removeAll(in: origin)
         
         // ...and then consume the arguments until hitting an option
         while let (origin2, value) = inputArguments.popNextElementIfValue() {

@@ -107,3 +107,28 @@ extension LongNameWithSingleDashEndToEndTests {
     XCTAssertThrowsError(try Bar.parse(["--file"]))
   }
 }
+
+extension LongNameWithSingleDashEndToEndTests {
+  private struct Issue327: ParsableCommand {
+    @Option(name: .customLong("argWithAnH", withSingleDash: true),
+            parsing: .upToNextOption)
+    var args: [String]
+  }
+
+  func testIssue327() {
+    AssertParse(Issue327.self, ["-argWithAnH", "03ade86c0", "8f2058e3ade86c84ec5b"]) { issue327 in
+      XCTAssertEqual(issue327.args, ["03ade86c0", "8f2058e3ade86c84ec5b"])
+    }
+  }
+  
+  private struct JoinedItem: ParsableCommand {
+    @Option(name: .customLong("argWithAnH", withSingleDash: true))
+    var arg: String
+  }
+
+  func testJoinedItem_Issue327() {
+    AssertParse(JoinedItem.self, ["-argWithAnH=foo"]) { joinedItem in
+      XCTAssertEqual(joinedItem.arg, "foo")
+    }
+  }
+}
