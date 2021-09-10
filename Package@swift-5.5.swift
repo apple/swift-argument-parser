@@ -31,7 +31,8 @@ var package = Package(
             exclude: ["CMakeLists.txt"]),
         .target(
             name: "ArgumentParserToolInfo",
-            dependencies: []),
+            dependencies: [],
+            exclude: ["CMakeLists.txt"]),
 
         .executableTarget(
             name: "roll",
