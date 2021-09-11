@@ -12,7 +12,7 @@
 
 import PackageDescription
 
-var package = Package(
+let package = Package(
     name: "swift-argument-parser",
     products: [
         .library(
@@ -61,16 +61,11 @@ var package = Package(
             dependencies: ["ArgumentParser", "ArgumentParserTestHelpers"],
             exclude: ["CMakeLists.txt"]),
         .testTarget(
+            name: "ArgumentParserPackageManagerTests",
+            dependencies: ["ArgumentParser", "ArgumentParserTestHelpers"],
+            exclude: ["CMakeLists.txt"]),
+        .testTarget(
             name: "ArgumentParserExampleTests",
             dependencies: ["ArgumentParserTestHelpers"]),
     ]
 )
-
-#if swift(>=5.2)
-// Skip if < 5.2 to avoid issue with nested type synthesized 'CodingKeys'
-package.targets.append(
-    .testTarget(
-        name: "ArgumentParserPackageManagerTests",
-        dependencies: ["ArgumentParser", "ArgumentParserTestHelpers"],
-        exclude: ["CMakeLists.txt"]))
-#endif
