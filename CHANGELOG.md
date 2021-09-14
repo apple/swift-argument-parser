@@ -10,6 +10,14 @@ Add new items at the end of the relevant section under **Unreleased**.
 
 ---
 
+## [1.0.1] - 2021-09-14
+
+## Fixes
+
+- Addresses an issue when compiling under Mac Catalyst.
+
+The 1.0.1 release includes a contribution from [imxieyi]. Thank you!
+
 ## [1.0.0] - 2021-09-10
 
 The 1.0 release marks an important milestone —
@@ -527,7 +535,8 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 
 <!-- Link references for releases -->
 
-[Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.0.0...HEAD
+[Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.0.1...HEAD
+[1.0.1]: https://github.com/apple/swift-argument-parser/compare/1.0.0...1.0.1
 [1.0.0]: https://github.com/apple/swift-argument-parser/compare/0.5.0...1.0.0
 [0.5.0]: https://github.com/apple/swift-argument-parser/compare/0.4.4...0.5.0
 [0.4.4]: https://github.com/apple/swift-argument-parser/compare/0.4.3...0.4.4
@@ -596,6 +605,7 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [griffin-stewie]: https://github.com/apple/swift-argument-parser/commits?author=griffin-stewie
 [iainsmith]: https://github.com/apple/swift-argument-parser/commits?author=iainsmith
 [ibrahimoktay]: https://github.com/apple/swift-argument-parser/commits?author=ibrahimoktay
+[imxieyi]: https://github.com/apple/swift-argument-parser/commits?author=imxieyi
 [IngmarStein]: https://github.com/apple/swift-argument-parser/commits?author=IngmarStein
 [interstateone]: https://github.com/apple/swift-argument-parser/commits?author=interstateone
 [john-mueller]: https://github.com/apple/swift-argument-parser/commits?author=john-mueller
