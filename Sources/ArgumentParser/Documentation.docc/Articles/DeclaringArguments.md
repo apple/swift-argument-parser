@@ -255,7 +255,7 @@ struct Example: ParsableCommand {
 }
 ```
 
-The flag names in this case are drawn from the raw values — for information about customizing the names and help text, see the  [`EnumerableFlag` documentation](../Sources/ArgumentParser/Parsable%20Types/EnumerableFlag.swift).
+The flag names in this case are drawn from the raw values — for information about customizing the names and help text, see the  [`EnumerableFlag` documentation](../../Parsable%20Types/EnumerableFlag.swift).
 
 ```
 % example --in-memory-cache --pink --silver
