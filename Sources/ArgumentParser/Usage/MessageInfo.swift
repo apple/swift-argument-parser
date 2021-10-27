@@ -31,6 +31,9 @@ enum MessageInfo {
         self = .help(text: HelpGenerator(commandStack: e.commandStack).rendered())
         return
 
+      case .helpHiddenRequested:
+        self = .help(text: HelpGenerator(commandStack: e.commandStack, includeHidden: true).rendered())
+        return
 
       case .dumpHelpRequested:
         self = .help(text: DumpHelpGenerator(commandStack: e.commandStack).rendered())
