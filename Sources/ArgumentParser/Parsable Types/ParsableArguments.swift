@@ -163,7 +163,7 @@ extension ParsableArguments {
     includeHidden: Bool = false,
     columns: Int? = nil
   ) -> String {
-    HelpGenerator(self, includeHidden: includeHidden)
+    HelpGenerator(self, visibility: includeHidden ? .hidden : .default)
       .rendered(screenWidth: columns)
   }
 
@@ -269,7 +269,7 @@ extension ArgumentSetProvider {
 }
 
 extension ArgumentSet {
-  init(_ type: ParsableArguments.Type, creatingHelp: Bool = false, includeHidden: Bool = false) {
+  init(_ type: ParsableArguments.Type, visibility: ArgumentVisibility) {
     
     #if DEBUG
     do {
@@ -285,13 +285,8 @@ extension ArgumentSet {
         guard var codingKey = child.label else { return nil }
         
         if let parsed = child.value as? ArgumentSetProvider {
-          if creatingHelp {
-            if includeHidden {
-              guard parsed._visibility != .private else { return nil }
-            } else {
-              guard parsed._visibility == .default else { return nil }
-            }
-          }
+          guard parsed._visibility.isAtLeastAsVisible(as: visibility)
+          else { return nil }
 
           // Property wrappers have underscore-prefixed names
           codingKey = String(codingKey.first == "_"

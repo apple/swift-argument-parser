@@ -64,7 +64,7 @@ public struct OptionGroup<Value: ParsableArguments>: Decodable, ParsedWrapper {
   /// Creates a property that represents another parsable type.
   public init() {
     self.init(_parsedValue: .init { _ in
-      ArgumentSet(Value.self)
+      ArgumentSet(Value.self, visibility: .private)
     })
   }
 

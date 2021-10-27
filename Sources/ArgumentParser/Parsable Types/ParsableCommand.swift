@@ -108,7 +108,7 @@ extension ParsableCommand {
   ) -> String {
     HelpGenerator(
       commandStack: CommandParser(self).commandStack(for: subcommand),
-      includeHidden: includeHidden)
+      visibility: includeHidden ? .hidden : .default)
         .rendered(screenWidth: columns)
   }
 
@@ -141,7 +141,7 @@ extension ParsableCommand {
   /// `true` if this command contains any array arguments that are declared
   /// with `.unconditionalRemaining`.
   internal static var includesUnconditionalArguments: Bool {
-    ArgumentSet(self).contains(where: {
+    ArgumentSet(self, visibility: .private).contains(where: {
       $0.isRepeatingPositional && $0.parsingStrategy == .allRemainingInput
     })
   }

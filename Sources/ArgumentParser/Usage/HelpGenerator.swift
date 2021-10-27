@@ -89,12 +89,12 @@ internal struct HelpGenerator {
   var sections: [Section]
   var discussionSections: [DiscussionSection]
   
-  init(commandStack: [ParsableCommand.Type], includeHidden: Bool = false) {
+  init(commandStack: [ParsableCommand.Type], visibility: ArgumentVisibility) {
     guard let currentCommand = commandStack.last else {
       fatalError()
     }
     
-    let currentArgSet = ArgumentSet(currentCommand)
+    let currentArgSet = ArgumentSet(currentCommand, visibility: visibility)
     self.commandStack = commandStack
 
     // Build the tool name and subcommand name from the command configuration
@@ -121,16 +121,16 @@ internal struct HelpGenerator {
       }
       self.abstract += "\n\(currentCommand.configuration.discussion)"
     }
-    
-    self.sections = HelpGenerator.generateSections(commandStack: commandStack, includeHidden: includeHidden)
+
+    self.sections = HelpGenerator.generateSections(commandStack: commandStack, visibility: visibility)
     self.discussionSections = []
   }
   
-  init(_ type: ParsableArguments.Type, includeHidden: Bool = false) {
-    self.init(commandStack: [type.asCommand], includeHidden: includeHidden)
+  init(_ type: ParsableArguments.Type, visibility: ArgumentVisibility) {
+    self.init(commandStack: [type.asCommand], visibility: visibility)
   }
 
-  private static func generateSections(commandStack: [ParsableCommand.Type], includeHidden: Bool) -> [Section] {
+  private static func generateSections(commandStack: [ParsableCommand.Type], visibility: ArgumentVisibility) -> [Section] {
     guard !commandStack.isEmpty else { return [] }
     
     var positionalElements: [Section.Element] = []
@@ -138,8 +138,7 @@ internal struct HelpGenerator {
 
     /// Start with a full slice of the ArgumentSet so we can peel off one or
     /// more elements at a time.
-    var args = commandStack.argumentsForHelp(includeHidden: includeHidden)[...]
-    
+    var args = commandStack.argumentsForHelp(visibility: visibility)[...]
     while let arg = args.popFirst() {
       guard arg.help.visibility == .default else { continue }
       
@@ -300,7 +299,7 @@ internal extension BidirectionalCollection where Element == ParsableCommand.Type
       .map { $0.configuration.helpNames!.generateHelpNames(visibility: visibility) }
       ?? CommandConfiguration.defaultHelpNames.generateHelpNames(visibility: visibility)
   }
-  
+
   func getPrimaryHelpName() -> Name? {
     getHelpNames(visibility: .default).preferredName
   }
@@ -340,8 +339,8 @@ internal extension BidirectionalCollection where Element == ParsableCommand.Type
   
   /// Returns the ArgumentSet for the last command in this stack, including
   /// help and version flags, when appropriate.
-  func argumentsForHelp(includeHidden: Bool = false) -> ArgumentSet {
-    guard var arguments = self.last.map({ ArgumentSet($0, creatingHelp: true, includeHidden: includeHidden) })
+  func argumentsForHelp(visibility: ArgumentVisibility) -> ArgumentSet {
+    guard var arguments = self.last.map({ ArgumentSet($0, visibility: visibility) })
       else { return ArgumentSet() }
     self.versionArgumentDefinition().map { arguments.append($0) }
     self.helpArgumentDefinition().map { arguments.append($0) }
