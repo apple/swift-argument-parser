@@ -571,4 +571,15 @@ extension SplitArgumentTests {
     XCTAssertEqual(valueB.0, SplitArguments.Index(inputIndex: 1, subIndex: .complete))
     XCTAssertEqual(valueB.1, "bar")
   }
+
+  func testInvalidContains() throws {
+    let sut = try SplitArguments(arguments: ["-invalid-arg"])
+    XCTAssertFalse(sut.contains(Name.short("i")))
+
+    XCTAssertFalse(sut.contains(anyOf: [
+      Name.longWithSingleDash("invalid"),
+      Name.short("i"),
+      Name.long("invalid"),
+    ]))
+  }
 }
