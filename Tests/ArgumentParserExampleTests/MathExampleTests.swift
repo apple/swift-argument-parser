@@ -15,8 +15,8 @@ import ArgumentParserTestHelpers
 
 final class MathExampleTests: XCTestCase {
   func testMath_Simple() throws {
-    AssertExecuteCommand(command: "math 1 2 3 4 5", expected: "15")
-    AssertExecuteCommand(command: "math multiply 1 2 3 4 5", expected: "120")
+    try AssertExecuteCommand(command: "math 1 2 3 4 5", expected: "15")
+    try AssertExecuteCommand(command: "math multiply 1 2 3 4 5", expected: "120")
   }
   
   func testMath_Help() throws {
@@ -37,9 +37,9 @@ final class MathExampleTests: XCTestCase {
           See 'math help <subcommand>' for detailed help.
         """
     
-    AssertExecuteCommand(command: "math -h", expected: helpText)
-    AssertExecuteCommand(command: "math --help", expected: helpText)
-    AssertExecuteCommand(command: "math help", expected: helpText)
+    try AssertExecuteCommand(command: "math -h", expected: helpText)
+    try AssertExecuteCommand(command: "math --help", expected: helpText)
+    try AssertExecuteCommand(command: "math help", expected: helpText)
   }
   
   func testMath_AddHelp() throws {
@@ -57,14 +57,14 @@ final class MathExampleTests: XCTestCase {
           -h, --help              Show help information.
         """
     
-    AssertExecuteCommand(command: "math add -h", expected: helpText)
-    AssertExecuteCommand(command: "math add --help", expected: helpText)
-    AssertExecuteCommand(command: "math help add", expected: helpText)
+    try AssertExecuteCommand(command: "math add -h", expected: helpText)
+    try AssertExecuteCommand(command: "math add --help", expected: helpText)
+    try AssertExecuteCommand(command: "math help add", expected: helpText)
     
     // Verify that extra help flags are ignored.
-    AssertExecuteCommand(command: "math help add -h", expected: helpText)
-    AssertExecuteCommand(command: "math help add -help", expected: helpText)
-    AssertExecuteCommand(command: "math help add --help", expected: helpText)
+    try AssertExecuteCommand(command: "math help add -h", expected: helpText)
+    try AssertExecuteCommand(command: "math help add -help", expected: helpText)
+    try AssertExecuteCommand(command: "math help add --help", expected: helpText)
   }
   
   func testMath_StatsMeanHelp() throws {
@@ -82,9 +82,9 @@ final class MathExampleTests: XCTestCase {
           -h, --help              Show help information.
         """
     
-    AssertExecuteCommand(command: "math stats average -h", expected: helpText)
-    AssertExecuteCommand(command: "math stats average --help", expected: helpText)
-    AssertExecuteCommand(command: "math help stats average", expected: helpText)
+    try AssertExecuteCommand(command: "math stats average -h", expected: helpText)
+    try AssertExecuteCommand(command: "math stats average --help", expected: helpText)
+    try AssertExecuteCommand(command: "math help stats average", expected: helpText)
   }
   
   func testMath_StatsQuantilesHelp() throws {
@@ -109,15 +109,15 @@ final class MathExampleTests: XCTestCase {
     
     // The "quantiles" subcommand's run() method is unimplemented, so it
     // just generates the help text.
-    AssertExecuteCommand(command: "math stats quantiles", expected: helpText)
+    try AssertExecuteCommand(command: "math stats quantiles", expected: helpText)
     
-    AssertExecuteCommand(command: "math stats quantiles -h", expected: helpText)
-    AssertExecuteCommand(command: "math stats quantiles --help", expected: helpText)
-    AssertExecuteCommand(command: "math help stats quantiles", expected: helpText)
+    try AssertExecuteCommand(command: "math stats quantiles -h", expected: helpText)
+    try AssertExecuteCommand(command: "math stats quantiles --help", expected: helpText)
+    try AssertExecuteCommand(command: "math help stats quantiles", expected: helpText)
   }
   
   func testMath_CustomValidation() throws {
-    AssertExecuteCommand(
+    try AssertExecuteCommand(
       command: "math stats average --kind mode",
       expected: """
             Error: Please provide at least one value to calculate the mode.
@@ -128,38 +128,38 @@ final class MathExampleTests: XCTestCase {
   }
   
   func testMath_Versions() throws {
-    AssertExecuteCommand(
+    try AssertExecuteCommand(
       command: "math --version",
       expected: "1.0.0")
-    AssertExecuteCommand(
+    try AssertExecuteCommand(
       command: "math stats --version",
       expected: "1.0.0")
-    AssertExecuteCommand(
+    try AssertExecuteCommand(
       command: "math stats average --version",
       expected: "1.5.0-alpha")
   }
 
   func testMath_ExitCodes() throws {
-    AssertExecuteCommand(
+    try AssertExecuteCommand(
       command: "math stats quantiles --test-success-exit-code",
       expected: "",
       exitCode: .success)
-    AssertExecuteCommand(
+    try AssertExecuteCommand(
       command: "math stats quantiles --test-failure-exit-code",
       expected: "",
       exitCode: .failure)
-    AssertExecuteCommand(
+    try AssertExecuteCommand(
       command: "math stats quantiles --test-validation-exit-code",
       expected: "",
       exitCode: .validationFailure)
-    AssertExecuteCommand(
+    try AssertExecuteCommand(
       command: "math stats quantiles --test-custom-exit-code 42",
       expected: "",
       exitCode: ExitCode(42))
   }
   
   func testMath_Fail() throws {
-    AssertExecuteCommand(
+    try AssertExecuteCommand(
       command: "math --foo",
       expected: """
             Error: Unknown option '--foo'
@@ -168,7 +168,7 @@ final class MathExampleTests: XCTestCase {
             """,
       exitCode: .validationFailure)
     
-    AssertExecuteCommand(
+    try AssertExecuteCommand(
       command: "math ZZZ",
       expected: """
             Error: The value 'ZZZ' is invalid for '<values>'
@@ -183,29 +183,29 @@ final class MathExampleTests: XCTestCase {
 // MARK: - Completion Script
 
 extension MathExampleTests {
-  func testMath_CompletionScript() {
-    AssertExecuteCommand(
+  func testMath_CompletionScript() throws {
+    try AssertExecuteCommand(
       command: "math --generate-completion-script=bash",
       expected: bashCompletionScriptText)
-    AssertExecuteCommand(
+    try AssertExecuteCommand(
       command: "math --generate-completion-script bash",
       expected: bashCompletionScriptText)
-    AssertExecuteCommand(
+    try AssertExecuteCommand(
       command: "math --generate-completion-script=zsh",
       expected: zshCompletionScriptText)
-    AssertExecuteCommand(
+    try AssertExecuteCommand(
       command: "math --generate-completion-script zsh",
       expected: zshCompletionScriptText)
-    AssertExecuteCommand(
+    try AssertExecuteCommand(
       command: "math --generate-completion-script=fish",
       expected: fishCompletionScriptText)
-    AssertExecuteCommand(
+    try AssertExecuteCommand(
       command: "math --generate-completion-script fish",
       expected: fishCompletionScriptText)
   }
   
-  func testMath_CustomCompletion() {
-    AssertExecuteCommand(
+  func testMath_CustomCompletion() throws {
+    try AssertExecuteCommand(
       command: "math ---completion stats quantiles -- --custom",
       expected: """
         hello
@@ -213,7 +213,7 @@ extension MathExampleTests {
         heliotrope
         """)
     
-    AssertExecuteCommand(
+    try AssertExecuteCommand(
       command: "math ---completion stats quantiles -- --custom h",
       expected: """
         hello
@@ -221,7 +221,7 @@ extension MathExampleTests {
         heliotrope
         """)
   
-    AssertExecuteCommand(
+    try AssertExecuteCommand(
       command: "math ---completion stats quantiles -- --custom a",
       expected: """
         aardvark
