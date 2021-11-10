@@ -15,7 +15,7 @@ import ArgumentParserTestHelpers
 
 final class RepeatExampleTests: XCTestCase {
   func testRepeat() throws {
-    AssertExecuteCommand(command: "repeat hello --count 6", expected: """
+    try AssertExecuteCommand(command: "repeat hello --count 6", expected: """
         hello
         hello
         hello
@@ -38,12 +38,12 @@ final class RepeatExampleTests: XCTestCase {
           -h, --help              Show help information.
         """
     
-    AssertExecuteCommand(command: "repeat -h", expected: helpText)
-    AssertExecuteCommand(command: "repeat --help", expected: helpText)
+    try AssertExecuteCommand(command: "repeat -h", expected: helpText)
+    try AssertExecuteCommand(command: "repeat --help", expected: helpText)
   }
   
   func testRepeat_Fail() throws {
-    AssertExecuteCommand(
+    try AssertExecuteCommand(
       command: "repeat",
       expected: """
             Error: Missing expected argument '<phrase>'
@@ -60,7 +60,7 @@ final class RepeatExampleTests: XCTestCase {
             """,
       exitCode: .validationFailure)
 
-    AssertExecuteCommand(
+    try AssertExecuteCommand(
       command: "repeat hello --count",
       expected: """
             Error: Missing value for '--count <count>'
@@ -70,7 +70,7 @@ final class RepeatExampleTests: XCTestCase {
             """,
       exitCode: .validationFailure)
     
-    AssertExecuteCommand(
+    try AssertExecuteCommand(
       command: "repeat hello --count ZZZ",
       expected: """
             Error: The value 'ZZZ' is invalid for '--count <count>'
@@ -80,7 +80,7 @@ final class RepeatExampleTests: XCTestCase {
             """,
       exitCode: .validationFailure)
     
-    AssertExecuteCommand(
+    try AssertExecuteCommand(
       command: "repeat --version hello",
       expected: """
             Error: Unknown option '--version'
