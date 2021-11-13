@@ -6,6 +6,6 @@ ArgumentParser has some built-in experimental features and they are available wi
 
 ## List of experimental features
 ### Experimental Flags
-| Name | Description | PR | Version |
+| Name | Description | related PRs | Version |
 | ------------- | ------------- | ------------- | ------------- |
-| `--experimental-dump-help`  | Dumps command/argument/help information as JSON | #310 | 0.5.0 or newer |
+| `--experimental-dump-help`  | Dumps command/argument/help information as JSON | [#310](https://github.com/apple/swift-argument-parser/pull/310) [#335](https://github.com/apple/swift-argument-parser/pull/335) | 0.5.0 or newer |
