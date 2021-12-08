@@ -175,7 +175,7 @@ extension XCTest {
     command: String,
     expected: String? = nil,
     exitCode: ExitCode = .success,
-    file: StaticString = #file, line: UInt = #line)
+    file: StaticString = #file, line: UInt = #line) throws
   {
     let splitCommand = command.split(separator: " ")
     let arguments = splitCommand.dropFirst().map(String.init)
@@ -188,6 +188,7 @@ extension XCTest {
       return
     }
     
+    #if !canImport(Darwin) || os(macOS)
     let process = Process()
     if #available(macOS 10.13, *) {
       process.executableURL = commandURL
@@ -222,6 +223,9 @@ extension XCTest {
     }
 
     XCTAssertEqual(process.terminationStatus, exitCode.rawValue, file: (file), line: line)
+    #else
+    throw XCTSkip("Not supported on this platform")
+    #endif
   }
 
   public func AssertJSONOutputEqual(
@@ -241,6 +245,7 @@ extension XCTest {
       return
     }
 
+    #if !canImport(Darwin) || os(macOS)
     let process = Process()
     if #available(macOS 10.13, *) {
       process.executableURL = commandURL
@@ -267,5 +272,8 @@ extension XCTest {
     let outputString = try XCTUnwrap(String(data: output.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8))
     XCTAssertTrue(error.fileHandleForReading.readDataToEndOfFile().isEmpty, "Error occurred with `--experimental-dump-help`")
     try AssertJSONEqualFromString(actual: outputString, expected: expected, for: ToolInfoV0.self)
+    #else
+    throw XCTSkip("Not supported on this platform")
+    #endif
   }
 }

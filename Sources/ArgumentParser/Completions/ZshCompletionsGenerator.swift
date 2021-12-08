@@ -185,7 +185,7 @@ extension ArgumentDefinition {
 
     case .custom:
       // Generate a call back into the command to retrieve a completions list
-      let commandName = commands.first!._commandName
+      let commandName = commands.first!._commandName.zshEscapingCommandName()
       return "{_custom_completion $_\(commandName)_commandname \(customCompletionCall(commands)) $words}"
     }
   }

@@ -127,6 +127,9 @@ extension CompletionScriptTests {
   struct EscapedCommand: ParsableCommand {
     @Option(help: #"Escaped chars: '[]\."#)
     var one: String
+    
+    @Argument(completion: .custom { _ in ["d", "e", "f"] })
+    var two: String
   }
 
   func testEscaped_Zsh() throws {
@@ -222,6 +225,7 @@ _escaped-command() {
     local -a args
     args+=(
         '--one[Escaped chars: '"'"'\\[\\]\\\\.]:one:'
+        ':two:{_custom_completion $_escaped_command_commandname ---completion  -- two $words}'
         '(-h --help)'{-h,--help}'[Show help information.]'
     )
     _arguments -w -s -S $args[@] && ret=0
