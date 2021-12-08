@@ -14,6 +14,7 @@ struct FishCompletionsGenerator {
         end
         return 1
     end
+    
     """
 
     let completions = generateCompletions(commandChain: [programName], [type])

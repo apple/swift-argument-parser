@@ -580,7 +580,7 @@ complete -c math -n '_swift_math_using_command math stats stdev' -f -s h -l help
 complete -c math -n '_swift_math_using_command math stats quantiles' -f -r -l file
 complete -c math -n '_swift_math_using_command math stats quantiles --file' -f -a '(for i in *.{txt,md}; echo $i;end)'
 complete -c math -n '_swift_math_using_command math stats quantiles' -f -r -l directory
-complete -c math -n '_swift_math_using_command math stats quantiles --directory' -f -a '(_swift_complete_directories)'
+complete -c math -n '_swift_math_using_command math stats quantiles --directory' -f -a '(__fish_complete_directories)'
 complete -c math -n '_swift_math_using_command math stats quantiles' -f -r -l shell
 complete -c math -n '_swift_math_using_command math stats quantiles --shell' -f -a '(head -100 /usr/share/dict/words | tail -50)'
 complete -c math -n '_swift_math_using_command math stats quantiles' -f -r -l custom
