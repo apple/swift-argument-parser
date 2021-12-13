@@ -67,7 +67,25 @@ OPTIONS:
 ```
 
 For more information and documentation about all supported options, 
-see the library's documentation in Xcode.
+see the articles below and the library's documentation in Xcode:
+
+- [Getting Started with `ArgumentParser`][getting-started]
+- [Declaring Arguments, Options, and Flags][declaring]
+- [Defining Commands and Subcommands][commands]
+- [Customizing Help][help]
+- [Manual Parsing and Testing][manual]
+- [Providing Custom Validation][validation]
+- [Customizing Completions][comp-custom]
+- [Generating and Installing Completion Scripts][comp-install]
+
+[getting-started]: http://github.com/apple/swift-argument-parser/blob/main/Sources/ArgumentParser/Documentation.docc/Articles/GettingStarted.md
+[declaring]: http://github.com/apple/swift-argument-parser/blob/main/Sources/ArgumentParser/Documentation.docc/Articles/DeclaringArguments.md
+[commands]: http://github.com/apple/swift-argument-parser/blob/main/Sources/ArgumentParser/Documentation.docc/Articles/CommandsAndSubcommands.md
+[help]: http://github.com/apple/swift-argument-parser/blob/main/Sources/ArgumentParser/Documentation.docc/Articles/CustomizingHelp.md
+[manual]: http://github.com/apple/swift-argument-parser/blob/main/Sources/ArgumentParser/Documentation.docc/Articles/ManualParsing.md
+[validation]: http://github.com/apple/swift-argument-parser/blob/main/Sources/ArgumentParser/Documentation.docc/Articles/Validation.md
+[comp-custom]: http://github.com/apple/swift-argument-parser/blob/main/Sources/ArgumentParser/Documentation.docc/Articles/CustomizingCompletions.md
+[comp-install]: http://github.com/apple/swift-argument-parser/blob/main/Sources/ArgumentParser/Documentation.docc/Articles/InstallingCompletionScripts.md
 
 ## Examples
 
