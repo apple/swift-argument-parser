@@ -2,8 +2,8 @@ struct FishCompletionsGenerator {
   static func generateCompletionScript(_ type: ParsableCommand.Type) -> String {
     let programName = type._commandName
     let helper = """
-    function __fish_\(programName)_using_command
-        set cmd (commandline -opc)
+    function _swift_\(programName)_using_command
+        set -l cmd (commandline -opc)
         if [ (count $cmd) -eq (count $argv) ]
             for i in (seq (count $argv))
                 if [ $cmd[$i] != $argv[$i] ]
@@ -14,7 +14,7 @@ struct FishCompletionsGenerator {
         end
         return 1
     end
-
+    
     """
 
     let completions = generateCompletions(commandChain: [programName], [type])
@@ -37,7 +37,7 @@ struct FishCompletionsGenerator {
       }
     }
 
-    let prefix = "complete -c \(programName) -n '__fish_\(programName)_using_command"
+    let prefix = "complete -c \(programName) -n '_swift_\(programName)_using_command"
     /// We ask each suggestion to produce 2 pieces of information
     /// - Parameters
     ///   - ancestors: a list of "ancestor" which must be present in the current shell buffer for

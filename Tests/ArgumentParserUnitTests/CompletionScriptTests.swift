@@ -243,8 +243,8 @@ _escaped-command
 """
 
 private let fishBaseCompletions = """
-function __fish_base_using_command
-    set cmd (commandline -opc)
+function _swift_base_using_command
+    set -l cmd (commandline -opc)
     if [ (count $cmd) -eq (count $argv) ]
         for i in (seq (count $argv))
             if [ $cmd[$i] != $argv[$i] ]
@@ -255,16 +255,16 @@ function __fish_base_using_command
     end
     return 1
 end
-complete -c base -n '__fish_base_using_command base' -f -r -l name -d 'The user\\'s name.'
-complete -c base -n '__fish_base_using_command base' -f -r -l kind
-complete -c base -n '__fish_base_using_command base --kind' -f -k -a 'one two custom-three'
-complete -c base -n '__fish_base_using_command base' -f -r -l other-kind
-complete -c base -n '__fish_base_using_command base --other-kind' -f -k -a '1 2 3'
-complete -c base -n '__fish_base_using_command base' -f -r -l path1
-complete -c base -n '__fish_base_using_command base --path1' -f -a '(for i in *.{}; echo $i;end)'
-complete -c base -n '__fish_base_using_command base' -f -r -l path2
-complete -c base -n '__fish_base_using_command base --path2' -f -a '(for i in *.{}; echo $i;end)'
-complete -c base -n '__fish_base_using_command base' -f -r -l path3
-complete -c base -n '__fish_base_using_command base --path3' -f -k -a 'a b c'
-complete -c base -n '__fish_base_using_command base' -f -s h -l help -d 'Show help information.'
+complete -c base -n '_swift_base_using_command base' -f -r -l name -d 'The user\\'s name.'
+complete -c base -n '_swift_base_using_command base' -f -r -l kind
+complete -c base -n '_swift_base_using_command base --kind' -f -k -a 'one two custom-three'
+complete -c base -n '_swift_base_using_command base' -f -r -l other-kind
+complete -c base -n '_swift_base_using_command base --other-kind' -f -k -a '1 2 3'
+complete -c base -n '_swift_base_using_command base' -f -r -l path1
+complete -c base -n '_swift_base_using_command base --path1' -f -a '(for i in *.{}; echo $i;end)'
+complete -c base -n '_swift_base_using_command base' -f -r -l path2
+complete -c base -n '_swift_base_using_command base --path2' -f -a '(for i in *.{}; echo $i;end)'
+complete -c base -n '_swift_base_using_command base' -f -r -l path3
+complete -c base -n '_swift_base_using_command base --path3' -f -k -a 'a b c'
+complete -c base -n '_swift_base_using_command base' -f -s h -l help -d 'Show help information.'
 """
