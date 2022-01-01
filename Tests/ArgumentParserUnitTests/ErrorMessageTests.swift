@@ -65,9 +65,10 @@ extension ErrorMessageTests {
 }
 
 fileprivate struct Foo: ParsableArguments {
-  enum Format: String, Equatable, Decodable, ExpressibleByArgument {
+  enum Format: String, Equatable, Decodable, ExpressibleByArgument, CaseIterable {
     case text
     case json
+    case csv
   }
   @Option(name: [.short, .long])
   var format: Format
@@ -75,8 +76,8 @@ fileprivate struct Foo: ParsableArguments {
 
 extension ErrorMessageTests {
   func testWrongEnumValue() {
-    AssertErrorMessage(Foo.self, ["--format", "png"], "The value 'png' is invalid for '--format <format>'")
-    AssertErrorMessage(Foo.self, ["-f", "png"], "The value 'png' is invalid for '-f <format>'")
+    AssertErrorMessage(Foo.self, ["--format", "png"], "The value 'png' is invalid for '--format <format>'. Choose from 'text', 'json' and 'csv'.")
+    AssertErrorMessage(Foo.self, ["-f", "png"], "The value 'png' is invalid for '-f <format>'. Choose from 'text', 'json' and 'csv'.")
   }
 }
 

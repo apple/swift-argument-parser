@@ -394,8 +394,9 @@ extension ErrorMessageGenerator {
   }
   
   func unableToParseValueMessage(origin: InputOrigin, name: Name?, value: String, key: InputKey, error: Error?) -> String {
-    let valueName = arguments(for: key).first?.valueName
-    
+    let argumentValue = arguments(for: key).first
+    let valueName = argumentValue?.valueName
+
     // We want to make the "best effort" in producing a custom error message.
     // We favour `LocalizedError.errorDescription` and fall back to
     // `CustomStringConvertible`. To opt in, return your custom error message
@@ -407,10 +408,20 @@ extension ErrorMessageGenerator {
       case let err?:
         return ": " + String(describing: err)
       default:
+        if let help = argumentValue?.help, !help.allValues.isEmpty {
+            let quotedValues = help.allValues.map { "'\($0)'" }
+            let validList: String
+            if quotedValues.count <= 2 {
+                validList = quotedValues.joined(separator: " and ")
+            } else {
+                validList = quotedValues.dropLast().joined(separator: ", ") + " and \(quotedValues.last!)"
+            }
+          return ". Choose from \(validList)."
+        }
         return ""
       }
     }()
-    
+
     switch (name, valueName) {
     case let (n?, v?):
       return "The value '\(value)' is invalid for '\(n.synopsisString) <\(v)>'\(customErrorMessage)"
