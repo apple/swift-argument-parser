@@ -408,17 +408,7 @@ extension ErrorMessageGenerator {
       case let err?:
         return ": " + String(describing: err)
       default:
-        if let help = argumentValue?.help, !help.allValues.isEmpty {
-            let quotedValues = help.allValues.map { "'\($0)'" }
-            let validList: String
-            if quotedValues.count <= 2 {
-                validList = quotedValues.joined(separator: " and ")
-            } else {
-                validList = quotedValues.dropLast().joined(separator: ", ") + " and \(quotedValues.last!)"
-            }
-          return ". Choose from \(validList)."
-        }
-        return ""
+        return argumentValue?.formattedValueList ?? ""
       }
     }()
 
@@ -431,6 +421,28 @@ extension ErrorMessageGenerator {
       return "The value '\(value)' is invalid for '\(n.synopsisString)'\(customErrorMessage)"
     case (nil, nil):
       return "The value '\(value)' is invalid.\(customErrorMessage)"
+    }
+  }
+}
+
+private extension ArgumentDefinition {
+  var formattedValueList: String {
+    if help.allValues.isEmpty {
+      return ""
+    }
+
+    if help.allValues.count < 6 {
+      let quotedValues = help.allValues.map { "'\($0)'" }
+      let validList: String
+      if quotedValues.count <= 2 {
+        validList = quotedValues.joined(separator: " and ")
+      } else {
+        validList = quotedValues.dropLast().joined(separator: ", ") + " or \(quotedValues.last!)"
+      }
+      return ". Please provide one of \(validList)."
+    } else {
+      let bulletValueList = help.allValues.map { "  - \($0)" }.joined(separator: "\n")
+      return ". Please provide one of the following:\n\(bulletValueList)"
     }
   }
 }
