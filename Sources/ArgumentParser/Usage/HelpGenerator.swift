@@ -348,7 +348,10 @@ import WinSDK
 #endif
 
 func _terminalSize() -> (width: Int, height: Int) {
-#if os(Windows)
+#if os(WASI)
+  // WASI doesn't yet support terminal size
+  return (80, 25)
+#elseif os(Windows)
   var csbi: CONSOLE_SCREEN_BUFFER_INFO = CONSOLE_SCREEN_BUFFER_INFO()
 
   GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi)
