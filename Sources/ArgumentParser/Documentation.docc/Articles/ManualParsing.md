@@ -10,7 +10,7 @@ For most programs, calling the static `main()` method on the root command type i
 
 For simple Swift scripts, and for those who prefer a straight-down-the-left-edge-of-the-screen scripting style, you can define a single `ParsableArguments` type to parse explicitly from the command-line arguments.
 
-Let's implement the `Select` command discussed in [Validation and Errors](./Validation.md), but using a scripty style instead of the typical command. First, we define the options as a `ParsableArguments` type:
+Let's implement the `Select` command discussed in <doc:Validation>, but using a scripty style instead of the typical command. First, we define the options as a `ParsableArguments` type:
 
 ```swift
 struct SelectOptions: ParsableArguments {
