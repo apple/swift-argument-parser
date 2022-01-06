@@ -76,7 +76,7 @@ OPTIONS:
 
 ## Customizing Help for Commands
 
-In addition to configuring the command name and subcommands, as described in [Command and Subcommands](03%20Commands%20and%20Subcommands.md), you can also configure a command's help text by providing an abstract and discussion.
+In addition to configuring the command name and subcommands, as described in <doc:CommandsAndSubcommands>, you can also configure a command's help text by providing an abstract and discussion.
 
 ```swift
 struct Repeat: ParsableCommand {

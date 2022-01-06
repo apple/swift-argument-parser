@@ -65,18 +65,53 @@ extension ErrorMessageTests {
 }
 
 fileprivate struct Foo: ParsableArguments {
-  enum Format: String, Equatable, Decodable, ExpressibleByArgument {
+  enum Format: String, Equatable, Decodable, ExpressibleByArgument, CaseIterable {
     case text
     case json
+    case csv
+  }
+
+  enum Name: String, Equatable, Decodable, ExpressibleByArgument, CaseIterable {
+    case bruce
+    case clint
+    case hulk
+    case natasha
+    case steve
+    case thor
+    case tony
   }
   @Option(name: [.short, .long])
   var format: Format
+  @Option(name: [.short, .long])
+  var name: Name?
 }
 
 extension ErrorMessageTests {
   func testWrongEnumValue() {
-    AssertErrorMessage(Foo.self, ["--format", "png"], "The value 'png' is invalid for '--format <format>'")
-    AssertErrorMessage(Foo.self, ["-f", "png"], "The value 'png' is invalid for '-f <format>'")
+    AssertErrorMessage(Foo.self, ["--format", "png"], "The value 'png' is invalid for '--format <format>'. Please provide one of 'text', 'json' or 'csv'.")
+    AssertErrorMessage(Foo.self, ["-f", "png"], "The value 'png' is invalid for '-f <format>'. Please provide one of 'text', 'json' or 'csv'.")
+    AssertErrorMessage(Foo.self, ["-f", "text", "--name", "loki"],
+      """
+      The value 'loki' is invalid for '--name <name>'. Please provide one of the following:
+        - bruce
+        - clint
+        - hulk
+        - natasha
+        - steve
+        - thor
+        - tony
+      """)
+    AssertErrorMessage(Foo.self, ["-f", "text", "-n", "loki"],
+      """
+      The value 'loki' is invalid for '-n <name>'. Please provide one of the following:
+        - bruce
+        - clint
+        - hulk
+        - natasha
+        - steve
+        - thor
+        - tony
+      """)
   }
 }
 
