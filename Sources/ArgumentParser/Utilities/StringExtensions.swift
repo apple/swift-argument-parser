@@ -12,6 +12,13 @@
 extension String {
   func wrapped(to columns: Int, wrappingIndent: Int = 0) -> String {
     let columns = columns - wrappingIndent
+    guard columns > 0 else {
+      // Skip wrapping logic if the number of columns is less than 1 in release
+      // builds and assert in debug builds.
+      assertionFailure("`columns - wrappingIndent` should be always be greater than 0.")
+      return ""
+    }
+
     var result: [Substring] = []
     
     var currentIndex = startIndex

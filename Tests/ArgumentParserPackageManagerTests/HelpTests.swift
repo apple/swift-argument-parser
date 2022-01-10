@@ -26,11 +26,11 @@ func getErrorText<T: ParsableArguments>(_: T.Type, _ arguments: [String]) -> Str
   }
 }
 
-func getErrorText<T: ParsableCommand>(_: T.Type, _ arguments: [String]) -> String {
+func getErrorText<T: ParsableCommand>(_: T.Type, _ arguments: [String], screenWidth: Int) -> String {
   do {
     let command = try T.parseAsRoot(arguments)
     if let helpCommand = command as? HelpCommand {
-      return helpCommand.generateHelp()
+      return helpCommand.generateHelp(screenWidth: screenWidth)
     } else {
       XCTFail("Didn't generate a help error")
       return ""
@@ -90,7 +90,7 @@ extension HelpTests {
 
   func testConfigHelp() throws {
     XCTAssertEqual(
-      getErrorText(Package.self, ["help", "config"]).trimmingLines(),
+      getErrorText(Package.self, ["help", "config"], screenWidth: 80).trimmingLines(),
       """
                 USAGE: package config <subcommand>
 
@@ -107,11 +107,8 @@ extension HelpTests {
   }
 
   func testGetMirrorHelp() throws {
-    HelpGenerator._screenWidthOverride = 80
-    defer { HelpGenerator._screenWidthOverride = nil }
-
     XCTAssertEqual(
-      getErrorText(Package.self, ["help", "config",  "get-mirror"]).trimmingLines(),
+      getErrorText(Package.self, ["help", "config",  "get-mirror"], screenWidth: 80).trimmingLines(),
       """
                 USAGE: package config get-mirror [<options>] --package-url <package-url>
 
