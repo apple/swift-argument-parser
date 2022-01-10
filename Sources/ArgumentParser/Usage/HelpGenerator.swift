@@ -339,8 +339,9 @@ func _terminalSize() -> (width: Int, height: Int) {
   return (80, 25)
 #elseif os(Windows)
   var csbi: CONSOLE_SCREEN_BUFFER_INFO = CONSOLE_SCREEN_BUFFER_INFO()
-
-  GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi)
+  guard GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi) else {
+    return (80, 25)
+  }
   return (width: Int(csbi.srWindow.Right - csbi.srWindow.Left) + 1,
           height: Int(csbi.srWindow.Bottom - csbi.srWindow.Top) + 1)
 #else
