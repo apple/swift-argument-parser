@@ -481,7 +481,7 @@ extension Argument {
   ///
   /// This method is called to initialize an array `Argument` with no default value such as:
   /// ```swift
-  /// @Argument(tranform: baz)
+  /// @Argument(transform: baz)
   /// var foo: [String]
   /// ```
   ///
