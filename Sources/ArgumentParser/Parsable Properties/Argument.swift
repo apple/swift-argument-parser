@@ -120,7 +120,7 @@ extension Argument where Value: ExpressibleByArgument {
   /// ```
   ///
   /// - Parameters:
-  ///   - wrappedValue: A default value to use for this property, provided implicitly by the compiler during propery wrapper initialization.
+  ///   - wrappedValue: A default value to use for this property, provided implicitly by the compiler during property wrapper initialization.
   ///   - help: Information about how to use this argument.
   public init(
     wrappedValue: Value,
