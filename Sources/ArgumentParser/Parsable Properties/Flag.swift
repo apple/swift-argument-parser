@@ -231,7 +231,7 @@ extension Flag where Value == Bool {
   /// Creates a Boolean property with default value provided by standard Swift default value syntax that reads its value from the presence of a flag.
   ///
   /// - Parameters:
-  ///   - wrappedValue: A default value to use for this property, provided implicitly by the compiler during propery wrapper initialization.
+  ///   - wrappedValue: A default value to use for this property, provided implicitly by the compiler during property wrapper initialization.
   ///   - name: A specification for what names are allowed for this flag.
   ///   - help: Information about how to use this flag.
   public init(
@@ -273,7 +273,7 @@ extension Flag where Value == Bool {
   ///
   /// - Parameters:
   ///   - name: A specification for what names are allowed for this flag.
-  ///   - wrappedValue: A default value to use for this property, provided implicitly by the compiler during propery wrapper initialization.
+  ///   - wrappedValue: A default value to use for this property, provided implicitly by the compiler during property wrapper initialization.
   ///   - inversion: The method for converting this flag's name into an on/off pair.
   ///   - exclusivity: The behavior to use when an on/off pair of flags is specified.
   ///   - help: Information about how to use this flag.
@@ -305,7 +305,7 @@ extension Flag where Value == Bool {
   ///
   /// - Parameters:
   ///   - name: A specification for what names are allowed for this flag.
-  ///   - wrappedValue: A default value to use for this property, provided implicitly by the compiler during propery wrapper initialization.
+  ///   - wrappedValue: A default value to use for this property, provided implicitly by the compiler during property wrapper initialization.
   ///   - inversion: The method for converting this flag's name into an on/off pair.
   ///   - exclusivity: The behavior to use when an on/off pair of flags is specified.
   ///   - help: Information about how to use this flag.
@@ -393,7 +393,7 @@ extension Flag where Value: EnumerableFlag {
   /// ```
   ///
   /// - Parameters:
-  ///   - wrappedValue: A default value to use for this property, provided implicitly by the compiler during propery wrapper initialization.
+  ///   - wrappedValue: A default value to use for this property, provided implicitly by the compiler during property wrapper initialization.
   ///   - exclusivity: The behavior to use when multiple flags are specified.
   ///   - help: Information about how to use this flag.
   public init(

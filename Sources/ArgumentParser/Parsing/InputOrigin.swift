@@ -11,7 +11,7 @@
 
 /// Specifies where a given input came from.
 ///
-/// When reading from the command line, a value might originate from a sinlge
+/// When reading from the command line, a value might originate from a single
 /// index, multiple indices, or from part of an index. For this command:
 ///
 ///     struct Example: ParsableCommand {

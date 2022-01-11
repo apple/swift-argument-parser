@@ -41,7 +41,7 @@ struct FishCompletionsGenerator {
     /// We ask each suggestion to produce 2 pieces of information
     /// - Parameters
     ///   - ancestors: a list of "ancestor" which must be present in the current shell buffer for
-    ///                this suggetion to be considered. This could be a combination of (nested)
+    ///                this suggestion to be considered. This could be a combination of (nested)
     ///                subcommands and flags.
     ///   - suggestion: text for the actual suggestion
     /// - Returns: A completion expression
