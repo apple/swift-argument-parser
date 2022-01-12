@@ -3,4 +3,5 @@
 /Packages
 /*.xcodeproj
 .swiftpm
+.vscode
 .*.sw?
