@@ -398,7 +398,7 @@ extension ErrorMessageGenerator {
     let valueName = argumentValue?.valueName
 
     // We want to make the "best effort" in producing a custom error message.
-    // We favour `LocalizedError.errorDescription` and fall back to
+    // We favor `LocalizedError.errorDescription` and fall back to
     // `CustomStringConvertible`. To opt in, return your custom error message
     // as the `description` property of `CustomStringConvertible`.
     let customErrorMessage: String = {

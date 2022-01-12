@@ -135,7 +135,7 @@ extension ValidationEndToEndTests {
   }
 
   func testCustomErrorValidation() {
-    // verify that error description is printed if avaiable via LocalizedError
+    // verify that error description is printed if available via LocalizedError
     AssertErrorMessage(Foo.self, ["--throw", "Joe"], UserValidationError.userValidationError.errorDescription!)
   }
 
