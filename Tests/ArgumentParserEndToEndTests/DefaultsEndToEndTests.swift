@@ -777,3 +777,19 @@ extension DefaultsEndToEndTests {
     }
   }
 }
+
+@available(*, deprecated)
+fileprivate struct OptionPropertyDeprecatedInit_NoDefault: ParsableArguments {
+  @Option(completion: .file(), help: "")
+  var data: String = "test"
+}
+
+extension DefaultsEndToEndTests {
+  /// Tests that instances created using deprecated initializer with completion and help arguments swapped are constructed and parsed correctly.
+  @available(*, deprecated)
+  func testParsing_OptionPropertyDeprecatedInit_NoDefault() {
+    AssertParse(OptionPropertyDeprecatedInit_NoDefault.self, []) { arguments in
+      XCTAssertEqual(arguments.data, "test")
+    }
+  }
+}

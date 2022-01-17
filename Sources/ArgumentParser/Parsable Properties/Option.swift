@@ -127,6 +127,23 @@ extension Option where Value: ExpressibleByArgument {
   }
 
   /// Creates a property with a default value provided by standard Swift default value syntax.
+  @available(*, deprecated, message: "Swap the order of your 'help' and 'completion' arguments.")
+  public init(
+    wrappedValue: Value,
+    name: NameSpecification = .long,
+    parsing parsingStrategy: SingleValueParsingStrategy = .next,
+    completion: CompletionKind?,
+    help: ArgumentHelp?
+  ) {
+    self.init(
+      name: name,
+      initial: wrappedValue,
+      parsingStrategy: parsingStrategy,
+      help: help,
+      completion: completion)
+  }
+
+  /// Creates a property with a default value provided by standard Swift default value syntax.
   ///
   /// This method is called to initialize an `Option` with a default value such as:
   /// ```swift
@@ -138,12 +155,13 @@ extension Option where Value: ExpressibleByArgument {
   ///   - name: A specification for what names are allowed for this flag.
   ///   - parsingStrategy: The behavior to use when looking for this option's value.
   ///   - help: Information about how to use this option.
+  ///   - completion: Kind of completion provided to the user for this option.
   public init(
     wrappedValue: Value,
     name: NameSpecification = .long,
     parsing parsingStrategy: SingleValueParsingStrategy = .next,
-    completion: CompletionKind? = nil,
-    help: ArgumentHelp? = nil
+    help: ArgumentHelp? = nil,
+    completion: CompletionKind? = nil
   ) {
     self.init(
       name: name,
