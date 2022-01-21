@@ -547,6 +547,29 @@ extension HelpGenerationTests {
     XCTAssertEqual(AllValues.SpecializedSynthesized.allValueStrings, opts[4].help.allValues)
     XCTAssertEqual(AllValues.SpecializedSynthesized.allValueStrings, opts[5].help.allValues)
   }
+
+  struct Q: ParsableArguments {
+    @Option(help: "Your name") var name: String
+    @Option(help: "Your title") var title: String?
+
+    @Argument(help: .private) var privateName: String?
+    @Option(help: .private) var privateTitle: String?
+    @Flag(help: .private) var privateFlag: Bool = false
+    @Flag(inversion: .prefixedNo, help: .private) var privateInvertedFlag: Bool = true
+  }
+
+  func testHelpWithPrivate() {
+    // For now, hidden and private have the same behaviour
+    AssertHelp(for: Q.self, equals: """
+            USAGE: q --name <name> [--title <title>]
+
+            OPTIONS:
+              --name <name>           Your name
+              --title <title>         Your title
+              -h, --help              Show help information.
+
+            """)
+  }
 }
 
 // MARK: - Issue #278 https://github.com/apple/swift-argument-parser/issues/278
