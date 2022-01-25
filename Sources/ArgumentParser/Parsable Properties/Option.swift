@@ -182,6 +182,7 @@ extension Option where Value: ExpressibleByArgument {
   ///   - name: A specification for what names are allowed for this flag.
   ///   - parsingStrategy: The behavior to use when looking for this option's value.
   ///   - help: Information about how to use this option.
+  ///   - completion: Kind of completion provided to the user for this option.
   public init(
     name: NameSpecification = .long,
     parsing parsingStrategy: SingleValueParsingStrategy = .next,
@@ -340,6 +341,7 @@ extension Option {
   ///   - parsingStrategy: The behavior to use when looking for this option's
   ///     value.
   ///   - help: Information about how to use this option.
+  ///   - completion: Kind of completion provided to the user for this option.
   public init<T: ExpressibleByArgument>(
     name: NameSpecification = .long,
     parsing parsingStrategy: SingleValueParsingStrategy = .next,
@@ -404,6 +406,7 @@ extension Option {
   ///   - name: A specification for what names are allowed for this flag.
   ///   - parsingStrategy: The behavior to use when looking for this option's value.
   ///   - help: Information about how to use this option.
+  ///   - completion: Kind of completion provided to the user for this option.
   ///   - transform: A closure that converts a string into this property's type or throws an error.
   public init(
     wrappedValue: Value,
@@ -435,6 +438,7 @@ extension Option {
   ///   - name: A specification for what names are allowed for this flag.
   ///   - parsingStrategy: The behavior to use when looking for this option's value.
   ///   - help: Information about how to use this option.
+  ///   - completion: Kind of completion provided to the user for this option.
   ///   - transform: A closure that converts a string into this property's type or throws an error.
   public init(
     name: NameSpecification = .long,
@@ -502,6 +506,7 @@ extension Option {
   ///   - parsingStrategy: The behavior to use when parsing multiple values
   ///     from the command-line arguments.
   ///   - help: Information about how to use this option.
+  ///   - completion: Kind of completion provided to the user for this option.
   public init<Element>(
     wrappedValue: [Element],
     name: NameSpecification = .long,
@@ -530,6 +535,7 @@ extension Option {
   ///   - name: A specification for what names are allowed for this flag.
   ///   - parsingStrategy: The behavior to use when parsing multiple values from the command-line arguments.
   ///   - help: Information about how to use this option.
+  ///   - completion: Kind of completion provided to the user for this option.
   public init<Element>(
     name: NameSpecification = .long,
     parsing parsingStrategy: ArrayParsingStrategy = .singleValue,
@@ -608,6 +614,7 @@ extension Option {
   ///   - parsingStrategy: The behavior to use when parsing multiple values
   ///     from the command-line arguments.
   ///   - help: Information about how to use this option.
+  ///   - completion: Kind of completion provided to the user for this option.
   ///   - transform: A closure that converts a string into this property's
   ///     element type or throws an error.
   public init<Element>(
@@ -640,6 +647,7 @@ extension Option {
   ///   - name: A specification for what names are allowed for this flag.
   ///   - parsingStrategy: The behavior to use when parsing multiple values from the command-line arguments.
   ///   - help: Information about how to use this option.
+  ///   - completion: Kind of completion provided to the user for this option.
   ///   - transform: A closure that converts a string into this property's element type or throws an error.
   public init<Element>(
     name: NameSpecification = .long,
