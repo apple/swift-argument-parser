@@ -88,3 +88,4 @@ and then either calls your `run()` method or exits with a useful message.
 ### Advanced Topics
 
 - <doc:ManualParsing>
+- <doc:ExperimentalFeatures>
