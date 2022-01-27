@@ -44,6 +44,18 @@ extension ParsableCommand {
   public mutating func run() throws {
     throw CleanExit.helpRequest(self)
   }
+  
+  internal static var includesUnconditionalArguments: Bool {
+    ArgumentSet(self).contains(where: {
+      $0.isRepeatingPositional && $0.parsingStrategy == .allRemainingInput
+    })
+  }
+
+  internal static var remainingInputSubcommands: [ParsableCommand.Type] {
+    configuration
+      .subcommands
+      .filter { $0.includesUnconditionalArguments }
+  }
 }
 
 // MARK: - API

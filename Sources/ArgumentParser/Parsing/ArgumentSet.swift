@@ -202,7 +202,11 @@ extension ArgumentSet {
   ///
   /// - Parameter all: The input (from the command line) that needs to be parsed
   /// - Parameter commandStack: commands that have been parsed
-  func lenientParse(_ all: SplitArguments) throws -> ParsedValues {
+  func lenientParse(
+    _ all: SplitArguments,
+    subcommandNames: [String],
+    overrideCapturesAll: Bool
+  ) throws -> ParsedValues {
     // Create a local, mutable copy of the arguments:
     var inputArguments = all
     
@@ -340,7 +344,7 @@ extension ArgumentSet {
     // captures all remaining input, we use a different behavior, where we
     // shortcut out at the first sign of a positional argument or unrecognized
     // option/flag label.
-    let capturesAll = self.contains(where: { arg in
+    let capturesAll = overrideCapturesAll || self.contains(where: { arg in
       arg.isRepeatingPositional && arg.parsingStrategy == .allRemainingInput
     })
     
@@ -359,10 +363,10 @@ extension ArgumentSet {
       }
       
       switch next.value {
-      case .value:
+      case .value(let argument):
         // If we're capturing all, the first positional value represents the
         // start of positional input.
-        if capturesAll { break ArgumentLoop }
+        if capturesAll || subcommandNames.contains(argument) { break ArgumentLoop }
         // We'll parse positional values later.
         break
       case let .option(parsed):

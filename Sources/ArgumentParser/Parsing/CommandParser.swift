@@ -125,9 +125,11 @@ extension CommandParser {
     // Build the argument set (i.e. information on how to parse):
     let commandArguments = ArgumentSet(currentNode.element)
     
+    let subcommandNames = currentNode.element.remainingInputSubcommands.map { $0._commandName }
+    let defaultCapturesAll = currentNode.element.configuration.defaultSubcommand?.includesUnconditionalArguments == true
     // Parse the arguments, ignoring anything unexpected
-    let values = try commandArguments.lenientParse(split)
-    
+    let values = try commandArguments.lenientParse(split, subcommandNames: subcommandNames, overrideCapturesAll: defaultCapturesAll)
+
     // Decode the values from ParsedValues into the ParsableCommand:
     let decoder = ArgumentDecoder(values: values, previouslyDecoded: decodedArguments)
     var decodedResult: ParsableCommand
