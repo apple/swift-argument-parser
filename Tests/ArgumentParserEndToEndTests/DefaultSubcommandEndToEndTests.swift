@@ -73,7 +73,7 @@ extension DefaultSubcommandEndToEndTests {
 extension DefaultSubcommandEndToEndTests {
   fileprivate struct MyCommand: ParsableCommand {
     static var configuration = CommandConfiguration(
-      subcommands: [Plugin.self, Other.self],
+      subcommands: [Plugin.self, NonDefault.self, Other.self],
       defaultSubcommand: Plugin.self
     )
     
@@ -88,20 +88,23 @@ extension DefaultSubcommandEndToEndTests {
   }
   
   fileprivate struct Plugin: ParsableCommand {
-    @OptionGroup
-    var options: CommonOptions
+    @OptionGroup var options: CommonOptions
+    @Argument var pluginName: String
     
-    @Argument(help: "Name of the plugin to invoke")
-    var pluginName: String
+    @Argument(parsing: .unconditionalRemaining)
+    var pluginArguments: [String] = []
+  }
+  
+  fileprivate struct NonDefault: ParsableCommand {
+    @OptionGroup var options: CommonOptions
+    @Argument var pluginName: String
     
-    @Argument(parsing: .unconditionalRemaining,
-              help: "Arguments for the plugin to invoke")
+    @Argument(parsing: .unconditionalRemaining)
     var pluginArguments: [String] = []
   }
   
   fileprivate struct Other: ParsableCommand {
-    @OptionGroup
-    var options: CommonOptions
+    @OptionGroup var options: CommonOptions
   }
   
   func testRemainingDefaultImplicit() throws {
@@ -140,14 +143,30 @@ extension DefaultSubcommandEndToEndTests {
     }
   }
 
+  func testRemainingNonDefault() throws {
+    AssertParseCommand(MyCommand.self, NonDefault.self, ["non-default", "my-plugin"]) { nondef in
+      XCTAssertEqual(nondef.pluginName, "my-plugin")
+      XCTAssertEqual(nondef.pluginArguments, [])
+      XCTAssertEqual(nondef.options.verbose, false)
+    }
+    AssertParseCommand(MyCommand.self, NonDefault.self, ["non-default", "my-plugin", "--verbose"]) { nondef in
+      XCTAssertEqual(nondef.pluginName, "my-plugin")
+      XCTAssertEqual(nondef.pluginArguments, ["--verbose"])
+      XCTAssertEqual(nondef.options.verbose, false)
+    }
+    AssertParseCommand(MyCommand.self, NonDefault.self, ["--verbose", "non-default", "my-plugin", "--verbose"]) { nondef in
+      XCTAssertEqual(nondef.pluginName, "my-plugin")
+      XCTAssertEqual(nondef.pluginArguments, ["--verbose"])
+      XCTAssertEqual(nondef.options.verbose, true)
+    }
+  }
+
   func testRemainingDefaultOther() throws {
     AssertParseCommand(MyCommand.self, Other.self, ["other"]) { other in
       XCTAssertEqual(other.options.verbose, false)
     }
-    XCTExpectFailure() {
-      AssertParseCommand(MyCommand.self, Other.self, ["other", "--verbose"]) { other in
-        XCTAssertEqual(other.options.verbose, true)
-      }
+    AssertParseCommand(MyCommand.self, Other.self, ["other", "--verbose"]) { other in
+      XCTAssertEqual(other.options.verbose, true)
     }
   }
   
