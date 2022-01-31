@@ -31,6 +31,8 @@ public protocol ParsableCommand: ParsableArguments {
   mutating func run() throws
 }
 
+// MARK: - Default implementations
+
 extension ParsableCommand {
   public static var _commandName: String {
     configuration.commandName ??
@@ -103,5 +105,24 @@ extension ParsableCommand {
   /// relevant error message if necessary.
   public static func main() {
     self.main(nil)
+  }
+}
+
+// MARK: - Internal API
+
+extension ParsableCommand {
+  /// `true` if this command contains any array arguments that are declared
+  /// with `.unconditionalRemaining`.
+  internal static var includesUnconditionalArguments: Bool {
+    ArgumentSet(self).contains(where: {
+      $0.isRepeatingPositional && $0.parsingStrategy == .allRemainingInput
+    })
+  }
+  
+  /// `true` if this command's default subcommand contains any array arguments
+  /// that are declared with `.unconditionalRemaining`. This is `false` if
+  /// there's no default subcommand.
+  internal static var defaultIncludesUnconditionalArguments: Bool {
+    configuration.defaultSubcommand?.includesUnconditionalArguments == true
   }
 }
