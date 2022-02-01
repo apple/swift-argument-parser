@@ -120,7 +120,7 @@ extension Argument where Value: ExpressibleByArgument {
   /// ```
   ///
   /// - Parameters:
-  ///   - wrappedValue: A default value to use for this property, provided implicitly by the compiler during propery wrapper initialization.
+  ///   - wrappedValue: A default value to use for this property, provided implicitly by the compiler during property wrapper initialization.
   ///   - help: Information about how to use this argument.
   public init(
     wrappedValue: Value,
@@ -481,7 +481,7 @@ extension Argument {
   ///
   /// This method is called to initialize an array `Argument` with no default value such as:
   /// ```swift
-  /// @Argument(tranform: baz)
+  /// @Argument(transform: baz)
   /// var foo: [String]
   /// ```
   ///

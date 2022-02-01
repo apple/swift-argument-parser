@@ -12,12 +12,8 @@
 internal struct HelpGenerator {
   static var helpIndent = 2
   static var labelColumnWidth = 26
-  static var systemScreenWidth: Int {
-    _screenWidthOverride ?? _terminalSize().width
-  }
-  
-  internal static var _screenWidthOverride: Int? = nil
-  
+  static var systemScreenWidth: Int { _terminalSize().width }
+
   struct Section {
     struct Element: Hashable {
       var label: String
@@ -107,12 +103,12 @@ internal struct HelpGenerator {
       toolName = "\(superName) \(toolName)"
     }
 
-    self.usage = currentCommand.configuration.usage
-    if self.usage.isEmpty {
-      self.usage = UsageGenerator(toolName: toolName, definition: [currentArgSet]).synopsis
+    var usage = currentCommand.configuration.usage
+    if usage.isEmpty {
+      usage = UsageGenerator(toolName: toolName, definition: [currentArgSet]).synopsis
       if !currentCommand.configuration.subcommands.isEmpty {
-        if self.usage.last != " " { self.usage += " " }
-        self.usage += "<subcommand>"
+        if usage.last != " " { usage += " " }
+        usage += "<subcommand>"
       }
     }
     
@@ -124,6 +120,7 @@ internal struct HelpGenerator {
       self.abstract += "\n\(currentCommand.configuration.discussion)"
     }
     
+    self.usage = usage
     self.sections = HelpGenerator.generateSections(commandStack: commandStack)
     self.discussionSections = []
   }
@@ -215,7 +212,7 @@ internal struct HelpGenerator {
     ]
   }
   
-  func usageMessage(screenWidth: Int? = nil) -> String {
+  func usageMessage() -> String {
     return "Usage: \(usage.hangingIndentingEachLine(by: 7))"
   }
   
@@ -235,7 +232,7 @@ internal struct HelpGenerator {
       ? ""
       : "OVERVIEW: \(abstract)".wrapped(to: screenWidth) + "\n\n"
     
-    var helpSubcommandMessage: String = ""
+    var helpSubcommandMessage = ""
     if includesSubcommands {
       var names = commandStack.map { $0._commandName }
       if let superName = commandStack.first!.configuration._superCommandName {
@@ -340,10 +337,14 @@ import WinSDK
 #endif
 
 func _terminalSize() -> (width: Int, height: Int) {
-#if os(Windows)
+#if os(WASI)
+  // WASI doesn't yet support terminal size
+  return (80, 25)
+#elseif os(Windows)
   var csbi: CONSOLE_SCREEN_BUFFER_INFO = CONSOLE_SCREEN_BUFFER_INFO()
-
-  GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi)
+  guard GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi) else {
+    return (80, 25)
+  }
   return (width: Int(csbi.srWindow.Right - csbi.srWindow.Left) + 1,
           height: Int(csbi.srWindow.Bottom - csbi.srWindow.Top) + 1)
 #else

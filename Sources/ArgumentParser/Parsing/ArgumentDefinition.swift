@@ -79,7 +79,7 @@ struct ArgumentDefinition {
       self.abstract = help?.abstract ?? ""
       self.discussion = help?.discussion ?? ""
       self.valueName = help?.valueName ?? ""
-      self.shouldDisplay = help?.shouldDisplay ?? true
+      self.shouldDisplay = (help?.visibility ?? .default) == .default
     }
   }
   

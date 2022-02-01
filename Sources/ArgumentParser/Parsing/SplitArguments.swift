@@ -169,7 +169,7 @@ struct SplitArguments {
     }
   }
   
-  /// The parsed arguments. Onl
+  /// The parsed arguments.
   var _elements: [Element] = []
   var firstUnused: Int = 0
 

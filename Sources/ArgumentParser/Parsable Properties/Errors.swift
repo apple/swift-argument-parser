@@ -15,6 +15,8 @@ import Glibc
 import Darwin
 #elseif canImport(CRT)
 import CRT
+#elseif canImport(WASILibc)
+import WASILibc
 #endif
 
 #if os(Windows)
@@ -66,6 +68,8 @@ public struct ExitCode: Error, RawRepresentable, Hashable {
   /// An exit code that indicates that the user provided invalid input.
 #if os(Windows)
   public static let validationFailure = ExitCode(ERROR_BAD_ARGUMENTS)
+#elseif os(WASI)
+  public static let validationFailure = ExitCode(EXIT_FAILURE)
 #else
   public static let validationFailure = ExitCode(EX_USAGE)
 #endif

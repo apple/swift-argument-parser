@@ -394,10 +394,11 @@ extension ErrorMessageGenerator {
   }
   
   func unableToParseValueMessage(origin: InputOrigin, name: Name?, value: String, key: InputKey, error: Error?) -> String {
-    let valueName = arguments(for: key).first?.valueName
-    
+    let argumentValue = arguments(for: key).first
+    let valueName = argumentValue?.valueName
+
     // We want to make the "best effort" in producing a custom error message.
-    // We favour `LocalizedError.errorDescription` and fall back to
+    // We favor `LocalizedError.errorDescription` and fall back to
     // `CustomStringConvertible`. To opt in, return your custom error message
     // as the `description` property of `CustomStringConvertible`.
     let customErrorMessage: String = {
@@ -407,10 +408,10 @@ extension ErrorMessageGenerator {
       case let err?:
         return ": " + String(describing: err)
       default:
-        return ""
+        return argumentValue?.formattedValueList ?? ""
       }
     }()
-    
+
     switch (name, valueName) {
     case let (n?, v?):
       return "The value '\(value)' is invalid for '\(n.synopsisString) <\(v)>'\(customErrorMessage)"
@@ -420,6 +421,28 @@ extension ErrorMessageGenerator {
       return "The value '\(value)' is invalid for '\(n.synopsisString)'\(customErrorMessage)"
     case (nil, nil):
       return "The value '\(value)' is invalid.\(customErrorMessage)"
+    }
+  }
+}
+
+private extension ArgumentDefinition {
+  var formattedValueList: String {
+    if help.allValues.isEmpty {
+      return ""
+    }
+
+    if help.allValues.count < 6 {
+      let quotedValues = help.allValues.map { "'\($0)'" }
+      let validList: String
+      if quotedValues.count <= 2 {
+        validList = quotedValues.joined(separator: " and ")
+      } else {
+        validList = quotedValues.dropLast().joined(separator: ", ") + " or \(quotedValues.last!)"
+      }
+      return ". Please provide one of \(validList)."
+    } else {
+      let bulletValueList = help.allValues.map { "  - \($0)" }.joined(separator: "\n")
+      return ". Please provide one of the following:\n\(bulletValueList)"
     }
   }
 }

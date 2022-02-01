@@ -192,19 +192,24 @@ extension ArgumentDefinition {
 
 // MARK: - Parsing from SplitArguments
 extension ArgumentSet {
-  /// Parse the given input (`SplitArguments`) for the given `commandStack` of previously parsed commands.
+  /// Parse the given input for this set of defined arguments.
   ///
-  /// This method will gracefully fail if there are extra arguments that it doesn’t understand. Hence the
-  /// *lenient* name. If so, it will return `.partial`.
+  /// This method will consume only the arguments that it understands. If any
+  /// arguments are declared to capture all remaining input, or a subcommand
+  /// is configured as such, parsing stops on the first positional argument or
+  /// unrecognized dash-prefixed argument.
   ///
-  /// When dealing with commands, this will be called iteratively in order to find
-  /// the matching command(s).
-  ///
-  /// - Parameter all: The input (from the command line) that needs to be parsed
-  /// - Parameter commandStack: commands that have been parsed
-  func lenientParse(_ all: SplitArguments) throws -> ParsedValues {
+  /// - Parameter input: The input that needs to be parsed.
+  /// - Parameter subcommands: Any subcommands of the current command.
+  /// - Parameter defaultCapturesAll: `true` if the default subcommand has an
+  ///   argument that captures all remaining input.
+  func lenientParse(
+    _ input: SplitArguments,
+    subcommands: [ParsableCommand.Type],
+    defaultCapturesAll: Bool
+  ) throws -> ParsedValues {
     // Create a local, mutable copy of the arguments:
-    var inputArguments = all
+    var inputArguments = input
     
     func parseValue(
       _ argument: ArgumentDefinition,
@@ -340,11 +345,11 @@ extension ArgumentSet {
     // captures all remaining input, we use a different behavior, where we
     // shortcut out at the first sign of a positional argument or unrecognized
     // option/flag label.
-    let capturesAll = self.contains(where: { arg in
+    let capturesAll = defaultCapturesAll || self.contains(where: { arg in
       arg.isRepeatingPositional && arg.parsingStrategy == .allRemainingInput
     })
     
-    var result = ParsedValues(elements: [:], originalInput: all.originalInput)
+    var result = ParsedValues(elements: [:], originalInput: input.originalInput)
     var allUsedOrigins = InputOrigin()
     
     try setInitialValues(into: &result)
@@ -359,7 +364,19 @@ extension ArgumentSet {
       }
       
       switch next.value {
-      case .value:
+      case .value(let argument):
+        // Special handling for matching subcommand names. We generally want
+        // parsing to skip over unrecognized input, but if the current
+        // command or the matched subcommand captures all remaining input,
+        // then we want to break out of parsing at this point.
+        if let matchedSubcommand = subcommands.first(where: { $0._commandName == argument }) {
+          if !matchedSubcommand.includesUnconditionalArguments && defaultCapturesAll {
+            continue ArgumentLoop
+          } else if matchedSubcommand.includesUnconditionalArguments {
+            break ArgumentLoop
+          }
+        }
+        
         // If we're capturing all, the first positional value represents the
         // start of positional input.
         if capturesAll { break ArgumentLoop }
@@ -403,7 +420,7 @@ extension ArgumentSet {
     
     // We have parsed all non-positional values at this point.
     // Next: parse / consume the positional values.
-    var unusedArguments = all
+    var unusedArguments = input
     unusedArguments.removeAll(in: allUsedOrigins)
     try parsePositionalValues(from: unusedArguments, into: &result)
 
