@@ -1,0 +1,87 @@
+{
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug roll",
+            "program": "${workspaceFolder:swift-argument-parser}/.build/debug/roll",
+            "args": [],
+            "cwd": "${workspaceFolder:swift-argument-parser}",
+            "preLaunchTask": "swift: Build Debug roll"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Release roll",
+            "program": "${workspaceFolder:swift-argument-parser}/.build/release/roll",
+            "args": [],
+            "cwd": "${workspaceFolder:swift-argument-parser}",
+            "preLaunchTask": "swift: Build Release roll"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug repeat",
+            "program": "${workspaceFolder:swift-argument-parser}/.build/debug/repeat",
+            "args": [],
+            "cwd": "${workspaceFolder:swift-argument-parser}",
+            "preLaunchTask": "swift: Build Debug repeat"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Release repeat",
+            "program": "${workspaceFolder:swift-argument-parser}/.build/release/repeat",
+            "args": [],
+            "cwd": "${workspaceFolder:swift-argument-parser}",
+            "preLaunchTask": "swift: Build Release repeat"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug math",
+            "program": "${workspaceFolder:swift-argument-parser}/.build/debug/math",
+            "args": [],
+            "cwd": "${workspaceFolder:swift-argument-parser}",
+            "preLaunchTask": "swift: Build Debug math"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Release math",
+            "program": "${workspaceFolder:swift-argument-parser}/.build/release/math",
+            "args": [],
+            "cwd": "${workspaceFolder:swift-argument-parser}",
+            "preLaunchTask": "swift: Build Release math"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug changelog-authors",
+            "program": "${workspaceFolder:swift-argument-parser}/.build/debug/changelog-authors",
+            "args": [],
+            "cwd": "${workspaceFolder:swift-argument-parser}",
+            "preLaunchTask": "swift: Build Debug changelog-authors"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Release changelog-authors",
+            "program": "${workspaceFolder:swift-argument-parser}/.build/release/changelog-authors",
+            "args": [],
+            "cwd": "${workspaceFolder:swift-argument-parser}",
+            "preLaunchTask": "swift: Build Release changelog-authors"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Test swift-argument-parser",
+            "program": "/Applications/Xcode.app/Contents/Developer/usr/bin/xctest",
+            "args": [
+                ".build/debug/swift-argument-parserPackageTests.xctest"
+            ],
+            "cwd": "${workspaceFolder:swift-argument-parser}",
+            "preLaunchTask": "swift: Build All"
+        }
+    ]
+}
