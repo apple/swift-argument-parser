@@ -11,18 +11,6 @@
 
 /// Help information for a command-line argument.
 public struct ArgumentHelp {
-  /// Visibility level of an argument's help.
-  public enum Visibility {
-      /// Show help for this argument whenever appropriate.
-      case `default`
-
-      /// Only show help for this argument in the extended help screen.
-      case hidden
-
-      /// Never show help for this argument.
-      case `private`
-  }
-
   /// A short description of the argument.
   public var abstract: String = ""
   
@@ -36,57 +24,26 @@ public struct ArgumentHelp {
   ///   flags don't include a value.
   public var valueName: String?
   
-  /// A visibility level indicating whether this argument should be shown in
-  /// the extended help display.
-  public var visibility: Visibility = .default
-
   /// A Boolean value indicating whether this argument should be shown in
   /// the extended help display.
-  @available(*, deprecated, message: "Use visibility level instead.")
-  public var shouldDisplay: Bool {
-    get {
-      return visibility == .default
-    }
-    set {
-      visibility = newValue ? .default : .hidden
-    }
-  }
+  public var shouldDisplay: Bool = true
   
   /// Creates a new help instance.
-  @available(*, deprecated, message: "Use init(_:discussion:valueName:visibility:) instead.")
   public init(
     _ abstract: String = "",
     discussion: String = "",
     valueName: String? = nil,
-    shouldDisplay: Bool)
+    shouldDisplay: Bool = true)
   {
     self.abstract = abstract
     self.discussion = discussion
     self.valueName = valueName
     self.shouldDisplay = shouldDisplay
   }
-
-  /// Creates a new help instance.
-  public init(
-    _ abstract: String = "",
-    discussion: String = "",
-    valueName: String? = nil,
-    visibility: Visibility = .default)
-  {
-    self.abstract = abstract
-    self.discussion = discussion
-    self.valueName = valueName
-    self.visibility = visibility
-  }
-
-  /// A `Help` instance that shows an argument only in the extended help display.
-  public static var hidden: ArgumentHelp {
-    ArgumentHelp(visibility: .hidden)
-  }
-
+  
   /// A `Help` instance that hides an argument from the extended help display.
-  public static var `private`: ArgumentHelp {
-    ArgumentHelp(visibility: .private)
+  public static var hidden: ArgumentHelp {
+    ArgumentHelp(shouldDisplay: false)
   }
 }
 

@@ -185,7 +185,7 @@ OPTIONS:
 
 ## Hiding Arguments and Commands
 
-You may want to suppress features under development or experimental flags from the generated help screen. You can hide an argument or a subcommand by passing `visibility: .hidden` to the property wrapper or `CommandConfiguration` initializers, respectively.
+You may want to suppress features under development or experimental flags from the generated help screen. You can hide an argument or a subcommand by passing `shouldDisplay: false` to the property wrapper or `CommandConfiguration` initializers, respectively.
 
 `ArgumentHelp` includes a `.hidden` static property that makes it even simpler to hide arguments:
 
