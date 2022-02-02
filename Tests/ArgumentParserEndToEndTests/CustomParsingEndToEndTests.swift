@@ -166,3 +166,25 @@ extension ParsingEndToEndTests {
   }
 }
 
+// MARK: -
+
+fileprivate struct Wibble: ParsableCommand {
+  @Flag
+  var ABCHelloWorld = false
+  @Flag
+  var defHelloWorld = false
+  @Flag
+  var ABC123HelloWorld = false
+  @Flag
+  var ABC123HelloWorldDEF456 = false
+  @Flag
+  var abc123HelloWorld456def = false
+  @Flag
+  var URL = false
+}
+
+extension ParsingEndToEndTests {
+  func testParsing_CamelCaseAndInitialisms() throws {
+    AssertParse(Wibble.self, ["--abc-hello-world", "--def-hello-world", "--abc123-hello-world-def456", "--abc123-hello-world456def", "--url"]) { _ in }
+  }
+}

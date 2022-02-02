@@ -258,7 +258,7 @@ extension CommandParser {
     guard rootCommand.configuration._superCommandName == nil else {
       return
     }
-    
+
     // We don't have the ability to check for `--name [value]`-style args yet,
     // so we need to try parsing two different commands.
     
@@ -292,7 +292,7 @@ extension CommandParser {
     while let subcommandName = args.popFirst() {
       // A double dash separates the subcommands from the argument information
       if subcommandName == "--" { break }
-      
+
       guard let nextCommandNode = current.firstChild(withName: subcommandName)
         else { throw ParserError.invalidState }
       current = nextCommandNode

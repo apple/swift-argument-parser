@@ -53,7 +53,7 @@ extension StringSnakeCaseTests {
       ("_IAmAnAPPDeveloper", "_i_am_an_app_developer")
     ]
     for test in toSnakeCaseTests {
-      XCTAssertEqual(test.0.convertedToSnakeCase(), test.1)
+      XCTAssertEqual(test.0.converted(from: .swiftVariableCase, to: .snakeCase()).lowercased(), test.1)
     }
   }
   
@@ -95,7 +95,7 @@ extension StringSnakeCaseTests {
       ("_IAmAnAPPDeveloper", "_-i-am-an-app-developer")
     ]
     for test in toSnakeCaseTests {
-      XCTAssertEqual(test.0.convertedToSnakeCase(separator: "-"), test.1)
+      XCTAssertEqual(test.0.converted(from: .swiftVariableCase, to: .snakeCase(separator: "-")).lowercased(), test.1)
     }
   }
 }

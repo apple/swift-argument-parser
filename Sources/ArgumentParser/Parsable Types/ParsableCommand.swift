@@ -36,7 +36,7 @@ public protocol ParsableCommand: ParsableArguments {
 extension ParsableCommand {
   public static var _commandName: String {
     configuration.commandName ??
-      String(describing: Self.self).convertedToSnakeCase(separator: "-")
+      String(describing: Self.self).converted(from: .swiftVariableCase, to: .snakeCase(separator: "-")).lowercased()
   }
   
   public static var configuration: CommandConfiguration {

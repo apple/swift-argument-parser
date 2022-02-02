@@ -10,6 +10,82 @@
 //===----------------------------------------------------------------------===//
 
 extension String {
+  /// A naming convention as used for arguments, variables, types, etc.
+  enum NamingConvention {
+    /// The convention is camel case (that is, no separator characters are used
+    /// and the first letter or initialism of each word is uppercase.)
+    ///
+    /// - Parameters:
+    ///   - lowercaseFirstWord: Whether or not the first character or
+    ///     initialism of the first word is uppercased. If `false`, produces
+    ///     strings such as `"HelloWorld"`, `"URL"`, or `"NSMutableString"`. If
+    ///     `true`, produces strings such as `"helloWorld"`, `"url"`, or
+    ///     `"nsMutableString"`.
+    case camelCase(lowercaseFirstWord: Bool)
+
+    /// The convention is snake case (that is, words are separated by
+    /// `separator`.
+    ///
+    /// - Parameters:
+    ///   - separator: The character that separates words. The default, `"_"`,
+    ///     produces strings such as `"snake_case"`, `"SNAKE_CASE"`, etc.
+    case snakeCase(separator: Character = "_")
+
+    /// The convention is equivalent to Swift's convention for variable names.
+    ///
+    /// This value is equal to `.camelCase(lowercaseFirstWord: true)`.
+    static var swiftVariableCase: Self { .camelCase(lowercaseFirstWord: true) }
+
+    /// This convention's separator character, if applicable.
+    var separator: Character? {
+      guard case let .snakeCase(separator: separator) = self else {
+        return nil
+      }
+      return separator
+    }
+  }
+
+  /// The auto-detected naming convention used in this string.
+  ///
+  /// If the convention used in this string could not be detected, the value of
+  /// this property is `nil`.
+  ///
+  /// - Complexity: O(*n*) in the worst case where *n* is the number of
+  ///   characters in `self`.
+  var autoDetectedNamingConvention: NamingConvention? {
+    let separator: Character?
+    if contains("-") {
+      separator = "-"
+    } else if contains("_") {
+      separator = "_"
+    } else {
+      separator = nil
+    }
+
+    if let separator = separator {
+      if contains(where: { $0 != separator }) {
+        // Snake case.
+        return .snakeCase(separator: separator)
+      } else {
+        // Only contains the separator character, so treat as ambiguous.
+        return nil
+      }
+    }
+
+    // No auto-recognized separator, so assume camel case as long as at least
+    // one uppercase letter is present in the string.
+    if contains(where: \.isUppercase) {
+      // If the first letter in the string is lowercase, then treat this string
+      // as lowerCamelCase. Otherwise, UpperCamelCase.
+      let isLowerCamelCase = (first(where: \.isLetter)?.isLowercase == true)
+      return .camelCase(lowercaseFirstWord: isLowerCamelCase)
+    }
+
+    // This string's naming convention is ambiguous. For instance, "foo"
+    // could be anything other than upper camel case.
+    return nil
+  }
+
   func wrapped(to columns: Int, wrappingIndent: Int = 0) -> String {
     let columns = columns - wrappingIndent
     guard columns > 0 else {
@@ -47,79 +123,149 @@ extension String {
       .map { $0.isEmpty ? $0 : String(repeating: " ", count: wrappingIndent) + $0 }
       .joined(separator: "\n")
   }
-  
-  /// Returns this string prefixed using a camel-case style.
+
+  /// Returns this string prefixed with another string using a given naming
+  /// convention.
   ///
-  /// Example:
+  /// - Parameters:
+  ///   - prefix: The prefix to add.
+  ///   - namingConvention: The naming convention to use when inserting
+  ///     `prefix`.
   ///
-  ///     "hello".addingIntercappedPrefix("my")
-  ///     // myHello
-  func addingIntercappedPrefix(_ prefix: String) -> String {
-    guard let firstChar = first else { return prefix }
-    return "\(prefix)\(firstChar.uppercased())\(self.dropFirst())"
-  }
-  
-  /// Returns this string prefixed using kebab-, snake-, or camel-case style
-  /// depending on what can be detected from the string.
+  /// - Returns: A string derived from `prefix` and `self`.
   ///
   /// Examples:
   ///
-  ///     "hello".addingPrefixWithAutodetectedStyle("my")
+  ///     "hello".addingPrefix("my", using: .snakeCase(separator: "-"))
   ///     // my-hello
-  ///     "hello_there".addingPrefixWithAutodetectedStyle("my")
+  ///     "hello_there".addingPrefix("my", using: .snakeCase())
   ///     // my_hello_there
-  ///     "hello-there".addingPrefixWithAutodetectedStyle("my")
+  ///     "hello-there".addingPrefix("my", using: .snakeCase(separator: "-"))
   ///     // my-hello-there
-  ///     "helloThere".addingPrefixWithAutodetectedStyle("my")
+  ///     "helloThere".addingPrefix("my", using: .snakeCase)
   ///     // myHelloThere
-  func addingPrefixWithAutodetectedStyle(_ prefix: String) -> String {
-    if contains("-") {
-      return "\(prefix)-\(self)"
-    } else if contains("_") {
-      return "\(prefix)_\(self)"
-    } else if first?.isLowercase == true && contains(where: { $0.isUppercase }) {
-      return addingIntercappedPrefix(prefix)
-    } else {
-      return "\(prefix)-\(self)"
+  ///
+  /// - Complexity: O(*n*) where *n* is the number of characters in `self`.
+  func addingPrefix(_ prefix: String, using namingConvention: NamingConvention) -> String {
+    return converted(from: namingConvention, to: namingConvention) { words in
+      words.insert(prefix[prefix.startIndex ..< prefix.endIndex], at: 0)
     }
   }
-  
-  /// Returns a new string with the camel-case-based words of this string
-  /// split by the specified separator.
+
+  /// Converts this string from one naming convention to another.
+  ///
+  /// - Parameters:
+  ///   - oldConvention: The naming convention already in use in `self`. This
+  ///     convention is used when splitting `self` into words.
+  ///   - newConvention: A new naming convention to which `self` will be
+  ///     converted.
+  ///   - wordsModifier: If not `nil`, a closure to call after the string has
+  ///     been split but before it is rejoined. The closure may modify the word
+  ///     list as needed.
+  ///
+  /// - Returns: A string derived from `self`, converted from one naming
+  ///   convention to another.
+  ///
+  /// - Complexity: O(*n*) where *n* is the number of characters in `self`.
+  ///
+  /// If `oldConvention` is `nil`, `autoDetectedNamingConvention` is used
+  /// instead. If that value is also `nil`, this function performs no conversion
+  /// and returns `self`.
   ///
   /// Examples:
   ///
-  ///     "myProperty".convertedToSnakeCase()
+  ///     "myProperty".converted(to: .snakeCase())
+  ///     // my_Property
+  ///     "myProperty".converted(to: .snakeCase()).lowercased()
   ///     // my_property
-  ///     "myURLProperty".convertedToSnakeCase()
+  ///     "myURLProperty".converted(to: .snakeCase()).lowercased()
   ///     // my_url_property
-  ///     "myURLProperty".convertedToSnakeCase(separator: "-")
+  ///     "myURLProperty".converted(to: .snakeCase(separator: "-")).lowercased()
   ///     // my-url-property
-  func convertedToSnakeCase(separator: Character = "_") -> String {
-    guard !isEmpty else { return self }
-    var result = ""
-    // Whether we should append a separator when we see a uppercase character.
-    var separateOnUppercase = true
-    for index in indices {
-      let nextIndex = self.index(after: index)
-      let character = self[index]
-      if character.isUppercase {
-        if separateOnUppercase && !result.isEmpty {
-          // Append the separator.
-          result += "\(separator)"
-        }
-        // If the next character is uppercase and the next-next character is lowercase, like "L" in "URLSession", we should separate words.
-        separateOnUppercase = nextIndex < endIndex && self[nextIndex].isUppercase && self.index(after: nextIndex) < endIndex && self[self.index(after: nextIndex)].isLowercase
-      } else {
-        // If the character is `separator`, we do not want to append another separator when we see the next uppercase character.
-        separateOnUppercase = character != separator
-      }
-      // Append the lowercased character.
-      result += character.lowercased()
+  ///     "my_url_property".converted(to: .swiftVariableCase)
+  ///     // myUrlProperty
+  ///     "My_URL_propertY".converted(to: .swiftVariableCase)
+  ///     // myURLProperty
+  func converted(from oldConvention: NamingConvention? = nil, to newConvention: NamingConvention, modifyingWordsListUsing wordsModifier: ((inout [Substring]) -> Void)? = nil) -> String {
+    // This function performs three operations:
+    //
+    // 1. It splits the string into "words" based on word boundaries determined
+    //    by `oldConvention`.
+    // 2. It offers the caller a chance to modify the list of "words" by calling
+    //    `wordsModifier`.
+    // 3. It rejoins the list of "words" back into a string using the rules of
+    //    `newConvention`.
+    //
+    // NOTE: Even if the conventions are equal, perform the work since we may
+    // need to normalize character cases.
+
+    // Figure out the existing naming convention if the caller didn't supply
+    // one. If one is not readily apparent, return self as documented.
+    guard let oldConvention = oldConvention ?? autoDetectedNamingConvention else {
+      return self
     }
-    return result
+
+    // STEP 1
+    var words: [Substring]
+    switch oldConvention {
+    case .camelCase:
+      let startIndex = startIndex
+      let endIndex = endIndex
+
+      var wordRanges = [Range<Index>]()
+      var wordStartIndex = startIndex
+
+      // Whether we should append a separator when we see a uppercase character.
+      var separateOnUppercase = true
+      let separator = newConvention.separator
+
+      forEachIndex { i, character in
+        var addWord = false
+        if character.isUppercase {
+          if separateOnUppercase {
+            addWord = true
+          }
+
+          // If the next character is uppercase and the next-next character is
+          // lowercase, like "L" in "URLSession", we should separate words.
+          let nextIndex = index(after: i)
+          separateOnUppercase = nextIndex < endIndex && self[nextIndex].isUppercase && self.index(after: nextIndex) < endIndex && self[self.index(after: nextIndex)].isLowercase
+
+        } else {
+          // If the character is `separator`, we do not want to insert another
+          // separator when we see the next uppercase character.
+          separateOnUppercase = character != separator
+        }
+
+        if addWord {
+          wordRanges.append(wordStartIndex ..< i)
+          wordStartIndex = i
+        }
+      }
+
+      if let lastWordRange = wordRanges.last {
+        // Add whatever remains uncaptured (might be empty.)
+        wordRanges.append(lastWordRange.upperBound ..< endIndex)
+      } else {
+        // Nothing was captured. The whole string is one "word."
+        wordRanges.append(startIndex ..< endIndex)
+      }
+
+      // Convert the captured ranges to substrings.
+      words = wordRanges.lazy.filter { !$0.isEmpty }.map { self[$0] }
+
+    case let .snakeCase(separator: separator):
+      words = split(separator: separator, omittingEmptySubsequences: false)
+    }
+
+    // STEP 2
+    wordsModifier?(&words)
+
+    // STEP 3
+    return words.joined(using: newConvention)
   }
-  
+
+
   /// Returns the edit distance between this string and the provided target string.
   ///
   /// Uses the Levenshtein distance algorithm internally.
@@ -176,6 +322,89 @@ extension String {
     } else {
       return lines.map { String(repeating: " ", count: n) + $0 }
         .joined(separator: "\n")
+    }
+  }
+}
+
+extension Sequence where Element: StringProtocol {
+  /// Join a sequence of substrings according to a given naming convention.
+  ///
+  /// - Parameters:
+  ///   - namingConvention: The naming convention to use when joining the
+  ///     elements of `self`.
+  ///
+  /// - Returns: A string derived from the elements of `self`.
+  ///
+  /// - Complexity: O(*nm*) where *n* is the number of elements in `self` and
+  ///   *m* is the average number of characters in each element.
+  ///
+  /// This function joins a sequence of strings or string-like values using the
+  /// specified naming convention.
+  ///
+  /// When converting to `.camelCase`, individual letters will be uppercased or
+  /// lowercased to match that convention. When converting to `.snakeCase`,
+  /// individual letter cases are preserved.
+  ///
+  /// - SeeAlso: ``String.converted(from:to:modifyingWordsListUsing:)``
+  func joined(using namingConvention: String.NamingConvention) -> String {
+    switch namingConvention {
+    case let .camelCase(lowercaseFirstWord: isLowerCamelCase):
+      if isLowerCamelCase {
+        // The first character should be lowercased and, if the entire first
+        // word is an initialism, it should also be lowercased. (We can express
+        // that as simply lowercasing the entire first word since splitting
+        // should have followed case lines.) Otherwise lower camel case is the
+        // same as upper camel case.
+        guard let firstWord = first(where: { _ in true })?.lowercased() else {
+          return ""
+        }
+        let theRest = dropFirst().joined(using: .camelCase(lowercaseFirstWord: false))
+        return firstWord + theRest
+      }
+
+      // Leave initialisms alone, but otherwise uppercase the first character
+      // and lowercase the rest.
+      var result = ""
+      let underestimatedCharacterCount = reduce(0, { $0 + $1.count })
+      result.reserveCapacity(underestimatedCharacterCount)
+
+      for word in self {
+        if !word.contains(where: \.isLowercase) {
+          // All uppercase.
+          result += word
+        } else if let firstCharacter = word.first {
+          result += firstCharacter.uppercased()
+          result += word.dropFirst().lowercased()
+        }
+      }
+
+      return result
+
+    case let .snakeCase(separator: separator):
+      return String(joined(separator: String(separator)))
+    }
+  }
+}
+
+extension Collection {
+  /// Iterate the elements of this collection, yielding both the index and value
+  /// for each element.
+  ///
+  /// - Parameters:
+  ///   - body: A closure to which this function will pass each index and
+  ///     element in `self`.
+  ///
+  /// - Throws: Whatever is thrown by `body`.
+  func forEachIndex(_ body: (Index, Element) throws -> Void) rethrows -> Void {
+    let startIndex = startIndex
+    let endIndex = endIndex
+
+    // Iterate indexes manually instead of using `for i in indices`. `indices`
+    // is not a lazy collection and may be expensive to construct.
+    var i = startIndex
+    while i < endIndex {
+      try body(i, self[i])
+      i = index(after: i)
     }
   }
 }
