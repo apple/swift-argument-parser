@@ -28,7 +28,7 @@ public struct CommandConfiguration {
   public var abstract: String
   
   /// A customized usage string to be shown in the help display.
-  public var usage: String
+  public var usage: String?
 
   /// A longer description of this command, to be shown in the extended help
   /// display.
@@ -77,7 +77,7 @@ public struct CommandConfiguration {
   public init(
     commandName: String? = nil,
     abstract: String = "",
-    usage: String = "",
+    usage: String? = nil,
     discussion: String = "",
     version: String = "",
     shouldDisplay: Bool = true,

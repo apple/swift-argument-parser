@@ -85,7 +85,7 @@ internal struct HelpGenerator {
   
   var commandStack: [ParsableCommand.Type]
   var abstract: String
-  var usage: String
+  var usage: String?
   var sections: [Section]
   var discussionSections: [DiscussionSection]
   
@@ -103,13 +103,15 @@ internal struct HelpGenerator {
       toolName = "\(superName) \(toolName)"
     }
 
-    var usage = currentCommand.configuration.usage
-    if usage.isEmpty {
-      usage = UsageGenerator(toolName: toolName, definition: [currentArgSet]).synopsis
+    if let usage = currentCommand.configuration.usage {
+      self.usage = usage
+    } else {
+      var usage = UsageGenerator(toolName: toolName, definition: [currentArgSet]).synopsis
       if !currentCommand.configuration.subcommands.isEmpty {
         if usage.last != " " { usage += " " }
         usage += "<subcommand>"
       }
+      self.usage = usage
     }
     
     self.abstract = currentCommand.configuration.abstract
@@ -120,7 +122,6 @@ internal struct HelpGenerator {
       self.abstract += "\n\(currentCommand.configuration.discussion)"
     }
     
-    self.usage = usage
     self.sections = HelpGenerator.generateSections(commandStack: commandStack)
     self.discussionSections = []
   }
@@ -213,6 +214,7 @@ internal struct HelpGenerator {
   }
   
   func usageMessage() -> String {
+    guard let usage = self.usage else { return "" }
     return "Usage: \(usage.hangingIndentingEachLine(by: 7))"
   }
   
@@ -246,9 +248,13 @@ internal struct HelpGenerator {
         """
     }
     
+    let renderedUsage = self.usage.map {
+      "USAGE: \($0.hangingIndentingEachLine(by: 7))\n"
+    } ?? ""
+    
     return """
     \(renderedAbstract)\
-    USAGE: \(usage.hangingIndentingEachLine(by: 7))
+    \(renderedUsage)\
     
     \(renderedSections)\(helpSubcommandMessage)
     """
