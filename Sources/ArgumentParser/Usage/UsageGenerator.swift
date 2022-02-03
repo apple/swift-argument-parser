@@ -281,7 +281,7 @@ extension ErrorMessageGenerator {
       switch name {
       case .short: return false
       case .long: return true
-      case .longWithSingleDash: return true
+      case .longWithShortPrefix: return true
       }
     }
     let suggestion = arguments

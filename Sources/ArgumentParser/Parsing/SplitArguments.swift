@@ -19,7 +19,8 @@ enum ParsedArgument: Equatable, CustomStringConvertible {
   case nameWithValue(Name, String)
   
   init<S: StringProtocol>(_ str: S) where S.SubSequence == Substring {
-    let indexOfEqualSign = str.firstIndex(of: "=") ?? str.endIndex
+    let valueSeparators = ParsingConvention.current.argumentValueSeparators
+    let indexOfEqualSign = str.firstIndex(where: { valueSeparators.contains($0) }) ?? str.endIndex
     let (baseName, value) = (str[..<indexOfEqualSign], str[indexOfEqualSign...].dropFirst())
     let name = Name(baseName)
     self = value.isEmpty
@@ -39,7 +40,7 @@ enum ParsedArgument: Equatable, CustomStringConvertible {
     case .nameWithValue: return []
     case .name(let name):
       switch name {
-      case .longWithSingleDash(let base):
+      case .longWithShortPrefix(let base):
         return base.enumerated().map {
           ($0, .name(.short($1)))
         }
@@ -526,54 +527,57 @@ extension SplitArguments {
   }
 }
 
+private func _removePrefix(_ prefix: String, from arg: String) -> Substring? {
+  let startIndex = arg.startIndex
+  let endIndex = arg.endIndex
+  if let nonPrefixIdx = arg.index(startIndex, offsetBy: prefix.count, limitedBy: endIndex) {
+    if arg[startIndex ..< nonPrefixIdx] == prefix {
+      return arg[nonPrefixIdx ..< endIndex]
+    }
+  }
+
+  return nil
+}
+
 func parseIndividualArg(_ arg: String, at position: Int) throws -> [SplitArguments.Element] {
   let index = SplitArguments.Index(inputIndex: .init(rawValue: position))
-  if let nonDashIdx = arg.firstIndex(where: { $0 != "-" }) {
-    let dashCount = arg.distance(from: arg.startIndex, to: nonDashIdx)
-    let remainder = arg[nonDashIdx..<arg.endIndex]
-    switch dashCount {
+  let convention = ParsingConvention.current
+
+  if arg == convention.terminatorArgument {
+    // Exit early if the argument is a terminator.
+    return [.terminator(index: index)]
+  }
+
+  let (longPrefix, shortPrefix) = convention.argumentPrefixes
+  if nil != _removePrefix(longPrefix, from: arg) {
+    // Argument with a long prefix.
+    return [.option(ParsedArgument(arg), index: index)]
+
+  } else if let remainder = _removePrefix(shortPrefix, from: arg) {
+    // Long option:
+    let parsed = try ParsedArgument(longArgWithShortArgumentPrefixRemainder: remainder)
+
+    // Short options:
+    let parts = parsed.subarguments
+    switch parts.count {
     case 0:
-      return [.value(arg, index: index)]
+      // This is a '-name=value' style argument
+      return [.option(parsed, index: index)]
     case 1:
-      // Long option:
-      let parsed = try ParsedArgument(longArgWithSingleDashRemainder: remainder)
-      
-      // Short options:
-      let parts = parsed.subarguments
-      switch parts.count {
-      case 0:
-        // This is a '-name=value' style argument
-        return [.option(parsed, index: index)]
-      case 1:
-        // This is a single short '-n' style argument
-        return [.option(.name(.short(remainder.first!)), index: index)]
-      default:
-        var result: [SplitArguments.Element] = [.option(parsed, index: index)]
-        for (sub, a) in parts {
-          var i = index
-          i.subIndex = .sub(sub)
-          result.append(.option(a, index: i))
-        }
-        return result
+      // This is a single short '-n' style argument
+      return [.option(.name(.short(remainder.first!)), index: index)]
+    default:
+      var result: [SplitArguments.Element] = [.option(parsed, index: index)]
+      for (sub, a) in parts {
+        var i = index
+        i.subIndex = .sub(sub)
+        result.append(.option(a, index: i))
       }
-    case 2:
-      return [.option(ParsedArgument(arg), index: index)]
-    default:
-      throw ParserError.invalidOption(arg)
+      return result
     }
+
   } else {
-    // All dashes
-    let dashCount = arg.count
-    switch dashCount {
-    case 0, 1:
-      // Empty string or single dash
-      return [.value(arg, index: index)]
-    case 2:
-      // We found the 1st "--". All the remaining are positional.
-      return [.terminator(index: index)]
-    default:
-      throw ParserError.invalidOption(arg)
-    }
+    return [.value(arg, index: index)]
   }
 }
 
@@ -611,14 +615,14 @@ private extension ParsedArgument {
     try self.init(longArgRemainder: remainder, makeName: { Name.long(String($0)) })
   }
   
-  init(longArgWithSingleDashRemainder remainder: Substring) throws {
+  init(longArgWithShortArgumentPrefixRemainder remainder: Substring) throws {
     try self.init(longArgRemainder: remainder, makeName: {
       /// If an argument has a single dash and single character,
       /// followed by a value, treat it as a short name.
       ///     `-c=1`      ->  `Name.short("c")`
       /// Otherwise, treat it as a long name with single dash.
-      ///     `-count=1`  ->  `Name.longWithSingleDash("count")`
-      $0.count == 1 ? Name.short($0.first!) : Name.longWithSingleDash(String($0))
+      ///     `-count=1`  ->  `Name.longWithShortPrefix("count")`
+      $0.count == 1 ? Name.short($0.first!) : Name.longWithShortPrefix(String($0))
     })
   }
   

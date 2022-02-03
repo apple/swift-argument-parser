@@ -361,7 +361,7 @@ extension HelpGenerationTests {
 
   struct L: ParsableArguments {
     @Option(
-      name: [.short, .customLong("remote"), .customLong("remote"), .short, .customLong("when"), .long, .customLong("other", withSingleDash: true), .customLong("there"), .customShort("x"), .customShort("y")],
+      name: [.short, .customLong("remote"), .customLong("remote"), .short, .customLong("when"), .long, .customLong("other", withShortPrefix: true), .customLong("there"), .customShort("x"), .customShort("y")],
       help: "Help Message")
     var time: String?
   }
@@ -439,7 +439,7 @@ extension HelpGenerationTests {
       subcommands: [
         Bar.self
       ],
-      helpNames: [.short, .long, .customLong("help", withSingleDash: true)])
+      helpNames: [.short, .long, .customLong("help", withShortPrefix: true)])
         
     @Option(help: "Name for foo")
     var fooName: String?
@@ -452,7 +452,7 @@ extension HelpGenerationTests {
       commandName: "bar",
       _superCommandName: "foo",
       abstract: "Perform bar operations",
-      helpNames: [.short, .long, .customLong("help", withSingleDash: true)])
+      helpNames: [.short, .long, .customLong("help", withShortPrefix: true)])
             
     @Option(help: "Bar Strength")
     var barStrength: String?

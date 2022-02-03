@@ -33,7 +33,7 @@ struct CommandParser {
       return result + [currentNode.element]
     }
   }
-  
+
   init(_ rootCommand: ParsableCommand.Type) {
     do {
       self.commandTree = try Tree(root: rootCommand)
@@ -75,7 +75,8 @@ extension CommandParser {
   /// built in help flags.
   func checkForBuiltInFlags(_ split: SplitArguments) throws {
     // Look for help flags
-    guard !split.contains(anyOf: self.commandStack.getHelpNames()) else {
+    let helpNames = self.commandStack.getHelpNames(forDisplay: false)
+    guard !split.contains(anyOf: helpNames) else {
       throw HelpRequested()
     }
     
@@ -259,6 +260,12 @@ extension CommandParser {
       return
     }
 
+    guard ParsingConvention.current == .posix else {
+      // Completion generation is only supported when using the POSIX-like
+      // parsing convention. DOS-style is not supported at this time.
+      return
+    }
+
     // We don't have the ability to check for `--name [value]`-style args yet,
     // so we need to try parsing two different commands.
     
@@ -290,9 +297,9 @@ extension CommandParser {
     var args = arguments.dropFirst()
     var current = commandTree
     while let subcommandName = args.popFirst() {
-      // A double dash separates the subcommands from the argument information
-      if subcommandName == "--" { break }
-
+      // A terminator separates the subcommands from the argument information
+      if subcommandName == ParsingConvention.current.terminatorArgument { break }
+      
       guard let nextCommandNode = current.firstChild(withName: subcommandName)
         else { throw ParserError.invalidState }
       current = nextCommandNode

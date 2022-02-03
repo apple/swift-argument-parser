@@ -250,7 +250,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
     @Flag(name: .customLong("bar"))
     var notBar: Bool = false
 
-    @Option(name: [.long, .customLong("help", withSingleDash: true)])
+    @Option(name: [.long, .customLong("help", withShortPrefix: true)])
     var help: String
   }
 

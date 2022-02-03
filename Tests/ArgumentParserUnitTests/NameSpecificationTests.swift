@@ -74,7 +74,7 @@ extension NameSpecificationTests {
     Assert(nameSpecification: .customShort("v"), key: "foo", makeNames: [.short("v")])
   }
   
-  func testMakeNames_customLongWithSingleDash() {
-    Assert(nameSpecification: .customLong("baz", withSingleDash: true), key: "foo", makeNames: [.longWithSingleDash("baz")])
+  func testMakeNames_customLongWithShortPrefix() {
+    Assert(nameSpecification: .customLong("baz", withShortPrefix: true), key: "foo", makeNames: [.longWithShortPrefix("baz")])
   }
 }

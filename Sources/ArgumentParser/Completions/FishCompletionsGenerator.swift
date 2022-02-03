@@ -81,7 +81,7 @@ extension Name {
       return "-l \(longName)"
     case .short(let shortName, _):
       return "-s \(shortName)"
-    case .longWithSingleDash(let dashedName):
+    case .longWithShortPrefix(let dashedName):
       return "-o \(dashedName)"
     }
   }
@@ -92,7 +92,7 @@ extension Name {
       return "--\(longName)"
     case .short(let shortName, _):
       return "-\(shortName)"
-    case .longWithSingleDash(let dashedName):
+    case .longWithShortPrefix(let dashedName):
       return "-\(dashedName)"
     }
   }

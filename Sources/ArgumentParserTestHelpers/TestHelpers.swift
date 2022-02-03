@@ -113,11 +113,13 @@ public func AssertEqualStringsIgnoringTrailingWhitespace(_ string1: String, _ st
 }
 
 public func AssertHelp<T: ParsableArguments>(
-  for _: T.Type, equals expected: String,
+  for _: T.Type, usingArgumentName helpArgumentName: String? = nil,
+  equals expected: String,
   file: StaticString = #file, line: UInt = #line
 ) {
   do {
-    _ = try T.parse(["-h"])
+    let helpArgumentName = helpArgumentName ?? "-h"
+    _ = try T.parse([helpArgumentName])
     XCTFail(file: (file), line: line)
   } catch {
     let helpString = T.fullMessage(for: error)

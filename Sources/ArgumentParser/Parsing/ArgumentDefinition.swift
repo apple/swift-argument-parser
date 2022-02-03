@@ -116,7 +116,7 @@ struct ArgumentDefinition {
   var valueName: String {
     help.valueName.mapEmpty {
       names.preferredName?.valueString
-        ?? help.keys.first?.rawValue.converted(from: .swiftVariableCase, to: .snakeCase(separator: "-")).lowercased()
+        ?? help.keys.first.map { ParsingConvention.current.convertStringToArgumentNamingConvention($0.rawValue) }
         ?? "value"
     }
   }

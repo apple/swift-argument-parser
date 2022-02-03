@@ -16,7 +16,7 @@ public struct NameSpecification: ExpressibleByArrayLiteral {
   public struct Element: Hashable {
     internal enum Representation: Hashable {
       case long
-      case customLong(_ name: String, withSingleDash: Bool)
+      case customLong(_ name: String, withShortPrefix: Bool)
       case short
       case customShort(_ char: Character, allowingJoined: Bool)
     }
@@ -32,20 +32,26 @@ public struct NameSpecification: ExpressibleByArrayLiteral {
       self.init(base: .long)
     }
     
+    @available(*, deprecated, message: "Use .customLong(_:withShortPrefix:) instead. Some platforms may use characters other than dashes for short prefixes.")
+    public static func customLong(_ name: String, withSingleDash: Bool) -> Element {
+      return .customLong(name, withShortPrefix: withSingleDash)
+    }
+    
     /// Use the given string instead of the property's name.
     ///
-    /// To create a single-dash argument, pass `true` as `withSingleDash`. Note
-    /// that combining single-dash options and options with short,
-    /// single-character names can lead to ambiguities for the user.
+    /// To create an argument with a long name that uses a short prefix, pass
+    /// `true` as `withShortPrefix`. Note that combining short-prefixed options
+    /// and options with short, single-character names can lead to ambiguities
+    /// for the user.
     ///
     /// - Parameters:
     ///   - name: The name of the option or flag.
-    ///   - withSingleDash: A Boolean value indicating whether to use a single
-    ///     dash as the prefix. If `false`, the name has a double-dash prefix.
-    public static func customLong(_ name: String, withSingleDash: Bool = false) -> Element {
-      self.init(base: .customLong(name, withSingleDash: withSingleDash))
+    ///   - withShortPrefix: A Boolean value indicating whether to use a short
+    ///     prefix (for instance, `"-"` rather than the typical `"--"`.)
+    public static func customLong(_ name: String, withShortPrefix: Bool = false) -> Element {
+      self.init(base: .customLong(name, withShortPrefix: withShortPrefix))
     }
-    
+
     /// Use the first character of the property's name as a short option label.
     ///
     /// For example, a property named `verbose` would be converted to the
@@ -88,20 +94,26 @@ extension NameSpecification {
   /// label `--allow-long-names`.
   public static var long: NameSpecification { [.long] }
   
+  @available(*, deprecated, message: "Use .customLong(_:withShortPrefix:) instead. Some platforms may use characters other than dashes for short prefixes.")
+  public static func customLong(_ name: String, withSingleDash: Bool) -> NameSpecification {
+    return customLong(name, withShortPrefix: withSingleDash)
+  }
+  
   /// Use the given string instead of the property's name.
   ///
-  /// To create a single-dash argument, pass `true` as `withSingleDash`. Note
-  /// that combining single-dash options and options with short,
-  /// single-character names can lead to ambiguities for the user.
+  /// To create an argument with a long name that uses a short prefix, pass
+  /// `true` as `withShortPrefix`. Note that combining short-prefixed options
+  /// and options with short, single-character names can lead to ambiguities for
+  /// the user.
   ///
   /// - Parameters:
   ///   - name: The name of the option or flag.
-  ///   - withSingleDash: A Boolean value indicating whether to use a single
-  ///     dash as the prefix. If `false`, the name has a double-dash prefix.
-  public static func customLong(_ name: String, withSingleDash: Bool = false) -> NameSpecification {
-    [.customLong(name, withSingleDash: withSingleDash)]
+  ///   - withShortPrefix: A Boolean value indicating whether to use a short
+  ///     prefix (for instance, `"-"` rather than the typical `"--"`.)
+  public static func customLong(_ name: String, withShortPrefix: Bool = false) -> NameSpecification {
+    [.customLong(name, withShortPrefix: withShortPrefix)]
   }
-  
+
   /// Use the first character of the property's name as a short option label.
   ///
   /// For example, a property named `verbose` would be converted to the
@@ -136,13 +148,13 @@ extension NameSpecification.Element {
   internal func name(for key: InputKey) -> Name? {
     switch self.base {
     case .long:
-      return .long(key.rawValue.converted(from: .swiftVariableCase, to: .snakeCase(separator: "-")).lowercased())
+      return .long(ParsingConvention.current.convertStringToArgumentNamingConvention(key.rawValue))
     case .short:
       guard let c = key.rawValue.first else { fatalError("Key '\(key.rawValue)' has not characters to form short option name.") }
       return .short(c)
-    case .customLong(let name, let withSingleDash):
-      return withSingleDash
-        ? .longWithSingleDash(name)
+    case .customLong(let name, let withShortPrefix):
+      return withShortPrefix
+        ? .longWithShortPrefix(name)
         : .long(name)
     case .customShort(let name, let allowingJoined):
       return .short(name, allowingJoined: allowingJoined)
@@ -169,10 +181,10 @@ extension FlagInversion {
         case .long:
           let modifiedKey = InputKey(rawValue: key.rawValue.addingPrefix(prefix, using: .swiftVariableCase))
           return element.name(for: modifiedKey)
-        case .customLong(let name, let withSingleDash):
-          let nameConvention = name.autoDetectedNamingConvention ?? .snakeCase(separator: "-")
+        case .customLong(let name, let withShortPrefix):
+          let nameConvention = name.autoDetectedNamingConvention ?? ParsingConvention.current.argumentNamingConvention
           let modifiedName = name.addingPrefix(prefix, using: nameConvention)
-          let modifiedElement = NameSpecification.Element.customLong(modifiedName, withSingleDash: withSingleDash)
+          let modifiedElement = NameSpecification.Element.customLong(modifiedName, withShortPrefix: withShortPrefix)
           return modifiedElement.name(for: key)
         }
       }

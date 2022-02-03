@@ -16,19 +16,25 @@ enum Name {
   ///
   /// Usually supports mixing multiple short names with a single dash, i.e. `-ab` is equivalent to `-a -b`.
   case short(Character, allowingJoined: Bool = false)
-  /// A name (usually multi-character) prefixed with `-` (1 dash).
-  case longWithSingleDash(String)
+  /// A long (multi-character) name prefixed with the short argument prefix
+  /// (i.e. one dash or slash.)
+  case longWithShortPrefix(String)
 }
 
 extension Name {
   init(_ baseName: Substring) {
-    assert(baseName.first == "-", "Attempted to create name for unprefixed argument")
-    if baseName.hasPrefix("--") {
-      self = .long(String(baseName.dropFirst(2)))
-    } else if baseName.count == 2 { // single character "-x" style
-      self = .short(baseName.last!)
-    } else { // long name with single dash
-      self = .longWithSingleDash(String(baseName.dropFirst()))
+    let (longPrefix, shortPrefix) = ParsingConvention.current.argumentPrefixes
+    if baseName.hasPrefix(longPrefix) {
+      self = .long(String(baseName.dropFirst(longPrefix.count)))
+    } else if baseName.hasPrefix(shortPrefix) {
+      if baseName.count == shortPrefix.count + 1 {
+        // single character style such as "-x" or "+x" (depending on convention)
+        self = .short(baseName.last!)
+      } else { // long name with single dash
+        self = .longWithShortPrefix(String(baseName.dropFirst()))
+      }
+    } else {
+      fatalError("Attempted to create name for unprefixed argument \"\(baseName)\"")
     }
   }
 }
@@ -47,15 +53,15 @@ extension Name {
   enum Case: Equatable {
     case long
     case short
-    case longWithSingleDash
+    case longWithShortPrefix
   }
 
   var `case`: Case {
     switch self {
     case .short:
       return .short
-    case .longWithSingleDash:
-      return .longWithSingleDash
+    case .longWithShortPrefix:
+      return .longWithShortPrefix
     case .long:
       return .long
     }
@@ -64,13 +70,15 @@ extension Name {
 
 extension Name {
   var synopsisString: String {
+    let convention = ParsingConvention.current
+    let (longPrefix, shortPrefix) = convention.argumentPrefixes
     switch self {
     case .long(let n):
-      return "--\(n)"
+      return "\(longPrefix)\(n)"
     case .short(let n, _):
-      return "-\(n)"
-    case .longWithSingleDash(let n):
-      return "-\(n)"
+      return "\(shortPrefix)\(n)"
+    case .longWithShortPrefix(let n):
+      return "\(shortPrefix)\(n)"
     }
   }
   
@@ -80,7 +88,7 @@ extension Name {
       return n
     case .short(let n, _):
       return String(n)
-    case .longWithSingleDash(let n):
+    case .longWithShortPrefix(let n):
       return n
     }
   }
@@ -98,7 +106,7 @@ extension Name {
   /// `allowingJoined` as `false`, since that's the way input is parsed.
   var nameToMatch: Name {
     switch self {
-    case .long, .longWithSingleDash: return self
+    case .long, .longWithShortPrefix: return self
     case .short(let c, _): return .short(c)
     }
   }

@@ -123,10 +123,11 @@ public struct CleanExit: Error, CustomStringConvertible {
   }
   
   public var description: String {
+    let convention = ParsingConvention.current
     switch self.base {
-    case .helpRequest: return "--help"
+    case .helpRequest: return "\(convention.argumentPrefixes.long)\(convention.convertStringToArgumentNamingConvention("help"))"
     case .message(let message): return message
-    case .dumpRequest: return "--experimental-dump-help"
+    case .dumpRequest: return "\(convention.argumentPrefixes.long)\(convention.convertStringToArgumentNamingConvention("experimentalDumpHelp"))"
     }
   }
 }

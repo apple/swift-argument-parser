@@ -163,8 +163,8 @@ fileprivate extension ArgumentInfoV0.NameInfoV0 {
       self.init(kind: .long, name: n)
     case let .short(n, _):
       self.init(kind: .short, name: String(n))
-    case let .longWithSingleDash(n):
-      self.init(kind: .longWithSingleDash, name: n)
+    case let .longWithShortPrefix(n):
+      self.init(kind: .longWithShortPrefix, name: n)
     }
   }
 }

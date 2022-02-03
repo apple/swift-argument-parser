@@ -147,7 +147,7 @@ extension ErrorMessageTests {
 
 fileprivate struct Qwz: ParsableArguments {
   @Option() var name: String?
-  @Option(name: [.customLong("title", withSingleDash: true)]) var title: String?
+  @Option(name: [.customLong("title", withShortPrefix: true)]) var title: String?
 }
 
 extension ErrorMessageTests {

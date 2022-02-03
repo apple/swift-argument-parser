@@ -93,7 +93,7 @@ public struct ArgumentInfoV0: Codable, Hashable {
       /// A single character name preceded by a single dash.
       case short
       /// A multi-character name preceded by a single dash.
-      case longWithSingleDash
+      case longWithShortPrefix
     }
 
     /// Kind of prefix the NameInfoV0 describes.

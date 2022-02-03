@@ -25,7 +25,7 @@ fileprivate struct Foo: ParsableArguments {
   @Option(name: .customShort("d", allowingJoined: true))
   var debug = ""
   
-  @Flag(name: .customLong("fdi", withSingleDash: true))
+  @Flag(name: .customLong("fdi", withShortPrefix: true))
   var fdi = false
 }
 

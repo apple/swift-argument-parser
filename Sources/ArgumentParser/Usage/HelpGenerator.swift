@@ -252,25 +252,16 @@ internal struct HelpGenerator {
   }
 }
 
-fileprivate extension CommandConfiguration {
-  static var defaultHelpNames: NameSpecification { [.short, .long] }
-}
-
-fileprivate extension NameSpecification {
-  func generateHelpNames() -> [Name] {
-    return self.makeNames(InputKey(rawValue: "help")).sorted(by: >)
-  }
-}
-
 internal extension BidirectionalCollection where Element == ParsableCommand.Type {
-  func getHelpNames() -> [Name] {
-    return self.last(where: { $0.configuration.helpNames != nil })
-      .map { $0.configuration.helpNames!.generateHelpNames() }
-      ?? CommandConfiguration.defaultHelpNames.generateHelpNames()
+  func getHelpNames(forDisplay: Bool = true) -> [Name] {
+    let nameSpecification = self.lazy.compactMap { $0.configuration.helpNames }.last
+      ?? HelpCommand.nameSpecification(forDisplay: forDisplay)
+
+    return nameSpecification.makeNames(InputKey(rawValue: "help")).sorted(by: >)
   }
   
   func getPrimaryHelpName() -> Name? {
-    getHelpNames().preferredName
+    getHelpNames(forDisplay: true).preferredName
   }
   
   func versionArgumentDefinition() -> ArgumentDefinition? {
@@ -285,7 +276,7 @@ internal extension BidirectionalCollection where Element == ParsableCommand.Type
   }
   
   func helpArgumentDefinition() -> ArgumentDefinition? {
-    let names = getHelpNames()
+    let names = getHelpNames(forDisplay: true)
     guard !names.isEmpty else { return nil }
     return ArgumentDefinition(
       kind: .named(names),

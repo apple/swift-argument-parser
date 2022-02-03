@@ -99,7 +99,7 @@ final class SplitArgumentTests: XCTestCase {
     XCTAssertEqual(sut.elements.count, 4)
     
     AssertIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
-    AssertElementEqual(sut, at: 0, .option(.name(.longWithSingleDash("abc"))))
+    AssertElementEqual(sut, at: 0, .option(.name(.longWithShortPrefix("abc"))))
     
     AssertIndexEqual(sut, at: 1, inputIndex: 0, subIndex: .sub(0))
     AssertElementEqual(sut, at: 1, .option(.name(.short("a"))))
@@ -114,13 +114,13 @@ final class SplitArgumentTests: XCTestCase {
     XCTAssertEqual(sut.originalInput, ["-abc"])
   }
   
-  func testSingleLongOptionWithValueAndSingleDash() throws {
+  func testSingleLongOptionWithValueAndShortPrefix() throws {
     let sut = try SplitArguments(arguments: ["-abc=def"])
     
     XCTAssertEqual(sut.elements.count, 1)
     
     AssertIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
-    AssertElementEqual(sut, at: 0, .option(.nameWithValue(.longWithSingleDash("abc"), "def")))
+    AssertElementEqual(sut, at: 0, .option(.nameWithValue(.longWithShortPrefix("abc"), "def")))
     
     XCTAssertEqual(sut.originalInput.count, 1)
     XCTAssertEqual(sut.originalInput, ["-abc=def"])
@@ -188,7 +188,7 @@ extension SplitArgumentTests {
     XCTAssertEqual(sut.elements.count, 7)
     
     AssertIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
-    AssertElementEqual(sut, at: 0, .option(.name(.longWithSingleDash("bc"))))
+    AssertElementEqual(sut, at: 0, .option(.name(.longWithShortPrefix("bc"))))
     
     AssertIndexEqual(sut, at: 1, inputIndex: 0, subIndex: .sub(0))
     AssertElementEqual(sut, at: 1, .option(.name(.short("b"))))
@@ -197,7 +197,7 @@ extension SplitArgumentTests {
     AssertElementEqual(sut, at: 2, .option(.name(.short("c"))))
     
     AssertIndexEqual(sut, at: 3, inputIndex: 1, subIndex: .complete)
-    AssertElementEqual(sut, at: 3, .option(.name(.longWithSingleDash("fv"))))
+    AssertElementEqual(sut, at: 3, .option(.name(.longWithShortPrefix("fv"))))
     
     AssertIndexEqual(sut, at: 4, inputIndex: 1, subIndex: .sub(0))
     AssertElementEqual(sut, at: 4, .option(.name(.short("f"))))
@@ -232,7 +232,7 @@ extension SplitArgumentTests {
     AssertElementEqual(sut, at: 3, .value("1234"))
     
     AssertIndexEqual(sut, at: 4, inputIndex: 4, subIndex: .complete)
-    AssertElementEqual(sut, at: 4, .option(.name(.longWithSingleDash("zz"))))
+    AssertElementEqual(sut, at: 4, .option(.name(.longWithShortPrefix("zz"))))
     
     AssertIndexEqual(sut, at: 5, inputIndex: 4, subIndex: .sub(0))
     AssertElementEqual(sut, at: 5, .option(.name(.short("z"))))
@@ -253,7 +253,7 @@ extension SplitArgumentTests {
     AssertElementEqual(sut, at: 0, .value("1234"))
     
     AssertIndexEqual(sut, at: 1, inputIndex: 1, subIndex: .complete)
-    AssertElementEqual(sut, at: 1, .option(.name(.longWithSingleDash("zz"))))
+    AssertElementEqual(sut, at: 1, .option(.name(.longWithShortPrefix("zz"))))
     
     AssertIndexEqual(sut, at: 2, inputIndex: 1, subIndex: .sub(0))
     AssertElementEqual(sut, at: 2, .option(.name(.short("z"))))
@@ -394,7 +394,7 @@ extension SplitArgumentTests {
     
     XCTAssertEqual(sut.elements.count, 3)
     AssertIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
-    AssertElementEqual(sut, at: 0, .option(.name(.longWithSingleDash("fb"))))
+    AssertElementEqual(sut, at: 0, .option(.name(.longWithShortPrefix("fb"))))
     AssertIndexEqual(sut, at: 1, inputIndex: 0, subIndex: .sub(0))
     AssertElementEqual(sut, at: 1, .option(.name(.short("f"))))
     AssertIndexEqual(sut, at: 2, inputIndex: 0, subIndex: .sub(1))

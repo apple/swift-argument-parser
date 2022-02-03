@@ -62,25 +62,25 @@ struct Options: ParsableArguments {
         help: "Increase verbosity of informational output")
   var verbose: Bool = false
 
-  @Option(name: .customLong("Xcc", withSingleDash: true),
+  @Option(name: .customLong("Xcc", withShortPrefix: true),
           parsing: .unconditionalSingleValue,
           help: ArgumentHelp("Pass flag through to all C compiler invocations",
                              valueName: "c-compiler-flag"))
   var cCompilerFlags: [String] = []
 
-  @Option(name: .customLong("Xcxx", withSingleDash: true),
+  @Option(name: .customLong("Xcxx", withShortPrefix: true),
           parsing: .unconditionalSingleValue,
           help: ArgumentHelp("Pass flag through to all C++ compiler invocations",
                              valueName: "cxx-compiler-flag"))
   var cxxCompilerFlags: [String] = []
 
-  @Option(name: .customLong("Xlinker", withSingleDash: true),
+  @Option(name: .customLong("Xlinker", withShortPrefix: true),
           parsing: .unconditionalSingleValue,
           help: ArgumentHelp("Pass flag through to all linker invocations",
                              valueName: "linker-flag"))
   var linkerFlags: [String] = []
 
-  @Option(name: .customLong("Xswiftc", withSingleDash: true),
+  @Option(name: .customLong("Xswiftc", withShortPrefix: true),
           parsing: .unconditionalSingleValue,
           help: ArgumentHelp("Pass flag through to all Swift compiler invocations",
                              valueName: "swift-compiler-flag"))

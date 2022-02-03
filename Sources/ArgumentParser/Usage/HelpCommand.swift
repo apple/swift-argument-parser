@@ -17,9 +17,27 @@ struct HelpCommand: ParsableCommand {
   
   /// Any subcommand names provided after the `help` subcommand.
   @Argument var subcommands: [String] = []
-  
+
+  /// Get the name specification to use for this command.
+  ///
+  /// - Parameters:
+  ///   - forDisplay: Whether or not the set of names is intended for display to
+  ///     the user.
+  static func nameSpecification(forDisplay: Bool) -> NameSpecification {
+    switch (ParsingConvention.current, forDisplay) {
+    case (.posix, true):
+      return [.short, .long]
+    case (.posix, false):
+      return [.short, .long, .customLong("help", withShortPrefix: true)]
+    case (.dos, true):
+      return [.customLong("?"), .customLong("h"), .customLong("Help")]
+    case (.dos, false):
+      return [.customLong("?"), .customLong("H"), .customLong("h"), .customLong("help"), .customLong("Help")]
+    }
+  }
+
   /// Capture and ignore any extra help flags given by the user.
-  @Flag(name: [.short, .long, .customLong("help", withSingleDash: true)], help: .hidden)
+  @Flag(name: Self.nameSpecification(forDisplay: false), help: .hidden)
   var help = false
   
   private(set) var commandStack: [ParsableCommand.Type] = []

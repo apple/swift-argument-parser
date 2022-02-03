@@ -21,7 +21,7 @@ extension UsageGenerationTests {
   func testNameSynopsis() {
     XCTAssertEqual(Name.long("foo").synopsisString, "--foo")
     XCTAssertEqual(Name.short("f").synopsisString, "-f")
-    XCTAssertEqual(Name.longWithSingleDash("foo").synopsisString, "-foo")
+    XCTAssertEqual(Name.longWithShortPrefix("foo").synopsisString, "-foo")
   }
 }
 
@@ -164,12 +164,12 @@ extension UsageGenerationTests {
 
   struct L: ParsableArguments {
     @Option(
-      name: [.short, .short, .customLong("remote", withSingleDash: true), .short, .customLong("remote", withSingleDash: true)],
+      name: [.short, .short, .customLong("remote", withShortPrefix: true), .short, .customLong("remote", withShortPrefix: true)],
       help: "Help Message")
     var time: String?
   }
 
-  func testSynopsisWithSingleDashLongNameFirst() {
+  func testSynopsisWithShortPrefixLongNameFirst() {
     let help = UsageGenerator(toolName: "bar", parsable: L())
     XCTAssertEqual(help.synopsis, "bar [-remote <remote>]")
   }
