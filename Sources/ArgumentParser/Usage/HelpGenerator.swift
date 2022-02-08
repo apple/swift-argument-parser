@@ -85,7 +85,7 @@ internal struct HelpGenerator {
   
   var commandStack: [ParsableCommand.Type]
   var abstract: String
-  var usage: String?
+  var usage: String
   var sections: [Section]
   var discussionSections: [DiscussionSection]
   
@@ -214,7 +214,7 @@ internal struct HelpGenerator {
   }
   
   func usageMessage() -> String {
-    guard let usage = self.usage else { return "" }
+    guard !usage.isEmpty else { return "" }
     return "Usage: \(usage.hangingIndentingEachLine(by: 7))"
   }
   
@@ -248,14 +248,13 @@ internal struct HelpGenerator {
         """
     }
     
-    let renderedUsage = self.usage.map {
-      "USAGE: \($0.hangingIndentingEachLine(by: 7))\n"
-    } ?? ""
+    let renderedUsage = usage.isEmpty
+      ? ""
+      : "USAGE: \(usage.hangingIndentingEachLine(by: 7))\n\n"
     
     return """
     \(renderedAbstract)\
     \(renderedUsage)\
-    
     \(renderedSections)\(helpSubcommandMessage)
     """
   }

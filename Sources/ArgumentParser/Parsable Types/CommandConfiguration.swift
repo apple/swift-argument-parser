@@ -108,7 +108,7 @@ public struct CommandConfiguration {
     commandName: String? = nil,
     _superCommandName: String,
     abstract: String = "",
-    usage: String = "",
+    usage: String? = nil,
     discussion: String = "",
     version: String = "",
     shouldDisplay: Bool = true,
