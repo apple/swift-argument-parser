@@ -595,7 +595,6 @@ extension HelpGenerationTests {
   }
   
   func testIssue278() {
-    print(ParserBug.helpMessage(for: ParserBug.Sub.self))
     AssertHelp(for: ParserBug.Sub.self, root: ParserBug.self, equals: """
       USAGE: parserBug sub [--example] [<argument>]
 
@@ -625,6 +624,7 @@ extension HelpGenerationTests {
       CommandConfiguration(usage: """
         example <file-name>
         example --verbose <file-name>
+        example --help
         """)
     }
     
@@ -632,7 +632,16 @@ extension HelpGenerationTests {
     @Flag var verboseMode = false
   }
 
-  func testCustomUsage() {
+  struct CustomUsageHidden: ParsableCommand {
+    static var configuration: CommandConfiguration {
+      CommandConfiguration(usage: "")
+    }
+    
+    @Argument var file: String
+    @Flag var verboseMode = false
+  }
+
+  func testCustomUsageHelp() {
     XCTAssertEqual(CustomUsageShort.helpMessage(columns: 80), """
       USAGE: example [--verbose] <file-name>
 
@@ -648,6 +657,7 @@ extension HelpGenerationTests {
     XCTAssertEqual(CustomUsageLong.helpMessage(columns: 80), """
       USAGE: example <file-name>
              example --verbose <file-name>
+             example --help
 
       ARGUMENTS:
         <file>
@@ -656,6 +666,35 @@ extension HelpGenerationTests {
         --verbose-mode
         -h, --help              Show help information.
       
+      """)
+    
+    XCTAssertEqual(CustomUsageHidden.helpMessage(columns: 80), """
+      ARGUMENTS:
+        <file>
+
+      OPTIONS:
+        --verbose-mode
+        -h, --help              Show help information.
+      
+      """)
+  }
+  
+  func testCustomUsageError() {
+    XCTAssertEqual(CustomUsageShort.fullMessage(for: ValidationError("Test")), """
+      Error: Test
+      Usage: example [--verbose] <file-name>
+        See 'custom-usage-short --help' for more information.
+      """)
+    XCTAssertEqual(CustomUsageLong.fullMessage(for: ValidationError("Test")), """
+      Error: Test
+      Usage: example <file-name>
+             example --verbose <file-name>
+             example --help
+        See 'custom-usage-long --help' for more information.
+      """)
+    XCTAssertEqual(CustomUsageHidden.fullMessage(for: ValidationError("Test")), """
+      Error: Test
+        See 'custom-usage-hidden --help' for more information.
       """)
   }
 }
