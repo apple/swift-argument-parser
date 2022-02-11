@@ -103,10 +103,15 @@ internal struct HelpGenerator {
       toolName = "\(superName) \(toolName)"
     }
 
-    var usage = UsageGenerator(toolName: toolName, definition: [currentArgSet]).synopsis
-    if !currentCommand.configuration.subcommands.isEmpty {
-      if usage.last != " " { usage += " " }
-      usage += "<subcommand>"
+    if let usage = currentCommand.configuration.usage {
+      self.usage = usage
+    } else {
+      var usage = UsageGenerator(toolName: toolName, definition: [currentArgSet]).synopsis
+      if !currentCommand.configuration.subcommands.isEmpty {
+        if usage.last != " " { usage += " " }
+        usage += "<subcommand>"
+      }
+      self.usage = usage
     }
     
     self.abstract = currentCommand.configuration.abstract
@@ -117,7 +122,6 @@ internal struct HelpGenerator {
       self.abstract += "\n\(currentCommand.configuration.discussion)"
     }
     
-    self.usage = usage
     self.sections = HelpGenerator.generateSections(commandStack: commandStack)
     self.discussionSections = []
   }
@@ -210,7 +214,8 @@ internal struct HelpGenerator {
   }
   
   func usageMessage() -> String {
-    return "Usage: \(usage)"
+    guard !usage.isEmpty else { return "" }
+    return "Usage: \(usage.hangingIndentingEachLine(by: 7))"
   }
   
   var includesSubcommands: Bool {
@@ -243,10 +248,13 @@ internal struct HelpGenerator {
         """
     }
     
+    let renderedUsage = usage.isEmpty
+      ? ""
+      : "USAGE: \(usage.hangingIndentingEachLine(by: 7))\n\n"
+    
     return """
     \(renderedAbstract)\
-    USAGE: \(usage)
-    
+    \(renderedUsage)\
     \(renderedSections)\(helpSubcommandMessage)
     """
   }

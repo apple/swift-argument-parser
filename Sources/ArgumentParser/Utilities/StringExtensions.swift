@@ -9,7 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-extension String {
+extension StringProtocol where SubSequence == Substring {
   func wrapped(to columns: Int, wrappingIndent: Int = 0) -> String {
     let columns = columns - wrappingIndent
     guard columns > 0 else {
@@ -96,7 +96,7 @@ extension String {
   ///     "myURLProperty".convertedToSnakeCase(separator: "-")
   ///     // my-url-property
   func convertedToSnakeCase(separator: Character = "_") -> String {
-    guard !isEmpty else { return self }
+    guard !isEmpty else { return "" }
     var result = ""
     // Whether we should append a separator when we see a uppercase character.
     var separateOnUppercase = true
@@ -138,7 +138,7 @@ extension String {
     let columns = target.count
     
     if rows <= 0 || columns <= 0 {
-      return max(rows, columns)
+      return Swift.max(rows, columns)
     }
     
     var matrix = Array(repeating: Array(repeating: 0, count: columns + 1), count: rows + 1)
@@ -168,14 +168,19 @@ extension String {
   }
   
   func indentingEachLine(by n: Int) -> String {
-    let hasTrailingNewline = self.last == "\n"
     let lines = self.split(separator: "\n", omittingEmptySubsequences: false)
-    if hasTrailingNewline && lines.last == "" {
-      return lines.dropLast().map { String(repeating: " ", count: n) + $0 }
-        .joined(separator: "\n") + "\n"
-    } else {
-      return lines.map { String(repeating: " ", count: n) + $0 }
-        .joined(separator: "\n")
-    }
+    let spacer = String(repeating: " ", count: n)
+    return lines.map {
+      $0.isEmpty ? $0 : spacer + $0
+    }.joined(separator: "\n")
+  }
+  
+  func hangingIndentingEachLine(by n: Int) -> String {
+    let lines = self.split(
+      separator: "\n",
+      maxSplits: 1,
+      omittingEmptySubsequences: false)
+    guard lines.count == 2 else { return lines.joined(separator: "") }
+    return "\(lines[0])\n\(lines[1].indentingEachLine(by: n))"
   }
 }
