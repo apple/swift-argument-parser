@@ -33,9 +33,10 @@ struct HelpCommand: ParsableCommand {
   mutating func buildCommandStack(with parser: CommandParser) throws {
     commandStack = parser.commandStack(for: subcommands)
   }
-  
-  func generateHelp() -> String {
-    return HelpGenerator(commandStack: commandStack).rendered()
+
+  /// Used for testing.
+  func generateHelp(screenWidth: Int) -> String {
+    HelpGenerator(commandStack: commandStack).rendered(screenWidth: screenWidth)
   }
   
   enum CodingKeys: CodingKey {

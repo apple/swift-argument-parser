@@ -183,7 +183,7 @@ _base() {
     fi
     case $prev in
         --name)
-            
+
             return
         ;;
         --kind)

@@ -564,6 +564,29 @@ extension HelpGenerationTests {
     XCTAssertEqual(AllValues.SpecializedSynthesized.allValueStrings, opts[4].help.allValues)
     XCTAssertEqual(AllValues.SpecializedSynthesized.allValueStrings, opts[5].help.allValues)
   }
+
+  struct Q: ParsableArguments {
+    @Option(help: "Your name") var name: String
+    @Option(help: "Your title") var title: String?
+
+    @Argument(help: .private) var privateName: String?
+    @Option(help: .private) var privateTitle: String?
+    @Flag(help: .private) var privateFlag: Bool = false
+    @Flag(inversion: .prefixedNo, help: .private) var privateInvertedFlag: Bool = true
+  }
+
+  func testHelpWithPrivate() {
+    // For now, hidden and private have the same behaviour
+    AssertHelp(for: Q.self, equals: """
+            USAGE: q --name <name> [--title <title>]
+
+            OPTIONS:
+              --name <name>           Your name
+              --title <title>         Your title
+              -h, --help              Show help information.
+
+            """)
+  }
 }
 
 // MARK: - Issue #278 https://github.com/apple/swift-argument-parser/issues/278
@@ -589,7 +612,6 @@ extension HelpGenerationTests {
   }
   
   func testIssue278() {
-    print(ParserBug.helpMessage(for: ParserBug.Sub.self))
     AssertHelp(for: ParserBug.Sub.self, root: ParserBug.self, equals: """
       USAGE: parserBug sub [--example] [<argument>]
 
@@ -600,6 +622,96 @@ extension HelpGenerationTests {
         --example               example flag
         -h, --help              Show help information.
 
+      """)
+  }
+
+  struct CustomUsageShort: ParsableCommand {
+    static var configuration: CommandConfiguration {
+      CommandConfiguration(usage: """
+        example [--verbose] <file-name>
+        """)
+    }
+    
+    @Argument var file: String
+    @Flag var verboseMode = false
+  }
+  
+  struct CustomUsageLong: ParsableCommand {
+    static var configuration: CommandConfiguration {
+      CommandConfiguration(usage: """
+        example <file-name>
+        example --verbose <file-name>
+        example --help
+        """)
+    }
+    
+    @Argument var file: String
+    @Flag var verboseMode = false
+  }
+
+  struct CustomUsageHidden: ParsableCommand {
+    static var configuration: CommandConfiguration {
+      CommandConfiguration(usage: "")
+    }
+    
+    @Argument var file: String
+    @Flag var verboseMode = false
+  }
+
+  func testCustomUsageHelp() {
+    XCTAssertEqual(CustomUsageShort.helpMessage(columns: 80), """
+      USAGE: example [--verbose] <file-name>
+
+      ARGUMENTS:
+        <file>
+
+      OPTIONS:
+        --verbose-mode
+        -h, --help              Show help information.
+      
+      """)
+    
+    XCTAssertEqual(CustomUsageLong.helpMessage(columns: 80), """
+      USAGE: example <file-name>
+             example --verbose <file-name>
+             example --help
+
+      ARGUMENTS:
+        <file>
+
+      OPTIONS:
+        --verbose-mode
+        -h, --help              Show help information.
+      
+      """)
+    
+    XCTAssertEqual(CustomUsageHidden.helpMessage(columns: 80), """
+      ARGUMENTS:
+        <file>
+
+      OPTIONS:
+        --verbose-mode
+        -h, --help              Show help information.
+      
+      """)
+  }
+  
+  func testCustomUsageError() {
+    XCTAssertEqual(CustomUsageShort.fullMessage(for: ValidationError("Test")), """
+      Error: Test
+      Usage: example [--verbose] <file-name>
+        See 'custom-usage-short --help' for more information.
+      """)
+    XCTAssertEqual(CustomUsageLong.fullMessage(for: ValidationError("Test")), """
+      Error: Test
+      Usage: example <file-name>
+             example --verbose <file-name>
+             example --help
+        See 'custom-usage-long --help' for more information.
+      """)
+    XCTAssertEqual(CustomUsageHidden.fullMessage(for: ValidationError("Test")), """
+      Error: Test
+        See 'custom-usage-hidden --help' for more information.
       """)
   }
 }

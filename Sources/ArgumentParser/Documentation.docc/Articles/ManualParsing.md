@@ -1,16 +1,16 @@
 # Manual Parsing and Testing
 
-Provide your own array of command-line inputs and work with parsed results by calling alternatives to `main()`.
+Provide your own array of command-line inputs or work directly with parsed command-line arguments.
 
 ## Overview
 
-For most programs, calling the static `main()` method on the root command type is all that's necessary. That single call parses the command-line arguments to find the correct command from your tree of nested subcommands, instantiates and validates the result, and executes the chosen command. For more control, however, you can perform each of those steps manually.
+For most programs, denoting the root command type as `@main` is all that's necessary. As the program's entry point, that type parses the command-line arguments to find the correct command from your tree of nested subcommands, instantiates and validates the result, and executes the chosen command. For more control, however, you can perform each of those steps manually.
 
 ## Parsing Arguments
 
 For simple Swift scripts, and for those who prefer a straight-down-the-left-edge-of-the-screen scripting style, you can define a single `ParsableArguments` type to parse explicitly from the command-line arguments.
 
-Let's implement the `Select` command discussed in [Validation and Errors](05%20Validation%20and%20Errors.md), but using a scripty style instead of the typical command. First, we define the options as a `ParsableArguments` type:
+Let's implement the `Select` command discussed in <doc:Validation>, but using a scripty style instead of the typical command. First, we define the options as a `ParsableArguments` type:
 
 ```swift
 struct SelectOptions: ParsableArguments {
@@ -51,7 +51,7 @@ print(chosen.joined(separator: "\n"))
 
 Manually parsing commands is a little more complex than parsing a simple `ParsableArguments` type. The result of parsing from a tree of subcommands may be of a different type than the root of the tree, so the static `parseAsRoot()` method returns a type-erased `ParsableCommand`.
 
-Let's see how this works by using the `Math` command and subcommands defined in [Commands and Subcommands](03%20Commands%20and%20Subcommands.md). This time, instead of calling `Math.main()`, we'll call `Math.parseAsRoot()`, and switch over the result:
+Let's see how this works by using the `Math` command and subcommands defined in [Commands and Subcommands](./CommandsAndSubcommands.md). This time, instead of calling `Math.main()`, we'll call `Math.parseAsRoot()`, and switch over the result:
 
 ```swift
 do {

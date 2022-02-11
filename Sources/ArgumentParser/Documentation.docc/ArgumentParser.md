@@ -37,26 +37,12 @@ the `ArgumentParser` library parses the command-line arguments,
 instantiates your command type,
 and then either calls your `run()` method or exits with a useful message.
 
-```
-$ repeat hello --count 3
-hello
-hello
-hello
-$ repeat --help
-USAGE: repeat [--count <count>] <phrase>
+![The output of the Repeat command, declared above.](repeat.png)
 
-ARGUMENTS:
-  <phrase>                The phrase to repeat.
+#### Additional Resources
 
-OPTIONS:
-  --count <count>         The number of times to repeat 'phrase'.
-  -h, --help              Show help for this command.
-$ repeat --count 3
-Error: Missing expected argument 'phrase'.
-Help:  <phrase>  The phrase to repeat.
-Usage: repeat [--count <count>] <phrase>
-  See 'repeat --help' for more information.
-```
+- [`ArgumentParser` on GitHub](https://github.com/apple/swift-argument-parser/)
+- [`ArgumentParser` on the Swift Forums](https://forums.swift.org/c/related-projects/argumentparser/60)
 
 ## Topics
 
@@ -102,3 +88,4 @@ Usage: repeat [--count <count>] <phrase>
 ### Advanced Topics
 
 - <doc:ManualParsing>
+- <doc:ExperimentalFeatures>

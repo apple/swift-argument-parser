@@ -12,21 +12,8 @@
 internal struct HelpGenerator {
   static var helpIndent = 2
   static var labelColumnWidth = 26
-  static var systemScreenWidth: Int {
-    _screenWidthOverride ?? _terminalSize().width
-  }
-  
-  internal static var _screenWidthOverride: Int? = nil
-  
-  struct Usage {
-    var components: [String]
-    
-    func rendered(screenWidth: Int) -> String {
-      components
-        .joined(separator: "\n")
-    }
-  }
-  
+  static var systemScreenWidth: Int { _terminalSize().width }
+
   struct Section {
     struct Element: Hashable {
       var label: String
@@ -98,7 +85,7 @@ internal struct HelpGenerator {
   
   var commandStack: [ParsableCommand.Type]
   var abstract: String
-  var usage: Usage
+  var usage: String
   var sections: [Section]
   var discussionSections: [DiscussionSection]
   
@@ -116,10 +103,15 @@ internal struct HelpGenerator {
       toolName = "\(superName) \(toolName)"
     }
 
-    var usageString = UsageGenerator(toolName: toolName, definition: [currentArgSet]).synopsis
-    if !currentCommand.configuration.subcommands.isEmpty {
-      if usageString.last != " " { usageString += " " }
-      usageString += "<subcommand>"
+    if let usage = currentCommand.configuration.usage {
+      self.usage = usage
+    } else {
+      var usage = UsageGenerator(toolName: toolName, definition: [currentArgSet]).synopsis
+      if !currentCommand.configuration.subcommands.isEmpty {
+        if usage.last != " " { usage += " " }
+        usage += "<subcommand>"
+      }
+      self.usage = usage
     }
     
     self.abstract = currentCommand.configuration.abstract
@@ -130,7 +122,6 @@ internal struct HelpGenerator {
       self.abstract += "\n\(currentCommand.configuration.discussion)"
     }
     
-    self.usage = Usage(components: [usageString])
     self.sections = HelpGenerator.generateSections(commandStack: commandStack, includeHidden: includeHidden)
     self.discussionSections = []
   }
@@ -222,9 +213,9 @@ internal struct HelpGenerator {
     ]
   }
   
-  func usageMessage(screenWidth: Int? = nil) -> String {
-    let screenWidth = screenWidth ?? HelpGenerator.systemScreenWidth
-    return "Usage: \(usage.rendered(screenWidth: screenWidth))"
+  func usageMessage() -> String {
+    guard !usage.isEmpty else { return "" }
+    return "Usage: \(usage.hangingIndentingEachLine(by: 7))"
   }
   
   var includesSubcommands: Bool {
@@ -243,7 +234,7 @@ internal struct HelpGenerator {
       ? ""
       : "OVERVIEW: \(abstract)".wrapped(to: screenWidth) + "\n\n"
     
-    var helpSubcommandMessage: String = ""
+    var helpSubcommandMessage = ""
     if includesSubcommands {
       var names = commandStack.map { $0._commandName }
       if let superName = commandStack.first!.configuration._superCommandName {
@@ -257,10 +248,13 @@ internal struct HelpGenerator {
         """
     }
     
+    let renderedUsage = usage.isEmpty
+      ? ""
+      : "USAGE: \(usage.hangingIndentingEachLine(by: 7))\n\n"
+    
     return """
     \(renderedAbstract)\
-    USAGE: \(usage.rendered(screenWidth: screenWidth))
-    
+    \(renderedUsage)\
     \(renderedSections)\(helpSubcommandMessage)
     """
   }
@@ -348,10 +342,14 @@ import WinSDK
 #endif
 
 func _terminalSize() -> (width: Int, height: Int) {
-#if os(Windows)
+#if os(WASI)
+  // WASI doesn't yet support terminal size
+  return (80, 25)
+#elseif os(Windows)
   var csbi: CONSOLE_SCREEN_BUFFER_INFO = CONSOLE_SCREEN_BUFFER_INFO()
-
-  GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi)
+  guard GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi) else {
+    return (80, 25)
+  }
   return (width: Int(csbi.srWindow.Right - csbi.srWindow.Left) + 1,
           height: Int(csbi.srWindow.Bottom - csbi.srWindow.Top) + 1)
 #else

@@ -199,7 +199,7 @@ struct Example: ParsableCommand {
 }
 ```
 
-Throw an error from the `transform` function to indicate that the user provided an invalid value for that type. See [Handling Transform Errors](./05%20Validation%20and%20Errors.md#handling-transform-errors) for more about customizing `transform` function errors.
+Throw an error from the `transform` function to indicate that the user provided an invalid value for that type. See <doc:Validation> for more about customizing `transform` function errors.
 
 ## Using flag inversions, enumerations, and counts
 
@@ -255,7 +255,7 @@ struct Example: ParsableCommand {
 }
 ```
 
-The flag names in this case are drawn from the raw values — for information about customizing the names and help text, see the  [`EnumerableFlag` documentation](../Sources/ArgumentParser/Parsable%20Types/EnumerableFlag.swift).
+The flag names in this case are drawn from the raw values — for information about customizing the names and help text, see the  ``EnumerableFlag`` documentation.
 
 ```
 % example --in-memory-cache --pink --silver

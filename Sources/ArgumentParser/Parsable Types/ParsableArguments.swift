@@ -18,6 +18,8 @@ let _exit: (Int32) -> Never = Darwin.exit
 #elseif canImport(CRT)
 import CRT
 let _exit: (Int32) -> Never = ucrt._exit
+#elseif canImport(WASILibc)
+import WASILibc
 #endif
 
 /// A type that can be parsed from a program's command-line arguments.

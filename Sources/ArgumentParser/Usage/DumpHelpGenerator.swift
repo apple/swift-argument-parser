@@ -107,7 +107,7 @@ fileprivate extension CommandInfoV0 {
     let arguments = commandStack
       .allArguments()
       .mergingCompositeArguments()
-      .map(ArgumentInfoV0.init)
+      .compactMap(ArgumentInfoV0.init)
 
     self = CommandInfoV0(
       superCommands: superCommands,
@@ -121,9 +121,10 @@ fileprivate extension CommandInfoV0 {
 }
 
 fileprivate extension ArgumentInfoV0 {
-  init(argument: ArgumentDefinition) {
+  init?(argument: ArgumentDefinition) {
+    guard let kind = ArgumentInfoV0.KindV0(argument: argument) else { return nil }
     self.init(
-      kind: ArgumentInfoV0.KindV0(argument: argument),
+      kind: kind,
       shouldDisplay: argument.help.shouldDisplay,
       isOptional: argument.help.options.contains(.isOptional),
       isRepeating: argument.help.options.contains(.isRepeating),
@@ -138,7 +139,7 @@ fileprivate extension ArgumentInfoV0 {
 }
 
 fileprivate extension ArgumentInfoV0.KindV0 {
-  init(argument: ArgumentDefinition) {
+  init?(argument: ArgumentDefinition) {
     switch argument.kind {
     case .named:
       switch argument.update {
@@ -150,7 +151,7 @@ fileprivate extension ArgumentInfoV0.KindV0 {
     case .positional:
       self = .positional
     case .default:
-      preconditionFailure("argument.kind must not be .default")
+      return nil
     }
   }
 }

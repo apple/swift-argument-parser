@@ -81,7 +81,10 @@ enum MessageInfo {
     
     let commandNames = commandStack.map { $0._commandName }.joined(separator: " ")
     if let helpName = commandStack.getPrimaryHelpName() {
-      usage += "\n  See '\(commandNames) \(helpName.synopsisString)' for more information."
+      if !usage.isEmpty {
+        usage += "\n"
+      }
+      usage += "  See '\(commandNames) \(helpName.synopsisString)' for more information."
     }
     
     // Parsing errors and user-thrown validation errors have the usage
