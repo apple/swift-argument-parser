@@ -89,7 +89,7 @@ internal struct HelpGenerator {
   var sections: [Section]
   var discussionSections: [DiscussionSection]
   
-  init(commandStack: [ParsableCommand.Type]) {
+  init(commandStack: [ParsableCommand.Type], includeHidden: Bool = false) {
     guard let currentCommand = commandStack.last else {
       fatalError()
     }
@@ -122,7 +122,7 @@ internal struct HelpGenerator {
       self.abstract += "\n\(currentCommand.configuration.discussion)"
     }
     
-    self.sections = HelpGenerator.generateSections(commandStack: commandStack)
+    self.sections = HelpGenerator.generateSections(commandStack: commandStack, includeHidden: includeHidden)
     self.discussionSections = []
   }
   
@@ -130,7 +130,7 @@ internal struct HelpGenerator {
     self.init(commandStack: [type.asCommand])
   }
 
-  static func generateSections(commandStack: [ParsableCommand.Type]) -> [Section] {
+  private static func generateSections(commandStack: [ParsableCommand.Type], includeHidden: Bool) -> [Section] {
     guard !commandStack.isEmpty else { return [] }
     
     var positionalElements: [Section.Element] = []
@@ -138,7 +138,7 @@ internal struct HelpGenerator {
 
     /// Start with a full slice of the ArgumentSet so we can peel off one or
     /// more elements at a time.
-    var args = commandStack.argumentsForHelp()[...]
+    var args = commandStack.argumentsForHelp(includeHidden: includeHidden)[...]
     
     while let arg = args.popFirst() {
       guard arg.help.shouldDisplay else { continue }
@@ -316,8 +316,8 @@ internal extension BidirectionalCollection where Element == ParsableCommand.Type
   
   /// Returns the ArgumentSet for the last command in this stack, including
   /// help and version flags, when appropriate.
-  func argumentsForHelp() -> ArgumentSet {
-    guard var arguments = self.last.map({ ArgumentSet($0, creatingHelp: true) })
+  func argumentsForHelp(includeHidden: Bool = false) -> ArgumentSet {
+    guard var arguments = self.last.map({ ArgumentSet($0, creatingHelp: true, includeHidden: includeHidden) })
       else { return ArgumentSet() }
     self.versionArgumentDefinition().map { arguments.append($0) }
     self.helpArgumentDefinition().map { arguments.append($0) }

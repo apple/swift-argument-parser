@@ -506,6 +506,23 @@ extension HelpGenerationTests {
     )
   }
 
+  func testHelpHiddenShowsAll() throws {
+    AssertHelpHidden(for: HideDriver.self, equals: """
+        OVERVIEW: Demo hiding option groups
+
+        USAGE: driver [--verbose] [--custom-name <custom-name>] [--timeout <timeout>]
+
+        OPTIONS:
+          --verbose               Verbose
+          --custom-name <custom-name>
+                                  Custom Name
+          --timeout <timeout>     Time to wait before timeout (in seconds)
+          -h, --help              Show help information.
+        
+        """
+    )
+  }
+
   struct AllValues: ParsableCommand {
     enum Manual: Int, ExpressibleByArgument {
       case foo

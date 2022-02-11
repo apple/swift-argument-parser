@@ -97,6 +97,8 @@ extension ParsableArguments {
     switch try self.asCommand.parseAsRoot(arguments) {
     case is HelpCommand:
       throw ParserError.helpRequested
+    case is HelpHiddenCommand:
+      throw ParserError.helpHiddenRequested
     case let result as _WrappedParsableCommand<Self>:
       return result.options
     case var result as Self:
@@ -245,7 +247,7 @@ extension ArgumentSetProvider {
 }
 
 extension ArgumentSet {
-  init(_ type: ParsableArguments.Type, creatingHelp: Bool = false) {
+  init(_ type: ParsableArguments.Type, creatingHelp: Bool = false, includeHidden: Bool = false) {
     
     #if DEBUG
     do {
@@ -261,7 +263,7 @@ extension ArgumentSet {
         guard var codingKey = child.label else { return nil }
         
         if let parsed = child.value as? ArgumentSetProvider {
-          if creatingHelp {
+          if creatingHelp && !includeHidden {
             guard !parsed._hiddenFromHelp else { return nil }
           }
 
