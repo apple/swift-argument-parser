@@ -144,7 +144,7 @@ public func AssertHelpHidden<T: ParsableArguments>(
   file: StaticString = #file, line: UInt = #line
 ) {
   do {
-    _ = try T.parse(["--experimental-help-hidden"])
+    _ = try T.parse(["--help-hidden"])
     XCTFail(file: (file), line: line)
   } catch {
     let helpString = T.fullMessage(for: error)

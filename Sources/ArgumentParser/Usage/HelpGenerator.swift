@@ -265,20 +265,34 @@ fileprivate extension CommandConfiguration {
 }
 
 fileprivate extension NameSpecification {
-  func generateHelpNames() -> [Name] {
-    return self.makeNames(InputKey(rawValue: "help")).sorted(by: >)
+  func generateHelpNames(visibility: ArgumentVisibility) -> [Name] {
+    self
+      .makeNames(InputKey(rawValue: "help"))
+      .compactMap { name in
+        guard visibility != .default else { return name }
+        switch name {
+        case .long(let helpName):
+          return .long("\(helpName)-\(visibility)")
+        case .longWithSingleDash(let helpName):
+          return .longWithSingleDash("\(helpName)-\(visibility)")
+        case .short:
+          // Cannot create a non-default help flag from a short name.
+          return nil
+        }
+      }
+      .sorted(by: >)
   }
 }
 
 internal extension BidirectionalCollection where Element == ParsableCommand.Type {
-  func getHelpNames() -> [Name] {
+  func getHelpNames(visibility: ArgumentVisibility) -> [Name] {
     return self.last(where: { $0.configuration.helpNames != nil })
-      .map { $0.configuration.helpNames!.generateHelpNames() }
-      ?? CommandConfiguration.defaultHelpNames.generateHelpNames()
+      .map { $0.configuration.helpNames!.generateHelpNames(visibility: visibility) }
+      ?? CommandConfiguration.defaultHelpNames.generateHelpNames(visibility: visibility)
   }
   
   func getPrimaryHelpName() -> Name? {
-    getHelpNames().preferredName
+    getHelpNames(visibility: .default).preferredName
   }
   
   func versionArgumentDefinition() -> ArgumentDefinition? {
@@ -293,7 +307,7 @@ internal extension BidirectionalCollection where Element == ParsableCommand.Type
   }
   
   func helpArgumentDefinition() -> ArgumentDefinition? {
-    let names = getHelpNames()
+    let names = getHelpNames(visibility: .default)
     guard !names.isEmpty else { return nil }
     return ArgumentDefinition(
       kind: .named(names),
