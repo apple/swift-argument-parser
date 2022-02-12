@@ -95,10 +95,8 @@ extension ParsableArguments {
   ) throws -> Self {
     // Parse the command and unwrap the result if necessary.
     switch try self.asCommand.parseAsRoot(arguments) {
-    case is HelpCommand:
-      throw ParserError.helpRequested
-    case is HelpHiddenCommand:
-      throw ParserError.helpHiddenRequested
+    case let helpCommand as HelpCommand:
+      throw ParserError.helpRequested(visibility: helpCommand.visibility)
     case let result as _WrappedParsableCommand<Self>:
       return result.options
     case var result as Self:

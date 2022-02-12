@@ -23,11 +23,14 @@ struct HelpCommand: ParsableCommand {
   var help = false
   
   private(set) var commandStack: [ParsableCommand.Type] = []
-  
+  private(set) var visibility: ArgumentVisibility = .default
+
   init() {}
   
   mutating func run() throws {
-    throw CommandError(commandStack: commandStack, parserError: .helpRequested)
+    throw CommandError(
+      commandStack: commandStack,
+      parserError: .helpRequested(visibility: visibility))
   }
   
   mutating func buildCommandStack(with parser: CommandParser) throws {
@@ -50,8 +53,9 @@ struct HelpCommand: ParsableCommand {
     self.help = try container.decode(Bool.self, forKey: .help)
   }
   
-  init(commandStack: [ParsableCommand.Type]) {
+  init(commandStack: [ParsableCommand.Type], visibility: ArgumentVisibility) {
     self.commandStack = commandStack
+    self.visibility = visibility
     self.subcommands = commandStack.map { $0._commandName }
     self.help = false
   }

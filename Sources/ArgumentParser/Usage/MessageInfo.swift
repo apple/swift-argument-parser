@@ -27,12 +27,8 @@ enum MessageInfo {
 
       // Exit early on built-in requests
       switch e.parserError {
-      case .helpRequested:
-        self = .help(text: HelpGenerator(commandStack: e.commandStack).rendered())
-        return
-
-      case .helpHiddenRequested:
-        self = .help(text: HelpGenerator(commandStack: e.commandStack, includeHidden: true).rendered())
+      case .helpRequested(let visibility):
+        self = .help(text: HelpGenerator(commandStack: e.commandStack, includeHidden: visibility != .default).rendered())
         return
 
       case .dumpHelpRequested:

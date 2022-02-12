@@ -14,8 +14,9 @@ struct CommandError: Error {
   var parserError: ParserError
 }
 
-struct HelpRequested: Error {}
-private struct HelpHiddenRequested: Error {}
+struct HelpRequested: Error {
+  var visibility: ArgumentVisibility
+}
 
 struct CommandParser {
   let commandTree: Tree<ParsableCommand.Type>
@@ -76,12 +77,12 @@ extension CommandParser {
   /// built in help flags.
   func checkForBuiltInFlags(_ split: SplitArguments) throws {
     guard !split.contains(Name.long("experimental-help-hidden")) else {
-      throw HelpHiddenRequested()
+      throw HelpRequested(visibility: .hidden)
     }
 
     // Look for help flags
     guard !split.contains(anyOf: self.commandStack.getHelpNames()) else {
-      throw HelpRequested()
+      throw HelpRequested(visibility: .default)
     }
 
     // Look for the "dump help" request
@@ -233,20 +234,16 @@ extension CommandParser {
         try helpResult.buildCommandStack(with: self)
         return .success(helpResult)
       }
-      if var helpResult = result as? HelpHiddenCommand {
-        try helpResult.buildCommandStack(with: self)
-        return .success(helpResult)
-      }
       return .success(result)
     } catch let error as CommandError {
       return .failure(error)
     } catch let error as ParserError {
       let error = arguments.isEmpty ? ParserError.noArguments(error) : error
       return .failure(CommandError(commandStack: commandStack, parserError: error))
-    } catch is HelpRequested {
-      return .success(HelpCommand(commandStack: commandStack))
-    } catch is HelpHiddenRequested {
-      return .success(HelpHiddenCommand(commandStack: commandStack))
+    } catch let helpRequest as HelpRequested {
+      return .success(HelpCommand(
+        commandStack: commandStack,
+        visibility: helpRequest.visibility))
     } catch {
       return .failure(CommandError(commandStack: commandStack, parserError: .invalidState))
     }
