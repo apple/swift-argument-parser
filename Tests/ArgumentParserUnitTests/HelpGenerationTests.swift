@@ -481,8 +481,9 @@ extension HelpGenerationTests {
     @Option(help: "Custom Name")
     var customName: String?
   }
-    
-  struct HideDriver: ParsableCommand {
+
+  @available(*, deprecated)
+  struct HideOptionGroupLegacyDriver: ParsableCommand {
     static let configuration = CommandConfiguration(commandName: "driver", abstract: "Demo hiding option groups")
     
     @OptionGroup(_hiddenFromHelp: true)
@@ -491,23 +492,36 @@ extension HelpGenerationTests {
     @Option(help: "Time to wait before timeout (in seconds)")
     var timeout: Int?
   }
-    
-  func testHidingOptionGroup() throws {
-    AssertHelp(for: HideDriver.self, equals: """
-        OVERVIEW: Demo hiding option groups
 
-        USAGE: driver [--verbose] [--custom-name <custom-name>] [--timeout <timeout>]
+  struct HideOptionGroupDriver: ParsableCommand {
+    static let configuration = CommandConfiguration(commandName: "driver", abstract: "Demo hiding option groups")
 
-        OPTIONS:
-          --timeout <timeout>     Time to wait before timeout (in seconds)
-          -h, --help              Show help information.
-        
-        """
-    )
+    @OptionGroup(_visibility: .hidden)
+    var hideMe: optionsToHide
+
+    @Option(help: "Time to wait before timeout (in seconds)")
+    var timeout: Int?
   }
 
+  @available(*, deprecated)
+  func testHidingOptionGroup() throws {
+    let helpMessage = """
+      OVERVIEW: Demo hiding option groups
+
+      USAGE: driver [--verbose] [--custom-name <custom-name>] [--timeout <timeout>]
+
+      OPTIONS:
+        --timeout <timeout>     Time to wait before timeout (in seconds)
+        -h, --help              Show help information.
+
+      """
+    AssertHelp(for: HideOptionGroupLegacyDriver.self, equals: helpMessage)
+    AssertHelp(for: HideOptionGroupDriver.self, equals: helpMessage)
+  }
+
+  @available(*, deprecated)
   func testHelpHiddenShowsAll() throws {
-    AssertHelpHidden(for: HideDriver.self, equals: """
+    let helpHiddenMessage = """
         OVERVIEW: Demo hiding option groups
 
         USAGE: driver [--verbose] [--custom-name <custom-name>] [--timeout <timeout>]
@@ -518,9 +532,10 @@ extension HelpGenerationTests {
                                   Custom Name
           --timeout <timeout>     Time to wait before timeout (in seconds)
           -h, --help              Show help information.
-        
+
         """
-    )
+    AssertHelpHidden(for: HideOptionGroupLegacyDriver.self, equals: helpHiddenMessage)
+    AssertHelpHidden(for: HideOptionGroupDriver.self, equals: helpHiddenMessage)
   }
 
   struct AllValues: ParsableCommand {

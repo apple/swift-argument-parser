@@ -239,11 +239,11 @@ func nilOrValue(_ value: Any) -> Any? {
 protocol ArgumentSetProvider {
   func argumentSet(for key: InputKey) -> ArgumentSet
     
-  var _hiddenFromHelp: Bool { get }
+  var _visibility: ArgumentVisibility { get }
 }
 
 extension ArgumentSetProvider {
-  var _hiddenFromHelp: Bool { false }
+  var _visibility: ArgumentVisibility { .default }
 }
 
 extension ArgumentSet {
@@ -263,8 +263,12 @@ extension ArgumentSet {
         guard var codingKey = child.label else { return nil }
         
         if let parsed = child.value as? ArgumentSetProvider {
-          if creatingHelp && !includeHidden {
-            guard !parsed._hiddenFromHelp else { return nil }
+          if creatingHelp {
+            if includeHidden {
+              guard parsed._visibility != .private else { return nil }
+            } else {
+              guard parsed._visibility == .default else { return nil }
+            }
           }
 
           // Property wrappers have underscore-prefixed names
