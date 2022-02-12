@@ -76,16 +76,17 @@ extension CommandParser {
   /// Throws a `HelpRequested` error if the user has specified either of the
   /// built in help flags.
   func checkForBuiltInFlags(_ split: SplitArguments) throws {
-    guard !split.contains(Name.long("experimental-help-hidden")) else {
-      throw HelpRequested(visibility: .hidden)
-    }
-
     // Look for help flags
-    guard !split.contains(anyOf: self.commandStack.getHelpNames()) else {
+    guard !split.contains(anyOf: self.commandStack.getHelpNames(visibility: .default)) else {
       throw HelpRequested(visibility: .default)
     }
 
-    // Look for the "dump help" request
+    // Look for help-hidden flags
+    guard !split.contains(anyOf: self.commandStack.getHelpNames(visibility: .hidden)) else {
+      throw HelpRequested(visibility: .hidden)
+    }
+
+    // Look for dump-help flag
     guard !split.contains(Name.long("experimental-dump-help")) else {
       throw CommandError(commandStack: commandStack, parserError: .dumpHelpRequested)
     }
