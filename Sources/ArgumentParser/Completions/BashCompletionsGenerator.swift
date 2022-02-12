@@ -178,7 +178,7 @@ struct BashCompletionsGenerator {
 extension ArgumentDefinition {
   /// Returns the different completion names for this argument.
   fileprivate func bashCompletionWords() -> [String] {
-    return help.shouldDisplay
+    return help.visibility == .default
       ? names.map { $0.synopsisString }
       : []
   }

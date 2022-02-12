@@ -11,18 +11,6 @@
 
 /// Help information for a command-line argument.
 public struct ArgumentHelp {
-  /// Visibility level of an argument's help.
-  public enum Visibility {
-      /// Show help for this argument whenever appropriate.
-      case `default`
-
-      /// Only show help for this argument in the extended help screen.
-      case hidden
-
-      /// Never show help for this argument.
-      case `private`
-  }
-
   /// A short description of the argument.
   public var abstract: String = ""
   
@@ -38,7 +26,7 @@ public struct ArgumentHelp {
   
   /// A visibility level indicating whether this argument should be shown in
   /// the extended help display.
-  public var visibility: Visibility = .default
+  public var visibility: ArgumentVisibility = .default
 
   /// A Boolean value indicating whether this argument should be shown in
   /// the extended help display.
@@ -71,7 +59,7 @@ public struct ArgumentHelp {
     _ abstract: String = "",
     discussion: String = "",
     valueName: String? = nil,
-    visibility: Visibility = .default)
+    visibility: ArgumentVisibility = .default)
   {
     self.abstract = abstract
     self.discussion = discussion

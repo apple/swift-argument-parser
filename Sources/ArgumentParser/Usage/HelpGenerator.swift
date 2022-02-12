@@ -141,7 +141,7 @@ internal struct HelpGenerator {
     var args = commandStack.argumentsForHelp(includeHidden: includeHidden)[...]
     
     while let arg = args.popFirst() {
-      guard arg.help.shouldDisplay else { continue }
+      guard arg.help.visibility == .default else { continue }
       
       let synopsis: String
       let description: String
@@ -155,7 +155,7 @@ internal struct HelpGenerator {
 
         synopsis = groupedArgs
           .lazy
-          .filter { $0.help.shouldDisplay }
+          .filter { $0.help.visibility == .default }
           .map { $0.synopsisForHelp }
           .joined(separator: "/")
 
@@ -173,7 +173,7 @@ internal struct HelpGenerator {
           .filter { !$0.isEmpty }
           .joined(separator: " ")
       } else {
-        synopsis = arg.help.shouldDisplay
+        synopsis = arg.help.visibility == .default
           ? arg.synopsisForHelp
           : ""
 

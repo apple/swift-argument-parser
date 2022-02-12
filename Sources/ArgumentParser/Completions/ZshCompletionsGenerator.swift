@@ -132,7 +132,7 @@ extension ArgumentDefinition {
   }
   
   func zshCompletionString(_ commands: [ParsableCommand.Type]) -> String? {
-    guard help.shouldDisplay else { return nil }
+    guard help.visibility == .default else { return nil }
     
     var inputs: String
     switch update {
