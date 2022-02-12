@@ -125,7 +125,7 @@ fileprivate extension ArgumentInfoV0 {
     guard let kind = ArgumentInfoV0.KindV0(argument: argument) else { return nil }
     self.init(
       kind: kind,
-      shouldDisplay: argument.help.shouldDisplay,
+      shouldDisplay: argument.help.visibility == .default,
       isOptional: argument.help.options.contains(.isOptional),
       isRepeating: argument.help.options.contains(.isRepeating),
       names: argument.names.map(ArgumentInfoV0.NameInfoV0.init),
