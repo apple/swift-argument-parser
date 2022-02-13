@@ -132,15 +132,39 @@ extension ParsableArguments {
   ) -> String {
     MessageInfo(error: error, type: self).fullText(for: self)
   }
-  
+
   /// Returns the text of the help screen for this type.
   ///
-  /// - Parameter columns: The column width to use when wrapping long lines in
-  ///   the help screen. If `columns` is `nil`, uses the current terminal width,
-  ///   or a default value of `80` if the terminal width is not available.
+  /// - Parameters:
+  ///   - columns: The column width to use when wrapping long line in the
+  ///     help screen. If `columns` is `nil`, uses the current terminal
+  ///     width, or a default value of `80` if the terminal width is not
+  ///     available.
   /// - Returns: The full help screen for this type.
-  public static func helpMessage(columns: Int? = nil) -> String {
-    HelpGenerator(self).rendered(screenWidth: columns)
+  @_disfavoredOverload
+  @available(*, deprecated, message: "Use helpMessage(includeHidden:columns:) instead.")
+  public static func helpMessage(
+    columns: Int?
+  ) -> String {
+    helpMessage(includeHidden: false, columns: columns)
+  }
+
+  /// Returns the text of the help screen for this type.
+  ///
+  /// - Parameters:
+  ///   - includeHidden: Include hidden help information in the generated
+  ///     message.
+  ///   - columns: The column width to use when wrapping long line in the
+  ///     help screen. If `columns` is `nil`, uses the current terminal
+  ///     width, or a default value of `80` if the terminal width is not
+  ///     available.
+  /// - Returns: The full help screen for this type.
+  public static func helpMessage(
+    includeHidden: Bool = false,
+    columns: Int? = nil
+  ) -> String {
+    HelpGenerator(self, includeHidden: includeHidden)
+      .rendered(screenWidth: columns)
   }
 
   /// Returns the JSON representation of this type.

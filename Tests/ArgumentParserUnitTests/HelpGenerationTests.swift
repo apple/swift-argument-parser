@@ -40,7 +40,7 @@ extension HelpGenerationTests {
   }
 
   func testHelp() {
-    AssertHelp(for: A.self, equals: """
+    AssertHelp(.default, for: A.self, equals: """
             USAGE: a --name <name> [--title <title>]
 
             OPTIONS:
@@ -62,7 +62,7 @@ extension HelpGenerationTests {
   }
 
   func testHelpWithHidden() {
-    AssertHelp(for: B.self, equals: """
+    AssertHelp(.default, for: B.self, equals: """
             USAGE: b --name <name> [--title <title>]
 
             OPTIONS:
@@ -80,7 +80,7 @@ extension HelpGenerationTests {
   }
 
   func testHelpWithDiscussion() {
-    AssertHelp(for: C.self, equals: """
+    AssertHelp(.default, for: C.self, equals: """
             USAGE: c --name <name>
 
             OPTIONS:
@@ -103,7 +103,7 @@ extension HelpGenerationTests {
   }
 
   func testHelpWithDefaultValueButNoDiscussion() {
-    AssertHelp(for: Issue27.self, equals: """
+    AssertHelp(.default, for: Issue27.self, equals: """
             USAGE: issue27 [--two <two>] --three <three> [--four <four>] [--five <five>]
 
             OPTIONS:
@@ -160,7 +160,7 @@ extension HelpGenerationTests {
   }
 
   func testHelpWithDefaultValues() {
-    AssertHelp(for: D.self, equals: """
+    AssertHelp(.default, for: D.self, equals: """
             USAGE: d [<occupation>] [--name <name>] [--age <age>] [--logging <logging>] [--lucky <numbers> ...] [--optional] [--required] [--degree <degree>] [--directory <directory>]
 
             ARGUMENTS:
@@ -211,7 +211,7 @@ extension HelpGenerationTests {
   }
 
   func testHelpWithMutuallyExclusiveFlags() {
-    AssertHelp(for: E.self, equals: """
+    AssertHelp(.default, for: E.self, equals: """
                USAGE: e --stats --count --list
 
                OPTIONS:
@@ -221,7 +221,7 @@ extension HelpGenerationTests {
 
                """)
 
-    AssertHelp(for: F.self, equals: """
+    AssertHelp(.default, for: F.self, equals: """
                USAGE: f [-s] [-c] [-l]
 
                OPTIONS:
@@ -230,7 +230,7 @@ extension HelpGenerationTests {
 
                """)
 
-    AssertHelp(for: G.self, equals: """
+    AssertHelp(.default, for: G.self, equals: """
                USAGE: g [--flag] [--no-flag]
 
                OPTIONS:
@@ -268,7 +268,7 @@ extension HelpGenerationTests {
   }
 
   func testHelpWithSubcommands() {
-    AssertHelp(for: H.self, equals: """
+    AssertHelp(.default, for: H.self, equals: """
     USAGE: h <subcommand>
 
     OPTIONS:
@@ -284,7 +284,7 @@ extension HelpGenerationTests {
       See 'h help <subcommand>' for detailed help.
     """)
 
-    AssertHelp(for: H.AnotherCommand.self, root: H.self, equals: """
+    AssertHelp(.default, for: H.AnotherCommand.self, root: H.self, equals: """
     USAGE: h another-command [--some-option-with-very-long-name <some-option-with-very-long-name>] [--option <option>] [<argument-with-very-long-name-and-help>] [<argument-with-very-long-name>] [<argument>]
 
     ARGUMENTS:
@@ -306,7 +306,7 @@ extension HelpGenerationTests {
   }
 
   func testHelpWithVersion() {
-    AssertHelp(for: I.self, equals: """
+    AssertHelp(.default, for: I.self, equals: """
     USAGE: i
 
     OPTIONS:
@@ -347,7 +347,7 @@ extension HelpGenerationTests {
   }
 
   func testHelpWithNoValueForArray() {
-    AssertHelp(for: K.self, equals: """
+    AssertHelp(.default, for: K.self, equals: """
     USAGE: k [<paths> ...]
 
     ARGUMENTS:
@@ -367,7 +367,7 @@ extension HelpGenerationTests {
   }
 
   func testHelpWithMultipleCustomNames() {
-    AssertHelp(for: L.self, equals: """
+    AssertHelp(.default, for: L.self, equals: """
     USAGE: l [--remote <remote>]
 
     OPTIONS:
@@ -385,7 +385,7 @@ extension HelpGenerationTests {
   }
 
   func testHelpWithDefaultCommand() {
-    AssertHelp(for: N.self, equals: """
+    AssertHelp(.default, for: N.self, equals: """
     USAGE: n <subcommand>
 
     OPTIONS:
@@ -419,7 +419,7 @@ extension HelpGenerationTests {
   }
 
   func testHelpWithDefaultValueForArray() {
-    AssertHelp(for: P.self, equals: """
+    AssertHelp(.default, for: P.self, equals: """
     USAGE: p [-o <o> ...] [<remainder> ...]
 
     ARGUMENTS:
@@ -461,7 +461,7 @@ extension HelpGenerationTests {
   }
 
   func testHelpExcludingSuperCommand() throws {
-    AssertHelp(for: Bar.self, root: Foo.self, equals: """
+    AssertHelp(.default, for: Bar.self, root: Foo.self, equals: """
     OVERVIEW: Perform bar operations
 
     USAGE: foo bar [--bar-strength <bar-strength>]
@@ -515,8 +515,8 @@ extension HelpGenerationTests {
         -h, --help              Show help information.
 
       """
-    AssertHelp(for: HideOptionGroupLegacyDriver.self, equals: helpMessage)
-    AssertHelp(for: HideOptionGroupDriver.self, equals: helpMessage)
+    AssertHelp(.default, for: HideOptionGroupLegacyDriver.self, equals: helpMessage)
+    AssertHelp(.default, for: HideOptionGroupDriver.self, equals: helpMessage)
   }
 
   @available(*, deprecated)
@@ -534,8 +534,8 @@ extension HelpGenerationTests {
           -h, --help              Show help information.
 
         """
-    AssertHelpHidden(for: HideOptionGroupLegacyDriver.self, equals: helpHiddenMessage)
-    AssertHelpHidden(for: HideOptionGroupDriver.self, equals: helpHiddenMessage)
+    AssertHelp(.hidden, for: HideOptionGroupLegacyDriver.self, equals: helpHiddenMessage)
+    AssertHelp(.hidden, for: HideOptionGroupDriver.self, equals: helpHiddenMessage)
   }
 
   struct AllValues: ParsableCommand {
@@ -591,8 +591,7 @@ extension HelpGenerationTests {
   }
 
   func testHelpWithPrivate() {
-    // For now, hidden and private have the same behaviour
-    AssertHelp(for: Q.self, equals: """
+    AssertHelp(.default, for: Q.self, equals: """
             USAGE: q --name <name> [--title <title>]
 
             OPTIONS:
@@ -627,7 +626,7 @@ extension HelpGenerationTests {
   }
   
   func testIssue278() {
-    AssertHelp(for: ParserBug.Sub.self, root: ParserBug.self, equals: """
+    AssertHelp(.default, for: ParserBug.Sub.self, root: ParserBug.self, equals: """
       USAGE: parserBug sub [--example] [<argument>]
 
       ARGUMENTS:

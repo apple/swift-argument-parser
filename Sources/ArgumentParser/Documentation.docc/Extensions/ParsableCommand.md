@@ -13,7 +13,7 @@
 
 ### Generating Help Text
 
-- ``helpMessage(for:columns:)``
+- ``helpMessage(for:includeHidden:columns:)``
 
 ### Starting the Program
 

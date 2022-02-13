@@ -126,8 +126,8 @@ internal struct HelpGenerator {
     self.discussionSections = []
   }
   
-  init(_ type: ParsableArguments.Type) {
-    self.init(commandStack: [type.asCommand])
+  init(_ type: ParsableArguments.Type, includeHidden: Bool = false) {
+    self.init(commandStack: [type.asCommand], includeHidden: includeHidden)
   }
 
   private static func generateSections(commandStack: [ParsableCommand.Type], includeHidden: Bool) -> [Section] {
