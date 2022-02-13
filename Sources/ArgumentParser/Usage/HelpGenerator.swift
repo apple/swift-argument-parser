@@ -265,6 +265,13 @@ fileprivate extension CommandConfiguration {
 }
 
 fileprivate extension NameSpecification {
+  /// Generates a list of `Name`s for the help command at any visibility level.
+  ///
+  /// If the `default` visibility is used, the help names are returned
+  /// unmodified. If a non-default visibility is used the short names are
+  /// removed and the long names (both single and double dash) are appended with
+  /// the name of the visibility level. After the optional name modification
+  /// step, the name are returned in descending order.
   func generateHelpNames(visibility: ArgumentVisibility) -> [Name] {
     self
       .makeNames(InputKey(rawValue: "help"))
@@ -285,8 +292,11 @@ fileprivate extension NameSpecification {
 }
 
 internal extension BidirectionalCollection where Element == ParsableCommand.Type {
+  /// Returns a list of help names at the request visibility level for the top
+  /// most ParsableCommand in the command stack with custom helpNames. If the
+  /// command stack contains no custom help names the default help names.
   func getHelpNames(visibility: ArgumentVisibility) -> [Name] {
-    return self.last(where: { $0.configuration.helpNames != nil })
+    self.last(where: { $0.configuration.helpNames != nil })
       .map { $0.configuration.helpNames!.generateHelpNames(visibility: visibility) }
       ?? CommandConfiguration.defaultHelpNames.generateHelpNames(visibility: visibility)
   }
