@@ -100,7 +100,7 @@ extension Name {
 
 extension ArgumentDefinition {
   fileprivate func argumentSegments(_ commandChain: [String]) -> [([String], String)] {
-    guard help.visibility == .default else { return [] }
+    guard help.visibility.base == .default else { return [] }
 
     var results = [([String], String)]()
     var formattedFlags = [String]()

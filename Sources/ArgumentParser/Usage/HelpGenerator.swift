@@ -140,7 +140,7 @@ internal struct HelpGenerator {
     /// more elements at a time.
     var args = commandStack.argumentsForHelp(visibility: visibility)[...]
     while let arg = args.popFirst() {
-      guard arg.help.visibility == .default else { continue }
+      guard arg.help.visibility.base == .default else { continue }
       
       let synopsis: String
       let description: String
@@ -154,7 +154,7 @@ internal struct HelpGenerator {
 
         synopsis = groupedArgs
           .lazy
-          .filter { $0.help.visibility == .default }
+          .filter { $0.help.visibility.base == .default }
           .map { $0.synopsisForHelp }
           .joined(separator: "/")
 
@@ -172,7 +172,7 @@ internal struct HelpGenerator {
           .filter { !$0.isEmpty }
           .joined(separator: " ")
       } else {
-        synopsis = arg.help.visibility == .default
+        synopsis = arg.help.visibility.base == .default
           ? arg.synopsisForHelp
           : ""
 
@@ -275,10 +275,10 @@ fileprivate extension NameSpecification {
     self
       .makeNames(InputKey(rawValue: "help"))
       .compactMap { name in
-        guard visibility != .default else { return name }
+        guard visibility.base != .default else { return name }
         switch name {
         case .long(let helpName):
-          return .long("\(helpName)-\(visibility)")
+          return .long("\(helpName)-\(visibility.base)")
         case .longWithSingleDash(let helpName):
           return .longWithSingleDash("\(helpName)-\(visibility)")
         case .short:

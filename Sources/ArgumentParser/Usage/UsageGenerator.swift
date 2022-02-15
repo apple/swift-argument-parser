@@ -40,7 +40,7 @@ extension UsageGenerator {
   var synopsis: String {
     // Filter out options that should not be displayed.
     var options = definition
-      .filter { $0.help.visibility == .default }
+      .filter { $0.help.visibility.base == .default }
     switch options.count {
     case 0:
       return toolName
@@ -346,7 +346,7 @@ extension ErrorMessageGenerator {
   func noValueMessage(key: InputKey) -> String? {
     let args = arguments(for: key)
     let possibilities: [String] = args.compactMap {
-      $0.help.visibility == .default
+      $0.help.visibility.base == .default
         ? $0.nonOptional.synopsis
         : nil
     }
