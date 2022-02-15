@@ -72,7 +72,7 @@ extension HelpGenerationTests {
 
             """)
 
-#if !os(Linux)
+#if !os(Linux) && !os(Android) && !os(Windows)
     XCTExpectFailure("""
             The following test fails to properly generate the help-hidden
             message properly because help-hidden is not fully supported yet.
