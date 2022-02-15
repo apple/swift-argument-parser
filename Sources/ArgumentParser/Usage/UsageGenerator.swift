@@ -23,7 +23,9 @@ extension UsageGenerator {
   }
   
   init(toolName: String, parsable: ParsableArguments) {
-    self.init(toolName: toolName, definition: ArgumentSet(type(of: parsable)))
+    self.init(
+      toolName: toolName,
+      definition: ArgumentSet(type(of: parsable), visibility: .default))
   }
   
   init(toolName: String, definition: [ArgumentSet]) {
@@ -38,7 +40,7 @@ extension UsageGenerator {
   var synopsis: String {
     // Filter out options that should not be displayed.
     var options = definition
-      .filter { $0.help.shouldDisplay }
+      .filter { $0.help.visibility == .default }
     switch options.count {
     case 0:
       return toolName
@@ -161,7 +163,7 @@ struct ErrorMessageGenerator {
 extension ErrorMessageGenerator {
   func makeErrorMessage() -> String? {
     switch error {
-    case .helpRequested, .helpHiddenRequested, .versionRequested, .completionScriptRequested, .completionScriptCustomResponse, .dumpHelpRequested:
+    case .helpRequested, .versionRequested, .completionScriptRequested, .completionScriptCustomResponse, .dumpHelpRequested:
       return nil
 
     case .unsupportedShell(let shell?):
@@ -344,7 +346,7 @@ extension ErrorMessageGenerator {
   func noValueMessage(key: InputKey) -> String? {
     let args = arguments(for: key)
     let possibilities: [String] = args.compactMap {
-      $0.help.shouldDisplay
+      $0.help.visibility == .default
         ? $0.nonOptional.synopsis
         : nil
     }

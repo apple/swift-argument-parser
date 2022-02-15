@@ -19,15 +19,18 @@ struct HelpCommand: ParsableCommand {
   @Argument var subcommands: [String] = []
   
   /// Capture and ignore any extra help flags given by the user.
-  @Flag(name: [.short, .long, .customLong("help", withSingleDash: true)], help: .hidden)
+  @Flag(name: [.short, .long, .customLong("help", withSingleDash: true)], help: .private)
   var help = false
   
   private(set) var commandStack: [ParsableCommand.Type] = []
-  
+  private(set) var visibility: ArgumentVisibility = .default
+
   init() {}
   
   mutating func run() throws {
-    throw CommandError(commandStack: commandStack, parserError: .helpRequested)
+    throw CommandError(
+      commandStack: commandStack,
+      parserError: .helpRequested(visibility: visibility))
   }
   
   mutating func buildCommandStack(with parser: CommandParser) throws {
@@ -36,7 +39,10 @@ struct HelpCommand: ParsableCommand {
 
   /// Used for testing.
   func generateHelp(screenWidth: Int) -> String {
-    HelpGenerator(commandStack: commandStack).rendered(screenWidth: screenWidth)
+    HelpGenerator(
+      commandStack: commandStack,
+      visibility: visibility)
+      .rendered(screenWidth: screenWidth)
   }
   
   enum CodingKeys: CodingKey {
@@ -50,8 +56,9 @@ struct HelpCommand: ParsableCommand {
     self.help = try container.decode(Bool.self, forKey: .help)
   }
   
-  init(commandStack: [ParsableCommand.Type]) {
+  init(commandStack: [ParsableCommand.Type], visibility: ArgumentVisibility) {
     self.commandStack = commandStack
+    self.visibility = visibility
     self.subcommands = commandStack.map { $0._commandName }
     self.help = false
   }

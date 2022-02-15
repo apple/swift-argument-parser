@@ -14,8 +14,9 @@ struct CommandError: Error {
   var parserError: ParserError
 }
 
-struct HelpRequested: Error {}
-private struct HelpHiddenRequested: Error {}
+struct HelpRequested: Error {
+  var visibility: ArgumentVisibility
+}
 
 struct CommandParser {
   let commandTree: Tree<ParsableCommand.Type>
@@ -75,16 +76,17 @@ extension CommandParser {
   /// Throws a `HelpRequested` error if the user has specified either of the
   /// built in help flags.
   func checkForBuiltInFlags(_ split: SplitArguments) throws {
-    guard !split.contains(Name.long("experimental-help-hidden")) else {
-      throw HelpHiddenRequested()
-    }
-
     // Look for help flags
-    guard !split.contains(anyOf: self.commandStack.getHelpNames()) else {
-      throw HelpRequested()
+    guard !split.contains(anyOf: self.commandStack.getHelpNames(visibility: .default)) else {
+      throw HelpRequested(visibility: .default)
     }
 
-    // Look for the "dump help" request
+    // Look for help-hidden flags
+    guard !split.contains(anyOf: self.commandStack.getHelpNames(visibility: .hidden)) else {
+      throw HelpRequested(visibility: .hidden)
+    }
+
+    // Look for dump-help flag
     guard !split.contains(Name.long("experimental-dump-help")) else {
       throw CommandError(commandStack: commandStack, parserError: .dumpHelpRequested)
     }
@@ -128,7 +130,7 @@ extension CommandParser {
   /// possible.
   fileprivate mutating func parseCurrent(_ split: inout SplitArguments) throws -> ParsableCommand {
     // Build the argument set (i.e. information on how to parse):
-    let commandArguments = ArgumentSet(currentNode.element)
+    let commandArguments = ArgumentSet(currentNode.element, visibility: .private)
     
     // Parse the arguments, ignoring anything unexpected
     let values = try commandArguments.lenientParse(
@@ -233,20 +235,16 @@ extension CommandParser {
         try helpResult.buildCommandStack(with: self)
         return .success(helpResult)
       }
-      if var helpResult = result as? HelpHiddenCommand {
-        try helpResult.buildCommandStack(with: self)
-        return .success(helpResult)
-      }
       return .success(result)
     } catch let error as CommandError {
       return .failure(error)
     } catch let error as ParserError {
       let error = arguments.isEmpty ? ParserError.noArguments(error) : error
       return .failure(CommandError(commandStack: commandStack, parserError: error))
-    } catch is HelpRequested {
-      return .success(HelpCommand(commandStack: commandStack))
-    } catch is HelpHiddenRequested {
-      return .success(HelpHiddenCommand(commandStack: commandStack))
+    } catch let helpRequest as HelpRequested {
+      return .success(HelpCommand(
+        commandStack: commandStack,
+        visibility: helpRequest.visibility))
     } catch {
       return .failure(CommandError(commandStack: commandStack, parserError: .invalidState))
     }
@@ -317,7 +315,7 @@ extension CommandParser {
     let completionValues = Array(args)
 
     // Generate the argument set and parse the argument to find in the set
-    let argset = ArgumentSet(current.element)
+    let argset = ArgumentSet(current.element, visibility: .private)
     let parsedArgument = try! parseIndividualArg(argToMatch, at: 0).first!
     
     // Look up the specified argument and retrieve its custom completion function

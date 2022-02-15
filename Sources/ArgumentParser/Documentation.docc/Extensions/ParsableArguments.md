@@ -19,7 +19,7 @@
 
 ### Generating Help Text
 
-- ``helpMessage(columns:)``
+- ``helpMessage(includeHidden:columns:)``
 
 ### Handling Errors
 

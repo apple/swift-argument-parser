@@ -31,14 +31,15 @@
 @propertyWrapper
 public struct OptionGroup<Value: ParsableArguments>: Decodable, ParsedWrapper {
   internal var _parsedValue: Parsed<Value>
-  internal var _hiddenFromHelp: Bool = false
-  
+  internal var _visibility: ArgumentVisibility
+
   // FIXME: Adding this property works around the crasher described in
   // https://github.com/apple/swift-argument-parser/issues/338
   internal var _dummy: Bool = false
 
   internal init(_parsedValue: Parsed<Value>) {
     self._parsedValue = _parsedValue
+    self._visibility = .default
   }
   
   public init(from decoder: Decoder) throws {
@@ -63,7 +64,7 @@ public struct OptionGroup<Value: ParsableArguments>: Decodable, ParsedWrapper {
   /// Creates a property that represents another parsable type.
   public init() {
     self.init(_parsedValue: .init { _ in
-      ArgumentSet(Value.self)
+      ArgumentSet(Value.self, visibility: .private)
     })
   }
 
@@ -96,8 +97,14 @@ extension OptionGroup: CustomStringConvertible {
 
 // Experimental use with caution
 extension OptionGroup {
-    public init(_hiddenFromHelp: Bool) {
-        self.init()
-        self._hiddenFromHelp = _hiddenFromHelp
-    }
+  @available(*, deprecated, message: "Use init(_visibility:) instead.")
+  public init(_hiddenFromHelp: Bool) {
+    self.init()
+    self._visibility = .hidden
+  }
+
+  public init(_visibility: ArgumentVisibility) {
+    self.init()
+    self._visibility = _visibility
+  }
 }

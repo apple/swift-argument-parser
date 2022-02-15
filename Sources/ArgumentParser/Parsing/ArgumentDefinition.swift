@@ -44,7 +44,7 @@ struct ArgumentDefinition {
     var abstract: String = ""
     var discussion: String = ""
     var valueName: String = ""
-    var shouldDisplay: Bool = true
+    var visibility: ArgumentVisibility = .default
 
     var defaultValue: String?
     var keys: [InputKey]
@@ -79,7 +79,7 @@ struct ArgumentDefinition {
       self.abstract = help?.abstract ?? ""
       self.discussion = help?.discussion ?? ""
       self.valueName = help?.valueName ?? ""
-      self.shouldDisplay = (help?.visibility ?? .default) == .default
+      self.visibility = help?.visibility ?? .default
     }
   }
   

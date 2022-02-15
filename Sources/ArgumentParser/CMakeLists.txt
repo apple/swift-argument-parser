@@ -6,6 +6,7 @@ add_library(ArgumentParser
 
   "Parsable Properties/Argument.swift"
   "Parsable Properties/ArgumentHelp.swift"
+  "Parsable Properties/ArgumentVisibility.swift"
   "Parsable Properties/CompletionKind.swift"
   "Parsable Properties/Errors.swift"
   "Parsable Properties/Flag.swift"
@@ -34,7 +35,6 @@ add_library(ArgumentParser
 
   Usage/DumpHelpGenerator.swift
   Usage/HelpCommand.swift
-  Usage/HelpHiddenCommand.swift
   Usage/HelpGenerator.swift
   Usage/MessageInfo.swift
   Usage/UsageGenerator.swift

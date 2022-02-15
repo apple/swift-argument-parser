@@ -193,9 +193,11 @@ struct CustomHelp: ParsableCommand {
 
 extension HelpTests {
   func testCustomHelpNames() {
-    let names = [CustomHelp.self].getHelpNames()
-    XCTAssertEqual(names, [.short("?"), .long("show-help")])
-    
+    let helpNames = [CustomHelp.self].getHelpNames(visibility: .default)
+    XCTAssertEqual(helpNames, [.short("?"), .long("show-help")])
+    let helpHiddenNames = [CustomHelp.self].getHelpNames(visibility: .hidden)
+    XCTAssertEqual(helpHiddenNames, [.long("show-help-hidden")])
+
     AssertFullErrorMessage(CustomHelp.self, ["--error"], """
       Error: Unknown option '--error'
       Usage: custom-help
@@ -214,8 +216,10 @@ struct NoHelp: ParsableCommand {
 
 extension HelpTests {
   func testNoHelpNames() {
-    let names = [NoHelp.self].getHelpNames()
-    XCTAssertEqual(names, [])
+    let helpNames = [NoHelp.self].getHelpNames(visibility: .default)
+    XCTAssertEqual(helpNames, [])
+    let helpHiddenNames = [NoHelp.self].getHelpNames(visibility: .hidden)
+    XCTAssertEqual(helpHiddenNames, [])
 
     AssertFullErrorMessage(NoHelp.self, ["--error"], """
       Error: Missing expected argument '--count <count>'
@@ -257,12 +261,18 @@ struct SubCommandCustomHelp: ParsableCommand {
 
 extension HelpTests {
   func testSubCommandInheritHelpNames() {
-    let names = [SubCommandCustomHelp.self, SubCommandCustomHelp.InheritHelp.self].getHelpNames()
+    let names = [
+      SubCommandCustomHelp.self,
+      SubCommandCustomHelp.InheritHelp.self,
+    ].getHelpNames(visibility: .default)
     XCTAssertEqual(names, [.short("p"), .long("parent-help")])
   }
 
   func testSubCommandCustomHelpNames() {
-    let names = [SubCommandCustomHelp.self, SubCommandCustomHelp.ModifiedHelp.self].getHelpNames()
+    let names = [
+      SubCommandCustomHelp.self,
+      SubCommandCustomHelp.ModifiedHelp.self
+    ].getHelpNames(visibility: .default)
     XCTAssertEqual(names, [.short("s"), .long("subcommand-help")])
   }
 
@@ -271,7 +281,7 @@ extension HelpTests {
       SubCommandCustomHelp.self,
       SubCommandCustomHelp.ModifiedHelp.self,
       SubCommandCustomHelp.ModifiedHelp.InheritImmediateParentdHelp.self
-    ].getHelpNames()
+    ].getHelpNames(visibility: .default)
     XCTAssertEqual(names, [.short("s"), .long("subcommand-help")])
   }
 }

@@ -77,12 +77,39 @@ extension ParsableCommand {
   ///     help screen. If `columns` is `nil`, uses the current terminal
   ///     width, or a default value of `80` if the terminal width is not
   ///     available.
+  /// - Returns: The full help screen for this type.
+  @_disfavoredOverload
+  @available(*, deprecated, message: "Use helpMessage(for:includeHidden:columns:) instead.")
   public static func helpMessage(
     for subcommand: ParsableCommand.Type,
     columns: Int? = nil
   ) -> String { 
-    let stack = CommandParser(self).commandStack(for: subcommand)
-    return HelpGenerator(commandStack: stack).rendered(screenWidth: columns)
+    helpMessage(for: subcommand, includeHidden: false, columns: columns)
+  }
+
+  /// Returns the text of the help screen for the given subcommand of this
+  /// command.
+  ///
+  /// - Parameters:
+  ///   - subcommand: The subcommand to generate the help screen for.
+  ///     `subcommand` must be declared in the subcommand tree of this
+  ///     command.
+  ///   - includeHidden: Include hidden help information in the generated
+  ///     message.
+  ///   - columns: The column width to use when wrapping long line in the
+  ///     help screen. If `columns` is `nil`, uses the current terminal
+  ///     width, or a default value of `80` if the terminal width is not
+  ///     available.
+  /// - Returns: The full help screen for this type.
+  public static func helpMessage(
+    for subcommand: ParsableCommand.Type,
+    includeHidden: Bool = false,
+    columns: Int? = nil
+  ) -> String {
+    HelpGenerator(
+      commandStack: CommandParser(self).commandStack(for: subcommand),
+      visibility: includeHidden ? .hidden : .default)
+        .rendered(screenWidth: columns)
   }
 
   /// Parses an instance of this type, or one of its subcommands, from
@@ -114,7 +141,7 @@ extension ParsableCommand {
   /// `true` if this command contains any array arguments that are declared
   /// with `.unconditionalRemaining`.
   internal static var includesUnconditionalArguments: Bool {
-    ArgumentSet(self).contains(where: {
+    ArgumentSet(self, visibility: .private).contains(where: {
       $0.isRepeatingPositional && $0.parsingStrategy == .allRemainingInput
     })
   }
