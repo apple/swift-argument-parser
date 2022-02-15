@@ -16,6 +16,8 @@ import Foundation
 
 // MARK: Command
 
+@main
+@available(macOS 12.1, *)
 struct ChangelogAuthors: AsyncParsableCommand {
   static var configuration: CommandConfiguration {
     CommandConfiguration(
@@ -101,21 +103,3 @@ struct ChangelogAuthors: AsyncParsableCommand {
     print(references(for: authors))
   }
 }
-
-#if swift(>=5.6)
-  @main extension ChangelogAuthors {}
-#else
-  @main struct AsyncMain: AsyncMainProtocol {
-    typealias Command = ChangelogAuthors
-  }
-#endif
-
-#else
-
-@main enum Main {
-    static func main() {
-        print("Unsupported on this platform.")
-    }
-}
-
-#endif

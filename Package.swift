@@ -12,9 +12,9 @@
 
 import PackageDescription
 
-let package = Package(
+var package = Package(
     name: "swift-argument-parser",
-    platforms: [.macOS(.v12)],
+    platforms: [.macOS(.v10_15), .macCatalyst(.v13), .iOS(.v13), .tvOS(.v13), .watchOS(.v6)],
     products: [
         .library(
             name: "ArgumentParser",
@@ -47,15 +47,6 @@ let package = Package(
             name: "repeat",
             dependencies: ["ArgumentParser"],
             path: "Examples/repeat"),
-        .executableTarget(
-            name: "count-lines",
-            dependencies: ["ArgumentParser"],
-            path: "Examples/count-lines"),
-
-        .executableTarget(
-            name: "changelog-authors",
-            dependencies: ["ArgumentParser"],
-            path: "Tools/changelog-authors"),
 
         .testTarget(
             name: "ArgumentParserEndToEndTests",
@@ -75,3 +66,16 @@ let package = Package(
             resources: [.copy("CountLinesTest.txt")]),
     ]
 )
+
+#if swift(>=5.6)
+package.targets.append(contentsOf: [
+    .executableTarget(
+        name: "count-lines",
+        dependencies: ["ArgumentParser"],
+        path: "Examples/count-lines"),
+    .executableTarget(
+        name: "changelog-authors",
+        dependencies: ["ArgumentParser"],
+        path: "Tools/changelog-authors"),
+    ])
+#endif

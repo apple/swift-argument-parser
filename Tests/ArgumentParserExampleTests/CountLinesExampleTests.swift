@@ -9,12 +9,13 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if os(macOS)
+#if os(macOS) && swift(>=5.6)
 
 import XCTest
 import ArgumentParserTestHelpers
 
 final class CountLinesExampleTests: XCTestCase {
+  @available(macOS 12, *)
   func testCountLines() throws {
     let testFile = try XCTUnwrap(Bundle.module.url(forResource: "CountLinesTest", withExtension: "txt"))
     try AssertExecuteCommand(command: "count-lines \(testFile.path)", expected: "20")

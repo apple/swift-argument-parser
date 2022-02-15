@@ -9,11 +9,10 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if os(macOS)
-
 import ArgumentParser
 import Foundation
 
+@main
 struct CountLines: AsyncParsableCommand {
     @Argument(
         help: "A file to count lines in. If omitted, counts the lines of stdin.",
@@ -57,8 +56,12 @@ extension CountLines {
     }
     
     mutating func run() async throws {
+        guard #available(macOS 12, *) else {
+          print("This example isn't supported on this platform")
+          return
+        }
+      
         let countAllLines = prefix == nil
-        
         let lineCount = try await fileHandle.bytes.lines.reduce(0) { count, line in
             if countAllLines || line.starts(with: prefix!) {
                 return count + 1
@@ -70,21 +73,3 @@ extension CountLines {
         printCount(lineCount)
     }
 }
-
-#if swift(>=5.6)
-    @main extension CountLines {}
-#else
-    @main struct AsyncMain: AsyncMainProtocol {
-        typealias Command = CountLines
-    }
-#endif
-
-#else
-
-@main enum Main {
-    static func main() {
-        print("Unsupported on this platform.")
-    }
-}
-
-#endif
