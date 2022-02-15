@@ -195,4 +195,16 @@ extension UsageGenerationTests {
   func testSynopsisWithTooManyOptions() {
     _testSynopsis(M.self, expected: "example [<options>] --option <option> <input> [<output>]")
   }
+  
+  struct N: ParsableArguments {
+    @Flag var a: Bool = false
+    @Flag var b: Bool = false
+    var title = "defaulted value"
+    var decode = false
+  }
+  
+  func testNonwrappedValues() {
+    _testSynopsis(N.self, expected: "example [--a] [--b]")
+    _testSynopsis(N.self, visibility: .hidden, expected: "example [--a] [--b]")
+  }
 }

@@ -190,6 +190,23 @@ extension ArgumentDefinition {
   }
 }
 
+extension ArgumentDefinition {
+  /// Creates an argument definition for a property that isn't parsed from the
+  /// command line.
+  ///
+  /// This initializer is used for any property defined on a `ParsableArguments`
+  /// type that isn't decorated with one of ArgumentParser's property wrappers.
+  init(unparsedKey: String, default defaultValue: Any?) {
+    self.init(
+      key: InputKey(rawValue: unparsedKey),
+      kind: .default,
+      parser: { _ in nil },
+      default: defaultValue,
+      completion: .default)
+    help.updateArgumentHelp(help: .private)
+  }
+}
+
 // MARK: - Parsing from SplitArguments
 extension ArgumentSet {
   /// Parse the given input for this set of defined arguments.
