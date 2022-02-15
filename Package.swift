@@ -67,7 +67,7 @@ var package = Package(
     ]
 )
 
-#if swift(>=5.6)
+#if swift(>=5.6) && os(macOS)
 package.targets.append(contentsOf: [
     .executableTarget(
         name: "count-lines",

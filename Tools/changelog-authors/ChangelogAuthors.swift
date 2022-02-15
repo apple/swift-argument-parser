@@ -103,3 +103,5 @@ struct ChangelogAuthors: AsyncParsableCommand {
     print(references(for: authors))
   }
 }
+
+#endif
