@@ -72,6 +72,7 @@ extension HelpGenerationTests {
 
             """)
 
+#if !os(Linux)
     XCTExpectFailure("""
             The following test fails to properly generate the help-hidden
             message properly because help-hidden is not fully supported yet.
@@ -92,6 +93,7 @@ extension HelpGenerationTests {
               -h, --help              Show help information.
 
             """)
+#endif
   }
 
   struct C: ParsableArguments {
