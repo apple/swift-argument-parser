@@ -270,7 +270,6 @@ extension ArgumentSetProvider {
 
 extension ArgumentSet {
   init(_ type: ParsableArguments.Type, visibility: ArgumentVisibility) {
-    
     #if DEBUG
     do {
       try type._validate()
@@ -296,17 +295,12 @@ extension ArgumentSet {
           return parsed.argumentSet(for: key)
         } else {
           // Save a non-wrapped property as is
-          var definition = ArgumentDefinition(
-            key: InputKey(rawValue: codingKey),
-            kind: .default,
-            parser: { _ in nil },
-            default: nilOrValue(child.value),
-            completion: .default)
-          definition.help.updateArgumentHelp(help: .hidden)
-          return ArgumentSet(definition)
+          return ArgumentSet(
+            ArgumentDefinition(unparsedKey: codingKey, default: nilOrValue(child.value)))
         }
       }
-    self.init(sets: a)
+    self.init(
+      a.joined().filter { $0.help.visibility.isAtLeastAsVisible(as: visibility) })
   }
 }
 
