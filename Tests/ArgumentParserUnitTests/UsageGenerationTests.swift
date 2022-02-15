@@ -33,7 +33,7 @@ extension UsageGenerationTests {
 
   func testSynopsis() {
     let help = UsageGenerator(toolName: "bar", parsable: A())
-    XCTAssertEqual(help.synopsis, "bar --first-name <first-name> --title <title>")
+    XCTAssertEqual(help.synopsis(), "bar --first-name <first-name> --title <title>")
   }
 
   struct B: ParsableArguments {
@@ -43,7 +43,7 @@ extension UsageGenerationTests {
 
   func testSynopsisWithOptional() {
     let help = UsageGenerator(toolName: "bar", parsable: B())
-    XCTAssertEqual(help.synopsis, "bar [--first-name <first-name>] [--title <title>]")
+    XCTAssertEqual(help.synopsis(), "bar [--first-name <first-name>] [--title <title>]")
   }
 
   struct C: ParsableArguments {
@@ -53,7 +53,7 @@ extension UsageGenerationTests {
 
   func testFlagSynopsis() {
     let help = UsageGenerator(toolName: "bar", parsable: C())
-    XCTAssertEqual(help.synopsis, "bar [--log] [--verbose ...]")
+    XCTAssertEqual(help.synopsis(), "bar [--log] [--verbose ...]")
   }
 
   struct D: ParsableArguments {
@@ -63,7 +63,7 @@ extension UsageGenerationTests {
 
   func testPositionalSynopsis() {
     let help = UsageGenerator(toolName: "bar", parsable: D())
-    XCTAssertEqual(help.synopsis, "bar <first-name> [<title>]")
+    XCTAssertEqual(help.synopsis(), "bar <first-name> [<title>]")
   }
 
   struct E: ParsableArguments {
@@ -79,7 +79,7 @@ extension UsageGenerationTests {
 
   func testSynopsisWithDefaults() {
     let help = UsageGenerator(toolName: "bar", parsable: E())
-    XCTAssertEqual(help.synopsis, "bar [--name <name>] [--count <count>] [<arg>]")
+    XCTAssertEqual(help.synopsis(), "bar [--name <name>] [--count <count>] [<arg>]")
   }
 
   struct F: ParsableArguments {
@@ -89,7 +89,7 @@ extension UsageGenerationTests {
 
   func testSynopsisWithRepeats() {
     let help = UsageGenerator(toolName: "bar", parsable: F())
-    XCTAssertEqual(help.synopsis, "bar [--name <name> ...] [<name-counts> ...]")
+    XCTAssertEqual(help.synopsis(), "bar [--name <name> ...] [<name-counts> ...]")
   }
 
   struct G: ParsableArguments {
@@ -102,7 +102,7 @@ extension UsageGenerationTests {
 
   func testSynopsisWithCustomization() {
     let help = UsageGenerator(toolName: "bar", parsable: G())
-    XCTAssertEqual(help.synopsis, "bar [--file-path <path>] <user-home-path>")
+    XCTAssertEqual(help.synopsis(), "bar [--file-path <path>] <user-home-path>")
   }
 
   struct H: ParsableArguments {
@@ -112,7 +112,8 @@ extension UsageGenerationTests {
 
   func testSynopsisWithHidden() {
     let help = UsageGenerator(toolName: "bar", parsable: H())
-    XCTAssertEqual(help.synopsis, "bar")
+    XCTAssertEqual(help.synopsis(), "bar")
+    XCTAssertEqual(help.synopsis(visibility: .hidden), "bar [--first-name <first-name>] [<title>]")
   }
 
   struct I: ParsableArguments {
@@ -136,7 +137,7 @@ extension UsageGenerationTests {
 
   func testSynopsisWithDefaultValueAndTransform() {
     let help = UsageGenerator(toolName: "bar", parsable: I())
-    XCTAssertEqual(help.synopsis, "bar [--color <color>]")
+    XCTAssertEqual(help.synopsis(), "bar [--color <color>]")
   }
 
   struct J: ParsableArguments {
@@ -147,7 +148,7 @@ extension UsageGenerationTests {
 
   func testSynopsisWithTransform() {
     let help = UsageGenerator(toolName: "bar", parsable: J())
-    XCTAssertEqual(help.synopsis, "bar --req <req> [--opt <opt>]")
+    XCTAssertEqual(help.synopsis(), "bar --req <req> [--opt <opt>]")
   }
 
   struct K: ParsableArguments {
@@ -159,7 +160,7 @@ extension UsageGenerationTests {
 
   func testSynopsisWithMultipleCustomNames() {
     let help = UsageGenerator(toolName: "bar", parsable: K())
-    XCTAssertEqual(help.synopsis, "bar [--remote <remote>]")
+    XCTAssertEqual(help.synopsis(), "bar [--remote <remote>]")
   }
 
   struct L: ParsableArguments {
@@ -171,7 +172,7 @@ extension UsageGenerationTests {
 
   func testSynopsisWithSingleDashLongNameFirst() {
     let help = UsageGenerator(toolName: "bar", parsable: L())
-    XCTAssertEqual(help.synopsis, "bar [-remote <remote>]")
+    XCTAssertEqual(help.synopsis(), "bar [-remote <remote>]")
   }
 
   struct M: ParsableArguments {
@@ -194,7 +195,7 @@ extension UsageGenerationTests {
 
   func testSynopsisWithTooManyOptions() {
     let help = UsageGenerator(toolName: "foo", parsable: M())
-    XCTAssertEqual(help.synopsis,
+    XCTAssertEqual(help.synopsis(),
                    "foo [<options>] --option <option> <input> [<output>]")
   }
 }

@@ -37,10 +37,10 @@ extension UsageGenerator {
   /// The tool synopsis.
   ///
   /// In `roff`.
-  var synopsis: String {
+  func synopsis(visibility: ArgumentVisibility = .default) -> String {
     // Filter out options that should not be displayed.
     var options = definition
-      .filter { $0.help.visibility == .default }
+      .filter { $0.help.visibility.isAtLeastAsVisible(as: visibility) }
     switch options.count {
     case 0:
       return toolName
