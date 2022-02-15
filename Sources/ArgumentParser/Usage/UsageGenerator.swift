@@ -37,7 +37,7 @@ extension UsageGenerator {
   /// The tool synopsis.
   ///
   /// In `roff`.
-  func synopsis() -> String {
+  var synopsis: String {
     var options = Array(definition)
     switch options.count {
     case 0:
@@ -344,7 +344,7 @@ extension ErrorMessageGenerator {
   func noValueMessage(key: InputKey) -> String? {
     let args = arguments(for: key)
     let possibilities: [String] = args.compactMap {
-      $0.help.visibility == .default
+      $0.help.visibility.base == .default
         ? $0.nonOptional.synopsis
         : nil
     }

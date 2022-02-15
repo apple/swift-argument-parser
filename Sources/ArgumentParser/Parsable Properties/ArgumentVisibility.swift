@@ -10,25 +10,35 @@
 //===----------------------------------------------------------------------===//
 
 /// Visibility level of an argument's help.
-public enum ArgumentVisibility {
-    /// Show help for this argument whenever appropriate.
+public struct ArgumentVisibility {
+  /// Internal implementation of `ArgumentVisibility` to allow for easier API
+  /// evolution.
+  internal enum Representation {
     case `default`
-
-    /// Only show help for this argument in the extended help screen.
     case hidden
-
-    /// Never show help for this argument.
     case `private`
+  }
+
+  internal var base: Representation
+
+  /// Show help for this argument whenever appropriate.
+  public static let `default` = Self(base: .default)
+
+  /// Only show help for this argument in the extended help screen.
+  public static let hidden = Self(base: .hidden)
+
+  /// Never show help for this argument.
+  public static let `private` = Self(base: .private)
 }
 
-extension ArgumentVisibility {
+extension ArgumentVisibility.Representation {
   /// A raw Integer value that represents each visibility level.
   ///
   /// `_comparableLevel` can be used to test if a Visibility case is more or
   /// less visible than another, without committing this behavior to API.
   /// A lower `_comparableLevel` indicates that the case is less visible (more
   /// secret).
-  private var _comparableLevel: Int {
+  internal var _comparableLevel: Int {
     switch self {
     case .default:
       return 2
@@ -38,9 +48,11 @@ extension ArgumentVisibility {
       return 0
     }
   }
+}
 
+extension ArgumentVisibility {
   /// - Returns: true if `self` is at least as visible as the supplied argument.
-  func isAtLeastAsVisible(as other: Self) -> Bool {
-    self._comparableLevel >= other._comparableLevel
+  internal func isAtLeastAsVisible(as other: Self) -> Bool {
+    self.base._comparableLevel >= other.base._comparableLevel
   }
 }

@@ -107,7 +107,7 @@ internal struct HelpGenerator {
       self.usage = usage
     } else {
       var usage = UsageGenerator(toolName: toolName, definition: [currentArgSet])
-        .synopsis()
+        .synopsis
       if !currentCommand.configuration.subcommands.isEmpty {
         if usage.last != " " { usage += " " }
         usage += "<subcommand>"
@@ -273,10 +273,10 @@ fileprivate extension NameSpecification {
     self
       .makeNames(InputKey(rawValue: "help"))
       .compactMap { name in
-        guard visibility != .default else { return name }
+        guard visibility.base != .default else { return name }
         switch name {
         case .long(let helpName):
-          return .long("\(helpName)-\(visibility)")
+          return .long("\(helpName)-\(visibility.base)")
         case .longWithSingleDash(let helpName):
           return .longWithSingleDash("\(helpName)-\(visibility)")
         case .short:

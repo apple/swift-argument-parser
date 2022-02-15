@@ -285,7 +285,7 @@ extension ArgumentSet {
         
         if let parsed = child.value as? ArgumentSetProvider {
           guard parsed._visibility.isAtLeastAsVisible(as: visibility)
-          else { return nil }
+            else { return nil }
 
           // Property wrappers have underscore-prefixed names
           codingKey = String(codingKey.first == "_"
