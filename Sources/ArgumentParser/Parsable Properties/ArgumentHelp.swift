@@ -33,7 +33,7 @@ public struct ArgumentHelp {
   @available(*, deprecated, message: "Use visibility level instead.")
   public var shouldDisplay: Bool {
     get {
-      return visibility == .default
+      return visibility.base == .default
     }
     set {
       visibility = newValue ? .default : .hidden
