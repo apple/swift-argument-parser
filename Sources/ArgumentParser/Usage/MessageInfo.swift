@@ -28,7 +28,7 @@ enum MessageInfo {
       // Exit early on built-in requests
       switch e.parserError {
       case .helpRequested(let visibility):
-        self = .help(text: HelpGenerator(commandStack: e.commandStack, includeHidden: visibility != .default).rendered())
+        self = .help(text: HelpGenerator(commandStack: e.commandStack, visibility: visibility).rendered())
         return
 
       case .dumpHelpRequested:
@@ -73,7 +73,7 @@ enum MessageInfo {
       parserError = .userValidationError(error)
     }
     
-    var usage = HelpGenerator(commandStack: commandStack).usageMessage()
+    var usage = HelpGenerator(commandStack: commandStack, visibility: .default).usageMessage()
     
     let commandNames = commandStack.map { $0._commandName }.joined(separator: " ")
     if let helpName = commandStack.getPrimaryHelpName() {
@@ -96,7 +96,7 @@ enum MessageInfo {
           if let command = command {
             commandStack = CommandParser(type.asCommand).commandStack(for: command)
           }
-          self = .help(text: HelpGenerator(commandStack: commandStack).rendered())
+          self = .help(text: HelpGenerator(commandStack: commandStack, visibility: .default).rendered())
         case .dumpRequest(let command):
           if let command = command {
             commandStack = CommandParser(type.asCommand).commandStack(for: command)
@@ -119,9 +119,9 @@ enum MessageInfo {
     } else if let parserError = parserError {
       let usage: String = {
         guard case ParserError.noArguments = parserError else { return usage }
-        return "\n" + HelpGenerator(commandStack: [type.asCommand]).rendered()
+        return "\n" + HelpGenerator(commandStack: [type.asCommand], visibility: .default).rendered()
       }()
-      let argumentSet = ArgumentSet(commandStack.last!)
+      let argumentSet = ArgumentSet(commandStack.last!, visibility: .default)
       let message = argumentSet.errorDescription(error: parserError) ?? ""
       let helpAbstract = argumentSet.helpDescription(error: parserError) ?? ""
       self = .validation(message: message, usage: usage, help: helpAbstract)

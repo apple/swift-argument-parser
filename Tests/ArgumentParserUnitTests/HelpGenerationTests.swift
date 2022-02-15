@@ -71,6 +71,29 @@ extension HelpGenerationTests {
               -h, --help              Show help information.
 
             """)
+
+#if !os(Linux)
+    XCTExpectFailure("""
+            The following test fails to properly generate the help-hidden
+            message properly because help-hidden is not fully supported yet.
+            """)
+    AssertHelp(.hidden, for: B.self, equals: """
+            USAGE: b --name <name> [--title <title>] [<hidden-name>] [--hidden-title <hidden-title>] [--hidden-flag] [--hidden-inverted-flag] [--no-hidden-inverted-flag]
+
+            ARGUMENTS:
+              <hidden-name>
+
+            OPTIONS:
+              --name <name>           Your name
+              --title <title>         Your title
+              --hidden-title <hidden-title>
+              --hidden-flag
+              --hidden-inverted-flag/--no-hidden-inverted-flag
+                                      (default: true)
+              -h, --help              Show help information.
+
+            """)
+#endif
   }
 
   struct C: ParsableArguments {
@@ -322,7 +345,8 @@ extension HelpGenerationTests {
   }
 
   func testOverviewButNoAbstractSpacing() {
-    let renderedHelp = HelpGenerator(J.self).rendered()
+    let renderedHelp = HelpGenerator(J.self, visibility: .default)
+      .rendered()
     AssertEqualStringsIgnoringTrailingWhitespace(renderedHelp, """
     OVERVIEW:
     test
@@ -508,7 +532,7 @@ extension HelpGenerationTests {
     let helpMessage = """
       OVERVIEW: Demo hiding option groups
 
-      USAGE: driver [--verbose] [--custom-name <custom-name>] [--timeout <timeout>]
+      USAGE: driver [--timeout <timeout>]
 
       OPTIONS:
         --timeout <timeout>     Time to wait before timeout (in seconds)
@@ -569,7 +593,7 @@ extension HelpGenerationTests {
   }
 
   func testAllValues() {
-    let opts = ArgumentSet(AllValues.self)
+    let opts = ArgumentSet(AllValues.self, visibility: .private)
     XCTAssertEqual(AllValues.Manual.allValueStrings, opts[0].help.allValues)
     XCTAssertEqual(AllValues.Manual.allValueStrings, opts[1].help.allValues)
 

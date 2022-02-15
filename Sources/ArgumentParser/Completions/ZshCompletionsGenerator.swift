@@ -103,7 +103,9 @@ struct ZshCompletionsGenerator {
   }
 
   static func generateCompletionArguments(_ commands: [ParsableCommand.Type]) -> [String] {
-    commands.argumentsForHelp().compactMap { $0.zshCompletionString(commands) }
+    commands
+      .argumentsForHelp(visibility: .default)
+      .compactMap { $0.zshCompletionString(commands) }
   }
 }
 

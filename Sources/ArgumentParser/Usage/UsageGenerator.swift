@@ -23,7 +23,9 @@ extension UsageGenerator {
   }
   
   init(toolName: String, parsable: ParsableArguments) {
-    self.init(toolName: toolName, definition: ArgumentSet(type(of: parsable)))
+    self.init(
+      toolName: toolName,
+      definition: ArgumentSet(type(of: parsable), visibility: .default))
   }
   
   init(toolName: String, definition: [ArgumentSet]) {

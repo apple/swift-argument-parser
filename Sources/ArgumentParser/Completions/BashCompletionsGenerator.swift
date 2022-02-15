@@ -122,14 +122,16 @@ struct BashCompletionsGenerator {
 
   /// Returns the option and flag names that can be top-level completions.
   fileprivate static func generateArgumentWords(_ commands: [ParsableCommand.Type]) -> [String] {
-    commands.argumentsForHelp().flatMap { $0.bashCompletionWords() }
+    commands
+      .argumentsForHelp(visibility: .default)
+      .flatMap { $0.bashCompletionWords() }
   }
 
   /// Returns additional top-level completions from positional arguments.
   ///
   /// These consist of completions that are defined as `.list` or `.custom`.
   fileprivate static func generateArgumentCompletions(_ commands: [ParsableCommand.Type]) -> [String] {
-    ArgumentSet(commands.last!)
+    ArgumentSet(commands.last!, visibility: .default)
       .compactMap { arg -> String? in
         guard arg.isPositional else { return nil }
 
@@ -156,7 +158,7 @@ struct BashCompletionsGenerator {
 
   /// Returns the case-matching statements for supplying completions after an option or flag.
   fileprivate static func generateOptionHandlers(_ commands: [ParsableCommand.Type]) -> String {
-    ArgumentSet(commands.last!)
+    ArgumentSet(commands.last!, visibility: .default)
       .compactMap { arg -> String? in
         let words = arg.bashCompletionWords()
         if words.isEmpty { return nil }
