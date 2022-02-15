@@ -107,7 +107,7 @@ internal struct HelpGenerator {
       self.usage = usage
     } else {
       var usage = UsageGenerator(toolName: toolName, definition: [currentArgSet])
-        .synopsis(visibility: visibility)
+        .synopsis()
       if !currentCommand.configuration.subcommands.isEmpty {
         if usage.last != " " { usage += " " }
         usage += "<subcommand>"
@@ -141,8 +141,7 @@ internal struct HelpGenerator {
     /// more elements at a time.
     var args = commandStack.argumentsForHelp(visibility: visibility)[...]
     while let arg = args.popFirst() {
-      guard arg.help.visibility.isAtLeastAsVisible(as: visibility)
-        else { continue }
+      assert(arg.help.visibility.isAtLeastAsVisible(as: visibility))
       
       let synopsis: String
       let description: String

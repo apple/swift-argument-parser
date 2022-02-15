@@ -270,7 +270,6 @@ extension ArgumentSetProvider {
 
 extension ArgumentSet {
   init(_ type: ParsableArguments.Type, visibility: ArgumentVisibility) {
-    
     #if DEBUG
     do {
       try type._validate()
@@ -306,7 +305,8 @@ extension ArgumentSet {
           return ArgumentSet(definition)
         }
       }
-    self.init(sets: a)
+    self.init(a.joined()
+          .filter { $0.help.visibility.isAtLeastAsVisible(as: visibility) })
   }
 }
 

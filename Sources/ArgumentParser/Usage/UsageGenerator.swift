@@ -22,10 +22,10 @@ extension UsageGenerator {
     self.init(toolName: toolName, definition: definition)
   }
   
-  init(toolName: String, parsable: ParsableArguments) {
+  init(toolName: String, parsable: ParsableArguments, visibility: ArgumentVisibility) {
     self.init(
       toolName: toolName,
-      definition: ArgumentSet(type(of: parsable), visibility: .default))
+      definition: ArgumentSet(type(of: parsable), visibility: visibility))
   }
   
   init(toolName: String, definition: [ArgumentSet]) {
@@ -37,10 +37,8 @@ extension UsageGenerator {
   /// The tool synopsis.
   ///
   /// In `roff`.
-  func synopsis(visibility: ArgumentVisibility = .default) -> String {
-    // Filter out options that should not be displayed.
-    var options = definition
-      .filter { $0.help.visibility.isAtLeastAsVisible(as: visibility) }
+  func synopsis() -> String {
+    var options = Array(definition)
     switch options.count {
     case 0:
       return toolName
