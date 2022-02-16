@@ -72,11 +72,6 @@ extension HelpGenerationTests {
 
             """)
 
-#if !os(Linux)
-    XCTExpectFailure("""
-            The following test fails to properly generate the help-hidden
-            message properly because help-hidden is not fully supported yet.
-            """)
     AssertHelp(.hidden, for: B.self, equals: """
             USAGE: b --name <name> [--title <title>] [<hidden-name>] [--hidden-title <hidden-title>] [--hidden-flag] [--hidden-inverted-flag] [--no-hidden-inverted-flag]
 
@@ -93,7 +88,6 @@ extension HelpGenerationTests {
               -h, --help              Show help information.
 
             """)
-#endif
   }
 
   struct C: ParsableArguments {

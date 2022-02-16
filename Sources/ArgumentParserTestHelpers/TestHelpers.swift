@@ -122,7 +122,7 @@ public func AssertHelp<T: ParsableArguments>(
   let flag: String
   let includeHidden: Bool
 
-  switch visibility {
+  switch visibility.base {
   case .default:
     flag = "--help"
     includeHidden = false
@@ -158,7 +158,7 @@ public func AssertHelp<T: ParsableCommand, U: ParsableCommand>(
 ) {
   let includeHidden: Bool
 
-  switch visibility {
+  switch visibility.base {
   case .default:
     includeHidden = false
   case .hidden:

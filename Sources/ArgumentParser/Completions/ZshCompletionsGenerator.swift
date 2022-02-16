@@ -134,7 +134,7 @@ extension ArgumentDefinition {
   }
   
   func zshCompletionString(_ commands: [ParsableCommand.Type]) -> String? {
-    guard help.visibility == .default else { return nil }
+    guard help.visibility.base == .default else { return nil }
     
     var inputs: String
     switch update {

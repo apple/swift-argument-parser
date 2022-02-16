@@ -106,7 +106,8 @@ internal struct HelpGenerator {
     if let usage = currentCommand.configuration.usage {
       self.usage = usage
     } else {
-      var usage = UsageGenerator(toolName: toolName, definition: [currentArgSet]).synopsis
+      var usage = UsageGenerator(toolName: toolName, definition: [currentArgSet])
+        .synopsis
       if !currentCommand.configuration.subcommands.isEmpty {
         if usage.last != " " { usage += " " }
         usage += "<subcommand>"
@@ -140,7 +141,7 @@ internal struct HelpGenerator {
     /// more elements at a time.
     var args = commandStack.argumentsForHelp(visibility: visibility)[...]
     while let arg = args.popFirst() {
-      guard arg.help.visibility == .default else { continue }
+      assert(arg.help.visibility.isAtLeastAsVisible(as: visibility))
       
       let synopsis: String
       let description: String
@@ -154,7 +155,6 @@ internal struct HelpGenerator {
 
         synopsis = groupedArgs
           .lazy
-          .filter { $0.help.visibility == .default }
           .map { $0.synopsisForHelp }
           .joined(separator: "/")
 
@@ -172,9 +172,7 @@ internal struct HelpGenerator {
           .filter { !$0.isEmpty }
           .joined(separator: " ")
       } else {
-        synopsis = arg.help.visibility == .default
-          ? arg.synopsisForHelp
-          : ""
+        synopsis = arg.synopsisForHelp
 
         let defaultValue = arg.help.defaultValue.flatMap { $0.isEmpty ? nil : "(default: \($0))" }
         description = [arg.help.abstract, defaultValue]
@@ -275,10 +273,10 @@ fileprivate extension NameSpecification {
     self
       .makeNames(InputKey(rawValue: "help"))
       .compactMap { name in
-        guard visibility != .default else { return name }
+        guard visibility.base != .default else { return name }
         switch name {
         case .long(let helpName):
-          return .long("\(helpName)-\(visibility)")
+          return .long("\(helpName)-\(visibility.base)")
         case .longWithSingleDash(let helpName):
           return .longWithSingleDash("\(helpName)-\(visibility)")
         case .short:
