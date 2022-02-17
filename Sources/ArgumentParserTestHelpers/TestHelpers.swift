@@ -9,7 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-import ArgumentParser
+@testable import ArgumentParser
 import ArgumentParserToolInfo
 import XCTest
 
@@ -113,28 +113,63 @@ public func AssertEqualStringsIgnoringTrailingWhitespace(_ string1: String, _ st
 }
 
 public func AssertHelp<T: ParsableArguments>(
-  for _: T.Type, equals expected: String,
-  file: StaticString = #file, line: UInt = #line
+  _ visibility: ArgumentVisibility,
+  for _: T.Type,
+  equals expected: String,
+  file: StaticString = #file,
+  line: UInt = #line
 ) {
+  let flag: String
+  let includeHidden: Bool
+
+  switch visibility.base {
+  case .default:
+    flag = "--help"
+    includeHidden = false
+  case .hidden:
+    flag = "--help-hidden"
+    includeHidden = true
+  case .private:
+    XCTFail("Should not be called.")
+    return
+  }
+
   do {
-    _ = try T.parse(["-h"])
-    XCTFail(file: (file), line: line)
+    _ = try T.parse([flag])
+    XCTFail(file: file, line: line)
   } catch {
     let helpString = T.fullMessage(for: error)
     AssertEqualStringsIgnoringTrailingWhitespace(
       helpString, expected, file: file, line: line)
   }
-  
-  let helpString = T.helpMessage()
+
+  let helpString = T.helpMessage(includeHidden: includeHidden, columns: nil)
   AssertEqualStringsIgnoringTrailingWhitespace(
     helpString, expected, file: file, line: line)
 }
 
 public func AssertHelp<T: ParsableCommand, U: ParsableCommand>(
-  for _: T.Type, root _: U.Type, equals expected: String,
-  file: StaticString = #file, line: UInt = #line
+  _ visibility: ArgumentVisibility,
+  for _: T.Type,
+  root _: U.Type,
+  equals expected: String,
+  file: StaticString = #file,
+  line: UInt = #line
 ) {
-  let helpString = U.helpMessage(for: T.self)
+  let includeHidden: Bool
+
+  switch visibility.base {
+  case .default:
+    includeHidden = false
+  case .hidden:
+    includeHidden = true
+  case .private:
+    XCTFail("Should not be called.")
+    return
+  }
+
+  let helpString = U.helpMessage(
+    for: T.self, includeHidden: includeHidden, columns: nil)
   AssertEqualStringsIgnoringTrailingWhitespace(
     helpString, expected, file: file, line: line)
 }

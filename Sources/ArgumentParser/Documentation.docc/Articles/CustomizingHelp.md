@@ -76,12 +76,16 @@ OPTIONS:
 
 ## Customizing Help for Commands
 
-In addition to configuring the command name and subcommands, as described in <doc:CommandsAndSubcommands>, you can also configure a command's help text by providing an abstract and discussion.
+In addition to configuring the command name and subcommands, as described in <doc:CommandsAndSubcommands>, you can also configure a command's help text by providing an abstract, discussion, or custom usage string.
 
 ```swift
 struct Repeat: ParsableCommand {
     static var configuration = CommandConfiguration(
         abstract: "Repeats your input phrase.",
+        usage: """
+            repeat <phrase>
+            repeat --count <count> <phrase>
+            """,
         discussion: """
             Prints to stdout forever, or until you halt the program.
             """)
@@ -89,8 +93,13 @@ struct Repeat: ParsableCommand {
     @Argument(help: "The phrase to repeat.")
     var phrase: String
 
+    @Option(help: "How many times to repeat.")
+    var count: Int?
+
     mutating func run() throws {
-        while true { print(phrase) }
+        for _ in 0..<(count ?? Int.max) {
+            print(phrase) 
+        }
     }
 }
 ```
@@ -104,6 +113,7 @@ OVERVIEW: Repeats your input phrase.
 Prints to stdout forever, or until you halt the program.
 
 USAGE: repeat <phrase>
+       repeat --count <count> <phrase>
 
 ARGUMENTS:
   <phrase>                The phrase to repeat.

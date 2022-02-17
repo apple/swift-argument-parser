@@ -22,8 +22,10 @@ extension UsageGenerator {
     self.init(toolName: toolName, definition: definition)
   }
   
-  init(toolName: String, parsable: ParsableArguments) {
-    self.init(toolName: toolName, definition: ArgumentSet(type(of: parsable)))
+  init(toolName: String, parsable: ParsableArguments, visibility: ArgumentVisibility) {
+    self.init(
+      toolName: toolName,
+      definition: ArgumentSet(type(of: parsable), visibility: visibility))
   }
   
   init(toolName: String, definition: [ArgumentSet]) {
@@ -36,9 +38,7 @@ extension UsageGenerator {
   ///
   /// In `roff`.
   var synopsis: String {
-    // Filter out options that should not be displayed.
-    var options = definition
-      .filter { $0.help.shouldDisplay }
+    var options = Array(definition)
     switch options.count {
     case 0:
       return toolName
@@ -344,7 +344,7 @@ extension ErrorMessageGenerator {
   func noValueMessage(key: InputKey) -> String? {
     let args = arguments(for: key)
     let possibilities: [String] = args.compactMap {
-      $0.help.shouldDisplay
+      $0.help.visibility.base == .default
         ? $0.nonOptional.synopsis
         : nil
     }

@@ -56,7 +56,7 @@ struct FishCompletionsGenerator {
     }
 
     let argumentCompletions = commands
-      .argumentsForHelp()
+      .argumentsForHelp(visibility: .default)
       .flatMap { $0.argumentSegments(commandChain) }
       .map { complete(ancestors: $0, suggestion: $1) }
 
@@ -100,7 +100,7 @@ extension Name {
 
 extension ArgumentDefinition {
   fileprivate func argumentSegments(_ commandChain: [String]) -> [([String], String)] {
-    guard help.shouldDisplay else { return [] }
+    guard help.visibility.base == .default else { return [] }
 
     var results = [([String], String)]()
     var formattedFlags = [String]()

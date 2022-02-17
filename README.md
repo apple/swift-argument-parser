@@ -66,10 +66,18 @@ OPTIONS:
   -h, --help              Show help for this command.
 ```
 
-For more information and documentation about all supported options, 
-see the library's documentation in Xcode.
+## Documentation
 
-## Examples
+For guides, articles, and API documentation see the 
+[library's documentation on the Web][docs] or in Xcode.
+
+- [ArgumentParser documentation][docs]
+- [Getting Started with ArgumentParser](https://apple.github.io/swift-argument-parser/documentation/argumentparser/gettingstarted)
+- [`ParsableCommand` documentation](https://apple.github.io/swift-argument-parser/documentation/argumentparser/parsablecommand)
+
+[docs]: https://apple.github.io/swift-argument-parser/documentation/argumentparser/
+
+#### Examples
 
 This repository includes a few examples of using the library:
 
@@ -79,8 +87,8 @@ This repository includes a few examples of using the library:
 
 You can also see examples of `ArgumentParser` adoption among Swift project tools:
 
-- [`indexstore-db`](https://github.com/apple/indexstore-db/pull/72) is a simple utility with two commands.
-- [`swift-format`](https://github.com/apple/swift-format/pull/154) uses some advanced features, like custom option values and hidden flags.
+- [`swift-format`](https://github.com/apple/swift-format/) uses some advanced features, like custom option values and hidden flags.
+- [`swift-package-manager`](https://github.com/apple/swift-package-manager/) includes a deep command hierarchy and extensive use of option groups.
 
 ## Project Status
 

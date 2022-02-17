@@ -1,10 +1,10 @@
 # Manual Parsing and Testing
 
-Provide your own array of command-line inputs and work with parsed results by calling alternatives to `main()`.
+Provide your own array of command-line inputs or work directly with parsed command-line arguments.
 
 ## Overview
 
-For most programs, calling the static `main()` method on the root command type is all that's necessary. That single call parses the command-line arguments to find the correct command from your tree of nested subcommands, instantiates and validates the result, and executes the chosen command. For more control, however, you can perform each of those steps manually.
+For most programs, denoting the root command type as `@main` is all that's necessary. As the program's entry point, that type parses the command-line arguments to find the correct command from your tree of nested subcommands, instantiates and validates the result, and executes the chosen command. For more control, however, you can perform each of those steps manually.
 
 ## Parsing Arguments
 

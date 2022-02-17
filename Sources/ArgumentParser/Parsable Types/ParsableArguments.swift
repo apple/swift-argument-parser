@@ -95,8 +95,8 @@ extension ParsableArguments {
   ) throws -> Self {
     // Parse the command and unwrap the result if necessary.
     switch try self.asCommand.parseAsRoot(arguments) {
-    case is HelpCommand:
-      throw ParserError.helpRequested
+    case let helpCommand as HelpCommand:
+      throw ParserError.helpRequested(visibility: helpCommand.visibility)
     case let result as _WrappedParsableCommand<Self>:
       return result.options
     case var result as Self:
@@ -132,15 +132,39 @@ extension ParsableArguments {
   ) -> String {
     MessageInfo(error: error, type: self).fullText(for: self)
   }
-  
+
   /// Returns the text of the help screen for this type.
   ///
-  /// - Parameter columns: The column width to use when wrapping long lines in
-  ///   the help screen. If `columns` is `nil`, uses the current terminal width,
-  ///   or a default value of `80` if the terminal width is not available.
+  /// - Parameters:
+  ///   - columns: The column width to use when wrapping long line in the
+  ///     help screen. If `columns` is `nil`, uses the current terminal
+  ///     width, or a default value of `80` if the terminal width is not
+  ///     available.
   /// - Returns: The full help screen for this type.
-  public static func helpMessage(columns: Int? = nil) -> String {
-    HelpGenerator(self).rendered(screenWidth: columns)
+  @_disfavoredOverload
+  @available(*, deprecated, message: "Use helpMessage(includeHidden:columns:) instead.")
+  public static func helpMessage(
+    columns: Int?
+  ) -> String {
+    helpMessage(includeHidden: false, columns: columns)
+  }
+
+  /// Returns the text of the help screen for this type.
+  ///
+  /// - Parameters:
+  ///   - includeHidden: Include hidden help information in the generated
+  ///     message.
+  ///   - columns: The column width to use when wrapping long line in the
+  ///     help screen. If `columns` is `nil`, uses the current terminal
+  ///     width, or a default value of `80` if the terminal width is not
+  ///     available.
+  /// - Returns: The full help screen for this type.
+  public static func helpMessage(
+    includeHidden: Bool = false,
+    columns: Int? = nil
+  ) -> String {
+    HelpGenerator(self, visibility: includeHidden ? .hidden : .default)
+      .rendered(screenWidth: columns)
   }
 
   /// Returns the JSON representation of this type.
@@ -237,16 +261,15 @@ func nilOrValue(_ value: Any) -> Any? {
 protocol ArgumentSetProvider {
   func argumentSet(for key: InputKey) -> ArgumentSet
     
-  var _hiddenFromHelp: Bool { get }
+  var _visibility: ArgumentVisibility { get }
 }
 
 extension ArgumentSetProvider {
-  var _hiddenFromHelp: Bool { false }
+  var _visibility: ArgumentVisibility { .default }
 }
 
 extension ArgumentSet {
-  init(_ type: ParsableArguments.Type, creatingHelp: Bool = false) {
-    
+  init(_ type: ParsableArguments.Type, visibility: ArgumentVisibility) {
     #if DEBUG
     do {
       try type._validate()
@@ -261,9 +284,8 @@ extension ArgumentSet {
         guard var codingKey = child.label else { return nil }
         
         if let parsed = child.value as? ArgumentSetProvider {
-          if creatingHelp {
-            guard !parsed._hiddenFromHelp else { return nil }
-          }
+          guard parsed._visibility.isAtLeastAsVisible(as: visibility)
+            else { return nil }
 
           // Property wrappers have underscore-prefixed names
           codingKey = String(codingKey.first == "_"
@@ -273,17 +295,12 @@ extension ArgumentSet {
           return parsed.argumentSet(for: key)
         } else {
           // Save a non-wrapped property as is
-          var definition = ArgumentDefinition(
-            key: InputKey(rawValue: codingKey),
-            kind: .default,
-            parser: { _ in nil },
-            default: nilOrValue(child.value),
-            completion: .default)
-          definition.help.updateArgumentHelp(help: .hidden)
-          return ArgumentSet(definition)
+          return ArgumentSet(
+            ArgumentDefinition(unparsedKey: codingKey, default: nilOrValue(child.value)))
         }
       }
-    self.init(sets: a)
+    self.init(
+      a.joined().filter { $0.help.visibility.isAtLeastAsVisible(as: visibility) })
   }
 }
 
