@@ -114,6 +114,7 @@ fileprivate extension CommandInfoV0 {
       commandName: command._commandName,
       abstract: command.configuration.abstract,
       discussion: command.configuration.discussion,
+      supplementalDiscussion: command.configuration.supplementalDiscussion,
       defaultSubcommand: defaultSubcommand,
       subcommands: subcommands,
       arguments: arguments)
@@ -135,7 +136,8 @@ fileprivate extension ArgumentInfoV0 {
       defaultValue: argument.help.defaultValue,
       allValues: argument.help.allValues,
       abstract: argument.help.abstract,
-      discussion: argument.help.discussion)
+      discussion: argument.help.discussion,
+      supplementalDiscussion: argument.help.supplementalDiscussion)
   }
 }
 

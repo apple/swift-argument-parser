@@ -51,6 +51,9 @@ public struct CommandInfoV0: Codable, Hashable {
   public var abstract: String?
   /// Extended description of the command's functionality.
   public var discussion: String?
+  /// Additional description of the command's functionality for supplemental
+  /// content.
+  public var supplementalDiscussion: String?
 
   /// Optional name of the subcommand invoked when the command is invoked with
   /// no arguments.
@@ -65,6 +68,7 @@ public struct CommandInfoV0: Codable, Hashable {
     commandName: String,
     abstract: String,
     discussion: String,
+    supplementalDiscussion: String,
     defaultSubcommand: String?,
     subcommands: [CommandInfoV0],
     arguments: [ArgumentInfoV0]
@@ -74,6 +78,7 @@ public struct CommandInfoV0: Codable, Hashable {
     self.commandName = commandName
     self.abstract = abstract.nonEmpty
     self.discussion = discussion.nonEmpty
+    self.supplementalDiscussion = supplementalDiscussion.nonEmpty
 
     self.defaultSubcommand = defaultSubcommand?.nonEmpty
     self.subcommands = subcommands.nonEmpty
@@ -146,6 +151,9 @@ public struct ArgumentInfoV0: Codable, Hashable {
   public var abstract: String?
   /// Extended description of the argument's functionality.
   public var discussion: String?
+  /// Additional description of the argument's functionality for supplemental
+  /// content.
+  public var supplementalDiscussion: String?
 
   public init(
     kind: KindV0,
@@ -159,7 +167,8 @@ public struct ArgumentInfoV0: Codable, Hashable {
     defaultValue: String?,
     allValues: [String]?,
     abstract: String?,
-    discussion: String?
+    discussion: String?,
+    supplementalDiscussion: String?
   ) {
     self.kind = kind
 
@@ -178,5 +187,6 @@ public struct ArgumentInfoV0: Codable, Hashable {
 
     self.abstract = abstract?.nonEmpty
     self.discussion = discussion?.nonEmpty
+    self.supplementalDiscussion = supplementalDiscussion?.nonEmpty
   }
 }

@@ -52,6 +52,7 @@ struct ArgumentDefinition {
     var isComposite: Bool
     var abstract: String
     var discussion: String
+    var supplementalDiscussion: String
     var valueName: String
     var visibility: ArgumentVisibility
     var parentTitle: String
@@ -71,6 +72,7 @@ struct ArgumentDefinition {
       self.isComposite = isComposite
       self.abstract = help?.abstract ?? ""
       self.discussion = help?.discussion ?? ""
+      self.supplementalDiscussion = help?.supplementalDiscussion ?? ""
       self.valueName = help?.valueName ?? ""
       self.visibility = help?.visibility ?? .default
       self.parentTitle = ""
