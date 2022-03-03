@@ -106,9 +106,17 @@ extension ArgumentSet {
   }
   
   /// Creates an argument set for a pair of inverted Boolean flags.
-  static func flag(key: InputKey, name: NameSpecification, default initialValue: Bool?, inversion: FlagInversion, exclusivity: FlagExclusivity, help: ArgumentHelp?) -> ArgumentSet {
+  static func flag(
+    key: InputKey,
+    name: NameSpecification,
+    default initialValue: Bool?,
+    required: Bool,
+    inversion: FlagInversion,
+    exclusivity: FlagExclusivity,
+    help: ArgumentHelp?) -> ArgumentSet
+  {
     // The flag is required if initialValue is `nil`, otherwise it's optional
-    let helpOptions: ArgumentDefinition.Help.Options = initialValue != nil ? .isOptional : []
+    let helpOptions: ArgumentDefinition.Help.Options = required ? [] : .isOptional
     
     let enableHelp = ArgumentDefinition.Help(options: helpOptions, help: help, defaultValue: initialValue.map(String.init), key: key, isComposite: true)
     let disableHelp = ArgumentDefinition.Help(options: [.isOptional], help: help, key: key)

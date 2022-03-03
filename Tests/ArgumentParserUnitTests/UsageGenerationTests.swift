@@ -187,6 +187,10 @@ extension UsageGenerationTests {
     @Flag var j: Bool = false
     @Flag var k: Bool = false
     @Flag var l: Bool = false
+    
+    @Flag(inversion: .prefixedEnableDisable)
+    var m: Bool?
+    
     @Option var option: Bool
     @Argument var input: String
     @Argument var output: String?
