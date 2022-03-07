@@ -115,7 +115,6 @@ extension ArgumentSet {
     exclusivity: FlagExclusivity,
     help: ArgumentHelp?) -> ArgumentSet
   {
-    // The flag is required if initialValue is `nil`, otherwise it's optional
     let helpOptions: ArgumentDefinition.Help.Options = required ? [] : .isOptional
     
     let enableHelp = ArgumentDefinition.Help(options: helpOptions, help: help, defaultValue: initialValue.map(String.init), key: key, isComposite: true)
