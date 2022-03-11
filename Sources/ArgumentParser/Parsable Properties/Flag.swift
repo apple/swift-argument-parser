@@ -209,7 +209,14 @@ extension Flag where Value == Optional<Bool> {
     help: ArgumentHelp? = nil
   ) {
     self.init(_parsedValue: .init { key in
-      .flag(key: key, name: name, default: nil, inversion: inversion, exclusivity: exclusivity, help: help)
+      .flag(
+        key: key,
+        name: name,
+        default: nil,
+        required: false,
+        inversion: inversion,
+        exclusivity: exclusivity,
+        help: help)
     })
   }
 }
@@ -257,7 +264,14 @@ extension Flag where Value == Bool {
     help: ArgumentHelp?
   ) {
     self.init(_parsedValue: .init { key in
-      .flag(key: key, name: name, default: initial, inversion: inversion, exclusivity: exclusivity, help: help)
+      .flag(
+        key: key,
+        name: name,
+        default: initial,
+        required: initial == nil,
+        inversion: inversion,
+        exclusivity: exclusivity,
+        help: help)
       })
   }
 

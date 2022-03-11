@@ -175,6 +175,10 @@ extension UsageGenerationTests {
   }
 
   struct M: ParsableArguments {
+    enum Color: String, EnumerableFlag {
+      case green, blue, yellow
+    }
+    
     @Flag var a: Bool = false
     @Flag var b: Bool = false
     @Flag var c: Bool = false
@@ -187,6 +191,12 @@ extension UsageGenerationTests {
     @Flag var j: Bool = false
     @Flag var k: Bool = false
     @Flag var l: Bool = false
+    
+    @Flag(inversion: .prefixedEnableDisable)
+    var optionalBool: Bool?
+    
+    @Flag var optionalColor: Color?
+    
     @Option var option: Bool
     @Argument var input: String
     @Argument var output: String?
