@@ -253,12 +253,6 @@ extension XCTest {
     let errorData = error.fileHandleForReading.readDataToEndOfFile()
     let errorActual = String(data: errorData, encoding: .utf8)!.trimmingCharacters(in: .whitespacesAndNewlines)
     
-    print("COMMAND: \(command)")
-    print("STDOUT:")
-    print(outputActual)
-    print("STDERR:")
-    print(errorActual)
-    
     if let expected = expected {
       AssertEqualStringsIgnoringTrailingWhitespace(expected, errorActual + outputActual, file: file, line: line)
     }
