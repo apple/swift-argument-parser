@@ -123,6 +123,11 @@ extension DefaultSubcommandEndToEndTests {
       XCTAssertEqual(plugin.pluginArguments, ["--verbose"])
       XCTAssertEqual(plugin.options.verbose, true)
     }
+    AssertParseCommand(MyCommand.self, Plugin.self, ["my-plugin", "--help"]) { plugin in
+      XCTAssertEqual(plugin.pluginName, "my-plugin")
+      XCTAssertEqual(plugin.pluginArguments, ["--help"])
+      XCTAssertEqual(plugin.options.verbose, false)
+    }
   }
 
   func testRemainingDefaultExplicit() throws {
@@ -141,6 +146,11 @@ extension DefaultSubcommandEndToEndTests {
       XCTAssertEqual(plugin.pluginArguments, ["--verbose"])
       XCTAssertEqual(plugin.options.verbose, true)
     }
+    AssertParseCommand(MyCommand.self, Plugin.self, ["--verbose", "plugin", "my-plugin", "--help"]) { plugin in
+      XCTAssertEqual(plugin.pluginName, "my-plugin")
+      XCTAssertEqual(plugin.pluginArguments, ["--help"])
+      XCTAssertEqual(plugin.options.verbose, true)
+    }
   }
 
   func testRemainingNonDefault() throws {
@@ -157,6 +167,11 @@ extension DefaultSubcommandEndToEndTests {
     AssertParseCommand(MyCommand.self, NonDefault.self, ["--verbose", "non-default", "my-plugin", "--verbose"]) { nondef in
       XCTAssertEqual(nondef.pluginName, "my-plugin")
       XCTAssertEqual(nondef.pluginArguments, ["--verbose"])
+      XCTAssertEqual(nondef.options.verbose, true)
+    }
+    AssertParseCommand(MyCommand.self, NonDefault.self, ["--verbose", "non-default", "my-plugin", "--help"]) { nondef in
+      XCTAssertEqual(nondef.pluginName, "my-plugin")
+      XCTAssertEqual(nondef.pluginArguments, ["--help"])
       XCTAssertEqual(nondef.options.verbose, true)
     }
   }
