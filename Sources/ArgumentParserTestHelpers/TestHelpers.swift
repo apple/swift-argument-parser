@@ -249,7 +249,7 @@ extension XCTest {
     
     let outputData = output.fileHandleForReading.readDataToEndOfFile()
     let outputActual = String(data: outputData, encoding: .utf8)!.trimmingCharacters(in: .whitespacesAndNewlines)
-    
+        
     let errorData = error.fileHandleForReading.readDataToEndOfFile()
     let errorActual = String(data: errorData, encoding: .utf8)!.trimmingCharacters(in: .whitespacesAndNewlines)
     

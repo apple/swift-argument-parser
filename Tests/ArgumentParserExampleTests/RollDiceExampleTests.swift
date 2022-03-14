@@ -10,7 +10,6 @@
 //===----------------------------------------------------------------------===//
 
 import XCTest
-import ArgumentParser
 import ArgumentParserTestHelpers
 
 final class RollDiceExampleTests: XCTestCase {

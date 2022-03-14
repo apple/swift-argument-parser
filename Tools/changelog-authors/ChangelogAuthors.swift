@@ -2,60 +2,23 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2020 Apple Inc. and the Swift project authors
+// Copyright (c) 2020-2021 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
 //
 //===----------------------------------------------------------------------===//
 
+#if os(macOS)
+
 import ArgumentParser
 import Foundation
 
-// MARK: GitHub API response modeling
-
-struct Comparison: Codable {
-  var commits: [Commit]
-}
-
-struct Commit: Codable {
-  var sha: String
-  var author: Author
-}
-
-struct Author: Codable {
-  var login: String
-  var htmlURL: String
-  
-  enum CodingKeys: String, CodingKey {
-    case login
-    case htmlURL = "html_url"
-  }
-  
-  var inlineLink: String {
-    "[\(login)]"
-  }
-}
-
-// MARK: Helpers
-
-extension Sequence {
-  func uniqued<T: Hashable>(by transform: (Element) throws -> T) rethrows -> [Element] {
-    var seen: Set<T> = []
-    var result: [Element] = []
-    
-    for element in self {
-      if try seen.insert(transform(element)).inserted {
-        result.append(element)
-      }
-    }
-    return result
-  }
-}
-
 // MARK: Command
 
-struct ChangelogAuthors: ParsableCommand {
+@main
+@available(macOS 12.1, *)
+struct ChangelogAuthors: AsyncParsableCommand {
   static var configuration: CommandConfiguration {
     CommandConfiguration(
       abstract: "A helper tool for generating author info for the changelog.",
@@ -128,8 +91,8 @@ struct ChangelogAuthors: ParsableCommand {
     return url
   }
   
-  mutating func run() throws {
-    let data = try Data(contentsOf: try comparisonURL())
+  mutating func run() async throws {
+    let (data, _) = try await URLSession.shared.data(from: try comparisonURL())
     let comparison = try JSONDecoder().decode(Comparison.self, from: data)
     let authors = comparison.commits.map({ $0.author })
       .uniqued(by: { $0.login })
@@ -141,5 +104,4 @@ struct ChangelogAuthors: ParsableCommand {
   }
 }
 
-ChangelogAuthors.main()
-
+#endif
