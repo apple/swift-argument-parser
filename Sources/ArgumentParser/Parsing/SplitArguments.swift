@@ -180,6 +180,10 @@ struct SplitArguments {
   var elements: ArraySlice<Element> {
     _elements[firstUnused...]
   }
+  
+  var count: Int {
+    elements.count
+  }
 }
 
 extension SplitArguments.Element: CustomDebugStringConvertible {

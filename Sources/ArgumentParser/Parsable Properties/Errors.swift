@@ -43,7 +43,7 @@ public struct ValidationError: Error, CustomStringConvertible {
 
 /// An error type that only includes an exit code.
 ///
-/// If you're printing custom errors messages yourself, you can throw this error
+/// If you're printing custom error messages yourself, you can throw this error
 /// to specify the exit code without adding any additional output to standard
 /// out or standard error.
 public struct ExitCode: Error, RawRepresentable, Hashable {

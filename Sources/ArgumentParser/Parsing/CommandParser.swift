@@ -73,9 +73,19 @@ extension CommandParser {
     return subcommandNode
   }
   
-  /// Throws a `HelpRequested` error if the user has specified either of the
-  /// built in help flags.
-  func checkForBuiltInFlags(_ split: SplitArguments) throws {
+  /// Throws a `HelpRequested` error if the user has specified any of the
+  /// built-in flags.
+  ///
+  /// - Parameters:
+  ///   - split: The remaining arguments to examine.
+  ///   - requireSoloArgument: `true` if the built-in flag must be the only
+  ///     one remaining for this to catch it.
+  func checkForBuiltInFlags(
+    _ split: SplitArguments,
+    requireSoloArgument: Bool = false
+  ) throws {
+    guard !requireSoloArgument || split.count == 1 else { return }
+    
     // Look for help flags
     guard !split.contains(anyOf: self.commandStack.getHelpNames(visibility: .default)) else {
       throw HelpRequested(visibility: .default)
@@ -187,7 +197,7 @@ extension CommandParser {
       }
       
       // Look for the help flag before falling back to a default command.
-      try checkForBuiltInFlags(split)
+      try checkForBuiltInFlags(split, requireSoloArgument: true)
       
       // No command was found, so fall back to the default subcommand.
       if let defaultSubcommand = currentNode.element.configuration.defaultSubcommand {
