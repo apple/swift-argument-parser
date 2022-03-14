@@ -8,7 +8,7 @@ While `ArgumentParser` validates that the inputs given by your user match the re
 
 ### Validating Command-Line Input
 
-To validate your commands properties after parsing, implement the `validate()` method on any `ParsableCommand` or `ParsableArguments` type. Throwing an error from the `validate()` method causes the program to print a message to standard error and exit with an error code, preventing the `run()` method from being called with invalid inputs.
+To validate your commands properties after parsing, implement the ``ParsableArguments/validate()-5r0ge`` method on any ``ParsableCommand`` or ``ParsableArguments`` type. Throwing an error from the `validate()` method causes the program to print a message to standard error and exit with an error code, preventing the `run()` method from being called with invalid inputs.
 
 Here's a command that prints out one or more random elements from the list you provide. Its `validate()` method catches three different errors that a user can make and throws a relevant error for each one.
 
@@ -59,7 +59,7 @@ hey
 
 ## Handling Post-Validation Errors
 
-The `ValidationError` type is a special `ArgumentParser` error — a validation error's message is always accompanied by an appropriate usage string. You can throw other errors, from either the `validate()` or `run()` method to indicate that something has gone wrong that isn't validation-specific. Errors that conform to `CustomStringConvertible` or `LocalizedError` provide the best experience for users.
+The ``ValidationError`` type is a special `ArgumentParser` error — a validation error's message is always accompanied by an appropriate usage string. You can throw other errors, from either the `validate()` or `run()` method to indicate that something has gone wrong that isn't validation-specific. Errors that conform to `CustomStringConvertible` or `LocalizedError` provide the best experience for users.
 
 ```swift
 struct LineCount: ParsableCommand {

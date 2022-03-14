@@ -35,7 +35,7 @@ SUBCOMMANDS:
   See 'math help stats <subcommand>' for detailed help.
 ```
 
-Start by defining the root `Math` command. You can provide a static `configuration` property for a command that specifies its subcommands and a default subcommand, if any.
+Start by defining the root `Math` command. You can provide a static ``ParsableCommand/configuration-35km1`` property for a command that specifies its subcommands and a default subcommand, if any.
 
 ```swift
 struct Math: ParsableCommand {
@@ -53,7 +53,7 @@ struct Math: ParsableCommand {
 32
 ```
 
-Next, define a `ParsableArguments` type with properties that will be shared across multiple subcommands. Types that conform to `ParsableArguments` can be parsed from command-line arguments, but don't provide any execution through a `run()` method.
+Next, define a ``ParsableArguments`` type with properties that will be shared across multiple subcommands. Types that conform to `ParsableArguments` can be parsed from command-line arguments, but don't provide any execution through a `run()` method.
 
 In this case, the `Options` type accepts a `--hexadecimal-output` flag and expects a list of integers.
 
@@ -67,7 +67,7 @@ struct Options: ParsableArguments {
 }
 ```
 
-It's time to define our first two subcommands: `Add` and `Multiply`. Both of these subcommands include the arguments defined in the `Options` type by denoting that property with the `@OptionGroup` property wrapper. `@OptionGroup` doesn't define any new arguments for a command; instead, it splats in the arguments defined by another `ParsableArguments` type.
+It's time to define our first two subcommands: `Add` and `Multiply`. Both of these subcommands include the arguments defined in the `Options` type by denoting that property with the `@OptionGroup` property wrapper (see ``OptionGroup``). `@OptionGroup` doesn't define any new arguments for a command; instead, it splats in the arguments defined by another `ParsableArguments` type.
 
 ```swift
 extension Math {
@@ -173,10 +173,13 @@ extension Math.Statistics {
 }
 ```
 
-Last but not least, we kick off parsing and execution with a call to the static `main` method on the type at the root of our command tree. The call to main parses the command-line arguments, determines whether a subcommand was selected, and then instantiates and calls the `run()` method on that particular subcommand.
+Last but not least, we add the `@main` attribute to the root of our command tree, to tell the compiler to use that as the program's entry point. Upon execution, this parses the command-line arguments, determines whether a subcommand was selected, and then instantiates and calls the `run()` method on that particular subcommand.
 
 ```swift
-Math.main()
+@main
+struct Math: ParsableCommand {
+    // ...
+}
 ```
 
-That's it for this doubly-nested `math` command! This example is also provided as a part of the `swift-argument-parser` repository, so you can see it all together and experiment with it [here](https://github.com/apple/swift-argument-parser/blob/main/Examples/math/main.swift).
+That's it for this doubly-nested `math` command! This example is also provided as a part of the `swift-argument-parser` repository, so you can see it all together and experiment with it [here](https://github.com/apple/swift-argument-parser/blob/main/Examples/math/Math.swift).

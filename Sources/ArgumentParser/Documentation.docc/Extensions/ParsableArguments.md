@@ -2,8 +2,6 @@
 
 ## Topics
 
-
-
 ### Handling Validation
 
 - ``validate()-5r0ge``

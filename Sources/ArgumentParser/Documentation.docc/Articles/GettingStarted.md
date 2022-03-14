@@ -15,13 +15,13 @@ and then include `"ArgumentParser"` as a dependency for our executable target.
 Our "Package.swift" file ends up looking like this:
 
 ```swift
-// swift-tools-version:5.2
+// swift-tools-version:5.5
 import PackageDescription
 
 let package = Package(
-    name: "random",
+    name: "Count",
     dependencies: [
-        .package(url: "https://github.com/apple/swift-argument-parser.git", from: "0.4.0"),
+        .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.0.0"),
     ],
     targets: [
         .target(
@@ -30,8 +30,6 @@ let package = Package(
     ]
 )
 ```
-
-> **Note:** To read more about creating and configuring packages using Swift Package Manager, see [Using the Package Manager](https://swift.org/getting-started/#using-the-package-manager).
 
 ## Building Our First Command
 
@@ -47,6 +45,7 @@ We'll define the initial version of the command as a type that conforms to the `
 ```swift
 import ArgumentParser
 
+@main
 struct Count: ParsableCommand {
     @Argument var inputFile: String
     @Argument var outputFile: String
@@ -60,15 +59,13 @@ struct Count: ParsableCommand {
         // Read 'inputFile', count the words, and save to 'outputFile'.
     }
 }
-
-Count.main()
 ```
 
-In the code above, the `inputFile` and `outputFile` properties use the `@Argument` property wrapper. `ArgumentParser` uses this wrapper to denote a positional command-line input — because `inputFile` is specified first in the `Count` type, it's the first value read from the command line, and `outputFile` is read second.
+In the code above, the `inputFile` and `outputFile` properties use the `@Argument` property wrapper. `ArgumentParser` uses this wrapper to denote a positional command-line input — because `inputFile` is specified first in the `Count` type, it's the first value read from the command line, and `outputFile` is the second.
 
 We've implemented the command's logic in its `run()` method. Here, we're printing out a message confirming the names of the files the user gave. (You can find a full implementation of the completed command at the end of this guide.)
 
-Finally, you tell the parser to execute the `Count` command by calling its static `main()` method. This method parses the command-line arguments, verifies that they match up with what we've defined in `Count`, and either calls the `run()` method or exits with a helpful message.
+Finally, you designate the `Count` command as the program's entry point by applying the `@main` attribute. When running your command, the `ArgumentParser` library parses the command-line arguments, verifies that they match up with what we've defined in `Count`, and either calls the `run()` method or exits with a helpful message.
 
 
 ## Working with Named Options
@@ -228,6 +225,7 @@ As promised, here's the complete `count` command, for your experimentation:
 import ArgumentParser
 import Foundation
 
+@main
 struct Count: ParsableCommand {
     static let configuration = CommandConfiguration(abstract: "Word counter.")
     
@@ -283,6 +281,4 @@ struct RuntimeError: Error, CustomStringConvertible {
         self.description = description
     }
 }
-
-Count.main()
 ```

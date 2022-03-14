@@ -49,8 +49,8 @@ and then either calls your `run()` method or exits with a useful message.
 ### Essentials
 
 - <doc:GettingStarted>
-- <doc:CommandsAndSubcommands>
 - ``ParsableCommand``
+- ``AsyncParsableCommand``
 
 ### Arguments, Options, and Flags
 
@@ -65,6 +65,7 @@ and then either calls your `run()` method or exits with a useful message.
 
 - <doc:CustomizingHelp>
 - ``ArgumentHelp``
+- ``ArgumentVisibility``
 - ``NameSpecification``
 
 ### Custom Types

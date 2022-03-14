@@ -1,6 +1,6 @@
 # Customizing Help
 
-Support your users (and yourself) by providing rich help for arguments and commands.
+Support your users (and yourself) by providing rich help for arguments, options, and flags.
 
 ## Overview
 
@@ -37,7 +37,7 @@ OPTIONS:
 
 ## Customizing Help for Arguments
 
-You can have more control over the help text by passing an `ArgumentHelp` instance instead. The `ArgumentHelp` type can include an abstract (which is what the string literal becomes), a discussion, a value name to use in the usage string, and a Boolean that indicates whether the argument should be visible in the help screen.
+For more control over the help text, pass an ``ArgumentHelp`` instance instead of a string literal. The `ArgumentHelp` type can include an abstract (which is what the string literal becomes), a discussion, a value name to use in the usage string, and a visibility level for that argument.
 
 Here's the same command with some extra customization:
 
@@ -74,148 +74,70 @@ OPTIONS:
   -h, --help              Show help information.
 ```
 
-## Customizing Help for Commands
+### Controlling Argument Visibility
 
-In addition to configuring the command name and subcommands, as described in <doc:CommandsAndSubcommands>, you can also configure a command's help text by providing an abstract, discussion, or custom usage string.
+You can specify the visibility of any argument, option, or flag.
 
 ```swift
-struct Repeat: ParsableCommand {
-    static var configuration = CommandConfiguration(
-        abstract: "Repeats your input phrase.",
-        usage: """
-            repeat <phrase>
-            repeat --count <count> <phrase>
-            """,
-        discussion: """
-            Prints to stdout forever, or until you halt the program.
-            """)
+struct Example: ParsableCommand {
+    @Flag(help: ArgumentHelp("Show extra info.", visibility: .hidden))
+    var verbose: Bool = false
 
-    @Argument(help: "The phrase to repeat.")
-    var phrase: String
-
-    @Option(help: "How many times to repeat.")
-    var count: Int?
-
-    mutating func run() throws {
-        for _ in 0..<(count ?? Int.max) {
-            print(phrase) 
-        }
-    }
+    @Flag(help: ArgumentHelp("Use the legacy format.", visibility: .private))
+    var useLegacyFormat: Bool = false
 }
 ```
 
-The abstract and discussion appear in the generated help screen:
+The `--verbose` flag is only visible in the extended help screen. The `--use-legacy-format` stays hidden even in the extended help screen, due to its `.private` visibility. 
 
 ```
-% repeat --help
-OVERVIEW: Repeats your input phrase.
-
-Prints to stdout forever, or until you halt the program.
-
-USAGE: repeat <phrase>
-       repeat --count <count> <phrase>
-
-ARGUMENTS:
-  <phrase>                The phrase to repeat.
+% example --help
+USAGE: example
 
 OPTIONS:
   -h, --help              Show help information.
 
-% repeat hello!
-hello!
-hello!
-hello!
-hello!
-hello!
-hello!
-...
-```
-
-## Modifying the Help Flag Names
-
-Users can see the help screen for a command by passing either the `-h` or the `--help` flag, by default. If you need to use one of those flags for another purpose, you can provide alternative names when configuring a root command.
-
-```swift
-struct Example: ParsableCommand {
-    static let configuration = CommandConfiguration(
-        helpNames: [.long, .customShort("?")])
-
-    @Option(name: .shortAndLong, help: "The number of history entries to show.")
-    var historyDepth: Int
-
-    mutating func run() throws {
-        printHistory(depth: historyDepth)
-    }
-}
-```
-
-When running the command, `-h` matches the short name of the `historyDepth` property, and `-?` displays the help screen.
-
-```
-% example -h 3
-...
-% example -?
-USAGE: example --history-depth <history-depth>
-
-ARGUMENTS:
-  <phrase>                The phrase to repeat.
+% example --help-hidden
+USAGE: example [--verbose]
 
 OPTIONS:
-  -h, --history-depth     The number of history entries to show.
-  -?, --help              Show help information.
+  --verbose               Show extra info.
+  -h, --help              Show help information.
 ```
 
-When not overridden, custom help names are inherited by subcommands. In this example, the parent command defines `--help` and `-?` as its help names:
+Alternatively, you can group multiple arguments, options, and flags together as part of a ``ParsableArguments`` type, and set the visibility when including them as an `@OptionGroup` property.
 
 ```swift
-struct Parent: ParsableCommand {
-    static let configuration = CommandConfiguration(
-        subcommands: [Child.self],
-        helpNames: [.long, .customShort("?")])
+struct ExperimentalFlags: ParsableArguments {
+    @Flag(help: "Use the remote access token. (experimental)")
+    var experimentalUseRemoteAccessToken: Bool = false
 
-    struct Child: ParsableCommand {
-        @Option(name: .shortAndLong, help: "The host the server will run on.")
-        var host: String
-    }
+    @Flag(help: "Use advanced security. (experimental)")
+    var experimentalAdvancedSecurity: Bool = false
+}
+
+struct Example: ParsableCommand {
+    @OptionGroup(visibility: .hidden)
+    var flags: ExperimentalFlags
 }
 ```
 
-The `child` subcommand inherits the parent's help names, allowing the user to distinguish between the host argument (`-h`) and help (`-?`).
+The members of `ExperimentalFlags` are only shown in the extended help screen:
 
 ```
-% parent child -h 192.0.0.0
-...
-% parent child -?
-USAGE: parent child --host <host>
+% example --help
+USAGE: example
 
 OPTIONS:
-  -h, --host <host>       The host the server will run on.
-  -?, --help              Show help information.
+  -h, --help              Show help information.
+
+% example --help-hidden
+USAGE: example [--experimental-use-remote-access-token] [--experimental-advanced-security]
+
+OPTIONS:
+  --experimental-use-remote-access-token
+                          Use the remote access token. (experimental)
+  --experimental-advanced-security
+                          Use advanced security. (experimental)
+  -h, --help              Show help information.
 ```
-
-## Hiding Arguments and Commands
-
-You may want to suppress features under development or experimental flags from the generated help screen. You can hide an argument or a subcommand by passing `visibility: .hidden` to the property wrapper or `CommandConfiguration` initializers, respectively.
-
-`ArgumentHelp` includes a `.hidden` static property that makes it even simpler to hide arguments:
-
-```swift
-struct Example: ParsableCommand {
-    @Flag(help: .hidden)
-    var experimentalEnableWidgets: Bool
-}
-```
-
-## Generating Help Text Programmatically
-
-The help screen is automatically shown to users when they call your command with the help flag. You can generate the same text from within your program by calling the `helpMessage()` method.
-
-```swift
-let help = Repeat.helpMessage()
-// `help` matches the output above
-
-let fortyColumnHelp = Repeat.helpMessage(columns: 40)
-// `fortyColumnHelp` is the same help screen, but wrapped to 40 columns
-```
-
-When generating help text for a subcommand, call `helpMessage(for:)` on the `ParsableCommand` type that represents the root of the command tree and pass the subcommand type as a parameter to ensure the correct display.

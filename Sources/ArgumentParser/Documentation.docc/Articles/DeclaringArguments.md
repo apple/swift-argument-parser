@@ -6,19 +6,19 @@ Use the `@Argument`, `@Option` and `@Flag` property wrappers to declare the comm
 
 When creating commands, you can define three primary kinds of command-line inputs:
 
-- *Arguments* are values given by a user and are read in order from first to last. For example, this command is called with three file names as arguments:
+- *Arguments* are values given by a user and are read in order from first to last (see ``Argument``). For example, this command is called with three file names as arguments:
 
   ```
   % example file1.swift file2.swift file3.swift
   ```
 
-- *Options* are named key-value pairs. Keys start with one or two dashes (`-` or `--`), and a user can separate the key and value with an equal sign (`=`) or a space. This command is called with two options:
+- *Options* are named key-value pairs. Keys start with one or two dashes (`-` or `--`), and a user can separate the key and value with an equal sign (`=`) or a space (see ``Option``). This command is called with two options:
 
   ```
   % example --count=5 --index 2
   ```
 
-- *Flags* are like options, but without a paired value. Instead, their presence indicates a particular value (usually `true`). This command is called with two flags:
+- *Flags* are like options, but without a paired value. Instead, their presence indicates a particular value (see ``Flag``). This command is called with two flags:
 
   ```
   % example --verbose --strip-whitespace
@@ -69,14 +69,14 @@ When providing a default value for an array property, any user-supplied values r
 
 ```swift
 struct Lucky: ParsableCommand {
-  @Argument var numbers = [7, 14, 21]
+    @Argument var numbers = [7, 14, 21]
 
-  mutating func run() throws {
-    print("""
-    Your lucky numbers are:
-    \(numbers.map(String.init).joined(separator: " "))
-    """)
-  }
+    mutating func run() throws {
+        print("""
+        Your lucky numbers are:
+        \(numbers.map(String.init).joined(separator: " "))
+        """)
+    }
 }
 ```
 
@@ -134,9 +134,9 @@ struct Example: ParsableCommand {
 
 ## Parsing custom types
 
-Arguments and options can be parsed from any type that conforms to the `ExpressibleByArgument` protocol. Standard library integer and floating-point types, strings, and Booleans all conform to `ExpressibleByArgument`.
+Arguments and options can be parsed from any type that conforms to the ``ExpressibleByArgument`` protocol. Standard library integer and floating-point types, strings, and Booleans all conform to `ExpressibleByArgument`.
 
-You can make your own custom types conform to `ExpressibleByArgument` by implementing `init?(argument:)`:
+You can make your own custom types conform to `ExpressibleByArgument` by implementing ``ExpressibleByArgument/init(argument:)``:
 
 ```swift
 struct Path: ExpressibleByArgument {

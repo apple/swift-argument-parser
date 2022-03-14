@@ -9,12 +9,25 @@
 //
 //===----------------------------------------------------------------------===//
 
-/// A type that can be executed as part of a nested tree of commands.
+/// A type that can be executed asynchronously, as part of a nested tree of
+/// commands.
 public protocol AsyncParsableCommand: ParsableCommand {
+  /// The behavior or functionality of this command.
+  ///
+  /// Implement this method in your `ParsableCommand`-conforming type with the
+  /// functionality that this command represents.
+  ///
+  /// This method has a default implementation that prints the help screen for
+  /// this command.
   mutating func run() async throws
 }
 
 extension AsyncParsableCommand {
+  /// Executes this command, or one of its subcommands, with the program's
+  /// command-line arguments.
+  ///
+  /// Instead of calling this method directly, you can add `@main` to the root
+  /// command for your command-line tool.
   public static func main() async {
     do {
       var command = try parseAsRoot()
@@ -29,6 +42,10 @@ extension AsyncParsableCommand {
   }
 }
 
+/// A type that can designate an `AsyncParsableCommand` as the program's
+/// entry point.
+///
+/// See the ``AsyncParsableCommand`` documentation for usage information.
 @available(
   swift, deprecated: 5.6,
   message: "Use @main directly on your root `AsyncParsableCommand` type.")
@@ -38,6 +55,8 @@ public protocol AsyncMainProtocol {
 
 @available(swift, deprecated: 5.6)
 extension AsyncMainProtocol {
+  /// Executes the designated command type, or one of its subcommands, with
+  /// the program's command-line arguments.
   public static func main() async {
     do {
       var command = try Command.parseAsRoot()
