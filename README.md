@@ -81,9 +81,10 @@ For guides, articles, and API documentation see the
 
 This repository includes a few examples of using the library:
 
-- [`repeat`](Examples/repeat/main.swift) is the example shown above.
+- [`repeat`](Examples/repeat/Repeat.swift) is the example shown above.
 - [`roll`](Examples/roll/main.swift) is a simple utility implemented as a straight-line script.
-- [`math`](Examples/math/main.swift) is an annotated example of using nested commands and subcommands.
+- [`math`](Examples/math/Math.swift) is an annotated example of using nested commands and subcommands.
+- [`count-lines`](Examples/count-lines/CountLines.swift) uses `async`/`await` code in its implementation.
 
 You can also see examples of `ArgumentParser` adoption among Swift project tools:
 
