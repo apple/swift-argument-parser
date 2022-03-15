@@ -491,17 +491,25 @@ extension HelpGenerationTests {
     
     """)
   }
-    
-  struct optionsToHide: ParsableArguments {
+}
+
+extension HelpGenerationTests {
+  private struct optionsToHide: ParsableArguments {
     @Flag(help: "Verbose")
     var verbose: Bool = false
     
     @Option(help: "Custom Name")
     var customName: String?
+    
+    @Option(help: .hidden)
+    var hiddenOption: String?
+    
+    @Argument(help: .private)
+    var privateArg: String?
   }
 
   @available(*, deprecated)
-  struct HideOptionGroupLegacyDriver: ParsableCommand {
+  private struct HideOptionGroupLegacyDriver: ParsableCommand {
     static let configuration = CommandConfiguration(commandName: "driver", abstract: "Demo hiding option groups")
     
     @OptionGroup(_hiddenFromHelp: true)
@@ -511,51 +519,72 @@ extension HelpGenerationTests {
     var timeout: Int?
   }
 
-  struct HideOptionGroupDriver: ParsableCommand {
+  private struct HideOptionGroupDriver: ParsableCommand {
     static let configuration = CommandConfiguration(commandName: "driver", abstract: "Demo hiding option groups")
 
-    @OptionGroup(_visibility: .hidden)
+    @OptionGroup(visibility: .hidden)
     var hideMe: optionsToHide
 
     @Option(help: "Time to wait before timeout (in seconds)")
     var timeout: Int?
   }
 
+  private struct PrivateOptionGroupDriver: ParsableCommand {
+    static let configuration = CommandConfiguration(commandName: "driver", abstract: "Demo hiding option groups")
+
+    @OptionGroup(visibility: .private)
+    var hideMe: optionsToHide
+
+    @Option(help: "Time to wait before timeout (in seconds)")
+    var timeout: Int?
+  }
+
+  private var helpMessage: String { """
+    OVERVIEW: Demo hiding option groups
+
+    USAGE: driver [--timeout <timeout>]
+
+    OPTIONS:
+      --timeout <timeout>     Time to wait before timeout (in seconds)
+      -h, --help              Show help information.
+
+    """
+  }
+
+  private var helpHiddenMessage: String { """
+    OVERVIEW: Demo hiding option groups
+
+    USAGE: driver [--verbose] [--custom-name <custom-name>] [--hidden-option <hidden-option>] [--timeout <timeout>]
+
+    OPTIONS:
+      --verbose               Verbose
+      --custom-name <custom-name>
+                              Custom Name
+      --hidden-option <hidden-option>
+      --timeout <timeout>     Time to wait before timeout (in seconds)
+      -h, --help              Show help information.
+
+    """
+  }
+
   @available(*, deprecated)
   func testHidingOptionGroup() throws {
-    let helpMessage = """
-      OVERVIEW: Demo hiding option groups
-
-      USAGE: driver [--timeout <timeout>]
-
-      OPTIONS:
-        --timeout <timeout>     Time to wait before timeout (in seconds)
-        -h, --help              Show help information.
-
-      """
     AssertHelp(.default, for: HideOptionGroupLegacyDriver.self, equals: helpMessage)
     AssertHelp(.default, for: HideOptionGroupDriver.self, equals: helpMessage)
+    AssertHelp(.default, for: PrivateOptionGroupDriver.self, equals: helpMessage)
   }
 
   @available(*, deprecated)
-  func testHelpHiddenShowsAll() throws {
-    let helpHiddenMessage = """
-        OVERVIEW: Demo hiding option groups
-
-        USAGE: driver [--verbose] [--custom-name <custom-name>] [--timeout <timeout>]
-
-        OPTIONS:
-          --verbose               Verbose
-          --custom-name <custom-name>
-                                  Custom Name
-          --timeout <timeout>     Time to wait before timeout (in seconds)
-          -h, --help              Show help information.
-
-        """
+  func testHelpHiddenShowsDefaultAndHidden() throws {
     AssertHelp(.hidden, for: HideOptionGroupLegacyDriver.self, equals: helpHiddenMessage)
     AssertHelp(.hidden, for: HideOptionGroupDriver.self, equals: helpHiddenMessage)
+    
+    // Note: Private option groups are not visible at `.hidden` help level.
+    AssertHelp(.hidden, for: PrivateOptionGroupDriver.self, equals: helpMessage)
   }
+}
 
+extension HelpGenerationTests {
   struct AllValues: ParsableCommand {
     enum Manual: Int, ExpressibleByArgument {
       case foo
