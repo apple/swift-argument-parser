@@ -61,11 +61,13 @@ public struct OptionGroup<Value: ParsableArguments>: Decodable, ParsedWrapper {
     }
   }
 
-  /// Creates a property that represents another parsable type.
-  public init() {
+  /// Creates a property that represents another parsable type, using the
+  /// specified visibility.
+  public init(visibility: ArgumentVisibility = .default) {
     self.init(_parsedValue: .init { _ in
       ArgumentSet(Value.self, visibility: .private)
     })
+    self._visibility = visibility
   }
 
   /// The value presented by this property wrapper.
@@ -97,14 +99,15 @@ extension OptionGroup: CustomStringConvertible {
 
 // Experimental use with caution
 extension OptionGroup {
-  @available(*, deprecated, message: "Use init(_visibility:) instead.")
+  @available(*, deprecated, renamed: "init(visibility:)")
   public init(_hiddenFromHelp: Bool) {
-    self.init()
-    self._visibility = .hidden
+    self.init(visibility: .hidden)
   }
-
-  public init(_visibility: ArgumentVisibility) {
-    self.init()
-    self._visibility = _visibility
+  
+  /// Creates a property that represents another parsable type.
+  @available(*, deprecated, renamed: "init(visibility:)")
+  @_disfavoredOverload
+  public init() {
+    self.init(visibility: .default)
   }
 }
