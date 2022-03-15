@@ -16,7 +16,8 @@ Add new items at the end of the relevant section under **Unreleased**.
 
 ### Changes
 
-- When a user provides an incorrect value for an option, an `ArgumentParser`-based program now includes the valid values when possible.
+- When a user provides an incorrect value for an option, an 
+  `ArgumentParser`-based program now includes the valid values when possible.
 
     ```
     $ example --format png
@@ -26,21 +27,29 @@ Add new items at the end of the relevant section under **Unreleased**.
 
 ### Fixes
 
-- Resolves an issue with `zsh` custom completions for command names that include a dash.
+- Resolves an issue with `zsh` custom completions for command names that include
+  a dash.
 - Improves the generated completions scripts for `fish`.
-- Resolves issues that prevented building `ArgumentParser` for WebAssembly using SwiftWasm toolchains.
+- Resolves issues that prevented building `ArgumentParser` for WebAssembly using
+  SwiftWasm toolchains.
 - Improved window size handling on Windows.
-- Fixed a crash when using `--experimental-dump-help` with commands that provide non-parsed values.
-- Fixes an issue where subcommands that declare array arguments with the `.unconditionalRemaining` parsing strategy unexpectedly miss arguments, extending the change in [#333] to subcommands. ([#397])
-- Corrects the order of an `@Option` initializer's parameters, deprecating the old version. ([#391])
+- Fixed a crash when using `--experimental-dump-help` with commands that provide
+  non-parsed values.
+- Fixes an issue where subcommands that declare array arguments with the
+  `.unconditionalRemaining` parsing strategy unexpectedly miss arguments,
+  extending the change in [#333] to subcommands. ([#397])
+- Corrects the order of an `@Option` initializer's parameters, deprecating the
+  old version. ([#391])
 - Expanded and corrected documentation.
 
-The 1.0.3 release includes contributions from [atierian], [CraigSiemens], [dduan], [floam], [KS1019], [McNight], [mdznr], [natecook1000], [rauhul], and [yonihemi]. Thank you!
+The 1.0.3 release includes contributions from [atierian], [CraigSiemens],
+[dduan], [floam], [KS1019], [McNight], [mdznr], [natecook1000], [rauhul], and
+[yonihemi]. Thank you!
 
 
 ## [1.0.2] - 2021-11-09
 
-## Fixes
+### Fixes
 
 - Addresses an issue when building tests under Mac Catalyst.
 
@@ -48,7 +57,7 @@ The 1.0.2 release includes a contribution from [jakepetroules]. Thank you!
 
 ## [1.0.1] - 2021-09-14
 
-## Fixes
+### Fixes
 
 - Addresses an issue when compiling under Mac Catalyst.
 
