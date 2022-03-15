@@ -22,12 +22,13 @@ public protocol ParsableCommand: ParsableArguments {
   /// can pass through the wrapped type's name.
   static var _commandName: String { get }
   
-  /// Runs this command.
+  /// The behavior or functionality of this command.
   ///
-  /// After implementing this method, you can run your command-line
-  /// application by calling the static `main()` method on the root type.
-  /// This method has a default implementation that prints help text
-  /// for this command.
+  /// Implement this method in your `ParsableCommand`-conforming type with the
+  /// functionality that this command represents.
+  ///
+  /// This method has a default implementation that prints the help screen for
+  /// this command.
   mutating func run() throws
 }
 
@@ -79,7 +80,7 @@ extension ParsableCommand {
   ///     available.
   /// - Returns: The full help screen for this type.
   @_disfavoredOverload
-  @available(*, deprecated, message: "Use helpMessage(for:includeHidden:columns:) instead.")
+  @available(*, deprecated, renamed: "helpMessage(for:includeHidden:columns:)")
   public static func helpMessage(
     for subcommand: ParsableCommand.Type,
     columns: Int? = nil
@@ -112,9 +113,13 @@ extension ParsableCommand {
         .rendered(screenWidth: columns)
   }
 
-  /// Parses an instance of this type, or one of its subcommands, from
-  /// the given arguments and calls its `run()` method, exiting with a
-  /// relevant error message if necessary.
+  /// Executes this command, or one of its subcommands, with the given
+  /// arguments.
+  ///
+  /// This method parses an instance of this type, one of its subcommands, or
+  /// another built-in `ParsableCommand` type, from command-line arguments,
+  /// and then calls its `run()` method, exiting with a relevant error message
+  /// if necessary.
   ///
   /// - Parameter arguments: An array of arguments to use for parsing. If
   ///   `arguments` is `nil`, this uses the program's command-line arguments.
@@ -127,9 +132,16 @@ extension ParsableCommand {
     }
   }
 
-  /// Parses an instance of this type, or one of its subcommands, from
-  /// command-line arguments and calls its `run()` method, exiting with a
-  /// relevant error message if necessary.
+  /// Executes this command, or one of its subcommands, with the program's
+  /// command-line arguments.
+  ///
+  /// Instead of calling this method directly, you can add `@main` to the root
+  /// command for your command-line tool.
+  ///
+  /// This method parses an instance of this type, one of its subcommands, or
+  /// another built-in `ParsableCommand` type, from command-line arguments,
+  /// and then calls its `run()` method, exiting with a relevant error message
+  /// if necessary.
   public static func main() {
     self.main(nil)
   }

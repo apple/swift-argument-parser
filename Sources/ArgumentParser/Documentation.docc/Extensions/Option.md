@@ -7,7 +7,7 @@
 - ``init(name:parsing:help:completion:)-4yske``
 - ``init(name:parsing:help:completion:)-7slrf``
 - ``init(name:parsing:help:completion:transform:)-2wf44``
-- ``init(wrappedValue:name:parsing:completion:help:)``
+- ``init(wrappedValue:name:parsing:help:completion:)-7ilku``
 - ``init(wrappedValue:name:parsing:help:completion:transform:)-2llve``
 - ``SingleValueParsingStrategy``
 
@@ -15,7 +15,7 @@
 
 - ``init(name:parsing:help:completion:)-238hg``
 - ``init(name:parsing:help:completion:transform:)-74hnp``
-- ``init(wrappedValue:name:parsing:help:completion:)``
+- ``init(wrappedValue:name:parsing:help:completion:)-1dtbf``
 - ``init(wrappedValue:name:parsing:help:completion:transform:)-1kpto``
 - ``ArrayParsingStrategy``
 
@@ -24,3 +24,7 @@
 - ``init()``
 - ``init(from:)``
 - ``wrappedValue``
+
+### Deprecated APIs
+
+- ``init(wrappedValue:name:parsing:completion:help:)``
