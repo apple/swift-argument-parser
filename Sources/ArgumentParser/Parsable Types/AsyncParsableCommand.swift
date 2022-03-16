@@ -11,6 +11,7 @@
 
 /// A type that can be executed asynchronously, as part of a nested tree of
 /// commands.
+@available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
 public protocol AsyncParsableCommand: ParsableCommand {
   /// The behavior or functionality of this command.
   ///
@@ -22,6 +23,7 @@ public protocol AsyncParsableCommand: ParsableCommand {
   mutating func run() async throws
 }
 
+@available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
 extension AsyncParsableCommand {
   /// Executes this command, or one of its subcommands, with the program's
   /// command-line arguments.
@@ -54,6 +56,7 @@ public protocol AsyncMainProtocol {
 }
 
 @available(swift, deprecated: 5.6)
+@available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
 extension AsyncMainProtocol {
   /// Executes the designated command type, or one of its subcommands, with
   /// the program's command-line arguments.
