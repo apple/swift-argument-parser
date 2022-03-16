@@ -10,6 +10,15 @@ Add new items at the end of the relevant section under **Unreleased**.
 
 ---
 
+## [1.1.1] - 2022-03-16
+
+### Fixes
+
+- Moves the platform requirement from the package level down to the new
+  types and protocols with `async` members. This was a source-breaking
+  change in 1.1.0. ([#427]) 
+- Fixed issues in the CMake build configuration.
+
 ## [1.1.0] - 2022-03-14
 
 ### Additions
@@ -609,7 +618,8 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 
 <!-- Link references for releases -->
 
-[Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.1.0...HEAD
+[Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.1.1...HEAD
+[1.1.1]: https://github.com/apple/swift-argument-parser/compare/1.1.0...1.1.1
 [1.1.0]: https://github.com/apple/swift-argument-parser/compare/1.0.3...1.1.0
 [1.0.3]: https://github.com/apple/swift-argument-parser/compare/1.0.2...1.0.3
 [1.0.2]: https://github.com/apple/swift-argument-parser/compare/1.0.1...1.0.2
@@ -663,6 +673,7 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [#400]: https://github.com/apple/swift-argument-parser/pull/400
 [#404]: https://github.com/apple/swift-argument-parser/pull/404
 [#416]: https://github.com/apple/swift-argument-parser/pull/416
+[#427]: https://github.com/apple/swift-argument-parser/pull/427
 
 <!-- Link references for contributors -->
 
