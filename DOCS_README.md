@@ -11,8 +11,8 @@ To generate a new set of documentation, follow these steps:
 
 3. To preview the updated documentation, run the following command:
 
-    swift package --disable-sandbox preview-documentation \
-        --target ArgumentParser
+        swift package --disable-sandbox preview-documentation \
+            --target ArgumentParser
         
    You can view the documentation at:
       http://localhost:8000/documentation/argumentparser
@@ -21,20 +21,20 @@ To generate a new set of documentation, follow these steps:
    Note that this requires a temporary location for the built documentation;
    change `~/Desktop/apdocs` in all places below as necessary.
 
-    swift package --allow-writing-to-directory ~/Desktop/apdocs \
-        generate-documentation --target ArgumentParser --disable-indexing \
-        --transform-for-static-hosting \
-        --hosting-base-path swift-argument-parser \
-        --output-path ~/Desktop/apdocs
+        swift package --allow-writing-to-directory ~/Desktop/apdocs \
+            generate-documentation --target ArgumentParser --disable-indexing \
+            --transform-for-static-hosting \
+            --hosting-base-path swift-argument-parser \
+            --output-path ~/Desktop/apdocs
 
 5. Run the following command to copy the top-level redirect file into place.
 
-    cp redirect.html ~/Desktop/apdocs/index.html
+        cp redirect.html ~/Desktop/apdocs/index.html
     
 6. Check out the `gh-pages` branch, copy the files into place, and then push
    to the remote repository.
 
-    git checkout gh-pages
-    cp -R ~/Desktop/apdocs/* ./
-    git add . && git commit -m "Update documentation"
-    git push
+        git checkout gh-pages
+        cp -R ~/Desktop/apdocs/* ./
+        git add . && git commit -m "Update documentation"
+        git push
