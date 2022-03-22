@@ -24,7 +24,7 @@ public protocol AsyncParsableCommand: ParsableCommand {
 }
 
 @available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
-extension AsyncParsableCommand {
+extension ParsableCommand where Self : AsyncParsableCommand {
   /// Executes this command, or one of its subcommands, with the program's
   /// command-line arguments.
   ///
