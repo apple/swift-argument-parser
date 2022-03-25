@@ -1,0 +1,446 @@
+{
+  "abstract" : [
+    {
+      "text" : "Inherited from ",
+      "type" : "text"
+    },
+    {
+      "code" : "CustomStringConvertible.description",
+      "type" : "codeVoice"
+    },
+    {
+      "text" : ".",
+      "type" : "text"
+    }
+  ],
+  "hierarchy" : {
+    "paths" : [
+      [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/OptionGroup"
+      ],
+      [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/OptionGroup",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/OptionGroup\/CustomStringConvertible-Implementations"
+      ]
+    ]
+  },
+  "identifier" : {
+    "interfaceLanguage" : "swift",
+    "url" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/OptionGroup\/description"
+  },
+  "kind" : "symbol",
+  "metadata" : {
+    "conformance" : {
+      "availabilityPrefix" : [
+        {
+          "text" : "Available when",
+          "type" : "text"
+        }
+      ],
+      "conformancePrefix" : [
+        {
+          "text" : "Conforms when",
+          "type" : "text"
+        }
+      ],
+      "constraints" : [
+        {
+          "code" : "Value",
+          "type" : "codeVoice"
+        },
+        {
+          "text" : " conforms to ",
+          "type" : "text"
+        },
+        {
+          "code" : "ParsableArguments",
+          "type" : "codeVoice"
+        },
+        {
+          "text" : ".",
+          "type" : "text"
+        }
+      ]
+    },
+    "extendedModule" : "ArgumentParser",
+    "externalID" : "s:14ArgumentParser11OptionGroupV11descriptionSSvp",
+    "fragments" : [
+      {
+        "kind" : "keyword",
+        "text" : "var"
+      },
+      {
+        "kind" : "text",
+        "text" : " "
+      },
+      {
+        "kind" : "identifier",
+        "text" : "description"
+      },
+      {
+        "kind" : "text",
+        "text" : ": "
+      },
+      {
+        "kind" : "typeIdentifier",
+        "preciseIdentifier" : "s:SS",
+        "text" : "String"
+      }
+    ],
+    "modules" : [
+      {
+        "name" : "ArgumentParser"
+      }
+    ],
+    "role" : "symbol",
+    "roleHeading" : "Instance Property",
+    "symbolKind" : "property",
+    "title" : "description"
+  },
+  "primaryContentSections" : [
+    {
+      "declarations" : [
+        {
+          "languages" : [
+            "swift"
+          ],
+          "platforms" : [
+            "macOS"
+          ],
+          "tokens" : [
+            {
+              "kind" : "keyword",
+              "text" : "var"
+            },
+            {
+              "kind" : "text",
+              "text" : " "
+            },
+            {
+              "kind" : "identifier",
+              "text" : "description"
+            },
+            {
+              "kind" : "text",
+              "text" : ": "
+            },
+            {
+              "kind" : "typeIdentifier",
+              "preciseIdentifier" : "s:SS",
+              "text" : "String"
+            },
+            {
+              "kind" : "text",
+              "text" : " { "
+            },
+            {
+              "kind" : "keyword",
+              "text" : "get"
+            },
+            {
+              "kind" : "text",
+              "text" : " }"
+            }
+          ]
+        }
+      ],
+      "kind" : "declarations"
+    }
+  ],
+  "schemaVersion" : {
+    "major" : 0,
+    "minor" : 2,
+    "patch" : 0
+  },
+  "sections" : [
+
+  ],
+  "seeAlsoSections" : [
+    {
+      "generated" : true,
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/OptionGroup\/init()",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/OptionGroup\/init(from:)",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/OptionGroup\/wrappedValue"
+      ],
+      "title" : "Infrequently Used APIs"
+    }
+  ],
+  "variants" : [
+    {
+      "paths" : [
+        "\/documentation\/argumentparser\/optiongroup\/description"
+      ],
+      "traits" : [
+        {
+          "interfaceLanguage" : "swift"
+        }
+      ]
+    }
+  ]
+, 
+"references": {
+"doc://ArgumentParser/documentation/ArgumentParser": {
+  "abstract" : [
+    {
+      "text" : "Straightforward, type-safe argument parsing for Swift.",
+      "type" : "text"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser",
+  "kind" : "symbol",
+  "role" : "collection",
+  "title" : "ArgumentParser",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/OptionGroup": {
+  "abstract" : [
+    {
+      "text" : "A wrapper that transparently includes a parsable type.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "struct"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "OptionGroup"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/OptionGroup",
+  "kind" : "symbol",
+  "navigatorTitle" : [
+    {
+      "kind" : "identifier",
+      "text" : "OptionGroup"
+    }
+  ],
+  "role" : "symbol",
+  "title" : "OptionGroup",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/optiongroup"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/OptionGroup/CustomStringConvertible-Implementations": {
+  "abstract" : [
+
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/OptionGroup\/CustomStringConvertible-Implementations",
+  "kind" : "article",
+  "role" : "collectionGroup",
+  "title" : "CustomStringConvertible Implementations",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/optiongroup\/customstringconvertible-implementations"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/OptionGroup/description": {
+  "abstract" : [
+
+  ],
+  "conformance" : {
+    "availabilityPrefix" : [
+      {
+        "text" : "Available when",
+        "type" : "text"
+      }
+    ],
+    "conformancePrefix" : [
+      {
+        "text" : "Conforms when",
+        "type" : "text"
+      }
+    ],
+    "constraints" : [
+      {
+        "code" : "Value",
+        "type" : "codeVoice"
+      },
+      {
+        "text" : " conforms to ",
+        "type" : "text"
+      },
+      {
+        "code" : "ParsableArguments",
+        "type" : "codeVoice"
+      },
+      {
+        "text" : ".",
+        "type" : "text"
+      }
+    ]
+  },
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "var"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "description"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:SS",
+      "text" : "String"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/OptionGroup\/description",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "description",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/optiongroup\/description"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/OptionGroup/init()": {
+  "abstract" : [
+    {
+      "text" : "Creates a property that represents another parsable type.",
+      "type" : "text"
+    }
+  ],
+  "conformance" : {
+    "availabilityPrefix" : [
+      {
+        "text" : "Available when",
+        "type" : "text"
+      }
+    ],
+    "conformancePrefix" : [
+      {
+        "text" : "Conforms when",
+        "type" : "text"
+      }
+    ],
+    "constraints" : [
+      {
+        "code" : "Value",
+        "type" : "codeVoice"
+      },
+      {
+        "text" : " conforms to ",
+        "type" : "text"
+      },
+      {
+        "code" : "ParsableArguments",
+        "type" : "codeVoice"
+      },
+      {
+        "text" : ".",
+        "type" : "text"
+      }
+    ]
+  },
+  "deprecated" : true,
+  "fragments" : [
+    {
+      "kind" : "identifier",
+      "text" : "init"
+    },
+    {
+      "kind" : "text",
+      "text" : "()"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/OptionGroup\/init()",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "init()",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/optiongroup\/init()"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/OptionGroup/init(from:)": {
+  "abstract" : [
+
+  ],
+  "fragments" : [
+    {
+      "kind" : "identifier",
+      "text" : "init"
+    },
+    {
+      "kind" : "text",
+      "text" : "("
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "from"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:s7DecoderP",
+      "text" : "Decoder"
+    },
+    {
+      "kind" : "text",
+      "text" : ") "
+    },
+    {
+      "kind" : "keyword",
+      "text" : "throws"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/OptionGroup\/init(from:)",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "init(from:)",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/optiongroup\/init(from:)"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/OptionGroup/wrappedValue": {
+  "abstract" : [
+    {
+      "text" : "The value presented by this property wrapper.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "var"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "wrappedValue"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "text" : "Value"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/OptionGroup\/wrappedValue",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "wrappedValue",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/optiongroup\/wrappedvalue"
+}
+}
+}

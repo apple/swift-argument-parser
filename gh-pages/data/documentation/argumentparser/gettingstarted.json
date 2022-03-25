@@ -1,0 +1,1077 @@
+{
+  "abstract" : [
+    {
+      "text" : "Learn to set up and customize a simple command-line tool.",
+      "type" : "text"
+    }
+  ],
+  "hierarchy" : {
+    "paths" : [
+      [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser"
+      ]
+    ]
+  },
+  "identifier" : {
+    "interfaceLanguage" : "swift",
+    "url" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/GettingStarted"
+  },
+  "kind" : "article",
+  "metadata" : {
+    "modules" : [
+      {
+        "name" : "ArgumentParser"
+      }
+    ],
+    "role" : "article",
+    "roleHeading" : "Article",
+    "title" : "Getting Started with ArgumentParser"
+  },
+  "primaryContentSections" : [
+    {
+      "content" : [
+        {
+          "anchor" : "Overview",
+          "level" : 2,
+          "text" : "Overview",
+          "type" : "heading"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "This guide walks through building an example command. You’ll learn about the different tools that ",
+              "type" : "text"
+            },
+            {
+              "code" : "ArgumentParser",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " provides for defining a command’s options, customizing the interface, and providing help text for your user.",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "anchor" : "Adding-ArgumentParser-as-a-Dependency",
+          "level" : 2,
+          "text" : "Adding ArgumentParser as a Dependency",
+          "type" : "heading"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "Let’s write a tool called ",
+              "type" : "text"
+            },
+            {
+              "code" : "count",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " that reads an input file, counts the words, and writes the result to an output file.",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "First, we need to add ",
+              "type" : "text"
+            },
+            {
+              "code" : "swift-argument-parser",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " as a dependency to our package,",
+              "type" : "text"
+            },
+            {
+              "text" : " ",
+              "type" : "text"
+            },
+            {
+              "text" : "and then include ",
+              "type" : "text"
+            },
+            {
+              "code" : "\"ArgumentParser\"",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " as a dependency for our executable target.",
+              "type" : "text"
+            },
+            {
+              "text" : " ",
+              "type" : "text"
+            },
+            {
+              "text" : "Our “Package.swift” file ends up looking like this:",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "code" : [
+            "\/\/ swift-tools-version:5.5",
+            "import PackageDescription",
+            "",
+            "let package = Package(",
+            "    name: \"Count\",",
+            "    dependencies: [",
+            "        .package(url: \"https:\/\/github.com\/apple\/swift-argument-parser.git\", from: \"1.0.0\"),",
+            "    ],",
+            "    targets: [",
+            "        .target(",
+            "            name: \"count\",",
+            "            dependencies: [.product(name: \"ArgumentParser\", package: \"swift-argument-parser\")]),",
+            "    ]",
+            ")"
+          ],
+          "syntax" : "swift",
+          "type" : "codeListing"
+        },
+        {
+          "anchor" : "Building-Our-First-Command",
+          "level" : 2,
+          "text" : "Building Our First Command",
+          "type" : "heading"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "Once we’ve built the ",
+              "type" : "text"
+            },
+            {
+              "code" : "count",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " tool, we’ll be able to run it like this:",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "code" : [
+            "% count readme.md readme.counts",
+            "Counting words in 'readme.md' and writing the result into 'readme.counts'."
+          ],
+          "syntax" : null,
+          "type" : "codeListing"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "We’ll define the initial version of the command as a type that conforms to the ",
+              "type" : "text"
+            },
+            {
+              "code" : "ParsableCommand",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " protocol:",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "code" : [
+            "import ArgumentParser",
+            "",
+            "@main",
+            "struct Count: ParsableCommand {",
+            "    @Argument var inputFile: String",
+            "    @Argument var outputFile: String",
+            "    ",
+            "    mutating func run() throws {",
+            "        print(\"\"\"",
+            "            Counting words in '\\(inputFile)' \\",
+            "            and writing the result into '\\(outputFile)'.",
+            "            \"\"\")",
+            "            ",
+            "        \/\/ Read 'inputFile', count the words, and save to 'outputFile'.",
+            "    }",
+            "}"
+          ],
+          "syntax" : "swift",
+          "type" : "codeListing"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "In the code above, the ",
+              "type" : "text"
+            },
+            {
+              "code" : "inputFile",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " and ",
+              "type" : "text"
+            },
+            {
+              "code" : "outputFile",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " properties use the ",
+              "type" : "text"
+            },
+            {
+              "code" : "@Argument",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " property wrapper. ",
+              "type" : "text"
+            },
+            {
+              "code" : "ArgumentParser",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " uses this wrapper to denote a positional command-line input — because ",
+              "type" : "text"
+            },
+            {
+              "code" : "inputFile",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " is specified first in the ",
+              "type" : "text"
+            },
+            {
+              "code" : "Count",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " type, it’s the first value read from the command line, and ",
+              "type" : "text"
+            },
+            {
+              "code" : "outputFile",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " is the second.",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "We’ve implemented the command’s logic in its ",
+              "type" : "text"
+            },
+            {
+              "code" : "run()",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " method. Here, we’re printing out a message confirming the names of the files the user gave. (You can find a full implementation of the completed command at the end of this guide.)",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "Finally, you designate the ",
+              "type" : "text"
+            },
+            {
+              "code" : "Count",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " command as the program’s entry point by applying the ",
+              "type" : "text"
+            },
+            {
+              "code" : "@main",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " attribute. When running your command, the ",
+              "type" : "text"
+            },
+            {
+              "code" : "ArgumentParser",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " library parses the command-line arguments, verifies that they match up with what we’ve defined in ",
+              "type" : "text"
+            },
+            {
+              "code" : "Count",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : ", and either calls the ",
+              "type" : "text"
+            },
+            {
+              "code" : "run()",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " method or exits with a helpful message.",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "anchor" : "Working-with-Named-Options",
+          "level" : 2,
+          "text" : "Working with Named Options",
+          "type" : "heading"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "Our ",
+              "type" : "text"
+            },
+            {
+              "code" : "count",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " tool may have a usability problem — it’s not immediately clear whether a user should provide the input file first, or the output file. Instead of using positional arguments for our two inputs, let’s specify that they should be labeled options:",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "code" : [
+            "% count --input-file readme.md --output-file readme.counts",
+            "Counting words in 'readme.md' and writing the result into 'readme.counts'."
+          ],
+          "syntax" : null,
+          "type" : "codeListing"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "We do this by using the ",
+              "type" : "text"
+            },
+            {
+              "code" : "@Option",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " property wrapper instead of ",
+              "type" : "text"
+            },
+            {
+              "code" : "@Argument",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : ":",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "code" : [
+            "struct Count: ParsableCommand {",
+            "    @Option var inputFile: String",
+            "    @Option var outputFile: String",
+            "    ",
+            "    mutating func run() throws {",
+            "        print(\"\"\"",
+            "            Counting words in '\\(inputFile)' \\",
+            "            and writing the result into '\\(outputFile)'.",
+            "            \"\"\")",
+            "            ",
+            "        \/\/ Read 'inputFile', count the words, and save to 'outputFile'.",
+            "    }",
+            "}"
+          ],
+          "syntax" : "swift",
+          "type" : "codeListing"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "The ",
+              "type" : "text"
+            },
+            {
+              "code" : "@Option",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " property wrapper denotes a command-line input that looks like ",
+              "type" : "text"
+            },
+            {
+              "code" : "--name <value>",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : ", deriving its name from the name of your property.",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "This interface has a trade-off for the users of our ",
+              "type" : "text"
+            },
+            {
+              "code" : "count",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " tool: With ",
+              "type" : "text"
+            },
+            {
+              "code" : "@Argument",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : ", users don’t need to type as much, but they have to remember whether to provide the input file or the output file first. Using ",
+              "type" : "text"
+            },
+            {
+              "code" : "@Option",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " makes the user type a little more, but the distinction between values is explicit. Options are order-independent, as well, so the user can name the input and output files in either order:",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "code" : [
+            "% count --output-file readme.counts --input-file readme.md",
+            "Counting words in 'readme.md' and writing the result into 'readme.counts'."
+          ],
+          "syntax" : null,
+          "type" : "codeListing"
+        },
+        {
+          "anchor" : "Adding-a-Flag",
+          "level" : 2,
+          "text" : "Adding a Flag",
+          "type" : "heading"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "Next, we want to add a ",
+              "type" : "text"
+            },
+            {
+              "code" : "--verbose",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " flag to our tool, and only print the message if the user specifies that option:",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "code" : [
+            "% count --input-file readme.md --output-file readme.counts",
+            "(no output)",
+            "% count --verbose --input-file readme.md --output-file readme.counts",
+            "Counting words in 'readme.md' and writing the result into 'readme.counts'."
+          ],
+          "syntax" : null,
+          "type" : "codeListing"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "Let’s change our ",
+              "type" : "text"
+            },
+            {
+              "code" : "Count",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " type to look like this:",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "code" : [
+            "struct Count: ParsableCommand {",
+            "    @Option var inputFile: String",
+            "    @Option var outputFile: String",
+            "    @Flag var verbose = false",
+            "    ",
+            "    mutating func run() throws {",
+            "        if verbose {",
+            "            print(\"\"\"",
+            "                Counting words in '\\(inputFile)' \\",
+            "                and writing the result into '\\(outputFile)'.",
+            "                \"\"\")",
+            "        }",
+            " ",
+            "        \/\/ Read 'inputFile', count the words, and save to 'outputFile'.",
+            "    }",
+            "}"
+          ],
+          "syntax" : "swift",
+          "type" : "codeListing"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "The ",
+              "type" : "text"
+            },
+            {
+              "code" : "@Flag",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " property wrapper denotes a command-line input that looks like ",
+              "type" : "text"
+            },
+            {
+              "code" : "--name",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : ", deriving its name from the name of your property. Flags are most frequently used for Boolean values, like the ",
+              "type" : "text"
+            },
+            {
+              "code" : "verbose",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " property here.",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "anchor" : "Using-Custom-Names",
+          "level" : 2,
+          "text" : "Using Custom Names",
+          "type" : "heading"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "We can customize the names of our options and add an alternative to the ",
+              "type" : "text"
+            },
+            {
+              "code" : "verbose",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " flag so that users can specify ",
+              "type" : "text"
+            },
+            {
+              "code" : "-v",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " instead of ",
+              "type" : "text"
+            },
+            {
+              "code" : "--verbose",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : ". The new interface will look like this:",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "code" : [
+            "% count -v -i readme.md -o readme.counts",
+            "Counting words in 'readme.md' and writing the result into 'readme.counts'.",
+            "% count --input readme.md --output readme.counts -v",
+            "Counting words in 'readme.md' and writing the result into 'readme.counts'.",
+            "% count -o readme.counts -i readme.md --verbose",
+            "Counting words in 'readme.md' and writing the result into 'readme.counts'."
+          ],
+          "syntax" : null,
+          "type" : "codeListing"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "Customize the input names by passing ",
+              "type" : "text"
+            },
+            {
+              "code" : "name",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " parameters to the ",
+              "type" : "text"
+            },
+            {
+              "code" : "@Option",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " and ",
+              "type" : "text"
+            },
+            {
+              "code" : "@Flag",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " initializers:",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "code" : [
+            "struct Count: ParsableCommand {",
+            "    @Option(name: [.short, .customLong(\"input\")])",
+            "    var inputFile: String",
+            "",
+            "    @Option(name: [.short, .customLong(\"output\")])",
+            "    var outputFile: String",
+            "",
+            "    @Flag(name: .shortAndLong)",
+            "    var verbose = false",
+            "    ",
+            "    mutating func run() throws { ... }",
+            "}"
+          ],
+          "syntax" : "swift",
+          "type" : "codeListing"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "The default name specification is ",
+              "type" : "text"
+            },
+            {
+              "code" : ".long",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : ", which uses a property’s name with a two-dash prefix. ",
+              "type" : "text"
+            },
+            {
+              "code" : ".short",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " uses only the first letter of a property’s name with a single-dash prefix, and allows combining groups of short options. You can specify custom short and long names with the ",
+              "type" : "text"
+            },
+            {
+              "code" : ".customShort(_:)",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " and ",
+              "type" : "text"
+            },
+            {
+              "code" : ".customLong(_:)",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " methods, respectively, or use the combined ",
+              "type" : "text"
+            },
+            {
+              "code" : ".shortAndLong",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " property to specify the common case of both the short and long derived names.",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "anchor" : "Providing-Help",
+          "level" : 2,
+          "text" : "Providing Help",
+          "type" : "heading"
+        },
+        {
+          "inlineContent" : [
+            {
+              "code" : "ArgumentParser",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " automatically generates help for any command when a user provides the ",
+              "type" : "text"
+            },
+            {
+              "code" : "-h",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " or ",
+              "type" : "text"
+            },
+            {
+              "code" : "--help",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " flags:",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "code" : [
+            "% count --help",
+            "USAGE: count --input <input> --output <output> [--verbose]",
+            "",
+            "OPTIONS:",
+            "  -i, --input <input>      ",
+            "  -o, --output <output>    ",
+            "  -v, --verbose            ",
+            "  -h, --help              Show help information."
+          ],
+          "syntax" : null,
+          "type" : "codeListing"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "This is a great start — you can see that all the custom names are visible, and the help shows that values are expected for the ",
+              "type" : "text"
+            },
+            {
+              "code" : "--input",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " and ",
+              "type" : "text"
+            },
+            {
+              "code" : "--output",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " options. However, our custom options and flag don’t have any descriptive text. Let’s add that now by passing string literals as the ",
+              "type" : "text"
+            },
+            {
+              "code" : "help",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " parameter:",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "code" : [
+            "struct Count: ParsableCommand {",
+            "    @Option(name: [.short, .customLong(\"input\")], help: \"A file to read.\")",
+            "    var inputFile: String",
+            "",
+            "    @Option(name: [.short, .customLong(\"output\")], help: \"A file to save word counts to.\")",
+            "    var outputFile: String",
+            "",
+            "    @Flag(name: .shortAndLong, help: \"Print status updates while counting.\")",
+            "    var verbose = false",
+            "",
+            "    mutating func run() throws { ... }",
+            "}"
+          ],
+          "syntax" : "swift",
+          "type" : "codeListing"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "The help screen now includes descriptions for each parameter:",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "code" : [
+            "% count -h",
+            "USAGE: count --input <input> --output <output> [--verbose]",
+            "",
+            "OPTIONS:",
+            "  -i, --input <input>     A file to read. ",
+            "  -o, --output <output>   A file to save word counts to. ",
+            "  -v, --verbose           Print status updates while counting. ",
+            "  -h, --help              Show help information.",
+            ""
+          ],
+          "syntax" : null,
+          "type" : "codeListing"
+        },
+        {
+          "anchor" : "The-Complete-Utility",
+          "level" : 2,
+          "text" : "The Complete Utility",
+          "type" : "heading"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "As promised, here’s the complete ",
+              "type" : "text"
+            },
+            {
+              "code" : "count",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " command, for your experimentation:",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "code" : [
+            "import ArgumentParser",
+            "import Foundation",
+            "",
+            "@main",
+            "struct Count: ParsableCommand {",
+            "    static let configuration = CommandConfiguration(abstract: \"Word counter.\")",
+            "    ",
+            "    @Option(name: [.short, .customLong(\"input\")], help: \"A file to read.\")",
+            "    var inputFile: String",
+            "",
+            "    @Option(name: [.short, .customLong(\"output\")], help: \"A file to save word counts to.\")",
+            "    var outputFile: String",
+            "",
+            "    @Flag(name: .shortAndLong, help: \"Print status updates while counting.\")",
+            "    var verbose = false",
+            "",
+            "    mutating func run() throws {",
+            "        if verbose {",
+            "            print(\"\"\"",
+            "                Counting words in '\\(inputFile)' \\",
+            "                and writing the result into '\\(outputFile)'.",
+            "                \"\"\")",
+            "        }",
+            " ",
+            "        guard let input = try? String(contentsOfFile: inputFile) else {",
+            "            throw RuntimeError(\"Couldn't read from '\\(inputFile)'!\")",
+            "        }",
+            "        ",
+            "        let words = input.components(separatedBy: .whitespacesAndNewlines)",
+            "            .map { word in",
+            "                word.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)",
+            "                    .lowercased()",
+            "            }",
+            "            .compactMap { word in word.isEmpty ? nil : word }",
+            "        ",
+            "        let counts = Dictionary(grouping: words, by: { $0 })",
+            "            .mapValues { $0.count }",
+            "            .sorted(by: { $0.value > $1.value })",
+            "        ",
+            "        if verbose {",
+            "            print(\"Found \\(counts.count) words.\")",
+            "        }",
+            "        ",
+            "        let output = counts.map { word, count in \"\\(word): \\(count)\" }",
+            "            .joined(separator: \"\\n\")",
+            "        ",
+            "        guard let _ = try? output.write(toFile: outputFile, atomically: true, encoding: .utf8) else {",
+            "            throw RuntimeError(\"Couldn't write to '\\(outputFile)'!\")",
+            "        }",
+            "    }",
+            "}",
+            "",
+            "struct RuntimeError: Error, CustomStringConvertible {",
+            "    var description: String",
+            "    ",
+            "    init(_ description: String) {",
+            "        self.description = description",
+            "    }",
+            "}"
+          ],
+          "syntax" : "swift",
+          "type" : "codeListing"
+        }
+      ],
+      "kind" : "content"
+    }
+  ],
+  "schemaVersion" : {
+    "major" : 0,
+    "minor" : 2,
+    "patch" : 0
+  },
+  "sections" : [
+
+  ],
+  "seeAlsoSections" : [
+    {
+      "generated" : true,
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ParsableCommand",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/AsyncParsableCommand"
+      ],
+      "title" : "Essentials"
+    }
+  ],
+  "variants" : [
+    {
+      "paths" : [
+        "\/documentation\/argumentparser\/gettingstarted"
+      ],
+      "traits" : [
+        {
+          "interfaceLanguage" : "swift"
+        }
+      ]
+    }
+  ]
+, 
+"references": {
+"doc://ArgumentParser/documentation/ArgumentParser": {
+  "abstract" : [
+    {
+      "text" : "Straightforward, type-safe argument parsing for Swift.",
+      "type" : "text"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser",
+  "kind" : "symbol",
+  "role" : "collection",
+  "title" : "ArgumentParser",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/AsyncParsableCommand": {
+  "abstract" : [
+    {
+      "text" : "A type that can be executed asynchronously, as part of a nested tree of",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "text" : "commands.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "protocol"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "AsyncParsableCommand"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/AsyncParsableCommand",
+  "kind" : "symbol",
+  "navigatorTitle" : [
+    {
+      "kind" : "identifier",
+      "text" : "AsyncParsableCommand"
+    }
+  ],
+  "role" : "symbol",
+  "title" : "AsyncParsableCommand",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/asyncparsablecommand"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ParsableCommand": {
+  "abstract" : [
+    {
+      "text" : "A type that can be executed as part of a nested tree of commands.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "protocol"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "ParsableCommand"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ParsableCommand",
+  "kind" : "symbol",
+  "navigatorTitle" : [
+    {
+      "kind" : "identifier",
+      "text" : "ParsableCommand"
+    }
+  ],
+  "role" : "symbol",
+  "title" : "ParsableCommand",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/parsablecommand"
+}
+}
+}

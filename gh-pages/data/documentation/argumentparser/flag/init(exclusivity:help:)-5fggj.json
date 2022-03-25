@@ -1,0 +1,855 @@
+{
+  "abstract" : [
+    {
+      "text" : "Creates a property with no default value that gets its value from the presence of a flag.",
+      "type" : "text"
+    }
+  ],
+  "hierarchy" : {
+    "paths" : [
+      [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Flag"
+      ]
+    ]
+  },
+  "identifier" : {
+    "interfaceLanguage" : "swift",
+    "url" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Flag\/init(exclusivity:help:)-5fggj"
+  },
+  "kind" : "symbol",
+  "metadata" : {
+    "conformance" : {
+      "availabilityPrefix" : [
+        {
+          "text" : "Available when",
+          "type" : "text"
+        }
+      ],
+      "conformancePrefix" : [
+        {
+          "text" : "Conforms when",
+          "type" : "text"
+        }
+      ],
+      "constraints" : [
+        {
+          "code" : "Value",
+          "type" : "codeVoice"
+        },
+        {
+          "text" : " conforms to ",
+          "type" : "text"
+        },
+        {
+          "code" : "EnumerableFlag",
+          "type" : "codeVoice"
+        },
+        {
+          "text" : ".",
+          "type" : "text"
+        }
+      ]
+    },
+    "extendedModule" : "ArgumentParser",
+    "externalID" : "s:14ArgumentParser4FlagVA2A010EnumerableC0RzlE11exclusivity4helpACyxGAA0C11ExclusivityV_AA0A4HelpVSgtcfc",
+    "fragments" : [
+      {
+        "kind" : "identifier",
+        "text" : "init"
+      },
+      {
+        "kind" : "text",
+        "text" : "("
+      },
+      {
+        "kind" : "externalParam",
+        "text" : "exclusivity"
+      },
+      {
+        "kind" : "text",
+        "text" : ": "
+      },
+      {
+        "kind" : "typeIdentifier",
+        "preciseIdentifier" : "s:14ArgumentParser15FlagExclusivityV",
+        "text" : "FlagExclusivity"
+      },
+      {
+        "kind" : "text",
+        "text" : ", "
+      },
+      {
+        "kind" : "externalParam",
+        "text" : "help"
+      },
+      {
+        "kind" : "text",
+        "text" : ": "
+      },
+      {
+        "kind" : "typeIdentifier",
+        "preciseIdentifier" : "s:14ArgumentParser0A4HelpV",
+        "text" : "ArgumentHelp"
+      },
+      {
+        "kind" : "text",
+        "text" : "?)"
+      }
+    ],
+    "modules" : [
+      {
+        "name" : "ArgumentParser"
+      }
+    ],
+    "role" : "symbol",
+    "roleHeading" : "Initializer",
+    "symbolKind" : "init",
+    "title" : "init(exclusivity:help:)"
+  },
+  "primaryContentSections" : [
+    {
+      "declarations" : [
+        {
+          "languages" : [
+            "swift"
+          ],
+          "platforms" : [
+            "macOS"
+          ],
+          "tokens" : [
+            {
+              "kind" : "keyword",
+              "text" : "init"
+            },
+            {
+              "kind" : "text",
+              "text" : "("
+            },
+            {
+              "kind" : "externalParam",
+              "text" : "exclusivity"
+            },
+            {
+              "kind" : "text",
+              "text" : ": "
+            },
+            {
+              "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/FlagExclusivity",
+              "kind" : "typeIdentifier",
+              "preciseIdentifier" : "s:14ArgumentParser15FlagExclusivityV",
+              "text" : "FlagExclusivity"
+            },
+            {
+              "kind" : "text",
+              "text" : " = .exclusive, "
+            },
+            {
+              "kind" : "externalParam",
+              "text" : "help"
+            },
+            {
+              "kind" : "text",
+              "text" : ": "
+            },
+            {
+              "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp",
+              "kind" : "typeIdentifier",
+              "preciseIdentifier" : "s:14ArgumentParser0A4HelpV",
+              "text" : "ArgumentHelp"
+            },
+            {
+              "kind" : "text",
+              "text" : "? = nil)"
+            }
+          ]
+        }
+      ],
+      "kind" : "declarations"
+    },
+    {
+      "kind" : "parameters",
+      "parameters" : [
+        {
+          "content" : [
+            {
+              "inlineContent" : [
+                {
+                  "text" : "The behavior to use when multiple flags are specified.",
+                  "type" : "text"
+                }
+              ],
+              "type" : "paragraph"
+            }
+          ],
+          "name" : "exclusivity"
+        },
+        {
+          "content" : [
+            {
+              "inlineContent" : [
+                {
+                  "text" : "Information about how to use this flag.",
+                  "type" : "text"
+                }
+              ],
+              "type" : "paragraph"
+            }
+          ],
+          "name" : "help"
+        }
+      ]
+    },
+    {
+      "content" : [
+        {
+          "anchor" : "discussion",
+          "level" : 2,
+          "text" : "Discussion",
+          "type" : "heading"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "Use this initializer to customize the name and number of states further than using a ",
+              "type" : "text"
+            },
+            {
+              "code" : "Bool",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : ".",
+              "type" : "text"
+            },
+            {
+              "text" : " ",
+              "type" : "text"
+            },
+            {
+              "text" : "To use, define an ",
+              "type" : "text"
+            },
+            {
+              "code" : "EnumerableFlag",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " enumeration with a case for each state, and use that as the type for your flag.",
+              "type" : "text"
+            },
+            {
+              "text" : " ",
+              "type" : "text"
+            },
+            {
+              "text" : "In this case, the user can specify either ",
+              "type" : "text"
+            },
+            {
+              "code" : "--use-production-server",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " or ",
+              "type" : "text"
+            },
+            {
+              "code" : "--use-development-server",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " to set the flag’s value.",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "code" : [
+            "enum ServerChoice: EnumerableFlag {",
+            "  case useProductionServer",
+            "  case useDevelopmentServer",
+            "}",
+            "",
+            "@Flag var serverChoice: ServerChoice"
+          ],
+          "syntax" : "swift",
+          "type" : "codeListing"
+        }
+      ],
+      "kind" : "content"
+    }
+  ],
+  "schemaVersion" : {
+    "major" : 0,
+    "minor" : 2,
+    "patch" : 0
+  },
+  "sections" : [
+
+  ],
+  "seeAlsoSections" : [
+    {
+      "generated" : true,
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Flag\/init(help:)",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Flag\/init(exclusivity:help:)-38n7u",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Flag\/init(wrappedValue:exclusivity:help:)",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Flag\/init(wrappedValue:help:)"
+      ],
+      "title" : "Custom Enumerable Flags"
+    }
+  ],
+  "variants" : [
+    {
+      "paths" : [
+        "\/documentation\/argumentparser\/flag\/init(exclusivity:help:)-5fggj"
+      ],
+      "traits" : [
+        {
+          "interfaceLanguage" : "swift"
+        }
+      ]
+    }
+  ]
+, 
+"references": {
+"doc://ArgumentParser/documentation/ArgumentParser": {
+  "abstract" : [
+    {
+      "text" : "Straightforward, type-safe argument parsing for Swift.",
+      "type" : "text"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser",
+  "kind" : "symbol",
+  "role" : "collection",
+  "title" : "ArgumentParser",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ArgumentHelp": {
+  "abstract" : [
+    {
+      "text" : "Help information for a command-line argument.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "struct"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "ArgumentHelp"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp",
+  "kind" : "symbol",
+  "navigatorTitle" : [
+    {
+      "kind" : "identifier",
+      "text" : "ArgumentHelp"
+    }
+  ],
+  "role" : "symbol",
+  "title" : "ArgumentHelp",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/argumenthelp"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/Flag": {
+  "abstract" : [
+    {
+      "text" : "A property wrapper that represents a command-line flag.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "struct"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "Flag"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Flag",
+  "kind" : "symbol",
+  "navigatorTitle" : [
+    {
+      "kind" : "identifier",
+      "text" : "Flag"
+    }
+  ],
+  "role" : "symbol",
+  "title" : "Flag",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/flag"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/Flag/init(exclusivity:help:)-38n7u": {
+  "abstract" : [
+    {
+      "text" : "Creates a property that gets its value from the presence of a flag,",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "text" : "where the allowed flags are defined by an ",
+      "type" : "text"
+    },
+    {
+      "code" : "EnumerableFlag",
+      "type" : "codeVoice"
+    },
+    {
+      "text" : " type.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "identifier",
+      "text" : "init"
+    },
+    {
+      "kind" : "text",
+      "text" : "<"
+    },
+    {
+      "kind" : "genericParameter",
+      "text" : "Element"
+    },
+    {
+      "kind" : "text",
+      "text" : ">("
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "exclusivity"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser15FlagExclusivityV",
+      "text" : "FlagExclusivity"
+    },
+    {
+      "kind" : "text",
+      "text" : ", "
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "help"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser0A4HelpV",
+      "text" : "ArgumentHelp"
+    },
+    {
+      "kind" : "text",
+      "text" : "?)"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Flag\/init(exclusivity:help:)-38n7u",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "init(exclusivity:help:)",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/flag\/init(exclusivity:help:)-38n7u"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/Flag/init(exclusivity:help:)-5fggj": {
+  "abstract" : [
+    {
+      "text" : "Creates a property with no default value that gets its value from the presence of a flag.",
+      "type" : "text"
+    }
+  ],
+  "conformance" : {
+    "availabilityPrefix" : [
+      {
+        "text" : "Available when",
+        "type" : "text"
+      }
+    ],
+    "conformancePrefix" : [
+      {
+        "text" : "Conforms when",
+        "type" : "text"
+      }
+    ],
+    "constraints" : [
+      {
+        "code" : "Value",
+        "type" : "codeVoice"
+      },
+      {
+        "text" : " conforms to ",
+        "type" : "text"
+      },
+      {
+        "code" : "EnumerableFlag",
+        "type" : "codeVoice"
+      },
+      {
+        "text" : ".",
+        "type" : "text"
+      }
+    ]
+  },
+  "fragments" : [
+    {
+      "kind" : "identifier",
+      "text" : "init"
+    },
+    {
+      "kind" : "text",
+      "text" : "("
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "exclusivity"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser15FlagExclusivityV",
+      "text" : "FlagExclusivity"
+    },
+    {
+      "kind" : "text",
+      "text" : ", "
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "help"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser0A4HelpV",
+      "text" : "ArgumentHelp"
+    },
+    {
+      "kind" : "text",
+      "text" : "?)"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Flag\/init(exclusivity:help:)-5fggj",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "init(exclusivity:help:)",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/flag\/init(exclusivity:help:)-5fggj"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/Flag/init(help:)": {
+  "abstract" : [
+    {
+      "text" : "Creates an array property with no default value that gets its values from the presence of zero or more flags, where the allowed flags are defined by an ",
+      "type" : "text"
+    },
+    {
+      "code" : "EnumerableFlag",
+      "type" : "codeVoice"
+    },
+    {
+      "text" : " type.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "identifier",
+      "text" : "init"
+    },
+    {
+      "kind" : "text",
+      "text" : "<"
+    },
+    {
+      "kind" : "genericParameter",
+      "text" : "Element"
+    },
+    {
+      "kind" : "text",
+      "text" : ">("
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "help"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser0A4HelpV",
+      "text" : "ArgumentHelp"
+    },
+    {
+      "kind" : "text",
+      "text" : "?)"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Flag\/init(help:)",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "init(help:)",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/flag\/init(help:)"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/Flag/init(wrappedValue:exclusivity:help:)": {
+  "abstract" : [
+    {
+      "text" : "Creates a property with a default value provided by standard Swift default value syntax that gets its value from the presence of a flag.",
+      "type" : "text"
+    }
+  ],
+  "conformance" : {
+    "availabilityPrefix" : [
+      {
+        "text" : "Available when",
+        "type" : "text"
+      }
+    ],
+    "conformancePrefix" : [
+      {
+        "text" : "Conforms when",
+        "type" : "text"
+      }
+    ],
+    "constraints" : [
+      {
+        "code" : "Value",
+        "type" : "codeVoice"
+      },
+      {
+        "text" : " conforms to ",
+        "type" : "text"
+      },
+      {
+        "code" : "EnumerableFlag",
+        "type" : "codeVoice"
+      },
+      {
+        "text" : ".",
+        "type" : "text"
+      }
+    ]
+  },
+  "fragments" : [
+    {
+      "kind" : "identifier",
+      "text" : "init"
+    },
+    {
+      "kind" : "text",
+      "text" : "("
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "wrappedValue"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "text" : "Value"
+    },
+    {
+      "kind" : "text",
+      "text" : ", "
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "exclusivity"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser15FlagExclusivityV",
+      "text" : "FlagExclusivity"
+    },
+    {
+      "kind" : "text",
+      "text" : ", "
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "help"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser0A4HelpV",
+      "text" : "ArgumentHelp"
+    },
+    {
+      "kind" : "text",
+      "text" : "?)"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Flag\/init(wrappedValue:exclusivity:help:)",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "init(wrappedValue:exclusivity:help:)",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/flag\/init(wrappedvalue:exclusivity:help:)"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/Flag/init(wrappedValue:help:)": {
+  "abstract" : [
+    {
+      "text" : "Creates an array property that gets its values from the presence of",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "text" : "zero or more flags, where the allowed flags are defined by an",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "code" : "EnumerableFlag",
+      "type" : "codeVoice"
+    },
+    {
+      "text" : " type.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "identifier",
+      "text" : "init"
+    },
+    {
+      "kind" : "text",
+      "text" : "<"
+    },
+    {
+      "kind" : "genericParameter",
+      "text" : "Element"
+    },
+    {
+      "kind" : "text",
+      "text" : ">("
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "wrappedValue"
+    },
+    {
+      "kind" : "text",
+      "text" : ": ["
+    },
+    {
+      "kind" : "typeIdentifier",
+      "text" : "Element"
+    },
+    {
+      "kind" : "text",
+      "text" : "], "
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "help"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser0A4HelpV",
+      "text" : "ArgumentHelp"
+    },
+    {
+      "kind" : "text",
+      "text" : "?)"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Flag\/init(wrappedValue:help:)",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "init(wrappedValue:help:)",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/flag\/init(wrappedvalue:help:)"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/FlagExclusivity": {
+  "abstract" : [
+    {
+      "text" : "The options for treating enumeration-based flags as exclusive.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "struct"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "FlagExclusivity"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/FlagExclusivity",
+  "kind" : "symbol",
+  "navigatorTitle" : [
+    {
+      "kind" : "identifier",
+      "text" : "FlagExclusivity"
+    }
+  ],
+  "role" : "symbol",
+  "title" : "FlagExclusivity",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/flagexclusivity"
+}
+}
+}

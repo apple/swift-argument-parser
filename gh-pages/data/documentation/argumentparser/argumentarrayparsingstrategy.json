@@ -1,0 +1,815 @@
+{
+  "abstract" : [
+    {
+      "text" : "The strategy to use when parsing multiple values from positional arguments",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "text" : "into an array.",
+      "type" : "text"
+    }
+  ],
+  "hierarchy" : {
+    "paths" : [
+      [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Argument"
+      ]
+    ]
+  },
+  "identifier" : {
+    "interfaceLanguage" : "swift",
+    "url" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentArrayParsingStrategy"
+  },
+  "kind" : "symbol",
+  "metadata" : {
+    "externalID" : "s:14ArgumentParser0A20ArrayParsingStrategyV",
+    "fragments" : [
+      {
+        "kind" : "keyword",
+        "text" : "struct"
+      },
+      {
+        "kind" : "text",
+        "text" : " "
+      },
+      {
+        "kind" : "identifier",
+        "text" : "ArgumentArrayParsingStrategy"
+      }
+    ],
+    "modules" : [
+      {
+        "name" : "ArgumentParser"
+      }
+    ],
+    "navigatorTitle" : [
+      {
+        "kind" : "identifier",
+        "text" : "ArgumentArrayParsingStrategy"
+      }
+    ],
+    "role" : "symbol",
+    "roleHeading" : "Structure",
+    "symbolKind" : "struct",
+    "title" : "ArgumentArrayParsingStrategy"
+  },
+  "primaryContentSections" : [
+    {
+      "declarations" : [
+        {
+          "languages" : [
+            "swift"
+          ],
+          "platforms" : [
+            "macOS"
+          ],
+          "tokens" : [
+            {
+              "kind" : "keyword",
+              "text" : "struct"
+            },
+            {
+              "kind" : "text",
+              "text" : " "
+            },
+            {
+              "kind" : "identifier",
+              "text" : "ArgumentArrayParsingStrategy"
+            }
+          ]
+        }
+      ],
+      "kind" : "declarations"
+    }
+  ],
+  "relationshipsSections" : [
+    {
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/SQ",
+        "doc:\/\/ArgumentParser\/SH"
+      ],
+      "kind" : "relationships",
+      "title" : "Conforms To",
+      "type" : "conformsTo"
+    }
+  ],
+  "schemaVersion" : {
+    "major" : 0,
+    "minor" : 2,
+    "patch" : 0
+  },
+  "sections" : [
+
+  ],
+  "seeAlsoSections" : [
+    {
+      "generated" : true,
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Argument\/init(parsing:help:completion:)",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Argument\/init(parsing:help:completion:transform:)",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Argument\/init(wrappedValue:parsing:help:completion:)",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Argument\/init(wrappedValue:parsing:help:completion:transform:)"
+      ],
+      "title" : "Array Arguments"
+    }
+  ],
+  "topicSections" : [
+    {
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentArrayParsingStrategy\/remaining",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentArrayParsingStrategy\/unconditionalRemaining"
+      ],
+      "title" : "Type Properties"
+    },
+    {
+      "generated" : true,
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentArrayParsingStrategy\/Equatable-Implementations"
+      ],
+      "title" : "Default Implementations"
+    }
+  ],
+  "variants" : [
+    {
+      "paths" : [
+        "\/documentation\/argumentparser\/argumentarrayparsingstrategy"
+      ],
+      "traits" : [
+        {
+          "interfaceLanguage" : "swift"
+        }
+      ]
+    }
+  ]
+, 
+"references": {
+"doc://ArgumentParser/SH": {
+  "identifier" : "doc:\/\/ArgumentParser\/SH",
+  "title" : "Swift.Hashable",
+  "type" : "unresolvable"
+},
+"doc://ArgumentParser/SQ": {
+  "identifier" : "doc:\/\/ArgumentParser\/SQ",
+  "title" : "Swift.Equatable",
+  "type" : "unresolvable"
+},
+"doc://ArgumentParser/documentation/ArgumentParser": {
+  "abstract" : [
+    {
+      "text" : "Straightforward, type-safe argument parsing for Swift.",
+      "type" : "text"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser",
+  "kind" : "symbol",
+  "role" : "collection",
+  "title" : "ArgumentParser",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/Argument": {
+  "abstract" : [
+    {
+      "text" : "A property wrapper that represents a positional command-line argument.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "struct"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "Argument"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Argument",
+  "kind" : "symbol",
+  "navigatorTitle" : [
+    {
+      "kind" : "identifier",
+      "text" : "Argument"
+    }
+  ],
+  "role" : "symbol",
+  "title" : "Argument",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/argument"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/Argument/init(parsing:help:completion:)": {
+  "abstract" : [
+    {
+      "text" : "Creates a property with no default value that reads an array from zero or more arguments.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "identifier",
+      "text" : "init"
+    },
+    {
+      "kind" : "text",
+      "text" : "<"
+    },
+    {
+      "kind" : "genericParameter",
+      "text" : "Element"
+    },
+    {
+      "kind" : "text",
+      "text" : ">("
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "parsing"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser0A20ArrayParsingStrategyV",
+      "text" : "ArgumentArrayParsingStrategy"
+    },
+    {
+      "kind" : "text",
+      "text" : ", "
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "help"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser0A4HelpV",
+      "text" : "ArgumentHelp"
+    },
+    {
+      "kind" : "text",
+      "text" : "?, "
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "completion"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser14CompletionKindV",
+      "text" : "CompletionKind"
+    },
+    {
+      "kind" : "text",
+      "text" : "?)"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Argument\/init(parsing:help:completion:)",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "init(parsing:help:completion:)",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/argument\/init(parsing:help:completion:)"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/Argument/init(parsing:help:completion:transform:)": {
+  "abstract" : [
+    {
+      "text" : "Creates a property with no default value that reads an array from zero or more arguments, parsing each element with the given closure.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "identifier",
+      "text" : "init"
+    },
+    {
+      "kind" : "text",
+      "text" : "<"
+    },
+    {
+      "kind" : "genericParameter",
+      "text" : "Element"
+    },
+    {
+      "kind" : "text",
+      "text" : ">("
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "parsing"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser0A20ArrayParsingStrategyV",
+      "text" : "ArgumentArrayParsingStrategy"
+    },
+    {
+      "kind" : "text",
+      "text" : ", "
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "help"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser0A4HelpV",
+      "text" : "ArgumentHelp"
+    },
+    {
+      "kind" : "text",
+      "text" : "?, "
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "completion"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser14CompletionKindV",
+      "text" : "CompletionKind"
+    },
+    {
+      "kind" : "text",
+      "text" : "?, "
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "transform"
+    },
+    {
+      "kind" : "text",
+      "text" : ": ("
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:SS",
+      "text" : "String"
+    },
+    {
+      "kind" : "text",
+      "text" : ") "
+    },
+    {
+      "kind" : "keyword",
+      "text" : "throws"
+    },
+    {
+      "kind" : "text",
+      "text" : " -> "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "text" : "Element"
+    },
+    {
+      "kind" : "text",
+      "text" : ")"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Argument\/init(parsing:help:completion:transform:)",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "init(parsing:help:completion:transform:)",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/argument\/init(parsing:help:completion:transform:)"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/Argument/init(wrappedValue:parsing:help:completion:)": {
+  "abstract" : [
+    {
+      "text" : "Creates a property that reads an array from zero or more arguments.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "identifier",
+      "text" : "init"
+    },
+    {
+      "kind" : "text",
+      "text" : "<"
+    },
+    {
+      "kind" : "genericParameter",
+      "text" : "Element"
+    },
+    {
+      "kind" : "text",
+      "text" : ">("
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "wrappedValue"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "text" : "Value"
+    },
+    {
+      "kind" : "text",
+      "text" : ", "
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "parsing"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser0A20ArrayParsingStrategyV",
+      "text" : "ArgumentArrayParsingStrategy"
+    },
+    {
+      "kind" : "text",
+      "text" : ", "
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "help"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser0A4HelpV",
+      "text" : "ArgumentHelp"
+    },
+    {
+      "kind" : "text",
+      "text" : "?, "
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "completion"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser14CompletionKindV",
+      "text" : "CompletionKind"
+    },
+    {
+      "kind" : "text",
+      "text" : "?)"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Argument\/init(wrappedValue:parsing:help:completion:)",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "init(wrappedValue:parsing:help:completion:)",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/argument\/init(wrappedvalue:parsing:help:completion:)"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/Argument/init(wrappedValue:parsing:help:completion:transform:)": {
+  "abstract" : [
+    {
+      "text" : "Creates a property that reads an array from zero or more arguments,",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "text" : "parsing each element with the given closure.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "identifier",
+      "text" : "init"
+    },
+    {
+      "kind" : "text",
+      "text" : "<"
+    },
+    {
+      "kind" : "genericParameter",
+      "text" : "Element"
+    },
+    {
+      "kind" : "text",
+      "text" : ">("
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "wrappedValue"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "text" : "Value"
+    },
+    {
+      "kind" : "text",
+      "text" : ", "
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "parsing"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser0A20ArrayParsingStrategyV",
+      "text" : "ArgumentArrayParsingStrategy"
+    },
+    {
+      "kind" : "text",
+      "text" : ", "
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "help"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser0A4HelpV",
+      "text" : "ArgumentHelp"
+    },
+    {
+      "kind" : "text",
+      "text" : "?, "
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "completion"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser14CompletionKindV",
+      "text" : "CompletionKind"
+    },
+    {
+      "kind" : "text",
+      "text" : "?, "
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "transform"
+    },
+    {
+      "kind" : "text",
+      "text" : ": ("
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:SS",
+      "text" : "String"
+    },
+    {
+      "kind" : "text",
+      "text" : ") "
+    },
+    {
+      "kind" : "keyword",
+      "text" : "throws"
+    },
+    {
+      "kind" : "text",
+      "text" : " -> "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "text" : "Element"
+    },
+    {
+      "kind" : "text",
+      "text" : ")"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Argument\/init(wrappedValue:parsing:help:completion:transform:)",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "init(wrappedValue:parsing:help:completion:transform:)",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/argument\/init(wrappedvalue:parsing:help:completion:transform:)"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ArgumentArrayParsingStrategy": {
+  "abstract" : [
+    {
+      "text" : "The strategy to use when parsing multiple values from positional arguments",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "text" : "into an array.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "struct"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "ArgumentArrayParsingStrategy"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentArrayParsingStrategy",
+  "kind" : "symbol",
+  "navigatorTitle" : [
+    {
+      "kind" : "identifier",
+      "text" : "ArgumentArrayParsingStrategy"
+    }
+  ],
+  "role" : "symbol",
+  "title" : "ArgumentArrayParsingStrategy",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/argumentarrayparsingstrategy"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ArgumentArrayParsingStrategy/Equatable-Implementations": {
+  "abstract" : [
+
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentArrayParsingStrategy\/Equatable-Implementations",
+  "kind" : "article",
+  "role" : "collectionGroup",
+  "title" : "Equatable Implementations",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/argumentarrayparsingstrategy\/equatable-implementations"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ArgumentArrayParsingStrategy/remaining": {
+  "abstract" : [
+    {
+      "text" : "Parse only unprefixed values from the command-line input, ignoring",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "text" : "any inputs that have a dash prefix. This is the default strategy.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "static"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "keyword",
+      "text" : "var"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "remaining"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser0A20ArrayParsingStrategyV",
+      "text" : "ArgumentArrayParsingStrategy"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentArrayParsingStrategy\/remaining",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "remaining",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/argumentarrayparsingstrategy\/remaining"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ArgumentArrayParsingStrategy/unconditionalRemaining": {
+  "abstract" : [
+    {
+      "text" : "Parse all remaining inputs after parsing any known options or flags,",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "text" : "including dash-prefixed inputs and the ",
+      "type" : "text"
+    },
+    {
+      "code" : "--",
+      "type" : "codeVoice"
+    },
+    {
+      "text" : " terminator.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "static"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "keyword",
+      "text" : "var"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "unconditionalRemaining"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser0A20ArrayParsingStrategyV",
+      "text" : "ArgumentArrayParsingStrategy"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentArrayParsingStrategy\/unconditionalRemaining",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "unconditionalRemaining",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/argumentarrayparsingstrategy\/unconditionalremaining"
+}
+}
+}

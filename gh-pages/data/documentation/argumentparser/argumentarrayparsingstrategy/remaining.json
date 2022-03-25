@@ -1,0 +1,398 @@
+{
+  "abstract" : [
+    {
+      "text" : "Parse only unprefixed values from the command-line input, ignoring",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "text" : "any inputs that have a dash prefix. This is the default strategy.",
+      "type" : "text"
+    }
+  ],
+  "hierarchy" : {
+    "paths" : [
+      [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Argument",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentArrayParsingStrategy"
+      ]
+    ]
+  },
+  "identifier" : {
+    "interfaceLanguage" : "swift",
+    "url" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentArrayParsingStrategy\/remaining"
+  },
+  "kind" : "symbol",
+  "metadata" : {
+    "externalID" : "s:14ArgumentParser0A20ArrayParsingStrategyV9remainingACvpZ",
+    "fragments" : [
+      {
+        "kind" : "keyword",
+        "text" : "static"
+      },
+      {
+        "kind" : "text",
+        "text" : " "
+      },
+      {
+        "kind" : "keyword",
+        "text" : "var"
+      },
+      {
+        "kind" : "text",
+        "text" : " "
+      },
+      {
+        "kind" : "identifier",
+        "text" : "remaining"
+      },
+      {
+        "kind" : "text",
+        "text" : ": "
+      },
+      {
+        "kind" : "typeIdentifier",
+        "preciseIdentifier" : "s:14ArgumentParser0A20ArrayParsingStrategyV",
+        "text" : "ArgumentArrayParsingStrategy"
+      }
+    ],
+    "modules" : [
+      {
+        "name" : "ArgumentParser"
+      }
+    ],
+    "role" : "symbol",
+    "roleHeading" : "Type Property",
+    "symbolKind" : "property",
+    "title" : "remaining"
+  },
+  "primaryContentSections" : [
+    {
+      "declarations" : [
+        {
+          "languages" : [
+            "swift"
+          ],
+          "platforms" : [
+            "macOS"
+          ],
+          "tokens" : [
+            {
+              "kind" : "keyword",
+              "text" : "static"
+            },
+            {
+              "kind" : "text",
+              "text" : " "
+            },
+            {
+              "kind" : "keyword",
+              "text" : "var"
+            },
+            {
+              "kind" : "text",
+              "text" : " "
+            },
+            {
+              "kind" : "identifier",
+              "text" : "remaining"
+            },
+            {
+              "kind" : "text",
+              "text" : ": "
+            },
+            {
+              "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentArrayParsingStrategy",
+              "kind" : "typeIdentifier",
+              "preciseIdentifier" : "s:14ArgumentParser0A20ArrayParsingStrategyV",
+              "text" : "ArgumentArrayParsingStrategy"
+            },
+            {
+              "kind" : "text",
+              "text" : " { "
+            },
+            {
+              "kind" : "keyword",
+              "text" : "get"
+            },
+            {
+              "kind" : "text",
+              "text" : " }"
+            }
+          ]
+        }
+      ],
+      "kind" : "declarations"
+    },
+    {
+      "content" : [
+        {
+          "anchor" : "discussion",
+          "level" : 2,
+          "text" : "Discussion",
+          "type" : "heading"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "For example, for a parsable type defined as following:",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "code" : [
+            "struct Options: ParsableArguments {",
+            "    @Flag var verbose: Bool",
+            "    @Argument(parsing: .remaining) var words: [String]",
+            "}"
+          ],
+          "syntax" : null,
+          "type" : "codeListing"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "Parsing the input ",
+              "type" : "text"
+            },
+            {
+              "code" : "--verbose one two",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " or ",
+              "type" : "text"
+            },
+            {
+              "code" : "one two --verbose",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " would result",
+              "type" : "text"
+            },
+            {
+              "text" : " ",
+              "type" : "text"
+            },
+            {
+              "text" : "in ",
+              "type" : "text"
+            },
+            {
+              "code" : "Options(verbose: true, words: [\"one\", \"two\"])",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : ". Parsing the input",
+              "type" : "text"
+            },
+            {
+              "text" : " ",
+              "type" : "text"
+            },
+            {
+              "code" : "one two --other",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " would result in an unknown option error for ",
+              "type" : "text"
+            },
+            {
+              "code" : "--other",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : ".",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "This is the default strategy for parsing argument arrays.",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        }
+      ],
+      "kind" : "content"
+    }
+  ],
+  "schemaVersion" : {
+    "major" : 0,
+    "minor" : 2,
+    "patch" : 0
+  },
+  "sections" : [
+
+  ],
+  "variants" : [
+    {
+      "paths" : [
+        "\/documentation\/argumentparser\/argumentarrayparsingstrategy\/remaining"
+      ],
+      "traits" : [
+        {
+          "interfaceLanguage" : "swift"
+        }
+      ]
+    }
+  ]
+, 
+"references": {
+"doc://ArgumentParser/documentation/ArgumentParser": {
+  "abstract" : [
+    {
+      "text" : "Straightforward, type-safe argument parsing for Swift.",
+      "type" : "text"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser",
+  "kind" : "symbol",
+  "role" : "collection",
+  "title" : "ArgumentParser",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/Argument": {
+  "abstract" : [
+    {
+      "text" : "A property wrapper that represents a positional command-line argument.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "struct"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "Argument"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Argument",
+  "kind" : "symbol",
+  "navigatorTitle" : [
+    {
+      "kind" : "identifier",
+      "text" : "Argument"
+    }
+  ],
+  "role" : "symbol",
+  "title" : "Argument",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/argument"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ArgumentArrayParsingStrategy": {
+  "abstract" : [
+    {
+      "text" : "The strategy to use when parsing multiple values from positional arguments",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "text" : "into an array.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "struct"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "ArgumentArrayParsingStrategy"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentArrayParsingStrategy",
+  "kind" : "symbol",
+  "navigatorTitle" : [
+    {
+      "kind" : "identifier",
+      "text" : "ArgumentArrayParsingStrategy"
+    }
+  ],
+  "role" : "symbol",
+  "title" : "ArgumentArrayParsingStrategy",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/argumentarrayparsingstrategy"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ArgumentArrayParsingStrategy/remaining": {
+  "abstract" : [
+    {
+      "text" : "Parse only unprefixed values from the command-line input, ignoring",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "text" : "any inputs that have a dash prefix. This is the default strategy.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "static"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "keyword",
+      "text" : "var"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "remaining"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser0A20ArrayParsingStrategyV",
+      "text" : "ArgumentArrayParsingStrategy"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentArrayParsingStrategy\/remaining",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "remaining",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/argumentarrayparsingstrategy\/remaining"
+}
+}
+}

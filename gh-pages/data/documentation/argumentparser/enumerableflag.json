@@ -1,0 +1,565 @@
+{
+  "abstract" : [
+    {
+      "text" : "A type that represents the different possible flags to be used by a",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "code" : "@Flag",
+      "type" : "codeVoice"
+    },
+    {
+      "text" : " property.",
+      "type" : "text"
+    }
+  ],
+  "hierarchy" : {
+    "paths" : [
+      [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser"
+      ]
+    ]
+  },
+  "identifier" : {
+    "interfaceLanguage" : "swift",
+    "url" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/EnumerableFlag"
+  },
+  "kind" : "symbol",
+  "metadata" : {
+    "externalID" : "s:14ArgumentParser14EnumerableFlagP",
+    "fragments" : [
+      {
+        "kind" : "keyword",
+        "text" : "protocol"
+      },
+      {
+        "kind" : "text",
+        "text" : " "
+      },
+      {
+        "kind" : "identifier",
+        "text" : "EnumerableFlag"
+      }
+    ],
+    "modules" : [
+      {
+        "name" : "ArgumentParser"
+      }
+    ],
+    "navigatorTitle" : [
+      {
+        "kind" : "identifier",
+        "text" : "EnumerableFlag"
+      }
+    ],
+    "role" : "symbol",
+    "roleHeading" : "Protocol",
+    "symbolKind" : "protocol",
+    "title" : "EnumerableFlag"
+  },
+  "primaryContentSections" : [
+    {
+      "declarations" : [
+        {
+          "languages" : [
+            "swift"
+          ],
+          "platforms" : [
+            "macOS"
+          ],
+          "tokens" : [
+            {
+              "kind" : "keyword",
+              "text" : "protocol"
+            },
+            {
+              "kind" : "text",
+              "text" : " "
+            },
+            {
+              "kind" : "identifier",
+              "text" : "EnumerableFlag"
+            },
+            {
+              "kind" : "text",
+              "text" : " : "
+            },
+            {
+              "kind" : "typeIdentifier",
+              "preciseIdentifier" : "s:s12CaseIterableP",
+              "text" : "CaseIterable"
+            },
+            {
+              "kind" : "text",
+              "text" : ", "
+            },
+            {
+              "kind" : "typeIdentifier",
+              "preciseIdentifier" : "s:SQ",
+              "text" : "Equatable"
+            }
+          ]
+        }
+      ],
+      "kind" : "declarations"
+    },
+    {
+      "content" : [
+        {
+          "anchor" : "overview",
+          "level" : 2,
+          "text" : "Overview",
+          "type" : "heading"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "For example, the ",
+              "type" : "text"
+            },
+            {
+              "code" : "Size",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " enumeration declared here can be used as the type of",
+              "type" : "text"
+            },
+            {
+              "text" : " ",
+              "type" : "text"
+            },
+            {
+              "text" : "a ",
+              "type" : "text"
+            },
+            {
+              "code" : "@Flag",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " property:",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "code" : [
+            "enum Size: String, EnumerableFlag {",
+            "    case small, medium, large, extraLarge",
+            "}",
+            "",
+            "struct Example: ParsableCommand {",
+            "    @Flag var sizes: [Size]",
+            "",
+            "    mutating func run() {",
+            "        print(sizes)",
+            "    }",
+            "}"
+          ],
+          "syntax" : null,
+          "type" : "codeListing"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "By default, each case name is converted to a flag by using the ",
+              "type" : "text"
+            },
+            {
+              "code" : ".long",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " name",
+              "type" : "text"
+            },
+            {
+              "text" : " ",
+              "type" : "text"
+            },
+            {
+              "text" : "specification, so a user can call ",
+              "type" : "text"
+            },
+            {
+              "code" : "example",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " like this:",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "code" : [
+            "$ example --small --large",
+            "[.small, .large]"
+          ],
+          "syntax" : null,
+          "type" : "codeListing"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "Provide alternative or additional name specifications for each case by",
+              "type" : "text"
+            },
+            {
+              "text" : " ",
+              "type" : "text"
+            },
+            {
+              "text" : "implementing the ",
+              "type" : "text"
+            },
+            {
+              "code" : "name(for:)",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " static method on your ",
+              "type" : "text"
+            },
+            {
+              "code" : "EnumerableFlag",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " type.",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "code" : [
+            "extension Size {",
+            "    static func name(for value: Self) -> NameSpecification {",
+            "        switch value {",
+            "        case .extraLarge:",
+            "            return [.customShort(\"x\"), .long]",
+            "        default:",
+            "            return .shortAndLong",
+            "        }",
+            "    }",
+            "}"
+          ],
+          "syntax" : null,
+          "type" : "codeListing"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "With this extension, a user can use short or long versions of the flags:",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "code" : [
+            "$ example -s -l -x --medium",
+            "[.small, .large, .extraLarge, .medium]"
+          ],
+          "syntax" : null,
+          "type" : "codeListing"
+        }
+      ],
+      "kind" : "content"
+    }
+  ],
+  "relationshipsSections" : [
+    {
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/s12CaseIterableP",
+        "doc:\/\/ArgumentParser\/SQ"
+      ],
+      "kind" : "relationships",
+      "title" : "Inherits From",
+      "type" : "inheritsFrom"
+    }
+  ],
+  "schemaVersion" : {
+    "major" : 0,
+    "minor" : 2,
+    "patch" : 0
+  },
+  "sections" : [
+
+  ],
+  "seeAlsoSections" : [
+    {
+      "generated" : true,
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExpressibleByArgument"
+      ],
+      "title" : "Custom Types"
+    }
+  ],
+  "topicSections" : [
+    {
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/EnumerableFlag\/help(for:)-8mmm",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/EnumerableFlag\/name(for:)-2rrp0"
+      ],
+      "title" : "Type Methods"
+    }
+  ],
+  "variants" : [
+    {
+      "paths" : [
+        "\/documentation\/argumentparser\/enumerableflag"
+      ],
+      "traits" : [
+        {
+          "interfaceLanguage" : "swift"
+        }
+      ]
+    }
+  ]
+, 
+"references": {
+"doc://ArgumentParser/SQ": {
+  "identifier" : "doc:\/\/ArgumentParser\/SQ",
+  "title" : "Swift.Equatable",
+  "type" : "unresolvable"
+},
+"doc://ArgumentParser/documentation/ArgumentParser": {
+  "abstract" : [
+    {
+      "text" : "Straightforward, type-safe argument parsing for Swift.",
+      "type" : "text"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser",
+  "kind" : "symbol",
+  "role" : "collection",
+  "title" : "ArgumentParser",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/EnumerableFlag": {
+  "abstract" : [
+    {
+      "text" : "A type that represents the different possible flags to be used by a",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "code" : "@Flag",
+      "type" : "codeVoice"
+    },
+    {
+      "text" : " property.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "protocol"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "EnumerableFlag"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/EnumerableFlag",
+  "kind" : "symbol",
+  "navigatorTitle" : [
+    {
+      "kind" : "identifier",
+      "text" : "EnumerableFlag"
+    }
+  ],
+  "role" : "symbol",
+  "title" : "EnumerableFlag",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/enumerableflag"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/EnumerableFlag/help(for:)-8mmm": {
+  "abstract" : [
+    {
+      "text" : "Returns the help information to show for the given flag.",
+      "type" : "text"
+    }
+  ],
+  "defaultImplementations" : 1,
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "static"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "keyword",
+      "text" : "func"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "help"
+    },
+    {
+      "kind" : "text",
+      "text" : "("
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "for"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "text" : "Self"
+    },
+    {
+      "kind" : "text",
+      "text" : ") -> "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser0A4HelpV",
+      "text" : "ArgumentHelp"
+    },
+    {
+      "kind" : "text",
+      "text" : "?"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/EnumerableFlag\/help(for:)-8mmm",
+  "kind" : "symbol",
+  "required" : true,
+  "role" : "symbol",
+  "title" : "help(for:)",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/enumerableflag\/help(for:)-8mmm"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/EnumerableFlag/name(for:)-2rrp0": {
+  "abstract" : [
+    {
+      "text" : "Returns the name specification to use for the given flag.",
+      "type" : "text"
+    }
+  ],
+  "defaultImplementations" : 1,
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "static"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "keyword",
+      "text" : "func"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "name"
+    },
+    {
+      "kind" : "text",
+      "text" : "("
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "for"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "text" : "Self"
+    },
+    {
+      "kind" : "text",
+      "text" : ") -> "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser17NameSpecificationV",
+      "text" : "NameSpecification"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/EnumerableFlag\/name(for:)-2rrp0",
+  "kind" : "symbol",
+  "required" : true,
+  "role" : "symbol",
+  "title" : "name(for:)",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/enumerableflag\/name(for:)-2rrp0"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ExpressibleByArgument": {
+  "abstract" : [
+    {
+      "text" : "A type that can be expressed as a command-line argument.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "protocol"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "ExpressibleByArgument"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExpressibleByArgument",
+  "kind" : "symbol",
+  "navigatorTitle" : [
+    {
+      "kind" : "identifier",
+      "text" : "ExpressibleByArgument"
+    }
+  ],
+  "role" : "symbol",
+  "title" : "ExpressibleByArgument",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/expressiblebyargument"
+},
+"doc://ArgumentParser/s12CaseIterableP": {
+  "identifier" : "doc:\/\/ArgumentParser\/s12CaseIterableP",
+  "title" : "Swift.CaseIterable",
+  "type" : "unresolvable"
+}
+}
+}

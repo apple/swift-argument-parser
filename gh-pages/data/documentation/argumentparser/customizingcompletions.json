@@ -1,0 +1,494 @@
+{
+  "abstract" : [
+    {
+      "text" : "Provide custom shell completions for your command-line tool’s arguments and options.",
+      "type" : "text"
+    }
+  ],
+  "hierarchy" : {
+    "paths" : [
+      [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser"
+      ]
+    ]
+  },
+  "identifier" : {
+    "interfaceLanguage" : "swift",
+    "url" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/CustomizingCompletions"
+  },
+  "kind" : "article",
+  "metadata" : {
+    "modules" : [
+      {
+        "name" : "ArgumentParser"
+      }
+    ],
+    "role" : "article",
+    "roleHeading" : "Article",
+    "title" : "Customizing Completions"
+  },
+  "primaryContentSections" : [
+    {
+      "content" : [
+        {
+          "anchor" : "Overview",
+          "level" : 2,
+          "text" : "Overview",
+          "type" : "heading"
+        },
+        {
+          "inlineContent" : [
+            {
+              "code" : "ArgumentParser",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " provides default completions for any types that it can. For example, an ",
+              "type" : "text"
+            },
+            {
+              "code" : "@Option",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " property that is a ",
+              "type" : "text"
+            },
+            {
+              "code" : "CaseIterable",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " type will automatically have the correct values as completion suggestions.",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "When declaring an option or argument, you can customize the completions that are offered by specifying a ",
+              "type" : "text"
+            },
+            {
+              "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/CompletionKind",
+              "isActive" : true,
+              "type" : "reference"
+            },
+            {
+              "text" : ". With this completion kind you can specify that the value should be a file, a directory, or one of a list of strings:",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "code" : [
+            "struct Example: ParsableCommand {",
+            "    @Option(help: \"The file to read from.\", completion: .file())",
+            "    var input: String",
+            "",
+            "    @Option(help: \"The output directory.\", completion: .directory)",
+            "    var outputDir: String",
+            "",
+            "    @Option(help: \"The preferred file format.\", completion: .list([\"markdown\", \"rst\"]))",
+            "    var format: String",
+            "",
+            "    enum CompressionType: String, CaseIterable, ExpressibleByArgument {",
+            "        case zip, gzip",
+            "    }",
+            "",
+            "    @Option(help: \"The compression type to use.\")",
+            "    var compression: CompressionType",
+            "}"
+          ],
+          "syntax" : "swift",
+          "type" : "codeListing"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "The generated completion script will suggest only file names for the ",
+              "type" : "text"
+            },
+            {
+              "code" : "--input",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " option, only directory names for ",
+              "type" : "text"
+            },
+            {
+              "code" : "--output-dir",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : ", and only the strings ",
+              "type" : "text"
+            },
+            {
+              "code" : "markdown",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " and ",
+              "type" : "text"
+            },
+            {
+              "code" : "rst",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " for ",
+              "type" : "text"
+            },
+            {
+              "code" : "--format",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : ". The ",
+              "type" : "text"
+            },
+            {
+              "code" : "--compression",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " option uses the default completions for a ",
+              "type" : "text"
+            },
+            {
+              "code" : "CaseIterable",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " type, so the completion script will suggest ",
+              "type" : "text"
+            },
+            {
+              "code" : "zip",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " and ",
+              "type" : "text"
+            },
+            {
+              "code" : "gzip",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : ".",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "You can define the default completion kind for custom ",
+              "type" : "text"
+            },
+            {
+              "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExpressibleByArgument",
+              "isActive" : true,
+              "type" : "reference"
+            },
+            {
+              "text" : " types by implementing ",
+              "type" : "text"
+            },
+            {
+              "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExpressibleByArgument\/defaultCompletionKind-866se",
+              "isActive" : true,
+              "type" : "reference"
+            },
+            {
+              "text" : ". For example, any arguments or options with this ",
+              "type" : "text"
+            },
+            {
+              "code" : "File",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " type will automatically use files for completions:",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "code" : [
+            "struct File: Hashable, ExpressibleByArgument {",
+            "    var path: String",
+            "    ",
+            "    init?(argument: String) {",
+            "        self.path = argument",
+            "    }",
+            "    ",
+            "    static var defaultCompletionKind: CompletionKind {",
+            "        .file()",
+            "    }",
+            "}"
+          ],
+          "syntax" : "swift",
+          "type" : "codeListing"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "For even more control over the suggested completions, you can specify a function that will be called during completion by using the ",
+              "type" : "text"
+            },
+            {
+              "code" : ".custom",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " completion kind.",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "code" : [
+            "func listExecutables(_ arguments: [String]) -> [String] {",
+            "    \/\/ Generate the list of executables in the current directory",
+            "}",
+            "",
+            "struct SwiftRun {",
+            "    @Option(help: \"The target to execute.\", completion: .custom(listExecutables))",
+            "    var target: String?",
+            "}"
+          ],
+          "syntax" : "swift",
+          "type" : "codeListing"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "In this example, when a user requests completions for the ",
+              "type" : "text"
+            },
+            {
+              "code" : "--target",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " option, the completion script runs the ",
+              "type" : "text"
+            },
+            {
+              "code" : "SwiftRun",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " command-line tool with a special syntax, calling the ",
+              "type" : "text"
+            },
+            {
+              "code" : "listExecutables",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " function with an array of the arguments given so far.",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        }
+      ],
+      "kind" : "content"
+    }
+  ],
+  "schemaVersion" : {
+    "major" : 0,
+    "minor" : 2,
+    "patch" : 0
+  },
+  "sections" : [
+
+  ],
+  "seeAlsoSections" : [
+    {
+      "generated" : true,
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/InstallingCompletionScripts",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/CompletionKind"
+      ],
+      "title" : "Shell Completion Scripts"
+    }
+  ],
+  "variants" : [
+    {
+      "paths" : [
+        "\/documentation\/argumentparser\/customizingcompletions"
+      ],
+      "traits" : [
+        {
+          "interfaceLanguage" : "swift"
+        }
+      ]
+    }
+  ]
+, 
+"references": {
+"doc://ArgumentParser/documentation/ArgumentParser": {
+  "abstract" : [
+    {
+      "text" : "Straightforward, type-safe argument parsing for Swift.",
+      "type" : "text"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser",
+  "kind" : "symbol",
+  "role" : "collection",
+  "title" : "ArgumentParser",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/CompletionKind": {
+  "abstract" : [
+    {
+      "text" : "The type of completion to use for an argument or option.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "struct"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "CompletionKind"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/CompletionKind",
+  "kind" : "symbol",
+  "navigatorTitle" : [
+    {
+      "kind" : "identifier",
+      "text" : "CompletionKind"
+    }
+  ],
+  "role" : "symbol",
+  "title" : "CompletionKind",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/completionkind"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ExpressibleByArgument": {
+  "abstract" : [
+    {
+      "text" : "A type that can be expressed as a command-line argument.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "protocol"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "ExpressibleByArgument"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExpressibleByArgument",
+  "kind" : "symbol",
+  "navigatorTitle" : [
+    {
+      "kind" : "identifier",
+      "text" : "ExpressibleByArgument"
+    }
+  ],
+  "role" : "symbol",
+  "title" : "ExpressibleByArgument",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/expressiblebyargument"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ExpressibleByArgument/defaultCompletionKind-866se": {
+  "abstract" : [
+    {
+      "text" : "The completion kind to use for options or arguments of this type that",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "text" : "don’t explicitly declare a completion kind.",
+      "type" : "text"
+    }
+  ],
+  "defaultImplementations" : 2,
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "static"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "keyword",
+      "text" : "var"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "defaultCompletionKind"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser14CompletionKindV",
+      "text" : "CompletionKind"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExpressibleByArgument\/defaultCompletionKind-866se",
+  "kind" : "symbol",
+  "required" : true,
+  "role" : "symbol",
+  "title" : "defaultCompletionKind",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/expressiblebyargument\/defaultcompletionkind-866se"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/InstallingCompletionScripts": {
+  "abstract" : [
+    {
+      "text" : "Install shell completion scripts generated by your command-line tool.",
+      "type" : "text"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/InstallingCompletionScripts",
+  "kind" : "article",
+  "role" : "article",
+  "title" : "Generating and Installing Completion Scripts",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/installingcompletionscripts"
+}
+}
+}

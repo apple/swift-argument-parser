@@ -1,0 +1,695 @@
+{
+  "abstract" : [
+    {
+      "text" : "An error type that only includes an exit code.",
+      "type" : "text"
+    }
+  ],
+  "hierarchy" : {
+    "paths" : [
+      [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser"
+      ]
+    ]
+  },
+  "identifier" : {
+    "interfaceLanguage" : "swift",
+    "url" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExitCode"
+  },
+  "kind" : "symbol",
+  "metadata" : {
+    "externalID" : "s:14ArgumentParser8ExitCodeV",
+    "fragments" : [
+      {
+        "kind" : "keyword",
+        "text" : "struct"
+      },
+      {
+        "kind" : "text",
+        "text" : " "
+      },
+      {
+        "kind" : "identifier",
+        "text" : "ExitCode"
+      }
+    ],
+    "modules" : [
+      {
+        "name" : "ArgumentParser"
+      }
+    ],
+    "navigatorTitle" : [
+      {
+        "kind" : "identifier",
+        "text" : "ExitCode"
+      }
+    ],
+    "role" : "symbol",
+    "roleHeading" : "Structure",
+    "symbolKind" : "struct",
+    "title" : "ExitCode"
+  },
+  "primaryContentSections" : [
+    {
+      "declarations" : [
+        {
+          "languages" : [
+            "swift"
+          ],
+          "platforms" : [
+            "macOS"
+          ],
+          "tokens" : [
+            {
+              "kind" : "keyword",
+              "text" : "struct"
+            },
+            {
+              "kind" : "text",
+              "text" : " "
+            },
+            {
+              "kind" : "identifier",
+              "text" : "ExitCode"
+            }
+          ]
+        }
+      ],
+      "kind" : "declarations"
+    },
+    {
+      "content" : [
+        {
+          "anchor" : "overview",
+          "level" : 2,
+          "text" : "Overview",
+          "type" : "heading"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "If you’re printing custom error messages yourself, you can throw this error",
+              "type" : "text"
+            },
+            {
+              "text" : " ",
+              "type" : "text"
+            },
+            {
+              "text" : "to specify the exit code without adding any additional output to standard",
+              "type" : "text"
+            },
+            {
+              "text" : " ",
+              "type" : "text"
+            },
+            {
+              "text" : "out or standard error.",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        }
+      ],
+      "kind" : "content"
+    }
+  ],
+  "relationshipsSections" : [
+    {
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/SQ",
+        "doc:\/\/ArgumentParser\/s5ErrorP",
+        "doc:\/\/ArgumentParser\/SH",
+        "doc:\/\/ArgumentParser\/SY",
+        "doc:\/\/ArgumentParser\/s8SendableP"
+      ],
+      "kind" : "relationships",
+      "title" : "Conforms To",
+      "type" : "conformsTo"
+    }
+  ],
+  "schemaVersion" : {
+    "major" : 0,
+    "minor" : 2,
+    "patch" : 0
+  },
+  "sections" : [
+
+  ],
+  "seeAlsoSections" : [
+    {
+      "generated" : true,
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Validation",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ValidationError",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/CleanExit"
+      ],
+      "title" : "Validation and Errors"
+    }
+  ],
+  "topicSections" : [
+    {
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExitCode\/init(_:)",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExitCode\/init(rawValue:)"
+      ],
+      "title" : "Initializers"
+    },
+    {
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExitCode\/isSuccess",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExitCode\/rawValue"
+      ],
+      "title" : "Instance Properties"
+    },
+    {
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExitCode\/failure",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExitCode\/success",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExitCode\/validationFailure"
+      ],
+      "title" : "Type Properties"
+    },
+    {
+      "generated" : true,
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExitCode\/Equatable-Implementations",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExitCode\/Error-Implementations",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExitCode\/RawRepresentable-Implementations"
+      ],
+      "title" : "Default Implementations"
+    }
+  ],
+  "variants" : [
+    {
+      "paths" : [
+        "\/documentation\/argumentparser\/exitcode"
+      ],
+      "traits" : [
+        {
+          "interfaceLanguage" : "swift"
+        }
+      ]
+    }
+  ]
+, 
+"references": {
+"doc://ArgumentParser/SH": {
+  "identifier" : "doc:\/\/ArgumentParser\/SH",
+  "title" : "Swift.Hashable",
+  "type" : "unresolvable"
+},
+"doc://ArgumentParser/SQ": {
+  "identifier" : "doc:\/\/ArgumentParser\/SQ",
+  "title" : "Swift.Equatable",
+  "type" : "unresolvable"
+},
+"doc://ArgumentParser/SY": {
+  "identifier" : "doc:\/\/ArgumentParser\/SY",
+  "title" : "Swift.RawRepresentable",
+  "type" : "unresolvable"
+},
+"doc://ArgumentParser/documentation/ArgumentParser": {
+  "abstract" : [
+    {
+      "text" : "Straightforward, type-safe argument parsing for Swift.",
+      "type" : "text"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser",
+  "kind" : "symbol",
+  "role" : "collection",
+  "title" : "ArgumentParser",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/CleanExit": {
+  "abstract" : [
+    {
+      "text" : "An error type that represents a clean (i.e. non-error state) exit of the",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "text" : "utility.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "struct"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "CleanExit"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/CleanExit",
+  "kind" : "symbol",
+  "navigatorTitle" : [
+    {
+      "kind" : "identifier",
+      "text" : "CleanExit"
+    }
+  ],
+  "role" : "symbol",
+  "title" : "CleanExit",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/cleanexit"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ExitCode": {
+  "abstract" : [
+    {
+      "text" : "An error type that only includes an exit code.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "struct"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "ExitCode"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExitCode",
+  "kind" : "symbol",
+  "navigatorTitle" : [
+    {
+      "kind" : "identifier",
+      "text" : "ExitCode"
+    }
+  ],
+  "role" : "symbol",
+  "title" : "ExitCode",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/exitcode"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ExitCode/Equatable-Implementations": {
+  "abstract" : [
+
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExitCode\/Equatable-Implementations",
+  "kind" : "article",
+  "role" : "collectionGroup",
+  "title" : "Equatable Implementations",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/exitcode\/equatable-implementations"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ExitCode/Error-Implementations": {
+  "abstract" : [
+
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExitCode\/Error-Implementations",
+  "kind" : "article",
+  "role" : "collectionGroup",
+  "title" : "Error Implementations",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/exitcode\/error-implementations"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ExitCode/RawRepresentable-Implementations": {
+  "abstract" : [
+
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExitCode\/RawRepresentable-Implementations",
+  "kind" : "article",
+  "role" : "collectionGroup",
+  "title" : "RawRepresentable Implementations",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/exitcode\/rawrepresentable-implementations"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ExitCode/failure": {
+  "abstract" : [
+    {
+      "text" : "An exit code that indicates that the command failed.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "static"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "keyword",
+      "text" : "let"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "failure"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser8ExitCodeV",
+      "text" : "ExitCode"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExitCode\/failure",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "failure",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/exitcode\/failure"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ExitCode/init(_:)": {
+  "abstract" : [
+    {
+      "text" : "Creates a new ",
+      "type" : "text"
+    },
+    {
+      "code" : "ExitCode",
+      "type" : "codeVoice"
+    },
+    {
+      "text" : " with the given code.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "identifier",
+      "text" : "init"
+    },
+    {
+      "kind" : "text",
+      "text" : "("
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:s5Int32V",
+      "text" : "Int32"
+    },
+    {
+      "kind" : "text",
+      "text" : ")"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExitCode\/init(_:)",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "init(_:)",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/exitcode\/init(_:)"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ExitCode/init(rawValue:)": {
+  "abstract" : [
+
+  ],
+  "fragments" : [
+    {
+      "kind" : "identifier",
+      "text" : "init"
+    },
+    {
+      "kind" : "text",
+      "text" : "("
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "rawValue"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:s5Int32V",
+      "text" : "Int32"
+    },
+    {
+      "kind" : "text",
+      "text" : ")"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExitCode\/init(rawValue:)",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "init(rawValue:)",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/exitcode\/init(rawvalue:)"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ExitCode/isSuccess": {
+  "abstract" : [
+    {
+      "text" : "A Boolean value indicating whether this exit code represents the",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "text" : "successful completion of a command.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "var"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "isSuccess"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:Sb",
+      "text" : "Bool"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExitCode\/isSuccess",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "isSuccess",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/exitcode\/issuccess"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ExitCode/rawValue": {
+  "abstract" : [
+    {
+      "text" : "The exit code represented by this instance.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "var"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "rawValue"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:s5Int32V",
+      "text" : "Int32"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExitCode\/rawValue",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "rawValue",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/exitcode\/rawvalue"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ExitCode/success": {
+  "abstract" : [
+    {
+      "text" : "An exit code that indicates successful completion of a command.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "static"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "keyword",
+      "text" : "let"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "success"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser8ExitCodeV",
+      "text" : "ExitCode"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExitCode\/success",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "success",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/exitcode\/success"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ExitCode/validationFailure": {
+  "abstract" : [
+
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "static"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "keyword",
+      "text" : "let"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "validationFailure"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser8ExitCodeV",
+      "text" : "ExitCode"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExitCode\/validationFailure",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "validationFailure",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/exitcode\/validationfailure"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/Validation": {
+  "abstract" : [
+    {
+      "text" : "Provide helpful feedback to users when things go wrong.",
+      "type" : "text"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Validation",
+  "kind" : "article",
+  "role" : "article",
+  "title" : "Providing Custom Validation",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/validation"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ValidationError": {
+  "abstract" : [
+    {
+      "text" : "An error type that is presented to the user as an error with parsing their",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "text" : "command-line input.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "struct"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "ValidationError"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ValidationError",
+  "kind" : "symbol",
+  "navigatorTitle" : [
+    {
+      "kind" : "identifier",
+      "text" : "ValidationError"
+    }
+  ],
+  "role" : "symbol",
+  "title" : "ValidationError",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/validationerror"
+},
+"doc://ArgumentParser/s5ErrorP": {
+  "identifier" : "doc:\/\/ArgumentParser\/s5ErrorP",
+  "title" : "Swift.Error",
+  "type" : "unresolvable"
+},
+"doc://ArgumentParser/s8SendableP": {
+  "identifier" : "doc:\/\/ArgumentParser\/s8SendableP",
+  "title" : "Swift.Sendable",
+  "type" : "unresolvable"
+}
+}
+}

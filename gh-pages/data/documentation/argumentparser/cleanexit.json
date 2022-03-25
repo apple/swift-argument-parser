@@ -1,0 +1,594 @@
+{
+  "abstract" : [
+    {
+      "text" : "An error type that represents a clean (i.e. non-error state) exit of the",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "text" : "utility.",
+      "type" : "text"
+    }
+  ],
+  "hierarchy" : {
+    "paths" : [
+      [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser"
+      ]
+    ]
+  },
+  "identifier" : {
+    "interfaceLanguage" : "swift",
+    "url" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/CleanExit"
+  },
+  "kind" : "symbol",
+  "metadata" : {
+    "externalID" : "s:14ArgumentParser9CleanExitV",
+    "fragments" : [
+      {
+        "kind" : "keyword",
+        "text" : "struct"
+      },
+      {
+        "kind" : "text",
+        "text" : " "
+      },
+      {
+        "kind" : "identifier",
+        "text" : "CleanExit"
+      }
+    ],
+    "modules" : [
+      {
+        "name" : "ArgumentParser"
+      }
+    ],
+    "navigatorTitle" : [
+      {
+        "kind" : "identifier",
+        "text" : "CleanExit"
+      }
+    ],
+    "role" : "symbol",
+    "roleHeading" : "Structure",
+    "symbolKind" : "struct",
+    "title" : "CleanExit"
+  },
+  "primaryContentSections" : [
+    {
+      "declarations" : [
+        {
+          "languages" : [
+            "swift"
+          ],
+          "platforms" : [
+            "macOS"
+          ],
+          "tokens" : [
+            {
+              "kind" : "keyword",
+              "text" : "struct"
+            },
+            {
+              "kind" : "text",
+              "text" : " "
+            },
+            {
+              "kind" : "identifier",
+              "text" : "CleanExit"
+            }
+          ]
+        }
+      ],
+      "kind" : "declarations"
+    },
+    {
+      "content" : [
+        {
+          "anchor" : "overview",
+          "level" : 2,
+          "text" : "Overview",
+          "type" : "heading"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "Throwing a ",
+              "type" : "text"
+            },
+            {
+              "code" : "CleanExit",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " instance from a ",
+              "type" : "text"
+            },
+            {
+              "code" : "validate",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " or ",
+              "type" : "text"
+            },
+            {
+              "code" : "run",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " method, or",
+              "type" : "text"
+            },
+            {
+              "text" : " ",
+              "type" : "text"
+            },
+            {
+              "text" : "passing it to ",
+              "type" : "text"
+            },
+            {
+              "code" : "exit(with:)",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : ", exits the program with exit code ",
+              "type" : "text"
+            },
+            {
+              "code" : "0",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : ".",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        }
+      ],
+      "kind" : "content"
+    }
+  ],
+  "relationshipsSections" : [
+    {
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/s23CustomStringConvertibleP",
+        "doc:\/\/ArgumentParser\/s5ErrorP",
+        "doc:\/\/ArgumentParser\/s8SendableP"
+      ],
+      "kind" : "relationships",
+      "title" : "Conforms To",
+      "type" : "conformsTo"
+    }
+  ],
+  "schemaVersion" : {
+    "major" : 0,
+    "minor" : 2,
+    "patch" : 0
+  },
+  "sections" : [
+
+  ],
+  "seeAlsoSections" : [
+    {
+      "generated" : true,
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Validation",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ValidationError",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExitCode"
+      ],
+      "title" : "Validation and Errors"
+    }
+  ],
+  "topicSections" : [
+    {
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/CleanExit\/description"
+      ],
+      "title" : "Instance Properties"
+    },
+    {
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/CleanExit\/helpRequest(_:)-773ef",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/CleanExit\/helpRequest(_:)-9qiuh",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/CleanExit\/message(_:)"
+      ],
+      "title" : "Type Methods"
+    },
+    {
+      "generated" : true,
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/CleanExit\/Error-Implementations"
+      ],
+      "title" : "Default Implementations"
+    }
+  ],
+  "variants" : [
+    {
+      "paths" : [
+        "\/documentation\/argumentparser\/cleanexit"
+      ],
+      "traits" : [
+        {
+          "interfaceLanguage" : "swift"
+        }
+      ]
+    }
+  ]
+, 
+"references": {
+"doc://ArgumentParser/documentation/ArgumentParser": {
+  "abstract" : [
+    {
+      "text" : "Straightforward, type-safe argument parsing for Swift.",
+      "type" : "text"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser",
+  "kind" : "symbol",
+  "role" : "collection",
+  "title" : "ArgumentParser",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/CleanExit": {
+  "abstract" : [
+    {
+      "text" : "An error type that represents a clean (i.e. non-error state) exit of the",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "text" : "utility.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "struct"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "CleanExit"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/CleanExit",
+  "kind" : "symbol",
+  "navigatorTitle" : [
+    {
+      "kind" : "identifier",
+      "text" : "CleanExit"
+    }
+  ],
+  "role" : "symbol",
+  "title" : "CleanExit",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/cleanexit"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/CleanExit/Error-Implementations": {
+  "abstract" : [
+
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/CleanExit\/Error-Implementations",
+  "kind" : "article",
+  "role" : "collectionGroup",
+  "title" : "Error Implementations",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/cleanexit\/error-implementations"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/CleanExit/description": {
+  "abstract" : [
+
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "var"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "description"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:SS",
+      "text" : "String"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/CleanExit\/description",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "description",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/cleanexit\/description"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/CleanExit/helpRequest(_:)-773ef": {
+  "abstract" : [
+    {
+      "text" : "Treat this error as a help request and display the full help message.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "static"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "keyword",
+      "text" : "func"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "helpRequest"
+    },
+    {
+      "kind" : "text",
+      "text" : "("
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser15ParsableCommandP",
+      "text" : "ParsableCommand"
+    },
+    {
+      "kind" : "text",
+      "text" : ".Type?) -> "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser9CleanExitV",
+      "text" : "CleanExit"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/CleanExit\/helpRequest(_:)-773ef",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "helpRequest(_:)",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/cleanexit\/helprequest(_:)-773ef"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/CleanExit/helpRequest(_:)-9qiuh": {
+  "abstract" : [
+    {
+      "text" : "Treat this error as a help request and display the full help message.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "static"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "keyword",
+      "text" : "func"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "helpRequest"
+    },
+    {
+      "kind" : "text",
+      "text" : "("
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser15ParsableCommandP",
+      "text" : "ParsableCommand"
+    },
+    {
+      "kind" : "text",
+      "text" : ") -> "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser9CleanExitV",
+      "text" : "CleanExit"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/CleanExit\/helpRequest(_:)-9qiuh",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "helpRequest(_:)",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/cleanexit\/helprequest(_:)-9qiuh"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/CleanExit/message(_:)": {
+  "abstract" : [
+    {
+      "text" : "Treat this error as a clean exit with the given message.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "static"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "keyword",
+      "text" : "func"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "message"
+    },
+    {
+      "kind" : "text",
+      "text" : "("
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:SS",
+      "text" : "String"
+    },
+    {
+      "kind" : "text",
+      "text" : ") -> "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser9CleanExitV",
+      "text" : "CleanExit"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/CleanExit\/message(_:)",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "message(_:)",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/cleanexit\/message(_:)"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ExitCode": {
+  "abstract" : [
+    {
+      "text" : "An error type that only includes an exit code.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "struct"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "ExitCode"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExitCode",
+  "kind" : "symbol",
+  "navigatorTitle" : [
+    {
+      "kind" : "identifier",
+      "text" : "ExitCode"
+    }
+  ],
+  "role" : "symbol",
+  "title" : "ExitCode",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/exitcode"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/Validation": {
+  "abstract" : [
+    {
+      "text" : "Provide helpful feedback to users when things go wrong.",
+      "type" : "text"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Validation",
+  "kind" : "article",
+  "role" : "article",
+  "title" : "Providing Custom Validation",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/validation"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ValidationError": {
+  "abstract" : [
+    {
+      "text" : "An error type that is presented to the user as an error with parsing their",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "text" : "command-line input.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "struct"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "ValidationError"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ValidationError",
+  "kind" : "symbol",
+  "navigatorTitle" : [
+    {
+      "kind" : "identifier",
+      "text" : "ValidationError"
+    }
+  ],
+  "role" : "symbol",
+  "title" : "ValidationError",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/validationerror"
+},
+"doc://ArgumentParser/s23CustomStringConvertibleP": {
+  "identifier" : "doc:\/\/ArgumentParser\/s23CustomStringConvertibleP",
+  "title" : "Swift.CustomStringConvertible",
+  "type" : "unresolvable"
+},
+"doc://ArgumentParser/s5ErrorP": {
+  "identifier" : "doc:\/\/ArgumentParser\/s5ErrorP",
+  "title" : "Swift.Error",
+  "type" : "unresolvable"
+},
+"doc://ArgumentParser/s8SendableP": {
+  "identifier" : "doc:\/\/ArgumentParser\/s8SendableP",
+  "title" : "Swift.Sendable",
+  "type" : "unresolvable"
+}
+}
+}
