@@ -31,6 +31,10 @@ extension AsyncParsableCommand {
   /// Instead of calling this method directly, you can add `@main` to the root
   /// command for your command-line tool.
   public static func main() async {
+#if DEBUG
+    configuration.subcommands.forEach(checkAsycHierarchy)
+#endif
+    
     do {
       var command = try parseAsRoot()
       if var asyncCommand = command as? AsyncParsableCommand {
@@ -42,6 +46,21 @@ extension AsyncParsableCommand {
       exit(withError: error)
     }
   }
+  
+#if DEBUG
+  @available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
+  internal static func checkAsycHierarchy(_ command: ParsableCommand.Type) {
+    command.configuration.subcommands.forEach(checkAsycHierarchy)
+    
+    if command is AsyncParsableCommand.Type { return }
+    
+    for sub in command.configuration.subcommands {
+      guard !(sub is AsyncParsableCommand.Type) else {
+        fatalError("`\(sub)` subcommand can't run asynchronously in `\(command)` command")
+      }
+    }
+  }
+#endif
 }
 
 /// A type that can designate an `AsyncParsableCommand` as the program's
@@ -61,6 +80,10 @@ extension AsyncMainProtocol {
   /// Executes the designated command type, or one of its subcommands, with
   /// the program's command-line arguments.
   public static func main() async {
+#if DEBUG
+    Command.configuration.subcommands.forEach(checkAsycHierarchy)
+#endif
+    
     do {
       var command = try Command.parseAsRoot()
       if var asyncCommand = command as? AsyncParsableCommand {
@@ -72,5 +95,18 @@ extension AsyncMainProtocol {
       Command.exit(withError: error)
     }
   }
+  
+#if DEBUG
+  internal static func checkAsycHierarchy(_ command: ParsableCommand.Type) {
+    command.configuration.subcommands.forEach(checkAsycHierarchy)
+    
+    if command is AsyncParsableCommand.Type { return }
+    
+    for sub in command.configuration.subcommands {
+      guard !(sub is AsyncParsableCommand.Type) else {
+        fatalError("`\(sub)` subcommand can't run asynchronously in `\(command)` command")
+      }
+    }
+  }
+#endif
 }
-

@@ -84,7 +84,7 @@ extension ParsableCommand {
   public static func helpMessage(
     for subcommand: ParsableCommand.Type,
     columns: Int? = nil
-  ) -> String { 
+  ) -> String {
     helpMessage(for: subcommand, includeHidden: false, columns: columns)
   }
 
@@ -124,6 +124,13 @@ extension ParsableCommand {
   /// - Parameter arguments: An array of arguments to use for parsing. If
   ///   `arguments` is `nil`, this uses the program's command-line arguments.
   public static func main(_ arguments: [String]?) {
+    
+#if DEBUG
+    if #available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *) {
+      checkAsycHierarchy(self)
+    }
+#endif
+    
     do {
       var command = try parseAsRoot(arguments)
       try command.run()
@@ -164,4 +171,19 @@ extension ParsableCommand {
   internal static var defaultIncludesUnconditionalArguments: Bool {
     configuration.defaultSubcommand?.includesUnconditionalArguments == true
   }
+  
+#if DEBUG
+  @available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
+  internal static func checkAsycHierarchy(_ command: ParsableCommand.Type) {
+    command.configuration.subcommands.forEach(checkAsycHierarchy)
+    
+    if command is AsyncParsableCommand.Type { return }
+    
+    for sub in command.configuration.subcommands {
+      guard !(sub is AsyncParsableCommand.Type) else {
+        fatalError("`\(sub)` subcommand can't run asynchronously in `\(command)` command")
+      }
+    }
+  }
+#endif
 }
