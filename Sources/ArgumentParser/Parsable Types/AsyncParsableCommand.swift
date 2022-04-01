@@ -32,7 +32,7 @@ extension AsyncParsableCommand {
   /// command for your command-line tool.
   public static func main() async {
 #if DEBUG
-    configuration.subcommands.forEach(checkAsycHierarchy)
+    configuration.subcommands.forEach(checkAsyncHierarchy)
 #endif
     
     do {
@@ -49,8 +49,8 @@ extension AsyncParsableCommand {
   
 #if DEBUG
   @available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
-  internal static func checkAsycHierarchy(_ command: ParsableCommand.Type) {
-    command.configuration.subcommands.forEach(checkAsycHierarchy)
+  internal static func checkAsyncHierarchy(_ command: ParsableCommand.Type) {
+    command.configuration.subcommands.forEach(checkAsyncHierarchy)
     
     if command is AsyncParsableCommand.Type { return }
     
@@ -81,7 +81,7 @@ extension AsyncMainProtocol {
   /// the program's command-line arguments.
   public static func main() async {
 #if DEBUG
-    Command.configuration.subcommands.forEach(checkAsycHierarchy)
+    Command.configuration.subcommands.forEach(checkAsyncHierarchy)
 #endif
     
     do {
@@ -97,8 +97,8 @@ extension AsyncMainProtocol {
   }
   
 #if DEBUG
-  internal static func checkAsycHierarchy(_ command: ParsableCommand.Type) {
-    command.configuration.subcommands.forEach(checkAsycHierarchy)
+  internal static func checkAsyncHierarchy(_ command: ParsableCommand.Type) {
+    command.configuration.subcommands.forEach(checkAsyncHierarchy)
     
     if command is AsyncParsableCommand.Type { return }
     

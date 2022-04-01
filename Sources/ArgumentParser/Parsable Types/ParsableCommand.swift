@@ -127,7 +127,7 @@ extension ParsableCommand {
     
 #if DEBUG
     if #available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *) {
-      checkAsycHierarchy(self)
+      checkAsyncHierarchy(self)
     }
 #endif
     
@@ -174,8 +174,8 @@ extension ParsableCommand {
   
 #if DEBUG
   @available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
-  internal static func checkAsycHierarchy(_ command: ParsableCommand.Type) {
-    command.configuration.subcommands.forEach(checkAsycHierarchy)
+  internal static func checkAsyncHierarchy(_ command: ParsableCommand.Type) {
+    command.configuration.subcommands.forEach(checkAsyncHierarchy)
     
     if command is AsyncParsableCommand.Type { return }
     
