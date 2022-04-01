@@ -74,6 +74,20 @@ For guides, articles, and API documentation see the
 - [ArgumentParser documentation][docs]
 - [Getting Started with ArgumentParser](https://apple.github.io/swift-argument-parser/documentation/argumentparser/gettingstarted)
 - [`ParsableCommand` documentation](https://apple.github.io/swift-argument-parser/documentation/argumentparser/parsablecommand)
+<details>
+  <summary>
+  Other articles
+  </summary>
+
+  - [Declaring Arguments, Options, and Flags](https://apple.github.io/swift-argument-parser/documentation/argumentparser/declaringarguments/)
+  - [Customizing Help](https://apple.github.io/swift-argument-parser/documentation/argumentparser/customizinghelp/)
+  - [Providing Custom Validation](https://apple.github.io/swift-argument-parser/documentation/argumentparser/validation/)
+  - [Generating and Installing Completion Scripts](https://apple.github.io/swift-argument-parser/documentation/argumentparser/installingcompletionscripts/)
+  - [Customizing Completions](https://apple.github.io/swift-argument-parser/documentation/argumentparser/customizingcompletions/)
+  - [Manual Parsing and Testing](https://apple.github.io/swift-argument-parser/documentation/argumentparser/manualparsing/)
+  - [Experimental Features](https://apple.github.io/swift-argument-parser/documentation/argumentparser/experimentalfeatures/)
+
+</details>
 
 [docs]: https://apple.github.io/swift-argument-parser/documentation/argumentparser/
 
