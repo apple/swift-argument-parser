@@ -1,4 +1,4 @@
-add_library(ArgumentParserToolInfo
+add_library(ArgumentParserToolInfo STATIC
   ToolInfo.swift)
 # NOTE: workaround for CMake not setting up include flags yet
 set_target_properties(ArgumentParserToolInfo PROPERTIES
@@ -7,5 +7,4 @@ target_compile_options(ArgumentParserToolInfo PRIVATE
   $<$<BOOL:${BUILD_TESTING}>:-enable-testing>)
 
 
-_install_target(ArgumentParserToolInfo)
 set_property(GLOBAL APPEND PROPERTY ArgumentParser_EXPORTS ArgumentParserToolInfo)
