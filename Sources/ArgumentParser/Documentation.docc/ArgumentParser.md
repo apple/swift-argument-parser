@@ -24,7 +24,7 @@ struct Repeat: ParsableCommand {
     var count: Int?
 
     mutating func run() throws {
-        let repeatCount = count ?? .max
+        let repeatCount = count ?? 2
         for _ in 0..<repeatCount {
             print(phrase)
         }
