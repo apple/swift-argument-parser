@@ -200,7 +200,7 @@ extension Option where Value: ExpressibleByArgument {
 
 /// The strategy to use when parsing a single value from `@Option` arguments.
 ///
-/// - SeeAlso: `ArrayParsingStrategy``
+/// - SeeAlso: ``ArrayParsingStrategy``
 public struct SingleValueParsingStrategy: Hashable {  
   internal var base: ArgumentDefinition.ParsingStrategy
   
