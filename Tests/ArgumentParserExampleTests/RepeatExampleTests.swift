@@ -14,6 +14,20 @@ import ArgumentParserTestHelpers
 
 final class RepeatExampleTests: XCTestCase {
   func testRepeat() throws {
+    try AssertExecuteCommand(command: "repeat hello", expected: """
+        hello
+        hello
+        """)
+  }
+  
+  func testRepeat_include_counter() throws {
+    try AssertExecuteCommand(command: "repeat --include-counter hello", expected: """
+      1: hello
+      2: hello
+      """)
+  }
+  
+  func testRepeat_Count() throws {
     try AssertExecuteCommand(command: "repeat hello --count 6", expected: """
         hello
         hello
