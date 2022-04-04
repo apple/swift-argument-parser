@@ -90,3 +90,4 @@ and then either calls your `run()` method or exits with a useful message.
 
 - <doc:ManualParsing>
 - <doc:ExperimentalFeatures>
+- <doc:CommandsAndSubcommands>
