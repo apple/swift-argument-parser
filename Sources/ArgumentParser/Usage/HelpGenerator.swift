@@ -229,7 +229,7 @@ internal struct HelpGenerator {
       .joined(separator: "\n")
     let renderedAbstract = abstract.isEmpty
       ? ""
-      : "OVERVIEW: \(abstract)".wrapped(to: screenWidth) + "\n\n"
+      : "OVERVIEW: \(abstract)".wrapped(to: screenWidth) + "\n"
     
     var helpSubcommandMessage = ""
     if includesSubcommands {
@@ -247,7 +247,7 @@ internal struct HelpGenerator {
     
     let renderedUsage = usage.isEmpty
       ? ""
-      : "USAGE: \(usage.hangingIndentingEachLine(by: 7))\n\n"
+      : "USAGE: \(usage.hangingIndentingEachLine(by: 7))\n"
     
     return """
     \(renderedAbstract)\
