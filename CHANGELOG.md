@@ -10,6 +10,22 @@ Add new items at the end of the relevant section under **Unreleased**.
 
 ---
 
+## [1.1.2] - 2022-04-11
+
+### Changes
+
+- CMake builds now always statically links `ArgumentParserToolInfo`. 
+  ([#424])
+
+### Fixes
+
+- When a user provides an array-based option's key (e.g. `--key`)
+  without any values, the error message now correctly describes the
+  problem. ([#435])
+
+The 1.1.2 release includes contributions from [compnerd] and [KeithBird].
+Thank you!
+
 ## [1.1.1] - 2022-03-16
 
 ### Fixes
@@ -618,7 +634,8 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 
 <!-- Link references for releases -->
 
-[Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.1.1...HEAD
+[Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.1.2...HEAD
+[1.1.2]: https://github.com/apple/swift-argument-parser/compare/1.1.1...1.1.2
 [1.1.1]: https://github.com/apple/swift-argument-parser/compare/1.1.0...1.1.1
 [1.1.0]: https://github.com/apple/swift-argument-parser/compare/1.0.3...1.1.0
 [1.0.3]: https://github.com/apple/swift-argument-parser/compare/1.0.2...1.0.3
@@ -673,7 +690,9 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [#400]: https://github.com/apple/swift-argument-parser/pull/400
 [#404]: https://github.com/apple/swift-argument-parser/pull/404
 [#416]: https://github.com/apple/swift-argument-parser/pull/416
+[#424]: https://github.com/apple/swift-argument-parser/pull/424
 [#427]: https://github.com/apple/swift-argument-parser/pull/427
+[#435]: https://github.com/apple/swift-argument-parser/pull/435
 
 <!-- Link references for contributors -->
 
@@ -709,6 +728,7 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [john-mueller]: https://github.com/apple/swift-argument-parser/commits?author=john-mueller
 [jonathanpenn]: https://github.com/apple/swift-argument-parser/commits?author=jonathanpenn
 [keith]: https://github.com/apple/swift-argument-parser/commits?author=keith
+[KeithBird]: https://github.com/apple/swift-argument-parser/commits?author=KeithBird
 [kennyyork]: https://github.com/apple/swift-argument-parser/commits?author=kennyyork
 [klaaspieter]: https://github.com/apple/swift-argument-parser/commits?author=klaaspieter
 [KS1019]: https://github.com/apple/swift-argument-parser/commits?author=KS1019
