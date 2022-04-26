@@ -70,17 +70,20 @@ var package = Package(
             dependencies: ["ArgumentParser", "ArgumentParserTestHelpers"],
             exclude: ["CMakeLists.txt"]),
         .testTarget(
-            name: "ArgumentParserUnitTests",
-            dependencies: ["ArgumentParser", "ArgumentParserTestHelpers"],
-            exclude: ["CMakeLists.txt"]),
+            name: "ArgumentParserExampleTests",
+            dependencies: ["ArgumentParserTestHelpers"],
+            resources: [.copy("CountLinesTest.txt")]),
+        .testTarget(
+            name: "ArgumentParserGenerateManualTests",
+            dependencies: ["ArgumentParserTestHelpers"]),
         .testTarget(
             name: "ArgumentParserPackageManagerTests",
             dependencies: ["ArgumentParser", "ArgumentParserTestHelpers"],
             exclude: ["CMakeLists.txt"]),
         .testTarget(
-            name: "ArgumentParserExampleTests",
-            dependencies: ["ArgumentParserTestHelpers"],
-            resources: [.copy("CountLinesTest.txt")]),
+            name: "ArgumentParserUnitTests",
+            dependencies: ["ArgumentParser", "ArgumentParserTestHelpers"],
+            exclude: ["CMakeLists.txt"]),
     ]
 )
 

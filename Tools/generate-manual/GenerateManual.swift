@@ -41,7 +41,7 @@ struct GenerateManual: ParsableCommand {
   @Option(name: .long, help: "Names and/or emails of the tool's authors. Format: 'name<email>'.")
   var authors: [AuthorArgument] = []
 
-  @Option(name: .shortAndLong, help: "Directory to save generated manual.")
+  @Option(name: .shortAndLong, help: "Directory to save generated manual. Use '-' for stdout.")
   var outputDirectory: String
 
   func validate() throws {
@@ -50,14 +50,16 @@ struct GenerateManual: ParsableCommand {
       throw ValidationError("Invalid manual section passed to --section")
     }
 
-    // outputDirectory must already exist, `GenerateManual` will not create it.
-    var objcBool: ObjCBool = true
-    guard FileManager.default.fileExists(atPath: outputDirectory, isDirectory: &objcBool) else {
-      throw ValidationError("Output directory \(outputDirectory) does not exist")
-    }
+    if outputDirectory != "-" {
+      // outputDirectory must already exist, `GenerateManual` will not create it.
+      var objcBool: ObjCBool = true
+      guard FileManager.default.fileExists(atPath: outputDirectory, isDirectory: &objcBool) else {
+        throw ValidationError("Output directory \(outputDirectory) does not exist")
+      }
 
-    guard objcBool.boolValue else {
-      throw ValidationError("Output directory \(outputDirectory) is not a directory")
+      guard objcBool.boolValue else {
+        throw ValidationError("Output directory \(outputDirectory) is not a directory")
+      }
     }
   }
 
@@ -90,14 +92,19 @@ struct GenerateManual: ParsableCommand {
     }
 
     do {
-      let outputDirectory = URL(fileURLWithPath: outputDirectory)
-      try generatePages(from: toolInfo.command, savingTo: outputDirectory)
+      if outputDirectory == "-" {
+        try generatePages(from: toolInfo.command, savingTo: nil)
+      } else {
+        try generatePages(
+          from: toolInfo.command,
+          savingTo: URL(fileURLWithPath: outputDirectory))
+      }
     } catch {
       throw Error.failedToGenerateManualPages(error: error)
     }
   }
 
-  func generatePages(from command: CommandInfoV0, savingTo directory: URL) throws {
+  func generatePages(from command: CommandInfoV0, savingTo directory: URL?) throws {
     let document = Document(
       singlePage: singlePage,
       date: date,
@@ -106,9 +113,13 @@ struct GenerateManual: ParsableCommand {
       command: command)
     let page = document.ast.map { $0.serialized() }.joined(separator: "\n")
 
-    let fileName = command.manualPageFileName(section: section)
-    let outputPath = directory.appendingPathComponent(fileName)
-    try page.write(to: outputPath, atomically: false, encoding: .utf8)
+    if let directory = directory {
+      let fileName = command.manualPageFileName(section: section)
+      let outputPath = directory.appendingPathComponent(fileName)
+      try page.write(to: outputPath, atomically: false, encoding: .utf8)
+    } else {
+      print(page)
+    }
 
     if !singlePage {
       for subcommand in command.subcommands ?? [] {
