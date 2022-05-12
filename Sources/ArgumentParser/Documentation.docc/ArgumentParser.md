@@ -51,6 +51,8 @@ and then either calls your `run()` method or exits with a useful message.
 - <doc:GettingStarted>
 - ``ParsableCommand``
 - ``AsyncParsableCommand``
+- <doc:CommandsAndSubcommands>
+- <doc:CustomizingCommandHelp>
 
 ### Arguments, Options, and Flags
 
@@ -90,4 +92,3 @@ and then either calls your `run()` method or exits with a useful message.
 
 - <doc:ManualParsing>
 - <doc:ExperimentalFeatures>
-- <doc:CommandsAndSubcommands>
