@@ -127,7 +127,7 @@ extension ParsableCommand {
     
 #if DEBUG
     if #available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *) {
-      checkAsyncHierarchy(self)
+      checkAsyncHierarchy(self, root: "\(self)")
     }
 #endif
     
@@ -174,15 +174,24 @@ extension ParsableCommand {
   
 #if DEBUG
   @available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
-  internal static func checkAsyncHierarchy(_ command: ParsableCommand.Type) {
-    command.configuration.subcommands.forEach(checkAsyncHierarchy)
-    
-    if command is AsyncParsableCommand.Type { return }
-    
+  internal static func checkAsyncHierarchy(_ command: ParsableCommand.Type, root: String) {
     for sub in command.configuration.subcommands {
-      guard !(sub is AsyncParsableCommand.Type) else {
-        fatalError("`\(sub)` subcommand can't run asynchronously in `\(command)` command")
-      }
+      checkAsyncHierarchy(sub, root: root)
+
+      guard sub.configuration.subcommands.isEmpty else { continue }
+      guard sub is AsyncParsableCommand.Type else { continue }
+
+      fatalError("""
+
+      --------------------------------------------------------------------
+      Asynchronous subcommand of a synchronous root.
+
+      The asynchronous command `\(sub)` is declared as a subcommand of the synchronous root command `\(root)`.
+
+      With this configuration, your asynchronous `run()` method will not be called. To fix this issue, change `\(root)`'s `ParsableCommand` conformance to `AsyncParsableCommand`.
+      --------------------------------------------------------------------
+
+      """.wrapped(to: 70))
     }
   }
 #endif
