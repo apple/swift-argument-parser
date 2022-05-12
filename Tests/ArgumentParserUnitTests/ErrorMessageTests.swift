@@ -64,26 +64,37 @@ extension ErrorMessageTests {
   }
 }
 
-fileprivate struct Foo: ParsableArguments {
-  enum Format: String, Equatable, Decodable, ExpressibleByArgument, CaseIterable {
-    case text
-    case json
-    case csv
-  }
+fileprivate enum Format: String, Equatable, Decodable, ExpressibleByArgument, CaseIterable {
+  case text
+  case json
+  case csv
+}
 
-  enum Name: String, Equatable, Decodable, ExpressibleByArgument, CaseIterable {
-    case bruce
-    case clint
-    case hulk
-    case natasha
-    case steve
-    case thor
-    case tony
-  }
+fileprivate enum Name: String, Equatable, Decodable, ExpressibleByArgument, CaseIterable {
+  case bruce
+  case clint
+  case hulk
+  case natasha
+  case steve
+  case thor
+  case tony
+}
+
+fileprivate struct Foo: ParsableArguments {
   @Option(name: [.short, .long])
   var format: Format
   @Option(name: [.short, .long])
   var name: Name?
+}
+
+fileprivate struct EnumWithFewCasesArrayArgument: ParsableArguments {
+  @Argument
+  var formats: [Format]
+}
+
+fileprivate struct EnumWithManyCasesArrayArgument: ParsableArguments {
+  @Argument
+  var names: [Name]
 }
 
 extension ErrorMessageTests {
@@ -104,6 +115,18 @@ extension ErrorMessageTests {
     AssertErrorMessage(Foo.self, ["-f", "text", "-n", "loki"],
       """
       The value 'loki' is invalid for '-n <name>'. Please provide one of the following:
+        - bruce
+        - clint
+        - hulk
+        - natasha
+        - steve
+        - thor
+        - tony
+      """)
+    AssertErrorMessage(EnumWithFewCasesArrayArgument.self, ["png"], "The value 'png' is invalid for '<formats>'. Please provide one of 'text', 'json' or 'csv'.")
+    AssertErrorMessage(EnumWithManyCasesArrayArgument.self, ["loki"],
+      """
+      The value 'loki' is invalid for '<names>'. Please provide one of the following:
         - bruce
         - clint
         - hulk
