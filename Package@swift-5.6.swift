@@ -1,4 +1,4 @@
-// swift-tools-version:5.5
+// swift-tools-version:5.6
 //===----------------------------------------------------------*- swift -*-===//
 //
 // This source file is part of the Swift Argument Parser open source project
@@ -32,8 +32,17 @@ var package = Package(
             exclude: ["CMakeLists.txt"]),
         .target(
             name: "ArgumentParserToolInfo",
-            dependencies: [],
+            dependencies: [ ],
             exclude: ["CMakeLists.txt"]),
+
+        // Plugins
+        .plugin(
+            name: "GenerateManualPlugin",
+            capability: .command(
+                intent: .custom(
+                    verb: "experimental-generate-manual",
+                    description: "Generate a manual entry for a specified target.")),
+            dependencies: ["generate-manual"]),
 
         // Examples
         .executableTarget(
@@ -49,27 +58,36 @@ var package = Package(
             dependencies: ["ArgumentParser"],
             path: "Examples/repeat"),
 
+        // Tools
+        .executableTarget(
+            name: "generate-manual",
+            dependencies: ["ArgumentParser", "ArgumentParserToolInfo"],
+            path: "Tools/generate-manual"),
+    
         // Tests
         .testTarget(
             name: "ArgumentParserEndToEndTests",
             dependencies: ["ArgumentParser", "ArgumentParserTestHelpers"],
             exclude: ["CMakeLists.txt"]),
         .testTarget(
-            name: "ArgumentParserUnitTests",
-            dependencies: ["ArgumentParser", "ArgumentParserTestHelpers"],
-            exclude: ["CMakeLists.txt"]),
+            name: "ArgumentParserExampleTests",
+            dependencies: ["ArgumentParserTestHelpers"],
+            resources: [.copy("CountLinesTest.txt")]),
+        .testTarget(
+            name: "ArgumentParserGenerateManualTests",
+            dependencies: ["ArgumentParserTestHelpers"]),
         .testTarget(
             name: "ArgumentParserPackageManagerTests",
             dependencies: ["ArgumentParser", "ArgumentParserTestHelpers"],
             exclude: ["CMakeLists.txt"]),
         .testTarget(
-            name: "ArgumentParserExampleTests",
-            dependencies: ["ArgumentParserTestHelpers"],
-            resources: [.copy("CountLinesTest.txt")]),
+            name: "ArgumentParserUnitTests",
+            dependencies: ["ArgumentParser", "ArgumentParserTestHelpers"],
+            exclude: ["CMakeLists.txt"]),
     ]
 )
 
-#if swift(>=5.6) && os(macOS)
+#if os(macOS)
 package.targets.append(contentsOf: [
     // Examples
     .executableTarget(
