@@ -23,5 +23,10 @@ extension StringEditDistanceTests {
     XCTAssertEqual("bar".editDistance(to: "foo"), 3)
     XCTAssertEqual("bar".editDistance(to: "baz"), 1)
     XCTAssertEqual("baz".editDistance(to: "bar"), 1)
+    XCTAssertEqual("friend".editDistance(to: "fresh"), 3)
+    XCTAssertEqual("friend".editDistance(to: "friend"), 0)
+    XCTAssertEqual("friend".editDistance(to: "fried"), 1)
+    XCTAssertEqual("friend".editDistance(to: "friendly"), 2)
+    XCTAssertEqual("friendly".editDistance(to: "friend"), 2)
   }
 }
