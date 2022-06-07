@@ -1,6 +1,9 @@
 {
   "meta": {},
   "theme": {
+    "code": {
+      "indentationWidth": 4
+    },
     "colors": {
       "text": "",
       "text-background": "",
@@ -53,6 +56,9 @@
     "docs": {
       "summary": {
         "hide": false
+      },
+      "navigator": {
+        "enable": false
       }
     }
   }
