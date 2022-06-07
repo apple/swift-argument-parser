@@ -338,7 +338,12 @@ extension Argument {
         helpDefaultValue = nil
       }
 
-      let help = ArgumentDefinition.Help(options: [.isOptional, .isRepeating], help: help, key: key)
+      let help = ArgumentDefinition.Help(
+        allValues: Element.allValueStrings,
+        options: [.isOptional, .isRepeating],
+        help: help,
+        key: key
+      )
       var arg = ArgumentDefinition(
         kind: .positional,
         help: help,
