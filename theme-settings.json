@@ -54,12 +54,6 @@
   },
   "features": {
     "docs": {
-      "summary": {
-        "hide": false
-      },
-      "navigator": {
-        "enable": false
-      }
     }
   }
 }

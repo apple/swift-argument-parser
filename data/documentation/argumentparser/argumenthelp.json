@@ -1,1 +1,855 @@
-{"seeAlsoSections":[{"title":"Property Customization","identifiers":["doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/CustomizingHelp","doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentVisibility","doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/NameSpecification"],"generated":true}],"schemaVersion":{"major":0,"minor":2,"patch":0},"metadata":{"fragments":[{"kind":"keyword","text":"struct"},{"kind":"text","text":" "},{"kind":"identifier","text":"ArgumentHelp"}],"title":"ArgumentHelp","roleHeading":"Structure","role":"symbol","symbolKind":"struct","externalID":"s:14ArgumentParser0A4HelpV","modules":[{"name":"ArgumentParser"}],"navigatorTitle":[{"kind":"identifier","text":"ArgumentHelp"}]},"abstract":[{"type":"text","text":"Help information for a command-line argument."}],"sections":[],"identifier":{"url":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp","interfaceLanguage":"swift"},"relationshipsSections":[{"identifiers":["doc:\/\/ArgumentParser\/s43ExpressibleByExtendedGraphemeClusterLiteralP","doc:\/\/ArgumentParser\/s32ExpressibleByStringInterpolationP","doc:\/\/ArgumentParser\/s26ExpressibleByStringLiteralP","doc:\/\/ArgumentParser\/s33ExpressibleByUnicodeScalarLiteralP"],"kind":"relationships","title":"Conforms To","type":"conformsTo"}],"hierarchy":{"paths":[["doc:\/\/ArgumentParser\/documentation\/ArgumentParser"]]},"topicSections":[{"title":"Initializers","identifiers":["doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/init(_:discussion:valueName:shouldDisplay:)","doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/init(_:discussion:valueName:visibility:)"]},{"title":"Instance Properties","identifiers":["doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/abstract","doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/discussion","doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/shouldDisplay","doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/valueName","doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/visibility"]},{"title":"Type Properties","identifiers":["doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/hidden","doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/private"]},{"title":"Default Implementations","identifiers":["doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/ExpressibleByExtendedGraphemeClusterLiteral-Implementations","doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/ExpressibleByStringInterpolation-Implementations","doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/ExpressibleByStringLiteral-Implementations","doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/ExpressibleByUnicodeScalarLiteral-Implementations"],"generated":true}],"variants":[{"paths":["\/documentation\/argumentparser\/argumenthelp"],"traits":[{"interfaceLanguage":"swift"}]}],"kind":"symbol","primaryContentSections":[{"kind":"declarations","declarations":[{"tokens":[{"kind":"keyword","text":"struct"},{"kind":"text","text":" "},{"kind":"identifier","text":"ArgumentHelp"}],"languages":["swift"],"platforms":["macOS"]}]}],"references":{"doc://ArgumentParser/documentation/ArgumentParser/ArgumentHelp/init(_:discussion:valueName:shouldDisplay:)":{"role":"symbol","title":"init(_:discussion:valueName:shouldDisplay:)","fragments":[{"kind":"identifier","text":"init"},{"kind":"text","text":"("},{"kind":"typeIdentifier","text":"String","preciseIdentifier":"s:SS"},{"kind":"text","text":", "},{"kind":"externalParam","text":"discussion"},{"kind":"text","text":": "},{"kind":"typeIdentifier","text":"String","preciseIdentifier":"s:SS"},{"kind":"text","text":", "},{"kind":"externalParam","text":"valueName"},{"kind":"text","text":": "},{"kind":"typeIdentifier","text":"String","preciseIdentifier":"s:SS"},{"kind":"text","text":"?, "},{"kind":"externalParam","text":"shouldDisplay"},{"kind":"text","text":": "},{"kind":"typeIdentifier","text":"Bool","preciseIdentifier":"s:Sb"},{"kind":"text","text":")"}],"abstract":[{"type":"text","text":"Creates a new help instance."}],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/init(_:discussion:valueName:shouldDisplay:)","kind":"symbol","type":"topic","deprecated":true,"url":"\/documentation\/argumentparser\/argumenthelp\/init(_:discussion:valuename:shoulddisplay:)"},"doc://ArgumentParser/documentation/ArgumentParser/ArgumentHelp/valueName":{"role":"symbol","title":"valueName","fragments":[{"kind":"keyword","text":"var"},{"kind":"text","text":" "},{"kind":"identifier","text":"valueName"},{"kind":"text","text":": "},{"kind":"typeIdentifier","text":"String","preciseIdentifier":"s:SS"},{"kind":"text","text":"?"}],"abstract":[{"type":"text","text":"An alternative name to use for the argument’s value when showing usage"},{"type":"text","text":" "},{"type":"text","text":"information."}],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/valueName","kind":"symbol","type":"topic","url":"\/documentation\/argumentparser\/argumenthelp\/valuename"},"doc://ArgumentParser/documentation/ArgumentParser/ArgumentHelp/ExpressibleByStringLiteral-Implementations":{"role":"collectionGroup","title":"ExpressibleByStringLiteral Implementations","abstract":[],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/ExpressibleByStringLiteral-Implementations","kind":"article","type":"topic","url":"\/documentation\/argumentparser\/argumenthelp\/expressiblebystringliteral-implementations"},"doc://ArgumentParser/documentation/ArgumentParser/ArgumentHelp/ExpressibleByUnicodeScalarLiteral-Implementations":{"role":"collectionGroup","title":"ExpressibleByUnicodeScalarLiteral Implementations","abstract":[],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/ExpressibleByUnicodeScalarLiteral-Implementations","kind":"article","type":"topic","url":"\/documentation\/argumentparser\/argumenthelp\/expressiblebyunicodescalarliteral-implementations"},"doc://ArgumentParser/documentation/ArgumentParser/ArgumentHelp/discussion":{"role":"symbol","title":"discussion","fragments":[{"kind":"keyword","text":"var"},{"kind":"text","text":" "},{"kind":"identifier","text":"discussion"},{"kind":"text","text":": "},{"kind":"typeIdentifier","text":"String","preciseIdentifier":"s:SS"}],"abstract":[{"type":"text","text":"An expanded description of the argument, in plain text form."}],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/discussion","kind":"symbol","type":"topic","url":"\/documentation\/argumentparser\/argumenthelp\/discussion"},"doc://ArgumentParser/s32ExpressibleByStringInterpolationP":{"type":"unresolvable","title":"Swift.ExpressibleByStringInterpolation","identifier":"doc:\/\/ArgumentParser\/s32ExpressibleByStringInterpolationP"},"doc://ArgumentParser/documentation/ArgumentParser/ArgumentVisibility":{"role":"symbol","title":"ArgumentVisibility","fragments":[{"kind":"keyword","text":"struct"},{"kind":"text","text":" "},{"kind":"identifier","text":"ArgumentVisibility"}],"abstract":[{"type":"text","text":"Visibility level of an argument’s help."}],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentVisibility","kind":"symbol","type":"topic","navigatorTitle":[{"kind":"identifier","text":"ArgumentVisibility"}],"url":"\/documentation\/argumentparser\/argumentvisibility"},"doc://ArgumentParser/documentation/ArgumentParser":{"role":"collection","title":"ArgumentParser","abstract":[{"type":"text","text":"Straightforward, type-safe argument parsing for Swift."}],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser","kind":"symbol","type":"topic","url":"\/documentation\/argumentparser"},"doc://ArgumentParser/documentation/ArgumentParser/ArgumentHelp/ExpressibleByStringInterpolation-Implementations":{"role":"collectionGroup","title":"ExpressibleByStringInterpolation Implementations","abstract":[],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/ExpressibleByStringInterpolation-Implementations","kind":"article","type":"topic","url":"\/documentation\/argumentparser\/argumenthelp\/expressiblebystringinterpolation-implementations"},"doc://ArgumentParser/documentation/ArgumentParser/ArgumentHelp/visibility":{"role":"symbol","title":"visibility","fragments":[{"kind":"keyword","text":"var"},{"kind":"text","text":" "},{"kind":"identifier","text":"visibility"},{"kind":"text","text":": "},{"kind":"typeIdentifier","text":"ArgumentVisibility","preciseIdentifier":"s:14ArgumentParser0A10VisibilityV"}],"abstract":[{"type":"text","text":"A visibility level indicating whether this argument should be shown in"},{"type":"text","text":" "},{"type":"text","text":"the extended help display."}],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/visibility","kind":"symbol","type":"topic","url":"\/documentation\/argumentparser\/argumenthelp\/visibility"},"doc://ArgumentParser/documentation/ArgumentParser/ArgumentHelp/init(_:discussion:valueName:visibility:)":{"role":"symbol","title":"init(_:discussion:valueName:visibility:)","fragments":[{"kind":"identifier","text":"init"},{"kind":"text","text":"("},{"kind":"typeIdentifier","text":"String","preciseIdentifier":"s:SS"},{"kind":"text","text":", "},{"kind":"externalParam","text":"discussion"},{"kind":"text","text":": "},{"kind":"typeIdentifier","text":"String","preciseIdentifier":"s:SS"},{"kind":"text","text":", "},{"kind":"externalParam","text":"valueName"},{"kind":"text","text":": "},{"kind":"typeIdentifier","text":"String","preciseIdentifier":"s:SS"},{"kind":"text","text":"?, "},{"kind":"externalParam","text":"visibility"},{"kind":"text","text":": "},{"kind":"typeIdentifier","text":"ArgumentVisibility","preciseIdentifier":"s:14ArgumentParser0A10VisibilityV"},{"kind":"text","text":")"}],"abstract":[{"type":"text","text":"Creates a new help instance."}],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/init(_:discussion:valueName:visibility:)","kind":"symbol","type":"topic","url":"\/documentation\/argumentparser\/argumenthelp\/init(_:discussion:valuename:visibility:)"},"doc://ArgumentParser/s43ExpressibleByExtendedGraphemeClusterLiteralP":{"type":"unresolvable","title":"Swift.ExpressibleByExtendedGraphemeClusterLiteral","identifier":"doc:\/\/ArgumentParser\/s43ExpressibleByExtendedGraphemeClusterLiteralP"},"doc://ArgumentParser/documentation/ArgumentParser/ArgumentHelp/shouldDisplay":{"role":"symbol","title":"shouldDisplay","fragments":[{"kind":"keyword","text":"var"},{"kind":"text","text":" "},{"kind":"identifier","text":"shouldDisplay"},{"kind":"text","text":": "},{"kind":"typeIdentifier","text":"Bool","preciseIdentifier":"s:Sb"}],"abstract":[{"type":"text","text":"A Boolean value indicating whether this argument should be shown in"},{"type":"text","text":" "},{"type":"text","text":"the extended help display."}],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/shouldDisplay","kind":"symbol","type":"topic","deprecated":true,"url":"\/documentation\/argumentparser\/argumenthelp\/shoulddisplay"},"doc://ArgumentParser/documentation/ArgumentParser/ArgumentHelp/private":{"role":"symbol","title":"private","fragments":[{"kind":"keyword","text":"static"},{"kind":"text","text":" "},{"kind":"keyword","text":"var"},{"kind":"text","text":" "},{"kind":"identifier","text":"`private`"},{"kind":"text","text":": "},{"kind":"typeIdentifier","text":"ArgumentHelp","preciseIdentifier":"s:14ArgumentParser0A4HelpV"}],"abstract":[{"type":"text","text":"A "},{"type":"codeVoice","code":"Help"},{"type":"text","text":" instance that hides an argument from the extended help display."}],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/private","kind":"symbol","type":"topic","url":"\/documentation\/argumentparser\/argumenthelp\/private"},"doc://ArgumentParser/documentation/ArgumentParser/ArgumentHelp":{"role":"symbol","title":"ArgumentHelp","fragments":[{"kind":"keyword","text":"struct"},{"kind":"text","text":" "},{"kind":"identifier","text":"ArgumentHelp"}],"abstract":[{"type":"text","text":"Help information for a command-line argument."}],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp","kind":"symbol","type":"topic","navigatorTitle":[{"kind":"identifier","text":"ArgumentHelp"}],"url":"\/documentation\/argumentparser\/argumenthelp"},"doc://ArgumentParser/documentation/ArgumentParser/ArgumentHelp/ExpressibleByExtendedGraphemeClusterLiteral-Implementations":{"role":"collectionGroup","title":"ExpressibleByExtendedGraphemeClusterLiteral Implementations","abstract":[],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/ExpressibleByExtendedGraphemeClusterLiteral-Implementations","kind":"article","type":"topic","url":"\/documentation\/argumentparser\/argumenthelp\/expressiblebyextendedgraphemeclusterliteral-implementations"},"doc://ArgumentParser/s26ExpressibleByStringLiteralP":{"type":"unresolvable","title":"Swift.ExpressibleByStringLiteral","identifier":"doc:\/\/ArgumentParser\/s26ExpressibleByStringLiteralP"},"doc://ArgumentParser/documentation/ArgumentParser/NameSpecification":{"role":"symbol","title":"NameSpecification","fragments":[{"kind":"keyword","text":"struct"},{"kind":"text","text":" "},{"kind":"identifier","text":"NameSpecification"}],"abstract":[{"type":"text","text":"A specification for how to represent a property as a command-line argument"},{"type":"text","text":" "},{"type":"text","text":"label."}],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/NameSpecification","kind":"symbol","type":"topic","navigatorTitle":[{"kind":"identifier","text":"NameSpecification"}],"url":"\/documentation\/argumentparser\/namespecification"},"doc://ArgumentParser/s33ExpressibleByUnicodeScalarLiteralP":{"type":"unresolvable","title":"Swift.ExpressibleByUnicodeScalarLiteral","identifier":"doc:\/\/ArgumentParser\/s33ExpressibleByUnicodeScalarLiteralP"},"doc://ArgumentParser/documentation/ArgumentParser/ArgumentHelp/abstract":{"role":"symbol","title":"abstract","fragments":[{"kind":"keyword","text":"var"},{"kind":"text","text":" "},{"kind":"identifier","text":"abstract"},{"kind":"text","text":": "},{"kind":"typeIdentifier","text":"String","preciseIdentifier":"s:SS"}],"abstract":[{"type":"text","text":"A short description of the argument."}],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/abstract","kind":"symbol","type":"topic","url":"\/documentation\/argumentparser\/argumenthelp\/abstract"},"doc://ArgumentParser/documentation/ArgumentParser/CustomizingHelp":{"role":"article","title":"Customizing Help","abstract":[{"type":"text","text":"Support your users (and yourself) by providing rich help for arguments, options, and flags."}],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/CustomizingHelp","kind":"article","type":"topic","url":"\/documentation\/argumentparser\/customizinghelp"},"doc://ArgumentParser/documentation/ArgumentParser/ArgumentHelp/hidden":{"role":"symbol","title":"hidden","fragments":[{"kind":"keyword","text":"static"},{"kind":"text","text":" "},{"kind":"keyword","text":"var"},{"kind":"text","text":" "},{"kind":"identifier","text":"hidden"},{"kind":"text","text":": "},{"kind":"typeIdentifier","text":"ArgumentHelp","preciseIdentifier":"s:14ArgumentParser0A4HelpV"}],"abstract":[{"type":"text","text":"A "},{"type":"codeVoice","code":"Help"},{"type":"text","text":" instance that shows an argument only in the extended help display."}],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/hidden","kind":"symbol","type":"topic","url":"\/documentation\/argumentparser\/argumenthelp\/hidden"}}}
+{
+  "abstract" : [
+    {
+      "text" : "Help information for a command-line argument.",
+      "type" : "text"
+    }
+  ],
+  "hierarchy" : {
+    "paths" : [
+      [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser"
+      ]
+    ]
+  },
+  "identifier" : {
+    "interfaceLanguage" : "swift",
+    "url" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp"
+  },
+  "kind" : "symbol",
+  "metadata" : {
+    "externalID" : "s:14ArgumentParser0A4HelpV",
+    "fragments" : [
+      {
+        "kind" : "keyword",
+        "text" : "struct"
+      },
+      {
+        "kind" : "text",
+        "text" : " "
+      },
+      {
+        "kind" : "identifier",
+        "text" : "ArgumentHelp"
+      }
+    ],
+    "modules" : [
+      {
+        "name" : "ArgumentParser"
+      }
+    ],
+    "navigatorTitle" : [
+      {
+        "kind" : "identifier",
+        "text" : "ArgumentHelp"
+      }
+    ],
+    "role" : "symbol",
+    "roleHeading" : "Structure",
+    "symbolKind" : "struct",
+    "title" : "ArgumentHelp"
+  },
+  "primaryContentSections" : [
+    {
+      "declarations" : [
+        {
+          "languages" : [
+            "swift"
+          ],
+          "platforms" : [
+            "macOS"
+          ],
+          "tokens" : [
+            {
+              "kind" : "keyword",
+              "text" : "struct"
+            },
+            {
+              "kind" : "text",
+              "text" : " "
+            },
+            {
+              "kind" : "identifier",
+              "text" : "ArgumentHelp"
+            }
+          ]
+        }
+      ],
+      "kind" : "declarations"
+    }
+  ],
+  "relationshipsSections" : [
+    {
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/s43ExpressibleByExtendedGraphemeClusterLiteralP",
+        "doc:\/\/ArgumentParser\/s32ExpressibleByStringInterpolationP",
+        "doc:\/\/ArgumentParser\/s26ExpressibleByStringLiteralP",
+        "doc:\/\/ArgumentParser\/s33ExpressibleByUnicodeScalarLiteralP"
+      ],
+      "kind" : "relationships",
+      "title" : "Conforms To",
+      "type" : "conformsTo"
+    }
+  ],
+  "schemaVersion" : {
+    "major" : 0,
+    "minor" : 3,
+    "patch" : 0
+  },
+  "sections" : [
+
+  ],
+  "seeAlsoSections" : [
+    {
+      "generated" : true,
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/CustomizingHelp",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentVisibility",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/NameSpecification"
+      ],
+      "title" : "Property Customization"
+    }
+  ],
+  "topicSections" : [
+    {
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/init(_:discussion:valueName:shouldDisplay:)",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/init(_:discussion:valueName:visibility:)"
+      ],
+      "title" : "Initializers"
+    },
+    {
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/abstract",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/discussion",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/shouldDisplay",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/valueName",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/visibility"
+      ],
+      "title" : "Instance Properties"
+    },
+    {
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/hidden",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/private"
+      ],
+      "title" : "Type Properties"
+    },
+    {
+      "generated" : true,
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/ExpressibleByExtendedGraphemeClusterLiteral-Implementations",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/ExpressibleByStringInterpolation-Implementations",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/ExpressibleByStringLiteral-Implementations",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/ExpressibleByUnicodeScalarLiteral-Implementations"
+      ],
+      "title" : "Default Implementations"
+    }
+  ],
+  "variants" : [
+    {
+      "paths" : [
+        "\/documentation\/argumentparser\/argumenthelp"
+      ],
+      "traits" : [
+        {
+          "interfaceLanguage" : "swift"
+        }
+      ]
+    }
+  ]
+, 
+"references": {
+"doc://ArgumentParser/documentation/ArgumentParser": {
+  "abstract" : [
+    {
+      "text" : "Straightforward, type-safe argument parsing for Swift.",
+      "type" : "text"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser",
+  "kind" : "symbol",
+  "role" : "collection",
+  "title" : "ArgumentParser",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ArgumentHelp": {
+  "abstract" : [
+    {
+      "text" : "Help information for a command-line argument.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "struct"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "ArgumentHelp"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp",
+  "kind" : "symbol",
+  "navigatorTitle" : [
+    {
+      "kind" : "identifier",
+      "text" : "ArgumentHelp"
+    }
+  ],
+  "role" : "symbol",
+  "title" : "ArgumentHelp",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/argumenthelp"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ArgumentHelp/ExpressibleByExtendedGraphemeClusterLiteral-Implementations": {
+  "abstract" : [
+
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/ExpressibleByExtendedGraphemeClusterLiteral-Implementations",
+  "kind" : "article",
+  "role" : "collectionGroup",
+  "title" : "ExpressibleByExtendedGraphemeClusterLiteral Implementations",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/argumenthelp\/expressiblebyextendedgraphemeclusterliteral-implementations"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ArgumentHelp/ExpressibleByStringInterpolation-Implementations": {
+  "abstract" : [
+
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/ExpressibleByStringInterpolation-Implementations",
+  "kind" : "article",
+  "role" : "collectionGroup",
+  "title" : "ExpressibleByStringInterpolation Implementations",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/argumenthelp\/expressiblebystringinterpolation-implementations"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ArgumentHelp/ExpressibleByStringLiteral-Implementations": {
+  "abstract" : [
+
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/ExpressibleByStringLiteral-Implementations",
+  "kind" : "article",
+  "role" : "collectionGroup",
+  "title" : "ExpressibleByStringLiteral Implementations",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/argumenthelp\/expressiblebystringliteral-implementations"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ArgumentHelp/ExpressibleByUnicodeScalarLiteral-Implementations": {
+  "abstract" : [
+
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/ExpressibleByUnicodeScalarLiteral-Implementations",
+  "kind" : "article",
+  "role" : "collectionGroup",
+  "title" : "ExpressibleByUnicodeScalarLiteral Implementations",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/argumenthelp\/expressiblebyunicodescalarliteral-implementations"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ArgumentHelp/abstract": {
+  "abstract" : [
+    {
+      "text" : "A short description of the argument.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "var"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "abstract"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:SS",
+      "text" : "String"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/abstract",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "abstract",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/argumenthelp\/abstract"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ArgumentHelp/discussion": {
+  "abstract" : [
+    {
+      "text" : "An expanded description of the argument, in plain text form.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "var"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "discussion"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:SS",
+      "text" : "String"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/discussion",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "discussion",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/argumenthelp\/discussion"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ArgumentHelp/hidden": {
+  "abstract" : [
+    {
+      "text" : "A ",
+      "type" : "text"
+    },
+    {
+      "code" : "Help",
+      "type" : "codeVoice"
+    },
+    {
+      "text" : " instance that shows an argument only in the extended help display.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "static"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "keyword",
+      "text" : "var"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "hidden"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser0A4HelpV",
+      "text" : "ArgumentHelp"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/hidden",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "hidden",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/argumenthelp\/hidden"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ArgumentHelp/init(_:discussion:valueName:shouldDisplay:)": {
+  "abstract" : [
+    {
+      "text" : "Creates a new help instance.",
+      "type" : "text"
+    }
+  ],
+  "deprecated" : true,
+  "fragments" : [
+    {
+      "kind" : "identifier",
+      "text" : "init"
+    },
+    {
+      "kind" : "text",
+      "text" : "("
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:SS",
+      "text" : "String"
+    },
+    {
+      "kind" : "text",
+      "text" : ", "
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "discussion"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:SS",
+      "text" : "String"
+    },
+    {
+      "kind" : "text",
+      "text" : ", "
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "valueName"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:SS",
+      "text" : "String"
+    },
+    {
+      "kind" : "text",
+      "text" : "?, "
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "shouldDisplay"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:Sb",
+      "text" : "Bool"
+    },
+    {
+      "kind" : "text",
+      "text" : ")"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/init(_:discussion:valueName:shouldDisplay:)",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "init(_:discussion:valueName:shouldDisplay:)",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/argumenthelp\/init(_:discussion:valuename:shoulddisplay:)"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ArgumentHelp/init(_:discussion:valueName:visibility:)": {
+  "abstract" : [
+    {
+      "text" : "Creates a new help instance.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "identifier",
+      "text" : "init"
+    },
+    {
+      "kind" : "text",
+      "text" : "("
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:SS",
+      "text" : "String"
+    },
+    {
+      "kind" : "text",
+      "text" : ", "
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "discussion"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:SS",
+      "text" : "String"
+    },
+    {
+      "kind" : "text",
+      "text" : ", "
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "valueName"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:SS",
+      "text" : "String"
+    },
+    {
+      "kind" : "text",
+      "text" : "?, "
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "visibility"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser0A10VisibilityV",
+      "text" : "ArgumentVisibility"
+    },
+    {
+      "kind" : "text",
+      "text" : ")"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/init(_:discussion:valueName:visibility:)",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "init(_:discussion:valueName:visibility:)",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/argumenthelp\/init(_:discussion:valuename:visibility:)"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ArgumentHelp/private": {
+  "abstract" : [
+    {
+      "text" : "A ",
+      "type" : "text"
+    },
+    {
+      "code" : "Help",
+      "type" : "codeVoice"
+    },
+    {
+      "text" : " instance that hides an argument from the extended help display.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "static"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "keyword",
+      "text" : "var"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "`private`"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser0A4HelpV",
+      "text" : "ArgumentHelp"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/private",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "private",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/argumenthelp\/private"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ArgumentHelp/shouldDisplay": {
+  "abstract" : [
+    {
+      "text" : "A Boolean value indicating whether this argument should be shown in",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "text" : "the extended help display.",
+      "type" : "text"
+    }
+  ],
+  "deprecated" : true,
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "var"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "shouldDisplay"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:Sb",
+      "text" : "Bool"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/shouldDisplay",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "shouldDisplay",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/argumenthelp\/shoulddisplay"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ArgumentHelp/valueName": {
+  "abstract" : [
+    {
+      "text" : "An alternative name to use for the argument’s value when showing usage",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "text" : "information.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "var"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "valueName"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:SS",
+      "text" : "String"
+    },
+    {
+      "kind" : "text",
+      "text" : "?"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/valueName",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "valueName",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/argumenthelp\/valuename"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ArgumentHelp/visibility": {
+  "abstract" : [
+    {
+      "text" : "A visibility level indicating whether this argument should be shown in",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "text" : "the extended help display.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "var"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "visibility"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser0A10VisibilityV",
+      "text" : "ArgumentVisibility"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentHelp\/visibility",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "visibility",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/argumenthelp\/visibility"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ArgumentVisibility": {
+  "abstract" : [
+    {
+      "text" : "Visibility level of an argument’s help.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "struct"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "ArgumentVisibility"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentVisibility",
+  "kind" : "symbol",
+  "navigatorTitle" : [
+    {
+      "kind" : "identifier",
+      "text" : "ArgumentVisibility"
+    }
+  ],
+  "role" : "symbol",
+  "title" : "ArgumentVisibility",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/argumentvisibility"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/CustomizingHelp": {
+  "abstract" : [
+    {
+      "text" : "Support your users (and yourself) by providing rich help for arguments, options, and flags.",
+      "type" : "text"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/CustomizingHelp",
+  "kind" : "article",
+  "role" : "article",
+  "title" : "Customizing Help",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/customizinghelp"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/NameSpecification": {
+  "abstract" : [
+    {
+      "text" : "A specification for how to represent a property as a command-line argument",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "text" : "label.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "struct"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "NameSpecification"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/NameSpecification",
+  "kind" : "symbol",
+  "navigatorTitle" : [
+    {
+      "kind" : "identifier",
+      "text" : "NameSpecification"
+    }
+  ],
+  "role" : "symbol",
+  "title" : "NameSpecification",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/namespecification"
+},
+"doc://ArgumentParser/s26ExpressibleByStringLiteralP": {
+  "identifier" : "doc:\/\/ArgumentParser\/s26ExpressibleByStringLiteralP",
+  "title" : "Swift.ExpressibleByStringLiteral",
+  "type" : "unresolvable"
+},
+"doc://ArgumentParser/s32ExpressibleByStringInterpolationP": {
+  "identifier" : "doc:\/\/ArgumentParser\/s32ExpressibleByStringInterpolationP",
+  "title" : "Swift.ExpressibleByStringInterpolation",
+  "type" : "unresolvable"
+},
+"doc://ArgumentParser/s33ExpressibleByUnicodeScalarLiteralP": {
+  "identifier" : "doc:\/\/ArgumentParser\/s33ExpressibleByUnicodeScalarLiteralP",
+  "title" : "Swift.ExpressibleByUnicodeScalarLiteral",
+  "type" : "unresolvable"
+},
+"doc://ArgumentParser/s43ExpressibleByExtendedGraphemeClusterLiteralP": {
+  "identifier" : "doc:\/\/ArgumentParser\/s43ExpressibleByExtendedGraphemeClusterLiteralP",
+  "title" : "Swift.ExpressibleByExtendedGraphemeClusterLiteral",
+  "type" : "unresolvable"
+}
+}
+}

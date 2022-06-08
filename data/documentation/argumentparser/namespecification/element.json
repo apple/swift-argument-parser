@@ -1,1 +1,526 @@
-{"primaryContentSections":[{"kind":"declarations","declarations":[{"tokens":[{"kind":"keyword","text":"struct"},{"kind":"text","text":" "},{"kind":"identifier","text":"Element"}],"languages":["swift"],"platforms":["macOS"]}]}],"schemaVersion":{"major":0,"minor":2,"patch":0},"sections":[],"variants":[{"paths":["\/documentation\/argumentparser\/namespecification\/element"],"traits":[{"interfaceLanguage":"swift"}]}],"relationshipsSections":[{"identifiers":["doc:\/\/ArgumentParser\/SQ","doc:\/\/ArgumentParser\/SH"],"kind":"relationships","title":"Conforms To","type":"conformsTo"}],"identifier":{"url":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/NameSpecification\/Element","interfaceLanguage":"swift"},"abstract":[{"type":"text","text":"An individual property name translation."}],"kind":"symbol","metadata":{"fragments":[{"kind":"keyword","text":"struct"},{"kind":"text","text":" "},{"kind":"identifier","text":"Element"}],"title":"NameSpecification.Element","roleHeading":"Structure","role":"symbol","symbolKind":"struct","externalID":"s:14ArgumentParser17NameSpecificationV7ElementV","modules":[{"name":"ArgumentParser"}],"navigatorTitle":[{"kind":"identifier","text":"Element"}]},"hierarchy":{"paths":[["doc:\/\/ArgumentParser\/documentation\/ArgumentParser","doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/NameSpecification"]]},"topicSections":[{"title":"Type Properties","identifiers":["doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/NameSpecification\/Element\/long","doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/NameSpecification\/Element\/short"]},{"title":"Type Methods","identifiers":["doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/NameSpecification\/Element\/customLong(_:withSingleDash:)","doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/NameSpecification\/Element\/customShort(_:allowingJoined:)"]},{"title":"Default Implementations","identifiers":["doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/NameSpecification\/Element\/Equatable-Implementations"],"generated":true}],"references":{"doc://ArgumentParser/documentation/ArgumentParser":{"role":"collection","title":"ArgumentParser","abstract":[{"type":"text","text":"Straightforward, type-safe argument parsing for Swift."}],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser","kind":"symbol","type":"topic","url":"\/documentation\/argumentparser"},"doc://ArgumentParser/documentation/ArgumentParser/NameSpecification/Element":{"role":"symbol","title":"NameSpecification.Element","fragments":[{"kind":"keyword","text":"struct"},{"kind":"text","text":" "},{"kind":"identifier","text":"Element"}],"abstract":[{"type":"text","text":"An individual property name translation."}],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/NameSpecification\/Element","kind":"symbol","type":"topic","navigatorTitle":[{"kind":"identifier","text":"Element"}],"url":"\/documentation\/argumentparser\/namespecification\/element"},"doc://ArgumentParser/SQ":{"type":"unresolvable","title":"Swift.Equatable","identifier":"doc:\/\/ArgumentParser\/SQ"},"doc://ArgumentParser/documentation/ArgumentParser/NameSpecification":{"role":"symbol","title":"NameSpecification","fragments":[{"kind":"keyword","text":"struct"},{"kind":"text","text":" "},{"kind":"identifier","text":"NameSpecification"}],"abstract":[{"type":"text","text":"A specification for how to represent a property as a command-line argument"},{"type":"text","text":" "},{"type":"text","text":"label."}],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/NameSpecification","kind":"symbol","type":"topic","navigatorTitle":[{"kind":"identifier","text":"NameSpecification"}],"url":"\/documentation\/argumentparser\/namespecification"},"doc://ArgumentParser/documentation/ArgumentParser/NameSpecification/Element/customLong(_:withSingleDash:)":{"role":"symbol","title":"customLong(_:withSingleDash:)","fragments":[{"kind":"keyword","text":"static"},{"kind":"text","text":" "},{"kind":"keyword","text":"func"},{"kind":"text","text":" "},{"kind":"identifier","text":"customLong"},{"kind":"text","text":"("},{"kind":"typeIdentifier","text":"String","preciseIdentifier":"s:SS"},{"kind":"text","text":", "},{"kind":"externalParam","text":"withSingleDash"},{"kind":"text","text":": "},{"kind":"typeIdentifier","text":"Bool","preciseIdentifier":"s:Sb"},{"kind":"text","text":") -> "},{"kind":"typeIdentifier","text":"NameSpecification","preciseIdentifier":"s:14ArgumentParser17NameSpecificationV"},{"kind":"text","text":"."},{"kind":"typeIdentifier","text":"Element","preciseIdentifier":"s:14ArgumentParser17NameSpecificationV7ElementV"}],"abstract":[{"type":"text","text":"Use the given string instead of the property’s name."}],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/NameSpecification\/Element\/customLong(_:withSingleDash:)","kind":"symbol","type":"topic","url":"\/documentation\/argumentparser\/namespecification\/element\/customlong(_:withsingledash:)"},"doc://ArgumentParser/SH":{"type":"unresolvable","title":"Swift.Hashable","identifier":"doc:\/\/ArgumentParser\/SH"},"doc://ArgumentParser/documentation/ArgumentParser/NameSpecification/Element/long":{"role":"symbol","title":"long","fragments":[{"kind":"keyword","text":"static"},{"kind":"text","text":" "},{"kind":"keyword","text":"var"},{"kind":"text","text":" "},{"kind":"identifier","text":"long"},{"kind":"text","text":": "},{"kind":"typeIdentifier","text":"NameSpecification","preciseIdentifier":"s:14ArgumentParser17NameSpecificationV"},{"kind":"text","text":"."},{"kind":"typeIdentifier","text":"Element","preciseIdentifier":"s:14ArgumentParser17NameSpecificationV7ElementV"}],"abstract":[{"type":"text","text":"Use the property’s name, converted to lowercase with words separated by"},{"type":"text","text":" "},{"type":"text","text":"hyphens."}],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/NameSpecification\/Element\/long","kind":"symbol","type":"topic","url":"\/documentation\/argumentparser\/namespecification\/element\/long"},"doc://ArgumentParser/documentation/ArgumentParser/NameSpecification/Element/customShort(_:allowingJoined:)":{"role":"symbol","title":"customShort(_:allowingJoined:)","fragments":[{"kind":"keyword","text":"static"},{"kind":"text","text":" "},{"kind":"keyword","text":"func"},{"kind":"text","text":" "},{"kind":"identifier","text":"customShort"},{"kind":"text","text":"("},{"kind":"typeIdentifier","text":"Character","preciseIdentifier":"s:SJ"},{"kind":"text","text":", "},{"kind":"externalParam","text":"allowingJoined"},{"kind":"text","text":": "},{"kind":"typeIdentifier","text":"Bool","preciseIdentifier":"s:Sb"},{"kind":"text","text":") -> "},{"kind":"typeIdentifier","text":"NameSpecification","preciseIdentifier":"s:14ArgumentParser17NameSpecificationV"},{"kind":"text","text":"."},{"kind":"typeIdentifier","text":"Element","preciseIdentifier":"s:14ArgumentParser17NameSpecificationV7ElementV"}],"abstract":[{"type":"text","text":"Use the given character as a short option label."}],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/NameSpecification\/Element\/customShort(_:allowingJoined:)","kind":"symbol","type":"topic","url":"\/documentation\/argumentparser\/namespecification\/element\/customshort(_:allowingjoined:)"},"doc://ArgumentParser/documentation/ArgumentParser/NameSpecification/Element/short":{"role":"symbol","title":"short","fragments":[{"kind":"keyword","text":"static"},{"kind":"text","text":" "},{"kind":"keyword","text":"var"},{"kind":"text","text":" "},{"kind":"identifier","text":"short"},{"kind":"text","text":": "},{"kind":"typeIdentifier","text":"NameSpecification","preciseIdentifier":"s:14ArgumentParser17NameSpecificationV"},{"kind":"text","text":"."},{"kind":"typeIdentifier","text":"Element","preciseIdentifier":"s:14ArgumentParser17NameSpecificationV7ElementV"}],"abstract":[{"type":"text","text":"Use the first character of the property’s name as a short option label."}],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/NameSpecification\/Element\/short","kind":"symbol","type":"topic","url":"\/documentation\/argumentparser\/namespecification\/element\/short"},"doc://ArgumentParser/documentation/ArgumentParser/NameSpecification/Element/Equatable-Implementations":{"role":"collectionGroup","title":"Equatable Implementations","abstract":[],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/NameSpecification\/Element\/Equatable-Implementations","kind":"article","type":"topic","url":"\/documentation\/argumentparser\/namespecification\/element\/equatable-implementations"}}}
+{
+  "abstract" : [
+    {
+      "text" : "An individual property name translation.",
+      "type" : "text"
+    }
+  ],
+  "hierarchy" : {
+    "paths" : [
+      [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/NameSpecification"
+      ]
+    ]
+  },
+  "identifier" : {
+    "interfaceLanguage" : "swift",
+    "url" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/NameSpecification\/Element"
+  },
+  "kind" : "symbol",
+  "metadata" : {
+    "externalID" : "s:14ArgumentParser17NameSpecificationV7ElementV",
+    "fragments" : [
+      {
+        "kind" : "keyword",
+        "text" : "struct"
+      },
+      {
+        "kind" : "text",
+        "text" : " "
+      },
+      {
+        "kind" : "identifier",
+        "text" : "Element"
+      }
+    ],
+    "modules" : [
+      {
+        "name" : "ArgumentParser"
+      }
+    ],
+    "navigatorTitle" : [
+      {
+        "kind" : "identifier",
+        "text" : "Element"
+      }
+    ],
+    "role" : "symbol",
+    "roleHeading" : "Structure",
+    "symbolKind" : "struct",
+    "title" : "NameSpecification.Element"
+  },
+  "primaryContentSections" : [
+    {
+      "declarations" : [
+        {
+          "languages" : [
+            "swift"
+          ],
+          "platforms" : [
+            "macOS"
+          ],
+          "tokens" : [
+            {
+              "kind" : "keyword",
+              "text" : "struct"
+            },
+            {
+              "kind" : "text",
+              "text" : " "
+            },
+            {
+              "kind" : "identifier",
+              "text" : "Element"
+            }
+          ]
+        }
+      ],
+      "kind" : "declarations"
+    }
+  ],
+  "relationshipsSections" : [
+    {
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/SQ",
+        "doc:\/\/ArgumentParser\/SH"
+      ],
+      "kind" : "relationships",
+      "title" : "Conforms To",
+      "type" : "conformsTo"
+    }
+  ],
+  "schemaVersion" : {
+    "major" : 0,
+    "minor" : 3,
+    "patch" : 0
+  },
+  "sections" : [
+
+  ],
+  "topicSections" : [
+    {
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/NameSpecification\/Element\/long",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/NameSpecification\/Element\/short"
+      ],
+      "title" : "Type Properties"
+    },
+    {
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/NameSpecification\/Element\/customLong(_:withSingleDash:)",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/NameSpecification\/Element\/customShort(_:allowingJoined:)"
+      ],
+      "title" : "Type Methods"
+    },
+    {
+      "generated" : true,
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/NameSpecification\/Element\/Equatable-Implementations"
+      ],
+      "title" : "Default Implementations"
+    }
+  ],
+  "variants" : [
+    {
+      "paths" : [
+        "\/documentation\/argumentparser\/namespecification\/element"
+      ],
+      "traits" : [
+        {
+          "interfaceLanguage" : "swift"
+        }
+      ]
+    }
+  ]
+, 
+"references": {
+"doc://ArgumentParser/SH": {
+  "identifier" : "doc:\/\/ArgumentParser\/SH",
+  "title" : "Swift.Hashable",
+  "type" : "unresolvable"
+},
+"doc://ArgumentParser/SQ": {
+  "identifier" : "doc:\/\/ArgumentParser\/SQ",
+  "title" : "Swift.Equatable",
+  "type" : "unresolvable"
+},
+"doc://ArgumentParser/documentation/ArgumentParser": {
+  "abstract" : [
+    {
+      "text" : "Straightforward, type-safe argument parsing for Swift.",
+      "type" : "text"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser",
+  "kind" : "symbol",
+  "role" : "collection",
+  "title" : "ArgumentParser",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/NameSpecification": {
+  "abstract" : [
+    {
+      "text" : "A specification for how to represent a property as a command-line argument",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "text" : "label.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "struct"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "NameSpecification"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/NameSpecification",
+  "kind" : "symbol",
+  "navigatorTitle" : [
+    {
+      "kind" : "identifier",
+      "text" : "NameSpecification"
+    }
+  ],
+  "role" : "symbol",
+  "title" : "NameSpecification",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/namespecification"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/NameSpecification/Element": {
+  "abstract" : [
+    {
+      "text" : "An individual property name translation.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "struct"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "Element"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/NameSpecification\/Element",
+  "kind" : "symbol",
+  "navigatorTitle" : [
+    {
+      "kind" : "identifier",
+      "text" : "Element"
+    }
+  ],
+  "role" : "symbol",
+  "title" : "NameSpecification.Element",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/namespecification\/element"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/NameSpecification/Element/Equatable-Implementations": {
+  "abstract" : [
+
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/NameSpecification\/Element\/Equatable-Implementations",
+  "kind" : "article",
+  "role" : "collectionGroup",
+  "title" : "Equatable Implementations",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/namespecification\/element\/equatable-implementations"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/NameSpecification/Element/customLong(_:withSingleDash:)": {
+  "abstract" : [
+    {
+      "text" : "Use the given string instead of the property’s name.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "static"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "keyword",
+      "text" : "func"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "customLong"
+    },
+    {
+      "kind" : "text",
+      "text" : "("
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:SS",
+      "text" : "String"
+    },
+    {
+      "kind" : "text",
+      "text" : ", "
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "withSingleDash"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:Sb",
+      "text" : "Bool"
+    },
+    {
+      "kind" : "text",
+      "text" : ") -> "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser17NameSpecificationV",
+      "text" : "NameSpecification"
+    },
+    {
+      "kind" : "text",
+      "text" : "."
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser17NameSpecificationV7ElementV",
+      "text" : "Element"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/NameSpecification\/Element\/customLong(_:withSingleDash:)",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "customLong(_:withSingleDash:)",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/namespecification\/element\/customlong(_:withsingledash:)"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/NameSpecification/Element/customShort(_:allowingJoined:)": {
+  "abstract" : [
+    {
+      "text" : "Use the given character as a short option label.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "static"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "keyword",
+      "text" : "func"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "customShort"
+    },
+    {
+      "kind" : "text",
+      "text" : "("
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:SJ",
+      "text" : "Character"
+    },
+    {
+      "kind" : "text",
+      "text" : ", "
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "allowingJoined"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:Sb",
+      "text" : "Bool"
+    },
+    {
+      "kind" : "text",
+      "text" : ") -> "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser17NameSpecificationV",
+      "text" : "NameSpecification"
+    },
+    {
+      "kind" : "text",
+      "text" : "."
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser17NameSpecificationV7ElementV",
+      "text" : "Element"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/NameSpecification\/Element\/customShort(_:allowingJoined:)",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "customShort(_:allowingJoined:)",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/namespecification\/element\/customshort(_:allowingjoined:)"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/NameSpecification/Element/long": {
+  "abstract" : [
+    {
+      "text" : "Use the property’s name, converted to lowercase with words separated by",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "text" : "hyphens.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "static"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "keyword",
+      "text" : "var"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "long"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser17NameSpecificationV",
+      "text" : "NameSpecification"
+    },
+    {
+      "kind" : "text",
+      "text" : "."
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser17NameSpecificationV7ElementV",
+      "text" : "Element"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/NameSpecification\/Element\/long",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "long",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/namespecification\/element\/long"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/NameSpecification/Element/short": {
+  "abstract" : [
+    {
+      "text" : "Use the first character of the property’s name as a short option label.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "static"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "keyword",
+      "text" : "var"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "short"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser17NameSpecificationV",
+      "text" : "NameSpecification"
+    },
+    {
+      "kind" : "text",
+      "text" : "."
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser17NameSpecificationV7ElementV",
+      "text" : "Element"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/NameSpecification\/Element\/short",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "short",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/namespecification\/element\/short"
+}
+}
+}

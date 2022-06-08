@@ -1,1 +1,402 @@
-{"primaryContentSections":[{"kind":"declarations","declarations":[{"tokens":[{"kind":"keyword","text":"static"},{"kind":"text","text":" "},{"kind":"keyword","text":"var"},{"kind":"text","text":" "},{"kind":"identifier","text":"prefixedEnableDisable"},{"kind":"text","text":": "},{"kind":"typeIdentifier","identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/FlagInversion","preciseIdentifier":"s:14ArgumentParser13FlagInversionV","text":"FlagInversion"},{"kind":"text","text":" { "},{"kind":"keyword","text":"get"},{"kind":"text","text":" }"}],"languages":["swift"],"platforms":["macOS"]}]},{"kind":"content","content":[{"anchor":"discussion","level":2,"type":"heading","text":"Discussion"},{"type":"paragraph","inlineContent":[{"type":"text","text":"For example, the "},{"type":"codeVoice","code":"extraOutput"},{"type":"text","text":" property in this declaration is set to"},{"type":"text","text":" "},{"type":"codeVoice","code":"true"},{"type":"text","text":" when a user provides "},{"type":"codeVoice","code":"--enable-extra-output"},{"type":"text","text":" and to "},{"type":"codeVoice","code":"false"},{"type":"text","text":" when"},{"type":"text","text":" "},{"type":"text","text":"the user provides "},{"type":"codeVoice","code":"--disable-extra-output"},{"type":"text","text":":"}]},{"type":"codeListing","syntax":null,"code":["@Flag(inversion: .prefixedEnableDisable)","var extraOutput: Bool"]}]}],"schemaVersion":{"major":0,"minor":2,"patch":0},"sections":[],"variants":[{"paths":["\/documentation\/argumentparser\/flaginversion\/prefixedenabledisable"],"traits":[{"interfaceLanguage":"swift"}]}],"identifier":{"url":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/FlagInversion\/prefixedEnableDisable","interfaceLanguage":"swift"},"abstract":[{"type":"text","text":"Uses matching flags with "},{"type":"codeVoice","code":"enable-"},{"type":"text","text":" and "},{"type":"codeVoice","code":"disable-"},{"type":"text","text":" prefixes."}],"kind":"symbol","metadata":{"fragments":[{"kind":"keyword","text":"static"},{"kind":"text","text":" "},{"kind":"keyword","text":"var"},{"kind":"text","text":" "},{"kind":"identifier","text":"prefixedEnableDisable"},{"kind":"text","text":": "},{"kind":"typeIdentifier","text":"FlagInversion","preciseIdentifier":"s:14ArgumentParser13FlagInversionV"}],"title":"prefixedEnableDisable","roleHeading":"Type Property","role":"symbol","symbolKind":"property","externalID":"s:14ArgumentParser13FlagInversionV21prefixedEnableDisableACvpZ","modules":[{"name":"ArgumentParser"}]},"hierarchy":{"paths":[["doc:\/\/ArgumentParser\/documentation\/ArgumentParser","doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Flag","doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/FlagInversion"]]},"references":{"doc://ArgumentParser/documentation/ArgumentParser/FlagInversion":{"role":"symbol","title":"FlagInversion","fragments":[{"kind":"keyword","text":"struct"},{"kind":"text","text":" "},{"kind":"identifier","text":"FlagInversion"}],"abstract":[{"type":"text","text":"The options for converting a Boolean flag into a "},{"type":"codeVoice","code":"true"},{"type":"text","text":"\/"},{"type":"codeVoice","code":"false"},{"type":"text","text":" pair."}],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/FlagInversion","kind":"symbol","type":"topic","navigatorTitle":[{"kind":"identifier","text":"FlagInversion"}],"url":"\/documentation\/argumentparser\/flaginversion"},"doc://ArgumentParser/documentation/ArgumentParser":{"role":"collection","title":"ArgumentParser","abstract":[{"type":"text","text":"Straightforward, type-safe argument parsing for Swift."}],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser","kind":"symbol","type":"topic","url":"\/documentation\/argumentparser"},"doc://ArgumentParser/documentation/ArgumentParser/FlagInversion/prefixedEnableDisable":{"role":"symbol","title":"prefixedEnableDisable","fragments":[{"kind":"keyword","text":"static"},{"kind":"text","text":" "},{"kind":"keyword","text":"var"},{"kind":"text","text":" "},{"kind":"identifier","text":"prefixedEnableDisable"},{"kind":"text","text":": "},{"kind":"typeIdentifier","text":"FlagInversion","preciseIdentifier":"s:14ArgumentParser13FlagInversionV"}],"abstract":[{"type":"text","text":"Uses matching flags with "},{"type":"codeVoice","code":"enable-"},{"type":"text","text":" and "},{"type":"codeVoice","code":"disable-"},{"type":"text","text":" prefixes."}],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/FlagInversion\/prefixedEnableDisable","kind":"symbol","type":"topic","url":"\/documentation\/argumentparser\/flaginversion\/prefixedenabledisable"},"doc://ArgumentParser/documentation/ArgumentParser/Flag":{"role":"symbol","title":"Flag","fragments":[{"kind":"keyword","text":"struct"},{"kind":"text","text":" "},{"kind":"identifier","text":"Flag"}],"abstract":[{"type":"text","text":"A property wrapper that represents a command-line flag."}],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Flag","kind":"symbol","type":"topic","navigatorTitle":[{"kind":"identifier","text":"Flag"}],"url":"\/documentation\/argumentparser\/flag"}}}
+{
+  "abstract" : [
+    {
+      "text" : "Uses matching flags with ",
+      "type" : "text"
+    },
+    {
+      "code" : "enable-",
+      "type" : "codeVoice"
+    },
+    {
+      "text" : " and ",
+      "type" : "text"
+    },
+    {
+      "code" : "disable-",
+      "type" : "codeVoice"
+    },
+    {
+      "text" : " prefixes.",
+      "type" : "text"
+    }
+  ],
+  "hierarchy" : {
+    "paths" : [
+      [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Flag",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/FlagInversion"
+      ]
+    ]
+  },
+  "identifier" : {
+    "interfaceLanguage" : "swift",
+    "url" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/FlagInversion\/prefixedEnableDisable"
+  },
+  "kind" : "symbol",
+  "metadata" : {
+    "externalID" : "s:14ArgumentParser13FlagInversionV21prefixedEnableDisableACvpZ",
+    "fragments" : [
+      {
+        "kind" : "keyword",
+        "text" : "static"
+      },
+      {
+        "kind" : "text",
+        "text" : " "
+      },
+      {
+        "kind" : "keyword",
+        "text" : "var"
+      },
+      {
+        "kind" : "text",
+        "text" : " "
+      },
+      {
+        "kind" : "identifier",
+        "text" : "prefixedEnableDisable"
+      },
+      {
+        "kind" : "text",
+        "text" : ": "
+      },
+      {
+        "kind" : "typeIdentifier",
+        "preciseIdentifier" : "s:14ArgumentParser13FlagInversionV",
+        "text" : "FlagInversion"
+      }
+    ],
+    "modules" : [
+      {
+        "name" : "ArgumentParser"
+      }
+    ],
+    "role" : "symbol",
+    "roleHeading" : "Type Property",
+    "symbolKind" : "property",
+    "title" : "prefixedEnableDisable"
+  },
+  "primaryContentSections" : [
+    {
+      "declarations" : [
+        {
+          "languages" : [
+            "swift"
+          ],
+          "platforms" : [
+            "macOS"
+          ],
+          "tokens" : [
+            {
+              "kind" : "keyword",
+              "text" : "static"
+            },
+            {
+              "kind" : "text",
+              "text" : " "
+            },
+            {
+              "kind" : "keyword",
+              "text" : "var"
+            },
+            {
+              "kind" : "text",
+              "text" : " "
+            },
+            {
+              "kind" : "identifier",
+              "text" : "prefixedEnableDisable"
+            },
+            {
+              "kind" : "text",
+              "text" : ": "
+            },
+            {
+              "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/FlagInversion",
+              "kind" : "typeIdentifier",
+              "preciseIdentifier" : "s:14ArgumentParser13FlagInversionV",
+              "text" : "FlagInversion"
+            },
+            {
+              "kind" : "text",
+              "text" : " { "
+            },
+            {
+              "kind" : "keyword",
+              "text" : "get"
+            },
+            {
+              "kind" : "text",
+              "text" : " }"
+            }
+          ]
+        }
+      ],
+      "kind" : "declarations"
+    },
+    {
+      "content" : [
+        {
+          "anchor" : "discussion",
+          "level" : 2,
+          "text" : "Discussion",
+          "type" : "heading"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "For example, the ",
+              "type" : "text"
+            },
+            {
+              "code" : "extraOutput",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " property in this declaration is set to",
+              "type" : "text"
+            },
+            {
+              "text" : " ",
+              "type" : "text"
+            },
+            {
+              "code" : "true",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " when a user provides ",
+              "type" : "text"
+            },
+            {
+              "code" : "--enable-extra-output",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " and to ",
+              "type" : "text"
+            },
+            {
+              "code" : "false",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " when",
+              "type" : "text"
+            },
+            {
+              "text" : " ",
+              "type" : "text"
+            },
+            {
+              "text" : "the user provides ",
+              "type" : "text"
+            },
+            {
+              "code" : "--disable-extra-output",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : ":",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "code" : [
+            "@Flag(inversion: .prefixedEnableDisable)",
+            "var extraOutput: Bool"
+          ],
+          "syntax" : null,
+          "type" : "codeListing"
+        }
+      ],
+      "kind" : "content"
+    }
+  ],
+  "schemaVersion" : {
+    "major" : 0,
+    "minor" : 3,
+    "patch" : 0
+  },
+  "sections" : [
+
+  ],
+  "variants" : [
+    {
+      "paths" : [
+        "\/documentation\/argumentparser\/flaginversion\/prefixedenabledisable"
+      ],
+      "traits" : [
+        {
+          "interfaceLanguage" : "swift"
+        }
+      ]
+    }
+  ]
+, 
+"references": {
+"doc://ArgumentParser/documentation/ArgumentParser": {
+  "abstract" : [
+    {
+      "text" : "Straightforward, type-safe argument parsing for Swift.",
+      "type" : "text"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser",
+  "kind" : "symbol",
+  "role" : "collection",
+  "title" : "ArgumentParser",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/Flag": {
+  "abstract" : [
+    {
+      "text" : "A property wrapper that represents a command-line flag.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "struct"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "Flag"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Flag",
+  "kind" : "symbol",
+  "navigatorTitle" : [
+    {
+      "kind" : "identifier",
+      "text" : "Flag"
+    }
+  ],
+  "role" : "symbol",
+  "title" : "Flag",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/flag"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/FlagInversion": {
+  "abstract" : [
+    {
+      "text" : "The options for converting a Boolean flag into a ",
+      "type" : "text"
+    },
+    {
+      "code" : "true",
+      "type" : "codeVoice"
+    },
+    {
+      "text" : "\/",
+      "type" : "text"
+    },
+    {
+      "code" : "false",
+      "type" : "codeVoice"
+    },
+    {
+      "text" : " pair.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "struct"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "FlagInversion"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/FlagInversion",
+  "kind" : "symbol",
+  "navigatorTitle" : [
+    {
+      "kind" : "identifier",
+      "text" : "FlagInversion"
+    }
+  ],
+  "role" : "symbol",
+  "title" : "FlagInversion",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/flaginversion"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/FlagInversion/prefixedEnableDisable": {
+  "abstract" : [
+    {
+      "text" : "Uses matching flags with ",
+      "type" : "text"
+    },
+    {
+      "code" : "enable-",
+      "type" : "codeVoice"
+    },
+    {
+      "text" : " and ",
+      "type" : "text"
+    },
+    {
+      "code" : "disable-",
+      "type" : "codeVoice"
+    },
+    {
+      "text" : " prefixes.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "static"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "keyword",
+      "text" : "var"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "prefixedEnableDisable"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser13FlagInversionV",
+      "text" : "FlagInversion"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/FlagInversion\/prefixedEnableDisable",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "prefixedEnableDisable",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/flaginversion\/prefixedenabledisable"
+}
+}
+}

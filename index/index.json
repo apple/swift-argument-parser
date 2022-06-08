@@ -1,0 +1,1814 @@
+{
+  "interfaceLanguages" : {
+    "swift" : [
+      {
+        "children" : [
+          {
+            "title" : "Essentials",
+            "type" : "groupMarker"
+          },
+          {
+            "path" : "\/documentation\/argumentparser\/gettingstarted",
+            "title" : "Getting Started with ArgumentParser",
+            "type" : "article"
+          },
+          {
+            "children" : [
+              {
+                "title" : "Essentials",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/commandsandsubcommands",
+                "title" : "Defining Commands and Subcommands",
+                "type" : "article"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/customizingcommandhelp",
+                "title" : "Customizing Help for Commands",
+                "type" : "article"
+              },
+              {
+                "title" : "Implementing a Command’s Behavior",
+                "type" : "groupMarker"
+              },
+              {
+                "children" : [
+                  {
+                    "children" : [
+                      {
+                        "path" : "\/documentation\/argumentparser\/parsablecommand\/run()-20aoy",
+                        "title" : "func run() throws",
+                        "type" : "method"
+                      }
+                    ],
+                    "title" : "ParsableCommand Implementations",
+                    "type" : "groupMarker"
+                  }
+                ],
+                "path" : "\/documentation\/argumentparser\/parsablecommand\/run()-7p2fr",
+                "title" : "func run() throws",
+                "type" : "method"
+              },
+              {
+                "children" : [
+                  {
+                    "title" : "ParsableArguments Implementations",
+                    "type" : "groupMarker"
+                  }
+                ],
+                "path" : "\/documentation\/argumentparser\/parsablearguments\/validate()-5r0ge",
+                "title" : "func validate() throws",
+                "type" : "method"
+              },
+              {
+                "title" : "Customizing a Command",
+                "type" : "groupMarker"
+              },
+              {
+                "children" : [
+                  {
+                    "children" : [
+                      {
+                        "path" : "\/documentation\/argumentparser\/parsablecommand\/configuration-6i64v",
+                        "title" : "static var configuration: CommandConfiguration",
+                        "type" : "property"
+                      }
+                    ],
+                    "title" : "ParsableCommand Implementations",
+                    "type" : "groupMarker"
+                  }
+                ],
+                "path" : "\/documentation\/argumentparser\/parsablecommand\/configuration-35km1",
+                "title" : "static var configuration: CommandConfiguration",
+                "type" : "property"
+              },
+              {
+                "children" : [
+                  {
+                    "title" : "Creating a Configuration",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/commandconfiguration\/init(commandname:abstract:usage:discussion:version:shoulddisplay:subcommands:defaultsubcommand:helpnames:)",
+                    "title" : "init(commandName: String?, abstract: String, usage: String?, discussion: String, version: String, shouldDisplay: Bool, subcommands: [ParsableCommand.Type], defaultSubcommand: ParsableCommand.Type?, helpNames: NameSpecification?)",
+                    "type" : "init"
+                  },
+                  {
+                    "title" : "Customizing the Help Screen",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/commandconfiguration\/abstract",
+                    "title" : "var abstract: String",
+                    "type" : "property"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/commandconfiguration\/discussion",
+                    "title" : "var discussion: String",
+                    "type" : "property"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/commandconfiguration\/usage",
+                    "title" : "var usage: String?",
+                    "type" : "property"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/commandconfiguration\/helpnames",
+                    "title" : "var helpNames: NameSpecification?",
+                    "type" : "property"
+                  },
+                  {
+                    "title" : "Declaring Subcommands",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/commandconfiguration\/subcommands",
+                    "title" : "var subcommands: [ParsableCommand.Type]",
+                    "type" : "property"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/commandconfiguration\/defaultsubcommand",
+                    "title" : "var defaultSubcommand: ParsableCommand.Type?",
+                    "type" : "property"
+                  },
+                  {
+                    "title" : "Defining Command Properties",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/commandconfiguration\/commandname",
+                    "title" : "var commandName: String?",
+                    "type" : "property"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/commandconfiguration\/version",
+                    "title" : "var version: String",
+                    "type" : "property"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/commandconfiguration\/shoulddisplay",
+                    "title" : "var shouldDisplay: Bool",
+                    "type" : "property"
+                  },
+                  {
+                    "title" : "Deprecated APIs",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/commandconfiguration\/init(commandname:abstract:discussion:version:shoulddisplay:subcommands:defaultsubcommand:helpnames:)",
+                    "title" : "init(commandName: String?, abstract: String, discussion: String, version: String, shouldDisplay: Bool, subcommands: [ParsableCommand.Type], defaultSubcommand: ParsableCommand.Type?, helpNames: NameSpecification?)",
+                    "type" : "init"
+                  }
+                ],
+                "path" : "\/documentation\/argumentparser\/commandconfiguration",
+                "title" : "CommandConfiguration",
+                "type" : "struct"
+              },
+              {
+                "title" : "Generating Help Text",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/parsablecommand\/helpmessage(for:includehidden:columns:)",
+                "title" : "static func helpMessage(for: ParsableCommand.Type, includeHidden: Bool, columns: Int?) -> String",
+                "type" : "method"
+              },
+              {
+                "title" : "Starting the Program",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/parsablecommand\/main()",
+                "title" : "static func main()",
+                "type" : "method"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/parsablecommand\/main(_:)",
+                "title" : "static func main([String]?)",
+                "type" : "method"
+              },
+              {
+                "title" : "Manually Parsing Input",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/parsablecommand\/parseasroot(_:)",
+                "title" : "static func parseAsRoot([String]?) throws -> ParsableCommand",
+                "type" : "method"
+              },
+              {
+                "title" : "Type Methods",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/parsablecommand\/helpmessage(for:columns:)",
+                "title" : "static func helpMessage(for: ParsableCommand.Type, columns: Int?) -> String",
+                "type" : "method"
+              }
+            ],
+            "path" : "\/documentation\/argumentparser\/parsablecommand",
+            "title" : "ParsableCommand",
+            "type" : "protocol"
+          },
+          {
+            "children" : [
+              {
+                "title" : "Implementing a Command’s Behavior",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/asyncparsablecommand\/run()",
+                "title" : "func run() async throws",
+                "type" : "method"
+              },
+              {
+                "title" : "Starting the Program",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/asyncparsablecommand\/main()",
+                "title" : "static func main() async",
+                "type" : "method"
+              },
+              {
+                "children" : [
+                  {
+                    "title" : "Associated Types",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/asyncmainprotocol\/command",
+                    "title" : "Command",
+                    "type" : "associatedtype"
+                  },
+                  {
+                    "title" : "Type Methods",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/asyncmainprotocol\/main()",
+                    "title" : "static func main() async",
+                    "type" : "method"
+                  }
+                ],
+                "path" : "\/documentation\/argumentparser\/asyncmainprotocol",
+                "title" : "AsyncMainProtocol",
+                "type" : "protocol"
+              }
+            ],
+            "path" : "\/documentation\/argumentparser\/asyncparsablecommand",
+            "title" : "AsyncParsableCommand",
+            "type" : "protocol"
+          },
+          {
+            "title" : "Arguments, Options, and Flags",
+            "type" : "groupMarker"
+          },
+          {
+            "path" : "\/documentation\/argumentparser\/declaringarguments",
+            "title" : "Declaring Arguments, Options, and Flags",
+            "type" : "article"
+          },
+          {
+            "children" : [
+              {
+                "title" : "Single Arguments",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/argument\/init(help:completion:)-6pqzn",
+                "title" : "init(help: ArgumentHelp?, completion: CompletionKind?)",
+                "type" : "init"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/argument\/init(help:completion:transform:)",
+                "title" : "init(help: ArgumentHelp?, completion: CompletionKind?, transform: (String) throws -> Value)",
+                "type" : "init"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/argument\/init(help:completion:)-4p94d",
+                "title" : "init<T>(help: ArgumentHelp?, completion: CompletionKind?)",
+                "type" : "init"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/argument\/init(wrappedvalue:help:completion:)",
+                "title" : "init(wrappedValue: Value, help: ArgumentHelp?, completion: CompletionKind?)",
+                "type" : "init"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/argument\/init(wrappedvalue:help:completion:transform:)",
+                "title" : "init(wrappedValue: Value, help: ArgumentHelp?, completion: CompletionKind?, transform: (String) throws -> Value)",
+                "type" : "init"
+              },
+              {
+                "title" : "Array Arguments",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/argument\/init(parsing:help:completion:)",
+                "title" : "init<Element>(parsing: ArgumentArrayParsingStrategy, help: ArgumentHelp?, completion: CompletionKind?)",
+                "type" : "init"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/argument\/init(parsing:help:completion:transform:)",
+                "title" : "init<Element>(parsing: ArgumentArrayParsingStrategy, help: ArgumentHelp?, completion: CompletionKind?, transform: (String) throws -> Element)",
+                "type" : "init"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/argument\/init(wrappedvalue:parsing:help:completion:)",
+                "title" : "init<Element>(wrappedValue: Value, parsing: ArgumentArrayParsingStrategy, help: ArgumentHelp?, completion: CompletionKind?)",
+                "type" : "init"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/argument\/init(wrappedvalue:parsing:help:completion:transform:)",
+                "title" : "init<Element>(wrappedValue: Value, parsing: ArgumentArrayParsingStrategy, help: ArgumentHelp?, completion: CompletionKind?, transform: (String) throws -> Element)",
+                "type" : "init"
+              },
+              {
+                "children" : [
+                  {
+                    "title" : "Type Properties",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/argumentarrayparsingstrategy\/remaining",
+                    "title" : "static var remaining: ArgumentArrayParsingStrategy",
+                    "type" : "property"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/argumentarrayparsingstrategy\/unconditionalremaining",
+                    "title" : "static var unconditionalRemaining: ArgumentArrayParsingStrategy",
+                    "type" : "property"
+                  },
+                  {
+                    "title" : "Default Implementations",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "children" : [
+                      {
+                        "title" : "Operators",
+                        "type" : "groupMarker"
+                      },
+                      {
+                        "path" : "\/documentation\/argumentparser\/argumentarrayparsingstrategy\/!=(_:_:)",
+                        "title" : "static func != (Self, Self) -> Bool",
+                        "type" : "op"
+                      }
+                    ],
+                    "path" : "\/documentation\/argumentparser\/argumentarrayparsingstrategy\/equatable-implementations",
+                    "title" : "Equatable Implementations",
+                    "type" : "symbol"
+                  }
+                ],
+                "path" : "\/documentation\/argumentparser\/argumentarrayparsingstrategy",
+                "title" : "ArgumentArrayParsingStrategy",
+                "type" : "struct"
+              },
+              {
+                "title" : "Infrequently Used APIs",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/argument\/init(from:)",
+                "title" : "init(from: Decoder) throws",
+                "type" : "init"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/argument\/wrappedvalue",
+                "title" : "var wrappedValue: Value",
+                "type" : "property"
+              },
+              {
+                "title" : "Default Implementations",
+                "type" : "groupMarker"
+              },
+              {
+                "children" : [
+                  {
+                    "title" : "Instance Properties",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/argument\/description",
+                    "title" : "var description: String",
+                    "type" : "property"
+                  }
+                ],
+                "path" : "\/documentation\/argumentparser\/argument\/customstringconvertible-implementations",
+                "title" : "CustomStringConvertible Implementations",
+                "type" : "symbol"
+              }
+            ],
+            "path" : "\/documentation\/argumentparser\/argument",
+            "title" : "Argument",
+            "type" : "struct"
+          },
+          {
+            "children" : [
+              {
+                "title" : "Single Options",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/option\/init(name:parsing:help:completion:)-4yske",
+                "title" : "init(name: NameSpecification, parsing: SingleValueParsingStrategy, help: ArgumentHelp?, completion: CompletionKind?)",
+                "type" : "init"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/option\/init(name:parsing:help:completion:)-7slrf",
+                "title" : "init<T>(name: NameSpecification, parsing: SingleValueParsingStrategy, help: ArgumentHelp?, completion: CompletionKind?)",
+                "type" : "init"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/option\/init(name:parsing:help:completion:transform:)-2wf44",
+                "title" : "init(name: NameSpecification, parsing: SingleValueParsingStrategy, help: ArgumentHelp?, completion: CompletionKind?, transform: (String) throws -> Value)",
+                "type" : "init"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/option\/init(wrappedvalue:name:parsing:help:completion:)-7ilku",
+                "title" : "init(wrappedValue: Value, name: NameSpecification, parsing: SingleValueParsingStrategy, help: ArgumentHelp?, completion: CompletionKind?)",
+                "type" : "init"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/option\/init(wrappedvalue:name:parsing:help:completion:transform:)-2llve",
+                "title" : "init(wrappedValue: Value, name: NameSpecification, parsing: SingleValueParsingStrategy, help: ArgumentHelp?, completion: CompletionKind?, transform: (String) throws -> Value)",
+                "type" : "init"
+              },
+              {
+                "children" : [
+                  {
+                    "title" : "Type Properties",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/singlevalueparsingstrategy\/next",
+                    "title" : "static var next: SingleValueParsingStrategy",
+                    "type" : "property"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/singlevalueparsingstrategy\/scanningforvalue",
+                    "title" : "static var scanningForValue: SingleValueParsingStrategy",
+                    "type" : "property"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/singlevalueparsingstrategy\/unconditional",
+                    "title" : "static var unconditional: SingleValueParsingStrategy",
+                    "type" : "property"
+                  },
+                  {
+                    "title" : "Default Implementations",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "children" : [
+                      {
+                        "title" : "Operators",
+                        "type" : "groupMarker"
+                      },
+                      {
+                        "path" : "\/documentation\/argumentparser\/singlevalueparsingstrategy\/!=(_:_:)",
+                        "title" : "static func != (Self, Self) -> Bool",
+                        "type" : "op"
+                      }
+                    ],
+                    "path" : "\/documentation\/argumentparser\/singlevalueparsingstrategy\/equatable-implementations",
+                    "title" : "Equatable Implementations",
+                    "type" : "symbol"
+                  }
+                ],
+                "path" : "\/documentation\/argumentparser\/singlevalueparsingstrategy",
+                "title" : "SingleValueParsingStrategy",
+                "type" : "struct"
+              },
+              {
+                "title" : "Array Options",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/option\/init(name:parsing:help:completion:)-238hg",
+                "title" : "init<Element>(name: NameSpecification, parsing: ArrayParsingStrategy, help: ArgumentHelp?, completion: CompletionKind?)",
+                "type" : "init"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/option\/init(name:parsing:help:completion:transform:)-74hnp",
+                "title" : "init<Element>(name: NameSpecification, parsing: ArrayParsingStrategy, help: ArgumentHelp?, completion: CompletionKind?, transform: (String) throws -> Element)",
+                "type" : "init"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/option\/init(wrappedvalue:name:parsing:help:completion:)-1dtbf",
+                "title" : "init<Element>(wrappedValue: [Element], name: NameSpecification, parsing: ArrayParsingStrategy, help: ArgumentHelp?, completion: CompletionKind?)",
+                "type" : "init"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/option\/init(wrappedvalue:name:parsing:help:completion:transform:)-1kpto",
+                "title" : "init<Element>(wrappedValue: [Element], name: NameSpecification, parsing: ArrayParsingStrategy, help: ArgumentHelp?, completion: CompletionKind?, transform: (String) throws -> Element)",
+                "type" : "init"
+              },
+              {
+                "children" : [
+                  {
+                    "title" : "Type Properties",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/arrayparsingstrategy\/remaining",
+                    "title" : "static var remaining: ArrayParsingStrategy",
+                    "type" : "property"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/arrayparsingstrategy\/singlevalue",
+                    "title" : "static var singleValue: ArrayParsingStrategy",
+                    "type" : "property"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/arrayparsingstrategy\/unconditionalsinglevalue",
+                    "title" : "static var unconditionalSingleValue: ArrayParsingStrategy",
+                    "type" : "property"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/arrayparsingstrategy\/uptonextoption",
+                    "title" : "static var upToNextOption: ArrayParsingStrategy",
+                    "type" : "property"
+                  },
+                  {
+                    "title" : "Default Implementations",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "children" : [
+                      {
+                        "title" : "Operators",
+                        "type" : "groupMarker"
+                      },
+                      {
+                        "path" : "\/documentation\/argumentparser\/arrayparsingstrategy\/!=(_:_:)",
+                        "title" : "static func != (Self, Self) -> Bool",
+                        "type" : "op"
+                      }
+                    ],
+                    "path" : "\/documentation\/argumentparser\/arrayparsingstrategy\/equatable-implementations",
+                    "title" : "Equatable Implementations",
+                    "type" : "symbol"
+                  }
+                ],
+                "path" : "\/documentation\/argumentparser\/arrayparsingstrategy",
+                "title" : "ArrayParsingStrategy",
+                "type" : "struct"
+              },
+              {
+                "title" : "Infrequently Used APIs",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/option\/init(from:)",
+                "title" : "init(from: Decoder) throws",
+                "type" : "init"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/option\/wrappedvalue",
+                "title" : "var wrappedValue: Value",
+                "type" : "property"
+              },
+              {
+                "title" : "Deprecated APIs",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/option\/init(wrappedvalue:name:parsing:completion:help:)",
+                "title" : "init(wrappedValue: Value, name: NameSpecification, parsing: SingleValueParsingStrategy, completion: CompletionKind?, help: ArgumentHelp?)",
+                "type" : "init"
+              },
+              {
+                "title" : "Default Implementations",
+                "type" : "groupMarker"
+              },
+              {
+                "children" : [
+                  {
+                    "title" : "Instance Properties",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/option\/description",
+                    "title" : "var description: String",
+                    "type" : "property"
+                  }
+                ],
+                "path" : "\/documentation\/argumentparser\/option\/customstringconvertible-implementations",
+                "title" : "CustomStringConvertible Implementations",
+                "type" : "symbol"
+              }
+            ],
+            "path" : "\/documentation\/argumentparser\/option",
+            "title" : "Option",
+            "type" : "struct"
+          },
+          {
+            "children" : [
+              {
+                "title" : "Boolean Flags",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/flag\/init(wrappedvalue:name:help:)",
+                "title" : "init(wrappedValue: Bool, name: NameSpecification, help: ArgumentHelp?)",
+                "type" : "init"
+              },
+              {
+                "title" : "Boolean Flags with Inversions",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/flag\/init(wrappedvalue:name:inversion:exclusivity:help:)",
+                "title" : "init(wrappedValue: Bool, name: NameSpecification, inversion: FlagInversion, exclusivity: FlagExclusivity, help: ArgumentHelp?)",
+                "type" : "init"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/flag\/init(name:inversion:exclusivity:help:)-12okg",
+                "title" : "init(name: NameSpecification, inversion: FlagInversion, exclusivity: FlagExclusivity, help: ArgumentHelp?)",
+                "type" : "init"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/flag\/init(name:inversion:exclusivity:help:)-1h8f7",
+                "title" : "init(name: NameSpecification, inversion: FlagInversion, exclusivity: FlagExclusivity, help: ArgumentHelp?)",
+                "type" : "init"
+              },
+              {
+                "children" : [
+                  {
+                    "title" : "Type Properties",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/flaginversion\/prefixedenabledisable",
+                    "title" : "static var prefixedEnableDisable: FlagInversion",
+                    "type" : "property"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/flaginversion\/prefixedno",
+                    "title" : "static var prefixedNo: FlagInversion",
+                    "type" : "property"
+                  },
+                  {
+                    "title" : "Default Implementations",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "children" : [
+                      {
+                        "title" : "Operators",
+                        "type" : "groupMarker"
+                      },
+                      {
+                        "path" : "\/documentation\/argumentparser\/flaginversion\/!=(_:_:)",
+                        "title" : "static func != (Self, Self) -> Bool",
+                        "type" : "op"
+                      }
+                    ],
+                    "path" : "\/documentation\/argumentparser\/flaginversion\/equatable-implementations",
+                    "title" : "Equatable Implementations",
+                    "type" : "symbol"
+                  }
+                ],
+                "path" : "\/documentation\/argumentparser\/flaginversion",
+                "title" : "FlagInversion",
+                "type" : "struct"
+              },
+              {
+                "title" : "Counted Flags",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/flag\/init(name:help:)",
+                "title" : "init(name: NameSpecification, help: ArgumentHelp?)",
+                "type" : "init"
+              },
+              {
+                "title" : "Custom Enumerable Flags",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/flag\/init(help:)",
+                "title" : "init<Element>(help: ArgumentHelp?)",
+                "type" : "init"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/flag\/init(exclusivity:help:)-38n7u",
+                "title" : "init<Element>(exclusivity: FlagExclusivity, help: ArgumentHelp?)",
+                "type" : "init"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/flag\/init(exclusivity:help:)-5fggj",
+                "title" : "init(exclusivity: FlagExclusivity, help: ArgumentHelp?)",
+                "type" : "init"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/flag\/init(wrappedvalue:exclusivity:help:)",
+                "title" : "init(wrappedValue: Value, exclusivity: FlagExclusivity, help: ArgumentHelp?)",
+                "type" : "init"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/flag\/init(wrappedvalue:help:)",
+                "title" : "init<Element>(wrappedValue: [Element], help: ArgumentHelp?)",
+                "type" : "init"
+              },
+              {
+                "title" : "Infrequently Used APIs",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/flag\/init(from:)",
+                "title" : "init(from: Decoder) throws",
+                "type" : "init"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/flag\/wrappedvalue",
+                "title" : "var wrappedValue: Value",
+                "type" : "property"
+              },
+              {
+                "title" : "Supporting Types",
+                "type" : "groupMarker"
+              },
+              {
+                "children" : [
+                  {
+                    "title" : "Type Properties",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/flagexclusivity\/choosefirst",
+                    "title" : "static var chooseFirst: FlagExclusivity",
+                    "type" : "property"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/flagexclusivity\/chooselast",
+                    "title" : "static var chooseLast: FlagExclusivity",
+                    "type" : "property"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/flagexclusivity\/exclusive",
+                    "title" : "static var exclusive: FlagExclusivity",
+                    "type" : "property"
+                  },
+                  {
+                    "title" : "Default Implementations",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "children" : [
+                      {
+                        "title" : "Operators",
+                        "type" : "groupMarker"
+                      },
+                      {
+                        "path" : "\/documentation\/argumentparser\/flagexclusivity\/!=(_:_:)",
+                        "title" : "static func != (Self, Self) -> Bool",
+                        "type" : "op"
+                      }
+                    ],
+                    "path" : "\/documentation\/argumentparser\/flagexclusivity\/equatable-implementations",
+                    "title" : "Equatable Implementations",
+                    "type" : "symbol"
+                  }
+                ],
+                "path" : "\/documentation\/argumentparser\/flagexclusivity",
+                "title" : "FlagExclusivity",
+                "type" : "struct"
+              },
+              {
+                "title" : "Default Implementations",
+                "type" : "groupMarker"
+              },
+              {
+                "children" : [
+                  {
+                    "title" : "Instance Properties",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/flag\/description",
+                    "title" : "var description: String",
+                    "type" : "property"
+                  }
+                ],
+                "path" : "\/documentation\/argumentparser\/flag\/customstringconvertible-implementations",
+                "title" : "CustomStringConvertible Implementations",
+                "type" : "symbol"
+              }
+            ],
+            "path" : "\/documentation\/argumentparser\/flag",
+            "title" : "Flag",
+            "type" : "struct"
+          },
+          {
+            "children" : [
+              {
+                "title" : "Creating an Option Group",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/optiongroup\/init(visibility:)",
+                "title" : "init(visibility: ArgumentVisibility)",
+                "type" : "init"
+              },
+              {
+                "title" : "Infrequently Used APIs",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/optiongroup\/init()",
+                "title" : "init()",
+                "type" : "init"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/optiongroup\/init(from:)",
+                "title" : "init(from: Decoder) throws",
+                "type" : "init"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/optiongroup\/wrappedvalue",
+                "title" : "var wrappedValue: Value",
+                "type" : "property"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/optiongroup\/description",
+                "title" : "var description: String",
+                "type" : "property"
+              },
+              {
+                "title" : "Default Implementations",
+                "type" : "groupMarker"
+              },
+              {
+                "children" : [
+                  {
+                    "title" : "Instance Properties",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/optiongroup\/description",
+                    "title" : "var description: String",
+                    "type" : "property"
+                  }
+                ],
+                "path" : "\/documentation\/argumentparser\/optiongroup\/customstringconvertible-implementations",
+                "title" : "CustomStringConvertible Implementations",
+                "type" : "symbol"
+              }
+            ],
+            "path" : "\/documentation\/argumentparser\/optiongroup",
+            "title" : "OptionGroup",
+            "type" : "struct"
+          },
+          {
+            "children" : [
+              {
+                "title" : "Handling Validation",
+                "type" : "groupMarker"
+              },
+              {
+                "children" : [
+                  {
+                    "children" : [
+                      {
+                        "path" : "\/documentation\/argumentparser\/parsablearguments\/validate()-39ivb",
+                        "title" : "func validate() throws",
+                        "type" : "method"
+                      }
+                    ],
+                    "title" : "ParsableArguments Implementations",
+                    "type" : "groupMarker"
+                  }
+                ],
+                "path" : "\/documentation\/argumentparser\/parsablearguments\/validate()-5r0ge",
+                "title" : "func validate() throws",
+                "type" : "method"
+              },
+              {
+                "title" : "Parsing a Type",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/parsablearguments\/parse(_:)",
+                "title" : "static func parse([String]?) throws -> Self",
+                "type" : "method"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/parsablearguments\/parseorexit(_:)",
+                "title" : "static func parseOrExit([String]?) -> Self",
+                "type" : "method"
+              },
+              {
+                "title" : "Exiting a Program",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/parsablearguments\/exit(witherror:)",
+                "title" : "static func exit(withError: Error?) -> Never",
+                "type" : "method"
+              },
+              {
+                "title" : "Generating Help Text",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/parsablearguments\/helpmessage(includehidden:columns:)",
+                "title" : "static func helpMessage(includeHidden: Bool, columns: Int?) -> String",
+                "type" : "method"
+              },
+              {
+                "title" : "Handling Errors",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/parsablearguments\/message(for:)",
+                "title" : "static func message(for: Error) -> String",
+                "type" : "method"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/parsablearguments\/fullmessage(for:)",
+                "title" : "static func fullMessage(for: Error) -> String",
+                "type" : "method"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/parsablearguments\/exitcode(for:)",
+                "title" : "static func exitCode(for: Error) -> ExitCode",
+                "type" : "method"
+              },
+              {
+                "title" : "Generating Completion Scripts",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/parsablearguments\/completionscript(for:)",
+                "title" : "static func completionScript(for: CompletionShell) -> String",
+                "type" : "method"
+              },
+              {
+                "children" : [
+                  {
+                    "title" : "Initializers",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/completionshell\/init(rawvalue:)",
+                    "title" : "init?(rawValue: String)",
+                    "type" : "init"
+                  },
+                  {
+                    "title" : "Instance Properties",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/completionshell\/rawvalue",
+                    "title" : "var rawValue: String",
+                    "type" : "property"
+                  },
+                  {
+                    "title" : "Type Properties",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/completionshell\/allcases",
+                    "title" : "static var allCases: [CompletionShell]",
+                    "type" : "property"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/completionshell\/bash",
+                    "title" : "static var bash: CompletionShell",
+                    "type" : "property"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/completionshell\/fish",
+                    "title" : "static var fish: CompletionShell",
+                    "type" : "property"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/completionshell\/zsh",
+                    "title" : "static var zsh: CompletionShell",
+                    "type" : "property"
+                  },
+                  {
+                    "title" : "Type Methods",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/completionshell\/autodetected()",
+                    "title" : "static func autodetected() -> CompletionShell?",
+                    "type" : "method"
+                  },
+                  {
+                    "title" : "Default Implementations",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "children" : [
+                      {
+                        "title" : "Operators",
+                        "type" : "groupMarker"
+                      },
+                      {
+                        "path" : "\/documentation\/argumentparser\/completionshell\/!=(_:_:)",
+                        "title" : "static func != (Self, Self) -> Bool",
+                        "type" : "op"
+                      }
+                    ],
+                    "path" : "\/documentation\/argumentparser\/completionshell\/equatable-implementations",
+                    "title" : "Equatable Implementations",
+                    "type" : "symbol"
+                  },
+                  {
+                    "children" : [
+                      {
+                        "title" : "Instance Properties",
+                        "type" : "groupMarker"
+                      },
+                      {
+                        "path" : "\/documentation\/argumentparser\/completionshell\/hashvalue",
+                        "title" : "var hashValue: Int",
+                        "type" : "property"
+                      },
+                      {
+                        "title" : "Instance Methods",
+                        "type" : "groupMarker"
+                      },
+                      {
+                        "path" : "\/documentation\/argumentparser\/completionshell\/hash(into:)",
+                        "title" : "func hash(into: inout Hasher)",
+                        "type" : "method"
+                      }
+                    ],
+                    "path" : "\/documentation\/argumentparser\/completionshell\/rawrepresentable-implementations",
+                    "title" : "RawRepresentable Implementations",
+                    "type" : "symbol"
+                  }
+                ],
+                "path" : "\/documentation\/argumentparser\/completionshell",
+                "title" : "CompletionShell",
+                "type" : "struct"
+              },
+              {
+                "title" : "Infrequently Used APIs",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/parsablearguments\/init()",
+                "title" : "init()",
+                "type" : "init"
+              },
+              {
+                "title" : "Type Methods",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/parsablearguments\/helpmessage(columns:)",
+                "title" : "static func helpMessage(columns: Int?) -> String",
+                "type" : "method"
+              }
+            ],
+            "path" : "\/documentation\/argumentparser\/parsablearguments",
+            "title" : "ParsableArguments",
+            "type" : "protocol"
+          },
+          {
+            "title" : "Property Customization",
+            "type" : "groupMarker"
+          },
+          {
+            "path" : "\/documentation\/argumentparser\/customizinghelp",
+            "title" : "Customizing Help",
+            "type" : "article"
+          },
+          {
+            "children" : [
+              {
+                "title" : "Initializers",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/argumenthelp\/init(_:discussion:valuename:shoulddisplay:)",
+                "title" : "init(String, discussion: String, valueName: String?, shouldDisplay: Bool)",
+                "type" : "init"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/argumenthelp\/init(_:discussion:valuename:visibility:)",
+                "title" : "init(String, discussion: String, valueName: String?, visibility: ArgumentVisibility)",
+                "type" : "init"
+              },
+              {
+                "title" : "Instance Properties",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/argumenthelp\/abstract",
+                "title" : "var abstract: String",
+                "type" : "property"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/argumenthelp\/discussion",
+                "title" : "var discussion: String",
+                "type" : "property"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/argumenthelp\/shoulddisplay",
+                "title" : "var shouldDisplay: Bool",
+                "type" : "property"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/argumenthelp\/valuename",
+                "title" : "var valueName: String?",
+                "type" : "property"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/argumenthelp\/visibility",
+                "title" : "var visibility: ArgumentVisibility",
+                "type" : "property"
+              },
+              {
+                "title" : "Type Properties",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/argumenthelp\/hidden",
+                "title" : "static var hidden: ArgumentHelp",
+                "type" : "property"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/argumenthelp\/private",
+                "title" : "static var `private`: ArgumentHelp",
+                "type" : "property"
+              },
+              {
+                "title" : "Default Implementations",
+                "type" : "groupMarker"
+              },
+              {
+                "children" : [
+                  {
+                    "title" : "Initializers",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/argumenthelp\/init(extendedgraphemeclusterliteral:)",
+                    "title" : "init(extendedGraphemeClusterLiteral: Self.StringLiteralType)",
+                    "type" : "init"
+                  }
+                ],
+                "path" : "\/documentation\/argumentparser\/argumenthelp\/expressiblebyextendedgraphemeclusterliteral-implementations",
+                "title" : "ExpressibleByExtendedGraphemeClusterLiteral Implementations",
+                "type" : "symbol"
+              },
+              {
+                "children" : [
+                  {
+                    "title" : "Initializers",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/argumenthelp\/init(stringinterpolation:)",
+                    "title" : "init(stringInterpolation: DefaultStringInterpolation)",
+                    "type" : "init"
+                  }
+                ],
+                "path" : "\/documentation\/argumentparser\/argumenthelp\/expressiblebystringinterpolation-implementations",
+                "title" : "ExpressibleByStringInterpolation Implementations",
+                "type" : "symbol"
+              },
+              {
+                "children" : [
+                  {
+                    "title" : "Initializers",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/argumenthelp\/init(stringliteral:)",
+                    "title" : "init(stringLiteral: String)",
+                    "type" : "init"
+                  }
+                ],
+                "path" : "\/documentation\/argumentparser\/argumenthelp\/expressiblebystringliteral-implementations",
+                "title" : "ExpressibleByStringLiteral Implementations",
+                "type" : "symbol"
+              },
+              {
+                "children" : [
+                  {
+                    "title" : "Initializers",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/argumenthelp\/init(unicodescalarliteral:)",
+                    "title" : "init(unicodeScalarLiteral: Self.ExtendedGraphemeClusterLiteralType)",
+                    "type" : "init"
+                  }
+                ],
+                "path" : "\/documentation\/argumentparser\/argumenthelp\/expressiblebyunicodescalarliteral-implementations",
+                "title" : "ExpressibleByUnicodeScalarLiteral Implementations",
+                "type" : "symbol"
+              }
+            ],
+            "path" : "\/documentation\/argumentparser\/argumenthelp",
+            "title" : "ArgumentHelp",
+            "type" : "struct"
+          },
+          {
+            "children" : [
+              {
+                "title" : "Type Properties",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/argumentvisibility\/default",
+                "title" : "static let `default`: ArgumentVisibility",
+                "type" : "property"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/argumentvisibility\/hidden",
+                "title" : "static let hidden: ArgumentVisibility",
+                "type" : "property"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/argumentvisibility\/private",
+                "title" : "static let `private`: ArgumentVisibility",
+                "type" : "property"
+              }
+            ],
+            "path" : "\/documentation\/argumentparser\/argumentvisibility",
+            "title" : "ArgumentVisibility",
+            "type" : "struct"
+          },
+          {
+            "children" : [
+              {
+                "title" : "Structures",
+                "type" : "groupMarker"
+              },
+              {
+                "children" : [
+                  {
+                    "title" : "Type Properties",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/namespecification\/element\/long",
+                    "title" : "static var long: NameSpecification.Element",
+                    "type" : "property"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/namespecification\/element\/short",
+                    "title" : "static var short: NameSpecification.Element",
+                    "type" : "property"
+                  },
+                  {
+                    "title" : "Type Methods",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/namespecification\/element\/customlong(_:withsingledash:)",
+                    "title" : "static func customLong(String, withSingleDash: Bool) -> NameSpecification.Element",
+                    "type" : "method"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/namespecification\/element\/customshort(_:allowingjoined:)",
+                    "title" : "static func customShort(Character, allowingJoined: Bool) -> NameSpecification.Element",
+                    "type" : "method"
+                  },
+                  {
+                    "title" : "Default Implementations",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "children" : [
+                      {
+                        "title" : "Operators",
+                        "type" : "groupMarker"
+                      },
+                      {
+                        "path" : "\/documentation\/argumentparser\/namespecification\/element\/!=(_:_:)",
+                        "title" : "static func != (Self, Self) -> Bool",
+                        "type" : "op"
+                      }
+                    ],
+                    "path" : "\/documentation\/argumentparser\/namespecification\/element\/equatable-implementations",
+                    "title" : "Equatable Implementations",
+                    "type" : "symbol"
+                  }
+                ],
+                "path" : "\/documentation\/argumentparser\/namespecification\/element",
+                "title" : "NameSpecification.Element",
+                "type" : "struct"
+              },
+              {
+                "title" : "Initializers",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/namespecification\/init(_:)",
+                "title" : "init<S>(S)",
+                "type" : "init"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/namespecification\/init(arrayliteral:)",
+                "title" : "init(arrayLiteral: NameSpecification.Element...)",
+                "type" : "init"
+              },
+              {
+                "title" : "Type Properties",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/namespecification\/long",
+                "title" : "static var long: NameSpecification",
+                "type" : "property"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/namespecification\/short",
+                "title" : "static var short: NameSpecification",
+                "type" : "property"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/namespecification\/shortandlong",
+                "title" : "static var shortAndLong: NameSpecification",
+                "type" : "property"
+              },
+              {
+                "title" : "Type Methods",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/namespecification\/customlong(_:withsingledash:)",
+                "title" : "static func customLong(String, withSingleDash: Bool) -> NameSpecification",
+                "type" : "method"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/namespecification\/customshort(_:allowingjoined:)",
+                "title" : "static func customShort(Character, allowingJoined: Bool) -> NameSpecification",
+                "type" : "method"
+              }
+            ],
+            "path" : "\/documentation\/argumentparser\/namespecification",
+            "title" : "NameSpecification",
+            "type" : "struct"
+          },
+          {
+            "title" : "Custom Types",
+            "type" : "groupMarker"
+          },
+          {
+            "children" : [
+              {
+                "title" : "Initializers",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/expressiblebyargument\/init(argument:)",
+                "title" : "init?(argument: String)",
+                "type" : "init"
+              },
+              {
+                "title" : "Instance Properties",
+                "type" : "groupMarker"
+              },
+              {
+                "children" : [
+                  {
+                    "children" : [
+                      {
+                        "path" : "\/documentation\/argumentparser\/expressiblebyargument\/defaultvaluedescription-940zv",
+                        "title" : "var defaultValueDescription: String",
+                        "type" : "property"
+                      }
+                    ],
+                    "title" : "ExpressibleByArgument Implementations",
+                    "type" : "groupMarker"
+                  }
+                ],
+                "path" : "\/documentation\/argumentparser\/expressiblebyargument\/defaultvaluedescription-2zydq",
+                "title" : "var defaultValueDescription: String",
+                "type" : "property"
+              },
+              {
+                "title" : "Type Properties",
+                "type" : "groupMarker"
+              },
+              {
+                "children" : [
+                  {
+                    "children" : [
+                      {
+                        "path" : "\/documentation\/argumentparser\/expressiblebyargument\/allvaluestrings-6ptln",
+                        "title" : "static var allValueStrings: [String]",
+                        "type" : "property"
+                      },
+                      {
+                        "path" : "\/documentation\/argumentparser\/expressiblebyargument\/allvaluestrings-9o6vc",
+                        "title" : "static var allValueStrings: [String]",
+                        "type" : "property"
+                      },
+                      {
+                        "path" : "\/documentation\/argumentparser\/expressiblebyargument\/allvaluestrings-5keru",
+                        "title" : "static var allValueStrings: [String]",
+                        "type" : "property"
+                      }
+                    ],
+                    "title" : "ExpressibleByArgument Implementations",
+                    "type" : "groupMarker"
+                  }
+                ],
+                "path" : "\/documentation\/argumentparser\/expressiblebyargument\/allvaluestrings-7hjo7",
+                "title" : "static var allValueStrings: [String]",
+                "type" : "property"
+              },
+              {
+                "children" : [
+                  {
+                    "children" : [
+                      {
+                        "path" : "\/documentation\/argumentparser\/expressiblebyargument\/defaultcompletionkind-vjh9",
+                        "title" : "static var defaultCompletionKind: CompletionKind",
+                        "type" : "property"
+                      },
+                      {
+                        "path" : "\/documentation\/argumentparser\/expressiblebyargument\/defaultcompletionkind-5hmqe",
+                        "title" : "static var defaultCompletionKind: CompletionKind",
+                        "type" : "property"
+                      }
+                    ],
+                    "title" : "ExpressibleByArgument Implementations",
+                    "type" : "groupMarker"
+                  }
+                ],
+                "path" : "\/documentation\/argumentparser\/expressiblebyargument\/defaultcompletionkind-866se",
+                "title" : "static var defaultCompletionKind: CompletionKind",
+                "type" : "property"
+              }
+            ],
+            "path" : "\/documentation\/argumentparser\/expressiblebyargument",
+            "title" : "ExpressibleByArgument",
+            "type" : "protocol"
+          },
+          {
+            "children" : [
+              {
+                "title" : "Type Methods",
+                "type" : "groupMarker"
+              },
+              {
+                "children" : [
+                  {
+                    "children" : [
+                      {
+                        "path" : "\/documentation\/argumentparser\/enumerableflag\/help(for:)-2qgai",
+                        "title" : "static func help(for: Self) -> ArgumentHelp?",
+                        "type" : "method"
+                      }
+                    ],
+                    "title" : "EnumerableFlag Implementations",
+                    "type" : "groupMarker"
+                  }
+                ],
+                "path" : "\/documentation\/argumentparser\/enumerableflag\/help(for:)-8mmm",
+                "title" : "static func help(for: Self) -> ArgumentHelp?",
+                "type" : "method"
+              },
+              {
+                "children" : [
+                  {
+                    "children" : [
+                      {
+                        "path" : "\/documentation\/argumentparser\/enumerableflag\/name(for:)-4ofoj",
+                        "title" : "static func name(for: Self) -> NameSpecification",
+                        "type" : "method"
+                      }
+                    ],
+                    "title" : "EnumerableFlag Implementations",
+                    "type" : "groupMarker"
+                  }
+                ],
+                "path" : "\/documentation\/argumentparser\/enumerableflag\/name(for:)-2rrp0",
+                "title" : "static func name(for: Self) -> NameSpecification",
+                "type" : "method"
+              }
+            ],
+            "path" : "\/documentation\/argumentparser\/enumerableflag",
+            "title" : "EnumerableFlag",
+            "type" : "protocol"
+          },
+          {
+            "title" : "Validation and Errors",
+            "type" : "groupMarker"
+          },
+          {
+            "path" : "\/documentation\/argumentparser\/validation",
+            "title" : "Providing Custom Validation",
+            "type" : "article"
+          },
+          {
+            "children" : [
+              {
+                "title" : "Initializers",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/validationerror\/init(_:)",
+                "title" : "init(String)",
+                "type" : "init"
+              },
+              {
+                "title" : "Instance Properties",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/validationerror\/description",
+                "title" : "var description: String",
+                "type" : "property"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/validationerror\/message",
+                "title" : "var message: String",
+                "type" : "property"
+              },
+              {
+                "title" : "Default Implementations",
+                "type" : "groupMarker"
+              },
+              {
+                "children" : [
+                  {
+                    "title" : "Instance Properties",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/validationerror\/localizeddescription",
+                    "title" : "var localizedDescription: String",
+                    "type" : "property"
+                  }
+                ],
+                "path" : "\/documentation\/argumentparser\/validationerror\/error-implementations",
+                "title" : "Error Implementations",
+                "type" : "symbol"
+              }
+            ],
+            "path" : "\/documentation\/argumentparser\/validationerror",
+            "title" : "ValidationError",
+            "type" : "struct"
+          },
+          {
+            "children" : [
+              {
+                "title" : "Instance Properties",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/cleanexit\/description",
+                "title" : "var description: String",
+                "type" : "property"
+              },
+              {
+                "title" : "Type Methods",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/cleanexit\/helprequest(_:)-773ef",
+                "title" : "static func helpRequest(ParsableCommand.Type?) -> CleanExit",
+                "type" : "method"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/cleanexit\/helprequest(_:)-9qiuh",
+                "title" : "static func helpRequest(ParsableCommand) -> CleanExit",
+                "type" : "method"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/cleanexit\/message(_:)",
+                "title" : "static func message(String) -> CleanExit",
+                "type" : "method"
+              },
+              {
+                "title" : "Default Implementations",
+                "type" : "groupMarker"
+              },
+              {
+                "children" : [
+                  {
+                    "title" : "Instance Properties",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/cleanexit\/localizeddescription",
+                    "title" : "var localizedDescription: String",
+                    "type" : "property"
+                  }
+                ],
+                "path" : "\/documentation\/argumentparser\/cleanexit\/error-implementations",
+                "title" : "Error Implementations",
+                "type" : "symbol"
+              }
+            ],
+            "path" : "\/documentation\/argumentparser\/cleanexit",
+            "title" : "CleanExit",
+            "type" : "struct"
+          },
+          {
+            "children" : [
+              {
+                "title" : "Initializers",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/exitcode\/init(_:)",
+                "title" : "init(Int32)",
+                "type" : "init"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/exitcode\/init(rawvalue:)",
+                "title" : "init(rawValue: Int32)",
+                "type" : "init"
+              },
+              {
+                "title" : "Instance Properties",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/exitcode\/issuccess",
+                "title" : "var isSuccess: Bool",
+                "type" : "property"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/exitcode\/rawvalue",
+                "title" : "var rawValue: Int32",
+                "type" : "property"
+              },
+              {
+                "title" : "Type Properties",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/exitcode\/failure",
+                "title" : "static let failure: ExitCode",
+                "type" : "property"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/exitcode\/success",
+                "title" : "static let success: ExitCode",
+                "type" : "property"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/exitcode\/validationfailure",
+                "title" : "static let validationFailure: ExitCode",
+                "type" : "property"
+              },
+              {
+                "title" : "Default Implementations",
+                "type" : "groupMarker"
+              },
+              {
+                "children" : [
+                  {
+                    "title" : "Operators",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/exitcode\/!=(_:_:)",
+                    "title" : "static func != (Self, Self) -> Bool",
+                    "type" : "op"
+                  }
+                ],
+                "path" : "\/documentation\/argumentparser\/exitcode\/equatable-implementations",
+                "title" : "Equatable Implementations",
+                "type" : "symbol"
+              },
+              {
+                "children" : [
+                  {
+                    "title" : "Instance Properties",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/exitcode\/localizeddescription",
+                    "title" : "var localizedDescription: String",
+                    "type" : "property"
+                  }
+                ],
+                "path" : "\/documentation\/argumentparser\/exitcode\/error-implementations",
+                "title" : "Error Implementations",
+                "type" : "symbol"
+              },
+              {
+                "children" : [
+                  {
+                    "title" : "Instance Properties",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/exitcode\/hashvalue",
+                    "title" : "var hashValue: Int",
+                    "type" : "property"
+                  },
+                  {
+                    "title" : "Instance Methods",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/exitcode\/hash(into:)",
+                    "title" : "func hash(into: inout Hasher)",
+                    "type" : "method"
+                  }
+                ],
+                "path" : "\/documentation\/argumentparser\/exitcode\/rawrepresentable-implementations",
+                "title" : "RawRepresentable Implementations",
+                "type" : "symbol"
+              }
+            ],
+            "path" : "\/documentation\/argumentparser\/exitcode",
+            "title" : "ExitCode",
+            "type" : "struct"
+          },
+          {
+            "title" : "Shell Completion Scripts",
+            "type" : "groupMarker"
+          },
+          {
+            "path" : "\/documentation\/argumentparser\/installingcompletionscripts",
+            "title" : "Generating and Installing Completion Scripts",
+            "type" : "article"
+          },
+          {
+            "path" : "\/documentation\/argumentparser\/customizingcompletions",
+            "title" : "Customizing Completions",
+            "type" : "article"
+          },
+          {
+            "children" : [
+              {
+                "title" : "Type Properties",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/completionkind\/default",
+                "title" : "static var `default`: CompletionKind",
+                "type" : "property"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/completionkind\/directory",
+                "title" : "static var directory: CompletionKind",
+                "type" : "property"
+              },
+              {
+                "title" : "Type Methods",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/completionkind\/custom(_:)",
+                "title" : "static func custom(([String]) -> [String]) -> CompletionKind",
+                "type" : "method"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/completionkind\/file(extensions:)",
+                "title" : "static func file(extensions: [String]) -> CompletionKind",
+                "type" : "method"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/completionkind\/list(_:)",
+                "title" : "static func list([String]) -> CompletionKind",
+                "type" : "method"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/completionkind\/shellcommand(_:)",
+                "title" : "static func shellCommand(String) -> CompletionKind",
+                "type" : "method"
+              }
+            ],
+            "path" : "\/documentation\/argumentparser\/completionkind",
+            "title" : "CompletionKind",
+            "type" : "struct"
+          },
+          {
+            "title" : "Advanced Topics",
+            "type" : "groupMarker"
+          },
+          {
+            "path" : "\/documentation\/argumentparser\/manualparsing",
+            "title" : "Manual Parsing and Testing",
+            "type" : "article"
+          },
+          {
+            "path" : "\/documentation\/argumentparser\/experimentalfeatures",
+            "title" : "Experimental Features",
+            "type" : "article"
+          }
+        ],
+        "path" : "\/documentation\/argumentparser",
+        "title" : "ArgumentParser",
+        "type" : "module"
+      }
+    ]
+  },
+  "schemaVersion" : {
+    "major" : 0,
+    "minor" : 1,
+    "patch" : 0
+  }
+}

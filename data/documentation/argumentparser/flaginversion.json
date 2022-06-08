@@ -1,1 +1,797 @@
-{"seeAlsoSections":[{"title":"Boolean Flags with Inversions","identifiers":["doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Flag\/init(wrappedValue:name:inversion:exclusivity:help:)","doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Flag\/init(name:inversion:exclusivity:help:)-12okg","doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Flag\/init(name:inversion:exclusivity:help:)-1h8f7"],"generated":true}],"schemaVersion":{"major":0,"minor":2,"patch":0},"metadata":{"fragments":[{"kind":"keyword","text":"struct"},{"kind":"text","text":" "},{"kind":"identifier","text":"FlagInversion"}],"title":"FlagInversion","roleHeading":"Structure","role":"symbol","symbolKind":"struct","externalID":"s:14ArgumentParser13FlagInversionV","modules":[{"name":"ArgumentParser"}],"navigatorTitle":[{"kind":"identifier","text":"FlagInversion"}]},"abstract":[{"type":"text","text":"The options for converting a Boolean flag into a "},{"type":"codeVoice","code":"true"},{"type":"text","text":"\/"},{"type":"codeVoice","code":"false"},{"type":"text","text":" pair."}],"sections":[],"identifier":{"url":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/FlagInversion","interfaceLanguage":"swift"},"relationshipsSections":[{"identifiers":["doc:\/\/ArgumentParser\/SQ","doc:\/\/ArgumentParser\/SH"],"kind":"relationships","title":"Conforms To","type":"conformsTo"}],"hierarchy":{"paths":[["doc:\/\/ArgumentParser\/documentation\/ArgumentParser","doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Flag"]]},"topicSections":[{"title":"Type Properties","identifiers":["doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/FlagInversion\/prefixedEnableDisable","doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/FlagInversion\/prefixedNo"]},{"title":"Default Implementations","identifiers":["doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/FlagInversion\/Equatable-Implementations"],"generated":true}],"variants":[{"paths":["\/documentation\/argumentparser\/flaginversion"],"traits":[{"interfaceLanguage":"swift"}]}],"kind":"symbol","primaryContentSections":[{"kind":"declarations","declarations":[{"tokens":[{"kind":"keyword","text":"struct"},{"kind":"text","text":" "},{"kind":"identifier","text":"FlagInversion"}],"languages":["swift"],"platforms":["macOS"]}]}],"references":{"doc://ArgumentParser/documentation/ArgumentParser/FlagInversion/prefixedNo":{"role":"symbol","title":"prefixedNo","fragments":[{"kind":"keyword","text":"static"},{"kind":"text","text":" "},{"kind":"keyword","text":"var"},{"kind":"text","text":" "},{"kind":"identifier","text":"prefixedNo"},{"kind":"text","text":": "},{"kind":"typeIdentifier","text":"FlagInversion","preciseIdentifier":"s:14ArgumentParser13FlagInversionV"}],"abstract":[{"type":"text","text":"Adds a matching flag with a "},{"type":"codeVoice","code":"no-"},{"type":"text","text":" prefix to represent "},{"type":"codeVoice","code":"false"},{"type":"text","text":"."}],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/FlagInversion\/prefixedNo","kind":"symbol","type":"topic","url":"\/documentation\/argumentparser\/flaginversion\/prefixedno"},"doc://ArgumentParser/SQ":{"type":"unresolvable","title":"Swift.Equatable","identifier":"doc:\/\/ArgumentParser\/SQ"},"doc://ArgumentParser/SH":{"type":"unresolvable","title":"Swift.Hashable","identifier":"doc:\/\/ArgumentParser\/SH"},"doc://ArgumentParser/documentation/ArgumentParser/FlagInversion":{"role":"symbol","title":"FlagInversion","fragments":[{"kind":"keyword","text":"struct"},{"kind":"text","text":" "},{"kind":"identifier","text":"FlagInversion"}],"abstract":[{"type":"text","text":"The options for converting a Boolean flag into a "},{"type":"codeVoice","code":"true"},{"type":"text","text":"\/"},{"type":"codeVoice","code":"false"},{"type":"text","text":" pair."}],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/FlagInversion","kind":"symbol","type":"topic","navigatorTitle":[{"kind":"identifier","text":"FlagInversion"}],"url":"\/documentation\/argumentparser\/flaginversion"},"doc://ArgumentParser/documentation/ArgumentParser/FlagInversion/prefixedEnableDisable":{"role":"symbol","title":"prefixedEnableDisable","fragments":[{"kind":"keyword","text":"static"},{"kind":"text","text":" "},{"kind":"keyword","text":"var"},{"kind":"text","text":" "},{"kind":"identifier","text":"prefixedEnableDisable"},{"kind":"text","text":": "},{"kind":"typeIdentifier","text":"FlagInversion","preciseIdentifier":"s:14ArgumentParser13FlagInversionV"}],"abstract":[{"type":"text","text":"Uses matching flags with "},{"type":"codeVoice","code":"enable-"},{"type":"text","text":" and "},{"type":"codeVoice","code":"disable-"},{"type":"text","text":" prefixes."}],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/FlagInversion\/prefixedEnableDisable","kind":"symbol","type":"topic","url":"\/documentation\/argumentparser\/flaginversion\/prefixedenabledisable"},"doc://ArgumentParser/documentation/ArgumentParser":{"role":"collection","title":"ArgumentParser","abstract":[{"type":"text","text":"Straightforward, type-safe argument parsing for Swift."}],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser","kind":"symbol","type":"topic","url":"\/documentation\/argumentparser"},"doc://ArgumentParser/documentation/ArgumentParser/Flag/init(wrappedValue:name:inversion:exclusivity:help:)":{"conformance":{"constraints":[{"type":"codeVoice","code":"Value"},{"type":"text","text":" is "},{"type":"codeVoice","code":"Bool"},{"type":"text","text":"."}],"availabilityPrefix":[{"type":"text","text":"Available when"}],"conformancePrefix":[{"type":"text","text":"Conforms when"}]},"role":"symbol","title":"init(wrappedValue:name:inversion:exclusivity:help:)","fragments":[{"kind":"identifier","text":"init"},{"kind":"text","text":"("},{"kind":"externalParam","text":"wrappedValue"},{"kind":"text","text":": "},{"kind":"typeIdentifier","text":"Bool","preciseIdentifier":"s:Sb"},{"kind":"text","text":", "},{"kind":"externalParam","text":"name"},{"kind":"text","text":": "},{"kind":"typeIdentifier","text":"NameSpecification","preciseIdentifier":"s:14ArgumentParser17NameSpecificationV"},{"kind":"text","text":", "},{"kind":"externalParam","text":"inversion"},{"kind":"text","text":": "},{"kind":"typeIdentifier","text":"FlagInversion","preciseIdentifier":"s:14ArgumentParser13FlagInversionV"},{"kind":"text","text":", "},{"kind":"externalParam","text":"exclusivity"},{"kind":"text","text":": "},{"kind":"typeIdentifier","text":"FlagExclusivity","preciseIdentifier":"s:14ArgumentParser15FlagExclusivityV"},{"kind":"text","text":", "},{"kind":"externalParam","text":"help"},{"kind":"text","text":": "},{"kind":"typeIdentifier","text":"ArgumentHelp","preciseIdentifier":"s:14ArgumentParser0A4HelpV"},{"kind":"text","text":"?)"}],"abstract":[{"type":"text","text":"Creates a Boolean property with default value provided by standard Swift default value syntax that reads its value from the presence of one or more inverted flags."}],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Flag\/init(wrappedValue:name:inversion:exclusivity:help:)","kind":"symbol","type":"topic","url":"\/documentation\/argumentparser\/flag\/init(wrappedvalue:name:inversion:exclusivity:help:)"},"doc://ArgumentParser/documentation/ArgumentParser/FlagInversion/Equatable-Implementations":{"role":"collectionGroup","title":"Equatable Implementations","abstract":[],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/FlagInversion\/Equatable-Implementations","kind":"article","type":"topic","url":"\/documentation\/argumentparser\/flaginversion\/equatable-implementations"},"doc://ArgumentParser/documentation/ArgumentParser/Flag/init(name:inversion:exclusivity:help:)-12okg":{"conformance":{"constraints":[{"type":"codeVoice","code":"Value"},{"type":"text","text":" is "},{"type":"codeVoice","code":"Bool"},{"type":"text","text":"."}],"availabilityPrefix":[{"type":"text","text":"Available when"}],"conformancePrefix":[{"type":"text","text":"Conforms when"}]},"role":"symbol","title":"init(name:inversion:exclusivity:help:)","fragments":[{"kind":"identifier","text":"init"},{"kind":"text","text":"("},{"kind":"externalParam","text":"name"},{"kind":"text","text":": "},{"kind":"typeIdentifier","text":"NameSpecification","preciseIdentifier":"s:14ArgumentParser17NameSpecificationV"},{"kind":"text","text":", "},{"kind":"externalParam","text":"inversion"},{"kind":"text","text":": "},{"kind":"typeIdentifier","text":"FlagInversion","preciseIdentifier":"s:14ArgumentParser13FlagInversionV"},{"kind":"text","text":", "},{"kind":"externalParam","text":"exclusivity"},{"kind":"text","text":": "},{"kind":"typeIdentifier","text":"FlagExclusivity","preciseIdentifier":"s:14ArgumentParser15FlagExclusivityV"},{"kind":"text","text":", "},{"kind":"externalParam","text":"help"},{"kind":"text","text":": "},{"kind":"typeIdentifier","text":"ArgumentHelp","preciseIdentifier":"s:14ArgumentParser0A4HelpV"},{"kind":"text","text":"?)"}],"abstract":[{"type":"text","text":"Creates a Boolean property with no default value that reads its value from the presence of one or more inverted flags."}],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Flag\/init(name:inversion:exclusivity:help:)-12okg","kind":"symbol","type":"topic","url":"\/documentation\/argumentparser\/flag\/init(name:inversion:exclusivity:help:)-12okg"},"doc://ArgumentParser/documentation/ArgumentParser/Flag/init(name:inversion:exclusivity:help:)-1h8f7":{"conformance":{"constraints":[{"type":"codeVoice","code":"Value"},{"type":"text","text":" is "},{"type":"codeVoice","code":"Optional<Bool>"},{"type":"text","text":"."}],"availabilityPrefix":[{"type":"text","text":"Available when"}],"conformancePrefix":[{"type":"text","text":"Conforms when"}]},"role":"symbol","title":"init(name:inversion:exclusivity:help:)","fragments":[{"kind":"identifier","text":"init"},{"kind":"text","text":"("},{"kind":"externalParam","text":"name"},{"kind":"text","text":": "},{"kind":"typeIdentifier","text":"NameSpecification","preciseIdentifier":"s:14ArgumentParser17NameSpecificationV"},{"kind":"text","text":", "},{"kind":"externalParam","text":"inversion"},{"kind":"text","text":": "},{"kind":"typeIdentifier","text":"FlagInversion","preciseIdentifier":"s:14ArgumentParser13FlagInversionV"},{"kind":"text","text":", "},{"kind":"externalParam","text":"exclusivity"},{"kind":"text","text":": "},{"kind":"typeIdentifier","text":"FlagExclusivity","preciseIdentifier":"s:14ArgumentParser15FlagExclusivityV"},{"kind":"text","text":", "},{"kind":"externalParam","text":"help"},{"kind":"text","text":": "},{"kind":"typeIdentifier","text":"ArgumentHelp","preciseIdentifier":"s:14ArgumentParser0A4HelpV"},{"kind":"text","text":"?)"}],"abstract":[{"type":"text","text":"Creates a Boolean property that reads its value from the presence of"},{"type":"text","text":" "},{"type":"text","text":"one or more inverted flags."}],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Flag\/init(name:inversion:exclusivity:help:)-1h8f7","kind":"symbol","type":"topic","url":"\/documentation\/argumentparser\/flag\/init(name:inversion:exclusivity:help:)-1h8f7"},"doc://ArgumentParser/documentation/ArgumentParser/Flag":{"role":"symbol","title":"Flag","fragments":[{"kind":"keyword","text":"struct"},{"kind":"text","text":" "},{"kind":"identifier","text":"Flag"}],"abstract":[{"type":"text","text":"A property wrapper that represents a command-line flag."}],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Flag","kind":"symbol","type":"topic","navigatorTitle":[{"kind":"identifier","text":"Flag"}],"url":"\/documentation\/argumentparser\/flag"}}}
+{
+  "abstract" : [
+    {
+      "text" : "The options for converting a Boolean flag into a ",
+      "type" : "text"
+    },
+    {
+      "code" : "true",
+      "type" : "codeVoice"
+    },
+    {
+      "text" : "\/",
+      "type" : "text"
+    },
+    {
+      "code" : "false",
+      "type" : "codeVoice"
+    },
+    {
+      "text" : " pair.",
+      "type" : "text"
+    }
+  ],
+  "hierarchy" : {
+    "paths" : [
+      [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Flag"
+      ]
+    ]
+  },
+  "identifier" : {
+    "interfaceLanguage" : "swift",
+    "url" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/FlagInversion"
+  },
+  "kind" : "symbol",
+  "metadata" : {
+    "externalID" : "s:14ArgumentParser13FlagInversionV",
+    "fragments" : [
+      {
+        "kind" : "keyword",
+        "text" : "struct"
+      },
+      {
+        "kind" : "text",
+        "text" : " "
+      },
+      {
+        "kind" : "identifier",
+        "text" : "FlagInversion"
+      }
+    ],
+    "modules" : [
+      {
+        "name" : "ArgumentParser"
+      }
+    ],
+    "navigatorTitle" : [
+      {
+        "kind" : "identifier",
+        "text" : "FlagInversion"
+      }
+    ],
+    "role" : "symbol",
+    "roleHeading" : "Structure",
+    "symbolKind" : "struct",
+    "title" : "FlagInversion"
+  },
+  "primaryContentSections" : [
+    {
+      "declarations" : [
+        {
+          "languages" : [
+            "swift"
+          ],
+          "platforms" : [
+            "macOS"
+          ],
+          "tokens" : [
+            {
+              "kind" : "keyword",
+              "text" : "struct"
+            },
+            {
+              "kind" : "text",
+              "text" : " "
+            },
+            {
+              "kind" : "identifier",
+              "text" : "FlagInversion"
+            }
+          ]
+        }
+      ],
+      "kind" : "declarations"
+    }
+  ],
+  "relationshipsSections" : [
+    {
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/SQ",
+        "doc:\/\/ArgumentParser\/SH"
+      ],
+      "kind" : "relationships",
+      "title" : "Conforms To",
+      "type" : "conformsTo"
+    }
+  ],
+  "schemaVersion" : {
+    "major" : 0,
+    "minor" : 3,
+    "patch" : 0
+  },
+  "sections" : [
+
+  ],
+  "seeAlsoSections" : [
+    {
+      "generated" : true,
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Flag\/init(wrappedValue:name:inversion:exclusivity:help:)",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Flag\/init(name:inversion:exclusivity:help:)-12okg",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Flag\/init(name:inversion:exclusivity:help:)-1h8f7"
+      ],
+      "title" : "Boolean Flags with Inversions"
+    }
+  ],
+  "topicSections" : [
+    {
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/FlagInversion\/prefixedEnableDisable",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/FlagInversion\/prefixedNo"
+      ],
+      "title" : "Type Properties"
+    },
+    {
+      "generated" : true,
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/FlagInversion\/Equatable-Implementations"
+      ],
+      "title" : "Default Implementations"
+    }
+  ],
+  "variants" : [
+    {
+      "paths" : [
+        "\/documentation\/argumentparser\/flaginversion"
+      ],
+      "traits" : [
+        {
+          "interfaceLanguage" : "swift"
+        }
+      ]
+    }
+  ]
+, 
+"references": {
+"doc://ArgumentParser/SH": {
+  "identifier" : "doc:\/\/ArgumentParser\/SH",
+  "title" : "Swift.Hashable",
+  "type" : "unresolvable"
+},
+"doc://ArgumentParser/SQ": {
+  "identifier" : "doc:\/\/ArgumentParser\/SQ",
+  "title" : "Swift.Equatable",
+  "type" : "unresolvable"
+},
+"doc://ArgumentParser/documentation/ArgumentParser": {
+  "abstract" : [
+    {
+      "text" : "Straightforward, type-safe argument parsing for Swift.",
+      "type" : "text"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser",
+  "kind" : "symbol",
+  "role" : "collection",
+  "title" : "ArgumentParser",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/Flag": {
+  "abstract" : [
+    {
+      "text" : "A property wrapper that represents a command-line flag.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "struct"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "Flag"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Flag",
+  "kind" : "symbol",
+  "navigatorTitle" : [
+    {
+      "kind" : "identifier",
+      "text" : "Flag"
+    }
+  ],
+  "role" : "symbol",
+  "title" : "Flag",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/flag"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/Flag/init(name:inversion:exclusivity:help:)-12okg": {
+  "abstract" : [
+    {
+      "text" : "Creates a Boolean property with no default value that reads its value from the presence of one or more inverted flags.",
+      "type" : "text"
+    }
+  ],
+  "conformance" : {
+    "availabilityPrefix" : [
+      {
+        "text" : "Available when",
+        "type" : "text"
+      }
+    ],
+    "conformancePrefix" : [
+      {
+        "text" : "Conforms when",
+        "type" : "text"
+      }
+    ],
+    "constraints" : [
+      {
+        "code" : "Value",
+        "type" : "codeVoice"
+      },
+      {
+        "text" : " is ",
+        "type" : "text"
+      },
+      {
+        "code" : "Bool",
+        "type" : "codeVoice"
+      },
+      {
+        "text" : ".",
+        "type" : "text"
+      }
+    ]
+  },
+  "fragments" : [
+    {
+      "kind" : "identifier",
+      "text" : "init"
+    },
+    {
+      "kind" : "text",
+      "text" : "("
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "name"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser17NameSpecificationV",
+      "text" : "NameSpecification"
+    },
+    {
+      "kind" : "text",
+      "text" : ", "
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "inversion"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser13FlagInversionV",
+      "text" : "FlagInversion"
+    },
+    {
+      "kind" : "text",
+      "text" : ", "
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "exclusivity"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser15FlagExclusivityV",
+      "text" : "FlagExclusivity"
+    },
+    {
+      "kind" : "text",
+      "text" : ", "
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "help"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser0A4HelpV",
+      "text" : "ArgumentHelp"
+    },
+    {
+      "kind" : "text",
+      "text" : "?)"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Flag\/init(name:inversion:exclusivity:help:)-12okg",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "init(name:inversion:exclusivity:help:)",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/flag\/init(name:inversion:exclusivity:help:)-12okg"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/Flag/init(name:inversion:exclusivity:help:)-1h8f7": {
+  "abstract" : [
+    {
+      "text" : "Creates a Boolean property that reads its value from the presence of",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "text" : "one or more inverted flags.",
+      "type" : "text"
+    }
+  ],
+  "conformance" : {
+    "availabilityPrefix" : [
+      {
+        "text" : "Available when",
+        "type" : "text"
+      }
+    ],
+    "conformancePrefix" : [
+      {
+        "text" : "Conforms when",
+        "type" : "text"
+      }
+    ],
+    "constraints" : [
+      {
+        "code" : "Value",
+        "type" : "codeVoice"
+      },
+      {
+        "text" : " is ",
+        "type" : "text"
+      },
+      {
+        "code" : "Bool?",
+        "type" : "codeVoice"
+      },
+      {
+        "text" : ".",
+        "type" : "text"
+      }
+    ]
+  },
+  "fragments" : [
+    {
+      "kind" : "identifier",
+      "text" : "init"
+    },
+    {
+      "kind" : "text",
+      "text" : "("
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "name"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser17NameSpecificationV",
+      "text" : "NameSpecification"
+    },
+    {
+      "kind" : "text",
+      "text" : ", "
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "inversion"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser13FlagInversionV",
+      "text" : "FlagInversion"
+    },
+    {
+      "kind" : "text",
+      "text" : ", "
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "exclusivity"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser15FlagExclusivityV",
+      "text" : "FlagExclusivity"
+    },
+    {
+      "kind" : "text",
+      "text" : ", "
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "help"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser0A4HelpV",
+      "text" : "ArgumentHelp"
+    },
+    {
+      "kind" : "text",
+      "text" : "?)"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Flag\/init(name:inversion:exclusivity:help:)-1h8f7",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "init(name:inversion:exclusivity:help:)",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/flag\/init(name:inversion:exclusivity:help:)-1h8f7"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/Flag/init(wrappedValue:name:inversion:exclusivity:help:)": {
+  "abstract" : [
+    {
+      "text" : "Creates a Boolean property with default value provided by standard Swift default value syntax that reads its value from the presence of one or more inverted flags.",
+      "type" : "text"
+    }
+  ],
+  "conformance" : {
+    "availabilityPrefix" : [
+      {
+        "text" : "Available when",
+        "type" : "text"
+      }
+    ],
+    "conformancePrefix" : [
+      {
+        "text" : "Conforms when",
+        "type" : "text"
+      }
+    ],
+    "constraints" : [
+      {
+        "code" : "Value",
+        "type" : "codeVoice"
+      },
+      {
+        "text" : " is ",
+        "type" : "text"
+      },
+      {
+        "code" : "Bool",
+        "type" : "codeVoice"
+      },
+      {
+        "text" : ".",
+        "type" : "text"
+      }
+    ]
+  },
+  "fragments" : [
+    {
+      "kind" : "identifier",
+      "text" : "init"
+    },
+    {
+      "kind" : "text",
+      "text" : "("
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "wrappedValue"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:Sb",
+      "text" : "Bool"
+    },
+    {
+      "kind" : "text",
+      "text" : ", "
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "name"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser17NameSpecificationV",
+      "text" : "NameSpecification"
+    },
+    {
+      "kind" : "text",
+      "text" : ", "
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "inversion"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser13FlagInversionV",
+      "text" : "FlagInversion"
+    },
+    {
+      "kind" : "text",
+      "text" : ", "
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "exclusivity"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser15FlagExclusivityV",
+      "text" : "FlagExclusivity"
+    },
+    {
+      "kind" : "text",
+      "text" : ", "
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "help"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser0A4HelpV",
+      "text" : "ArgumentHelp"
+    },
+    {
+      "kind" : "text",
+      "text" : "?)"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Flag\/init(wrappedValue:name:inversion:exclusivity:help:)",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "init(wrappedValue:name:inversion:exclusivity:help:)",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/flag\/init(wrappedvalue:name:inversion:exclusivity:help:)"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/FlagInversion": {
+  "abstract" : [
+    {
+      "text" : "The options for converting a Boolean flag into a ",
+      "type" : "text"
+    },
+    {
+      "code" : "true",
+      "type" : "codeVoice"
+    },
+    {
+      "text" : "\/",
+      "type" : "text"
+    },
+    {
+      "code" : "false",
+      "type" : "codeVoice"
+    },
+    {
+      "text" : " pair.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "struct"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "FlagInversion"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/FlagInversion",
+  "kind" : "symbol",
+  "navigatorTitle" : [
+    {
+      "kind" : "identifier",
+      "text" : "FlagInversion"
+    }
+  ],
+  "role" : "symbol",
+  "title" : "FlagInversion",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/flaginversion"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/FlagInversion/Equatable-Implementations": {
+  "abstract" : [
+
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/FlagInversion\/Equatable-Implementations",
+  "kind" : "article",
+  "role" : "collectionGroup",
+  "title" : "Equatable Implementations",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/flaginversion\/equatable-implementations"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/FlagInversion/prefixedEnableDisable": {
+  "abstract" : [
+    {
+      "text" : "Uses matching flags with ",
+      "type" : "text"
+    },
+    {
+      "code" : "enable-",
+      "type" : "codeVoice"
+    },
+    {
+      "text" : " and ",
+      "type" : "text"
+    },
+    {
+      "code" : "disable-",
+      "type" : "codeVoice"
+    },
+    {
+      "text" : " prefixes.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "static"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "keyword",
+      "text" : "var"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "prefixedEnableDisable"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser13FlagInversionV",
+      "text" : "FlagInversion"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/FlagInversion\/prefixedEnableDisable",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "prefixedEnableDisable",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/flaginversion\/prefixedenabledisable"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/FlagInversion/prefixedNo": {
+  "abstract" : [
+    {
+      "text" : "Adds a matching flag with a ",
+      "type" : "text"
+    },
+    {
+      "code" : "no-",
+      "type" : "codeVoice"
+    },
+    {
+      "text" : " prefix to represent ",
+      "type" : "text"
+    },
+    {
+      "code" : "false",
+      "type" : "codeVoice"
+    },
+    {
+      "text" : ".",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "static"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "keyword",
+      "text" : "var"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "prefixedNo"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser13FlagInversionV",
+      "text" : "FlagInversion"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/FlagInversion\/prefixedNo",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "prefixedNo",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/flaginversion\/prefixedno"
+}
+}
+}

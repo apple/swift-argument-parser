@@ -1,1 +1,434 @@
-{"seeAlsoSections":[{"title":"Starting the Program","identifiers":["doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/AsyncParsableCommand\/main()"],"generated":true}],"schemaVersion":{"major":0,"minor":2,"patch":0},"metadata":{"navigatorTitle":[{"kind":"identifier","text":"AsyncMainProtocol"}],"role":"symbol","title":"AsyncMainProtocol","roleHeading":"Protocol","fragments":[{"kind":"keyword","text":"protocol"},{"kind":"text","text":" "},{"kind":"identifier","text":"AsyncMainProtocol"}],"symbolKind":"protocol","externalID":"s:14ArgumentParser17AsyncMainProtocolP","modules":[{"name":"ArgumentParser"}],"platforms":[]},"deprecationSummary":[{"type":"paragraph","inlineContent":[{"type":"text","text":"Use @main directly on your root `AsyncParsableCommand` type."}]}],"abstract":[{"type":"text","text":"A type that can designate an "},{"type":"codeVoice","code":"AsyncParsableCommand"},{"type":"text","text":" as the program’s"},{"type":"text","text":" "},{"type":"text","text":"entry point."}],"sections":[],"identifier":{"url":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/AsyncMainProtocol","interfaceLanguage":"swift"},"hierarchy":{"paths":[["doc:\/\/ArgumentParser\/documentation\/ArgumentParser","doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/AsyncParsableCommand"]]},"topicSections":[{"title":"Associated Types","identifiers":["doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/AsyncMainProtocol\/Command"]},{"title":"Type Methods","identifiers":["doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/AsyncMainProtocol\/main()"]}],"variants":[{"paths":["\/documentation\/argumentparser\/asyncmainprotocol"],"traits":[{"interfaceLanguage":"swift"}]}],"kind":"symbol","primaryContentSections":[{"kind":"declarations","declarations":[{"tokens":[{"kind":"keyword","text":"protocol"},{"kind":"text","text":" "},{"kind":"identifier","text":"AsyncMainProtocol"}],"languages":["swift"],"platforms":["macOS"]}]},{"kind":"content","content":[{"anchor":"overview","level":2,"type":"heading","text":"Overview"},{"type":"paragraph","inlineContent":[{"type":"text","text":"See the "},{"type":"reference","isActive":true,"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/AsyncParsableCommand"},{"type":"text","text":" documentation for usage information."}]}]}],"references":{"doc://ArgumentParser/documentation/ArgumentParser/AsyncParsableCommand":{"role":"symbol","title":"AsyncParsableCommand","fragments":[{"kind":"keyword","text":"protocol"},{"kind":"text","text":" "},{"kind":"identifier","text":"AsyncParsableCommand"}],"abstract":[{"type":"text","text":"A type that can be executed asynchronously, as part of a nested tree of"},{"type":"text","text":" "},{"type":"text","text":"commands."}],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/AsyncParsableCommand","kind":"symbol","type":"topic","navigatorTitle":[{"kind":"identifier","text":"AsyncParsableCommand"}],"url":"\/documentation\/argumentparser\/asyncparsablecommand"},"doc://ArgumentParser/documentation/ArgumentParser/AsyncMainProtocol":{"deprecated":true,"role":"symbol","title":"AsyncMainProtocol","fragments":[{"kind":"keyword","text":"protocol"},{"kind":"text","text":" "},{"kind":"identifier","text":"AsyncMainProtocol"}],"abstract":[{"type":"text","text":"A type that can designate an "},{"type":"codeVoice","code":"AsyncParsableCommand"},{"type":"text","text":" as the program’s"},{"type":"text","text":" "},{"type":"text","text":"entry point."}],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/AsyncMainProtocol","kind":"symbol","type":"topic","navigatorTitle":[{"kind":"identifier","text":"AsyncMainProtocol"}],"url":"\/documentation\/argumentparser\/asyncmainprotocol"},"doc://ArgumentParser/documentation/ArgumentParser/AsyncMainProtocol/Command":{"deprecated":true,"role":"symbol","title":"Command","fragments":[{"kind":"keyword","text":"associatedtype"},{"kind":"text","text":" "},{"kind":"identifier","text":"Command"},{"kind":"text","text":" : "},{"kind":"typeIdentifier","text":"ParsableCommand","preciseIdentifier":"s:14ArgumentParser15ParsableCommandP"}],"abstract":[],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/AsyncMainProtocol\/Command","kind":"symbol","required":true,"type":"topic","url":"\/documentation\/argumentparser\/asyncmainprotocol\/command"},"doc://ArgumentParser/documentation/ArgumentParser":{"role":"collection","title":"ArgumentParser","abstract":[{"type":"text","text":"Straightforward, type-safe argument parsing for Swift."}],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser","kind":"symbol","type":"topic","url":"\/documentation\/argumentparser"},"doc://ArgumentParser/documentation/ArgumentParser/AsyncParsableCommand/main()":{"role":"symbol","title":"main()","fragments":[{"kind":"keyword","text":"static"},{"kind":"text","text":" "},{"kind":"keyword","text":"func"},{"kind":"text","text":" "},{"kind":"identifier","text":"main"},{"kind":"text","text":"() "},{"kind":"keyword","text":"async"}],"abstract":[{"type":"text","text":"Executes this command, or one of its subcommands, with the program’s"},{"type":"text","text":" "},{"type":"text","text":"command-line arguments."}],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/AsyncParsableCommand\/main()","kind":"symbol","type":"topic","url":"\/documentation\/argumentparser\/asyncparsablecommand\/main()"},"doc://ArgumentParser/documentation/ArgumentParser/AsyncMainProtocol/main()":{"role":"symbol","title":"main()","fragments":[{"kind":"keyword","text":"static"},{"kind":"text","text":" "},{"kind":"keyword","text":"func"},{"kind":"text","text":" "},{"kind":"identifier","text":"main"},{"kind":"text","text":"() "},{"kind":"keyword","text":"async"}],"abstract":[{"type":"text","text":"Executes the designated command type, or one of its subcommands, with"},{"type":"text","text":" "},{"type":"text","text":"the program’s command-line arguments."}],"identifier":"doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/AsyncMainProtocol\/main()","kind":"symbol","type":"topic","url":"\/documentation\/argumentparser\/asyncmainprotocol\/main()"}}}
+{
+  "abstract" : [
+    {
+      "text" : "A type that can designate an ",
+      "type" : "text"
+    },
+    {
+      "code" : "AsyncParsableCommand",
+      "type" : "codeVoice"
+    },
+    {
+      "text" : " as the program’s",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "text" : "entry point.",
+      "type" : "text"
+    }
+  ],
+  "deprecationSummary" : [
+    {
+      "inlineContent" : [
+        {
+          "text" : "Use @main directly on your root `AsyncParsableCommand` type.",
+          "type" : "text"
+        }
+      ],
+      "type" : "paragraph"
+    }
+  ],
+  "hierarchy" : {
+    "paths" : [
+      [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/AsyncParsableCommand"
+      ]
+    ]
+  },
+  "identifier" : {
+    "interfaceLanguage" : "swift",
+    "url" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/AsyncMainProtocol"
+  },
+  "kind" : "symbol",
+  "metadata" : {
+    "externalID" : "s:14ArgumentParser17AsyncMainProtocolP",
+    "fragments" : [
+      {
+        "kind" : "keyword",
+        "text" : "protocol"
+      },
+      {
+        "kind" : "text",
+        "text" : " "
+      },
+      {
+        "kind" : "identifier",
+        "text" : "AsyncMainProtocol"
+      }
+    ],
+    "modules" : [
+      {
+        "name" : "ArgumentParser"
+      }
+    ],
+    "navigatorTitle" : [
+      {
+        "kind" : "identifier",
+        "text" : "AsyncMainProtocol"
+      }
+    ],
+    "platforms" : [
+
+    ],
+    "role" : "symbol",
+    "roleHeading" : "Protocol",
+    "symbolKind" : "protocol",
+    "title" : "AsyncMainProtocol"
+  },
+  "primaryContentSections" : [
+    {
+      "declarations" : [
+        {
+          "languages" : [
+            "swift"
+          ],
+          "platforms" : [
+            "macOS"
+          ],
+          "tokens" : [
+            {
+              "kind" : "keyword",
+              "text" : "protocol"
+            },
+            {
+              "kind" : "text",
+              "text" : " "
+            },
+            {
+              "kind" : "identifier",
+              "text" : "AsyncMainProtocol"
+            }
+          ]
+        }
+      ],
+      "kind" : "declarations"
+    },
+    {
+      "content" : [
+        {
+          "anchor" : "overview",
+          "level" : 2,
+          "text" : "Overview",
+          "type" : "heading"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "See the ",
+              "type" : "text"
+            },
+            {
+              "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/AsyncParsableCommand",
+              "isActive" : true,
+              "type" : "reference"
+            },
+            {
+              "text" : " documentation for usage information.",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        }
+      ],
+      "kind" : "content"
+    }
+  ],
+  "schemaVersion" : {
+    "major" : 0,
+    "minor" : 3,
+    "patch" : 0
+  },
+  "sections" : [
+
+  ],
+  "seeAlsoSections" : [
+    {
+      "generated" : true,
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/AsyncParsableCommand\/main()"
+      ],
+      "title" : "Starting the Program"
+    }
+  ],
+  "topicSections" : [
+    {
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/AsyncMainProtocol\/Command"
+      ],
+      "title" : "Associated Types"
+    },
+    {
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/AsyncMainProtocol\/main()"
+      ],
+      "title" : "Type Methods"
+    }
+  ],
+  "variants" : [
+    {
+      "paths" : [
+        "\/documentation\/argumentparser\/asyncmainprotocol"
+      ],
+      "traits" : [
+        {
+          "interfaceLanguage" : "swift"
+        }
+      ]
+    }
+  ]
+, 
+"references": {
+"doc://ArgumentParser/documentation/ArgumentParser": {
+  "abstract" : [
+    {
+      "text" : "Straightforward, type-safe argument parsing for Swift.",
+      "type" : "text"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser",
+  "kind" : "symbol",
+  "role" : "collection",
+  "title" : "ArgumentParser",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/AsyncMainProtocol": {
+  "abstract" : [
+    {
+      "text" : "A type that can designate an ",
+      "type" : "text"
+    },
+    {
+      "code" : "AsyncParsableCommand",
+      "type" : "codeVoice"
+    },
+    {
+      "text" : " as the program’s",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "text" : "entry point.",
+      "type" : "text"
+    }
+  ],
+  "deprecated" : true,
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "protocol"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "AsyncMainProtocol"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/AsyncMainProtocol",
+  "kind" : "symbol",
+  "navigatorTitle" : [
+    {
+      "kind" : "identifier",
+      "text" : "AsyncMainProtocol"
+    }
+  ],
+  "role" : "symbol",
+  "title" : "AsyncMainProtocol",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/asyncmainprotocol"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/AsyncMainProtocol/Command": {
+  "abstract" : [
+
+  ],
+  "deprecated" : true,
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "associatedtype"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "Command"
+    },
+    {
+      "kind" : "text",
+      "text" : " : "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser15ParsableCommandP",
+      "text" : "ParsableCommand"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/AsyncMainProtocol\/Command",
+  "kind" : "symbol",
+  "required" : true,
+  "role" : "symbol",
+  "title" : "Command",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/asyncmainprotocol\/command"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/AsyncMainProtocol/main()": {
+  "abstract" : [
+    {
+      "text" : "Executes the designated command type, or one of its subcommands, with",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "text" : "the program’s command-line arguments.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "static"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "keyword",
+      "text" : "func"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "main"
+    },
+    {
+      "kind" : "text",
+      "text" : "() "
+    },
+    {
+      "kind" : "keyword",
+      "text" : "async"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/AsyncMainProtocol\/main()",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "main()",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/asyncmainprotocol\/main()"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/AsyncParsableCommand": {
+  "abstract" : [
+    {
+      "text" : "A type that can be executed asynchronously, as part of a nested tree of",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "text" : "commands.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "protocol"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "AsyncParsableCommand"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/AsyncParsableCommand",
+  "kind" : "symbol",
+  "navigatorTitle" : [
+    {
+      "kind" : "identifier",
+      "text" : "AsyncParsableCommand"
+    }
+  ],
+  "role" : "symbol",
+  "title" : "AsyncParsableCommand",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/asyncparsablecommand"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/AsyncParsableCommand/main()": {
+  "abstract" : [
+    {
+      "text" : "Executes this command, or one of its subcommands, with the program’s",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "text" : "command-line arguments.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "static"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "keyword",
+      "text" : "func"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "main"
+    },
+    {
+      "kind" : "text",
+      "text" : "() "
+    },
+    {
+      "kind" : "keyword",
+      "text" : "async"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/AsyncParsableCommand\/main()",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "main()",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/asyncparsablecommand\/main()"
+}
+}
+}
