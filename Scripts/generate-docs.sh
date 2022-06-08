@@ -40,13 +40,14 @@ export DOCC_JSON_PRETTYPRINT="YES"
 # to the 'gh-pages' worktree directory.
 export SWIFTPM_ENABLE_COMMAND_PLUGINS=1 
 swift package \
-    --allow-writing-to-directory "$SWIFT_ARGUMENT_PARSER_ROOT/gh-pages" \
+    --allow-writing-to-directory "$SWIFT_ARGUMENT_PARSER_ROOT/gh-pages/output" \
     generate-documentation \
     --target ArgumentParser \
     --disable-indexing \
     --transform-for-static-hosting \
     --hosting-base-path swift-argument-parser \
-    --output-path "$SWIFT_ARGUMENT_PARSER_ROOT/gh-pages"
+    --output-path "$SWIFT_ARGUMENT_PARSER_ROOT/gh-pages/output"
+rsync --remove-source-files -a "$SWIFT_ARGUMENT_PARSER_ROOT/gh-pages/output/" "$SWIFT_ARGUMENT_PARSER_ROOT/gh-pages/"
 
 # Save the current commit we've just built documentation from in a variable
 CURRENT_COMMIT_HASH=`git rev-parse --short HEAD`
