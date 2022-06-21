@@ -143,34 +143,40 @@ extension CommandParser {
     let commandArguments = ArgumentSet(currentNode.element, visibility: .private)
     
     // Parse the arguments, ignoring anything unexpected
-    let values = try commandArguments.lenientParse(
+    var values = try commandArguments.lenientParse(
       split,
       subcommands: currentNode.element.configuration.subcommands,
       defaultCapturesAll: currentNode.element.defaultIncludesUnconditionalArguments)
-
-    // Decode the values from ParsedValues into the ParsableCommand:
-    let decoder = ArgumentDecoder(values: values, previouslyDecoded: decodedArguments)
-    var decodedResult: ParsableCommand
-    do {
-      decodedResult = try currentNode.element.init(from: decoder)
-    } catch let error {
-      // If decoding this command failed, see if they were asking for
-      // help before propagating that parsing failure.
-      try checkForBuiltInFlags(split)
-      throw error
+    
+    var decodedResult: ParsableCommand?
+    var decoder: ArgumentDecoder?
+    
+    while decodedResult == nil {
+      // Decode the values from ParsedValues into the ParsableCommand:
+      decoder = ArgumentDecoder(values: values, previouslyDecoded: decodedArguments)
+      do {
+        decodedResult = try currentNode.element.init(from: decoder!)
+      } catch {
+        if canInteract(error: error, values: &values) { continue }
+        
+        // If decoding this command failed, see if they were asking for
+        // help before propagating that parsing failure.
+        try checkForBuiltInFlags(split)
+        throw error
+      }
     }
     
     // Decoding was successful, so remove the arguments that were used
     // by the decoder.
-    split.removeAll(in: decoder.usedOrigins)
+    split.removeAll(in: decoder!.usedOrigins)
     
     // Save the decoded results to add to the next command.
-    let newDecodedValues = decoder.previouslyDecoded
-      .filter { prev in !decodedArguments.contains(where: { $0.type == prev.type })}
+    let newDecodedValues = decoder!.previouslyDecoded
+      .filter { prev in !decodedArguments.contains(where: { $0.type == prev.type }) }
     decodedArguments.append(contentsOf: newDecodedValues)
-    decodedArguments.append(DecodedArguments(type: currentNode.element, value: decodedResult))
+    decodedArguments.append(DecodedArguments(type: currentNode.element, value: decodedResult!))
 
-    return decodedResult
+    return decodedResult!
   }
   
   /// Starting with the current node, extracts commands out of `split` and

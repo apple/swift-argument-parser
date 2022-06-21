@@ -9,6 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+/// The type containing information for parsing a single argument.
 struct ArgumentDefinition {
   /// A closure that modifies a `ParsedValues` instance to include this
   /// argument's value.

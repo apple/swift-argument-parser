@@ -29,16 +29,20 @@
 /// `2`, while the value for `verbose` will come from index `1`, sub-index `0`.
 struct InputOrigin: Equatable, ExpressibleByArrayLiteral {
   enum Element: Comparable, Hashable {
-    /// The input value came from a property's default value, not from a
-    /// command line argument.
+    /// The input value came from a property's default value,
+    /// not from a command line argument.
     case defaultValue
+    
+    /// The input value came from interactive mode,
+    /// not from the first command typed by the user
+    case interactive
     
     /// The input value came from the specified index in the argument string.
     case argumentIndex(SplitArguments.Index)
     
     var baseIndex: Int? {
       switch self {
-      case .defaultValue:
+      case .defaultValue, .interactive:
         return nil
       case .argumentIndex(let i):
         return i.inputIndex.rawValue
@@ -47,7 +51,7 @@ struct InputOrigin: Equatable, ExpressibleByArrayLiteral {
     
     var subIndex: Int? {
       switch self {
-      case .defaultValue:
+      case .defaultValue, .interactive:
         return nil
       case .argumentIndex(let i):
         switch i.subIndex {
@@ -109,15 +113,15 @@ extension InputOrigin {
   }
 }
 
-extension InputOrigin.Element {
-  static func < (lhs: Self, rhs: Self) -> Bool {
-    switch (lhs, rhs) {
-    case (.argumentIndex(let l), .argumentIndex(let r)):
-      return l < r
-    case (.argumentIndex, .defaultValue):
-      return true
-    case (.defaultValue, _):
-      return false
-    }
-  }
-}
+//extension InputOrigin.Element {
+//  static func < (lhs: Self, rhs: Self) -> Bool {
+//    switch (lhs, rhs) {
+//    case (.argumentIndex(let l), .argumentIndex(let r)):
+//      return l < r
+//    case (.argumentIndex, .defaultValue):
+//      return true
+//    case (.defaultValue, _):
+//      return false
+//    }
+//  }
+//}
