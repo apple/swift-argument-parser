@@ -142,22 +142,29 @@ extension CommandParser {
     // Build the argument set (i.e. information on how to parse):
     let commandArguments = ArgumentSet(currentNode.element, visibility: .private)
     
-    // Parse the arguments, ignoring anything unexpected
-    var values = try commandArguments.lenientParse(
-      split,
-      subcommands: currentNode.element.configuration.subcommands,
-      defaultCapturesAll: currentNode.element.defaultIncludesUnconditionalArguments)
+    var values: ParsedValues?
+    while values == nil {
+      do {
+        // Parse the arguments, ignoring anything unexpected
+        values = try commandArguments.lenientParse(
+          split,
+          subcommands: currentNode.element.configuration.subcommands,
+          defaultCapturesAll: currentNode.element.defaultIncludesUnconditionalArguments)
+      } catch {
+        if canInteract(error: error, split: &split) { continue }
+        throw error
+      }
+    }
     
     var decodedResult: ParsableCommand?
     var decoder: ArgumentDecoder?
-    
     while decodedResult == nil {
       // Decode the values from ParsedValues into the ParsableCommand:
-      decoder = ArgumentDecoder(values: values, previouslyDecoded: decodedArguments)
+      decoder = ArgumentDecoder(values: values!, previouslyDecoded: decodedArguments)
       do {
         decodedResult = try currentNode.element.init(from: decoder!)
       } catch {
-        if canInteract(error: error, values: &values) { continue }
+        if canInteract(error: error, values: &values!) { continue }
         
         // If decoding this command failed, see if they were asking for
         // help before propagating that parsing failure.
