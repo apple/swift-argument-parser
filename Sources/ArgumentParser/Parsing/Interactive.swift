@@ -30,7 +30,7 @@ extension CommandParser {
     return true
   }
   
-  func canInteract(error: Error, values: inout ParsedValues) -> Bool {
+  func canInteract(error: Error, arguments: ArgumentSet, values: inout ParsedValues) -> Bool {
     guard let error = error as? ParserError else { return false }
     
     switch error {
@@ -43,11 +43,12 @@ extension CommandParser {
         print("Please enter '\(label)': ", terminator: "")
         input = readLine() ?? nil
       }
-        
-      var element = values.elements[key]!
-      element.value = (input as Any)
-      element.inputOrigin = InputOrigin(elements: [.interactive])
-      values.elements[key] = element
+      
+      let name = arguments.namePositions.keys.first { $0.valueString == label }
+      let position = arguments.namePositions[name!]!
+      guard case let .unary(update) = arguments.content[position].update else { break }
+      guard case .some = try? update(InputOrigin(elements: [.interactive]), name, input!, &values) else { break }
+      
       return true
         
     default:
