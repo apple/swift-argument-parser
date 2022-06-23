@@ -142,48 +142,53 @@ extension CommandParser {
     // Build the argument set (i.e. information on how to parse):
     let commandArguments = ArgumentSet(currentNode.element, visibility: .private)
     
-    var values: ParsedValues?
-    while values == nil {
+    func getValues() throws -> ParsedValues {
       do {
         // Parse the arguments, ignoring anything unexpected
-        values = try commandArguments.lenientParse(
+        return try commandArguments.lenientParse(
           split,
           subcommands: currentNode.element.configuration.subcommands,
           defaultCapturesAll: currentNode.element.defaultIncludesUnconditionalArguments)
       } catch {
-        if canInteract(error: error, split: &split) { continue }
-        throw error
+        // Try to fix error by interacting with the user
+        guard canInteract(error: error, split: &split) else { throw error }
+        return try getValues()
       }
     }
+    var values = try getValues()
     
-    var decodedResult: ParsableCommand?
-    var decoder: ArgumentDecoder?
-    while decodedResult == nil {
+    func getDecoderAndResult() throws -> (ArgumentDecoder, ParsableCommand) {
       // Decode the values from ParsedValues into the ParsableCommand:
-      decoder = ArgumentDecoder(values: values!, previouslyDecoded: decodedArguments)
+      let decoder = ArgumentDecoder(values: values, previouslyDecoded: decodedArguments)
+
       do {
-        decodedResult = try currentNode.element.init(from: decoder!)
+        let decodedResult = try currentNode.element.init(from: decoder)
+        return (decoder, decodedResult)
       } catch {
-        if canInteract(error: error, values: &values!) { continue }
-        
-        // If decoding this command failed, see if they were asking for
-        // help before propagating that parsing failure.
-        try checkForBuiltInFlags(split)
-        throw error
+        // Try to fix error by interacting with the user
+        if canInteract(error: error, values: &values) {
+          return try getDecoderAndResult()
+        } else {
+          // If decoding this command failed, see if they were asking for
+          // help before propagating that parsing failure.
+          try checkForBuiltInFlags(split)
+          throw error
+        }
       }
     }
+    let (decoder, decodedResult) = try getDecoderAndResult()
     
     // Decoding was successful, so remove the arguments that were used
     // by the decoder.
-    split.removeAll(in: decoder!.usedOrigins)
+    split.removeAll(in: decoder.usedOrigins)
     
     // Save the decoded results to add to the next command.
-    let newDecodedValues = decoder!.previouslyDecoded
+    let newDecodedValues = decoder.previouslyDecoded
       .filter { prev in !decodedArguments.contains(where: { $0.type == prev.type }) }
     decodedArguments.append(contentsOf: newDecodedValues)
-    decodedArguments.append(DecodedArguments(type: currentNode.element, value: decodedResult!))
+    decodedArguments.append(DecodedArguments(type: currentNode.element, value: decodedResult))
 
-    return decodedResult!
+    return decodedResult
   }
   
   /// Starting with the current node, extracts commands out of `split` and

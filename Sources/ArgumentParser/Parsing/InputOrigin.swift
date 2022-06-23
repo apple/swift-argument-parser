@@ -112,16 +112,3 @@ extension InputOrigin {
     return _elements.count == 1 && _elements.first == .defaultValue
   }
 }
-
-//extension InputOrigin.Element {
-//  static func < (lhs: Self, rhs: Self) -> Bool {
-//    switch (lhs, rhs) {
-//    case (.argumentIndex(let l), .argumentIndex(let r)):
-//      return l < r
-//    case (.argumentIndex, .defaultValue):
-//      return true
-//    case (.defaultValue, _):
-//      return false
-//    }
-//  }
-//}

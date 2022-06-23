@@ -37,7 +37,9 @@ struct Repeat: ParsableCommand {
     public static func main() {
       
 //        main(["--count", "3"])
-        main(["swift", "--count"])
+//        main(["swift", "--count"])
+//        main(["hello", "--count", "--include-counter"])
+        main(["--count", "--include-counter", "swift"])
         
     }
 }
