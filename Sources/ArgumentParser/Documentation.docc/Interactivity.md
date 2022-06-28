@@ -1,6 +1,6 @@
 # Interactivity
 
-The `canInteract()` in ``CommandParser`` can try to fix errors such as `.missingValueForOption` or `.noValue` by interacting with the user.
+The `canInteract()` in `CommandParser` can try to fix errors such as `.missingValueForOption` or `.noValue` by interacting with the user.
 
 ## Overview
 
@@ -40,5 +40,16 @@ While the interactive mode can prompt for the required arguments not given in th
 hello
 hello
 ```
+## Test
 
+Here are some boundary conditions that can be used for testing:
 
+```
+// Missing value for option.
+% repeat hello --count
+```
+
+```
+// Missing value for option in the middle.
+% repeat hello --count --include-counter
+```
