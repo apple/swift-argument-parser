@@ -1,18 +1,28 @@
+//===----------------------------------------------------------*- swift -*-===//
 //
-//  File.swift
+// This source file is part of the Swift Argument Parser open source project
 //
+// Copyright (c) 2020 Apple Inc. and the Swift project authors
+// Licensed under Apache License v2.0 with Runtime Library Exception
 //
-//  Created by Keith  on 2022/6/21.
+// See https://swift.org/LICENSE.txt for license information
 //
+//===----------------------------------------------------------------------===//
 
 extension CommandParser {
+  
+  /// Try to fix parsing error by interacting with the user.
+  /// - Parameters:
+  ///   - error: A parsing error thrown by `lenientParse(_:subcommands:defaultCapturesAll:)`.
+  ///   - split: A collection of parsed arguments which needs to be modified.
+  /// - Returns: Whether the dialog resolve the error.
   func canInteract(error: Error, split: inout SplitArguments) -> Bool {
     guard let error = error as? ParserError else { return false }
     guard case let .missingValueForOption(inputOrigin, name) = error else { return false }
     
     var input: String?
     while input?.isEmpty ?? true {
-      print("Please enter value for '\(name.synopsisString)': ", terminator: "")
+      print("? Please enter value for '\(name.synopsisString)': ", terminator: "")
       input = readLine() ?? nil
     }
     
@@ -30,6 +40,12 @@ extension CommandParser {
     return true
   }
   
+  /// Try to fix decoding error by interacting with the user.
+  /// - Parameters:
+  ///   - error: A decoding error thrown by `ParsableCommand.init(from:)`.
+  ///   - arguments: A nested tree of argument definitions which can provide modification method.
+  ///   - values: The resulting values after parsing the arguments which needs to be modified.
+  /// - Returns: Whether the dialog resolve the error.
   func canInteract(error: Error, arguments: ArgumentSet, values: inout ParsedValues) -> Bool {
     guard let error = error as? ParserError else { return false }
     
@@ -40,7 +56,7 @@ extension CommandParser {
         
       var input: String?
       while input?.isEmpty ?? true {
-        print("Please enter '\(label)': ", terminator: "")
+        print("? Please enter '\(label)': ", terminator: "")
         input = readLine() ?? nil
       }
       

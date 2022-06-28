@@ -166,14 +166,14 @@ extension CommandParser {
         return (decoder, decodedResult)
       } catch {
         // Try to fix error by interacting with the user
-        if canInteract(error: error, arguments: commandArguments, values: &values) {
-          return try getDecoderAndResult()
-        } else {
+//        if canInteract(error: error, arguments: commandArguments, values: &values) {
+//          return try getDecoderAndResult()
+//        } else {
           // If decoding this command failed, see if they were asking for
           // help before propagating that parsing failure.
           try checkForBuiltInFlags(split)
           throw error
-        }
+//        }
       }
     }
     let (decoder, decodedResult) = try getDecoderAndResult()
