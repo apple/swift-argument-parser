@@ -10,7 +10,6 @@
 //===----------------------------------------------------------------------===//
 
 extension CommandParser {
-  
   /// Try to fix parsing error by interacting with the user.
   /// - Parameters:
   ///   - error: A parsing error thrown by `lenientParse(_:subcommands:defaultCapturesAll:)`.
@@ -60,10 +59,16 @@ extension CommandParser {
         input = readLine() ?? nil
       }
       
-      let name = arguments.namePositions.keys.first { $0.valueString == label }
-      let position = arguments.namePositions[name!]!
-      guard case let .unary(update) = arguments.content[position].update else { break }
-      guard case .some = try? update(InputOrigin(elements: [.interactive]), name, input!, &values) else { break }
+      if let name = arguments.namePositions.keys.first(where: { $0.valueString == label }) {
+        let position = arguments.namePositions[name]!
+        guard case let .unary(update) = arguments.content[position].update else { break }
+        guard case .some = try? update(InputOrigin(elements: [.interactive]), name, input!, &values) else { break }
+      } else {
+        var element = values.elements[key]!
+        element.value = (input as Any)
+        element.inputOrigin = InputOrigin(elements: [.interactive])
+        values.elements[key] = element
+      }
       
       return true
         

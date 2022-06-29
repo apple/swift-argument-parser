@@ -45,11 +45,16 @@ hello
 Here are some boundary conditions that can be used for testing:
 
 ```
-// Missing value for option.
+// The value for option is missing.
 % repeat hello --count
 ```
 
 ```
-// Missing value for option in the middle.
+// The value for option in the middle is missing.
 % repeat hello --count --include-counter
+```
+
+```
+// More than one parameter is missing.
+% repeat --include-counter
 ```

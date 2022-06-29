@@ -34,14 +34,15 @@ struct Repeat: ParsableCommand {
         }
     }
 
-    public static func main() {
-      
-        main(["hello"])
+//    public static func main() {
+//      
+//        main(["hello"])
 //        main(["--count", "3"])
+//        main(["--include-counter"])
 //        main(["hello", "--count"])
 //        main(["hello", "--count", "--include-counter"])
 //        main(["--count", "--include-counter", "hello"])
-//      main(["--count", "3", "--include-counter", "hello"])
-        
-    }
+//        main(["--count", "3", "--include-counter", "hello"])
+//
+//    }
 }
