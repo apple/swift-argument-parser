@@ -20,7 +20,7 @@ struct Repeat: ParsableCommand {
     var includeCounter = false
 
     @Argument(help: "The phrase to repeat.")
-    var phrase: String
+    var phrase: [String]
 
     mutating func run() throws {
         let repeatCount = count
@@ -35,8 +35,8 @@ struct Repeat: ParsableCommand {
     }
 
 //    public static func main() {
-//      
-//        main(["hello"])
+//
+//        main(["--count", "3", "hello", "world"])
 //        main(["--count", "3"])
 //        main(["--include-counter"])
 //        main(["hello", "--count"])
