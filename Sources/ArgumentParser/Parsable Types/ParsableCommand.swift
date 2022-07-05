@@ -60,11 +60,12 @@ extension ParsableCommand {
   /// - Returns: A new instance of this type, one of its subcommands, or a
   ///   command type internal to the `ArgumentParser` library.
   public static func parseAsRoot(
-    _ arguments: [String]? = nil
+    _ arguments: [String]?,
+    lines: [String]? = nil
   ) throws -> ParsableCommand {
     var parser = CommandParser(self)
     let arguments = arguments ?? Array(CommandLine.arguments.dropFirst())
-    return try parser.parse(arguments: arguments).get()
+    return try parser.parse(arguments: arguments, lines: lines).get()
   }
   
   /// Returns the text of the help screen for the given subcommand of this
@@ -123,7 +124,7 @@ extension ParsableCommand {
   ///
   /// - Parameter arguments: An array of arguments to use for parsing. If
   ///   `arguments` is `nil`, this uses the program's command-line arguments.
-  public static func main(_ arguments: [String]?) {
+  public static func main(_ arguments: [String]?, lines: [String]? = nil) {
     
 #if DEBUG
     if #available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *) {
@@ -132,7 +133,7 @@ extension ParsableCommand {
 #endif
     
     do {
-      var command = try parseAsRoot(arguments)
+      var command = try parseAsRoot(arguments, lines: lines)
       try command.run()
     } catch {
       exit(withError: error)
@@ -150,7 +151,7 @@ extension ParsableCommand {
   /// and then calls its `run()` method, exiting with a relevant error message
   /// if necessary.
   public static func main() {
-    self.main(nil)
+    self.main(nil, lines: [])
   }
 }
 

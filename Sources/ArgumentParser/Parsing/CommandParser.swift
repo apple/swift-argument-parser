@@ -138,7 +138,7 @@ extension CommandParser {
   
   /// Extracts the current command from `split`, throwing if decoding isn't
   /// possible.
-  fileprivate mutating func parseCurrent(_ split: inout SplitArguments) throws -> ParsableCommand {
+  fileprivate mutating func parseCurrent(_ split: inout SplitArguments, lineStack: inout [String]?) throws -> ParsableCommand {
     // Build the argument set (i.e. information on how to parse):
     let commandArguments = ArgumentSet(currentNode.element, visibility: .private)
     
@@ -151,7 +151,7 @@ extension CommandParser {
           defaultCapturesAll: currentNode.element.defaultIncludesUnconditionalArguments)
       } catch {
         // Try to fix error by interacting with the user
-        guard canInteract(error: error, split: &split) else { throw error }
+        guard canInteract(error: error, split: &split, lineStack: &lineStack) else { throw error }
         return try getValues()
       }
     }
@@ -166,7 +166,7 @@ extension CommandParser {
         return (decoder, decodedResult)
       } catch {
         // Try to fix error by interacting with the user
-        if canInteract(error: error, arguments: commandArguments, values: &values) {
+        if canInteract(error: error, arguments: commandArguments, values: &values, lineStack: &lineStack) {
           return try getDecoderAndResult()
         } else {
           // If decoding this command failed, see if they were asking for
@@ -193,9 +193,9 @@ extension CommandParser {
   
   /// Starting with the current node, extracts commands out of `split` and
   /// descends into subcommands as far as possible.
-  internal mutating func descendingParse(_ split: inout SplitArguments) throws {
+  internal mutating func descendingParse(_ split: inout SplitArguments, lineStack: inout [String]?) throws {
     while true {
-      var parsedCommand = try parseCurrent(&split)
+      var parsedCommand = try parseCurrent(&split, lineStack: &lineStack)
 
       // after decoding a command, make sure to validate it
       do {
@@ -236,7 +236,7 @@ extension CommandParser {
   ///
   /// - Parameter arguments: The array of arguments to parse. This should not
   ///   include the command name as the first argument.
-  mutating func parse(arguments: [String]) -> Result<ParsableCommand, CommandError> {
+  mutating func parse(arguments: [String], lines: [String]?) -> Result<ParsableCommand, CommandError> {
     do {
       try handleCustomCompletion(arguments)
     } catch {
@@ -252,9 +252,11 @@ extension CommandParser {
       return .failure(CommandError(commandStack: [commandTree.element], parserError: .invalidState))
     }
     
+    var lineStack = lines
+    lineStack?.reverse()
     do {
-      try checkForCompletionScriptRequest(&split)
-      try descendingParse(&split)
+      try checkForCompletionScriptRequest(&split, lineStack: &lineStack)
+      try descendingParse(&split, lineStack: &lineStack)
       let result = try extractLastParsedValue(split)
       
       // HelpCommand is a valid result, but needs extra information about
@@ -290,7 +292,7 @@ struct AutodetectedGenerateCompletions: ParsableCommand {
 }
 
 extension CommandParser {
-  func checkForCompletionScriptRequest(_ split: inout SplitArguments) throws {
+  func checkForCompletionScriptRequest(_ split: inout SplitArguments, lineStack: inout [String]?) throws {
     // Pseudo-commands don't support `--generate-completion-script` flag
     guard rootCommand.configuration._superCommandName == nil else {
       return
@@ -301,13 +303,13 @@ extension CommandParser {
     
     // First look for `--generate-completion-script <shell>`
     var completionsParser = CommandParser(GenerateCompletions.self)
-    if let result = try? completionsParser.parseCurrent(&split) as? GenerateCompletions {
+    if let result = try? completionsParser.parseCurrent(&split, lineStack: &lineStack) as? GenerateCompletions {
       throw CommandError(commandStack: commandStack, parserError: .completionScriptRequested(shell: result.generateCompletionScript))
     }
     
     // Check for for `--generate-completion-script` without a value
     var autodetectedParser = CommandParser(AutodetectedGenerateCompletions.self)
-    if let result = try? autodetectedParser.parseCurrent(&split) as? AutodetectedGenerateCompletions,
+    if let result = try? autodetectedParser.parseCurrent(&split, lineStack: &lineStack) as? AutodetectedGenerateCompletions,
        result.generateCompletionScript
     {
       throw CommandError(commandStack: commandStack, parserError: .completionScriptRequested(shell: nil))

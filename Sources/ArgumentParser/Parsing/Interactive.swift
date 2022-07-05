@@ -15,11 +15,12 @@ extension CommandParser {
   ///   - error: A parsing error thrown by `lenientParse(_:subcommands:defaultCapturesAll:)`.
   ///   - split: A collection of parsed arguments which needs to be modified.
   /// - Returns: Whether the dialog resolve the error.
-  func canInteract(error: Error, split: inout SplitArguments) -> Bool {
+  func canInteract(error: Error, split: inout SplitArguments, lineStack: inout [String]?) -> Bool {
+    guard lineStack == nil || !lineStack!.isEmpty else { return false }
     guard let error = error as? ParserError else { return false }
     guard case let .missingValueForOption(inputOrigin, name) = error else { return false }
     
-    var input: String?
+    var input = lineStack?.removeLast()
     while input?.isEmpty ?? true {
       print("? Please enter value for '\(name.synopsisString)': ", terminator: "")
       input = readLine() ?? nil
@@ -45,15 +46,16 @@ extension CommandParser {
   ///   - arguments: A nested tree of argument definitions which can provide modification method.
   ///   - values: The resulting values after parsing the arguments which needs to be modified.
   /// - Returns: Whether the dialog resolve the error.
-  func canInteract(error: Error, arguments: ArgumentSet, values: inout ParsedValues) -> Bool {
+  func canInteract(error: Error, arguments: ArgumentSet, values: inout ParsedValues, lineStack: inout [String]?) -> Bool {
+    guard lineStack == nil || !lineStack!.isEmpty else { return false }
     guard let error = error as? ParserError else { return false }
     
     switch error {
     case let .noValue(forKey: key):
       let label = key.rawValue
       guard label != "generateCompletionScript" else { break }
-        
-      var input: String?
+      
+      var input = lineStack?.removeLast()
       while input?.isEmpty ?? true {
         print("? Please enter '\(label)': ", terminator: "")
         input = readLine() ?? nil
