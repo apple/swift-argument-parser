@@ -55,27 +55,27 @@ extension CommandParser {
       let label = key.rawValue
       guard label != "generateCompletionScript" else { break }
       
+      // Extract the parameters used in the test.
       var input = lineStack?.removeLast()
       while input?.isEmpty ?? true {
         print("? Please enter '\(label)': ", terminator: "")
         input = readLine() ?? nil
       }
       
-      if let name = arguments.namePositions.keys.first(where: { $0.valueString == label }) {
-        let position = arguments.namePositions[name]!
-        guard case let .unary(update) = arguments.content[position].update else { break }
-        guard case .some = try? update(InputOrigin(elements: [.interactive]), name, input!, &values) else { break }
-      } else {
-        var element = values.elements[key]!
-        element.value = (input as Any)
-        element.inputOrigin = InputOrigin(elements: [.interactive])
-        values.elements[key] = element
+      // Retrieve the correct `ArgumentDefinition` for the required transformation
+      // before storing the new value received from the user.
+      guard let definition = arguments.content.first(where: { $0.valueName == label }) else { break }
+      let name = definition.names.first // (where: { $0.case == .long } )
+      guard case let .unary(update) = definition.update else { break }
+      
+      // Split array input like "1 2 3".
+      for input in input!.components(separatedBy: " ") {
+        try! update(InputOrigin(elements: [.interactive]), name, input, &values)
       }
       
       return true
         
-    default:
-      break
+    default: break
     }
     
     return false

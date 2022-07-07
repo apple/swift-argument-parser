@@ -13,7 +13,7 @@ import ArgumentParser
 import ArgumentParserTestHelpers
 import XCTest
 
-final class InteractiveTests: XCTestCase {}
+final class InteractiveExampleTests: XCTestCase {}
 
 private struct Repeat: ParsableCommand {
   @Option var count: Int
@@ -23,7 +23,7 @@ private struct Repeat: ParsableCommand {
   @Argument var phrase: String
 }
 
-extension InteractiveTests {
+extension InteractiveExampleTests {
   func testParsing_Repeat() throws {
     AssertParseCommand(Repeat.self, Repeat.self, ["a"], lines: ["2"]) { rep in
       XCTAssertEqual(rep.count, 2)
