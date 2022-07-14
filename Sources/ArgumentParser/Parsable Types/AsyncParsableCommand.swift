@@ -31,17 +31,8 @@ extension AsyncParsableCommand {
   /// Instead of calling this method directly, you can add `@main` to the root
   /// command for your command-line tool.
   public static func main() async {
-    await self.main(lines: nil)
-  }
-  
-  /// Executes this command, or one of its subcommands, with the program's
-  /// command-line arguments.
-  ///
-  /// Instead of calling this method directly, you can add `@main` to the root
-  /// command for your command-line tool.
-  public static func main(lines: [String]?) async {
     do {
-      var command = try parseAsRoot(nil, lines: lines)
+      var command = try parseAsRoot()
       if var asyncCommand = command as? AsyncParsableCommand {
         try await asyncCommand.run()
       } else {
@@ -70,14 +61,8 @@ extension AsyncMainProtocol {
   /// Executes the designated command type, or one of its subcommands, with
   /// the program's command-line arguments.
   public static func main() async {
-    await self.main(lines: nil)
-  }
-  
-  /// Executes the designated command type, or one of its subcommands, with
-  /// the program's command-line arguments.
-  public static func main(lines: [String]?) async {
     do {
-      var command = try Command.parseAsRoot(nil, lines: lines)
+      var command = try Command.parseAsRoot()
       if var asyncCommand = command as? AsyncParsableCommand {
         try await asyncCommand.run()
       } else {

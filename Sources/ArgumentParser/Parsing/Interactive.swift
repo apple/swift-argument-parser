@@ -15,7 +15,7 @@ extension CommandParser {
   ///   - error: A parsing error thrown by `lenientParse(_:subcommands:defaultCapturesAll:)`.
   ///   - split: A collection of parsed arguments which needs to be modified.
   /// - Returns: Whether the dialog resolve the error.
-  func canInteract(error: Error, split: inout SplitArguments, lineStack: inout [String]?) -> Bool {
+  mutating func canInteract(error: Error, split: inout SplitArguments) -> Bool {
     guard lineStack == nil || !lineStack!.isEmpty else { return false }
     guard let error = error as? ParserError else { return false }
     guard case let .missingValueForOption(inputOrigin, name) = error else { return false }
@@ -46,7 +46,7 @@ extension CommandParser {
   ///   - arguments: A nested tree of argument definitions which can provide modification method.
   ///   - values: The resulting values after parsing the arguments which needs to be modified.
   /// - Returns: Whether the dialog resolve the error.
-  func canInteract(error: Error, arguments: ArgumentSet, values: inout ParsedValues, lineStack: inout [String]?) -> Bool {
+  mutating func canInteract(error: Error, arguments: ArgumentSet, values: inout ParsedValues) -> Bool {
     guard lineStack == nil || !lineStack!.isEmpty else { return false }
     guard let error = error as? ParserError else { return false }
     
