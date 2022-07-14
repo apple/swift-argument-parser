@@ -14,7 +14,7 @@ import ArgumentParser
 @main
 struct Repeat: ParsableCommand {
     @Option(help: "The number of times to repeat 'phrase'.")
-    var count: Int
+    var count: Int?
 
     @Flag(help: "Include a counter with each repetition.")
     var includeCounter = false
@@ -23,9 +23,9 @@ struct Repeat: ParsableCommand {
     var phrase: String
 
     mutating func run() throws {
-        let repeatCount = count
+        let repeatCount = count ?? .max
 
-        for i in 1 ... repeatCount {
+        for i in 1...repeatCount {
             if includeCounter {
                 print("\(i): \(phrase)")
             } else {
@@ -33,15 +33,4 @@ struct Repeat: ParsableCommand {
             }
         }
     }
-
-    public static func main() {
-        main(["a"], lines: ["1"])
-        main(["--count", "1"], lines: ["b"])
-        main([], lines: ["1", "c"])
-        main(["d", "--count"], lines: ["1"])
-        main(["--include-counter"], lines: ["1", "e"])
-        main(["f", "--count", "--include-counter"], lines: ["1"])
-        main(["--count", "--include-counter", "g"], lines: ["1"])
-        main(["--count", "1", "--include-counter", "h"])
-  }
 }
