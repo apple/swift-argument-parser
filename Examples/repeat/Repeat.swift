@@ -23,7 +23,7 @@ struct Repeat: ParsableCommand {
     var phrase: String
 
     mutating func run() throws {
-        let repeatCount = count ?? 2
+        let repeatCount = count ?? .max
 
         for i in 1...repeatCount {
             if includeCounter {

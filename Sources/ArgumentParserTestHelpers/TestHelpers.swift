@@ -102,6 +102,23 @@ public func AssertParseCommand<A: ParsableCommand>(_ rootCommand: ParsableComman
   }
 }
 
+// Assert ParseCommand of interactive mode
+public func AssertParseCommand<A: ParsableCommand>(_ rootCommand: ParsableCommand.Type, _ type: A.Type, _ arguments: [String], lines: [String], file: StaticString = #file, line: UInt = #line, closure: (A) throws -> Void) {
+  do {
+    var parser = CommandParser(rootCommand, lines: lines)
+    let command = try parser.parse(arguments: arguments).get()
+    
+    guard let aCommand = command as? A else {
+      XCTFail("Command is of unexpected type: \(command)", file: (file), line: line)
+      return
+    }
+    try closure(aCommand)
+  } catch {
+    let message = rootCommand.message(for: error)
+    XCTFail("\"\(message)\" — \(error)", file: (file), line: line)
+  }
+}
+
 public func AssertEqualStringsIgnoringTrailingWhitespace(_ string1: String, _ string2: String, file: StaticString = #file, line: UInt = #line) {
   let lines1 = string1.split(separator: "\n", omittingEmptySubsequences: false)
   let lines2 = string2.split(separator: "\n", omittingEmptySubsequences: false)
