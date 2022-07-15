@@ -88,9 +88,26 @@ public func AssertParse<A>(_ type: A.Type, _ arguments: [String], file: StaticSt
   }
 }
 
-public func AssertParseCommand<A: ParsableCommand>(_ rootCommand: ParsableCommand.Type, _ type: A.Type, _ arguments: [String], lines: [String]? = nil, file: StaticString = #file, line: UInt = #line, closure: (A) throws -> Void) {
+public func AssertParseCommand<A: ParsableCommand>(_ rootCommand: ParsableCommand.Type, _ type: A.Type, _ arguments: [String], file: StaticString = #file, line: UInt = #line, closure: (A) throws -> Void) {
   do {
-    let command = try rootCommand.parseAsRoot(arguments, lines: lines)
+    let command = try rootCommand.parseAsRoot(arguments)
+    guard let aCommand = command as? A else {
+      XCTFail("Command is of unexpected type: \(command)", file: (file), line: line)
+      return
+    }
+    try closure(aCommand)
+  } catch {
+    let message = rootCommand.message(for: error)
+    XCTFail("\"\(message)\" — \(error)", file: (file), line: line)
+  }
+}
+
+// Assert ParseCommand of interactive mode
+public func AssertParseCommand<A: ParsableCommand>(_ rootCommand: ParsableCommand.Type, _ type: A.Type, _ arguments: [String], lines: [String], file: StaticString = #file, line: UInt = #line, closure: (A) throws -> Void) {
+  do {
+    var parser = CommandParser(rootCommand, lines: lines)
+    let command = try parser.parse(arguments: arguments).get()
+    
     guard let aCommand = command as? A else {
       XCTFail("Command is of unexpected type: \(command)", file: (file), line: line)
       return
