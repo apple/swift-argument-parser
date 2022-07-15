@@ -60,10 +60,9 @@ extension ParsableCommand {
   /// - Returns: A new instance of this type, one of its subcommands, or a
   ///   command type internal to the `ArgumentParser` library.
   public static func parseAsRoot(
-    _ arguments: [String]? = nil,
-    lines: [String]? = nil
+    _ arguments: [String]? = nil
   ) throws -> ParsableCommand {
-    var parser = CommandParser(self, lines: lines)
+    var parser = CommandParser(self)
     let arguments = arguments ?? Array(CommandLine.arguments.dropFirst())
     return try parser.parse(arguments: arguments).get()
   }

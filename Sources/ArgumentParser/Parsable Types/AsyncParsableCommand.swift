@@ -32,7 +32,7 @@ extension AsyncParsableCommand {
   /// command for your command-line tool.
   public static func main() async {
     do {
-      var command = try parseAsRoot(nil)
+      var command = try parseAsRoot()
       if var asyncCommand = command as? AsyncParsableCommand {
         try await asyncCommand.run()
       } else {
