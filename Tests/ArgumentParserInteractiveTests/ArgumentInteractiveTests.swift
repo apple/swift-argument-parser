@@ -80,3 +80,68 @@ extension ArgumentInteractiveTests {
     }
   }
 }
+
+// MARK: -
+
+private struct PositionalArray1: ParsableCommand {
+  @Argument var values: [Int]
+  @Option var count: Int
+  @Flag var verbose = false
+}
+
+private struct PositionalArray2: ParsableCommand {
+  @Option var count: Int
+  @Argument var values: [Int]
+  @Flag var verbose = false
+}
+
+private struct PositionalArray3: ParsableCommand {
+  @Option var count: Int
+  @Flag var verbose = false
+  @Argument var values: [Int]
+}
+
+extension ArgumentInteractiveTests {
+  func testParsing_PositionalArray1() throws {
+    AssertParseCommand(PositionalArray1.self, PositionalArray1.self, ["--count", "3", "--verbose"], lines: ["1 2"]) { value in
+      XCTAssertEqual(value.count, 3)
+      XCTAssertEqual(value.verbose, true)
+      XCTAssertEqual(value.values, [1, 2])
+    }
+    
+    AssertParseCommand(PositionalArray2.self, PositionalArray2.self, ["--count", "3", "--verbose"], lines: ["1 2"]) { value in
+      XCTAssertEqual(value.count, 3)
+      XCTAssertEqual(value.verbose, true)
+      XCTAssertEqual(value.values, [1, 2])
+    }
+    
+    AssertParseCommand(PositionalArray3.self, PositionalArray3.self, ["--count", "3", "--verbose"], lines: ["1 2"]) { value in
+      XCTAssertEqual(value.count, 3)
+      XCTAssertEqual(value.verbose, true)
+      XCTAssertEqual(value.values, [1, 2])
+    }
+  }
+}
+
+private struct ExpressibleArgument: ParsableCommand {
+  enum Mode: String, ExpressibleByArgument {
+    case foo, bar, baz
+  }
+
+  @Argument var mode: Mode
+  @Argument var modes: [Mode]
+}
+
+extension ArgumentInteractiveTests {
+  func testParsing_ExpressibleArgument() throws {
+    AssertParseCommand(ExpressibleArgument.self, ExpressibleArgument.self, ["foo"], lines: ["bar baz"]) { value in
+      XCTAssertEqual(value.mode, .foo)
+      XCTAssertEqual(value.modes, [.bar, .baz])
+    }
+    
+    AssertParseCommand(ExpressibleArgument.self, ExpressibleArgument.self, [], lines: ["foo", "bar baz"]) { value in
+      XCTAssertEqual(value.mode, .foo)
+      XCTAssertEqual(value.modes, [.bar, .baz])
+    }
+  }
+}
