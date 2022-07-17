@@ -18,6 +18,9 @@ var package = Package(
         .library(
             name: "ArgumentParser",
             targets: ["ArgumentParser"]),
+        .plugin(
+            name: "GenerateManualPlugin",
+            targets: ["GenerateManualPlugin"]),
     ],
     dependencies: [],
     targets: [
