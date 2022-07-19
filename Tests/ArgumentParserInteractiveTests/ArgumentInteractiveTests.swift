@@ -102,7 +102,7 @@ private struct PositionalArray3: ParsableCommand {
 }
 
 extension ArgumentInteractiveTests {
-  func testParsing_PositionalArray1() throws {
+  func testParsing_PositionalArray() throws {
     AssertParseCommand(PositionalArray1.self, PositionalArray1.self, ["--count", "3", "--verbose"], lines: ["1 2"]) { value in
       XCTAssertEqual(value.count, 3)
       XCTAssertEqual(value.verbose, true)
@@ -124,7 +124,7 @@ extension ArgumentInteractiveTests {
 }
 
 private struct ExpressibleArgument: ParsableCommand {
-  enum Mode: String, ExpressibleByArgument {
+  enum Mode: String, CaseIterable, ExpressibleByArgument {
     case foo, bar, baz
   }
 
@@ -134,14 +134,19 @@ private struct ExpressibleArgument: ParsableCommand {
 
 extension ArgumentInteractiveTests {
   func testParsing_ExpressibleArgument() throws {
-    AssertParseCommand(ExpressibleArgument.self, ExpressibleArgument.self, ["foo"], lines: ["bar baz"]) { value in
+    AssertParseCommand(ExpressibleArgument.self, ExpressibleArgument.self, ["foo"], lines: ["2 3"]) { value in
+      XCTAssertEqual(value.mode, .foo)
+      XCTAssertEqual(value.modes, [.bar, .baz])
+    }
+
+    AssertParseCommand(ExpressibleArgument.self, ExpressibleArgument.self, [], lines: ["1", "2 3"]) { value in
       XCTAssertEqual(value.mode, .foo)
       XCTAssertEqual(value.modes, [.bar, .baz])
     }
     
-    AssertParseCommand(ExpressibleArgument.self, ExpressibleArgument.self, [], lines: ["foo", "bar baz"]) { value in
-      XCTAssertEqual(value.mode, .foo)
-      XCTAssertEqual(value.modes, [.bar, .baz])
+    AssertParseCommand(ExpressibleArgument.self, ExpressibleArgument.self, [], lines: ["foo", "0", "2 3", "1"]) { value in
+      XCTAssertEqual(value.mode, .baz)
+      XCTAssertEqual(value.modes, [.foo])
     }
   }
 }
