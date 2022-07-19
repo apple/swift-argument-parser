@@ -49,6 +49,50 @@ extension ArgumentInteractiveTests {
 
 // MARK: -
 
+private struct ExpressibleValue: ParsableCommand {
+  enum Mode: String, ExpressibleByArgument {
+    case foo, bar, baz
+  }
+
+  @Argument var mode: Mode
+}
+
+private struct TransformableValue: ParsableCommand {
+  enum Format: Equatable {
+    case text
+    case other(String)
+
+    init(_ string: String) throws {
+      if string == "text" {
+        self = .text
+      } else {
+        self = .other(string)
+      }
+    }
+  }
+
+  @Argument(transform: Format.init) var format: Format
+}
+
+extension ArgumentInteractiveTests {
+  func testParsing_ExpressibleValue() throws {
+    AssertParseCommand(ExpressibleValue.self, ExpressibleValue.self, [], lines: ["foo"]) { value in
+      XCTAssertEqual(value.mode, .foo)
+    }
+  }
+
+  func testParsing_TransformableValue() throws {
+    AssertParseCommand(TransformableValue.self, TransformableValue.self, [], lines: ["text"]) { value in
+      XCTAssertEqual(value.format, .text)
+    }
+    AssertParseCommand(TransformableValue.self, TransformableValue.self, [], lines: ["keynote"]) { value in
+      XCTAssertEqual(value.format, .other("keynote"))
+    }
+  }
+}
+
+// MARK: -
+
 private struct StringArray: ParsableCommand {
   @Argument var values: [String]
 }
@@ -108,13 +152,13 @@ extension ArgumentInteractiveTests {
       XCTAssertEqual(value.verbose, true)
       XCTAssertEqual(value.values, [1, 2])
     }
-    
+
     AssertParseCommand(PositionalArray2.self, PositionalArray2.self, ["--count", "3", "--verbose"], lines: ["1 2"]) { value in
       XCTAssertEqual(value.count, 3)
       XCTAssertEqual(value.verbose, true)
       XCTAssertEqual(value.values, [1, 2])
     }
-    
+
     AssertParseCommand(PositionalArray3.self, PositionalArray3.self, ["--count", "3", "--verbose"], lines: ["1 2"]) { value in
       XCTAssertEqual(value.count, 3)
       XCTAssertEqual(value.verbose, true)
@@ -123,7 +167,9 @@ extension ArgumentInteractiveTests {
   }
 }
 
-private struct ExpressibleArgument: ParsableCommand {
+// MARK: -
+
+private struct CaseIterableArgument: ParsableCommand {
   enum Mode: String, CaseIterable, ExpressibleByArgument {
     case foo, bar, baz
   }
@@ -133,18 +179,18 @@ private struct ExpressibleArgument: ParsableCommand {
 }
 
 extension ArgumentInteractiveTests {
-  func testParsing_ExpressibleArgument() throws {
-    AssertParseCommand(ExpressibleArgument.self, ExpressibleArgument.self, ["foo"], lines: ["2 3"]) { value in
+  func testParsing_CaseIterableArgument() throws {
+    AssertParseCommand(CaseIterableArgument.self, CaseIterableArgument.self, ["foo"], lines: ["2 3"]) { value in
       XCTAssertEqual(value.mode, .foo)
       XCTAssertEqual(value.modes, [.bar, .baz])
     }
 
-    AssertParseCommand(ExpressibleArgument.self, ExpressibleArgument.self, [], lines: ["1", "2 3"]) { value in
+    AssertParseCommand(CaseIterableArgument.self, CaseIterableArgument.self, [], lines: ["1", "2 3"]) { value in
       XCTAssertEqual(value.mode, .foo)
       XCTAssertEqual(value.modes, [.bar, .baz])
     }
-    
-    AssertParseCommand(ExpressibleArgument.self, ExpressibleArgument.self, [], lines: ["foo", "0", "2 3", "1"]) { value in
+
+    AssertParseCommand(CaseIterableArgument.self, CaseIterableArgument.self, [], lines: ["foo", "0", "2 3", "1"]) { value in
       XCTAssertEqual(value.mode, .baz)
       XCTAssertEqual(value.modes, [.foo])
     }
