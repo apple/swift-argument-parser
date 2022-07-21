@@ -20,11 +20,8 @@ extension CommandParser {
     guard let error = error as? ParserError else { return false }
     guard case let .missingValueForOption(inputOrigin, name) = error else { return false }
     
-    var input = lineStack?.removeLast()
-    while input?.isEmpty ?? true {
-      print("? Please enter value for '\(name.synopsisString)': ", terminator: "")
-      input = readLine() ?? nil
-    }
+    print("? Please enter value for '\(name.synopsisString)': ", terminator: "")
+    let input = getInput()
     
     let inputIndex = inputOrigin.elements.first!.baseIndex! + 1
     split._elements.insert(.init(value: .value(input!),
@@ -67,8 +64,8 @@ extension CommandParser {
         // Get normal value
         input = getNormalValue(label: label)
       } else {
-        // Get CaseIterable Enum
         allValues.enumerated().forEach { print("\($0 + 1). \($1)") }
+        // Get CaseIterable Enum
         input = getCaseIterableEnum(label: label, allValues: allValues)
       }
       
@@ -87,33 +84,18 @@ extension CommandParser {
   
   fileprivate mutating func getNormalValue(label: String) -> [String] {
     print("? Please enter '\(label)': ", terminator: "")
-    
-    if let input = lineStack?.removeLast().components(separatedBy: " ") {
-      // Extract the parameters used in the test.
-      return input
-    } else {
-      // Get values from user input
-      return readLine()?.components(separatedBy: " ") ?? getNormalValue(label: label)
-    }
+    return getInput()?.components(separatedBy: " ") ?? [""]
   }
   
   fileprivate mutating func getCaseIterableEnum(label: String, allValues: [String]) -> [String] {
     print("? Please select '\(label)': ", terminator: "")
+    let strs = getInput()?.components(separatedBy: " ") ?? [""]
     
-    let nums: [String]
-    if lineStack != nil {
-      // Extract the parameters used in the test.
-      nums = lineStack!.removeLast().components(separatedBy: " ")
-    } else {
-      // Get values from user input
-      nums = readLine()?.components(separatedBy: " ") ?? getNormalValue(label: label)
-    }
-    
-    var result: [String] = []
+    var nums: [String] = []
     let range = 1 ... allValues.count
-    for num in nums {
-      guard let index = Int(num) else {
-        print("Error: '\(num)' is not a serial number.\n")
+    for str in strs {
+      guard let index = Int(str) else {
+        print("Error: '\(str)' is not a serial number.\n")
         return getCaseIterableEnum(label: label, allValues: allValues)
       }
 
@@ -122,15 +104,25 @@ extension CommandParser {
         return getCaseIterableEnum(label: label, allValues: allValues)
       }
       
-      result.append(allValues[index - 1])
+      nums.append(allValues[index - 1])
     }
     
-    if result.count == 1 {
-      print("You select '\(result[0])'.\n")
+    if nums.count == 1 {
+      print("You select '\(nums[0])'.\n")
     } else {
-      print("You select '\(result.joined(separator: "', '"))'.\n")
+      print("You select '\(nums.joined(separator: "', '"))'.\n")
     }
     
-    return result
+    return nums
+  }
+  
+  fileprivate mutating func getInput() -> String? {
+    if lineStack != nil {
+      // Extract the parameters used in the test.
+      return lineStack!.removeLast()
+    } else {
+      // Get values from user input.
+      return readLine()
+    }
   }
 }
