@@ -57,23 +57,16 @@ extension CommandParser {
       guard let definition = arguments.content.first(where: { $0.valueName == label }) else { break }
       guard case let .unary(update) = definition.update else { break }
       let name = definition.names.first // (where: { $0.case == .long } )
-      
-      let input: [String]
+      let updateBy: (String) throws -> Void = { try update(InputOrigin(elements: [.interactive]), name, $0, &values) }
+
       let allValues = definition.help.allValues
       if allValues.isEmpty {
-        // Get normal value
-        input = getNormalValue(label: label)
+        storeNormalValues(label: label, updateBy: updateBy, arguments: arguments)
       } else {
         allValues.enumerated().forEach { print("\($0 + 1). \($1)") }
-        // Get CaseIterable Enum
-        input = getCaseIterableEnum(label: label, allValues: allValues)
+        storeCaseIterableEnums(label: label, allValues: allValues, updateBy: updateBy, arguments: arguments)
       }
-      
-      // Split array input like "1 2 3".
-      for element in input {
-        try update(InputOrigin(elements: [.interactive]), name, element, &values)
-      }
-      
+
       return true
         
     default: break
@@ -81,27 +74,71 @@ extension CommandParser {
     
     return false
   }
-  
-  fileprivate mutating func getNormalValue(label: String) -> [String] {
-    print("? Please enter '\(label)': ", terminator: "")
-    return getInput()?.components(separatedBy: " ") ?? [""]
-  }
-  
-  fileprivate mutating func getCaseIterableEnum(label: String, allValues: [String]) -> [String] {
+
+  fileprivate mutating func storeNormalValues(label: String,
+                                              updateBy: (String) throws -> Void,
+                                              arguments: ArgumentSet)
+  {
     print("? Please select '\(label)': ", terminator: "")
     let strs = getInput()?.components(separatedBy: " ") ?? [""]
-    
+
+    // Handle ParserError
+    for str in strs {
+      do {
+        try updateBy(str)
+      } catch {
+        guard let error = error as? ParserError else { return }
+        let generator = ErrorMessageGenerator(arguments: arguments, error: error)
+        let description = generator.makeErrorMessage() ?? error.localizedDescription
+        guard case let .unableToParseValue(_, _, original, _, _) = error else { return }
+        print("Error: " + description + ".\n")
+        replaceInvalidValue(original: original, updateBy: updateBy, arguments: arguments)
+      }
+    }
+  }
+
+  fileprivate mutating func replaceInvalidValue(original: String,
+                                                updateBy: (String) throws -> Void,
+                                                arguments: ArgumentSet)
+  {
+    print("? Please replace '\(original)': ", terminator: "")
+    let input = getInput() ?? ""
+
+    // Handle ParserError
+    do {
+      try updateBy(input)
+    } catch {
+      guard let error = error as? ParserError else { return }
+      let generator = ErrorMessageGenerator(arguments: arguments, error: error)
+      let description = generator.makeErrorMessage() ?? error.localizedDescription
+      guard case let .unableToParseValue(_, _, original, _, _) = error else { return }
+      print("Error: " + description + ".\n")
+      replaceInvalidValue(original: original, updateBy: updateBy, arguments: arguments)
+    }
+  }
+
+  fileprivate mutating func storeCaseIterableEnums(label: String,
+                                                   allValues: [String],
+                                                   updateBy: (String) throws -> Void,
+                                                   arguments: ArgumentSet)
+  {
+    print("? Please select '\(label)': ", terminator: "")
+    let strs = getInput()?.components(separatedBy: " ") ?? [""]
+
     var nums: [String] = []
     let range = 1 ... allValues.count
-    for str in strs {
-      guard let index = Int(str) else {
-        print("Error: '\(str)' is not a serial number.\n")
-        return getCaseIterableEnum(label: label, allValues: allValues)
+    for num in strs {
+      guard let index = Int(num) else {
+        print("Error: '\(num)' is not a serial number.\n")
+        storeCaseIterableEnums(label: label, allValues: allValues, updateBy: updateBy, arguments: arguments)
+        return
       }
 
       guard range.contains(index) else {
         print("Error: '\(index)' is not in the range of \(range) \n")
-        return getCaseIterableEnum(label: label, allValues: allValues)
+        storeCaseIterableEnums(label: label, allValues: allValues,
+                               updateBy: updateBy, arguments: arguments)
+        return
       }
       
       nums.append(allValues[index - 1])
@@ -112,8 +149,8 @@ extension CommandParser {
     } else {
       print("You select '\(nums.joined(separator: "', '"))'.\n")
     }
-    
-    return nums
+
+    nums.forEach { try! updateBy($0) }
   }
   
   fileprivate mutating func getInput() -> String? {
