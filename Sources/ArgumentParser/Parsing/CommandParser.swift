@@ -22,7 +22,7 @@ struct CommandParser {
   let commandTree: Tree<ParsableCommand.Type>
   var currentNode: Tree<ParsableCommand.Type>
   var decodedArguments: [DecodedArguments] = []
-  var lineStack: [String]?
+  var lineStack: [String]? = nil
   
   var rootCommand: ParsableCommand.Type {
     commandTree.element
@@ -37,7 +37,7 @@ struct CommandParser {
     }
   }
   
-  internal init(_ rootCommand: ParsableCommand.Type, lines: [String]?) {
+  internal init(_ rootCommand: ParsableCommand.Type, lines: [String]) {
     self.init(rootCommand)
     self.lineStack = lines
     lineStack?.reverse()
@@ -158,7 +158,7 @@ extension CommandParser {
           defaultCapturesAll: currentNode.element.defaultIncludesUnconditionalArguments)
       } catch {
         // Try to fix error by interacting with the user
-        guard canInteract(error: error, split: &split) else { throw error }
+        guard try canInteract(error: error, split: &split) else { throw error }
         return try getValues()
       }
     }
@@ -173,7 +173,7 @@ extension CommandParser {
         return (decoder, decodedResult)
       } catch {
         // Try to fix error by interacting with the user
-        if canInteract(error: error, arguments: commandArguments, values: &values) {
+        if try canInteract(error: error, arguments: commandArguments, values: &values) {
           return try getDecoderAndResult()
         } else {
           // If decoding this command failed, see if they were asking for
