@@ -57,8 +57,12 @@ extension CommandParser {
       guard let definition = arguments.content.first(where: { $0.valueName == label }) else { break }
       guard case let .unary(update) = definition.update else { break }
       let name = definition.names.first // (where: { $0.case == .long } )
-      let updateBy: (String) throws -> Void = { try update(InputOrigin(elements: [.interactive]), name, $0, &values) }
-
+      let updateBy: (String) throws -> Void = { string in
+        try update(InputOrigin(elements: [.interactive]), name, string, &values)
+      }
+      
+      // All possible strings that can be converted to value
+      // of this CaseIterable enum type.
       let allValues = definition.help.allValues
       if allValues.isEmpty {
         storeNormalValues(label: label, updateBy: updateBy, arguments: arguments)
@@ -79,14 +83,14 @@ extension CommandParser {
                                               updateBy: (String) throws -> Void,
                                               arguments: ArgumentSet)
   {
-    print("? Please select '\(label)': ", terminator: "")
+    print("? Please enter '\(label)': ", terminator: "")
     let strs = getInput()?.components(separatedBy: " ") ?? [""]
 
-    // Handle ParserError
     for str in strs {
       do {
         try updateBy(str)
       } catch {
+        // Handle ParserError
         guard let error = error as? ParserError else { return }
         let generator = ErrorMessageGenerator(arguments: arguments, error: error)
         let description = generator.makeErrorMessage() ?? error.localizedDescription
@@ -104,10 +108,10 @@ extension CommandParser {
     print("? Please replace '\(original)': ", terminator: "")
     let input = getInput() ?? ""
 
-    // Handle ParserError
     do {
       try updateBy(input)
     } catch {
+      // Handle ParserError
       guard let error = error as? ParserError else { return }
       let generator = ErrorMessageGenerator(arguments: arguments, error: error)
       let description = generator.makeErrorMessage() ?? error.localizedDescription
@@ -136,8 +140,7 @@ extension CommandParser {
 
       guard range.contains(index) else {
         print("Error: '\(index)' is not in the range of \(range) \n")
-        storeCaseIterableEnums(label: label, allValues: allValues,
-                               updateBy: updateBy, arguments: arguments)
+        storeCaseIterableEnums(label: label, allValues: allValues, updateBy: updateBy, arguments: arguments)
         return
       }
       
@@ -153,6 +156,7 @@ extension CommandParser {
     nums.forEach { try! updateBy($0) }
   }
   
+  /// Get input from the user's typing or from the parameters of the test.
   fileprivate mutating func getInput() -> String? {
     if lineStack != nil {
       // Extract the parameters used in the test.
