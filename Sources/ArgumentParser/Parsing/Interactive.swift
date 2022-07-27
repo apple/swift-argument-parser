@@ -19,24 +19,24 @@ extension CommandParser {
     guard lineStack == nil || !lineStack!.isEmpty else { return false }
     guard let error = error as? ParserError else { return false }
     guard case let .missingValueForOption(inputOrigin, name) = error else { return false }
-    
+
     print("? Please enter value for '\(name.synopsisString)': ", terminator: "")
     let input = getInput()
-    
+
     let inputIndex = inputOrigin.elements.first!.baseIndex! + 1
     split._elements.insert(.init(value: .value(input!),
                                  index: .init(inputIndex: .init(rawValue: inputIndex))),
                            at: inputIndex)
-    
+
     for index in (inputIndex + 1) ..< split.count {
       split._elements[index].index = .init(inputIndex: .init(rawValue: index))
     }
-    
+
     split.originalInput.insert(input!, at: inputIndex)
-    
+
     return true
   }
-  
+
   /// Try to fix decoding error by interacting with the user.
   /// - Parameters:
   ///   - error: A decoding error thrown by `ParsableCommand.init(from:)`.
@@ -46,12 +46,12 @@ extension CommandParser {
   mutating func canInteract(error: Error, arguments: ArgumentSet, values: inout ParsedValues) -> Bool {
     guard lineStack == nil || !lineStack!.isEmpty else { return false }
     guard let error = error as? ParserError else { return false }
-    
+
     switch error {
     case let .noValue(forKey: key):
       let label = key.rawValue
       guard label != "generateCompletionScript" else { break }
-      
+
       // Retrieve the correct `ArgumentDefinition` for the required transformation
       // before storing the new value received from the user.
       guard let definition = arguments.content.first(where: { $0.valueName == label }) else { break }
@@ -60,7 +60,7 @@ extension CommandParser {
       let updateBy: (String) throws -> Void = { string in
         try update(InputOrigin(elements: [.interactive]), name, string, &values)
       }
-      
+
       // All possible strings that can be converted to value
       // of this CaseIterable enum type.
       let allValues = definition.help.allValues
@@ -72,17 +72,18 @@ extension CommandParser {
       }
 
       return true
-        
+
     default: break
     }
-    
+
     return false
   }
 
-  fileprivate mutating func storeNormalValues(label: String,
-                                              updateBy: (String) throws -> Void,
-                                              arguments: ArgumentSet)
-  {
+  fileprivate mutating func storeNormalValues(
+    label: String,
+    updateBy: (String) throws -> Void,
+    arguments: ArgumentSet
+  ) {
     print("? Please enter '\(label)': ", terminator: "")
     let strs = getInput()?.components(separatedBy: " ") ?? [""]
 
@@ -101,10 +102,11 @@ extension CommandParser {
     }
   }
 
-  fileprivate mutating func replaceInvalidValue(original: String,
-                                                updateBy: (String) throws -> Void,
-                                                arguments: ArgumentSet)
-  {
+  fileprivate mutating func replaceInvalidValue(
+    original: String,
+    updateBy: (String) throws -> Void,
+    arguments: ArgumentSet
+  ) {
     print("? Please replace '\(original)': ", terminator: "")
     let input = getInput() ?? ""
 
@@ -121,11 +123,12 @@ extension CommandParser {
     }
   }
 
-  fileprivate mutating func storeCaseIterableEnums(label: String,
-                                                   allValues: [String],
-                                                   updateBy: (String) throws -> Void,
-                                                   arguments: ArgumentSet)
-  {
+  fileprivate mutating func storeCaseIterableEnums(
+    label: String,
+    allValues: [String],
+    updateBy: (String) throws -> Void,
+    arguments: ArgumentSet
+  ) {
     print("? Please select '\(label)': ", terminator: "")
     let strs = getInput()?.components(separatedBy: " ") ?? [""]
 
@@ -143,10 +146,10 @@ extension CommandParser {
         storeCaseIterableEnums(label: label, allValues: allValues, updateBy: updateBy, arguments: arguments)
         return
       }
-      
+
       nums.append(allValues[index - 1])
     }
-    
+
     if nums.count == 1 {
       print("You select '\(nums[0])'.\n")
     } else {
@@ -155,7 +158,7 @@ extension CommandParser {
 
     nums.forEach { try! updateBy($0) }
   }
-  
+
   /// Get input from the user's typing or from the parameters of the test.
   fileprivate mutating func getInput() -> String? {
     if lineStack != nil {
