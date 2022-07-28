@@ -158,7 +158,7 @@ extension CommandParser {
           defaultCapturesAll: currentNode.element.defaultIncludesUnconditionalArguments)
       } catch {
         // Try to fix error by interacting with the user
-        guard try canInteract(error: error, split: &split) else { throw error }
+        guard canInteract(error: error, split: &split) else { throw error }
         return try getValues()
       }
     }
@@ -173,7 +173,7 @@ extension CommandParser {
         return (decoder, decodedResult)
       } catch {
         // Try to fix error by interacting with the user
-        if try canInteract(error: error, arguments: commandArguments, values: &values) {
+        if canInteract(error: error, arguments: commandArguments, values: &values) {
           return try getDecoderAndResult()
         } else {
           // If decoding this command failed, see if they were asking for
