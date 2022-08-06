@@ -16,10 +16,14 @@ import XCTest
 final class InvalidValueInteractiveTests: XCTestCase {}
 
 private struct IntValue: ParsableCommand {
+  static var configuration = CommandConfiguration(isInteractable: true)
+
   @Argument var integer: Int
 }
 
 private struct IntArray: ParsableCommand {
+  static var configuration = CommandConfiguration(isInteractable: true)
+
   @Argument var values: [Int]
 }
 
