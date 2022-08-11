@@ -60,6 +60,28 @@ struct _WrappedParsableCommand<P: ParsableArguments>: ParsableCommand {
   @OptionGroup var options: P
 }
 
+/// A type that provides the `ParsableCommand` interface to a `ParsableArguments` type,
+/// and set the `shouldPromptForMissing` to true.
+struct _WrappedThrowableCommand<P: ParsableArguments>: ParsableCommand {
+  static var configuration: CommandConfiguration { .init(shouldPromptForMissing: false) }
+
+  static var _commandName: String {
+    let name = String(describing: P.self).convertedToSnakeCase()
+
+    // If the type is named something like "TransformOptions", we only want
+    // to use "transform" as the command name.
+    if let optionsRange = name.range(of: "_options"),
+      optionsRange.upperBound == name.endIndex
+    {
+      return String(name[..<optionsRange.lowerBound])
+    } else {
+      return name
+    }
+  }
+
+  @OptionGroup var options: P
+}
+
 struct StandardError: TextOutputStream {
   mutating func write(_ string: String) {
     for byte in string.utf8 { putc(numericCast(byte), stderr) }
@@ -70,15 +92,13 @@ var standardError = StandardError()
 
 extension ParsableArguments {
   public mutating func validate() throws {}
-  
+
+  public static var _errorLabel: String { "Error" }
+
   /// This type as-is if it conforms to `ParsableCommand`, or wrapped in the
   /// `ParsableCommand` wrapper if not.
   internal static var asCommand: ParsableCommand.Type {
-    self as? ParsableCommand.Type ?? _WrappedParsableCommand<Self>.self
-  }
-  
-  public static var _errorLabel: String {
-    "Error"
+    self as? ParsableCommand.Type ?? _WrappedThrowableCommand<Self>.self
   }
 }
 
@@ -97,7 +117,7 @@ extension ParsableArguments {
     switch try self.asCommand.parseAsRoot(arguments) {
     case let helpCommand as HelpCommand:
       throw ParserError.helpRequested(visibility: helpCommand.visibility)
-    case let result as _WrappedParsableCommand<Self>:
+    case let result as _WrappedThrowableCommand<Self>:
       return result.options
     case var result as Self:
       do {

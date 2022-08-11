@@ -16,7 +16,7 @@ extension CommandParser {
   ///   - split: A collection of parsed arguments which needs to be modified.
   /// - Returns: Whether the dialog resolve the error.
   mutating func canInteract(error: Error, split: inout SplitArguments) -> Bool {
-    guard rootCommand.configuration.isInteractable else { return false }
+    guard rootCommand.configuration.shouldPromptForMissing else { return false }
     guard lineStack == nil || !lineStack!.isEmpty else { return false }
     guard let error = error as? ParserError else { return false }
     guard case let .missingValueForOption(inputOrigin, name) = error else { return false }
@@ -45,7 +45,7 @@ extension CommandParser {
   ///   - values: The resulting values after parsing the arguments which needs to be modified.
   /// - Returns: Whether the dialog resolve the error.
   mutating func canInteract(error: Error, arguments: ArgumentSet, values: inout ParsedValues) -> Bool {
-    guard rootCommand.configuration.isInteractable else { return false }
+    guard rootCommand.configuration.shouldPromptForMissing else { return false }
     guard lineStack == nil || !lineStack!.isEmpty else { return false }
     guard let error = error as? ParserError else { return false }
 
