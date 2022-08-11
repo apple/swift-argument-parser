@@ -14,6 +14,7 @@ import ArgumentParser
 extension Package {
   /// Describe the current package
   struct Describe: ParsableCommand {
+    static var configuration = CommandConfiguration(shouldPromptForMissing: false)
     @OptionGroup()
     var options: Options
     

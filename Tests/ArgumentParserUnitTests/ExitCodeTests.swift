@@ -21,7 +21,8 @@ extension ExitCodeTests {
   struct A: ParsableArguments {}
   struct E: Error {}
   struct C: ParsableCommand {
-    static var configuration = CommandConfiguration(version: "v1")
+    static var configuration = CommandConfiguration(
+      version: "v1", shouldPromptForMissing: false)
   }
   
   func testExitCodes() {
@@ -41,7 +42,7 @@ extension ExitCodeTests {
     } catch {
       XCTAssertEqual(ExitCode.validationFailure, A.exitCode(for: error))
     }
-
+    
     do {
       _ = try C.parse(["--version"])
       XCTFail("Didn't throw version request error.")
@@ -49,7 +50,7 @@ extension ExitCodeTests {
       XCTAssertEqual(ExitCode.success, C.exitCode(for: error))
     }
   }
-
+  
   func testExitCode_Success() {
     XCTAssertFalse(A.exitCode(for: E()).isSuccess)
     XCTAssertFalse(A.exitCode(for: ValidationError("")).isSuccess)
@@ -82,6 +83,7 @@ extension ExitCodeTests {
 extension ExitCodeTests {
   func testNSErrorIsHandled() {
     struct NSErrorCommand: ParsableCommand {
+      static var configuration = CommandConfiguration(shouldPromptForMissing: false)
       static let fileNotFoundNSError = NSError(domain: "", code: 1, userInfo: [NSLocalizedDescriptionKey: "The file “foo/bar” couldn’t be opened because there is no such file"])
     }
     XCTAssertEqual(NSErrorCommand.exitCode(for: NSErrorCommand.fileNotFoundNSError), ExitCode(rawValue: 1))

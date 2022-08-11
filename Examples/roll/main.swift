@@ -12,6 +12,8 @@
 import ArgumentParser
 
 struct RollOptions: ParsableArguments {
+    static var configuration = CommandConfiguration(shouldPromptForMissing: false)
+
     @Option(help: ArgumentHelp("Rolls the dice <n> times.", valueName: "n"))
     var times = 1
 

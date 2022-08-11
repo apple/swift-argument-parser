@@ -14,30 +14,31 @@ import ArgumentParser
 extension Package {
   /// Generates an Xcode project
   struct GenerateXcodeProject: ParsableCommand {
-    static var configuration =
-      CommandConfiguration(commandName: "generate-xcodeproj")
-
+    static var configuration = CommandConfiguration(
+      commandName: "generate-xcodeproj",
+      shouldPromptForMissing: false)
+    
     @OptionGroup()
     var options: Options
-
+    
     @Flag(help: "Enable code coverage in the generated project")
     var enableCodeCoverage: Bool = false
-
+    
     @Flag(help: "Use the legacy scheme generator")
     var legacySchemeGenerator: Bool = false
-
+    
     @Option(help: "Path where the Xcode project should be generated")
     var output: String?
-
+    
     @Flag(help: "Do not add file references for extra files to the generated Xcode project")
     var skipExtraFiles: Bool = false
-
+    
     @Flag(help: "Watch for changes to the Package manifest to regenerate the Xcode project")
     var watch: Bool = false
-
+    
     @Option(help: "Path to xcconfig file")
     var xcconfigOverrides: String?
-
+    
     mutating func run() {
       print("Generating Xcode Project.......")
     }

@@ -28,12 +28,13 @@ extension CompletionScriptTests {
       .file()
     }
   }
-    
+  
   enum Kind: String, ExpressibleByArgument, CaseIterable {
     case one, two, three = "custom-three"
   }
   
   struct Base: ParsableCommand {
+    static var configuration = CommandConfiguration(shouldPromptForMissing: false)
     @Option(help: "The user's name.") var name: String
     @Option() var kind: Kind
     @Option(completion: .list(["1", "2", "3"])) var otherKind: Kind
@@ -44,40 +45,40 @@ extension CompletionScriptTests {
     
     @Flag(help: .hidden) var verbose = false
   }
-
+  
   func testBase_Zsh() throws {
     let script1 = try CompletionsGenerator(command: Base.self, shell: .zsh)
-          .generateCompletionScript()
+      .generateCompletionScript()
     XCTAssertEqual(zshBaseCompletions, script1)
     
     let script2 = try CompletionsGenerator(command: Base.self, shellName: "zsh")
-          .generateCompletionScript()
+      .generateCompletionScript()
     XCTAssertEqual(zshBaseCompletions, script2)
     
     let script3 = Base.completionScript(for: .zsh)
     XCTAssertEqual(zshBaseCompletions, script3)
   }
-
+  
   func testBase_Bash() throws {
     let script1 = try CompletionsGenerator(command: Base.self, shell: .bash)
-          .generateCompletionScript()
+      .generateCompletionScript()
     XCTAssertEqual(bashBaseCompletions, script1)
     
     let script2 = try CompletionsGenerator(command: Base.self, shellName: "bash")
-          .generateCompletionScript()
+      .generateCompletionScript()
     XCTAssertEqual(bashBaseCompletions, script2)
     
     let script3 = Base.completionScript(for: .bash)
     XCTAssertEqual(bashBaseCompletions, script3)
   }
-
+  
   func testBase_Fish() throws {
     let script1 = try CompletionsGenerator(command: Base.self, shell: .fish)
-          .generateCompletionScript()
+      .generateCompletionScript()
     XCTAssertEqual(fishBaseCompletions, script1)
     
     let script2 = try CompletionsGenerator(command: Base.self, shellName: "fish")
-          .generateCompletionScript()
+      .generateCompletionScript()
     XCTAssertEqual(fishBaseCompletions, script2)
     
     let script3 = Base.completionScript(for: .fish)
@@ -87,12 +88,13 @@ extension CompletionScriptTests {
 
 extension CompletionScriptTests {
   struct Custom: ParsableCommand {
+    static var configuration = CommandConfiguration(shouldPromptForMissing: false)
     @Option(name: .shortAndLong, completion: .custom { _ in ["a", "b", "c"] })
     var one: String
-
+    
     @Argument(completion: .custom { _ in ["d", "e", "f"] })
     var two: String
-
+    
     @Option(name: .customShort("z"), completion: .custom { _ in ["x", "y", "z"] })
     var three: String
   }
@@ -125,13 +127,14 @@ extension CompletionScriptTests {
 
 extension CompletionScriptTests {
   struct EscapedCommand: ParsableCommand {
+    static var configuration = CommandConfiguration(shouldPromptForMissing: false)
     @Option(help: #"Escaped chars: '[]\."#)
     var one: String
     
     @Argument(completion: .custom { _ in ["d", "e", "f"] })
     var two: String
   }
-
+  
   func testEscaped_Zsh() throws {
     XCTAssertEqual(zshEscapedCompletion, EscapedCommand.completionScript(for: .zsh))
   }
@@ -271,49 +274,52 @@ complete -c base -n '_swift_base_using_command base' -f -s h -l help -d 'Show he
 
 // MARK: - Test Hidden Subcommand
 struct Parent: ParsableCommand {
-    static var configuration = CommandConfiguration(subcommands: [HiddenChild.self])
+  static var configuration = CommandConfiguration(
+    shouldPromptForMissing: false,
+    subcommands: [HiddenChild.self])
 }
 
 struct HiddenChild: ParsableCommand {
-    static var configuration = CommandConfiguration(shouldDisplay: false)
+  static var configuration = CommandConfiguration(
+    shouldDisplay: false, shouldPromptForMissing: false)
 }
 
 extension CompletionScriptTests {
   func testHiddenSubcommand_Zsh() throws {
     let script1 = try CompletionsGenerator(command: Parent.self, shell: .zsh)
-          .generateCompletionScript()
+      .generateCompletionScript()
     XCTAssertEqual(zshHiddenCompletion, script1)
-
+    
     let script2 = try CompletionsGenerator(command: Parent.self, shellName: "zsh")
-          .generateCompletionScript()
+      .generateCompletionScript()
     XCTAssertEqual(zshHiddenCompletion, script2)
-
+    
     let script3 = Parent.completionScript(for: .zsh)
     XCTAssertEqual(zshHiddenCompletion, script3)
   }
-
+  
   func testHiddenSubcommand_Bash() throws {
     let script1 = try CompletionsGenerator(command: Parent.self, shell: .bash)
-          .generateCompletionScript()
+      .generateCompletionScript()
     XCTAssertEqual(bashHiddenCompletion, script1)
-
+    
     let script2 = try CompletionsGenerator(command: Parent.self, shellName: "bash")
-          .generateCompletionScript()
+      .generateCompletionScript()
     XCTAssertEqual(bashHiddenCompletion, script2)
-
+    
     let script3 = Parent.completionScript(for: .bash)
     XCTAssertEqual(bashHiddenCompletion, script3)
   }
-
+  
   func testHiddenSubcommand_Fish() throws {
     let script1 = try CompletionsGenerator(command: Parent.self, shell: .fish)
-          .generateCompletionScript()
+      .generateCompletionScript()
     XCTAssertEqual(fishHiddenCompletion, script1)
-
+    
     let script2 = try CompletionsGenerator(command: Parent.self, shellName: "fish")
-          .generateCompletionScript()
+      .generateCompletionScript()
     XCTAssertEqual(fishHiddenCompletion, script2)
-
+    
     let script3 = Parent.completionScript(for: .fish)
     XCTAssertEqual(fishHiddenCompletion, script3)
   }

@@ -21,6 +21,7 @@ final class DumpHelpGenerationTests: XCTestCase {
 
 extension DumpHelpGenerationTests {
   struct A: ParsableCommand {
+    static var configuration = CommandConfiguration(shouldPromptForMissing: false)
     enum TestEnum: String, CaseIterable, ExpressibleByArgument {
       case a, b, c
     }
@@ -39,7 +40,7 @@ extension DumpHelpGenerationTests {
     
     @Argument
     var arg: Int
-     
+
     @Argument(help: "argument with help")
     var argWithHelp: Int
     

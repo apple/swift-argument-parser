@@ -128,6 +128,7 @@ extension UnparsedValuesEndToEndTests {
 
 
 fileprivate struct Foo: ParsableCommand {
+  static var configuration = CommandConfiguration(shouldPromptForMissing: false)
   @Flag var foo: Bool = false
   var config: Config?
   @OptionGroup var opt: OptionalArguments
@@ -158,7 +159,7 @@ extension UnparsedValuesEndToEndTests {
       XCTAssertEqual(1, foo.def.one)
       XCTAssertEqual(2, foo.def.two)
     }
-
+    
     AssertParse(Foo.self, ["--foo", "--edition", "5", "Hello", "--one", "2", "--two", "1"]) { foo in
       XCTAssertTrue(foo.foo)
       XCTAssertEqual("Hello", foo.opt.title)
@@ -177,10 +178,12 @@ extension UnparsedValuesEndToEndTests {
 // MARK: Nested unparsed optional decodable type
 
 fileprivate struct Barr: ParsableCommand {
+  static var configuration = CommandConfiguration(shouldPromptForMissing: false)
   var baz: Baz? = Baz(name: "Some Name", age: 105)
 }
 
 fileprivate struct Bar: ParsableCommand {
+  static var configuration = CommandConfiguration(shouldPromptForMissing: false)
   @Flag var bar: Bool = false
   var baz: Baz?
   var bazz: Bazz?
@@ -219,7 +222,7 @@ extension UnparsedValuesEndToEndTests {
       XCTAssertNil(bar.bazz?.age)
       XCTAssertNil(bar.bazz?.name)
     }
-
+    
     AssertParse(Bar.self, ["--bar"]) { bar in
       XCTAssertTrue(bar.bar)
       XCTAssertNotNil(bar.baz)

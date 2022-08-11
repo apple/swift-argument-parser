@@ -13,8 +13,7 @@ import XCTest
 import ArgumentParserTestHelpers
 import ArgumentParser
 
-final class OptionGroupEndToEndTests: XCTestCase {
-}
+final class OptionGroupEndToEndTests: XCTestCase { }
 
 fileprivate struct Inner: TestableParsableArguments {
   @Flag(name: [.short, .long])
@@ -43,6 +42,7 @@ fileprivate struct Outer: TestableParsableArguments {
   @Argument()
   var after: String
 
+  public static var shouldPromptForMissing: Bool { true }
   let didValidateExpectation = XCTestExpectation(singleExpectation: "outer validated")
 
   private enum CodingKeys: CodingKey {

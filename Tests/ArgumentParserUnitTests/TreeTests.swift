@@ -56,15 +56,21 @@ extension TreeTests {
 
 extension TreeTests {
   struct A: ParsableCommand {
-    static let configuration = CommandConfiguration(subcommands: [A.self])
+    static let configuration = CommandConfiguration(
+      shouldPromptForMissing: false,
+      subcommands: [A.self])
   }
   struct Root: ParsableCommand {
-    static let configuration = CommandConfiguration(subcommands: [Sub.self])
+    static let configuration = CommandConfiguration(
+      shouldPromptForMissing: false,
+      subcommands: [Sub.self])
   }
   struct Sub: ParsableCommand {
-    static let configuration = CommandConfiguration(subcommands: [Sub.self])
+    static let configuration = CommandConfiguration(
+      shouldPromptForMissing: false,
+      subcommands: [Sub.self])
   }
-    
+
   func testInitializationWithRecursiveSubcommand() {
     XCTAssertThrowsError(try Tree(root: A.asCommand))
     XCTAssertThrowsError(try Tree(root: Root.asCommand))
