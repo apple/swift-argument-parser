@@ -16,8 +16,6 @@ import XCTest
 final class InteractiveExampleTests: XCTestCase {}
 
 private struct Repeat: ParsableCommand {
-  static var configuration = CommandConfiguration(isInteractable: true)
-
   @Option var count: Int
 
   @Flag var includeCounter = false

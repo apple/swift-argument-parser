@@ -47,7 +47,7 @@ public struct CommandConfiguration {
   public var shouldDisplay: Bool
 
   /// A Boolean value indicating whether to prompt for missing required values.
-  public var isInteractable: Bool
+  public var shouldPromptForMissing: Bool
   
   /// An array of the types that define subcommands for this command.
   public var subcommands: [ParsableCommand.Type]
@@ -90,7 +90,7 @@ public struct CommandConfiguration {
     discussion: String = "",
     version: String = "",
     shouldDisplay: Bool = true,
-    isInteractable: Bool = false,
+    shouldPromptForMissing: Bool = true,
     subcommands: [ParsableCommand.Type] = [],
     defaultSubcommand: ParsableCommand.Type? = nil,
     helpNames: NameSpecification? = nil
@@ -101,7 +101,7 @@ public struct CommandConfiguration {
     self.discussion = discussion
     self.version = version
     self.shouldDisplay = shouldDisplay
-    self.isInteractable = isInteractable
+    self.shouldPromptForMissing = shouldPromptForMissing
     self.subcommands = subcommands
     self.defaultSubcommand = defaultSubcommand
     self.helpNames = helpNames
@@ -117,7 +117,7 @@ public struct CommandConfiguration {
     discussion: String = "",
     version: String = "",
     shouldDisplay: Bool = true,
-    isInteractable: Bool = false,
+    shouldPromptForMissing: Bool = true,
     subcommands: [ParsableCommand.Type] = [],
     defaultSubcommand: ParsableCommand.Type? = nil,
     helpNames: NameSpecification? = nil
@@ -129,7 +129,7 @@ public struct CommandConfiguration {
     self.discussion = discussion
     self.version = version
     self.shouldDisplay = shouldDisplay
-    self.isInteractable = isInteractable
+    self.shouldPromptForMissing = shouldPromptForMissing
     self.subcommands = subcommands
     self.defaultSubcommand = defaultSubcommand
     self.helpNames = helpNames
@@ -144,7 +144,7 @@ extension CommandConfiguration {
     discussion: String,
     version: String,
     shouldDisplay: Bool,
-    isInteractable: Bool,
+    shouldPromptForMissing: Bool,
     subcommands: [ParsableCommand.Type],
     defaultSubcommand: ParsableCommand.Type?,
     helpNames: NameSpecification?
@@ -156,7 +156,7 @@ extension CommandConfiguration {
       discussion: discussion,
       version: version,
       shouldDisplay: shouldDisplay,
-      isInteractable: isInteractable,
+      shouldPromptForMissing: shouldPromptForMissing,
       subcommands: subcommands,
       defaultSubcommand: defaultSubcommand,
       helpNames: helpNames)

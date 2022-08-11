@@ -16,20 +16,14 @@ import XCTest
 final class ArgumentInteractiveTests: XCTestCase {}
 
 private struct StringValue: ParsableCommand {
-  static var configuration = CommandConfiguration(isInteractable: true)
-
   @Argument var string: String
 }
 
 private struct IntValue: ParsableCommand {
-  static var configuration = CommandConfiguration(isInteractable: true)
-
   @Argument var integer: Int
 }
 
 private struct DoubleValue: ParsableCommand {
-  static var configuration = CommandConfiguration(isInteractable: true)
-
   @Argument var decimal: Double
 }
 
@@ -56,8 +50,6 @@ extension ArgumentInteractiveTests {
 // MARK: -
 
 private struct ExpressibleValue: ParsableCommand {
-  static var configuration = CommandConfiguration(isInteractable: true)
-
   enum Mode: String, ExpressibleByArgument {
     case foo, bar, baz
   }
@@ -66,8 +58,6 @@ private struct ExpressibleValue: ParsableCommand {
 }
 
 private struct TransformableValue: ParsableCommand {
-  static var configuration = CommandConfiguration(isInteractable: true)
-
   enum Format: Equatable {
     case text
     case other(String)
@@ -104,20 +94,14 @@ extension ArgumentInteractiveTests {
 // MARK: -
 
 private struct StringArray: ParsableCommand {
-  static var configuration = CommandConfiguration(isInteractable: true)
-
   @Argument var values: [String]
 }
 
 private struct IntArray: ParsableCommand {
-  static var configuration = CommandConfiguration(isInteractable: true)
-
   @Argument var values: [Int]
 }
 
 private struct DoubleArray: ParsableCommand {
-  static var configuration = CommandConfiguration(isInteractable: true)
-
   @Argument var values: [Double]
 }
 
@@ -144,24 +128,18 @@ extension ArgumentInteractiveTests {
 // MARK: -
 
 private struct PositionalArray1: ParsableCommand {
-  static var configuration = CommandConfiguration(isInteractable: true)
-
   @Argument var values: [Int]
   @Option var count: Int
   @Flag var verbose = false
 }
 
 private struct PositionalArray2: ParsableCommand {
-  static var configuration = CommandConfiguration(isInteractable: true)
-
   @Option var count: Int
   @Argument var values: [Int]
   @Flag var verbose = false
 }
 
 private struct PositionalArray3: ParsableCommand {
-  static var configuration = CommandConfiguration(isInteractable: true)
-
   @Option var count: Int
   @Flag var verbose = false
   @Argument var values: [Int]
@@ -192,8 +170,6 @@ extension ArgumentInteractiveTests {
 // MARK: -
 
 private struct CaseIterableArgument: ParsableCommand {
-  static var configuration = CommandConfiguration(isInteractable: true)
-
   enum Mode: String, CaseIterable, ExpressibleByArgument {
     case foo, bar, baz
   }
