@@ -41,28 +41,9 @@ public protocol ParsableArguments: Decodable {
   static var _errorLabel: String { get }
 }
 
-/// A type that provides the `ParsableCommand` interface to a `ParsableArguments` type.
-struct _WrappedParsableCommand<P: ParsableArguments>: ParsableCommand {
-  static var _commandName: String {
-    let name = String(describing: P.self).convertedToSnakeCase()
-    
-    // If the type is named something like "TransformOptions", we only want
-    // to use "transform" as the command name.
-    if let optionsRange = name.range(of: "_options"),
-      optionsRange.upperBound == name.endIndex
-    {
-      return String(name[..<optionsRange.lowerBound])
-    } else {
-      return name
-    }
-  }
-  
-  @OptionGroup var options: P
-}
-
 /// A type that provides the `ParsableCommand` interface to a `ParsableArguments` type,
 /// and set the `shouldPromptForMissing` to true.
-struct _WrappedThrowableCommand<P: ParsableArguments>: ParsableCommand {
+struct _WrappedParsableCommand<P: ParsableArguments>: ParsableCommand {
   static var configuration: CommandConfiguration { .init(shouldPromptForMissing: false) }
 
   static var _commandName: String {
@@ -98,7 +79,7 @@ extension ParsableArguments {
   /// This type as-is if it conforms to `ParsableCommand`, or wrapped in the
   /// `ParsableCommand` wrapper if not.
   internal static var asCommand: ParsableCommand.Type {
-    self as? ParsableCommand.Type ?? _WrappedThrowableCommand<Self>.self
+    self as? ParsableCommand.Type ?? _WrappedParsableCommand<Self>.self
   }
 }
 
@@ -117,7 +98,7 @@ extension ParsableArguments {
     switch try self.asCommand.parseAsRoot(arguments) {
     case let helpCommand as HelpCommand:
       throw ParserError.helpRequested(visibility: helpCommand.visibility)
-    case let result as _WrappedThrowableCommand<Self>:
+    case let result as _WrappedParsableCommand<Self>:
       return result.options
     case var result as Self:
       do {
