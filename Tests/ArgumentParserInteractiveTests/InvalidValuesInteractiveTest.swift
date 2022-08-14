@@ -28,11 +28,11 @@ extension InvalidValueInteractiveTests {
     AssertParseCommand(IntValue.self, IntValue.self, [], lines: ["", "a", "0.1", "1"]) { value in
       XCTAssertEqual(value.integer, 1)
     }
-    
+
     AssertParseCommand(IntArray.self, IntArray.self, [], lines: ["1 2 a", "0.1", "3"]) { value in
       XCTAssertEqual(value.values, [1, 2, 3])
     }
-    
+
     AssertParseCommand(IntArray.self, IntArray.self, [], lines: ["a 0.1", "1", "2"]) { value in
       XCTAssertEqual(value.values, [1, 2])
     }

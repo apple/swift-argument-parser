@@ -41,14 +41,14 @@ extension UnparsedValuesEndToEndTests {
       XCTAssertTrue(qux.verbose)
       XCTAssertEqual(qux.count, 0)
     }
-    
+
     AssertParse(Quizzo.self, ["--name", "Qux", "--verbose"]) { quizzo in
       XCTAssertEqual(quizzo.name, "Qux")
       XCTAssertTrue(quizzo.verbose)
       XCTAssertEqual(quizzo.count, 0)
     }
   }
-  
+
   func testParsing_TwoPlusUnparsed_Fails() throws {
     XCTAssertThrowsError(try Qux.parse([]))
     XCTAssertThrowsError(try Qux.parse(["--name"]))
@@ -86,7 +86,7 @@ extension UnparsedValuesEndToEndTests {
     AssertParse(Hogeraa.self, []) { hogeraa in
       XCTAssertEqual(hogeraa.fullName, "Full Name")
     }
-    
+
     AssertParse(Hogera.self, ["--first-name", "Hogera"]) { hogera in
       XCTAssertEqual(hogera.firstName, "Hogera")
       XCTAssertFalse(hogera.hasLastName)
@@ -97,7 +97,7 @@ extension UnparsedValuesEndToEndTests {
       XCTAssertTrue(hogera.hasLastName)
       XCTAssertEqual(hogera.fullName, "Hogera LastName")
     }
-    
+
     AssertParse(Piyo.self, ["--first-name", "Hogera"]) { piyo in
       XCTAssertEqual(piyo.firstName, "Hogera")
       XCTAssertFalse(piyo.hasLastName)
@@ -109,7 +109,7 @@ extension UnparsedValuesEndToEndTests {
       XCTAssertEqual(piyo.fullName, "Hogera LastName")
     }
   }
-  
+
   func testParsing_TwoPlusOptionalUnparsed_Fails() throws {
     XCTAssertThrowsError(try Hogeraa.parse(["--full-name"]))
     XCTAssertThrowsError(try Hogeraa.parse(["--full-name", "Hogera Piyo"]))
@@ -159,7 +159,7 @@ extension UnparsedValuesEndToEndTests {
       XCTAssertEqual(1, foo.def.one)
       XCTAssertEqual(2, foo.def.two)
     }
-    
+
     AssertParse(Foo.self, ["--foo", "--edition", "5", "Hello", "--one", "2", "--two", "1"]) { foo in
       XCTAssertTrue(foo.foo)
       XCTAssertEqual("Hello", foo.opt.title)
@@ -168,7 +168,7 @@ extension UnparsedValuesEndToEndTests {
       XCTAssertEqual(1, foo.def.two)
     }
   }
-  
+
   func testUnparsedNestedValues_Fails() {
     XCTAssertThrowsError(try Foo.parse(["--edition", "aaa"]))
     XCTAssertThrowsError(try Foo.parse(["--one", "aaa"]))
@@ -212,7 +212,7 @@ extension UnparsedValuesEndToEndTests {
       XCTAssertEqual(barr.baz?.age, 105)
       XCTAssertEqual(barr.baz?.name, "Some Name")
     }
-    
+
     AssertParse(Bar.self, []) { bar in
       XCTAssertFalse(bar.bar)
       XCTAssertNil(bar.baz)
@@ -222,7 +222,7 @@ extension UnparsedValuesEndToEndTests {
       XCTAssertNil(bar.bazz?.age)
       XCTAssertNil(bar.bazz?.name)
     }
-    
+
     AssertParse(Bar.self, ["--bar"]) { bar in
       XCTAssertTrue(bar.bar)
       XCTAssertNotNil(bar.baz)
@@ -233,7 +233,7 @@ extension UnparsedValuesEndToEndTests {
       XCTAssertEqual(bar.bazz?.age, 101)
     }
   }
-  
+
   func testUnparsedNestedOptionalValue_Fails() {
     XCTAssertThrowsError(try Bar.parse(["--baz", "xyz"]))
     XCTAssertThrowsError(try Bar.parse(["--bazz", "xyz"]))

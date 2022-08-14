@@ -19,39 +19,39 @@ extension Package {
 extension Package.Config {
   public static var configuration = CommandConfiguration(
     subcommands: [GetMirror.self, SetMirror.self, UnsetMirror.self])
-  
+
   /// Print mirror configuration for the given package dependency
   struct GetMirror: ParsableCommand {
     static var configuration = CommandConfiguration(shouldPromptForMissing: false)
     @OptionGroup()
     var options: Options
-    
+
     @Option(name: .customLong("package-url"), help: "The package dependency URL")
     var packageURL: String
   }
-  
+
   /// Set a mirror for a dependency
   struct SetMirror: ParsableCommand {
     static var configuration = CommandConfiguration(shouldPromptForMissing: false)
     @OptionGroup()
     var options: Options
-    
+
     @Option(name: .customLong("mirror-url"), help: "The mirror URL")
     var mirrorURL: String
-    
+
     @Option(name: .customLong("package-url"), help: "The package dependency URL")
     var packageURL: String
   }
-  
+
   /// Remove an existing mirror
   struct UnsetMirror: ParsableCommand {
     static var configuration = CommandConfiguration(shouldPromptForMissing: false)
     @OptionGroup()
     var options: Options
-    
+
     @Option(name: .customLong("mirror-url"), help: "The mirror URL")
     var mirrorURL: String
-    
+
     @Option(name: .customLong("package-url"), help: "The package dependency URL")
     var packageURL: String
   }

@@ -22,32 +22,32 @@ private struct Foo: ParsableCommand {
   static var configuration = CommandConfiguration(
     shouldPromptForMissing: false,
     subcommands: [Build.self, Package.self])
-  
+
   @Flag(name: .short)
   var verbose: Bool = false
-  
+
   struct Build: ParsableCommand {
     static var configuration = CommandConfiguration(shouldPromptForMissing: false)
     @OptionGroup() var foo: Foo
-    
+
     @Argument()
     var input: String
   }
-  
+
   struct Package: ParsableCommand {
     static var configuration = CommandConfiguration(
       shouldPromptForMissing: false,
       subcommands: [Clean.self, Config.self])
-    
+
     @Flag(name: .short)
     var force: Bool = false
-    
+
     struct Clean: ParsableCommand {
       static var configuration = CommandConfiguration(shouldPromptForMissing: false)
       @OptionGroup() var foo: Foo
       @OptionGroup() var package: Package
     }
-    
+
     struct Config: ParsableCommand {
       static var configuration = CommandConfiguration(shouldPromptForMissing: false)
       @OptionGroup() var foo: Foo
@@ -66,70 +66,70 @@ extension NestedCommandEndToEndTests {
     AssertParseFooCommand(Foo.Package.self, ["package"]) { package in
       XCTAssertFalse(package.force)
     }
-    
+
     AssertParseFooCommand(Foo.Package.Clean.self, ["package", "clean"]) { clean in
       XCTAssertEqual(clean.foo.verbose, false)
       XCTAssertEqual(clean.package.force, false)
     }
-    
+
     AssertParseFooCommand(Foo.Package.Clean.self, ["package", "-f", "clean"]) { clean in
       XCTAssertEqual(clean.foo.verbose, false)
       XCTAssertEqual(clean.package.force, true)
     }
-    
+
     AssertParseFooCommand(Foo.Package.Config.self, ["package", "-v", "config"]) { config in
       XCTAssertEqual(config.foo.verbose, true)
       XCTAssertEqual(config.package.force, false)
     }
-    
+
     AssertParseFooCommand(Foo.Package.Config.self, ["package", "config", "-v"]) { config in
       XCTAssertEqual(config.foo.verbose, true)
       XCTAssertEqual(config.package.force, false)
     }
-    
+
     AssertParseFooCommand(Foo.Package.Config.self, ["-v", "package", "config"]) { config in
       XCTAssertEqual(config.foo.verbose, true)
       XCTAssertEqual(config.package.force, false)
     }
-    
+
     AssertParseFooCommand(Foo.Package.Config.self, ["package", "-f", "config"]) { config in
       XCTAssertEqual(config.foo.verbose, false)
       XCTAssertEqual(config.package.force, true)
     }
-    
+
     AssertParseFooCommand(Foo.Package.Config.self, ["package", "config", "-f"]) { config in
       XCTAssertEqual(config.foo.verbose, false)
       XCTAssertEqual(config.package.force, true)
     }
-    
+
     AssertParseFooCommand(Foo.Package.Config.self, ["package", "-v", "config", "-f"]) { config in
       XCTAssertEqual(config.foo.verbose, true)
       XCTAssertEqual(config.package.force, true)
     }
-    
+
     AssertParseFooCommand(Foo.Package.Config.self, ["package", "-f", "config", "-v"]) { config in
       XCTAssertEqual(config.foo.verbose, true)
       XCTAssertEqual(config.package.force, true)
     }
-    
+
     AssertParseFooCommand(Foo.Package.Config.self, ["package", "-vf", "config"]) { config in
       XCTAssertEqual(config.foo.verbose, true)
       XCTAssertEqual(config.package.force, true)
     }
-    
+
     AssertParseFooCommand(Foo.Package.Config.self, ["package", "-fv", "config"]) { config in
       XCTAssertEqual(config.foo.verbose, true)
       XCTAssertEqual(config.package.force, true)
     }
   }
-  
+
   func testParsing_build() throws {
     AssertParseFooCommand(Foo.Build.self, ["build", "file"]) { build in
       XCTAssertEqual(build.foo.verbose, false)
       XCTAssertEqual(build.input, "file")
     }
   }
-  
+
   func testParsing_fails() throws {
     XCTAssertThrowsError(try Foo.parseAsRoot(["clean", "package"]))
     XCTAssertThrowsError(try Foo.parseAsRoot(["config", "package"]))
@@ -160,14 +160,14 @@ private struct Super: ParsableCommand {
   static var configuration: CommandConfiguration {
     .init(shouldPromptForMissing: false, subcommands: [Sub1.self, Sub2.self])
   }
-  
+
   @OptionGroup() var options: Options
-  
+
   struct Sub1: ParsableCommand {
     static var configuration = CommandConfiguration(shouldPromptForMissing: false)
     @OptionGroup() var options: Options
   }
-  
+
   struct Sub2: ParsableCommand {
     static var configuration = CommandConfiguration(shouldPromptForMissing: false)
     @OptionGroup() var options: UniqueOptions
@@ -179,19 +179,19 @@ extension NestedCommandEndToEndTests {
     AssertParseCommand(Super.self, Super.self, []) { sup in
       XCTAssertNil(sup.options.firstName)
     }
-    
+
     AssertParseCommand(Super.self, Super.self, ["--first-name", "Foo"]) { sup in
       XCTAssertEqual("Foo", sup.options.firstName)
     }
-    
+
     AssertParseCommand(Super.self, Super.Sub1.self, ["sub1"]) { sub1 in
       XCTAssertNil(sub1.options.firstName)
     }
-    
+
     AssertParseCommand(Super.self, Super.Sub1.self, ["sub1", "--first-name", "Foo"]) { sub1 in
       XCTAssertEqual("Foo", sub1.options.firstName)
     }
-    
+
     AssertParseCommand(Super.self, Super.Sub2.self, ["sub2", "--last-name", "Foo"]) { sub2 in
       XCTAssertEqual("Foo", sub2.options.lastName)
     }

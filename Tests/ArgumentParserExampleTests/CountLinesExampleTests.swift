@@ -21,7 +21,7 @@ final class CountLinesExampleTests: XCTestCase {
     try AssertExecuteCommand(command: "count-lines \(testFile.path)", expected: "20")
     try AssertExecuteCommand(command: "count-lines \(testFile.path) --prefix al", expected: "4")
   }
-  
+
   func testCountLinesHelp() throws {
     guard #available(macOS 12, *) else { return }
     let helpText = """

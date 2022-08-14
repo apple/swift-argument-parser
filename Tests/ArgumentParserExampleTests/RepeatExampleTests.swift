@@ -19,14 +19,14 @@ final class RepeatExampleTests: XCTestCase {
         hello
         """)
   }
-  
+
   func testRepeat_include_counter() throws {
     try AssertExecuteCommand(command: "repeat --include-counter hello", expected: """
       1: hello
       2: hello
       """)
   }
-  
+
   func testRepeat_Count() throws {
     try AssertExecuteCommand(command: "repeat hello --count 6", expected: """
         hello
@@ -37,7 +37,7 @@ final class RepeatExampleTests: XCTestCase {
         hello
         """)
   }
-  
+
   func testRepeat_Help() throws {
     let helpText = """
         USAGE: repeat [--count <count>] [--include-counter] <phrase>
@@ -50,11 +50,11 @@ final class RepeatExampleTests: XCTestCase {
           --include-counter       Include a counter with each repetition.
           -h, --help              Show help information.
         """
-    
+
     try AssertExecuteCommand(command: "repeat -h", expected: helpText)
     try AssertExecuteCommand(command: "repeat --help", expected: helpText)
   }
-  
+
   func testRepeat_Fail() throws {
     try AssertExecuteCommand(
       command: "repeat",
@@ -82,7 +82,7 @@ final class RepeatExampleTests: XCTestCase {
               See 'repeat --help' for more information.
             """,
       exitCode: .validationFailure)
-    
+
     try AssertExecuteCommand(
       command: "repeat hello --count ZZZ",
       expected: """
@@ -92,7 +92,7 @@ final class RepeatExampleTests: XCTestCase {
               See 'repeat --help' for more information.
             """,
       exitCode: .validationFailure)
-    
+
     try AssertExecuteCommand(
       command: "repeat --version hello",
       expected: """

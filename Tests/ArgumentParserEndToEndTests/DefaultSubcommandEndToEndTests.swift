@@ -29,7 +29,7 @@ private struct Default: ParsableCommand {
   enum Mode: String, CaseIterable, ExpressibleByArgument {
     case foo, bar, baz
   }
-  
+
   @Option var mode: Mode = .foo
 }
 
@@ -41,29 +41,29 @@ extension DefaultSubcommandEndToEndTests {
     AssertParseCommand(Main.self, Default.self, []) { def in
       XCTAssertEqual(.foo, def.mode)
     }
-    
+
     AssertParseCommand(Main.self, Default.self, ["--mode=bar"]) { def in
       XCTAssertEqual(.bar, def.mode)
     }
-    
+
     AssertParseCommand(Main.self, Default.self, ["--mode", "bar"]) { def in
       XCTAssertEqual(.bar, def.mode)
     }
-    
+
     AssertParseCommand(Main.self, Default.self, ["--mode", "baz"]) { def in
       XCTAssertEqual(.baz, def.mode)
     }
   }
-  
+
   func testNonDefaultSubcommand() {
     AssertParseCommand(Main.self, Foo.self, ["foo"]) { _ in }
     AssertParseCommand(Main.self, Bar.self, ["bar"]) { _ in }
-    
+
     AssertParseCommand(Main.self, Default.self, ["default", "--mode", "bar"]) { def in
       XCTAssertEqual(.bar, def.mode)
     }
   }
-  
+
   func testParsingFailure() {
     XCTAssertThrowsError(try Main.parseAsRoot(["--mode", "qux"]))
     XCTAssertThrowsError(try Main.parseAsRoot(["qux"]))
@@ -77,37 +77,37 @@ extension DefaultSubcommandEndToEndTests {
       subcommands: [Plugin.self, NonDefault.self, Other.self],
       defaultSubcommand: Plugin.self
     )
-    
+
     @OptionGroup
     var options: CommonOptions
   }
-  
+
   fileprivate struct CommonOptions: ParsableArguments {
     @Flag(name: [.customLong("verbose"), .customShort("v")],
           help: "Enable verbose aoutput.")
     var verbose = false
   }
-  
+
   fileprivate struct Plugin: ParsableCommand {
     @OptionGroup var options: CommonOptions
     @Argument var pluginName: String
-    
+
     @Argument(parsing: .unconditionalRemaining)
     var pluginArguments: [String] = []
   }
-  
+
   fileprivate struct NonDefault: ParsableCommand {
     @OptionGroup var options: CommonOptions
     @Argument var pluginName: String
-    
+
     @Argument(parsing: .unconditionalRemaining)
     var pluginArguments: [String] = []
   }
-  
+
   fileprivate struct Other: ParsableCommand {
     @OptionGroup var options: CommonOptions
   }
-  
+
   func testRemainingDefaultImplicit() throws {
     AssertParseCommand(MyCommand.self, Plugin.self, ["my-plugin"]) { plugin in
       XCTAssertEqual(plugin.pluginName, "my-plugin")
@@ -130,7 +130,7 @@ extension DefaultSubcommandEndToEndTests {
       XCTAssertEqual(plugin.options.verbose, false)
     }
   }
-  
+
   func testRemainingDefaultExplicit() throws {
     AssertParseCommand(MyCommand.self, Plugin.self, ["plugin", "my-plugin"]) { plugin in
       XCTAssertEqual(plugin.pluginName, "my-plugin")
@@ -153,7 +153,7 @@ extension DefaultSubcommandEndToEndTests {
       XCTAssertEqual(plugin.options.verbose, true)
     }
   }
-  
+
   func testRemainingNonDefault() throws {
     AssertParseCommand(MyCommand.self, NonDefault.self, ["non-default", "my-plugin"]) { nondef in
       XCTAssertEqual(nondef.pluginName, "my-plugin")
@@ -176,7 +176,7 @@ extension DefaultSubcommandEndToEndTests {
       XCTAssertEqual(nondef.options.verbose, true)
     }
   }
-  
+
   func testRemainingDefaultOther() throws {
     AssertParseCommand(MyCommand.self, Other.self, ["other"]) { other in
       XCTAssertEqual(other.options.verbose, false)
@@ -185,7 +185,7 @@ extension DefaultSubcommandEndToEndTests {
       XCTAssertEqual(other.options.verbose, true)
     }
   }
-  
+
   func testRemainingDefaultFailure() {
     XCTAssertThrowsError(try MyCommand.parseAsRoot([]))
     XCTAssertThrowsError(try MyCommand.parseAsRoot(["--verbose"]))

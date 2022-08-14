@@ -55,7 +55,7 @@ final class CountLinesGenerateManualTests: XCTestCase {
       .Ac .
       """#)
   }
-  
+
   func testCountLines_MultiPageManual() throws {
     guard #available(macOS 12, *) else { return }
     try AssertGenerateManual(singlePage: false, command: "count-lines", expected: #"""

@@ -21,7 +21,7 @@ extension SequenceExtensionTests {
     XCTAssertEqual([0, 1, 2, 3, 4], [0, 1, 2, 3, 4, 0, 1, 2, 3, 4].uniquing())
     XCTAssertEqual([0, 1, 2, 3, 4], [0, 1, 2, 3, 4, 4, 3, 2, 1, 0].uniquing())
   }
-  
+
   func testUniquingAdjacentElements() {
     XCTAssertEqual([], (0..<0).uniquingAdjacentElements())
     XCTAssertEqual([0, 1, 2, 3, 4], (0..<5).uniquingAdjacentElements())

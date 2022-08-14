@@ -178,7 +178,7 @@ extension UsageGenerationTests {
     enum Color: String, EnumerableFlag {
       case green, blue, yellow
     }
-    
+
     @Flag var a: Bool = false
     @Flag var b: Bool = false
     @Flag var c: Bool = false
@@ -191,12 +191,12 @@ extension UsageGenerationTests {
     @Flag var j: Bool = false
     @Flag var k: Bool = false
     @Flag var l: Bool = false
-    
+
     @Flag(inversion: .prefixedEnableDisable)
     var optionalBool: Bool?
-    
+
     @Flag var optionalColor: Color?
-    
+
     @Option var option: Bool
     @Argument var input: String
     @Argument var output: String?
@@ -205,14 +205,14 @@ extension UsageGenerationTests {
   func testSynopsisWithTooManyOptions() {
     _testSynopsis(M.self, expected: "example [<options>] --option <option> <input> [<output>]")
   }
-  
+
   struct N: ParsableArguments {
     @Flag var a: Bool = false
     @Flag var b: Bool = false
     var title = "defaulted value"
     var decode = false
   }
-  
+
   func testNonwrappedValues() {
     _testSynopsis(N.self, expected: "example [--a] [--b]")
     _testSynopsis(N.self, visibility: .hidden, expected: "example [--a] [--b]")

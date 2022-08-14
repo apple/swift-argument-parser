@@ -57,7 +57,7 @@ extension StringWrappingTests {
             malesuada fames ac turpis egestas sed
             tempus urna.
             """)
-    
+
     XCTAssertEqual(shortSample.wrapped(to: 80), """
             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
             incididunt ut labore et dolore magna aliqua. Lectus proin nibh nisl condimentum
@@ -66,7 +66,7 @@ extension StringWrappingTests {
             lacus laoreet. Netus et malesuada fames ac turpis egestas sed tempus urna.
             """)
   }
-  
+
   func testShortWithIndent() {
     XCTAssertEqual(shortSample.wrapped(to: 60, wrappingIndent: 10), """
                       Lorem ipsum dolor sit amet, consectetur
@@ -79,7 +79,7 @@ extension StringWrappingTests {
                       malesuada fames ac turpis egestas sed tempus urna.
             """)
   }
-  
+
   func testLong() {
     XCTAssertEqual(longSample.wrapped(to: 40), """
             Pretium vulputate sapien nec sagittis
@@ -102,7 +102,7 @@ extension StringWrappingTests {
             quisque.       Risus nec feugiat in
             fermentum posuere urna nec tincidunt.
             """)
-    
+
     XCTAssertEqual(longSample.wrapped(to: 80), """
             Pretium vulputate sapien nec sagittis aliquam malesuada bibendum. Ut diam quam
             nulla porttitor.
@@ -119,7 +119,7 @@ extension StringWrappingTests {
             posuere urna nec tincidunt.
             """)
   }
-  
+
   func testLongWithIndent() {
     XCTAssertEqual(longSample.wrapped(to: 60, wrappingIndent: 10), """
                       Pretium vulputate sapien nec sagittis aliquam
@@ -138,7 +138,7 @@ extension StringWrappingTests {
                       neque egestas congue quisque.       Risus nec
                       feugiat in fermentum posuere urna nec tincidunt.
             """)
-    
+
   }
 
   func testJSON() {
@@ -164,7 +164,7 @@ extension StringWrappingTests {
                       }
             """)
   }
-  
+
   func testIndent() {
     XCTAssertEqual(
       shortSample.wrapped(to: 40).indentingEachLine(by: 10),
@@ -182,7 +182,7 @@ extension StringWrappingTests {
     XCTAssertEqual("\na\n\nb\n".indentingEachLine(by: 10),
                    "\n          a\n\n          b\n")
   }
-  
+
   func testHangingIndent() {
     XCTAssertEqual(
       shortSample.wrapped(to: 40).hangingIndentingEachLine(by: 10),
@@ -190,7 +190,7 @@ extension StringWrappingTests {
     XCTAssertEqual(
       longSample.wrapped(to: 40).hangingIndentingEachLine(by: 10),
       String(longSample.wrapped(to: 50, wrappingIndent: 10).dropFirst(10)))
-    
+
     XCTAssertEqual("".hangingIndentingEachLine(by: 10), "")
     XCTAssertEqual("\n".hangingIndentingEachLine(by: 10), "\n")
     XCTAssertEqual("a\n".hangingIndentingEachLine(by: 10), "a\n")

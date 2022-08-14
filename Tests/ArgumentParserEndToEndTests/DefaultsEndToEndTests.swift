@@ -34,17 +34,17 @@ extension DefaultsEndToEndTests {
       XCTAssertEqual(foo.name.rawValue, "A")
       XCTAssertEqual(foo.max, 3)
     }
-    
+
     AssertParse(Foo.self, ["--name", "B"]) { foo in
       XCTAssertEqual(foo.name.rawValue, "B")
       XCTAssertEqual(foo.max, 3)
     }
-    
+
     AssertParse(Foo.self, ["--max", "5"]) { foo in
       XCTAssertEqual(foo.name.rawValue, "A")
       XCTAssertEqual(foo.max, 5)
     }
-    
+
     AssertParse(Foo.self, ["--max", "5", "--name", "B"]) { foo in
       XCTAssertEqual(foo.name.rawValue, "B")
       XCTAssertEqual(foo.max, 5)
@@ -79,7 +79,7 @@ extension DefaultsEndToEndTests {
       XCTAssertEqual(bar.bar, "D")
     }
   }
-  
+
   func testParsing_Optional_WithAllValues_2() {
     AssertParse(Bar.self, ["D", "--format", "B", "--foo", "C", "--name", "A"]) { bar in
       XCTAssertEqual(bar.name, "A")
@@ -88,7 +88,7 @@ extension DefaultsEndToEndTests {
       XCTAssertEqual(bar.bar, "D")
     }
   }
-  
+
   func testParsing_Optional_WithAllValues_3() {
     AssertParse(Bar.self, ["--format", "B", "--foo", "C", "D", "--name", "A"]) { bar in
       XCTAssertEqual(bar.name, "A")
@@ -97,7 +97,7 @@ extension DefaultsEndToEndTests {
       XCTAssertEqual(bar.bar, "D")
     }
   }
-  
+
   func testParsing_Optional_WithMissingValues_1() {
     AssertParse(Bar.self, ["--format", "B", "--foo", "C", "D"]) { bar in
       XCTAssertEqual(bar.name, "N")
@@ -106,7 +106,7 @@ extension DefaultsEndToEndTests {
       XCTAssertEqual(bar.bar, "D")
     }
   }
-  
+
   func testParsing_Optional_WithMissingValues_2() {
     AssertParse(Bar.self, ["D", "--format", "B", "--foo", "C"]) { bar in
       XCTAssertEqual(bar.name, "N")
@@ -115,7 +115,7 @@ extension DefaultsEndToEndTests {
       XCTAssertEqual(bar.bar, "D")
     }
   }
-  
+
   func testParsing_Optional_WithMissingValues_3() {
     AssertParse(Bar.self, ["--format", "B", "--foo", "C", "D"]) { bar in
       XCTAssertEqual(bar.name, "N")
@@ -124,7 +124,7 @@ extension DefaultsEndToEndTests {
       XCTAssertEqual(bar.bar, "D")
     }
   }
-  
+
   func testParsing_Optional_WithMissingValues_4() {
     AssertParse(Bar.self, ["--name", "A", "--format", "B", "--foo", "C"]) { bar in
       XCTAssertEqual(bar.name, "A")
@@ -133,7 +133,7 @@ extension DefaultsEndToEndTests {
       XCTAssertEqual(bar.bar, nil)
     }
   }
-  
+
   func testParsing_Optional_WithMissingValues_5() {
     AssertParse(Bar.self, ["--format", "B", "--foo", "C", "--name", "A"]) { bar in
       XCTAssertEqual(bar.name, "A")
@@ -142,7 +142,7 @@ extension DefaultsEndToEndTests {
       XCTAssertEqual(bar.bar, nil)
     }
   }
-  
+
   func testParsing_Optional_WithMissingValues_6() {
     AssertParse(Bar.self, ["--format", "B", "--foo", "C", "--name", "A"]) { bar in
       XCTAssertEqual(bar.name, "A")
@@ -151,7 +151,7 @@ extension DefaultsEndToEndTests {
       XCTAssertEqual(bar.bar, nil)
     }
   }
-  
+
   func testParsing_Optional_WithMissingValues_7() {
     AssertParse(Bar.self, ["--foo", "C"]) { bar in
       XCTAssertEqual(bar.name, "N")
@@ -160,7 +160,7 @@ extension DefaultsEndToEndTests {
       XCTAssertEqual(bar.bar, nil)
     }
   }
-  
+
   func testParsing_Optional_WithMissingValues_8() {
     AssertParse(Bar.self, ["--format", "B", "--foo", "C"]) { bar in
       XCTAssertEqual(bar.name, "N")
@@ -169,7 +169,7 @@ extension DefaultsEndToEndTests {
       XCTAssertEqual(bar.bar, nil)
     }
   }
-  
+
   func testParsing_Optional_WithMissingValues_9() {
     AssertParse(Bar.self, ["--format", "B", "--foo", "C"]) { bar in
       XCTAssertEqual(bar.name, "N")
@@ -178,7 +178,7 @@ extension DefaultsEndToEndTests {
       XCTAssertEqual(bar.bar, nil)
     }
   }
-  
+
   func testParsing_Optional_WithMissingValues_10() {
     AssertParse(Bar.self, ["--format", "B", "--foo", "C"]) { bar in
       XCTAssertEqual(bar.name, "N")
@@ -187,7 +187,7 @@ extension DefaultsEndToEndTests {
       XCTAssertEqual(bar.bar, nil)
     }
   }
-  
+
   func testParsing_Optional_Fails() throws {
     XCTAssertThrowsError(try Bar.parse([]))
     XCTAssertThrowsError(try Bar.parse(["--fooz", "C"]))
@@ -231,7 +231,7 @@ extension DefaultsEndToEndTests {
       XCTAssertEqual(bar.bar, nil)
     }
   }
-  
+
   func testParsing_Optional_WithOverlappingValues_2() {
     AssertParse(Bar_NextInput.self, ["--format", "-d", "--foo", "--name", "--name", "--foo"]) { bar in
       XCTAssertEqual(bar.name, "--foo")
@@ -240,7 +240,7 @@ extension DefaultsEndToEndTests {
       XCTAssertEqual(bar.bar, nil)
     }
   }
-  
+
   func testParsing_Optional_WithOverlappingValues_3() {
     AssertParse(Bar_NextInput.self, ["--format", "-d", "--name", "--foo", "--foo", "--name", "bar"]) { bar in
       XCTAssertEqual(bar.name, "--foo")
@@ -264,10 +264,10 @@ fileprivate struct Baz: ParsableArguments {
   @Option var uint16: UInt16 = 0
   @Option var uint32: UInt32 = 0
   @Option var uint64: UInt64 = 0
-  
+
   @Option(parsing: .unconditional) var float: Float = 0
   @Option(parsing: .unconditional) var double: Double = 0
-  
+
   @Option var bool: Bool = false
 }
 
@@ -289,7 +289,7 @@ extension DefaultsEndToEndTests {
       XCTAssertEqual(baz.bool, false)
     }
   }
-  
+
   func testParsing_AllTypes_2() {
     AssertParse(Baz.self, [
       "--int", "-1", "--int8", "-2", "--int16", "-3", "--int32", "-4", "--int64", "-5",
@@ -311,26 +311,26 @@ extension DefaultsEndToEndTests {
       XCTAssertEqual(baz.bool, true)
     }
   }
-  
+
   func testParsing_AllTypes_Fails() throws {
     XCTAssertThrowsError(try Baz.parse(["--int8", "256"]))
     XCTAssertThrowsError(try Baz.parse(["--int16", "32768"]))
     XCTAssertThrowsError(try Baz.parse(["--int32", "2147483648"]))
     XCTAssertThrowsError(try Baz.parse(["--int64", "9223372036854775808"]))
     XCTAssertThrowsError(try Baz.parse(["--int", "9223372036854775808"]))
-    
+
     XCTAssertThrowsError(try Baz.parse(["--uint8", "512"]))
     XCTAssertThrowsError(try Baz.parse(["--uint16", "65536"]))
     XCTAssertThrowsError(try Baz.parse(["--uint32", "4294967296"]))
     XCTAssertThrowsError(try Baz.parse(["--uint64", "18446744073709551616"]))
     XCTAssertThrowsError(try Baz.parse(["--uint", "18446744073709551616"]))
-    
+
     XCTAssertThrowsError(try Baz.parse(["--uint8", "-1"]))
     XCTAssertThrowsError(try Baz.parse(["--uint16", "-1"]))
     XCTAssertThrowsError(try Baz.parse(["--uint32", "-1"]))
     XCTAssertThrowsError(try Baz.parse(["--uint64", "-1"]))
     XCTAssertThrowsError(try Baz.parse(["--uint", "-1"]))
-    
+
     XCTAssertThrowsError(try Baz.parse(["--float", "zzz"]))
     XCTAssertThrowsError(try Baz.parse(["--double", "zzz"]))
     XCTAssertThrowsError(try Baz.parse(["--bool", "truthy"]))
@@ -366,7 +366,7 @@ extension DefaultsEndToEndTests {
       XCTAssertEqual(qux.name, "--")
     }
   }
-  
+
   func testParsing_ArgumentDefaults_Fails() throws {
     XCTAssertThrowsError(try Qux.parse(["--name"]))
     XCTAssertThrowsError(try Qux.parse(["Foo", "Bar"]))
@@ -380,7 +380,7 @@ fileprivate func exclaim(_ input: String) throws -> String {
 fileprivate struct OptionPropertyInitArguments_Default: ParsableArguments {
   @Option
   var data: String = "test"
-  
+
   @Option(transform: exclaim)
   var transformedData: String = "test"
 }
@@ -402,14 +402,14 @@ extension DefaultsEndToEndTests {
       XCTAssertEqual(arguments.data, "test")
     }
   }
-  
+
   /// Tests that using default property initialization syntax parses the command-line-provided value for the argument when provided.
   func testParsing_OptionPropertyInit_Default_NoTransform_OverrideDefault() throws {
     AssertParse(OptionPropertyInitArguments_Default.self, ["--data", "test2"]) { arguments in
       XCTAssertEqual(arguments.data, "test2")
     }
   }
-  
+
   /// Tests that *not* providing a default value still parses the argument correctly from the command-line.
   /// This test is almost certainly duplicated by others in the repository, but allows for quick use of test filtering during development on the initialization functionality.
   func testParsing_OptionPropertyInit_NoDefault_NoTransform() throws {
@@ -417,21 +417,21 @@ extension DefaultsEndToEndTests {
       XCTAssertEqual(arguments.data, "test")
     }
   }
-  
+
   /// Tests that using default property initialization syntax on a property with a `transform` function provided parses the default value for the argument when nothing is provided from the command-line.
   func testParsing_OptionPropertyInit_Default_Transform_UseDefault() throws {
     AssertParse(OptionPropertyInitArguments_Default.self, []) { arguments in
       XCTAssertEqual(arguments.transformedData, "test")
     }
   }
-  
+
   /// Tests that using default property initialization syntax on a property with a `transform` function provided parses and transforms the command-line-provided value for the argument when provided.
   func testParsing_OptionPropertyInit_Default_Transform_OverrideDefault() throws {
     AssertParse(OptionPropertyInitArguments_Default.self, ["--transformed-data", "test2"]) { arguments in
       XCTAssertEqual(arguments.transformedData, "test2!")
     }
   }
-  
+
   /// Tests that *not* providing a default value for a property with a `transform` function still parses the argument correctly from the command-line.
   /// This test is almost certainly duplicated by others in the repository, but allows for quick use of test filtering during development on the initialization functionality.
   func testParsing_OptionPropertyInit_NoDefault_Transform() throws {
@@ -469,14 +469,14 @@ extension DefaultsEndToEndTests {
       XCTAssertEqual(arguments.data, "test")
     }
   }
-  
+
   /// Tests that using default property initialization syntax parses the command-line-provided value for the argument when provided.
   func testParsing_ArgumentPropertyInit_Default_NoTransform_OverrideDefault() throws {
     AssertParse(ArgumentPropertyInitArguments_Default_NoTransform.self, ["test2"]) { arguments in
       XCTAssertEqual(arguments.data, "test2")
     }
   }
-  
+
   /// Tests that *not* providing a default value still parses the argument correctly from the command-line.
   /// This test is almost certainly duplicated by others in the repository, but allows for quick use of test filtering during development on the initialization functionality.
   func testParsing_ArgumentPropertyInit_NoDefault_NoTransform() throws {
@@ -484,21 +484,21 @@ extension DefaultsEndToEndTests {
       XCTAssertEqual(arguments.data, "test")
     }
   }
-  
+
   /// Tests that using default property initialization syntax on a property with a `transform` function provided parses the default value for the argument when nothing is provided from the command-line.
   func testParsing_ArgumentPropertyInit_Default_Transform_UseDefault() throws {
     AssertParse(ArgumentPropertyInitArguments_Default_Transform.self, []) { arguments in
       XCTAssertEqual(arguments.transformedData, "test")
     }
   }
-  
+
   /// Tests that using default property initialization syntax on a property with a `transform` function provided parses and transforms the command-line-provided value for the argument when provided.
   func testParsing_ArgumentPropertyInit_Default_Transform_OverrideDefault() throws {
     AssertParse(ArgumentPropertyInitArguments_Default_Transform.self, ["test2"]) { arguments in
       XCTAssertEqual(arguments.transformedData, "test2!")
     }
   }
-  
+
   /// Tests that *not* providing a default value for a property with a `transform` function still parses the argument correctly from the command-line.
   /// This test is almost certainly duplicated by others in the repository, but allows for quick use of test filtering during development on the initialization functionality.
   func testParsing_ArgumentPropertyInit_NoDefault_Transform() throws {
@@ -511,7 +511,7 @@ extension DefaultsEndToEndTests {
 fileprivate struct Quux: ParsableArguments {
   @Option(parsing: .upToNextOption)
   var letters: [String] = ["A", "B"]
-  
+
   @Argument()
   var numbers: [Int] = [1, 2]
 }
@@ -554,14 +554,14 @@ extension DefaultsEndToEndTests {
       XCTAssertEqual(arguments.data, false)
     }
   }
-  
+
   /// Tests that using default property initialization syntax parses the command-line-provided value for the argument when provided.
   func testParsing_FlagPropertyInit_Bool_Default_OverrideDefault() throws {
     AssertParse(FlagPropertyInitArguments_Bool_Default.self, ["--data"]) { arguments in
       XCTAssertEqual(arguments.data, true)
     }
   }
-  
+
   /// Tests that *not* providing a default value still parses the argument correctly from the command-line.
   /// This test is almost certainly duplicated by others in the repository, but allows for quick use of test filtering during development on the initialization functionality.
   func testParsing_FlagPropertyInit_Bool_NoDefault() throws {
@@ -595,14 +595,14 @@ extension DefaultsEndToEndTests {
       XCTAssertEqual(arguments.data, .noData)
     }
   }
-  
+
   /// Tests that using default property initialization syntax parses the command-line-provided value for the argument when provided.
   func testParsing_FlagPropertyInit_EnumerableFlag_Default_OverrideDefault() throws {
     AssertParse(FlagPropertyInitArguments_EnumerableFlag_Default.self, ["--data"]) { arguments in
       XCTAssertEqual(arguments.data, .data)
     }
   }
-  
+
   /// Tests that *not* providing a default value still parses the argument correctly from the command-line.
   /// This test is almost certainly duplicated by others in the repository, but allows for quick use of test filtering during development on the initialization functionality.
   func testParsing_FlagPropertyInit_EnumerableFlag_NoDefault() throws {
@@ -618,17 +618,17 @@ fileprivate struct Main: ParsableCommand {
     subcommands: [Sub.self],
     defaultSubcommand: Sub.self
   )
-  
+
   struct Options: ParsableArguments {
     @Option(parsing: .upToNextOption)
     var letters: [String] = ["A", "B"]
   }
-  
+
   struct Sub: ParsableCommand {
     static var configuration = CommandConfiguration(shouldPromptForMissing: false)
     @Argument()
     var numbers: [Int] = [1, 2]
-    
+
     @OptionGroup()
     var options: Main.Options
   }
@@ -686,92 +686,92 @@ extension DefaultsEndToEndTests {
   func testParsing_RequiredArray_Option_NoTransform_NoInput() {
     XCTAssertThrowsError(try RequiredArray_Option_NoTransform.parse([]))
   }
-  
+
   /// Tests that providing a single argument for a required array option parses that value correctly.
   func testParsing_RequiredArray_Option_NoTransform_SingleInput() {
     AssertParse(RequiredArray_Option_NoTransform.self, ["--array", "1"]) { arguments in
       XCTAssertEqual(arguments.array, ["1"])
     }
   }
-  
+
   /// Tests that providing multiple arguments for a required array option parses those values correctly.
   func testParsing_RequiredArray_Option_NoTransform_MultipleInput() {
     AssertParse(RequiredArray_Option_NoTransform.self, ["--array", "2", "3"]) { arguments in
       XCTAssertEqual(arguments.array, ["2", "3"])
     }
   }
-  
+
   /// Tests that not providing an argument for a required array option with a transform produces an error.
   func testParsing_RequiredArray_Option_Transform_NoInput() {
     XCTAssertThrowsError(try RequiredArray_Option_Transform.parse([]))
   }
-  
+
   /// Tests that providing a single argument for a required array option with a transform parses that value correctly.
   func testParsing_RequiredArray_Option_Transform_SingleInput() {
     AssertParse(RequiredArray_Option_Transform.self, ["--array", "1"]) { arguments in
       XCTAssertEqual(arguments.array, ["1!"])
     }
   }
-  
+
   /// Tests that providing multiple arguments for a required array option with a transform parses those values correctly.
   func testParsing_RequiredArray_Option_Transform_MultipleInput() {
     AssertParse(RequiredArray_Option_Transform.self, ["--array", "2", "3"]) { arguments in
       XCTAssertEqual(arguments.array, ["2!", "3!"])
     }
   }
-  
-  
+
+
   /// Tests that not providing an argument for a required array argument produces an error.
   func testParsing_RequiredArray_Argument_NoTransform_NoInput() {
     XCTAssertThrowsError(try RequiredArray_Argument_NoTransform.parse([]))
   }
-  
+
   /// Tests that providing a single argument for a required array argument parses that value correctly.
   func testParsing_RequiredArray_Argument_NoTransform_SingleInput() {
     AssertParse(RequiredArray_Argument_NoTransform.self, ["1"]) { arguments in
       XCTAssertEqual(arguments.array, ["1"])
     }
   }
-  
+
   /// Tests that providing multiple arguments for a required array argument parses those values correctly.
   func testParsing_RequiredArray_Argument_NoTransform_MultipleInput() {
     AssertParse(RequiredArray_Argument_NoTransform.self, ["2", "3"]) { arguments in
       XCTAssertEqual(arguments.array, ["2", "3"])
     }
   }
-  
+
   /// Tests that not providing an argument for a required array argument with a transform produces an error.
   func testParsing_RequiredArray_Argument_Transform_NoInput() {
     XCTAssertThrowsError(try RequiredArray_Argument_Transform.parse([]))
   }
-  
+
   /// Tests that providing a single argument for a required array argument with a transform parses that value correctly.
   func testParsing_RequiredArray_Argument_Transform_SingleInput() {
     AssertParse(RequiredArray_Argument_Transform.self, ["1"]) { arguments in
       XCTAssertEqual(arguments.array, ["1!"])
     }
   }
-  
+
   /// Tests that providing multiple arguments for a required array argument with a transform parses those values correctly.
   func testParsing_RequiredArray_Argument_Transform_MultipleInput() {
     AssertParse(RequiredArray_Argument_Transform.self, ["2", "3"]) { arguments in
       XCTAssertEqual(arguments.array, ["2!", "3!"])
     }
   }
-  
-  
+
+
   /// Tests that not providing an argument for a required array flag produces an error.
   func testParsing_RequiredArray_Flag_NoInput() {
     XCTAssertThrowsError(try RequiredArray_Flag.parse([]))
   }
-  
+
   /// Tests that providing a single argument for a required array flag parses that value correctly.
   func testParsing_RequiredArray_Flag_SingleInput() {
     AssertParse(RequiredArray_Flag.self, ["--data"]) { arguments in
       XCTAssertEqual(arguments.array, [.data])
     }
   }
-  
+
   /// Tests that providing multiple arguments for a required array flag parses those values correctly.
   func testParsing_RequiredArray_Flag_MultipleInput() {
     AssertParse(RequiredArray_Flag.self, ["--data", "--no-data"]) { arguments in

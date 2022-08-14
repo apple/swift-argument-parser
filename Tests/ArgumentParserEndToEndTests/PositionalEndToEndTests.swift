@@ -43,7 +43,7 @@ extension PositionalEndToEndTests {
       XCTAssertEqual(bar.name, "--")
     }
   }
-  
+
   func testParsing_SinglePositional_Fails() throws {
     XCTAssertThrowsError(try Bar.parse([]))
     XCTAssertThrowsError(try Bar.parse(["--name"]))
@@ -81,7 +81,7 @@ extension PositionalEndToEndTests {
       XCTAssertEqual(baz.format, "--f")
     }
   }
-  
+
   func testParsing_TwoPositional_Fails() throws {
     XCTAssertThrowsError(try Baz.parse(["Bar", "Foo", "Baz"]))
     XCTAssertThrowsError(try Baz.parse(["Bar"]))
@@ -112,7 +112,7 @@ extension PositionalEndToEndTests {
     AssertParse(Qux.self, ["Bar", "Foo", "Baz"]) { qux in
       XCTAssertEqual(qux.names, ["Bar", "Foo", "Baz"])
     }
-    
+
     AssertParse(Qux.self, ["--", "--b", "--f"]) { qux in
       XCTAssertEqual(qux.names, ["--b", "--f"])
     }
@@ -120,7 +120,7 @@ extension PositionalEndToEndTests {
       XCTAssertEqual(qux.names, ["b", "--f"])
     }
   }
-  
+
   func testParsing_MultiplePositional_Fails() throws {
     // TODO: Allow zero-argument arrays?
     XCTAssertThrowsError(try Qux.parse(["--name", "Bar", "Foo"]))
@@ -154,7 +154,7 @@ extension PositionalEndToEndTests {
       XCTAssertEqual(wobble.count, 5)
       XCTAssertEqual(wobble.names, ["Bar", "Foo", "Baz"])
     }
-    
+
     AssertParse(Wobble.self, ["5", "--", "--b", "--f"]) { wobble in
       XCTAssertEqual(wobble.count, 5)
       XCTAssertEqual(wobble.names, ["--b", "--f"])
@@ -168,7 +168,7 @@ extension PositionalEndToEndTests {
       XCTAssertEqual(wobble.names, ["b", "--f"])
     }
   }
-  
+
   func testParsing_SingleAndMultiplePositional_Fails() throws {
     XCTAssertThrowsError(try Wobble.parse([]))
     XCTAssertThrowsError(try Wobble.parse(["--name", "Bar", "Foo"]))
@@ -194,7 +194,7 @@ extension PositionalEndToEndTests {
     AssertParse(Flob.self, ["5", "6"]) { flob in
       XCTAssertEqual(flob.counts, [5, 6])
     }
-    
+
     AssertParse(Flob.self, ["5", "--", "6"]) { flob in
       XCTAssertEqual(flob.counts, [5, 6])
     }
@@ -205,7 +205,7 @@ extension PositionalEndToEndTests {
       XCTAssertEqual(flob.counts, [5, 6])
     }
   }
-  
+
   func testParsing_MultipleParsedPositional_Fails() throws {
     XCTAssertThrowsError(try Flob.parse(["a"]))
     XCTAssertThrowsError(try Flob.parse(["5", "6", "a"]))
