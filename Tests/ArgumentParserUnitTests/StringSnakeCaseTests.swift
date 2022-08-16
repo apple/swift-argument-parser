@@ -56,7 +56,7 @@ extension StringSnakeCaseTests {
       XCTAssertEqual(test.0.convertedToSnakeCase(), test.1)
     }
   }
-  
+
   func testStringSnakeCaseWithSeparator() {
     let toSnakeCaseTests = [
       ("simpleOneTwo", "simple-one-two"),

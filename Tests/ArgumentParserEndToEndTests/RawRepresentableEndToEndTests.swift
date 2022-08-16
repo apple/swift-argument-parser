@@ -22,7 +22,7 @@ fileprivate struct Bar: ParsableArguments {
   struct Identifier: RawRepresentable, Equatable, ExpressibleByArgument {
     var rawValue: Int
   }
-  
+
   @Option() var identifier: Identifier
 }
 
@@ -32,13 +32,13 @@ extension RawRepresentableEndToEndTests {
       XCTAssertEqual(bar.identifier, Bar.Identifier(rawValue: 123))
     }
   }
-  
+
   func testParsing_SingleOptionMultipleTimes() throws {
     AssertParse(Bar.self, ["--identifier", "123", "--identifier", "456"]) { bar in
       XCTAssertEqual(bar.identifier, Bar.Identifier(rawValue: 456))
     }
   }
-  
+
   func testParsing_SingleOption_Fails() throws {
     XCTAssertThrowsError(try Bar.parse([]))
     XCTAssertThrowsError(try Bar.parse(["--identifier"]))

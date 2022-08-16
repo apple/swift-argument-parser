@@ -15,6 +15,7 @@ import ArgumentParserTestHelpers
 
 final class ParsableArgumentsValidationTests: XCTestCase {
   private struct A: ParsableCommand {
+    static var configuration = CommandConfiguration(shouldPromptForMissing: false)
     @Option(help: "The number of times to repeat 'phrase'.")
     var count: Int?
 
@@ -30,6 +31,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   }
 
   private struct B: ParsableCommand {
+    static var configuration = CommandConfiguration(shouldPromptForMissing: false)
     @Option(help: "The number of times to repeat 'phrase'.")
     var count: Int?
 
@@ -40,6 +42,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   }
 
   private struct C: ParsableCommand {
+    static var configuration = CommandConfiguration(shouldPromptForMissing: false)
     @Option(help: "The number of times to repeat 'phrase'.")
     var count: Int?
 
@@ -85,15 +88,15 @@ final class ParsableArgumentsValidationTests: XCTestCase {
     XCTAssertNil(ParsableArgumentsCodingKeyValidator.validate(B.self))
 
     if let error = ParsableArgumentsCodingKeyValidator.validate(C.self)
-      as? ParsableArgumentsCodingKeyValidator.Error
+        as? ParsableArgumentsCodingKeyValidator.Error
     {
       XCTAssert(error.missingCodingKeys == ["count"])
     } else {
       XCTFail()
     }
-    
+
     if let error = ParsableArgumentsCodingKeyValidator.validate(D.self)
-      as? ParsableArgumentsCodingKeyValidator.Error
+        as? ParsableArgumentsCodingKeyValidator.Error
     {
       XCTAssert(error.missingCodingKeys == ["phrase"])
     } else {
@@ -101,7 +104,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
     }
 
     if let error = ParsableArgumentsCodingKeyValidator.validate(E.self)
-      as? ParsableArgumentsCodingKeyValidator.Error
+        as? ParsableArgumentsCodingKeyValidator.Error
     {
       XCTAssert(error.missingCodingKeys == ["phrase", "includeCounter"])
     } else {
@@ -219,6 +222,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
 
   // MARK: One name is duplicated
   fileprivate struct TwoOfTheSameName: ParsableCommand {
+    static var configuration = CommandConfiguration(shouldPromptForMissing: false)
     @Option()
     var foo: String
 
@@ -228,7 +232,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
 
   func testUniqueNamesValidation_TwoOfSameName() throws {
     if let error = ParsableArgumentsUniqueNamesValidator.validate(TwoOfTheSameName.self)
-      as? ParsableArgumentsUniqueNamesValidator.Error
+        as? ParsableArgumentsUniqueNamesValidator.Error
     {
       XCTAssertEqual(error.description, "Multiple (2) `Option` or `Flag` arguments are named \"--foo\".")
     } else {
@@ -256,7 +260,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
 
   func testUniqueNamesValidation_TwoDuplications() throws {
     if let error = ParsableArgumentsUniqueNamesValidator.validate(MultipleUniquenessViolations.self)
-      as? ParsableArgumentsUniqueNamesValidator.Error
+        as? ParsableArgumentsUniqueNamesValidator.Error
     {
       XCTAssert(
         /// The `Mirror` reflects the properties `foo` and `bar` in a random order each time it's built.
@@ -276,6 +280,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
 
   // MARK: Argument has multiple names and one is duplicated
   fileprivate struct MultipleNamesPerArgument: ParsableCommand {
+    static var configuration = CommandConfiguration(shouldPromptForMissing: false)
     @Flag(name: [.customShort("v"), .customLong("very-chatty")])
     var verbose: Bool = false
 
@@ -291,7 +296,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
 
   func testUniqueNamesValidation_ArgumentHasMultipleNames() throws {
     if let error = ParsableArgumentsUniqueNamesValidator.validate(MultipleNamesPerArgument.self)
-      as? ParsableArgumentsUniqueNamesValidator.Error
+        as? ParsableArgumentsUniqueNamesValidator.Error
     {
       XCTAssertEqual(error.description, "Multiple (2) `Option` or `Flag` arguments are named \"-v\".")
     } else {
@@ -322,7 +327,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
 
   func testUniqueNamesValidation_MoreThanTwoDuplications() throws {
     if let error = ParsableArgumentsUniqueNamesValidator.validate(FourDuplicateNames.self)
-      as? ParsableArgumentsUniqueNamesValidator.Error
+        as? ParsableArgumentsUniqueNamesValidator.Error
     {
       XCTAssertEqual(error.description, "Multiple (4) `Option` or `Flag` arguments are named \"--foo\".")
     } else {
@@ -333,6 +338,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   // MARK: EnumerableFlag has first letter duplication
 
   fileprivate struct DuplicatedFirstLettersShortNames: ParsableCommand {
+    static var configuration = CommandConfiguration(shouldPromptForMissing: false)
     enum ExampleEnum: String, EnumerableFlag {
       case first
       case second
@@ -350,6 +356,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   }
 
   fileprivate struct DuplicatedFirstLettersLongNames: ParsableCommand {
+    static var configuration = CommandConfiguration(shouldPromptForMissing: false)
     enum ExampleEnum: String, EnumerableFlag {
       case first
       case second
@@ -364,7 +371,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
 
   func testUniqueNamesValidation_DuplicatedFlagFirstLetters_ShortNames() throws {
     if let error = ParsableArgumentsUniqueNamesValidator.validate(DuplicatedFirstLettersShortNames.self)
-      as? ParsableArgumentsUniqueNamesValidator.Error
+        as? ParsableArgumentsUniqueNamesValidator.Error
     {
       XCTAssertEqual(error.description, "Multiple (3) `Option` or `Flag` arguments are named \"-f\".")
     } else {
@@ -375,8 +382,9 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   func testUniqueNamesValidation_DuplicatedFlagFirstLetters_LongNames() throws {
     XCTAssertNil(ParsableArgumentsUniqueNamesValidator.validate(DuplicatedFirstLettersLongNames.self))
   }
-  
+
   fileprivate struct HasOneNonsenseFlag: ParsableCommand {
+    static var configuration = CommandConfiguration(shouldPromptForMissing: false)
     enum ExampleEnum: String, EnumerableFlag {
       case first
       case second
@@ -387,7 +395,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
 
     @Flag
     var enumFlag: ExampleEnum = .first
-    
+
     @Flag
     var fine: Bool = false
 
@@ -406,7 +414,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
 
   func testNonsenseFlagsValidation_OneFlag() throws {
     if let error = NonsenseFlagsValidator.validate(HasOneNonsenseFlag.self)
-      as? NonsenseFlagsValidator.Error
+        as? NonsenseFlagsValidator.Error
     {
       XCTAssertEqual(
         error.description,
@@ -426,6 +434,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   }
 
   fileprivate struct MultipleNonsenseFlags: ParsableCommand {
+    static var configuration = CommandConfiguration(shouldPromptForMissing: false)
     @Flag
     var stuff = true
 
@@ -441,7 +450,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
 
   func testNonsenseFlagsValidation_MultipleFlags() throws {
     if let error = NonsenseFlagsValidator.validate(MultipleNonsenseFlags.self)
-      as? NonsenseFlagsValidator.Error
+        as? NonsenseFlagsValidator.Error
     {
       XCTAssertEqual(
         error.description,

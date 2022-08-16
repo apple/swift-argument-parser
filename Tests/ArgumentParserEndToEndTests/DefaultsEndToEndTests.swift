@@ -454,7 +454,7 @@ fileprivate struct ArgumentPropertyInitArguments_NoDefault_NoTransform: Parsable
 
 fileprivate struct ArgumentPropertyInitArguments_Default_Transform: ParsableArguments {
   @Argument(transform: exclaim)
-    var transformedData: String = "test"
+  var transformedData: String = "test"
 }
 
 fileprivate struct ArgumentPropertyInitArguments_NoDefault_Transform: ParsableArguments {
@@ -511,7 +511,7 @@ extension DefaultsEndToEndTests {
 fileprivate struct Quux: ParsableArguments {
   @Option(parsing: .upToNextOption)
   var letters: [String] = ["A", "B"]
-  
+
   @Argument()
   var numbers: [Int] = [1, 2]
 }
@@ -614,19 +614,21 @@ extension DefaultsEndToEndTests {
 
 fileprivate struct Main: ParsableCommand {
   static var configuration = CommandConfiguration(
+    shouldPromptForMissing: false,
     subcommands: [Sub.self],
     defaultSubcommand: Sub.self
   )
-  
+
   struct Options: ParsableArguments {
     @Option(parsing: .upToNextOption)
     var letters: [String] = ["A", "B"]
   }
-  
+
   struct Sub: ParsableCommand {
+    static var configuration = CommandConfiguration(shouldPromptForMissing: false)
     @Argument()
     var numbers: [Int] = [1, 2]
-    
+
     @OptionGroup()
     var options: Main.Options
   }

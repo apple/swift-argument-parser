@@ -14,8 +14,9 @@ import ArgumentParser
 extension Package {
   /// Generates an Xcode project
   struct GenerateXcodeProject: ParsableCommand {
-    static var configuration =
-      CommandConfiguration(commandName: "generate-xcodeproj")
+    static var configuration = CommandConfiguration(
+      commandName: "generate-xcodeproj",
+      shouldPromptForMissing: false)
 
     @OptionGroup()
     var options: Options

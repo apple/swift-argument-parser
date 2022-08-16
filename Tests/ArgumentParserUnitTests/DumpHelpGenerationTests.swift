@@ -21,6 +21,7 @@ final class DumpHelpGenerationTests: XCTestCase {
 
 extension DumpHelpGenerationTests {
   struct A: ParsableCommand {
+    static var configuration = CommandConfiguration(shouldPromptForMissing: false)
     enum TestEnum: String, CaseIterable, ExpressibleByArgument {
       case a, b, c
     }
@@ -30,40 +31,40 @@ extension DumpHelpGenerationTests {
 
     @Option
     var noHelpOption: Int
-    
+
     @Option(help: "int value option")
     var intOption: Int
-    
+
     @Option(help: "int value option with default value")
     var intOptionWithDefaultValue: Int = 0
-    
+
     @Argument
     var arg: Int
-     
+
     @Argument(help: "argument with help")
     var argWithHelp: Int
-    
+
     @Argument(help: "argument with default value")
     var argWithDefaultValue: Int = 1
   }
-  
+
   public func testDumpA() throws {
     try AssertDump(for: A.self, equals: Self.aDumpText)
   }
-  
+
   public func testDumpExampleCommands() throws {
     struct TestCase {
       let expected: String
       let command: String
     }
-    
+
     let testCases: [UInt : TestCase] = [
       #line : .init(expected: Self.mathDumpText, command: "math --experimental-dump-help"),
       #line : .init(expected: Self.mathAddDumpText, command: "math add --experimental-dump-help"),
       #line : .init(expected: Self.mathMultiplyDumpText, command: "math multiply --experimental-dump-help"),
       #line : .init(expected: Self.mathStatsDumpText, command: "math stats --experimental-dump-help")
     ]
-    
+
     try testCases.forEach { line, testCase in
       try AssertJSONOutputEqual(
         command: testCase.command,

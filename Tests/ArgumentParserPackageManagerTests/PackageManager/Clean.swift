@@ -13,6 +13,7 @@ import ArgumentParser
 
 extension Package {
   struct Clean: ParsableCommand {
+    static var configuration = CommandConfiguration(shouldPromptForMissing: false)
     @OptionGroup()
     var options: Options
   }

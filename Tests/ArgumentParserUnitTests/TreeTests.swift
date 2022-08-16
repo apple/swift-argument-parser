@@ -38,7 +38,7 @@ extension TreeTests {
       tree.children.flatMap { $0.children.map { $0.element } },
       [111, 112, 113, 121, 122, 123, 131, 132, 133])
   }
-  
+
   func testSearch() {
     XCTAssertEqual(
       tree.path(toFirstWhere: { $0 == 1 }).map { $0.element },
@@ -49,22 +49,28 @@ extension TreeTests {
     XCTAssertEqual(
       tree.path(toFirstWhere: { $0 == 133 }).map { $0.element },
       [1, 13, 133])
-    
+
     XCTAssertTrue(tree.path(toFirstWhere: { $0 < 0 }).isEmpty)
   }
 }
 
 extension TreeTests {
   struct A: ParsableCommand {
-    static let configuration = CommandConfiguration(subcommands: [A.self])
+    static let configuration = CommandConfiguration(
+      shouldPromptForMissing: false,
+      subcommands: [A.self])
   }
   struct Root: ParsableCommand {
-    static let configuration = CommandConfiguration(subcommands: [Sub.self])
+    static let configuration = CommandConfiguration(
+      shouldPromptForMissing: false,
+      subcommands: [Sub.self])
   }
   struct Sub: ParsableCommand {
-    static let configuration = CommandConfiguration(subcommands: [Sub.self])
+    static let configuration = CommandConfiguration(
+      shouldPromptForMissing: false,
+      subcommands: [Sub.self])
   }
-    
+
   func testInitializationWithRecursiveSubcommand() {
     XCTAssertThrowsError(try Tree(root: A.asCommand))
     XCTAssertThrowsError(try Tree(root: Root.asCommand))

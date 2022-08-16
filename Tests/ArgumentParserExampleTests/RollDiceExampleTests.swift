@@ -16,7 +16,7 @@ final class RollDiceExampleTests: XCTestCase {
   func testRollDice() throws {
     try AssertExecuteCommand(command: "roll --times 6")
   }
-  
+
   func testRollDice_Help() throws {
     let helpText = """
         USAGE: roll [--times <n>] [--sides <m>] [--seed <seed>] [--verbose]
@@ -29,11 +29,11 @@ final class RollDiceExampleTests: XCTestCase {
           -v, --verbose           Show all roll results.
           -h, --help              Show help information.
         """
-    
+
     try AssertExecuteCommand(command: "roll -h", expected: helpText)
     try AssertExecuteCommand(command: "roll --help", expected: helpText)
   }
-  
+
   func testRollDice_Fail() throws {
     try AssertExecuteCommand(
       command: "roll --times",
@@ -44,7 +44,7 @@ final class RollDiceExampleTests: XCTestCase {
               See 'roll --help' for more information.
             """,
       exitCode: .validationFailure)
-    
+
     try AssertExecuteCommand(
       command: "roll --times ZZZ",
       expected: """

@@ -449,7 +449,7 @@ extension HelpGenerationTests {
 
     """)
   }
-    
+
   struct Foo: ParsableCommand {
     public static var configuration = CommandConfiguration(
       commandName: "foo",
@@ -458,10 +458,10 @@ extension HelpGenerationTests {
         Bar.self
       ],
       helpNames: [.short, .long, .customLong("help", withSingleDash: true)])
-        
+
     @Option(help: "Name for foo")
     var fooName: String?
-        
+
     public init() {}
   }
 
@@ -471,10 +471,10 @@ extension HelpGenerationTests {
       _superCommandName: "foo",
       abstract: "Perform bar operations",
       helpNames: [.short, .long, .customLong("help", withSingleDash: true)])
-            
+
     @Option(help: "Bar Strength")
     var barStrength: String?
-        
+
     public init() {}
   }
 
@@ -488,7 +488,7 @@ extension HelpGenerationTests {
       --bar-strength <bar-strength>
                               Bar Strength
       -h, -help, --help       Show help information.
-    
+
     """)
   }
 }
@@ -497,13 +497,13 @@ extension HelpGenerationTests {
   private struct optionsToHide: ParsableArguments {
     @Flag(help: "Verbose")
     var verbose: Bool = false
-    
+
     @Option(help: "Custom Name")
     var customName: String?
-    
+
     @Option(help: .hidden)
     var hiddenOption: String?
-    
+
     @Argument(help: .private)
     var privateArg: String?
   }
@@ -511,10 +511,10 @@ extension HelpGenerationTests {
   @available(*, deprecated)
   private struct HideOptionGroupLegacyDriver: ParsableCommand {
     static let configuration = CommandConfiguration(commandName: "driver", abstract: "Demo hiding option groups")
-    
+
     @OptionGroup(_hiddenFromHelp: true)
     var hideMe: optionsToHide
-    
+
     @Option(help: "Time to wait before timeout (in seconds)")
     var timeout: Int?
   }
@@ -578,7 +578,7 @@ extension HelpGenerationTests {
   func testHelpHiddenShowsDefaultAndHidden() throws {
     AssertHelp(.hidden, for: HideOptionGroupLegacyDriver.self, equals: helpHiddenMessage)
     AssertHelp(.hidden, for: HideOptionGroupDriver.self, equals: helpHiddenMessage)
-    
+
     // Note: Private option groups are not visible at `.hidden` help level.
     AssertHelp(.hidden, for: PrivateOptionGroupDriver.self, equals: helpMessage)
   }
@@ -657,7 +657,7 @@ extension HelpGenerationTests {
     static let configuration = CommandConfiguration(
       commandName: "parserBug",
       subcommands: [Sub.self])
-    
+
     struct CommonOptions: ParsableCommand {
       @Flag(help: "example flag")
       var example: Bool = false
@@ -666,12 +666,12 @@ extension HelpGenerationTests {
     struct Sub: ParsableCommand {
       @OptionGroup()
       var commonOptions: CommonOptions
-      
+
       @Argument(help: "Non-mandatory argument")
       var argument: String?
     }
   }
-  
+
   func testIssue278() {
     AssertHelp(.default, for: ParserBug.Sub.self, root: ParserBug.self, equals: """
       USAGE: parserBug sub [--example] [<argument>]
@@ -692,11 +692,11 @@ extension HelpGenerationTests {
         example [--verbose] <file-name>
         """)
     }
-    
+
     @Argument var file: String
     @Flag var verboseMode = false
   }
-  
+
   struct CustomUsageLong: ParsableCommand {
     static var configuration: CommandConfiguration {
       CommandConfiguration(usage: """
@@ -705,7 +705,7 @@ extension HelpGenerationTests {
         example --help
         """)
     }
-    
+
     @Argument var file: String
     @Flag var verboseMode = false
   }
@@ -714,7 +714,7 @@ extension HelpGenerationTests {
     static var configuration: CommandConfiguration {
       CommandConfiguration(usage: "")
     }
-    
+
     @Argument var file: String
     @Flag var verboseMode = false
   }
@@ -729,9 +729,9 @@ extension HelpGenerationTests {
       OPTIONS:
         --verbose-mode
         -h, --help              Show help information.
-      
+
       """)
-    
+
     XCTAssertEqual(CustomUsageLong.helpMessage(columns: 80), """
       USAGE: example <file-name>
              example --verbose <file-name>
@@ -743,9 +743,9 @@ extension HelpGenerationTests {
       OPTIONS:
         --verbose-mode
         -h, --help              Show help information.
-      
+
       """)
-    
+
     XCTAssertEqual(CustomUsageHidden.helpMessage(columns: 80), """
       ARGUMENTS:
         <file>
@@ -753,10 +753,10 @@ extension HelpGenerationTests {
       OPTIONS:
         --verbose-mode
         -h, --help              Show help information.
-      
+
       """)
   }
-  
+
   func testCustomUsageError() {
     XCTAssertEqual(CustomUsageShort.fullMessage(for: ValidationError("Test")), """
       Error: Test

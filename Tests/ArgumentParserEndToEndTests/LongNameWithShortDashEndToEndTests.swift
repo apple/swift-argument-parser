@@ -110,6 +110,7 @@ extension LongNameWithSingleDashEndToEndTests {
 
 extension LongNameWithSingleDashEndToEndTests {
   private struct Issue327: ParsableCommand {
+    static var configuration = CommandConfiguration(shouldPromptForMissing: false)
     @Option(name: .customLong("argWithAnH", withSingleDash: true),
             parsing: .upToNextOption)
     var args: [String]
@@ -120,8 +121,9 @@ extension LongNameWithSingleDashEndToEndTests {
       XCTAssertEqual(issue327.args, ["03ade86c0", "8f2058e3ade86c84ec5b"])
     }
   }
-  
+
   private struct JoinedItem: ParsableCommand {
+    static var configuration = CommandConfiguration(shouldPromptForMissing: false)
     @Option(name: .customLong("argWithAnH", withSingleDash: true))
     var arg: String
   }

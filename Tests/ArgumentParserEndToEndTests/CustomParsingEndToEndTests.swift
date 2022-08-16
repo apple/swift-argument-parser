@@ -36,6 +36,7 @@ extension Array where Element == Name {
 // MARK: -
 
 fileprivate struct Foo: ParsableCommand {
+  static var configuration = CommandConfiguration(shouldPromptForMissing: false)
   enum Subgroup: Equatable {
     case first(Int)
     case second(Int)
@@ -86,6 +87,7 @@ extension ParsingEndToEndTests {
 // MARK: -
 
 fileprivate struct Bar: ParsableCommand {
+  static var configuration = CommandConfiguration(shouldPromptForMissing: false)
   @Option(transform: { try Name(rawValue: $0) })
   var firstName: Name = try! Name(rawValue: "none")
 
@@ -125,6 +127,7 @@ extension ParsingEndToEndTests {
 // MARK: -
 
 fileprivate struct Qux: ParsableCommand {
+  static var configuration = CommandConfiguration(shouldPromptForMissing: false)
   @Option(transform: { try Name(rawValue: $0) })
   var firstName: [Name] = []
 
