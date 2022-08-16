@@ -45,6 +45,9 @@ public struct CommandConfiguration {
   /// A Boolean value indicating whether this command should be shown in
   /// the extended help display.
   public var shouldDisplay: Bool
+
+  /// A Boolean value indicating whether to prompt for missing required values.
+  public var shouldPromptForMissing: Bool
   
   /// An array of the types that define subcommands for this command.
   public var subcommands: [ParsableCommand.Type]
@@ -87,6 +90,7 @@ public struct CommandConfiguration {
     discussion: String = "",
     version: String = "",
     shouldDisplay: Bool = true,
+    shouldPromptForMissing: Bool = true,
     subcommands: [ParsableCommand.Type] = [],
     defaultSubcommand: ParsableCommand.Type? = nil,
     helpNames: NameSpecification? = nil
@@ -97,6 +101,7 @@ public struct CommandConfiguration {
     self.discussion = discussion
     self.version = version
     self.shouldDisplay = shouldDisplay
+    self.shouldPromptForMissing = shouldPromptForMissing
     self.subcommands = subcommands
     self.defaultSubcommand = defaultSubcommand
     self.helpNames = helpNames
@@ -112,6 +117,7 @@ public struct CommandConfiguration {
     discussion: String = "",
     version: String = "",
     shouldDisplay: Bool = true,
+    shouldPromptForMissing: Bool = true,
     subcommands: [ParsableCommand.Type] = [],
     defaultSubcommand: ParsableCommand.Type? = nil,
     helpNames: NameSpecification? = nil
@@ -123,6 +129,7 @@ public struct CommandConfiguration {
     self.discussion = discussion
     self.version = version
     self.shouldDisplay = shouldDisplay
+    self.shouldPromptForMissing = shouldPromptForMissing
     self.subcommands = subcommands
     self.defaultSubcommand = defaultSubcommand
     self.helpNames = helpNames
@@ -137,6 +144,7 @@ extension CommandConfiguration {
     discussion: String,
     version: String,
     shouldDisplay: Bool,
+    shouldPromptForMissing: Bool,
     subcommands: [ParsableCommand.Type],
     defaultSubcommand: ParsableCommand.Type?,
     helpNames: NameSpecification?
@@ -148,6 +156,7 @@ extension CommandConfiguration {
       discussion: discussion,
       version: version,
       shouldDisplay: shouldDisplay,
+      shouldPromptForMissing: shouldPromptForMissing,
       subcommands: subcommands,
       defaultSubcommand: defaultSubcommand,
       helpNames: helpNames)

@@ -41,14 +41,14 @@ extension UnparsedValuesEndToEndTests {
       XCTAssertTrue(qux.verbose)
       XCTAssertEqual(qux.count, 0)
     }
-    
+
     AssertParse(Quizzo.self, ["--name", "Qux", "--verbose"]) { quizzo in
       XCTAssertEqual(quizzo.name, "Qux")
       XCTAssertTrue(quizzo.verbose)
       XCTAssertEqual(quizzo.count, 0)
     }
   }
-  
+
   func testParsing_TwoPlusUnparsed_Fails() throws {
     XCTAssertThrowsError(try Qux.parse([]))
     XCTAssertThrowsError(try Qux.parse(["--name"]))
@@ -86,7 +86,7 @@ extension UnparsedValuesEndToEndTests {
     AssertParse(Hogeraa.self, []) { hogeraa in
       XCTAssertEqual(hogeraa.fullName, "Full Name")
     }
-    
+
     AssertParse(Hogera.self, ["--first-name", "Hogera"]) { hogera in
       XCTAssertEqual(hogera.firstName, "Hogera")
       XCTAssertFalse(hogera.hasLastName)
@@ -97,7 +97,7 @@ extension UnparsedValuesEndToEndTests {
       XCTAssertTrue(hogera.hasLastName)
       XCTAssertEqual(hogera.fullName, "Hogera LastName")
     }
-    
+
     AssertParse(Piyo.self, ["--first-name", "Hogera"]) { piyo in
       XCTAssertEqual(piyo.firstName, "Hogera")
       XCTAssertFalse(piyo.hasLastName)
@@ -109,7 +109,7 @@ extension UnparsedValuesEndToEndTests {
       XCTAssertEqual(piyo.fullName, "Hogera LastName")
     }
   }
-  
+
   func testParsing_TwoPlusOptionalUnparsed_Fails() throws {
     XCTAssertThrowsError(try Hogeraa.parse(["--full-name"]))
     XCTAssertThrowsError(try Hogeraa.parse(["--full-name", "Hogera Piyo"]))
@@ -128,6 +128,7 @@ extension UnparsedValuesEndToEndTests {
 
 
 fileprivate struct Foo: ParsableCommand {
+  static var configuration = CommandConfiguration(shouldPromptForMissing: false)
   @Flag var foo: Bool = false
   var config: Config?
   @OptionGroup var opt: OptionalArguments
@@ -167,7 +168,7 @@ extension UnparsedValuesEndToEndTests {
       XCTAssertEqual(1, foo.def.two)
     }
   }
-  
+
   func testUnparsedNestedValues_Fails() {
     XCTAssertThrowsError(try Foo.parse(["--edition", "aaa"]))
     XCTAssertThrowsError(try Foo.parse(["--one", "aaa"]))
@@ -177,10 +178,12 @@ extension UnparsedValuesEndToEndTests {
 // MARK: Nested unparsed optional decodable type
 
 fileprivate struct Barr: ParsableCommand {
+  static var configuration = CommandConfiguration(shouldPromptForMissing: false)
   var baz: Baz? = Baz(name: "Some Name", age: 105)
 }
 
 fileprivate struct Bar: ParsableCommand {
+  static var configuration = CommandConfiguration(shouldPromptForMissing: false)
   @Flag var bar: Bool = false
   var baz: Baz?
   var bazz: Bazz?
@@ -209,7 +212,7 @@ extension UnparsedValuesEndToEndTests {
       XCTAssertEqual(barr.baz?.age, 105)
       XCTAssertEqual(barr.baz?.name, "Some Name")
     }
-    
+
     AssertParse(Bar.self, []) { bar in
       XCTAssertFalse(bar.bar)
       XCTAssertNil(bar.baz)
@@ -230,7 +233,7 @@ extension UnparsedValuesEndToEndTests {
       XCTAssertEqual(bar.bazz?.age, 101)
     }
   }
-  
+
   func testUnparsedNestedOptionalValue_Fails() {
     XCTAssertThrowsError(try Bar.parse(["--baz", "xyz"]))
     XCTAssertThrowsError(try Bar.parse(["--bazz", "xyz"]))

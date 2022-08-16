@@ -20,7 +20,9 @@ final class SubcommandEndToEndTests: XCTestCase {
 
 fileprivate struct Foo: ParsableCommand {
   static var configuration =
-    CommandConfiguration(subcommands: [CommandA.self, CommandB.self])
+  CommandConfiguration(
+    shouldPromptForMissing: false,
+    subcommands: [CommandA.self, CommandB.self])
 
   @Option() var name: String
 }
@@ -226,11 +228,11 @@ extension SubcommandEndToEndTests {
     AssertParseCommand(BaseCommand.self,
                        BaseCommand.SubCommand.SubSubCommand.self,
                        ["--base-flag", BaseCommand.baseFlagValue, "sub", "--sub-flag", BaseCommand.SubCommand.subFlagValue, "subsub", "--sub-sub-flag"]) { cmd in
-                        XCTAssertTrue(cmd.subSubFlag)
+      XCTAssertTrue(cmd.subSubFlag)
 
-                        // make sure that the instance of SubSubCommand provided
-                        // had its validate method called, not just that any instance of SubSubCommand was validated
-                        wait(for: [cmd.didValidateExpectation], timeout: 0.1)
+      // make sure that the instance of SubSubCommand provided
+      // had its validate method called, not just that any instance of SubSubCommand was validated
+      wait(for: [cmd.didValidateExpectation], timeout: 0.1)
     }
   }
 }

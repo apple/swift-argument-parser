@@ -89,11 +89,13 @@ struct Options: ParsableArguments {
 
 struct Package: ParsableCommand {
   static var configuration = CommandConfiguration(
+    shouldPromptForMissing: false,
     subcommands: [Clean.self, Config.self, Describe.self, GenerateXcodeProject.self, Hidden.self])
 }
 
 extension Package {
   struct Hidden: ParsableCommand {
-    static var configuration = CommandConfiguration(shouldDisplay: false)
+    static var configuration = CommandConfiguration(
+      shouldDisplay: false, shouldPromptForMissing: false)
   }
 }

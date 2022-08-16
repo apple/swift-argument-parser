@@ -148,6 +148,7 @@ extension ValidationEndToEndTests {
 }
 
 fileprivate struct FooCommand: ParsableCommand {
+  static var configuration = CommandConfiguration(shouldPromptForMissing: false)
   @Flag(help: .hidden)
   var foo = false
   @Flag(help: .hidden)

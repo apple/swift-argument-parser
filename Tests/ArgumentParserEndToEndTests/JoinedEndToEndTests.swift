@@ -21,10 +21,10 @@ final class JoinedEndToEndTests: XCTestCase {
 fileprivate struct Foo: ParsableArguments {
   @Option(name: .customShort("f"))
   var file = ""
-  
+
   @Option(name: .customShort("d", allowingJoined: true))
   var debug = ""
-  
+
   @Flag(name: .customLong("fdi", withSingleDash: true))
   var fdi = false
 }
@@ -85,7 +85,7 @@ extension JoinedEndToEndTests {
       XCTAssertEqual(foo.fdi, true)
     }
   }
-  
+
   func testSingleValueParsing_Fails() throws {
     XCTAssertThrowsError(try Foo.parse(["-f", "-d"]))
     XCTAssertThrowsError(try Foo.parse(["-f", "file", "-d"]))
@@ -120,7 +120,7 @@ extension JoinedEndToEndTests {
       XCTAssertEqual(bar.debug, ["debug1", "debug2", "debug3"])
     }
   }
-  
+
   func testArrayValueParsing_Fails() throws {
     XCTAssertThrowsError(try Bar.parse(["-D"]))
     XCTAssertThrowsError(try Bar.parse(["-Ddebug1", "debug2"]))
@@ -132,7 +132,7 @@ extension JoinedEndToEndTests {
 fileprivate struct Baz: ParsableArguments {
   @Option(name: .customShort("D", allowingJoined: true), parsing: .upToNextOption)
   var debug: [String] = []
-  
+
   @Flag var verbose = false
 }
 
@@ -141,22 +141,22 @@ extension JoinedEndToEndTests {
     AssertParse(Baz.self, []) { baz in
       XCTAssertEqual(baz.debug, [])
     }
-    
+
     AssertParse(Baz.self, ["-Ddebug1", "debug2"]) { baz in
       XCTAssertEqual(baz.debug, ["debug1", "debug2"])
       XCTAssertEqual(baz.verbose, false)
     }
-    
+
     AssertParse(Baz.self, ["-Ddebug1", "debug2", "--verbose"]) { baz in
       XCTAssertEqual(baz.debug, ["debug1", "debug2"])
       XCTAssertEqual(baz.verbose, true)
     }
-    
+
     AssertParse(Baz.self, ["-Ddebug1", "debug2", "-Ddebug3", "debug4"]) { baz in
       XCTAssertEqual(baz.debug, ["debug1", "debug2", "debug3", "debug4"])
     }
   }
-  
+
   func testArrayUpToNextParsing_Fails() throws {
     XCTAssertThrowsError(try Baz.parse(["-D", "--other"]))
     XCTAssertThrowsError(try Baz.parse(["-Ddebug", "--other"]))
@@ -177,16 +177,16 @@ extension JoinedEndToEndTests {
     AssertParse(Qux.self, []) { qux in
       XCTAssertEqual(qux.debug, [])
     }
-    
+
     AssertParse(Qux.self, ["-Ddebug1", "debug2"]) { qux in
       XCTAssertEqual(qux.debug, ["debug1", "debug2"])
     }
-    
+
     AssertParse(Qux.self, ["-Ddebug1", "debug2", "-Ddebug3", "debug4", "--other"]) { qux in
       XCTAssertEqual(qux.debug, ["debug1", "debug2", "-Ddebug3", "debug4", "--other"])
     }
   }
-  
+
   func testArrayRemainingParsing_Fails() throws {
     XCTAssertThrowsError(try Baz.parse(["--other", "-Ddebug", "debug"]))
   }

@@ -44,7 +44,7 @@ extension HelpTests {
   func testGlobalHelp() throws {
     XCTAssertEqual(
       getErrorText(Package.self, ["help"]).trimmingLines(),
-      """
+                """
                 USAGE: package <subcommand>
 
                 OPTIONS:
@@ -63,7 +63,7 @@ extension HelpTests {
   func testGlobalHelp_messageForCleanExit_helpRequest() throws {
     XCTAssertEqual(
       Package.message(for: CleanExit.helpRequest()).trimmingLines(),
-      """
+                """
                 USAGE: package <subcommand>
 
                 OPTIONS:
@@ -91,7 +91,7 @@ extension HelpTests {
   func testConfigHelp() throws {
     XCTAssertEqual(
       getErrorText(Package.self, ["help", "config"], screenWidth: 80).trimmingLines(),
-      """
+                """
                 USAGE: package config <subcommand>
 
                 OPTIONS:
@@ -109,7 +109,7 @@ extension HelpTests {
   func testGetMirrorHelp() throws {
     XCTAssertEqual(
       getErrorText(Package.self, ["help", "config",  "get-mirror"], screenWidth: 80).trimmingLines(),
-      """
+                """
                 USAGE: package config get-mirror [<options>] --package-url <package-url>
 
                 OPTIONS:
@@ -187,6 +187,7 @@ extension HelpTests {
 
 struct CustomHelp: ParsableCommand {
   static let configuration = CommandConfiguration(
+    shouldPromptForMissing: false,
     helpNames: [.customShort("?"), .customLong("show-help")]
   )
 }
@@ -208,6 +209,7 @@ extension HelpTests {
 
 struct NoHelp: ParsableCommand {
   static let configuration = CommandConfiguration(
+    shouldPromptForMissing: false,
     helpNames: []
   )
 
@@ -229,7 +231,7 @@ extension HelpTests {
 
     XCTAssertEqual(
       NoHelp.message(for: CleanExit.helpRequest()).trimmingLines(),
-      """
+            """
             USAGE: no-help --count <count>
 
             OPTIONS:
@@ -241,20 +243,22 @@ extension HelpTests {
 
 struct SubCommandCustomHelp: ParsableCommand {
   static var configuration = CommandConfiguration (
+    shouldPromptForMissing: false,
     helpNames: [.customShort("p"), .customLong("parent-help")]
   )
 
   struct InheritHelp: ParsableCommand {
-
+    static let configuration = CommandConfiguration(shouldPromptForMissing: false)
   }
 
   struct ModifiedHelp: ParsableCommand {
     static var configuration = CommandConfiguration (
+      shouldPromptForMissing: false,
       helpNames: [.customShort("s"), .customLong("subcommand-help")]
     )
 
     struct InheritImmediateParentdHelp: ParsableCommand {
-
+      static var configuration = CommandConfiguration (shouldPromptForMissing: false)
     }
   }
 }

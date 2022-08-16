@@ -237,7 +237,7 @@ extension ErrorMessageTests {
 private struct EmptyArray: ParsableArguments {
   @Option(parsing: .upToNextOption)
   var array: [String] = []
-  
+
   @Flag(name: [.short, .long])
   var verbose = false
 }
@@ -245,10 +245,10 @@ private struct EmptyArray: ParsableArguments {
 extension ErrorMessageTests {
   func testEmptyArrayOption() {
     AssertErrorMessage(EmptyArray.self, ["--array"], "Missing value for '--array <array>'")
-    
+
     AssertErrorMessage(EmptyArray.self, ["--array", "--verbose"], "Missing value for '--array <array>'")
     AssertErrorMessage(EmptyArray.self, ["-verbose", "--array"], "Missing value for '--array <array>'")
-    
+
     AssertErrorMessage(EmptyArray.self, ["--array", "-v"], "Missing value for '--array <array>'")
     AssertErrorMessage(EmptyArray.self, ["-v", "--array"], "Missing value for '--array <array>'")
   }

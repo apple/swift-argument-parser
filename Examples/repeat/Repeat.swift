@@ -13,6 +13,8 @@ import ArgumentParser
 
 @main
 struct Repeat: ParsableCommand {
+    static var configuration = CommandConfiguration(shouldPromptForMissing: false)
+
     @Option(help: "The number of times to repeat 'phrase'.")
     var count: Int?
 
@@ -23,7 +25,7 @@ struct Repeat: ParsableCommand {
     var phrase: String
 
     mutating func run() throws {
-        let repeatCount = count ?? .max
+        let repeatCount = count ?? 2
 
         for i in 1...repeatCount {
             if includeCounter {

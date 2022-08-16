@@ -32,7 +32,7 @@ extension SingleValueParsingStrategyTests {
       XCTAssertEqual(bar.input, "Baz")
     }
   }
-  
+
   func testParsing_scanningForValue_2() throws {
     AssertParse(Bar.self, ["--name", "--format", "Foo", "Bar", "--input", "Baz"]) { bar in
       XCTAssertEqual(bar.name, "Foo")
@@ -40,7 +40,7 @@ extension SingleValueParsingStrategyTests {
       XCTAssertEqual(bar.input, "Baz")
     }
   }
-  
+
   func testParsing_scanningForValue_3() throws {
     AssertParse(Bar.self, ["--name", "--format", "--input", "Foo", "Bar", "Baz"]) { bar in
       XCTAssertEqual(bar.name, "Foo")
@@ -66,7 +66,7 @@ extension SingleValueParsingStrategyTests {
       XCTAssertEqual(bar.input, "Baz")
     }
   }
-  
+
   func testParsing_unconditional_2() throws {
     AssertParse(Baz.self, ["--name", "--name", "--format", "--format", "--input", "--input"]) { bar in
       XCTAssertEqual(bar.name, "--name")
@@ -74,7 +74,7 @@ extension SingleValueParsingStrategyTests {
       XCTAssertEqual(bar.input, "--input")
     }
   }
-  
+
   func testParsing_unconditional_3() throws {
     AssertParse(Baz.self, ["--name", "-Foo", "--format", "-Bar", "--input", "-Baz"]) { bar in
       XCTAssertEqual(bar.name, "-Foo")

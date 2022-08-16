@@ -416,6 +416,7 @@ extension RepeatingEndToEndTests {
 // MARK: -
 
 struct PerformanceTest: ParsableCommand {
+  static var configuration = CommandConfiguration(shouldPromptForMissing: false)
   @Option(name: .short) var bundleIdentifiers: [String] = []
 
   mutating func run() throws { print(bundleIdentifiers) }

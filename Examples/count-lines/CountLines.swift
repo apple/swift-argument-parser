@@ -15,6 +15,8 @@ import Foundation
 @main
 @available(macOS 10.15, *)
 struct CountLines: AsyncParsableCommand {
+    static var configuration = CommandConfiguration(shouldPromptForMissing: false)
+
     @Argument(
         help: "A file to count lines in. If omitted, counts the lines of stdin.",
         completion: .file(), transform: URL.init(fileURLWithPath:))
