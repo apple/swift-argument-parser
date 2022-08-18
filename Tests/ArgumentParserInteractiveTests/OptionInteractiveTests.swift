@@ -24,6 +24,26 @@ extension OptionInteractiveTests {
     AssertParseCommand(StringValue.self, StringValue.self, [], lines: ["abc"]) { value in
       XCTAssertEqual(value.string, "abc")
     }
+
+    AssertParseCommand(StringValue.self, StringValue.self, ["--string"], lines: ["abc"]) { value in
+      XCTAssertEqual(value.string, "abc")
+    }
+  }
+}
+
+private struct OptionName: ParsableCommand {
+  @Option(name: .shortAndLong) var string: String
+}
+
+extension OptionInteractiveTests {
+  func testParsing_OptionName() throws {
+    AssertParseCommand(OptionName.self, OptionName.self, ["--string"], lines: ["abc"]) { value in
+      XCTAssertEqual(value.string, "abc")
+    }
+
+    AssertParseCommand(OptionName.self, OptionName.self, ["-s"], lines: ["abc"]) { value in
+      XCTAssertEqual(value.string, "abc")
+    }
   }
 }
 
@@ -62,8 +82,8 @@ private struct Foo: ParsableCommand {
     var rawValue: String
   }
 
-  @Option() var name: Name
-  @Option() var nums: [Int]
+  @Option var name: Name
+  @Option(parsing: .upToNextOption) var nums: [Int]
 }
 
 extension OptionInteractiveTests {
@@ -73,14 +93,14 @@ extension OptionInteractiveTests {
       XCTAssertEqual(value.nums, [1, 2, 3])
     }
 
-    AssertParseCommand(Foo.self, Foo.self, ["--max", " 1 2 3"], lines: ["A"]) { value in
+    AssertParseCommand(Foo.self, Foo.self, ["--nums", "1", "2", "3"], lines: ["A"]) { value in
       XCTAssertEqual(value.name.rawValue, "A")
       XCTAssertEqual(value.nums, [1, 2, 3])
     }
 
-    AssertParseCommand(Foo.self, Foo.self, [], lines: ["A", "3"]) { value in
+    AssertParseCommand(Foo.self, Foo.self, [], lines: ["A", "1 2 3"]) { value in
       XCTAssertEqual(value.name.rawValue, "A")
-      XCTAssertEqual(value.nums, [3])
+      XCTAssertEqual(value.nums, [1, 2, 3])
     }
   }
 }
@@ -157,8 +177,8 @@ extension OptionInteractiveTests {
 // MARK: -
 
 private struct GlobalOptions: ParsableArguments {
-  @Flag(name: .shortAndLong) var verbose: Bool = false
   @Argument var values: [Int]
+  @Flag var verbose: Bool = false
 }
 
 private struct Options: ParsableCommand {
@@ -168,7 +188,7 @@ private struct Options: ParsableCommand {
 
 extension OptionInteractiveTests {
   func testParsing_OptionGroup() throws {
-    AssertParseCommand(Options.self, Options.self, ["-v"], lines: ["kth", "1 2 3"]) { value in
+    AssertParseCommand(Options.self, Options.self, ["--verbose"], lines: ["kth", "1 2 3"]) { value in
       XCTAssertEqual(value.name, "kth")
       XCTAssertEqual(value.globals.verbose, true)
       XCTAssertEqual(value.globals.values, [1, 2, 3])

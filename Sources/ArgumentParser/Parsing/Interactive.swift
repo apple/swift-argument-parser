@@ -56,9 +56,14 @@ extension CommandParser {
 
       // Retrieve the correct `ArgumentDefinition` for the required transformation
       // before storing the new value received from the user.
-      guard let definition = arguments.content.first(where: { $0.valueName == label }) else { break }
+      guard
+        let definition = arguments.content.first(where: {
+          $0.help.keys.contains { $0.rawValue == label }
+        })
+      else { break }
+
       guard case let .unary(update) = definition.update else { break }
-      let name = definition.names.first // (where: { $0.case == .long } )
+      let name = definition.names.first
       let updateBy: (String) throws -> Void = { string in
         try update(InputOrigin(elements: [.interactive]), name, string, &values)
       }
