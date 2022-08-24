@@ -89,7 +89,7 @@ extension CommandParser {
         possibilities.enumerated().forEach { print("\($0 + 1). \($1)") }
         choose("? Please select '\(label)': ", choices: possibilities)
           .forEach { str in
-            let definition = args.first { str == "\($0)" }!
+            let definition = args.first { "\($0)".components(separatedBy: ",").contains(str) }!
             // TODO:
             guard case let .nullary(update) = definition.update else { return }
             let name = definition.names.first
