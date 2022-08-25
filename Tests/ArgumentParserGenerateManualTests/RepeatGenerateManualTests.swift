@@ -45,6 +45,7 @@ final class RepeatGenerateManualTests: XCTestCase {
       .An -nosplit
       .An "Jane Appleseed" ,
       .Mt johnappleseed@apple.com ,
+      and
       .An -nosplit
       .An "The Appleseeds"
       .Ao
@@ -85,6 +86,7 @@ final class RepeatGenerateManualTests: XCTestCase {
       .An -nosplit
       .An "Jane Appleseed" ,
       .Mt johnappleseed@apple.com ,
+      and
       .An -nosplit
       .An "The Appleseeds"
       .Ao

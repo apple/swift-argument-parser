@@ -48,6 +48,7 @@ final class CountLinesGenerateManualTests: XCTestCase {
       .An -nosplit
       .An "Jane Appleseed" ,
       .Mt johnappleseed@apple.com ,
+      and
       .An -nosplit
       .An "The Appleseeds"
       .Ao
@@ -89,6 +90,7 @@ final class CountLinesGenerateManualTests: XCTestCase {
       .An -nosplit
       .An "Jane Appleseed" ,
       .Mt johnappleseed@apple.com ,
+      and
       .An -nosplit
       .An "The Appleseeds"
       .Ao

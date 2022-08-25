@@ -46,5 +46,5 @@ extension GenerateManualPluginError: CustomStringConvertible {
 }
 
 extension GenerateManualPluginError: LocalizedError {
-  var localizedDescription: String { self.description }
+  var errorDescription: String? { self.description }
 }

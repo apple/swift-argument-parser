@@ -23,9 +23,10 @@ struct SeeAlso: MDocComponent {
 
   var body: MDocComponent {
     Section(title: "see also") {
-      ForEach(references) { reference, isLast in
+      ForEach(references) { reference, index in
         MDocMacro.CrossManualReference(title: reference, section: section)
-          .withUnsafeChildren(nodes: isLast ? [] : [","])
+          .withUnsafeChildren(
+            nodes: index == references.count - 1 ? [] : [","])
       }
     }
   }
