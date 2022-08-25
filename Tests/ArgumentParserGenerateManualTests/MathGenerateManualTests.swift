@@ -26,8 +26,8 @@ final class MathGenerateManualTests: XCTestCase {
       .Sh SYNOPSIS
       .Nm
       .Ar subcommand
-      .Fl -version Ar version
-      .Fl -help Ar help
+      .Fl -version
+      .Fl -help
       .Sh DESCRIPTION
       .Bl -tag -width 6n
       .It Fl -version
@@ -130,8 +130,8 @@ final class MathGenerateManualTests: XCTestCase {
       .Sh SYNOPSIS
       .Nm
       .Ar subcommand
-      .Fl -version Ar version
-      .Fl -help Ar help
+      .Fl -version
+      .Fl -help
       .Sh DESCRIPTION
       .Bl -tag -width 6n
       .It Fl -version
@@ -164,10 +164,10 @@ final class MathGenerateManualTests: XCTestCase {
       .Nd "Print the sum of the values."
       .Sh SYNOPSIS
       .Nm
-      .Op Fl -hex-output Ar hex-output
+      .Op Fl -hex-output
       .Op Ar values...
-      .Fl -version Ar version
-      .Fl -help Ar help
+      .Fl -version
+      .Fl -help
       .Sh DESCRIPTION
       .Bl -tag -width 6n
       .It Fl x , -hex-output
@@ -200,10 +200,10 @@ final class MathGenerateManualTests: XCTestCase {
       .Nd "Print the product of the values."
       .Sh SYNOPSIS
       .Nm
-      .Op Fl -hex-output Ar hex-output
+      .Op Fl -hex-output
       .Op Ar values...
-      .Fl -version Ar version
-      .Fl -help Ar help
+      .Fl -version
+      .Fl -help
       .Sh DESCRIPTION
       .Bl -tag -width 6n
       .It Fl x , -hex-output
@@ -237,8 +237,8 @@ final class MathGenerateManualTests: XCTestCase {
       .Sh SYNOPSIS
       .Nm
       .Ar subcommand
-      .Fl -version Ar version
-      .Fl -help Ar help
+      .Fl -version
+      .Fl -help
       .Sh DESCRIPTION
       .Bl -tag -width 6n
       .It Fl -version
@@ -271,10 +271,10 @@ final class MathGenerateManualTests: XCTestCase {
       .Nd "Print the average of the values."
       .Sh SYNOPSIS
       .Nm
-      .Op Fl -kind
+      .Op Fl -kind Ar kind
       .Op Ar values...
-      .Fl -version Ar version
-      .Fl -help Ar help
+      .Fl -version
+      .Fl -help
       .Sh DESCRIPTION
       .Bl -tag -width 6n
       .It Fl -kind Ar kind
@@ -308,8 +308,8 @@ final class MathGenerateManualTests: XCTestCase {
       .Sh SYNOPSIS
       .Nm
       .Op Ar values...
-      .Fl -version Ar version
-      .Fl -help Ar help
+      .Fl -version
+      .Fl -help
       .Sh DESCRIPTION
       .Bl -tag -width 6n
       .It Ar values...
@@ -343,16 +343,16 @@ final class MathGenerateManualTests: XCTestCase {
       .Op Ar one-of-four
       .Op Ar custom-arg
       .Op Ar values...
-      .Op Fl -test-success-exit-code Ar test-success-exit-code
-      .Op Fl -test-failure-exit-code Ar test-failure-exit-code
-      .Op Fl -test-validation-exit-code Ar test-validation-exit-code
-      .Op Fl -test-custom-exit-code
-      .Op Fl -file
-      .Op Fl -directory
-      .Op Fl -shell
-      .Op Fl -custom
-      .Fl -version Ar version
-      .Fl -help Ar help
+      .Op Fl -test-success-exit-code
+      .Op Fl -test-failure-exit-code
+      .Op Fl -test-validation-exit-code
+      .Op Fl -test-custom-exit-code Ar test-custom-exit-code
+      .Op Fl -file Ar file
+      .Op Fl -directory Ar directory
+      .Op Fl -shell Ar shell
+      .Op Fl -custom Ar custom
+      .Fl -version
+      .Fl -help
       .Sh DESCRIPTION
       .Bl -tag -width 6n
       .It Ar one-of-four

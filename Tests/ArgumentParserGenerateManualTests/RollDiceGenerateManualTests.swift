@@ -23,11 +23,11 @@ final class RollDiceGenerateManualTests: XCTestCase {
       .Nm roll
       .Sh SYNOPSIS
       .Nm
-      .Op Fl -times
-      .Op Fl -sides
-      .Op Fl -seed
-      .Op Fl -verbose Ar verbose
-      .Fl -help Ar help
+      .Op Fl -times Ar n
+      .Op Fl -sides Ar m
+      .Op Fl -seed Ar seed
+      .Op Fl -verbose
+      .Fl -help
       .Sh DESCRIPTION
       .Bl -tag -width 6n
       .It Fl -times Ar n
@@ -68,11 +68,11 @@ final class RollDiceGenerateManualTests: XCTestCase {
       .Nm roll
       .Sh SYNOPSIS
       .Nm
-      .Op Fl -times
-      .Op Fl -sides
-      .Op Fl -seed
-      .Op Fl -verbose Ar verbose
-      .Fl -help Ar help
+      .Op Fl -times Ar n
+      .Op Fl -sides Ar m
+      .Op Fl -seed Ar seed
+      .Op Fl -verbose
+      .Fl -help
       .Sh DESCRIPTION
       .Bl -tag -width 6n
       .It Fl -times Ar n
