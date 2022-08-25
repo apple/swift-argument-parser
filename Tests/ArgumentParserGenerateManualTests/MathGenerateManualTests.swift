@@ -110,6 +110,7 @@ final class MathGenerateManualTests: XCTestCase {
       .An -nosplit
       .An "Jane Appleseed" ,
       .Mt johnappleseed@apple.com ,
+      and
       .An -nosplit
       .An "The Appleseeds"
       .Ao
@@ -150,6 +151,7 @@ final class MathGenerateManualTests: XCTestCase {
       .An -nosplit
       .An "Jane Appleseed" ,
       .Mt johnappleseed@apple.com ,
+      and
       .An -nosplit
       .An "The Appleseeds"
       .Ao
@@ -186,6 +188,7 @@ final class MathGenerateManualTests: XCTestCase {
       .An -nosplit
       .An "Jane Appleseed" ,
       .Mt johnappleseed@apple.com ,
+      and
       .An -nosplit
       .An "The Appleseeds"
       .Ao
@@ -222,6 +225,7 @@ final class MathGenerateManualTests: XCTestCase {
       .An -nosplit
       .An "Jane Appleseed" ,
       .Mt johnappleseed@apple.com ,
+      and
       .An -nosplit
       .An "The Appleseeds"
       .Ao
@@ -257,6 +261,7 @@ final class MathGenerateManualTests: XCTestCase {
       .An -nosplit
       .An "Jane Appleseed" ,
       .Mt johnappleseed@apple.com ,
+      and
       .An -nosplit
       .An "The Appleseeds"
       .Ao
@@ -293,6 +298,7 @@ final class MathGenerateManualTests: XCTestCase {
       .An -nosplit
       .An "Jane Appleseed" ,
       .Mt johnappleseed@apple.com ,
+      and
       .An -nosplit
       .An "The Appleseeds"
       .Ao
@@ -326,6 +332,7 @@ final class MathGenerateManualTests: XCTestCase {
       .An -nosplit
       .An "Jane Appleseed" ,
       .Mt johnappleseed@apple.com ,
+      and
       .An -nosplit
       .An "The Appleseeds"
       .Ao
@@ -379,6 +386,7 @@ final class MathGenerateManualTests: XCTestCase {
       .An -nosplit
       .An "Jane Appleseed" ,
       .Mt johnappleseed@apple.com ,
+      and
       .An -nosplit
       .An "The Appleseeds"
       .Ao

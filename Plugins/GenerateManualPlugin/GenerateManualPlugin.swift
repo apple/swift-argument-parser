@@ -85,7 +85,7 @@ struct GenerateManualPlugin: CommandPlugin {
         outputDirectory.string
       ]
       generationToolArguments.append(
-        contentsOf: extractor.unextractedOptionsOrFlags)
+        contentsOf: extractor.remainingArguments)
 
       // Spawn generation tool.
       try generationToolFile.exec(arguments: generationToolArguments)
