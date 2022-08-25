@@ -15,8 +15,6 @@ import XCTest
 
 final class FlagInteractiveTests: XCTestCase {}
 
-// TODO: short & long -
-
 enum Color: String, EnumerableFlag {
   case pink
   case purple
@@ -110,6 +108,22 @@ extension FlagInteractiveTests {
     AssertParseCommand(Qux.self, Qux.self, ["--purple", "--pink"], lines: ["3 3"]) { options in
       XCTAssertEqual(options.color, [.purple, .pink])
       XCTAssertEqual(options.size, [.large, .large])
+    }
+  }
+}
+
+
+extension FlagInteractiveTests {
+  func testParsing_InvalidValue() throws {
+    AssertParseCommand(Baz.self, Baz.self, ["--pink"], lines: ["--small", "0", "6", "1"]) { options in
+      XCTAssertEqual(options.shape, nil)
+      XCTAssertEqual(options.color, .pink)
+      XCTAssertEqual(options.size, .small)
+    }
+
+    AssertParseCommand(Qux.self, Qux.self, [], lines: ["1 0 2", "1 2"]) { options in
+      XCTAssertEqual(options.color, [])
+      XCTAssertEqual(options.size, [.small, .medium])
     }
   }
 }
