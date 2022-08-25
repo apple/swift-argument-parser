@@ -27,9 +27,9 @@ final class CountLinesGenerateManualTests: XCTestCase {
       .Sh SYNOPSIS
       .Nm
       .Ar input-file
-      .Op Fl -prefix
-      .Op Fl -verbose Ar verbose
-      .Fl -help Ar help
+      .Op Fl -prefix Ar prefix
+      .Op Fl -verbose
+      .Fl -help
       .Sh DESCRIPTION
       .Bl -tag -width 6n
       .It Ar input-file
@@ -69,9 +69,9 @@ final class CountLinesGenerateManualTests: XCTestCase {
       .Sh SYNOPSIS
       .Nm
       .Ar input-file
-      .Op Fl -prefix
-      .Op Fl -verbose Ar verbose
-      .Fl -help Ar help
+      .Op Fl -prefix Ar prefix
+      .Op Fl -verbose
+      .Fl -help
       .Sh DESCRIPTION
       .Bl -tag -width 6n
       .It Ar input-file

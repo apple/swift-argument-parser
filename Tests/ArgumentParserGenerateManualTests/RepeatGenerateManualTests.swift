@@ -23,10 +23,10 @@ final class RepeatGenerateManualTests: XCTestCase {
       .Nm repeat
       .Sh SYNOPSIS
       .Nm
-      .Op Fl -count
-      .Op Fl -include-counter Ar include-counter
+      .Op Fl -count Ar count
+      .Op Fl -include-counter
       .Ar phrase
-      .Fl -help Ar help
+      .Fl -help
       .Sh DESCRIPTION
       .Bl -tag -width 6n
       .It Fl -count Ar count
@@ -64,10 +64,10 @@ final class RepeatGenerateManualTests: XCTestCase {
       .Nm repeat
       .Sh SYNOPSIS
       .Nm
-      .Op Fl -count
-      .Op Fl -include-counter Ar include-counter
+      .Op Fl -count Ar count
+      .Op Fl -include-counter
       .Ar phrase
-      .Fl -help Ar help
+      .Fl -help
       .Sh DESCRIPTION
       .Bl -tag -width 6n
       .It Fl -count Ar count
