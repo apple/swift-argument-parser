@@ -26,7 +26,7 @@ final class RepeatGenerateManualTests: XCTestCase {
       .Op Fl -count Ar count
       .Op Fl -include-counter
       .Ar phrase
-      .Fl -help
+      .Op Fl -help
       .Sh DESCRIPTION
       .Bl -tag -width 6n
       .It Fl -count Ar count
@@ -66,7 +66,7 @@ final class RepeatGenerateManualTests: XCTestCase {
       .Op Fl -count Ar count
       .Op Fl -include-counter
       .Ar phrase
-      .Fl -help
+      .Op Fl -help
       .Sh DESCRIPTION
       .Bl -tag -width 6n
       .It Fl -count Ar count
