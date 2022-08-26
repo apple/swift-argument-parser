@@ -174,11 +174,30 @@ extension HelpGenerationTests {
 
     @Option(help: "Directory.")
     var directory: URL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
+
+    enum Manual: Int, ExpressibleByArgument {
+      case foo
+      var defaultValueDescription: String { "default-value" }
+    }
+    @Option(help: "Manual Option.")
+    var manual: Manual = .foo
+
+    enum UnspecializedSynthesized: Int, CaseIterable, ExpressibleByArgument {
+      case one, two
+    }
+    @Option(help: "Unspecialized Synthesized")
+    var unspecial: UnspecializedSynthesized = .one
+
+    enum SpecializedSynthesized: String, CaseIterable, ExpressibleByArgument {
+      case apple = "Apple", banana = "Banana"
+    }
+    @Option(help: "Specialized Synthesized")
+    var special: SpecializedSynthesized = .apple
   }
 
   func testHelpWithDefaultValues() {
     AssertHelp(.default, for: D.self, equals: """
-            USAGE: d [<occupation>] [--name <name>] [--age <age>] [--logging <logging>] [--lucky <numbers> ...] [--optional] [--required] [--degree <degree>] [--directory <directory>]
+            USAGE: d [<occupation>] [--name <name>] [--age <age>] [--logging <logging>] [--lucky <numbers> ...] [--optional] [--required] [--degree <degree>] [--directory <directory>] [--manual <manual>] [--unspecial <unspecial>] [--special <special>]
 
             ARGUMENTS:
               <occupation>            Your occupation. (default: --)
@@ -191,6 +210,9 @@ extension HelpGenerationTests {
               --optional/--required   Vegan diet. (default: optional)
               --degree <degree>       Your degree. (default: bachelor)
               --directory <directory> Directory. (default: current directory)
+              --manual <manual>       Manual Option. (default: default-value)
+              --unspecial <unspecial> Unspecialized Synthesized (default: one)
+              --special <special>     Specialized Synthesized (default: Apple)
               -h, --help              Show help information.
 
             """)
