@@ -206,7 +206,7 @@ extension DumpHelpGenerationTests {
       },
       {
         "abstract" : "Show help information.",
-        "isOptional" : false,
+        "isOptional" : true,
         "isRepeating" : false,
         "kind" : "flag",
         "names" : [
@@ -240,7 +240,7 @@ extension DumpHelpGenerationTests {
     "arguments" : [
       {
         "abstract" : "Show the version.",
-        "isOptional" : false,
+        "isOptional" : true,
         "isRepeating" : false,
         "kind" : "flag",
         "names" : [
@@ -258,7 +258,7 @@ extension DumpHelpGenerationTests {
       },
       {
         "abstract" : "Show help information.",
-        "isOptional" : false,
+        "isOptional" : true,
         "isRepeating" : false,
         "kind" : "flag",
         "names" : [
@@ -316,7 +316,7 @@ extension DumpHelpGenerationTests {
           },
           {
             "abstract" : "Show the version.",
-            "isOptional" : false,
+            "isOptional" : true,
             "isRepeating" : false,
             "kind" : "flag",
             "names" : [
@@ -334,7 +334,7 @@ extension DumpHelpGenerationTests {
           },
           {
             "abstract" : "Show help information.",
-            "isOptional" : false,
+            "isOptional" : true,
             "isRepeating" : false,
             "kind" : "flag",
             "names" : [
@@ -395,7 +395,7 @@ extension DumpHelpGenerationTests {
           },
           {
             "abstract" : "Show the version.",
-            "isOptional" : false,
+            "isOptional" : true,
             "isRepeating" : false,
             "kind" : "flag",
             "names" : [
@@ -413,7 +413,7 @@ extension DumpHelpGenerationTests {
           },
           {
             "abstract" : "Show help information.",
-            "isOptional" : false,
+            "isOptional" : true,
             "isRepeating" : false,
             "kind" : "flag",
             "names" : [
@@ -444,7 +444,7 @@ extension DumpHelpGenerationTests {
         "arguments" : [
           {
             "abstract" : "Show the version.",
-            "isOptional" : false,
+            "isOptional" : true,
             "isRepeating" : false,
             "kind" : "flag",
             "names" : [
@@ -462,7 +462,7 @@ extension DumpHelpGenerationTests {
           },
           {
             "abstract" : "Show help information.",
-            "isOptional" : false,
+            "isOptional" : true,
             "isRepeating" : false,
             "kind" : "flag",
             "names" : [
@@ -522,7 +522,7 @@ extension DumpHelpGenerationTests {
               },
               {
                 "abstract" : "Show the version.",
-                "isOptional" : false,
+                "isOptional" : true,
                 "isRepeating" : false,
                 "kind" : "flag",
                 "names" : [
@@ -540,7 +540,7 @@ extension DumpHelpGenerationTests {
               },
               {
                 "abstract" : "Show help information.",
-                "isOptional" : false,
+                "isOptional" : true,
                 "isRepeating" : false,
                 "kind" : "flag",
                 "names" : [
@@ -580,7 +580,7 @@ extension DumpHelpGenerationTests {
               },
               {
                 "abstract" : "Show the version.",
-                "isOptional" : false,
+                "isOptional" : true,
                 "isRepeating" : false,
                 "kind" : "flag",
                 "names" : [
@@ -598,7 +598,7 @@ extension DumpHelpGenerationTests {
               },
               {
                 "abstract" : "Show help information.",
-                "isOptional" : false,
+                "isOptional" : true,
                 "isRepeating" : false,
                 "kind" : "flag",
                 "names" : [
@@ -788,7 +788,7 @@ extension DumpHelpGenerationTests {
               },
               {
                 "abstract" : "Show the version.",
-                "isOptional" : false,
+                "isOptional" : true,
                 "isRepeating" : false,
                 "kind" : "flag",
                 "names" : [
@@ -806,7 +806,7 @@ extension DumpHelpGenerationTests {
               },
               {
                 "abstract" : "Show help information.",
-                "isOptional" : false,
+                "isOptional" : true,
                 "isRepeating" : false,
                 "kind" : "flag",
                 "names" : [
@@ -881,7 +881,7 @@ extension DumpHelpGenerationTests {
       },
       {
         "abstract" : "Show the version.",
-        "isOptional" : false,
+        "isOptional" : true,
         "isRepeating" : false,
         "kind" : "flag",
         "names" : [
@@ -899,7 +899,7 @@ extension DumpHelpGenerationTests {
       },
       {
         "abstract" : "Show help information.",
-        "isOptional" : false,
+        "isOptional" : true,
         "isRepeating" : false,
         "kind" : "flag",
         "names" : [
@@ -966,7 +966,7 @@ extension DumpHelpGenerationTests {
       },
       {
         "abstract" : "Show the version.",
-        "isOptional" : false,
+        "isOptional" : true,
         "isRepeating" : false,
         "kind" : "flag",
         "names" : [
@@ -984,7 +984,7 @@ extension DumpHelpGenerationTests {
       },
       {
         "abstract" : "Show help information.",
-        "isOptional" : false,
+        "isOptional" : true,
         "isRepeating" : false,
         "kind" : "flag",
         "names" : [
@@ -1021,7 +1021,7 @@ extension DumpHelpGenerationTests {
     "arguments" : [
       {
         "abstract" : "Show the version.",
-        "isOptional" : false,
+        "isOptional" : true,
         "isRepeating" : false,
         "kind" : "flag",
         "names" : [
@@ -1039,7 +1039,7 @@ extension DumpHelpGenerationTests {
       },
       {
         "abstract" : "Show help information.",
-        "isOptional" : false,
+        "isOptional" : true,
         "isRepeating" : false,
         "kind" : "flag",
         "names" : [
@@ -1099,7 +1099,7 @@ extension DumpHelpGenerationTests {
           },
           {
             "abstract" : "Show the version.",
-            "isOptional" : false,
+            "isOptional" : true,
             "isRepeating" : false,
             "kind" : "flag",
             "names" : [
@@ -1117,7 +1117,7 @@ extension DumpHelpGenerationTests {
           },
           {
             "abstract" : "Show help information.",
-            "isOptional" : false,
+            "isOptional" : true,
             "isRepeating" : false,
             "kind" : "flag",
             "names" : [
@@ -1157,7 +1157,7 @@ extension DumpHelpGenerationTests {
           },
           {
             "abstract" : "Show the version.",
-            "isOptional" : false,
+            "isOptional" : true,
             "isRepeating" : false,
             "kind" : "flag",
             "names" : [
@@ -1175,7 +1175,7 @@ extension DumpHelpGenerationTests {
           },
           {
             "abstract" : "Show help information.",
-            "isOptional" : false,
+            "isOptional" : true,
             "isRepeating" : false,
             "kind" : "flag",
             "names" : [
@@ -1365,7 +1365,7 @@ extension DumpHelpGenerationTests {
           },
           {
             "abstract" : "Show the version.",
-            "isOptional" : false,
+            "isOptional" : true,
             "isRepeating" : false,
             "kind" : "flag",
             "names" : [
@@ -1383,7 +1383,7 @@ extension DumpHelpGenerationTests {
           },
           {
             "abstract" : "Show help information.",
-            "isOptional" : false,
+            "isOptional" : true,
             "isRepeating" : false,
             "kind" : "flag",
             "names" : [
