@@ -27,7 +27,7 @@ final class RollDiceGenerateManualTests: XCTestCase {
       .Op Fl -sides Ar m
       .Op Fl -seed Ar seed
       .Op Fl -verbose
-      .Fl -help
+      .Op Fl -help
       .Sh DESCRIPTION
       .Bl -tag -width 6n
       .It Fl -times Ar n
@@ -73,7 +73,7 @@ final class RollDiceGenerateManualTests: XCTestCase {
       .Op Fl -sides Ar m
       .Op Fl -seed Ar seed
       .Op Fl -verbose
-      .Fl -help
+      .Op Fl -help
       .Sh DESCRIPTION
       .Bl -tag -width 6n
       .It Fl -times Ar n

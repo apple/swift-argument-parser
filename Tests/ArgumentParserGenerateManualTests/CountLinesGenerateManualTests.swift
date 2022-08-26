@@ -29,7 +29,7 @@ final class CountLinesGenerateManualTests: XCTestCase {
       .Ar input-file
       .Op Fl -prefix Ar prefix
       .Op Fl -verbose
-      .Fl -help
+      .Op Fl -help
       .Sh DESCRIPTION
       .Bl -tag -width 6n
       .It Ar input-file
@@ -71,7 +71,7 @@ final class CountLinesGenerateManualTests: XCTestCase {
       .Ar input-file
       .Op Fl -prefix Ar prefix
       .Op Fl -verbose
-      .Fl -help
+      .Op Fl -help
       .Sh DESCRIPTION
       .Bl -tag -width 6n
       .It Ar input-file

@@ -26,8 +26,8 @@ final class MathGenerateManualTests: XCTestCase {
       .Sh SYNOPSIS
       .Nm
       .Ar subcommand
-      .Fl -version
-      .Fl -help
+      .Op Fl -version
+      .Op Fl -help
       .Sh DESCRIPTION
       .Bl -tag -width 6n
       .It Fl -version
@@ -131,8 +131,8 @@ final class MathGenerateManualTests: XCTestCase {
       .Sh SYNOPSIS
       .Nm
       .Ar subcommand
-      .Fl -version
-      .Fl -help
+      .Op Fl -version
+      .Op Fl -help
       .Sh DESCRIPTION
       .Bl -tag -width 6n
       .It Fl -version
@@ -168,8 +168,8 @@ final class MathGenerateManualTests: XCTestCase {
       .Nm
       .Op Fl -hex-output
       .Op Ar values...
-      .Fl -version
-      .Fl -help
+      .Op Fl -version
+      .Op Fl -help
       .Sh DESCRIPTION
       .Bl -tag -width 6n
       .It Fl x , -hex-output
@@ -205,8 +205,8 @@ final class MathGenerateManualTests: XCTestCase {
       .Nm
       .Op Fl -hex-output
       .Op Ar values...
-      .Fl -version
-      .Fl -help
+      .Op Fl -version
+      .Op Fl -help
       .Sh DESCRIPTION
       .Bl -tag -width 6n
       .It Fl x , -hex-output
@@ -241,8 +241,8 @@ final class MathGenerateManualTests: XCTestCase {
       .Sh SYNOPSIS
       .Nm
       .Ar subcommand
-      .Fl -version
-      .Fl -help
+      .Op Fl -version
+      .Op Fl -help
       .Sh DESCRIPTION
       .Bl -tag -width 6n
       .It Fl -version
@@ -278,8 +278,8 @@ final class MathGenerateManualTests: XCTestCase {
       .Nm
       .Op Fl -kind Ar kind
       .Op Ar values...
-      .Fl -version
-      .Fl -help
+      .Op Fl -version
+      .Op Fl -help
       .Sh DESCRIPTION
       .Bl -tag -width 6n
       .It Fl -kind Ar kind
@@ -314,8 +314,8 @@ final class MathGenerateManualTests: XCTestCase {
       .Sh SYNOPSIS
       .Nm
       .Op Ar values...
-      .Fl -version
-      .Fl -help
+      .Op Fl -version
+      .Op Fl -help
       .Sh DESCRIPTION
       .Bl -tag -width 6n
       .It Ar values...
@@ -358,8 +358,8 @@ final class MathGenerateManualTests: XCTestCase {
       .Op Fl -directory Ar directory
       .Op Fl -shell Ar shell
       .Op Fl -custom Ar custom
-      .Fl -version
-      .Fl -help
+      .Op Fl -version
+      .Op Fl -help
       .Sh DESCRIPTION
       .Bl -tag -width 6n
       .It Ar one-of-four
