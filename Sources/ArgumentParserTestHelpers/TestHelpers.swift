@@ -325,7 +325,7 @@ extension XCTest {
   }
 
   public func AssertGenerateManual(
-    singlePage: Bool,
+    multiPage: Bool,
     command: String,
     expected: String,
     file: StaticString = #file,
@@ -341,8 +341,8 @@ extension XCTest {
       "--authors", "The Appleseeds<appleseeds@apple.com>",
       "--output-directory", "-",
     ]
-    if singlePage {
-      command.append("--single-page")
+    if multiPage {
+      command.append("--multi-page")
     }
     try AssertExecuteCommand(
       command: command,

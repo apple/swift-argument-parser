@@ -14,7 +14,7 @@ import ArgumentParserToolInfo
 import Foundation
 
 struct Document: MDocComponent {
-  var singlePage: Bool
+  var multiPage: Bool
   var date: Date
   var section: Int
   var authors: [AuthorArgument]
@@ -24,13 +24,13 @@ struct Document: MDocComponent {
     Preamble(date: date, section: section, command: command)
     Name(command: command)
     Synopsis(command: command)
-    if singlePage {
-      SinglePageDescription(command: command)
-    } else {
+    if multiPage {
       MultiPageDescription(command: command)
+    } else {
+      SinglePageDescription(command: command)
     }
     Exit(section: section)
-    if !singlePage {
+    if multiPage {
       SeeAlso(section: section, command: command)
     }
     Authors(authors: authors)
