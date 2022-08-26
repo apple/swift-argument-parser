@@ -280,7 +280,7 @@ extension ArgumentSet {
     
     let a: [ArgumentSet] = Mirror(reflecting: type.init())
       .children
-      .compactMap { child in
+      .compactMap { child -> ArgumentSet? in
         guard var codingKey = child.label else { return nil }
         
         if let parsed = child.value as? ArgumentSetProvider {
@@ -294,9 +294,12 @@ extension ArgumentSet {
           let key = InputKey(rawValue: codingKey)
           return parsed.argumentSet(for: key)
         } else {
+          let arg = ArgumentDefinition(
+            unparsedKey: codingKey,
+            default: nilOrValue(child.value))
+
           // Save a non-wrapped property as is
-          return ArgumentSet(
-            ArgumentDefinition(unparsedKey: codingKey, default: nilOrValue(child.value)))
+          return ArgumentSet(arg)
         }
       }
     self.init(

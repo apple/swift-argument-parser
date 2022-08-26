@@ -308,9 +308,12 @@ internal extension BidirectionalCollection where Element == ParsableCommand.Type
     return ArgumentDefinition(
       kind: .named([.long("version")]),
       help: .init(
+        allValues: [],
         options: [.isOptional],
         help: "Show the version.",
-        key: InputKey(rawValue: "")),
+        defaultValue: nil,
+        key: InputKey(rawValue: ""),
+        isComposite: false),
       completion: .default,
       update: .nullary({ _, _, _ in })
     )
@@ -322,9 +325,12 @@ internal extension BidirectionalCollection where Element == ParsableCommand.Type
     return ArgumentDefinition(
       kind: .named(names),
       help: .init(
+        allValues: [],
         options: [.isOptional],
         help: "Show help information.",
-        key: InputKey(rawValue: "")),
+        defaultValue: nil,
+        key: InputKey(rawValue: ""),
+        isComposite: false),
       completion: .default,
       update: .nullary({ _, _, _ in })
     )
@@ -334,9 +340,12 @@ internal extension BidirectionalCollection where Element == ParsableCommand.Type
     return ArgumentDefinition(
       kind: .named([.long("experimental-dump-help")]),
       help: .init(
+        allValues: [],
         options: [.isOptional],
         help: ArgumentHelp("Dump help information as JSON."),
-        key: InputKey(rawValue: "")),
+        defaultValue: nil,
+        key: InputKey(rawValue: ""),
+        isComposite: false),
       completion: .default,
       update: .nullary({ _, _, _ in })
     )
