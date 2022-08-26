@@ -391,7 +391,15 @@ extension Flag where Value: EnumerableFlag {
       // This gets flipped to `true` the first time one of these flags is
       // encountered.
       var hasUpdated = false
-      let defaultValue = initial.map(String.init(describing:))
+      
+      // Create a string representation of the default value. Since this is a
+      // flag, the default value to show to the user is the `--value-name`
+      // flag that a user would provide on the command line, not a Swift value.
+      let defaultValueFlag = initial.flatMap { value in
+        let defaultKey = InputKey(rawValue: String(describing: value))
+        let defaultNames = Value.name(for: value).makeNames(defaultKey)
+        return defaultNames.first?.synopsisString
+      }
 
       let caseHelps = Value.allCases.map { Value.help(for: $0) }
       let hasCustomCaseHelp = caseHelps.contains(where: { $0 != nil })
@@ -399,11 +407,35 @@ extension Flag where Value: EnumerableFlag {
       let args = Value.allCases.enumerated().map { (i, value) -> ArgumentDefinition in
         let caseKey = InputKey(rawValue: String(describing: value))
         let name = Value.name(for: value)
-        let helpForCase = hasCustomCaseHelp ? (caseHelps[i] ?? help) : help
-        let help = ArgumentDefinition.Help(options: initial != nil ? .isOptional : [], help: helpForCase, defaultValue: defaultValue, key: key, isComposite: !hasCustomCaseHelp)
-        return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .default, initialValue: initial, update: .nullary({ (origin, name, values) in
-          hasUpdated = try ArgumentSet.updateFlag(key: key, value: value, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
-        }))
+        
+        let helpForCase = caseHelps[i] ?? help
+        var defaultValueString: String? = ""
+        if hasCustomCaseHelp {
+          if value == initial {
+            defaultValueString = "this"
+          }
+        } else {
+          defaultValueString = defaultValueFlag
+        }
+        
+        let help = ArgumentDefinition.Help(
+          options: initial != nil ? .isOptional : [],
+          help: helpForCase,
+          defaultValue: defaultValueString,
+          key: key,
+          isComposite: !hasCustomCaseHelp)
+        
+        return ArgumentDefinition.flag(
+          name: name,
+          key: key,
+          caseKey: caseKey,
+          help: help,
+          parsingStrategy: .default,
+          initialValue: initial,
+          update: .nullary({ (origin, name, values) in
+            hasUpdated = try ArgumentSet.updateFlag(key: key, value: value, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
+          })
+        )
       }
       return ArgumentSet(args)
       })

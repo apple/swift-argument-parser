@@ -207,7 +207,7 @@ extension HelpGenerationTests {
               --age <age>             Your age. (default: 20)
               --logging <logging>     Whether logging is enabled. (default: false)
               --lucky <numbers>       Your lucky numbers. (default: 7, 14)
-              --optional/--required   Vegan diet. (default: optional)
+              --optional/--required   Vegan diet. (default: --optional)
               --degree <degree>       Your degree. (default: bachelor)
               --directory <directory> Directory. (default: current directory)
               --manual <manual>       Manual Option. (default: default-value)
@@ -264,7 +264,7 @@ extension HelpGenerationTests {
                USAGE: f [-s] [-c] [-l]
 
                OPTIONS:
-                 -s/-c/-l                Change the program output (default: list)
+                 -s/-c/-l                Change the program output (default: -l)
                  -h, --help              Show help information.
 
                """)
