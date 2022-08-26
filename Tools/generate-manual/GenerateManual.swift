@@ -29,8 +29,8 @@ struct GenerateManual: ParsableCommand {
   @Argument(help: "Tool to generate manual for.")
   var tool: String
 
-  @Flag(help: "Generate a single page with information for all subcommands.")
-  var singlePage = false
+  @Flag(help: "Generate a separate manual for each subcommand.")
+  var multiPage = false
 
   @Option(name: .long, help: "Override the creation date of the manual. Format: 'yyyy-mm-dd'.")
   var date: Date = Date()
@@ -46,7 +46,7 @@ struct GenerateManual: ParsableCommand {
 
   func validate() throws {
     // Only man pages 1 through 9 are valid.
-    if !(1...9).contains(section) {
+    guard (1...9).contains(section) else {
       throw ValidationError("Invalid manual section passed to --section")
     }
 
@@ -106,7 +106,7 @@ struct GenerateManual: ParsableCommand {
 
   func generatePages(from command: CommandInfoV0, savingTo directory: URL?) throws {
     let document = Document(
-      singlePage: singlePage,
+      multiPage: multiPage,
       date: date,
       section: section,
       authors: authors,
@@ -121,7 +121,7 @@ struct GenerateManual: ParsableCommand {
       print(page)
     }
 
-    if !singlePage {
+    if multiPage {
       for subcommand in command.subcommands ?? [] {
         try generatePages(from: subcommand, savingTo: directory)
       }
