@@ -15,26 +15,9 @@ To generate a new set of documentation, follow these steps:
             --target ArgumentParser
         
    You can view the documentation at:
-      http://localhost:8000/documentation/argumentparser
+      
+        http://localhost:8000/documentation/argumentparser
     
-4. Run the following command to build the documentation.
-   Note that this requires a temporary location for the built documentation;
-   change `~/Desktop/apdocs` in all places below as necessary.
+4. Run the following command to build the documentation and push it to the `gh-pages` site:
 
-        swift package --allow-writing-to-directory ~/Desktop/apdocs \
-            generate-documentation --target ArgumentParser --disable-indexing \
-            --transform-for-static-hosting \
-            --hosting-base-path swift-argument-parser \
-            --output-path ~/Desktop/apdocs
-
-5. Run the following command to copy the top-level redirect file into place.
-
-        cp redirect.html ~/Desktop/apdocs/index.html
-    
-6. Check out the `gh-pages` branch, copy the files into place, and then push
-   to the remote repository.
-
-        git checkout gh-pages
-        cp -R ~/Desktop/apdocs/* ./
-        git add . && git commit -m "Update documentation"
-        git push
+        Scripts/generate-docs.sh
