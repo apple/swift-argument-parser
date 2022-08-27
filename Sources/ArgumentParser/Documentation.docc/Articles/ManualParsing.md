@@ -51,7 +51,7 @@ print(chosen.joined(separator: "\n"))
 
 Manually parsing commands is a little more complex than parsing a simple `ParsableArguments` type. The result of parsing from a tree of subcommands may be of a different type than the root of the tree, so the static ``ParsableCommand/parseAsRoot(_:)`` method returns a type-erased ``ParsableCommand``.
 
-Let's see how this works by using the `Math` command and subcommands defined in [Commands and Subcommands](./CommandsAndSubcommands.md). This time, instead of calling `Math.main()`, we'll call `Math.parseAsRoot()`, and switch over the result:
+Let's see how this works by using the `Math` command and subcommands defined in <doc:CommandsAndSubcommands>. This time, instead of calling `Math.main()`, we'll call `Math.parseAsRoot()`, and switch over the result:
 
 ```swift
 do {

@@ -356,6 +356,14 @@ extension ArgumentSet {
         usedOrigins.formUnion(origin)
         inputArguments.removeAll(in: origin)
         
+        // Fix incorrect error message
+        // for @Option array without values (see issue #434).
+        guard let first = inputArguments.elements.first,
+              first.isValue
+        else {
+          throw ParserError.missingValueForOption(origin, parsed.name)
+        }
+        
         // ...and then consume the arguments until hitting an option
         while let (origin2, value) = inputArguments.popNextElementIfValue() {
           let origins = origin.inserting(origin2)

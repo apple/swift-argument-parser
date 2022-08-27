@@ -212,10 +212,22 @@ extension XCTest {
     exitCode: ExitCode = .success,
     file: StaticString = #file, line: UInt = #line) throws
   {
-    let splitCommand = command.split(separator: " ")
-    let arguments = splitCommand.dropFirst().map(String.init)
-    
-    let commandName = String(splitCommand.first!)
+    try AssertExecuteCommand(
+      command: command.split(separator: " ").map(String.init),
+      expected: expected,
+      exitCode: exitCode,
+      file: file,
+      line: line)
+  }
+
+  public func AssertExecuteCommand(
+    command: [String],
+    expected: String? = nil,
+    exitCode: ExitCode = .success,
+    file: StaticString = #file, line: UInt = #line) throws
+  {
+    let arguments = Array(command.dropFirst())
+    let commandName = String(command.first!)
     let commandURL = debugURL.appendingPathComponent(commandName)
     guard (try? commandURL.checkResourceIsReachable()) ?? false else {
       XCTFail("No executable at '\(commandURL.standardizedFileURL.path)'.",
@@ -310,5 +322,33 @@ extension XCTest {
     #else
     throw XCTSkip("Not supported on this platform")
     #endif
+  }
+
+  public func AssertGenerateManual(
+    multiPage: Bool,
+    command: String,
+    expected: String,
+    file: StaticString = #file,
+    line: UInt = #line
+  ) throws {
+    let commandURL = debugURL.appendingPathComponent(command)
+    var command = [
+      "generate-manual", commandURL.path,
+      "--date", "1996-05-12",
+      "--section", "9",
+      "--authors", "Jane Appleseed",
+      "--authors", "<johnappleseed@apple.com>",
+      "--authors", "The Appleseeds<appleseeds@apple.com>",
+      "--output-directory", "-",
+    ]
+    if multiPage {
+      command.append("--multi-page")
+    }
+    try AssertExecuteCommand(
+      command: command,
+      expected: expected,
+      exitCode: .success,
+      file: file,
+      line: line)
   }
 }

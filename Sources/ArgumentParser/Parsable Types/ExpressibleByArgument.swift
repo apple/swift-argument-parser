@@ -60,6 +60,12 @@ extension ExpressibleByArgument where Self: CaseIterable, Self: RawRepresentable
   }
 }
 
+extension ExpressibleByArgument where Self: RawRepresentable, RawValue == String {
+  public var defaultValueDescription: String {
+    rawValue
+  }
+}
+
 extension String: ExpressibleByArgument {
   public init?(argument: String) {
     self = argument

@@ -23,6 +23,7 @@ var package = Package(
       .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.0.0"),
     ],
     targets: [
+        // Core Library
         .target(
             name: "ArgumentParser",
             dependencies: ["ArgumentParserToolInfo"],
@@ -36,6 +37,7 @@ var package = Package(
             dependencies: [],
             exclude: ["CMakeLists.txt"]),
 
+        // Examples
         .executableTarget(
             name: "roll",
             dependencies: ["ArgumentParser"],
@@ -49,6 +51,7 @@ var package = Package(
             dependencies: ["ArgumentParser"],
             path: "Examples/repeat"),
 
+        // Tests
         .testTarget(
             name: "ArgumentParserEndToEndTests",
             dependencies: ["ArgumentParser", "ArgumentParserTestHelpers"],
@@ -70,10 +73,13 @@ var package = Package(
 
 #if swift(>=5.6) && os(macOS)
 package.targets.append(contentsOf: [
+    // Examples
     .executableTarget(
         name: "count-lines",
         dependencies: ["ArgumentParser"],
         path: "Examples/count-lines"),
+
+    // Tools
     .executableTarget(
         name: "changelog-authors",
         dependencies: ["ArgumentParser"],
