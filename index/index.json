@@ -53,6 +53,13 @@
               {
                 "children" : [
                   {
+                    "children" : [
+                      {
+                        "path" : "\/documentation\/argumentparser\/parsablearguments\/validate()-39ivb",
+                        "title" : "func validate() throws",
+                        "type" : "method"
+                      }
+                    ],
                     "title" : "ParsableArguments Implementations",
                     "type" : "groupMarker"
                   }
@@ -260,6 +267,16 @@
             "path" : "\/documentation\/argumentparser\/asyncparsablecommand",
             "title" : "AsyncParsableCommand",
             "type" : "protocol"
+          },
+          {
+            "path" : "\/documentation\/argumentparser\/commandsandsubcommands",
+            "title" : "Defining Commands and Subcommands",
+            "type" : "article"
+          },
+          {
+            "path" : "\/documentation\/argumentparser\/customizingcommandhelp",
+            "title" : "Customizing Help for Commands",
+            "type" : "article"
           },
           {
             "title" : "Arguments, Options, and Flags",
@@ -1380,6 +1397,11 @@
                         "path" : "\/documentation\/argumentparser\/expressiblebyargument\/defaultvaluedescription-940zv",
                         "title" : "var defaultValueDescription: String",
                         "type" : "property"
+                      },
+                      {
+                        "path" : "\/documentation\/argumentparser\/expressiblebyargument\/defaultvaluedescription-1dv6u",
+                        "title" : "var defaultValueDescription: String",
+                        "type" : "property"
                       }
                     ],
                     "title" : "ExpressibleByArgument Implementations",
@@ -1399,17 +1421,17 @@
                   {
                     "children" : [
                       {
+                        "path" : "\/documentation\/argumentparser\/expressiblebyargument\/allvaluestrings-5keru",
+                        "title" : "static var allValueStrings: [String]",
+                        "type" : "property"
+                      },
+                      {
                         "path" : "\/documentation\/argumentparser\/expressiblebyargument\/allvaluestrings-6ptln",
                         "title" : "static var allValueStrings: [String]",
                         "type" : "property"
                       },
                       {
                         "path" : "\/documentation\/argumentparser\/expressiblebyargument\/allvaluestrings-9o6vc",
-                        "title" : "static var allValueStrings: [String]",
-                        "type" : "property"
-                      },
-                      {
-                        "path" : "\/documentation\/argumentparser\/expressiblebyargument\/allvaluestrings-5keru",
                         "title" : "static var allValueStrings: [String]",
                         "type" : "property"
                       }

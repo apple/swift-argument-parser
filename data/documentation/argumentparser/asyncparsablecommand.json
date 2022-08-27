@@ -358,7 +358,9 @@
       "generated" : true,
       "identifiers" : [
         "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/GettingStarted",
-        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ParsableCommand"
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ParsableCommand",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/CommandsAndSubcommands",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/CustomizingCommandHelp"
       ],
       "title" : "Essentials"
     }
@@ -600,6 +602,34 @@
   "title" : "run()",
   "type" : "topic",
   "url" : "\/documentation\/argumentparser\/asyncparsablecommand\/run()"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/CommandsAndSubcommands": {
+  "abstract" : [
+    {
+      "text" : "Break complex command-line tools into a tree of subcommands.",
+      "type" : "text"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/CommandsAndSubcommands",
+  "kind" : "article",
+  "role" : "article",
+  "title" : "Defining Commands and Subcommands",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/commandsandsubcommands"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/CustomizingCommandHelp": {
+  "abstract" : [
+    {
+      "text" : "Define your command’s abstract, extended discussion, or usage string, and set the flags used to invoke the help display.",
+      "type" : "text"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/CustomizingCommandHelp",
+  "kind" : "article",
+  "role" : "article",
+  "title" : "Customizing Help for Commands",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/customizingcommandhelp"
 },
 "doc://ArgumentParser/documentation/ArgumentParser/GettingStarted": {
   "abstract" : [

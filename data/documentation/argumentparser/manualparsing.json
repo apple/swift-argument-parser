@@ -285,7 +285,7 @@
               "type" : "text"
             },
             {
-              "identifier" : ".\/CommandsAndSubcommands.md",
+              "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/CommandsAndSubcommands",
               "isActive" : true,
               "type" : "reference"
             },
@@ -483,18 +483,6 @@
   ]
 , 
 "references": {
-"./CommandsAndSubcommands.md": {
-  "identifier" : ".\/CommandsAndSubcommands.md",
-  "title" : "Commands and Subcommands",
-  "titleInlineContent" : [
-    {
-      "text" : "Commands and Subcommands",
-      "type" : "text"
-    }
-  ],
-  "type" : "link",
-  "url" : ".\/CommandsAndSubcommands.md"
-},
 "doc://ArgumentParser/documentation/ArgumentParser": {
   "abstract" : [
     {
@@ -508,6 +496,20 @@
   "title" : "ArgumentParser",
   "type" : "topic",
   "url" : "\/documentation\/argumentparser"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/CommandsAndSubcommands": {
+  "abstract" : [
+    {
+      "text" : "Break complex command-line tools into a tree of subcommands.",
+      "type" : "text"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/CommandsAndSubcommands",
+  "kind" : "article",
+  "role" : "article",
+  "title" : "Defining Commands and Subcommands",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/commandsandsubcommands"
 },
 "doc://ArgumentParser/documentation/ArgumentParser/ExperimentalFeatures": {
   "abstract" : [

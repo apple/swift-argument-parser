@@ -8,6 +8,9 @@
   "hierarchy" : {
     "paths" : [
       [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser"
+      ],
+      [
         "doc:\/\/ArgumentParser\/documentation\/ArgumentParser",
         "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ParsableCommand"
       ]
@@ -75,7 +78,7 @@
             "    var count: Int?",
             "",
             "    mutating func run() throws {",
-            "        for _ in 0..<(count ?? Int.max) {",
+            "        for _ in 0..<(count ?? 2) {",
             "            print(phrase) ",
             "        }",
             "    }",
@@ -416,6 +419,9 @@
     {
       "generated" : true,
       "identifiers" : [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/GettingStarted",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ParsableCommand",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/AsyncParsableCommand",
         "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/CommandsAndSubcommands"
       ],
       "title" : "Essentials"
@@ -448,6 +454,48 @@
   "title" : "ArgumentParser",
   "type" : "topic",
   "url" : "\/documentation\/argumentparser"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/AsyncParsableCommand": {
+  "abstract" : [
+    {
+      "text" : "A type that can be executed asynchronously, as part of a nested tree of",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "text" : "commands.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "protocol"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "AsyncParsableCommand"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/AsyncParsableCommand",
+  "kind" : "symbol",
+  "navigatorTitle" : [
+    {
+      "kind" : "identifier",
+      "text" : "AsyncParsableCommand"
+    }
+  ],
+  "role" : "symbol",
+  "title" : "AsyncParsableCommand",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/asyncparsablecommand"
 },
 "doc://ArgumentParser/documentation/ArgumentParser/CommandConfiguration": {
   "abstract" : [
@@ -496,6 +544,20 @@
   "title" : "Defining Commands and Subcommands",
   "type" : "topic",
   "url" : "\/documentation\/argumentparser\/commandsandsubcommands"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/GettingStarted": {
+  "abstract" : [
+    {
+      "text" : "Learn to set up and customize a simple command-line tool.",
+      "type" : "text"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/GettingStarted",
+  "kind" : "article",
+  "role" : "article",
+  "title" : "Getting Started with ArgumentParser",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/gettingstarted"
 },
 "doc://ArgumentParser/documentation/ArgumentParser/ParsableCommand": {
   "abstract" : [

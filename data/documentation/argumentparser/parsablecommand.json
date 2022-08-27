@@ -168,7 +168,7 @@
             "    var count: Int?",
             "",
             "    mutating func run() throws {",
-            "        let repeatCount = count ?? .max",
+            "        let repeatCount = count ?? 2",
             "        for _ in 0..<repeatCount {",
             "            print(phrase)",
             "        }",
@@ -214,7 +214,9 @@
       "generated" : true,
       "identifiers" : [
         "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/GettingStarted",
-        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/AsyncParsableCommand"
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/AsyncParsableCommand",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/CommandsAndSubcommands",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/CustomizingCommandHelp"
       ],
       "title" : "Essentials"
     }

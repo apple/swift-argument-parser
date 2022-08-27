@@ -16,7 +16,8 @@
   "defaultImplementationsSections" : [
     {
       "identifiers" : [
-        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExpressibleByArgument\/defaultValueDescription-940zv"
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExpressibleByArgument\/defaultValueDescription-940zv",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExpressibleByArgument\/defaultValueDescription-1dv6u"
       ],
       "title" : "ExpressibleByArgument Implementations"
     }
@@ -190,6 +191,88 @@
   "type" : "topic",
   "url" : "\/documentation\/argumentparser\/expressiblebyargument"
 },
+"doc://ArgumentParser/documentation/ArgumentParser/ExpressibleByArgument/defaultValueDescription-1dv6u": {
+  "abstract" : [
+
+  ],
+  "conformance" : {
+    "availabilityPrefix" : [
+      {
+        "text" : "Available when",
+        "type" : "text"
+      }
+    ],
+    "conformancePrefix" : [
+      {
+        "text" : "Conforms when",
+        "type" : "text"
+      }
+    ],
+    "constraints" : [
+      {
+        "code" : "Self",
+        "type" : "codeVoice"
+      },
+      {
+        "text" : " conforms to ",
+        "type" : "text"
+      },
+      {
+        "code" : "RawRepresentable",
+        "type" : "codeVoice"
+      },
+      {
+        "text" : " and ",
+        "type" : "text"
+      },
+      {
+        "code" : "RawValue",
+        "type" : "codeVoice"
+      },
+      {
+        "text" : " is ",
+        "type" : "text"
+      },
+      {
+        "code" : "String",
+        "type" : "codeVoice"
+      },
+      {
+        "text" : ".",
+        "type" : "text"
+      }
+    ]
+  },
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "var"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "defaultValueDescription"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:SS",
+      "text" : "String"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExpressibleByArgument\/defaultValueDescription-1dv6u",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "defaultValueDescription",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/expressiblebyargument\/defaultvaluedescription-1dv6u"
+},
 "doc://ArgumentParser/documentation/ArgumentParser/ExpressibleByArgument/defaultValueDescription-2zydq": {
   "abstract" : [
     {
@@ -205,7 +288,7 @@
       "type" : "text"
     }
   ],
-  "defaultImplementations" : 1,
+  "defaultImplementations" : 2,
   "fragments" : [
     {
       "kind" : "keyword",
