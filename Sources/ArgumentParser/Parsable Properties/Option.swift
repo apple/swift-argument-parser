@@ -25,7 +25,7 @@
 ///     @main
 ///     struct Greet: ParsableCommand {
 ///         @Option var greeting = "Hello"
-///         @Option var age: Int?
+///         @Option var age: Int? = nil
 ///         @Option var name: String
 ///
 ///         mutating func run() {

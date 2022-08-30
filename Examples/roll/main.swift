@@ -22,7 +22,7 @@ struct RollOptions: ParsableArguments {
     var sides = 6
 
     @Option(help: "A seed to use for repeatable random generation.")
-    var seed: Int?
+    var seed: Int? = nil
 
     @Flag(name: .shortAndLong, help: "Show all roll results.")
     var verbose = false
