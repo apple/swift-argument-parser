@@ -361,6 +361,24 @@ extension Option {
     })
   }
 
+  /// This initializer allows a user to provide a `nil` default value for an
+  /// optional `@Option`-marked property without allowing a non-`nil` default
+  /// value.
+  public init<T: ExpressibleByArgument>(
+    wrappedValue _value: _OptionalNilComparisonType,
+    name: NameSpecification = .long,
+    parsing parsingStrategy: SingleValueParsingStrategy = .next,
+    help: ArgumentHelp? = nil,
+    completion: CompletionKind? = nil
+  ) where Value == T? {
+    self.init(
+      name: name,
+      parsing: parsingStrategy,
+      help: help,
+      completion: completion
+    )
+  }
+
   /// Creates a property with an optional default value, intended to be called by other constructors to centralize logic.
   ///
   /// This private `init` allows us to expose multiple other similar constructors to allow for standard default property initialization while reducing code duplication.
