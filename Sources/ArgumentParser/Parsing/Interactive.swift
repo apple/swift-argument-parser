@@ -78,22 +78,33 @@ extension CommandParser {
         if allValues.isEmpty {
           storeNormalValues(label: label, updateBy: updateBy, arguments: arguments)
         } else {
-          allValues.enumerated().forEach { print("\($0 + 1). \($1)") }
-          choose("? Please select '\(label)': ", choices: allValues)
-            .forEach {
-              try! update(InputOrigin(elements: [.interactive]), name, $0, &values)
-            }
+          let strs = choose("? Please select '\(label)': ", choices: allValues)
+          for str in strs {
+            try! update(InputOrigin(elements: [.interactive]), name, str, &values)
+          }
+
+          if values.elements[.init(rawValue: label)]!.value is Array<Any> {
+            print("You select '\(strs.joined(separator: "', '"))'.\n")
+          } else {
+            print("You select '\(strs.last!)'.\n")
+          }
         }
       } else {
         // Enumerable Flag
-        possibilities.enumerated().forEach { print("\($0 + 1). \($1)") }
-        choose("? Please select '\(label)': ", choices: possibilities)
-          .forEach { str in
-            let definition = args.first { "\($0)".components(separatedBy: ",").contains(str) }!
-            guard case let .nullary(update) = definition.update else { return }
-            let name = definition.names.first
-            try! update(InputOrigin(elements: [.interactive]), name, &values)
+        let strs = choose("? Please select '\(label)': ", choices: possibilities)
+        for str in strs {
+          let definition = args.first { str == "\($0)" }!
+          guard case let .nullary(update) = definition.update else { continue }
+          let name = definition.names.first
+          do {
+            try update(InputOrigin(elements: [.interactive]), name, &values)
+          } catch {
+            print("You select '\(strs[0])'.\n")
+            return true
           }
+        }
+
+        print("You select '\(strs.joined(separator: "', '"))'.\n")
       }
 
       return true
@@ -153,29 +164,29 @@ extension CommandParser {
   }
 
   fileprivate mutating func choose(_ prompt: String, choices: [String]) -> [String] {
-    print(prompt)
-    let nums = getInput()?.components(separatedBy: " ") ?? [""]
-
+    choices.enumerated().forEach { print("\($0 + 1). \($1)") }
     var strs: [String] = []
     let range = 1 ... choices.count
-    for num in nums {
-      guard let index = Int(num) else {
-        print("Error: '\(num)' is not a serial number.\n")
-        return choose(prompt, choices: choices)
+
+    while strs.isEmpty {
+      print(prompt)
+
+      let nums = getInput()?.components(separatedBy: " ") ?? [""]
+      for num in nums {
+        guard let index = Int(num) else {
+          print("Error: '\(num)' is not a serial number.\n")
+          strs.removeAll()
+          break
+        }
+
+        guard range.contains(index) else {
+          print("Error: '\(index)' is not in the range \(range.lowerBound) - \(range.upperBound).\n")
+          strs.removeAll()
+          break
+        }
+
+        strs.append(choices[index - 1])
       }
-
-      guard range.contains(index) else {
-        print("Error: '\(index)' is not in the range \(range.lowerBound) - \(range.upperBound).\n")
-        return choose(prompt, choices: choices)
-      }
-
-      strs.append(choices[index - 1])
-    }
-
-    if strs.count == 1 {
-      print("You select '\(strs[0])'.\n")
-    } else {
-      print("You select '\(strs.joined(separator: "', '"))'.\n")
     }
 
     return strs

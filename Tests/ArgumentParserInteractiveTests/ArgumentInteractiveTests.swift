@@ -190,6 +190,11 @@ extension ArgumentInteractiveTests {
       XCTAssertEqual(value.modes, [.bar, .baz])
     }
 
+    AssertParseCommand(CaseIterableArgument.self, CaseIterableArgument.self, [], lines: ["1 2", "2 3"]) { value in
+      XCTAssertEqual(value.mode, .bar)
+      XCTAssertEqual(value.modes, [.bar, .baz])
+    }
+
     AssertParseCommand(CaseIterableArgument.self, CaseIterableArgument.self, [], lines: ["foo", "0", "2 3", "1"]) { value in
       XCTAssertEqual(value.mode, .baz)
       XCTAssertEqual(value.modes, [.foo])

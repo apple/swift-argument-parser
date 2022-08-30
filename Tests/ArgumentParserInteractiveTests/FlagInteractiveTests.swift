@@ -112,13 +112,24 @@ extension FlagInteractiveTests {
   }
 }
 
-
 extension FlagInteractiveTests {
   func testParsing_InvalidValue() throws {
     AssertParseCommand(Baz.self, Baz.self, ["--pink"], lines: ["--small", "0", "6", "1"]) { options in
       XCTAssertEqual(options.shape, nil)
       XCTAssertEqual(options.color, .pink)
       XCTAssertEqual(options.size, .small)
+    }
+
+    AssertParseCommand(Baz.self, Baz.self, ["--pink"], lines: ["1 2"]) { options in
+      XCTAssertEqual(options.shape, nil)
+      XCTAssertEqual(options.color, .pink)
+      XCTAssertEqual(options.size, .small)
+    }
+
+    AssertParseCommand(Baz.self, Baz.self, ["--pink"], lines: ["3 2 1"]) { options in
+      XCTAssertEqual(options.shape, nil)
+      XCTAssertEqual(options.color, .pink)
+      XCTAssertEqual(options.size, .large)
     }
 
     AssertParseCommand(Qux.self, Qux.self, [], lines: ["1 0 2", "1 2"]) { options in
