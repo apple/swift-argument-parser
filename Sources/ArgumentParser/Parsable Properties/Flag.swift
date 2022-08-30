@@ -219,6 +219,24 @@ extension Flag where Value == Optional<Bool> {
         help: help)
     })
   }
+  
+  /// This initializer allows a user to provide a `nil` default value for
+  /// `@Flag`-marked `Optional<Bool>` property without allowing a non-`nil`
+  /// default value.
+  public init(
+    wrappedValue _value: _OptionalNilComparisonType,
+    name: NameSpecification = .long,
+    inversion: FlagInversion,
+    exclusivity: FlagExclusivity = .chooseLast,
+    help: ArgumentHelp? = nil
+  ) {
+    self.init(
+      name: name,
+      inversion: inversion,
+      exclusivity: exclusivity,
+      help: help)
+  }
+
 }
 
 extension Flag where Value == Bool {
