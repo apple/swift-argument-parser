@@ -96,6 +96,8 @@ fileprivate struct Foo: ParsableArguments {
   var sandbox: Bool = true
   @Flag(inversion: .prefixedEnableDisable)
   var requiredElement: Bool
+  @Flag(inversion: .prefixedEnableDisable)
+  var optional: Bool? = nil
 }
 
 extension FlagsEndToEndTests {
@@ -104,22 +106,25 @@ extension FlagsEndToEndTests {
       XCTAssertEqual(options.index, false)
       XCTAssertEqual(options.sandbox, true)
       XCTAssertEqual(options.requiredElement, true)
+      XCTAssertNil(options.optional)
     }
   }
 
   func testParsingEnableDisable_disableAll() throws {
-    AssertParse(Foo.self, ["--disable-index", "--disable-sandbox", "--disable-required-element"]) { options in
+    AssertParse(Foo.self, ["--disable-index", "--disable-sandbox", "--disable-required-element", "--disable-optional"]) { options in
       XCTAssertEqual(options.index, false)
       XCTAssertEqual(options.sandbox, false)
       XCTAssertEqual(options.requiredElement, false)
+      XCTAssertEqual(options.optional, false)
     }
   }
 
   func testParsingEnableDisable_enableAll() throws {
-    AssertParse(Foo.self, ["--enable-index", "--enable-sandbox", "--enable-required-element"]) { options in
+    AssertParse(Foo.self, ["--enable-index", "--enable-sandbox", "--enable-required-element", "--enable-optional"]) { options in
       XCTAssertEqual(options.index, true)
       XCTAssertEqual(options.sandbox, true)
       XCTAssertEqual(options.requiredElement, true)
+      XCTAssertEqual(options.optional, true)
     }
   }
 

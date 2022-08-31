@@ -25,7 +25,7 @@
 ///     @main
 ///     struct Greet: ParsableCommand {
 ///         @Option var greeting = "Hello"
-///         @Option var age: Int?
+///         @Option var age: Int? = nil
 ///         @Option var name: String
 ///
 ///         mutating func run() {
@@ -359,6 +359,24 @@ extension Option {
       arg.help.updateArgumentHelp(help: help)
       return ArgumentSet(arg.optional)
     })
+  }
+
+  /// This initializer allows a user to provide a `nil` default value for an
+  /// optional `@Option`-marked property without allowing a non-`nil` default
+  /// value.
+  public init<T: ExpressibleByArgument>(
+    wrappedValue _value: _OptionalNilComparisonType,
+    name: NameSpecification = .long,
+    parsing parsingStrategy: SingleValueParsingStrategy = .next,
+    help: ArgumentHelp? = nil,
+    completion: CompletionKind? = nil
+  ) where Value == T? {
+    self.init(
+      name: name,
+      parsing: parsingStrategy,
+      help: help,
+      completion: completion
+    )
   }
 
   /// Creates a property with an optional default value, intended to be called by other constructors to centralize logic.
