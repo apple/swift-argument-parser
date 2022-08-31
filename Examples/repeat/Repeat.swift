@@ -14,7 +14,7 @@ import ArgumentParser
 @main
 struct Repeat: ParsableCommand {
     @Option(help: "The number of times to repeat 'phrase'.")
-    var count: Int?
+    var count: Int? = nil
 
     @Flag(help: "Include a counter with each repetition.")
     var includeCounter = false
