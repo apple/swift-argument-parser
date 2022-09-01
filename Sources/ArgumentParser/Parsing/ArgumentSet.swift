@@ -116,11 +116,15 @@ extension ArgumentSet {
     help: ArgumentHelp?) -> ArgumentSet
   {
     let helpOptions: ArgumentDefinition.Help.Options = required ? [] : .isOptional
-    
-    let enableHelp = ArgumentDefinition.Help(options: helpOptions, help: help, defaultValue: initialValue.map(String.init), key: key, isComposite: true)
-    let disableHelp = ArgumentDefinition.Help(options: [.isOptional], help: help, key: key)
-
+        
     let (enableNames, disableNames) = inversion.enableDisableNamePair(for: key, name: name)
+    let initialValueNames = initialValue.map {
+      $0 ? enableNames : disableNames
+    }
+    
+
+    let enableHelp = ArgumentDefinition.Help(options: helpOptions, help: help, defaultValue: initialValueNames?.first?.synopsisString, key: key, isComposite: true)
+    let disableHelp = ArgumentDefinition.Help(options: [.isOptional], help: help, key: key)
 
     var hasUpdated = false
     let enableArg = ArgumentDefinition(kind: .named(enableNames), help: enableHelp, completion: .default, update: .nullary({ (origin, name, values) in

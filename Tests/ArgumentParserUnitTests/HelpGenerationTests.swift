@@ -84,7 +84,7 @@ extension HelpGenerationTests {
               --hidden-title <hidden-title>
               --hidden-flag
               --hidden-inverted-flag/--no-hidden-inverted-flag
-                                      (default: true)
+                                      (default: --hidden-inverted-flag)
               -h, --help              Show help information.
 
             """)
@@ -273,7 +273,7 @@ extension HelpGenerationTests {
                USAGE: g [--flag] [--no-flag]
 
                OPTIONS:
-                 --flag/--no-flag        Whether to flag (default: false)
+                 --flag/--no-flag        Whether to flag (default: --no-flag)
                  -h, --help              Show help information.
 
                """)
