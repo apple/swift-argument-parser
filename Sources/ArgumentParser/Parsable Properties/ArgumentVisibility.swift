@@ -10,7 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 /// Visibility level of an argument's help.
-public struct ArgumentVisibility {
+public struct ArgumentVisibility: Hashable {
   /// Internal implementation of `ArgumentVisibility` to allow for easier API
   /// evolution.
   internal enum Representation {

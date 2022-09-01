@@ -9,7 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-@testable import ArgumentParser
+import ArgumentParser
 import ArgumentParserToolInfo
 import XCTest
 
@@ -122,7 +122,7 @@ public func AssertHelp<T: ParsableArguments>(
   let flag: String
   let includeHidden: Bool
 
-  switch visibility.base {
+  switch visibility {
   case .default:
     flag = "--help"
     includeHidden = false
@@ -130,7 +130,10 @@ public func AssertHelp<T: ParsableArguments>(
     flag = "--help-hidden"
     includeHidden = true
   case .private:
-    XCTFail("Should not be called.")
+    XCTFail("Should not be called.", file: file, line: line)
+    return
+  default:
+    XCTFail("Unrecognized visibility.", file: file, line: line)
     return
   }
 
@@ -158,13 +161,16 @@ public func AssertHelp<T: ParsableCommand, U: ParsableCommand>(
 ) {
   let includeHidden: Bool
 
-  switch visibility.base {
+  switch visibility {
   case .default:
     includeHidden = false
   case .hidden:
     includeHidden = true
   case .private:
-    XCTFail("Should not be called.")
+    XCTFail("Should not be called.", file: file, line: line)
+    return
+  default:
+    XCTFail("Unrecognized visibility.", file: file, line: line)
     return
   }
 
