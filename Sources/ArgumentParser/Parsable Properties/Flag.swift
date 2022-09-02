@@ -409,10 +409,10 @@ extension Flag where Value: EnumerableFlag {
         let name = Value.name(for: value)
         
         let helpForCase = caseHelps[i] ?? help
-        var defaultValueString: String? = ""
+        var defaultValueString: String? = nil
         if hasCustomCaseHelp {
           if value == initial {
-            defaultValueString = "this"
+            defaultValueString = defaultValueFlag
           }
         } else {
           defaultValueString = defaultValueFlag

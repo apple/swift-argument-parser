@@ -263,7 +263,7 @@ extension FlagsEndToEndTests {
 
             OPTIONS:
               --pink/--purple/--silver
-              -s, --small             A smallish size. (default: this)
+              -s, --small             A smallish size. (default: --small)
               -m, --medium            Not too big, not too small.
               -l, --large             The size to use.
               --extra-large           The size to use.
