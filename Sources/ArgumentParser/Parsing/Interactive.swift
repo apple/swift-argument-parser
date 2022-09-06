@@ -56,26 +56,55 @@ extension CommandParser {
 
       // Retrieve the correct `ArgumentDefinition` for the required transformation
       // before storing the new value received from the user.
-      guard
-        let definition = arguments.content.first(where: {
-          $0.help.keys.contains { $0.rawValue == label }
-        })
-      else { break }
-
-      guard case let .unary(update) = definition.update else { break }
-      let name = definition.names.first
-      let updateBy: (String) throws -> Void = { string in
-        try update(InputOrigin(elements: [.interactive]), name, string, &values)
+      let args = arguments.filter { $0.help.keys.contains(key) }
+      let possibilities: [String] = args.compactMap {
+        $0.help.visibility.base == .default
+          ? $0.nonOptional.synopsis
+          : nil
       }
 
-      // All possible strings that can be converted to value
-      // of this CaseIterable enum type.
-      let allValues = definition.help.allValues
-      if allValues.isEmpty {
-        storeNormalValues(label: label, updateBy: updateBy, arguments: arguments)
+      if possibilities.count == 1 {
+        // Missing expected argument
+        let definition = args.first!
+        guard case let .unary(update) = definition.update else { break }
+        let name = definition.names.first
+        let updateBy: (String) throws -> Void = { string in
+          try update(InputOrigin(elements: [.interactive]), name, string, &values)
+        }
+
+        // All possible strings that can be converted to value
+        // of this CaseIterable enum type.
+        let allValues = definition.help.allValues
+        if allValues.isEmpty {
+          storeNormalValues(label: label, updateBy: updateBy, arguments: arguments)
+        } else {
+          let strs = choose("? Please select '\(label)': ", choices: allValues)
+          for str in strs {
+            try! update(InputOrigin(elements: [.interactive]), name, str, &values)
+          }
+
+          if values.elements[.init(rawValue: label)]!.value is Array<Any> {
+            print("You select '\(strs.joined(separator: "', '"))'.\n")
+          } else {
+            print("You select '\(strs.last!)'.\n")
+          }
+        }
       } else {
-        allValues.enumerated().forEach { print("\($0 + 1). \($1)") }
-        storeCaseIterableEnums(label: label, allValues: allValues, updateBy: updateBy)
+        // Enumerable Flag
+        let strs = choose("? Please select '\(label)': ", choices: possibilities)
+        for str in strs {
+          let definition = args.first { str == "\($0)" }!
+          guard case let .nullary(update) = definition.update else { continue }
+          let name = definition.names.first
+          do {
+            try update(InputOrigin(elements: [.interactive]), name, &values)
+          } catch {
+            print("You select '\(strs[0])'.\n")
+            return true
+          }
+        }
+
+        print("You select '\(strs.joined(separator: "', '"))'.\n")
       }
 
       return true
@@ -134,39 +163,33 @@ extension CommandParser {
     }
   }
 
-  fileprivate mutating func storeCaseIterableEnums(
-    label: String,
-    allValues: [String],
-    updateBy: (String) throws -> Void
-  ) {
-    print("? Please select '\(label)': ", terminator: "")
-    let strs = getInput()?.components(separatedBy: " ") ?? [""]
+  fileprivate mutating func choose(_ prompt: String, choices: [String]) -> [String] {
+    choices.enumerated().forEach { print("\($0 + 1). \($1)") }
+    var strs: [String] = []
+    let range = 1 ... choices.count
 
-    var nums: [String] = []
-    let range = 1 ... allValues.count
-    for num in strs {
-      guard let index = Int(num) else {
-        print("Error: '\(num)' is not a serial number.\n")
-        storeCaseIterableEnums(label: label, allValues: allValues, updateBy: updateBy)
-        return
+    while strs.isEmpty {
+      print(prompt)
+
+      let nums = getInput()?.components(separatedBy: " ") ?? [""]
+      for num in nums {
+        guard let index = Int(num) else {
+          print("Error: '\(num)' is not a serial number.\n")
+          strs.removeAll()
+          break
+        }
+
+        guard range.contains(index) else {
+          print("Error: '\(index)' is not in the range \(range.lowerBound) - \(range.upperBound).\n")
+          strs.removeAll()
+          break
+        }
+
+        strs.append(choices[index - 1])
       }
-
-      guard range.contains(index) else {
-        print("Error: '\(index)' is not in the range \(range.lowerBound) - \(range.upperBound).\n")
-        storeCaseIterableEnums(label: label, allValues: allValues, updateBy: updateBy)
-        return
-      }
-
-      nums.append(allValues[index - 1])
     }
 
-    if nums.count == 1 {
-      print("You select '\(nums[0])'.\n")
-    } else {
-      print("You select '\(nums.joined(separator: "', '"))'.\n")
-    }
-
-    nums.forEach { try! updateBy($0) }
+    return strs
   }
 
   /// Get input from the user's typing or from the parameters of the test.
