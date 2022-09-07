@@ -31,15 +31,17 @@
 ///
 /// - Parameters:
 ///   - prompt: The message to display.
+///   - getInput: Get input from the user's typing or other ways.
 ///   - validate: Custom validation for user input.
 /// - Returns: The string casted to the type requested.
 internal func ask(
   _ prompt: String,
+  getInput: () -> String? = { readLine() },
   validate: ((String) -> Result<Void, ValidationError>)? = nil
 ) -> String {
   print(prompt, terminator: "")
 
-  let input = readLine() ?? ""
+  let input = getInput() ?? ""
 
   guard let validate = validate else { return input }
   switch validate(input) {
@@ -78,16 +80,18 @@ internal func ask(
 /// - Parameters:
 ///   - prompt: The message to display.
 ///   - type: The value type expected the user enters.
+///   - getInput: Get input from the user's typing or other ways.
 ///   - validate: Custom validation for user input.
 /// - Returns: The string casted to the type requested.
 internal func ask<T: ExpressibleByArgument>(
   _ prompt: String,
   type: T.Type,
+  getInput: () -> String? = { readLine() },
   validate: ((T) -> Result<Void, ValidationError>)? = nil
 ) -> T {
   print(prompt, terminator: "")
 
-  let input = readLine() ?? ""
+  let input = getInput() ?? ""
   guard let value = T(argument: input) else {
     print("Error: The type of '\(input)' is not \(type).\n")
     return ask(prompt, type: type, validate: validate)
@@ -132,17 +136,19 @@ internal func ask<T: ExpressibleByArgument>(
 /// - Parameters:
 ///   - prompt: The message to display.
 ///   - type: The type of array you expected the user enters.
+///   - getInput: Get input from the user's typing or other ways.
 ///   - validate: Custom validation for user input.
 /// - Returns: The string casted to the type requested.
 internal func ask<E: ExpressibleByArgument>(
   _ prompt: String,
   type: [E].Type,
+  getInput: () -> String? = { readLine() },
   validate: (([E]) -> Result<Void, ValidationError>)? = nil
 ) -> [E] {
   print(prompt, terminator: "")
 
   var result: [E] = []
-  let input = readLine() ?? ""
+  let input = getInput() ?? ""
   for str in input.components(separatedBy: " ") {
     guard let val = E(argument: str) else {
       print("Error: The type of '\(str)' is not \(E.self).\n")

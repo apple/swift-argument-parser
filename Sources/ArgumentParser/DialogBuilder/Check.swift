@@ -25,16 +25,17 @@
 /// ? Please enter [y]es or [n]o: y
 /// ---DELETE---
 /// ```
-///
-/// - Parameter prompt: The prompt to display.
+/// - Parameters:
+///   - prompt: The message to display.
+///   - getInput: Get input from the user's typing or other ways.
 /// - Returns: The user decision.
-internal func check(_ prompt: String) -> Bool {
+internal func check(_ prompt: String, getInput: () -> String? = { readLine() }) -> Bool {
   print(prompt)
 
   while true {
     print("? Please enter [y]es or [n]o: ", terminator: "")
 
-    let input = readLine()?
+    let input = getInput()?
       .trimmingCharacters(in: .whitespaces)
       .lowercased()
       ?? ""

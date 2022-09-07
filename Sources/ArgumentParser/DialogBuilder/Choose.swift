@@ -48,10 +48,12 @@
 ///   - prompt: Prompt to display to the user after listing choices.
 ///   - choices: Items to choose from.
 ///   - validate: Custom validation for selected indices.
+///   - getInput: Get input from the user's typing or other ways.
 /// - Returns: The user selected indices.
 internal func choose(
   _ prompt: String,
   from choices: [String],
+  getInput: () -> String? = { readLine() },
   validate: (([Int]) -> Result<Void, ValidationError>)? = nil
 ) -> [Int] {
   choices.enumerated().forEach { print("\($0 + 1). \($1)") }
@@ -63,7 +65,7 @@ internal func choose(
   while !hasAnswer {
     print(prompt, terminator: "")
 
-    let nums = readLine()?.components(separatedBy: " ") ?? [""]
+    let nums = getInput()?.components(separatedBy: " ") ?? [""]
     for num in nums {
       guard let index = Int(num) else {
         print("Error: '\(num)' is not a serial number.\n")

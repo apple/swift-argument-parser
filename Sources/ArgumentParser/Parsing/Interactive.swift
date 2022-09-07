@@ -10,6 +10,17 @@
 //===----------------------------------------------------------------------===//
 
 extension CommandParser {
+  /// Get input from the user's typing or from the parameters of the test.
+  fileprivate mutating func getInput() -> String? {
+    if lineStack != nil {
+      // Extract the parameters used in the test.
+      return lineStack!.removeLast()
+    } else {
+      // Get values from user input.
+      return readLine()
+    }
+  }
+
   /// Try to fix parsing error by interacting with the user.
   /// - Parameters:
   ///   - error: A parsing error thrown by `lenientParse(_:subcommands:defaultCapturesAll:)`.
@@ -21,11 +32,11 @@ extension CommandParser {
     guard let error = error as? ParserError else { return false }
     guard case let .missingValueForOption(inputOrigin, name) = error else { return false }
 
-    print("? Please enter value for '\(name.synopsisString)': ", terminator: "")
-    let input = getInput()
+    let input = ask("? Please enter value for '\(name.synopsisString)': ",
+                    getInput: { getInput() })
 
     let inputIndex = inputOrigin.elements.first!.baseIndex! + 1
-    split._elements.insert(.init(value: .value(input!),
+    split._elements.insert(.init(value: .value(input),
                                  index: .init(inputIndex: .init(rawValue: inputIndex))),
                            at: inputIndex)
 
@@ -33,7 +44,7 @@ extension CommandParser {
       split._elements[index].index = .init(inputIndex: .init(rawValue: index))
     }
 
-    split.originalInput.insert(input!, at: inputIndex)
+    split.originalInput.insert(input, at: inputIndex)
 
     return true
   }
@@ -78,12 +89,14 @@ extension CommandParser {
         if allValues.isEmpty {
           storeNormalValues(label: label, updateBy: updateBy, arguments: arguments)
         } else {
-          let strs = choose("? Please select '\(label)': ", choices: allValues)
+          let selected = choose("? Please select '\(label)': ",
+                                from: allValues, getInput: { self.getInput() })
+          let strs = selected.map { allValues[$0] }
           for str in strs {
             try! update(InputOrigin(elements: [.interactive]), name, str, &values)
           }
 
-          if values.elements[.init(rawValue: label)]!.value is Array<Any> {
+          if values.elements[.init(rawValue: label)]!.value is [Any] {
             print("You select '\(strs.joined(separator: "', '"))'.\n")
           } else {
             print("You select '\(strs.last!)'.\n")
@@ -91,7 +104,9 @@ extension CommandParser {
         }
       } else {
         // Enumerable Flag
-        let strs = choose("? Please select '\(label)': ", choices: possibilities)
+        let selected = choose("? Please select '\(label)': ",
+                              from: possibilities, getInput: { self.getInput() })
+        let strs = selected.map { possibilities[$0] }
         for str in strs {
           let definition = args.first { str == "\($0)" }!
           guard case let .nullary(update) = definition.update else { continue }
@@ -120,9 +135,8 @@ extension CommandParser {
     updateBy: (String) throws -> Void,
     arguments: ArgumentSet
   ) {
-    print("? Please enter '\(label)': ", terminator: "")
-    let strs = getInput()?.components(separatedBy: " ") ?? [""]
-
+    let strs = ask("? Please enter '\(label)': ",
+                   type: [String].self, getInput: { self.getInput() })
     for str in strs {
       do {
         try updateBy(str)
@@ -145,9 +159,7 @@ extension CommandParser {
     updateBy: (String) throws -> Void,
     arguments: ArgumentSet
   ) {
-    print("? Please replace '\(original)': ", terminator: "")
-    let input = getInput() ?? ""
-
+    let input = ask("? Please replace '\(original)': ", getInput: { self.getInput() })
     do {
       try updateBy(input)
     } catch {
@@ -160,46 +172,6 @@ extension CommandParser {
       let description = generator.makeErrorMessage() ?? error.localizedDescription
       print("Error: " + description + ".\n")
       replaceInvalidValue(original: original, updateBy: updateBy, arguments: arguments)
-    }
-  }
-
-  fileprivate mutating func choose(_ prompt: String, choices: [String]) -> [String] {
-    choices.enumerated().forEach { print("\($0 + 1). \($1)") }
-    var strs: [String] = []
-    let range = 1 ... choices.count
-
-    while strs.isEmpty {
-      print(prompt)
-
-      let nums = getInput()?.components(separatedBy: " ") ?? [""]
-      for num in nums {
-        guard let index = Int(num) else {
-          print("Error: '\(num)' is not a serial number.\n")
-          strs.removeAll()
-          break
-        }
-
-        guard range.contains(index) else {
-          print("Error: '\(index)' is not in the range \(range.lowerBound) - \(range.upperBound).\n")
-          strs.removeAll()
-          break
-        }
-
-        strs.append(choices[index - 1])
-      }
-    }
-
-    return strs
-  }
-
-  /// Get input from the user's typing or from the parameters of the test.
-  fileprivate mutating func getInput() -> String? {
-    if lineStack != nil {
-      // Extract the parameters used in the test.
-      return lineStack!.removeLast()
-    } else {
-      // Get values from user input.
-      return readLine()
     }
   }
 }
