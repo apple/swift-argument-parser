@@ -28,7 +28,7 @@
 ///
 /// - Parameter prompt: The prompt to display.
 /// - Returns: The user decision.
-public func check(_ prompt: String) -> Bool {
+internal func check(_ prompt: String) -> Bool {
   print(prompt)
 
   while true {

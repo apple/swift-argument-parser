@@ -9,55 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-/// Asks single string from the user after displaying a prompt.
-///
-/// ```swift
-/// let name: String = ask("? Please enter your name: ")
-/// ```
-/// By default ask captures a string entered by the user:
-///
-/// ```
-/// ? Please enter your name: keith
-/// ```
-///
-/// - Parameters:
-///   - prompt: The message to display.
-/// - Returns: String from user input.
-public func ask(_ prompt: String) -> String {
-  ask(prompt, type: String.self)
-}
-
-/// Ask single value from the user after displaying a prompt.
-///
-/// ```swift
-/// let age = ask("? Please enter your age: ", type: Int.self)
-/// ```
-///
-/// Ask with a `type` parameter will automatically validate the input:
-///
-/// ```
-/// ? Please enter your age: keith
-/// Error: The type of 'keith' is not Int.
-///
-/// ? Please enter your age: 18
-/// ```
-///
-/// - Parameters:
-///   - prompt: The message to display.
-///   - type: The value type expected the user enters.
-/// - Returns: The string casted to the type requested.
-public func ask<T: ExpressibleByArgument>(_ prompt: String, type: T.Type) -> T {
-  print(prompt, terminator: "")
-
-  let input = readLine() ?? ""
-  guard let value = T(argument: input) else {
-    print("Error: The type of '\(input)' is not \(type).\n")
-    return ask(prompt, type: type)
-  }
-
-  return value
-}
-
 /// Ask single string from the user after displaying a prompt.
 ///
 /// ```swift
@@ -82,15 +33,15 @@ public func ask<T: ExpressibleByArgument>(_ prompt: String, type: T.Type) -> T {
 ///   - prompt: The message to display.
 ///   - validate: Custom validation for user input.
 /// - Returns: The string casted to the type requested.
-public func ask(
+internal func ask(
   _ prompt: String,
   validate: ((String) -> Result<Void, ValidationError>)? = nil
 ) -> String {
   print(prompt, terminator: "")
 
   let input = readLine() ?? ""
-  guard let validate = validate else { return input }
 
+  guard let validate = validate else { return input }
   switch validate(input) {
   case .success:
     return input
@@ -129,7 +80,7 @@ public func ask(
 ///   - type: The value type expected the user enters.
 ///   - validate: Custom validation for user input.
 /// - Returns: The string casted to the type requested.
-public func ask<T: ExpressibleByArgument>(
+internal func ask<T: ExpressibleByArgument>(
   _ prompt: String,
   type: T.Type,
   validate: ((T) -> Result<Void, ValidationError>)? = nil
@@ -143,7 +94,6 @@ public func ask<T: ExpressibleByArgument>(
   }
 
   guard let validate = validate else { return value }
-
   switch validate(value) {
   case .success:
     return value
@@ -151,43 +101,6 @@ public func ask<T: ExpressibleByArgument>(
     print(e)
     return ask(prompt, type: type, validate: validate)
   }
-}
-
-/// Ask array from the user after displaying a prompt.
-///
-/// ```swift
-/// let integers = ask(
-///   "? Please enter your favorite integers: ",
-///   type: [Int].self)
-/// ```
-///
-/// Each element in the input array will be converted to the specified type:
-///
-/// ```
-/// ? Please enter your favorite integers: 1 2 c
-/// Error: The type of 'c' is not Int.
-///
-/// ? Please enter your favorite integers: 1 2 3
-/// ```
-///
-/// - Parameters:
-///   - prompt: The message to display.
-///   - type: The type of array you expected the user enters.
-/// - Returns: The string casted to the type requested.
-public func ask<E: ExpressibleByArgument>(_ prompt: String, type: [E].Type) -> [E] {
-  print(prompt, terminator: "")
-
-  var result: [E] = []
-  let input = readLine() ?? ""
-  for str in input.components(separatedBy: " ") {
-    guard let val = E(argument: str) else {
-      print("Error: The type of '\(str)' is not \(E.self).\n")
-      return ask(prompt, type: type)
-    }
-    result.append(val)
-  }
-
-  return result
 }
 
 /// Ask array from the user after displaying a prompt.
@@ -221,10 +134,10 @@ public func ask<E: ExpressibleByArgument>(_ prompt: String, type: [E].Type) -> [
 ///   - type: The type of array you expected the user enters.
 ///   - validate: Custom validation for user input.
 /// - Returns: The string casted to the type requested.
-public func ask<E: ExpressibleByArgument>(
+internal func ask<E: ExpressibleByArgument>(
   _ prompt: String,
   type: [E].Type,
-  validate: ([E]) -> Result<Void, ValidationError>
+  validate: (([E]) -> Result<Void, ValidationError>)? = nil
 ) -> [E] {
   print(prompt, terminator: "")
 
@@ -238,6 +151,7 @@ public func ask<E: ExpressibleByArgument>(
     result.append(val)
   }
 
+  guard let validate = validate else { return result }
   switch validate(result) {
   case .success:
     return result
