@@ -29,9 +29,7 @@ internal func ask(
   _ prompt: String,
   getInput: () -> String? = { readLine() }
 ) -> String {
-  print(prompt, terminator: "")
-
-  return getInput() ?? ""
+  ask(prompt, type: String.self, getInput: getInput)
 }
 
 /// Ask single value from the user after displaying a prompt.

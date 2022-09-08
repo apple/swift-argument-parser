@@ -42,13 +42,11 @@ internal func choose(
   from choices: [String],
   getInput: () -> String? = { readLine() }
 ) -> [Int] {
+  let range = 1 ... choices.count
   choices.enumerated().forEach { print("\($0 + 1). \($1)") }
 
-  var hasAnswer = false
-  var selected: [Int] = []
-  let range = 1 ... choices.count
-
-  while !hasAnswer {
+  while true {
+    var selected: [Int] = []
     print(prompt, terminator: "")
 
     let nums = getInput()?.components(separatedBy: " ") ?? [""]
@@ -69,8 +67,6 @@ internal func choose(
     }
 
     guard !selected.isEmpty else { continue }
-    hasAnswer = true
+    return selected
   }
-
-  return selected
 }
