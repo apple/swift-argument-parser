@@ -197,6 +197,8 @@ extension HelpGenerationTests {
   }
 
   struct E: ParsableCommand {
+    static var configuration = CommandConfiguration(shouldPromptForMissing: false)
+
     enum OutputBehaviour: String, EnumerableFlag {
       case stats, count, list
 

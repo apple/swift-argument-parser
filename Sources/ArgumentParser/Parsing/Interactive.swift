@@ -9,6 +9,12 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if os(Linux)
+import Glibc
+#else
+import Darwin
+#endif
+
 extension CommandParser {
   /// Get input from the user's typing or from the parameters of the test.
   fileprivate mutating func getInput() -> String? {
@@ -27,6 +33,10 @@ extension CommandParser {
   ///   - split: A collection of parsed arguments which needs to be modified.
   /// - Returns: Whether the dialog resolve the error.
   mutating func canInteract(error: Error, split: inout SplitArguments) -> Bool {
+    // Check if the command is executed in an interactive shell
+    guard
+      isatty(STDOUT_FILENO) == 1 && isatty(STDIN_FILENO) == 1
+    else { return false }
     guard rootCommand.configuration.shouldPromptForMissing else { return false }
     guard lineStack == nil || !lineStack!.isEmpty else { return false }
     guard let error = error as? ParserError else { return false }
@@ -56,6 +66,10 @@ extension CommandParser {
   ///   - values: The resulting values after parsing the arguments which needs to be modified.
   /// - Returns: Whether the dialog resolve the error.
   mutating func canInteract(error: Error, arguments: ArgumentSet, values: inout ParsedValues) -> Bool {
+    // Check if the command is executed in an interactive shell
+    guard
+      isatty(STDOUT_FILENO) == 1 && isatty(STDIN_FILENO) == 1
+    else { return false }
     guard rootCommand.configuration.shouldPromptForMissing else { return false }
     guard lineStack == nil || !lineStack!.isEmpty else { return false }
     guard let error = error as? ParserError else { return false }
