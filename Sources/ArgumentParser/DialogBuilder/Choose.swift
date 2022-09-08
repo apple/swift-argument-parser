@@ -14,16 +14,7 @@
 ///
 /// ```swift
 /// let selected = choose("Please pick your favorite colors: ",
-///                       from: ["pink", "purple", "silver"]
-/// ) { selected in
-///   if selected.count == 2 {
-///     return .success(())
-///   } else {
-///     return .failure(
-///       .init("Error: You can only choose two colors.\n")
-///     )
-///   }
-/// }
+///                       from: ["pink", "purple", "silver"])
 /// ```
 ///
 /// The above code will generate the following dialog:
@@ -38,23 +29,18 @@
 /// Please pick your favorite colors: 0 1
 /// Error: '0' is not in the range 1 - 3.
 ///
-/// Please pick your favorite colors: 1 2 3
-/// Error: You can only choose two colors.
-///
 /// Please pick your favorite colors: 1 2
 /// ```
 ///
 /// - Parameters:
 ///   - prompt: Prompt to display to the user after listing choices.
 ///   - choices: Items to choose from.
-///   - validate: Custom validation for selected indices.
 ///   - getInput: Get input from the user's typing or other ways.
 /// - Returns: The user selected indices.
 internal func choose(
   _ prompt: String,
   from choices: [String],
-  getInput: () -> String? = { readLine() },
-  validate: (([Int]) -> Result<Void, ValidationError>)? = nil
+  getInput: () -> String? = { readLine() }
 ) -> [Int] {
   choices.enumerated().forEach { print("\($0 + 1). \($1)") }
 
@@ -83,14 +69,8 @@ internal func choose(
     }
 
     guard !selected.isEmpty else { continue }
-    guard let validate = validate else { return selected }
-    switch validate(selected) {
-    case .success:
-      hasAnswer = true
-    case let .failure(e):
-      selected.removeAll()
-      print(e)
-    }
+    hasAnswer = true
   }
+
   return selected
 }
