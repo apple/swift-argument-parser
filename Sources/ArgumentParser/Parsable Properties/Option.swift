@@ -433,7 +433,7 @@ extension Option {
     Optional @Options with default values should be declared as non-Optional.
     """)
   public init<T>(
-    wrappedValue: Value,
+    wrappedValue: Optional<T>,
     name: NameSpecification = .long,
     parsing parsingStrategy: SingleValueParsingStrategy = .next,
     help: ArgumentHelp? = nil,
@@ -533,7 +533,7 @@ extension Option {
     Optional @Options with default values should be declared as non-Optional.
     """)
   public init<T>(
-    wrappedValue: Value,
+    wrappedValue: Optional<T>,
     name: NameSpecification = .long,
     parsing parsingStrategy: SingleValueParsingStrategy = .next,
     help: ArgumentHelp? = nil,
@@ -605,7 +605,7 @@ extension Option {
   ///   - help: Information about how to use this option.
   ///   - completion: Kind of completion provided to the user for this option.
   public init<T>(
-    wrappedValue: Value,
+    wrappedValue: Array<T>,
     name: NameSpecification = .long,
     parsing parsingStrategy: ArrayParsingStrategy = .singleValue,
     help: ArgumentHelp? = nil,
@@ -678,7 +678,7 @@ extension Option {
   ///   - transform: A closure that converts a string into this property's
   ///     element type or throws an error.
   public init<T>(
-    wrappedValue: Value,
+    wrappedValue: Array<T>,
     name: NameSpecification = .long,
     parsing parsingStrategy: ArrayParsingStrategy = .singleValue,
     help: ArgumentHelp? = nil,

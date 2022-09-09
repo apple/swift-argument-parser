@@ -322,7 +322,7 @@ extension Argument {
     Optional @Arguments with default values should be declared as non-Optional.
     """)
   public init<T>(
-    wrappedValue: Value,
+    wrappedValue: Optional<T>,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil
   ) where T: ExpressibleByArgument, Value == Optional<T> {
@@ -403,7 +403,7 @@ extension Argument {
     Optional @Arguments with default values should be declared as non-Optional.
     """)
   public init<T>(
-    wrappedValue: Value,
+    wrappedValue: Optional<T>,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
     transform: @escaping (String) throws -> T
