@@ -146,15 +146,47 @@ struct ParsableArgumentsCodingKeyValidator: ParsableArgumentsValidator {
   
   /// This error indicates that an option, a flag, or an argument of
   /// a `ParsableArguments` is defined without a corresponding `CodingKey`.
-  struct Error: ParsableArgumentsValidatorError, CustomStringConvertible {
+  struct MissingKeysError: ParsableArgumentsValidatorError, CustomStringConvertible {
     let missingCodingKeys: [String]
     
     var description: String {
+      let resolution = """
+        To resolve this error, make sure that all properties have corresponding
+        cases in your custom `CodingKey` enumeration.
+        """
+
       if missingCodingKeys.count > 1 {
-        return "Arguments \(missingCodingKeys.map({ "`\($0)`" }).joined(separator: ",")) are defined without corresponding `CodingKey`s."
+        return """
+          Arguments \(missingCodingKeys.map({ "`\($0)`" }).joined(separator: ",")) \
+          are defined without corresponding `CodingKey`s.
+          
+          \(resolution)
+          """
       } else {
-        return "Argument `\(missingCodingKeys[0])` is defined without a corresponding `CodingKey`."
+        return """
+          Argument `\(missingCodingKeys[0])` is defined without a corresponding \
+          `CodingKey`.
+          
+          \(resolution)
+          """
       }
+    }
+    
+    var kind: ValidatorErrorKind {
+      .failure
+    }
+  }
+  
+  struct InvalidDecoderError: ParsableArgumentsValidatorError, CustomStringConvertible {
+    let type: ParsableArguments.Type
+    
+    var description: String {
+      """
+      The implementation of `init(from:)` for `\(type)`
+      is not compatible with ArgumentParser. To resolve this issue, make sure
+      that `init(from:)` calls the `container(keyedBy:)` method on the given
+      decoder and decodes each of its properties using the returned decoder.
+      """
     }
     
     var kind: ValidatorErrorKind {
@@ -179,11 +211,11 @@ struct ParsableArgumentsCodingKeyValidator: ParsableArgumentsValidator {
     }
     do {
       let _ = try type.init(from: Validator(argumentKeys: argumentKeys))
-      fatalError("The validator should always throw.")
+      return InvalidDecoderError(type: type)
     } catch let result as Validator.ValidationResult {
       switch result {
       case .missingCodingKeys(let keys):
-        return Error(missingCodingKeys: keys)
+        return MissingKeysError(missingCodingKeys: keys)
       case .success:
         return nil
       }
@@ -244,9 +276,11 @@ struct NonsenseFlagsValidator: ParsableArgumentsValidator {
       """
       One or more Boolean flags is declared with an initial value of `true`.
       This results in the flag always being `true`, no matter whether the user
-      specifies the flag or not. To resolve this error, change the default to
-      `false`, provide a value for the `inversion:` parameter, or remove the
-      `@Flag` property wrapper altogether.
+      specifies the flag or not.
+      
+      To resolve this error, change the default to `false`, provide a value
+      for the `inversion:` parameter, or remove the `@Flag` property wrapper
+      altogether.
 
       Affected flag(s):
       \(names.joined(separator: "\n"))

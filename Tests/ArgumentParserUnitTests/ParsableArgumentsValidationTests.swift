@@ -85,7 +85,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
     XCTAssertNil(ParsableArgumentsCodingKeyValidator.validate(B.self))
 
     if let error = ParsableArgumentsCodingKeyValidator.validate(C.self)
-      as? ParsableArgumentsCodingKeyValidator.Error
+      as? ParsableArgumentsCodingKeyValidator.MissingKeysError
     {
       XCTAssert(error.missingCodingKeys == ["count"])
     } else {
@@ -93,7 +93,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
     }
     
     if let error = ParsableArgumentsCodingKeyValidator.validate(D.self)
-      as? ParsableArgumentsCodingKeyValidator.Error
+      as? ParsableArgumentsCodingKeyValidator.MissingKeysError
     {
       XCTAssert(error.missingCodingKeys == ["phrase"])
     } else {
@@ -101,9 +101,33 @@ final class ParsableArgumentsValidationTests: XCTestCase {
     }
 
     if let error = ParsableArgumentsCodingKeyValidator.validate(E.self)
-      as? ParsableArgumentsCodingKeyValidator.Error
+      as? ParsableArgumentsCodingKeyValidator.MissingKeysError
     {
       XCTAssert(error.missingCodingKeys == ["phrase", "includeCounter"])
+    } else {
+      XCTFail()
+    }
+  }
+  
+  private struct TypeWithInvalidDecoder: ParsableArguments {
+    @Argument(help: "The phrase to repeat.")
+    var phrase: String = ""
+
+    @Option(help: "The number of times to repeat 'phrase'.")
+    var count: Int = 0
+    
+    init() {}
+    
+    init(from decoder: Decoder) throws {
+      self.init()
+    }
+  }
+
+  func testCustomDecoderValidation() throws {
+    if let error = ParsableArgumentsCodingKeyValidator.validate(TypeWithInvalidDecoder.self)
+      as? ParsableArgumentsCodingKeyValidator.InvalidDecoderError
+    {
+      XCTAssert(error.type == TypeWithInvalidDecoder.self)
     } else {
       XCTFail()
     }
@@ -413,9 +437,11 @@ final class ParsableArgumentsValidationTests: XCTestCase {
         """
         One or more Boolean flags is declared with an initial value of `true`.
         This results in the flag always being `true`, no matter whether the user
-        specifies the flag or not. To resolve this error, change the default to
-        `false`, provide a value for the `inversion:` parameter, or remove the
-        `@Flag` property wrapper altogether.
+        specifies the flag or not.
+        
+        To resolve this error, change the default to `false`, provide a value
+        for the `inversion:` parameter, or remove the `@Flag` property wrapper
+        altogether.
 
         Affected flag(s):
         --nonsense
@@ -448,9 +474,11 @@ final class ParsableArgumentsValidationTests: XCTestCase {
         """
         One or more Boolean flags is declared with an initial value of `true`.
         This results in the flag always being `true`, no matter whether the user
-        specifies the flag or not. To resolve this error, change the default to
-        `false`, provide a value for the `inversion:` parameter, or remove the
-        `@Flag` property wrapper altogether.
+        specifies the flag or not.
+        
+        To resolve this error, change the default to `false`, provide a value
+        for the `inversion:` parameter, or remove the `@Flag` property wrapper
+        altogether.
 
         Affected flag(s):
         --stuff
