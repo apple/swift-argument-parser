@@ -9,10 +9,14 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if os(Linux)
+#if canImport(Glibc)
 import Glibc
-#else
+#elseif canImport(Darwin)
 import Darwin
+#elseif canImport(CRT)
+import CRT
+#elseif canImport(WASILibc)
+import WASILibc
 #endif
 
 extension CommandParser {
