@@ -13,8 +13,6 @@ import ArgumentParser
 
 @main
 struct Repeat: ParsableCommand {
-    static var configuration = CommandConfiguration(shouldPromptForMissing: false)
-
     @Option(help: "The number of times to repeat 'phrase'.")
     var count: Int?
 
