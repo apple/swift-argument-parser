@@ -257,7 +257,7 @@ extension XCTest {
     
     if #available(macOS 10.13, *) {
       guard (try? process.run()) != nil else {
-        XCTFail("Couldn't run command process.", file: (file), line: line)
+        XCTFail("Couldn't run command process.", file: file, line: line)
         return
       }
     } else {
@@ -275,7 +275,7 @@ extension XCTest {
       AssertEqualStringsIgnoringTrailingWhitespace(expected, errorActual + outputActual, file: file, line: line)
     }
 
-    XCTAssertEqual(process.terminationStatus, exitCode.rawValue, file: (file), line: line)
+    XCTAssertEqual(process.terminationStatus, exitCode.rawValue, file: file, line: line)
     #else
     throw XCTSkip("Not supported on this platform")
     #endif

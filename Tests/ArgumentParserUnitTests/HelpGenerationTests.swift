@@ -197,25 +197,25 @@ extension HelpGenerationTests {
 
   func testHelpWithDefaultValues() {
     AssertHelp(.default, for: D.self, equals: """
-            USAGE: d [<occupation>] [--name <name>] [--age <age>] [--logging <logging>] [--lucky <numbers> ...] [--optional] [--required] [--degree <degree>] [--directory <directory>] [--manual <manual>] [--unspecial <unspecial>] [--special <special>]
+      USAGE: d [<occupation>] [--name <name>] [--age <age>] [--logging <logging>] [--lucky <numbers> ...] [--optional] [--required] [--degree <degree>] [--directory <directory>] [--manual <manual>] [--unspecial <unspecial>] [--special <special>]
 
-            ARGUMENTS:
-              <occupation>            Your occupation. (default: --)
+      ARGUMENTS:
+        <occupation>            Your occupation. (default: --)
 
-            OPTIONS:
-              --name <name>           Your name. (default: John)
-              --age <age>             Your age. (default: 20)
-              --logging <logging>     Whether logging is enabled. (default: false)
-              --lucky <numbers>       Your lucky numbers. (default: 7, 14)
-              --optional/--required   Vegan diet. (default: --optional)
-              --degree <degree>       Your degree. (default: bachelor)
-              --directory <directory> Directory. (default: current directory)
-              --manual <manual>       Manual Option. (default: default-value)
-              --unspecial <unspecial> Unspecialized Synthesized (default: one)
-              --special <special>     Specialized Synthesized (default: Apple)
-              -h, --help              Show help information.
+      OPTIONS:
+        --name <name>           Your name. (default: John)
+        --age <age>             Your age. (default: 20)
+        --logging <logging>     Whether logging is enabled. (default: false)
+        --lucky <numbers>       Your lucky numbers. (default: 7, 14)
+        --optional/--required   Vegan diet. (default: --optional)
+        --degree <degree>       Your degree.
+        --directory <directory> Directory. (default: current directory)
+        --manual <manual>       Manual Option. (default: default-value)
+        --unspecial <unspecial> Unspecialized Synthesized (default: one)
+        --special <special>     Specialized Synthesized (default: Apple)
+        -h, --help              Show help information.
 
-            """)
+      """)
   }
 
   struct E: ParsableCommand {

@@ -2,6 +2,8 @@ add_library(UnitTests
   ParsableArgumentsValidationTests.swift
   ErrorMessageTests.swift
   HelpGenerationTests.swift
+  HelpGenerationTests+AtArgument.swift
+  HelpGenerationTests+AtOption.swift
   NameSpecificationTests.swift
   SplitArgumentTests.swift
   StringSnakeCaseTests.swift

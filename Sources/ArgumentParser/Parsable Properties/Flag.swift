@@ -419,6 +419,7 @@ extension Flag where Value: EnumerableFlag {
         }
         
         let help = ArgumentDefinition.Help(
+          allValues: [],
           options: initial != nil ? .isOptional : [],
           help: helpForCase,
           defaultValue: defaultValueString,
@@ -521,7 +522,15 @@ extension Flag {
         let caseKey = InputKey(rawValue: String(describing: value))
         let name = Element.name(for: value)
         let helpForCase = hasCustomCaseHelp ? (caseHelps[i] ?? help) : help
-        let help = ArgumentDefinition.Help(options: .isOptional, help: helpForCase, key: key, isComposite: !hasCustomCaseHelp)
+
+        let help = ArgumentDefinition.Help(
+          allValues: [],
+          options: [.isOptional],
+          help: helpForCase,
+          defaultValue: nil,
+          key: key,
+          isComposite: !hasCustomCaseHelp)
+
         return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .default, initialValue: nil as Element?, update: .nullary({ (origin, name, values) in
           hasUpdated = try ArgumentSet.updateFlag(key: key, value: value, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
         }))
@@ -546,7 +555,14 @@ extension Flag {
         let caseKey = InputKey(rawValue: String(describing: value))
         let name = Element.name(for: value)
         let helpForCase = hasCustomCaseHelp ? (caseHelps[i] ?? help) : help
-        let help = ArgumentDefinition.Help(options: .isOptional, help: helpForCase, key: key, isComposite: !hasCustomCaseHelp)
+        let help = ArgumentDefinition.Help(
+          allValues: [],
+          options: [.isOptional],
+          help: helpForCase,
+          defaultValue: nil,
+          key: key,
+          isComposite: !hasCustomCaseHelp)
+
         return ArgumentDefinition.flag(name: name, key: key, caseKey: caseKey, help: help, parsingStrategy: .default, initialValue: initial, update: .nullary({ (origin, name, values) in
           values.update(forKey: key, inputOrigin: origin, initial: [Element](), closure: {
             $0.append(value)
