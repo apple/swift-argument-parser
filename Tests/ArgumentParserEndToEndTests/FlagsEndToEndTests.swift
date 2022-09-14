@@ -162,11 +162,11 @@ enum Size: String, EnumerableFlag {
   static func help(for value: Size) -> ArgumentHelp? {
     switch value {
     case .small:
-      return "A smallish size"
+      return "A smallish size."
     case .medium:
-      return "Not too big, not too small"
+      return "Not too big, not too small."
     case .humongous:
-      return "Roughly the size of a barge"
+      return "Roughly the size of a barge."
     case .large, .extraLarge:
       return nil
     }
@@ -183,7 +183,7 @@ fileprivate struct Baz: ParsableArguments {
   @Flag()
   var color: Color
 
-  @Flag
+  @Flag(help: "The size to use.")
   var size: Size = .small
 
   @Flag()
@@ -257,6 +257,23 @@ extension FlagsEndToEndTests {
     }
   }
 
+  func testParsingCaseIterable_Help() throws {
+    AssertHelp(.default, for: Baz.self, equals: """
+            USAGE: baz --pink --purple --silver [--small] [--medium] [--large] [--extra-large] [--humongous] [--round] [--square] [--oblong]
+
+            OPTIONS:
+              --pink/--purple/--silver
+              -s, --small             A smallish size. (default: --small)
+              -m, --medium            Not too big, not too small.
+              -l, --large             The size to use.
+              --extra-large           The size to use.
+              --humongous, --huge     Roughly the size of a barge.
+              --round/--square/--oblong
+              -h, --help              Show help information.
+            
+            """)
+  }
+  
   func testParsingCaseIterable_Fails() throws {
     // Missing color
     XCTAssertThrowsError(try Baz.parse([]))
