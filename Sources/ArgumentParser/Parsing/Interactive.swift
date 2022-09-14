@@ -9,6 +9,16 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if canImport(Glibc)
+import Glibc
+#elseif canImport(Darwin)
+import Darwin
+#elseif canImport(CRT)
+import CRT
+#elseif canImport(WASILibc)
+import WASILibc
+#endif
+
 extension CommandParser {
   /// Get input from the user's typing or from the parameters of the test.
   fileprivate mutating func getInput() -> String? {
@@ -27,8 +37,14 @@ extension CommandParser {
   ///   - split: A collection of parsed arguments which needs to be modified.
   /// - Returns: Whether the dialog resolve the error.
   mutating func canInteract(error: Error, split: inout SplitArguments) -> Bool {
+    // Check if it's under test.
+    if lineStack == nil {
+      guard
+        // Check if the command is executed in an interactive shell.
+        isatty(STDOUT_FILENO) == 1, isatty(STDIN_FILENO) == 1
+      else { return false }
+    }
     guard rootCommand.configuration.shouldPromptForMissing else { return false }
-    guard lineStack == nil || !lineStack!.isEmpty else { return false }
     guard let error = error as? ParserError else { return false }
     guard case let .missingValueForOption(inputOrigin, name) = error else { return false }
 
@@ -56,8 +72,14 @@ extension CommandParser {
   ///   - values: The resulting values after parsing the arguments which needs to be modified.
   /// - Returns: Whether the dialog resolve the error.
   mutating func canInteract(error: Error, arguments: ArgumentSet, values: inout ParsedValues) -> Bool {
+    // Check if it's under test.
+    if lineStack == nil {
+      guard
+        // Check if the command is executed in an interactive shell.
+        isatty(STDOUT_FILENO) == 1, isatty(STDIN_FILENO) == 1
+      else { return false }
+    }
     guard rootCommand.configuration.shouldPromptForMissing else { return false }
-    guard lineStack == nil || !lineStack!.isEmpty else { return false }
     guard let error = error as? ParserError else { return false }
 
     switch error {

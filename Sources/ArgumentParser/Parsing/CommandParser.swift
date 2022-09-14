@@ -22,6 +22,9 @@ struct CommandParser {
   let commandTree: Tree<ParsableCommand.Type>
   var currentNode: Tree<ParsableCommand.Type>
   var decodedArguments: [DecodedArguments] = []
+  /// Used to simulate user input to test interactive mode.
+  ///
+  /// When not optional, an interactive shell will be mocked for testing.
   var lineStack: [String]? = nil
   
   var rootCommand: ParsableCommand.Type {
