@@ -395,7 +395,7 @@ extension Flag where Value: EnumerableFlag {
       // Create a string representation of the default value. Since this is a
       // flag, the default value to show to the user is the `--value-name`
       // flag that a user would provide on the command line, not a Swift value.
-      let defaultValueFlag = initial.flatMap { value in
+      let defaultValueFlag = initial.flatMap { value -> String? in
         let defaultKey = InputKey(rawValue: String(describing: value))
         let defaultNames = Value.name(for: value).makeNames(defaultKey)
         return defaultNames.first?.synopsisString
