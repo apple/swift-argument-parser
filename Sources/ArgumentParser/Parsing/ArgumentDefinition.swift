@@ -54,6 +54,7 @@ struct ArgumentDefinition {
     var discussion: String
     var valueName: String
     var visibility: ArgumentVisibility
+    var parentTitle: String
 
     init(
       allValues: [String],
@@ -72,6 +73,7 @@ struct ArgumentDefinition {
       self.discussion = help?.discussion ?? ""
       self.valueName = help?.valueName ?? ""
       self.visibility = help?.visibility ?? .default
+      self.parentTitle = ""
     }
   }
   

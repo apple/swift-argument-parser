@@ -4,6 +4,7 @@ add_library(UnitTests
   HelpGenerationTests.swift
   HelpGenerationTests+AtArgument.swift
   HelpGenerationTests+AtOption.swift
+  HelpGenerationTests+GroupName.swift
   NameSpecificationTests.swift
   SplitArgumentTests.swift
   StringSnakeCaseTests.swift

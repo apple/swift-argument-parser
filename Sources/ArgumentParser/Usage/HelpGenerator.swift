@@ -51,6 +51,7 @@ internal struct HelpGenerator {
       case positionalArguments
       case subcommands
       case options
+      case title(String)
       
       var description: String {
         switch self {
@@ -60,6 +61,8 @@ internal struct HelpGenerator {
           return "Subcommands"
         case .options:
           return "Options"
+        case .title(let name):
+          return name
         }
       }
     }
@@ -136,6 +139,8 @@ internal struct HelpGenerator {
     
     var positionalElements: [Section.Element] = []
     var optionElements: [Section.Element] = []
+    var titledSections: [String: [Section.Element]] = [:]
+    var sectionTitles: [String] = []
 
     /// Start with a full slice of the ArgumentSet so we can peel off one or
     /// more elements at a time.
@@ -183,9 +188,15 @@ internal struct HelpGenerator {
       }
       
       let element = Section.Element(label: synopsis, abstract: description, discussion: arg.help.discussion)
-      if case .positional = arg.kind {
+      switch (arg.kind, arg.help.parentTitle) {
+      case (_, let sectionTitle) where !sectionTitle.isEmpty:
+        if !titledSections.keys.contains(sectionTitle) {
+          sectionTitles.append(sectionTitle)
+        }
+        titledSections[sectionTitle, default: []].append(element)
+      case (.positional, _):
         positionalElements.append(element)
-      } else {
+      default:
         optionElements.append(element)
       }
     }
@@ -203,8 +214,16 @@ internal struct HelpGenerator {
           abstract: command.configuration.abstract)
     }
     
+    // Combine the compiled groups in this order:
+    // - arguments
+    // - named sections
+    // - options/flags
+    // - subcommands
     return [
       Section(header: .positionalArguments, elements: positionalElements),
+    ] + sectionTitles.map { name in
+      Section(header: .title(name), elements: titledSections[name, default: []])
+    } + [
       Section(header: .options, elements: optionElements),
       Section(header: .subcommands, elements: subcommandElements),
     ]
