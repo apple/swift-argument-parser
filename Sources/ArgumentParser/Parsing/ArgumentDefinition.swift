@@ -209,10 +209,10 @@ extension ArgumentDefinition {
   ///
   /// This initializer is used for any property defined on a `ParsableArguments`
   /// type that isn't decorated with one of ArgumentParser's property wrappers.
-  init(unparsedKey: String, default defaultValue: Any?) {
+  init(unparsedKey: String, default defaultValue: Any?, parent: InputKey.Parent) {
     self.init(
       container: Bare<Any>.self,
-      key: InputKey(name: unparsedKey, parent: .root),
+      key: InputKey(name: unparsedKey, parent: parent),
       kind: .default,
       allValues: [],
       help: .private,

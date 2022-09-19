@@ -292,7 +292,7 @@ extension ArgumentSet {
         } else {
           let arg = ArgumentDefinition(
             unparsedKey: codingKey,
-            default: nilOrValue(child.value))
+            default: nilOrValue(child.value), parent: parent)
 
           // Save a non-wrapped property as is
           return ArgumentSet(arg)
