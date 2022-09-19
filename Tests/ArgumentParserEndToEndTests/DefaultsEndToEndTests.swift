@@ -549,14 +549,14 @@ fileprivate struct FlagPropertyInitArguments_Bool_NoDefault: ParsableArguments {
 
 extension DefaultsEndToEndTests {
   /// Tests that using default property initialization syntax parses the default value for the argument when nothing is provided from the command-line.
-  func xx_testParsing_FlagPropertyInit_Bool_Default_UseDefault() throws {
+  func testParsing_FlagPropertyInit_Bool_Default_UseDefault() throws {
     AssertParse(FlagPropertyInitArguments_Bool_Default.self, []) { arguments in
       XCTAssertEqual(arguments.data, false)
     }
   }
 
   /// Tests that using default property initialization syntax parses the command-line-provided value for the argument when provided.
-  func xx_testParsing_FlagPropertyInit_Bool_Default_OverrideDefault() throws {
+  func testParsing_FlagPropertyInit_Bool_Default_OverrideDefault() throws {
     AssertParse(FlagPropertyInitArguments_Bool_Default.self, ["--data"]) { arguments in
       XCTAssertEqual(arguments.data, true)
     }
@@ -564,7 +564,7 @@ extension DefaultsEndToEndTests {
 
   /// Tests that *not* providing a default value still parses the argument correctly from the command-line.
   /// This test is almost certainly duplicated by others in the repository, but allows for quick use of test filtering during development on the initialization functionality.
-  func xx_testParsing_FlagPropertyInit_Bool_NoDefault() throws {
+  func testParsing_FlagPropertyInit_Bool_NoDefault() throws {
     AssertParse(FlagPropertyInitArguments_Bool_NoDefault.self, ["--data"]) { arguments in
       XCTAssertEqual(arguments.data, true)
     }
