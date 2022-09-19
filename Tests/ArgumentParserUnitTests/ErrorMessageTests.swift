@@ -80,6 +80,11 @@ fileprivate enum Name: String, Equatable, Decodable, ExpressibleByArgument, Case
   case tony
 }
 
+fileprivate enum Counter: Int, ExpressibleByArgument, CaseIterable {
+  case one = 1
+  case two, three, four
+}
+
 fileprivate struct Foo: ParsableArguments {
   @Option(name: [.short, .long])
   var format: Format
@@ -95,6 +100,10 @@ fileprivate struct EnumWithFewCasesArrayArgument: ParsableArguments {
 fileprivate struct EnumWithManyCasesArrayArgument: ParsableArguments {
   @Argument
   var names: [Name]
+}
+
+fileprivate struct EnumWithIntRawValue: ParsableArguments {
+  @Option var counter: Counter
 }
 
 extension ErrorMessageTests {
@@ -134,6 +143,11 @@ extension ErrorMessageTests {
         - steve
         - thor
         - tony
+      """)
+    
+    AssertErrorMessage(EnumWithIntRawValue.self, ["--counter", "one"], """
+      The value 'one' is invalid for '--counter <counter>'. \
+      Please provide one of '1', '2', '3' or '4'.
       """)
   }
 }
