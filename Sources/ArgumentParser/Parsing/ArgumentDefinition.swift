@@ -108,7 +108,7 @@ struct ArgumentDefinition {
   var valueName: String {
     help.valueName.mapEmpty {
       names.preferredName?.valueString
-        ?? help.keys.first?.rawValue.convertedToSnakeCase(separator: "-")
+        ?? help.keys.first?.name.convertedToSnakeCase(separator: "-")
         ?? "value"
     }
   }
@@ -212,7 +212,7 @@ extension ArgumentDefinition {
   init(unparsedKey: String, default defaultValue: Any?) {
     self.init(
       container: Bare<Any>.self,
-      key: InputKey(rawValue: unparsedKey),
+      key: InputKey(name: unparsedKey, parent: .root),
       kind: .default,
       allValues: [],
       help: .private,

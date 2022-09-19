@@ -136,9 +136,9 @@ extension NameSpecification.Element {
   internal func name(for key: InputKey) -> Name? {
     switch self.base {
     case .long:
-      return .long(key.rawValue.convertedToSnakeCase(separator: "-"))
+      return .long(key.name.convertedToSnakeCase(separator: "-"))
     case .short:
-      guard let c = key.rawValue.first else { fatalError("Key '\(key.rawValue)' has not characters to form short option name.") }
+      guard let c = key.name.first else { fatalError("Key '\(key.name)' has not characters to form short option name.") }
       return .short(c)
     case .customLong(let name, let withSingleDash):
       return withSingleDash
@@ -167,7 +167,7 @@ extension FlagInversion {
         case .short, .customShort:
           return includingShort ? element.name(for: key) : nil
         case .long:
-          let modifiedKey = InputKey(rawValue: key.rawValue.addingIntercappedPrefix(prefix))
+          let modifiedKey = key.with(newName: key.name.addingIntercappedPrefix(prefix))
           return element.name(for: modifiedKey)
         case .customLong(let name, let withSingleDash):
           let modifiedName = name.addingPrefixWithAutodetectedStyle(prefix)

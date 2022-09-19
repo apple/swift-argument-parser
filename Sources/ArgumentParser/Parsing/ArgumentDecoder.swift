@@ -95,7 +95,7 @@ final class ParsedArgumentsContainer<K>: KeyedDecodingContainerProtocol where K 
   }
   
   fileprivate func element(forKey key: K) -> ParsedValues.Element? {
-    let k = InputKey(key)
+    let k = InputKey(codingKey: key, path: codingPath)
     return decoder.element(forKey: k)
   }
   
@@ -108,7 +108,7 @@ final class ParsedArgumentsContainer<K>: KeyedDecodingContainerProtocol where K 
   }
   
   func decode<T>(_ type: T.Type, forKey key: K) throws -> T where T : Decodable {
-    let subDecoder = SingleValueDecoder(userInfo: decoder.userInfo, underlying: decoder, codingPath: codingPath + [key], key: InputKey(key), parsedElement: element(forKey: key))
+    let subDecoder = SingleValueDecoder(userInfo: decoder.userInfo, underlying: decoder, codingPath: codingPath + [key], key: InputKey(codingKey: key, path: codingPath), parsedElement: element(forKey: key))
     return try type.init(from: subDecoder)
   }
   
@@ -117,7 +117,7 @@ final class ParsedArgumentsContainer<K>: KeyedDecodingContainerProtocol where K 
     if let parsedElement = parsedElement, parsedElement.inputOrigin.isDefaultValue {
       return parsedElement.value as? T
     }
-    let subDecoder = SingleValueDecoder(userInfo: decoder.userInfo, underlying: decoder, codingPath: codingPath + [key], key: InputKey(key), parsedElement: parsedElement)
+    let subDecoder = SingleValueDecoder(userInfo: decoder.userInfo, underlying: decoder, codingPath: codingPath + [key], key: InputKey(codingKey: key, path: codingPath), parsedElement: parsedElement)
     do {
       return try type.init(from: subDecoder)
     } catch let error as ParserError {
@@ -159,7 +159,9 @@ struct SingleValueDecoder: Decoder {
   
   func unkeyedContainer() throws -> UnkeyedDecodingContainer {
     guard let e = parsedElement else {
-      throw ParserError.noValue(forKey: InputKey(rawValue: codingPath.last!.stringValue))
+      var errorPath = codingPath
+      let last = errorPath.popLast()!
+      throw ParserError.noValue(forKey: InputKey(codingKey: last, path: errorPath))
     }
     guard let a = e.value as? [Any] else {
       throw ParserError.invalidState
@@ -192,7 +194,9 @@ struct SingleValueDecoder: Decoder {
     
     func decode<T>(_ type: T.Type) throws -> T where T : Decodable {
       guard let e = parsedElement else {
-        throw ParserError.noValue(forKey: InputKey(rawValue: codingPath.last!.stringValue))
+        var errorPath = codingPath
+        let last = errorPath.popLast()!
+        throw ParserError.noValue(forKey: InputKey(codingKey: last, path: errorPath))
       }
       guard let s = e.value as? T else {
         throw InternalParseError.wrongType(e.value, forKey: e.key)
