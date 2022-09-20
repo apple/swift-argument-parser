@@ -118,15 +118,12 @@ fileprivate struct DuplicatedFlagOption: ParsableArguments {
   }
 }
 
-fileprivate struct DuplicatedFlagCommand: TestableParsableCommand {
+fileprivate struct DuplicatedFlagCommand: ParsableCommand {
 
   @Flag
   var duplicated: Bool = false
   
   @OptionGroup var option: DuplicatedFlagOption
-  
-  let didValidateExpectation = XCTestExpectation(singleExpectation: "Command validated")
-  let didRunExpectation = XCTestExpectation(singleExpectation: "Command ran")
   
   enum CodingKeys: CodingKey {
     case duplicated
