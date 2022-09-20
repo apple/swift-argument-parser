@@ -109,11 +109,9 @@ extension OptionGroupEndToEndTests {
   }
 }
 
-fileprivate struct DuplicatedFlagOption: TestableParsableArguments {
+fileprivate struct DuplicatedFlagOption: ParsableArguments {
   @Flag(name: .customLong("duplicated-option"))
   var duplicated: Bool = false
-  
-  let didValidateExpectation = XCTestExpectation(singleExpectation: "duplicate validated")
   
   enum CodingKeys: CodingKey {
     case duplicated
