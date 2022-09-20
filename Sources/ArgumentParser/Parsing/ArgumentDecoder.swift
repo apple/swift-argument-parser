@@ -33,11 +33,6 @@ final class ArgumentDecoder: Decoder {
     self.values = values
     self.previouslyDecoded = previouslyDecoded
     self.usedOrigins = InputOrigin()
-    
-    // Mark the terminator position(s) as used:
-    values.elements.values.filter { $0.key == .terminator }.forEach {
-      usedOrigins.formUnion($0.inputOrigin)
-    }
   }
   
   let values: ParsedValues

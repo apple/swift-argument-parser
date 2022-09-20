@@ -96,8 +96,6 @@ struct InputKey: Hashable {
   func with(newName: String) -> InputKey {
     return .init(name: Self.clean(codingKey: newName), parent: self.parent)
   }
-  
-  static let terminator = InputKey(name: "__terminator", parent: .root)
 }
 
 extension InputKey {
