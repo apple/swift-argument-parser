@@ -211,7 +211,7 @@ extension HelpGenerationTests {
         --degree <degree>       Your degree.
         --directory <directory> Directory. (default: current directory)
         --manual <manual>       Manual Option. (default: default-value)
-        --unspecial <unspecial> Unspecialized Synthesized (default: one)
+        --unspecial <unspecial> Unspecialized Synthesized (default: 0)
         --special <special>     Specialized Synthesized (default: Apple)
         -h, --help              Show help information.
 
@@ -633,7 +633,7 @@ extension HelpGenerationTests {
 
   func testAllValueStrings() throws {
     XCTAssertEqual(AllValues.Manual.allValueStrings, ["bar"])
-    XCTAssertEqual(AllValues.UnspecializedSynthesized.allValueStrings, ["one", "two"])
+    XCTAssertEqual(AllValues.UnspecializedSynthesized.allValueStrings, ["0", "1"])
     XCTAssertEqual(AllValues.SpecializedSynthesized.allValueStrings, ["Apple", "Banana"])
   }
 
