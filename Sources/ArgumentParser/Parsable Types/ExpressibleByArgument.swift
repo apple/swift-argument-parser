@@ -54,15 +54,15 @@ extension ExpressibleByArgument where Self: CaseIterable {
   }
 }
 
-extension ExpressibleByArgument where Self: CaseIterable, Self: RawRepresentable, RawValue == String {
+extension ExpressibleByArgument where Self: CaseIterable, Self: RawRepresentable, RawValue: ExpressibleByArgument {
   public static var allValueStrings: [String] {
-    self.allCases.map { $0.rawValue }
+    self.allCases.map(\.rawValue.defaultValueDescription)
   }
 }
 
-extension ExpressibleByArgument where Self: RawRepresentable, RawValue == String {
+extension ExpressibleByArgument where Self: RawRepresentable, RawValue: ExpressibleByArgument {
   public var defaultValueDescription: String {
-    rawValue
+    rawValue.defaultValueDescription
   }
 }
 
