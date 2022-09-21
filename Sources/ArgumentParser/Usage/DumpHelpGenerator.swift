@@ -126,6 +126,7 @@ fileprivate extension ArgumentInfoV0 {
     self.init(
       kind: kind,
       shouldDisplay: argument.help.visibility.base == .default,
+      sectionTitle: argument.help.parentTitle.nilIfEmpty,
       isOptional: argument.help.options.contains(.isOptional),
       isRepeating: argument.help.options.contains(.isRepeating),
       names: argument.names.map(ArgumentInfoV0.NameInfoV0.init),

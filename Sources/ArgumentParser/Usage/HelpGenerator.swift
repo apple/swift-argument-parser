@@ -139,6 +139,8 @@ internal struct HelpGenerator {
     
     var positionalElements: [Section.Element] = []
     var optionElements: [Section.Element] = []
+    
+    // Simulate an ordered dictionary using a dictionary and array for ordering.
     var titledSections: [String: [Section.Element]] = [:]
     var sectionTitles: [String] = []
 
