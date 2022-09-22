@@ -110,7 +110,7 @@ struct ArgumentDefinition {
   var valueName: String {
     help.valueName.mapEmpty {
       names.preferredName?.valueString
-        ?? help.keys.first?.rawValue.convertedToSnakeCase(separator: "-")
+        ?? help.keys.first?.name.convertedToSnakeCase(separator: "-")
         ?? "value"
     }
   }
@@ -211,10 +211,10 @@ extension ArgumentDefinition {
   ///
   /// This initializer is used for any property defined on a `ParsableArguments`
   /// type that isn't decorated with one of ArgumentParser's property wrappers.
-  init(unparsedKey: String, default defaultValue: Any?) {
+  init(unparsedKey: String, default defaultValue: Any?, parent: InputKey.Parent) {
     self.init(
       container: Bare<Any>.self,
-      key: InputKey(rawValue: unparsedKey),
+      key: InputKey(name: unparsedKey, parent: parent),
       kind: .default,
       allValues: [],
       help: .private,

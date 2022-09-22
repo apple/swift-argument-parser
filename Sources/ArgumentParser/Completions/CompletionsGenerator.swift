@@ -105,7 +105,7 @@ extension ArgumentDefinition {
   func customCompletionCall(_ commands: [ParsableCommand.Type]) -> String {
     let subcommandNames = commands.dropFirst().map { $0._commandName }.joined(separator: " ")
     let argumentName = names.preferredName?.synopsisString
-          ?? self.help.keys.first?.rawValue ?? "---"
+          ?? self.help.keys.first?.name ?? "---"
     return "---completion \(subcommandNames) -- \(argumentName)"
   }
 }

@@ -77,8 +77,8 @@ public struct OptionGroup<Value: ParsableArguments>: Decodable, ParsedWrapper {
     title: String = "",
     visibility: ArgumentVisibility = .default
   ) {
-    self.init(_parsedValue: .init { _ in
-      var args = ArgumentSet(Value.self, visibility: .private)
+    self.init(_parsedValue: .init { parentKey in
+      var args = ArgumentSet(Value.self, visibility: .private, parent: .key(parentKey))
       args.content.withEach {
         $0.help.parentTitle = title
       }

@@ -97,7 +97,7 @@ internal struct HelpGenerator {
       fatalError()
     }
     
-    let currentArgSet = ArgumentSet(currentCommand, visibility: visibility)
+    let currentArgSet = ArgumentSet(currentCommand, visibility: visibility, parent: .root)
     self.commandStack = commandStack
 
     // Build the tool name and subcommand name from the command configuration
@@ -292,7 +292,7 @@ fileprivate extension NameSpecification {
   /// step, the name are returned in descending order.
   func generateHelpNames(visibility: ArgumentVisibility) -> [Name] {
     self
-      .makeNames(InputKey(rawValue: "help"))
+      .makeNames(InputKey(name: "help", parent: .root))
       .compactMap { name in
         guard visibility.base != .default else { return name }
         switch name {
@@ -333,7 +333,7 @@ internal extension BidirectionalCollection where Element == ParsableCommand.Type
         options: [.isOptional],
         help: "Show the version.",
         defaultValue: nil,
-        key: InputKey(rawValue: ""),
+        key: InputKey(name: "", parent: .root),
         isComposite: false),
       completion: .default,
       update: .nullary({ _, _, _ in })
@@ -350,7 +350,7 @@ internal extension BidirectionalCollection where Element == ParsableCommand.Type
         options: [.isOptional],
         help: "Show help information.",
         defaultValue: nil,
-        key: InputKey(rawValue: ""),
+        key: InputKey(name: "", parent: .root),
         isComposite: false),
       completion: .default,
       update: .nullary({ _, _, _ in })
@@ -365,7 +365,7 @@ internal extension BidirectionalCollection where Element == ParsableCommand.Type
         options: [.isOptional],
         help: ArgumentHelp("Dump help information as JSON."),
         defaultValue: nil,
-        key: InputKey(rawValue: ""),
+        key: InputKey(name: "", parent: .root),
         isComposite: false),
       completion: .default,
       update: .nullary({ _, _, _ in })
@@ -375,7 +375,7 @@ internal extension BidirectionalCollection where Element == ParsableCommand.Type
   /// Returns the ArgumentSet for the last command in this stack, including
   /// help and version flags, when appropriate.
   func argumentsForHelp(visibility: ArgumentVisibility) -> ArgumentSet {
-    guard var arguments = self.last.map({ ArgumentSet($0, visibility: visibility) })
+    guard var arguments = self.last.map({ ArgumentSet($0, visibility: visibility, parent: .root) })
       else { return ArgumentSet() }
     self.versionArgumentDefinition().map { arguments.append($0) }
     self.helpArgumentDefinition().map { arguments.append($0) }

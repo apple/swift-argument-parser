@@ -22,10 +22,10 @@ extension UsageGenerator {
     self.init(toolName: toolName, definition: definition)
   }
   
-  init(toolName: String, parsable: ParsableArguments, visibility: ArgumentVisibility) {
+  init(toolName: String, parsable: ParsableArguments, visibility: ArgumentVisibility, parent: InputKey.Parent) {
     self.init(
       toolName: toolName,
-      definition: ArgumentSet(type(of: parsable), visibility: visibility))
+      definition: ArgumentSet(type(of: parsable), visibility: visibility, parent: parent))
   }
   
   init(toolName: String, definition: [ArgumentSet]) {
