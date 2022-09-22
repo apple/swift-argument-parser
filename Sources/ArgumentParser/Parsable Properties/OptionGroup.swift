@@ -64,8 +64,8 @@ public struct OptionGroup<Value: ParsableArguments>: Decodable, ParsedWrapper {
   /// Creates a property that represents another parsable type, using the
   /// specified visibility.
   public init(visibility: ArgumentVisibility = .default) {
-    self.init(_parsedValue: .init { _ in
-      ArgumentSet(Value.self, visibility: .private)
+    self.init(_parsedValue: .init { parentKey in
+      return ArgumentSet(Value.self, visibility: .private, parent: .key(parentKey))
     })
     self._visibility = visibility
   }

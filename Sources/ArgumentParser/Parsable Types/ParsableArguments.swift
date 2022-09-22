@@ -269,10 +269,10 @@ extension ArgumentSetProvider {
 }
 
 extension ArgumentSet {
-  init(_ type: ParsableArguments.Type, visibility: ArgumentVisibility) {
+  init(_ type: ParsableArguments.Type, visibility: ArgumentVisibility, parent: InputKey.Parent) {
     #if DEBUG
     do {
-      try type._validate()
+      try type._validate(parent: parent)
     } catch {
       assertionFailure("\(error)")
     }
@@ -281,22 +281,18 @@ extension ArgumentSet {
     let a: [ArgumentSet] = Mirror(reflecting: type.init())
       .children
       .compactMap { child -> ArgumentSet? in
-        guard var codingKey = child.label else { return nil }
+        guard let codingKey = child.label else { return nil }
         
         if let parsed = child.value as? ArgumentSetProvider {
           guard parsed._visibility.isAtLeastAsVisible(as: visibility)
             else { return nil }
 
-          // Property wrappers have underscore-prefixed names
-          codingKey = String(codingKey.first == "_"
-                              ? codingKey.dropFirst(1)
-                              : codingKey.dropFirst(0))
-          let key = InputKey(rawValue: codingKey)
+          let key = InputKey(name: codingKey, parent: parent)
           return parsed.argumentSet(for: key)
         } else {
           let arg = ArgumentDefinition(
             unparsedKey: codingKey,
-            default: nilOrValue(child.value))
+            default: nilOrValue(child.value), parent: parent)
 
           // Save a non-wrapped property as is
           return ArgumentSet(arg)

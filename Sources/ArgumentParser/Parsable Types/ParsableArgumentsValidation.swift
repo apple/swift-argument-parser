@@ -10,7 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 fileprivate protocol ParsableArgumentsValidator {
-  static func validate(_ type: ParsableArguments.Type) -> ParsableArgumentsValidatorError?
+  static func validate(_ type: ParsableArguments.Type, parent: InputKey.Parent) -> ParsableArgumentsValidatorError?
 }
 
 enum ValidatorErrorKind {
@@ -37,7 +37,7 @@ struct ParsableArgumentsValidationError: Error, CustomStringConvertible {
 }
 
 extension ParsableArguments {
-  static func _validate() throws {
+  static func _validate(parent: InputKey.Parent) throws {
     let validators: [ParsableArgumentsValidator.Type] = [
       PositionalArgumentsValidator.self,
       ParsableArgumentsCodingKeyValidator.self,
@@ -45,7 +45,7 @@ extension ParsableArguments {
       NonsenseFlagsValidator.self,
     ]
     let errors = validators.compactMap { validator in
-      validator.validate(self)
+      validator.validate(self, parent: parent)
     }
     if errors.count > 0 {
       throw ParsableArgumentsValidationError(parsableArgumentsType: self, underlayingErrors: errors)
@@ -68,7 +68,6 @@ fileprivate extension ArgumentSet {
 /// in the argument list. Any other configuration leads to ambiguity in
 /// parsing the arguments.
 struct PositionalArgumentsValidator: ParsableArgumentsValidator {
-  
   struct Error: ParsableArgumentsValidatorError, CustomStringConvertible {
     let repeatedPositionalArgument: String
 
@@ -81,19 +80,16 @@ struct PositionalArgumentsValidator: ParsableArgumentsValidator {
     var kind: ValidatorErrorKind { .failure }
   }
   
-  static func validate(_ type: ParsableArguments.Type) -> ParsableArgumentsValidatorError? {
+  static func validate(_ type: ParsableArguments.Type, parent: InputKey.Parent) -> ParsableArgumentsValidatorError? {
     let sets: [ArgumentSet] = Mirror(reflecting: type.init())
       .children
       .compactMap { child in
         guard
-          var codingKey = child.label,
+          let codingKey = child.label,
           let parsed = child.value as? ArgumentSetProvider
           else { return nil }
         
-        // Property wrappers have underscore-prefixed names
-        codingKey = String(codingKey.first == "_" ? codingKey.dropFirst(1) : codingKey.dropFirst(0))
-        
-        let key = InputKey(rawValue: codingKey)
+        let key = InputKey(name: codingKey, parent: parent)
         return parsed.argumentSet(for: key)
     }
     
@@ -107,8 +103,8 @@ struct PositionalArgumentsValidator: ParsableArgumentsValidator {
     let firstRepeatedPositionalArgument: ArgumentDefinition = sets[repeatedPositional].firstRepeatedPositionalArgument!
     let positionalFollowingRepeatedArgument: ArgumentDefinition = positionalFollowingRepeated.firstPositionalArgument!
     return Error(
-      repeatedPositionalArgument: firstRepeatedPositionalArgument.help.keys.first!.rawValue,
-      positionalArgumentFollowingRepeated: positionalFollowingRepeatedArgument.help.keys.first!.rawValue)
+      repeatedPositionalArgument: firstRepeatedPositionalArgument.help.keys.first!.name,
+      positionalArgumentFollowingRepeated: positionalFollowingRepeatedArgument.help.keys.first!.name)
   }
 }
 
@@ -116,11 +112,11 @@ struct PositionalArgumentsValidator: ParsableArgumentsValidator {
 struct ParsableArgumentsCodingKeyValidator: ParsableArgumentsValidator {
   
   private struct Validator: Decoder {
-    let argumentKeys: [String]
+    let argumentKeys: [InputKey]
     
     enum ValidationResult: Swift.Error {
       case success
-      case missingCodingKeys([String])
+      case missingCodingKeys([InputKey])
     }
     
     let codingPath: [CodingKey] = []
@@ -135,7 +131,7 @@ struct ParsableArgumentsCodingKeyValidator: ParsableArgumentsValidator {
     }
     
     func container<Key>(keyedBy type: Key.Type) throws -> KeyedDecodingContainer<Key> where Key : CodingKey {
-      let missingKeys = argumentKeys.filter { Key(stringValue: $0) == nil }
+      let missingKeys = argumentKeys.filter { Key(stringValue: $0.name) == nil }
       if missingKeys.isEmpty {
         throw ValidationResult.success
       } else {
@@ -147,7 +143,7 @@ struct ParsableArgumentsCodingKeyValidator: ParsableArgumentsValidator {
   /// This error indicates that an option, a flag, or an argument of
   /// a `ParsableArguments` is defined without a corresponding `CodingKey`.
   struct MissingKeysError: ParsableArgumentsValidatorError, CustomStringConvertible {
-    let missingCodingKeys: [String]
+    let missingCodingKeys: [InputKey]
     
     var description: String {
       let resolution = """
@@ -194,8 +190,8 @@ struct ParsableArgumentsCodingKeyValidator: ParsableArgumentsValidator {
     }
   }
   
-  static func validate(_ type: ParsableArguments.Type) -> ParsableArgumentsValidatorError? {
-    let argumentKeys: [String] = Mirror(reflecting: type.init())
+  static func validate(_ type: ParsableArguments.Type, parent: InputKey.Parent) -> ParsableArgumentsValidatorError? {
+    let argumentKeys: [InputKey] = Mirror(reflecting: type.init())
       .children
       .compactMap { child in
         guard
@@ -204,7 +200,7 @@ struct ParsableArgumentsCodingKeyValidator: ParsableArgumentsValidator {
           else { return nil }
         
         // Property wrappers have underscore-prefixed names
-        return String(codingKey.first == "_" ? codingKey.dropFirst(1) : codingKey.dropFirst(0))
+        return InputKey(name: codingKey, parent: parent)
     }
     guard argumentKeys.count > 0 else {
       return nil
@@ -239,19 +235,16 @@ struct ParsableArgumentsUniqueNamesValidator: ParsableArgumentsValidator {
     var kind: ValidatorErrorKind { .failure }
   }
 
-  static func validate(_ type: ParsableArguments.Type) -> ParsableArgumentsValidatorError? {
+  static func validate(_ type: ParsableArguments.Type, parent: InputKey.Parent) -> ParsableArgumentsValidatorError? {
     let argSets: [ArgumentSet] = Mirror(reflecting: type.init())
       .children
       .compactMap { child in
         guard
-          var codingKey = child.label,
+          let codingKey = child.label,
           let parsed = child.value as? ArgumentSetProvider
           else { return nil }
 
-        // Property wrappers have underscore-prefixed names
-        codingKey = String(codingKey.first == "_" ? codingKey.dropFirst(1) : codingKey.dropFirst(0))
-
-        let key = InputKey(rawValue: codingKey)
+        let key = InputKey(name: codingKey, parent: parent)
         return parsed.argumentSet(for: key)
     }
 
@@ -290,19 +283,16 @@ struct NonsenseFlagsValidator: ParsableArgumentsValidator {
     var kind: ValidatorErrorKind { .warning }
   }
 
-  static func validate(_ type: ParsableArguments.Type) -> ParsableArgumentsValidatorError? {
+  static func validate(_ type: ParsableArguments.Type, parent: InputKey.Parent) -> ParsableArgumentsValidatorError? {
     let argSets: [ArgumentSet] = Mirror(reflecting: type.init())
       .children
       .compactMap { child in
         guard
-          var codingKey = child.label,
+          let codingKey = child.label,
           let parsed = child.value as? ArgumentSetProvider
           else { return nil }
 
-        // Property wrappers have underscore-prefixed names
-        codingKey = String(codingKey.first == "_" ? codingKey.dropFirst(1) : codingKey.dropFirst(0))
-
-        let key = InputKey(rawValue: codingKey)
+        let key = InputKey(name: codingKey, parent: parent)
         return parsed.argumentSet(for: key)
     }
 

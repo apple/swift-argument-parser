@@ -160,7 +160,7 @@ extension ParsableCommand {
   /// `true` if this command contains any array arguments that are declared
   /// with `.unconditionalRemaining`.
   internal static var includesUnconditionalArguments: Bool {
-    ArgumentSet(self, visibility: .private).contains(where: {
+    ArgumentSet(self, visibility: .private, parent: .root).contains(where: {
       $0.isRepeatingPositional && $0.parsingStrategy == .allRemainingInput
     })
   }
