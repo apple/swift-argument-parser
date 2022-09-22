@@ -120,19 +120,29 @@ public struct ArgumentArrayParsingStrategy: Hashable {
     self.init(base: .default)
   }
   
+  /// After parsing, capture all unrecognized inputs in this argument array.
+  public static var allUnrecognized: ArgumentArrayParsingStrategy {
+    self.init(base: .allUnrecognized)
+  }
+  
+  /// Before parsing, capture all inputs that follow the `--` terminator in this
+  /// argument array.
+  public static var postTerminator: ArgumentArrayParsingStrategy {
+    self.init(base: .postTerminator)
+  }
+  
   /// Parse all remaining inputs after parsing any known options or flags,
   /// including dash-prefixed inputs and the `--` terminator.
   ///
-  /// When you use the `unconditionalRemaining` parsing strategy, the parser
+  /// When you use the `captureForPassthrough` parsing strategy, the parser
   /// stops parsing flags and options as soon as it encounters a positional
-  /// argument or an unrecognized flag. For example, for a parsable type
-  /// defined as following:
+  /// argument or an unrecognized flag, and captures all remaining inputs in
+  /// the array argument. For example, for a parsable type defined as following:
   ///
   ///     struct Options: ParsableArguments {
-  ///         @Flag
-  ///         var verbose: Bool = false
+  ///         @Flag var verbose: Bool = false
   ///
-  ///         @Argument(parsing: .unconditionalRemaining)
+  ///         @Argument(parsing: .captureForPassthrough)
   ///         var words: [String] = []
   ///     }
   ///
@@ -141,13 +151,19 @@ public struct ArgumentArrayParsingStrategy: Hashable {
   /// `Options(verbose: true, words: ["one", "two", "--verbose"])`.
   ///
   /// - Note: This parsing strategy can be surprising for users, particularly
-  ///   when combined with options and flags. Prefer `remaining` whenever
+  ///   when combined with options and flags. Prefer `upToNextOption` whenever
   ///   possible, since users can always terminate options and flags with
-  ///   the `--` terminator. With the `remaining` parsing strategy, the input
-  ///   `--verbose -- one two --verbose` would have the same result as the above
-  ///   example: `Options(verbose: true, words: ["one", "two", "--verbose"])`.
-  public static var unconditionalRemaining: ArgumentArrayParsingStrategy {
+  ///   the `--` terminator. With the `upToNextOption` parsing strategy, the
+  ///   input `--verbose -- one two --verbose` would have the same result as
+  ///   the above example:
+  ///   `Options(verbose: true, words: ["one", "two", "--verbose"])`.
+  public static var captureForPassthrough: ArgumentArrayParsingStrategy {
     self.init(base: .allRemainingInput)
+  }
+  
+  @available(*, deprecated, renamed: "captureForPassthrough")
+  public static var unconditionalRemaining: ArgumentArrayParsingStrategy {
+    .captureForPassthrough
   }
 }
 

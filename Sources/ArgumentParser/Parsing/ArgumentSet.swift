@@ -316,6 +316,10 @@ extension ArgumentSet {
           try update(origins, parsed.name, value, &result)
           usedOrigins.formUnion(origins)
         }
+        
+      case .postTerminator, .allUnrecognized:
+        // These parsing kinds are for arguments only.
+        throw ParserError.invalidState
       }
     }
     
@@ -442,49 +446,83 @@ extension ArgumentSet {
     from unusedInput: SplitArguments,
     into result: inout ParsedValues
   ) throws {
-    // Filter out the inputs that aren't "whole" arguments, like `-h` and `-i`
-    // from the input `-hi`.
-    var argumentStack = unusedInput.elements.filter {
+    var endOfInput = unusedInput.elements.endIndex
+    
+    // Check for a post-terminator argument, and if so, collect all post-
+    // terminator args.
+    if let postTerminatorArg = self.first(where: { def in
+      def.isRepeatingPositional && def.parsingStrategy == .postTerminator
+    }),
+       case let .unary(update) = postTerminatorArg.update,
+       let terminatorIndex = unusedInput.elements.firstIndex(where: \.isTerminator)
+    {
+      for input in unusedInput.elements[(terminatorIndex + 1)...] {
+        // Everything post-terminator is a value, force-unwrapping here is safe:
+        let value = input.value.valueString!
+        try update([.argumentIndex(input.index)], nil, value, &result)
+      }
+      
+      endOfInput = terminatorIndex
+    }
+
+    // Create a stack out of the remaining unused inputs that aren't "partial"
+    // arguments (i.e. the individual components of a `-vix` grouped short
+    // option input).
+    var argumentStack = unusedInput.elements[..<endOfInput].filter {
       $0.index.subIndex == .complete
-    }.map {
-      (InputOrigin.Element.argumentIndex($0.index), $0)
     }[...]
-    
     guard !argumentStack.isEmpty else { return }
-    
-    /// Pops arguments until reaching one that is a value (i.e., isn't dash-
-    /// prefixed).
-    func skipNonValues() {
-      while argumentStack.first?.1.isValue == false {
-        _ = argumentStack.popFirst()
+        
+    /// Pops arguments off the stack until the next valid value. Skips over
+    /// dash-prefixed inputs unless `unconditional` is `true`.
+    func next(unconditional: Bool) -> SplitArguments.Element? {
+      while let arg = argumentStack.popFirst() {
+        if arg.isValue || unconditional {
+          return arg
+        }
       }
+
+      return nil
     }
     
-    /// Pops the origin of the next argument to use.
-    ///
-    /// If `unconditional` is false, this skips over any non-"value" input.
-    func next(unconditional: Bool) -> InputOrigin.Element? {
-      if !unconditional {
-        skipNonValues()
-      }
-      return argumentStack.popFirst()?.0
-    }
-    
+    // For all positional arguments, consume one or more inputs.
+    var usedOrigins = InputOrigin()
     ArgumentLoop:
     for argumentDefinition in self {
       guard case .positional = argumentDefinition.kind else { continue }
+      switch argumentDefinition.parsingStrategy {
+      case .default, .allRemainingInput:
+        break
+      default:
+        continue ArgumentLoop
+      }
       guard case let .unary(update) = argumentDefinition.update else {
         preconditionFailure("Shouldn't see a nullary positional argument.")
       }
       let allowOptionsAsInput = argumentDefinition.parsingStrategy == .allRemainingInput
       
       repeat {
-        guard let origin = next(unconditional: allowOptionsAsInput) else {
+        guard let arg = next(unconditional: allowOptionsAsInput) else {
           break ArgumentLoop
         }
+        let origin: InputOrigin.Element = .argumentIndex(arg.index)
         let value = unusedInput.originalInput(at: origin)!
         try update([origin], nil, value, &result)
+        usedOrigins.insert(origin)
       } while argumentDefinition.isRepeatingPositional
+    }
+        
+    // If there's an `.allUnrecognized` argument array, collect leftover args.
+    if let allUnrecognizedArg = self.first(where: { def in
+      def.isRepeatingPositional && def.parsingStrategy == .allUnrecognized
+    }),
+       case let .unary(update) = allUnrecognizedArg.update
+    {
+      while let arg = argumentStack.popFirst() {
+        let origin: InputOrigin.Element = .argumentIndex(arg.index)
+        let value = unusedInput.originalInput(at: origin)!
+        try update([origin], nil, value, &result)
+      }
     }
   }
 }

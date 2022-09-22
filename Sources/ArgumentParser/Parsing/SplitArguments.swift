@@ -500,11 +500,13 @@ extension SplitArguments {
         return $0.index.inputIndex
     }
     
-    // Now return all elements that are either:
+    // Now return all non-terminator elements that are either:
     // 1) `.complete`
     // 2) `.sub` but not in `completeIndexes`
     
     let extraElements = elements.filter {
+      if $0.isTerminator { return false }
+      
       switch $0.index.subIndex {
       case .complete:
         return true
