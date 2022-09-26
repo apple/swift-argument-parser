@@ -132,7 +132,6 @@ extension StringProtocol where SubSequence == Substring {
   ///     // 3
   ///     "bar".editDistance(to: "baz")
   ///     // 1
-
   func editDistance(to target: String) -> Int {
     let rows = self.count
     let columns = target.count
@@ -238,5 +237,9 @@ extension StringProtocol where SubSequence == Substring {
       omittingEmptySubsequences: false)
     guard lines.count == 2 else { return lines.joined(separator: "") }
     return "\(lines[0])\n\(lines[1].indentingEachLine(by: n))"
+  }
+  
+  var nonEmpty: Self? {
+    isEmpty ? nil : self
   }
 }
