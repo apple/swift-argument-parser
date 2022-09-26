@@ -239,7 +239,7 @@ extension StringProtocol where SubSequence == Substring {
     return "\(lines[0])\n\(lines[1].indentingEachLine(by: n))"
   }
   
-  var nilIfEmpty: Self? {
+  var nonEmpty: Self? {
     isEmpty ? nil : self
   }
 }
