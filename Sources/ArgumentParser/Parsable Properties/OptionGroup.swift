@@ -36,6 +36,9 @@ public struct OptionGroup<Value: ParsableArguments>: Decodable, ParsedWrapper {
   // FIXME: Adding this property works around the crasher described in
   // https://github.com/apple/swift-argument-parser/issues/338
   internal var _dummy: Bool = false
+  
+  /// The title to use in the help screen for this option group.
+  public var title: String = ""
 
   internal init(_parsedValue: Parsed<Value>) {
     self._parsedValue = _parsedValue
@@ -62,12 +65,27 @@ public struct OptionGroup<Value: ParsableArguments>: Decodable, ParsedWrapper {
   }
 
   /// Creates a property that represents another parsable type, using the
-  /// specified visibility.
-  public init(visibility: ArgumentVisibility = .default) {
+  /// specified title and visibility.
+  ///
+  /// - Parameters:
+  ///   - title: A title for grouping this option group's members in your
+  ///     command's help screen. If `title` is empty, the members will be
+  ///     displayed alongside the other arguments, flags, and options declared
+  ///     by your command.
+  ///   - visibility: The visibility to use for the entire option group.
+  public init(
+    title: String = "",
+    visibility: ArgumentVisibility = .default
+  ) {
     self.init(_parsedValue: .init { parentKey in
-      return ArgumentSet(Value.self, visibility: .private, parent: .key(parentKey))
+      var args = ArgumentSet(Value.self, visibility: .private, parent: .key(parentKey))
+      args.content.withEach {
+        $0.help.parentTitle = title
+      }
+      return args
     })
     self._visibility = visibility
+    self.title = title
   }
 
   /// The value presented by this property wrapper.
@@ -109,5 +127,17 @@ extension OptionGroup {
   @_disfavoredOverload
   public init() {
     self.init(visibility: .default)
+  }
+}
+
+// MARK: Deprecated
+
+extension OptionGroup {
+  @_disfavoredOverload
+  @available(*, deprecated, renamed: "init(title:visibility:)")
+  public init(
+    visibility _visibility: ArgumentVisibility = .default
+  ) {
+    self.init(title: "", visibility: _visibility)
   }
 }
