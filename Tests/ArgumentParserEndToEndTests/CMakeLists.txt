@@ -11,6 +11,7 @@ add_library(EndToEndTests
   PositionalEndToEndTests.swift
   RawRepresentableEndToEndTests.swift
   RepeatingEndToEndTests.swift
+  RepeatingEndToEndTests+ParsingStrategy.swift
   ShortNameEndToEndTests.swift
   SimpleEndToEndTests.swift
   SingleValueParsingStrategyTests.swift
