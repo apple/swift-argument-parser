@@ -37,7 +37,7 @@ extension UsageGenerator {
   ///
   /// If no tool name can be generated, `"<command>"` will be returned.
   static var executableName: String {
-    if let name = CommandLine.arguments[0].split(separator: "/").last.map(String.init) {
+    if let name = URL(fileURLWithPath: CommandLine.arguments[0]).pathComponents.last {
       // We quote the name if it contains whitespace to avoid confusion with
       // subcommands but otherwise leave properly quoting/escaping the command
       // up to the user running the tool
