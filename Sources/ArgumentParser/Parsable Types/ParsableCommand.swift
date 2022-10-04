@@ -37,7 +37,9 @@ public protocol ParsableCommand: ParsableArguments {
 extension ParsableCommand {
   public static var _commandName: String {
     configuration.commandName ??
-      String(describing: Self.self).convertedToSnakeCase(separator: "-")
+      (configuration.shouldUseExecutableName && configuration._superCommandName == nil
+        ? UsageGenerator.executableName
+        : String(describing: Self.self).convertedToSnakeCase(separator: "-"))
   }
   
   public static var configuration: CommandConfiguration {

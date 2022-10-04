@@ -17,6 +17,13 @@ public struct CommandConfiguration {
   /// the command type to hyphen-separated lowercase words.
   public var commandName: String?
 
+  /// A Boolean value indicating whether to use the executable's file name
+  /// for the command name.
+  ///
+  /// If `commandName` or `_superCommandName` are non-`nil`, this
+  /// value is ignored.
+  public var shouldUseExecutableName: Bool
+  
   /// The name of this command's "super-command". (experimental)
   ///
   /// Use this when a command is part of a group of commands that are installed
@@ -61,6 +68,9 @@ public struct CommandConfiguration {
   ///   - commandName: The name of the command to use on the command line. If
   ///     `commandName` is `nil`, the command name is derived by converting
   ///     the name of the command type to hyphen-separated lowercase words.
+  ///   - shouldUseExecutableName: A Boolean value indicating whether to
+  ///     use the executable's file name for the command name. If `commandName`
+  ///     is non-`nil`, this value is ignored.
   ///   - abstract: A one-line description of the command.
   ///   - usage: A custom usage description for the command. When you provide
   ///     a non-`nil` string, the argument parser uses `usage` instead of
@@ -82,6 +92,7 @@ public struct CommandConfiguration {
   ///     are `-h` and `--help`.
   public init(
     commandName: String? = nil,
+    shouldUseExecutableName: Bool = false,
     abstract: String = "",
     usage: String? = nil,
     discussion: String = "",
@@ -92,6 +103,7 @@ public struct CommandConfiguration {
     helpNames: NameSpecification? = nil
   ) {
     self.commandName = commandName
+    self.shouldUseExecutableName = shouldUseExecutableName
     self.abstract = abstract
     self.usage = usage
     self.discussion = discussion
@@ -106,6 +118,7 @@ public struct CommandConfiguration {
   /// (experimental)
   public init(
     commandName: String? = nil,
+    shouldUseExecutableName: Bool = false,
     _superCommandName: String,
     abstract: String = "",
     usage: String? = nil,
@@ -117,6 +130,7 @@ public struct CommandConfiguration {
     helpNames: NameSpecification? = nil
   ) {
     self.commandName = commandName
+    self.shouldUseExecutableName = shouldUseExecutableName
     self._superCommandName = _superCommandName
     self.abstract = abstract
     self.usage = usage
