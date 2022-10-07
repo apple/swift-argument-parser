@@ -94,7 +94,8 @@ struct ArgumentDefinition {
     /// Collect all the elements after the terminator, preventing them from
     /// appearing in any other position.
     case postTerminator
-    /// Collect all unused inputs after the 
+    /// Collect all unused inputs once recognized arguments/options/flags have
+    /// been parsed.
     case allUnrecognized
   }
   

@@ -448,8 +448,9 @@ extension ArgumentSet {
   ) throws {
     var endOfInput = unusedInput.elements.endIndex
     
-    // Check for a post-terminator argument, and if so, collect all post-
-    // terminator args.
+    // If this argument set includes a definition that should collect all the
+    // post-terminator inputs, capture them before trying to fill other
+    // `@Argument` definitions.
     if let postTerminatorArg = self.first(where: { def in
       def.isRepeatingPositional && def.parsingStrategy == .postTerminator
     }),
