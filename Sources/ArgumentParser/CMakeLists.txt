@@ -26,6 +26,7 @@ add_library(ArgumentParser
   Parsing/ArgumentDefinition.swift
   Parsing/ArgumentSet.swift
   Parsing/CommandParser.swift
+  Parsing/InputKey.swift
   Parsing/InputOrigin.swift
   Parsing/Name.swift
   Parsing/Parsed.swift
