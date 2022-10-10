@@ -12,7 +12,7 @@
 internal struct HelpGenerator {
   static var helpIndent = 2
   static var labelColumnWidth = 26
-  static var systemScreenWidth: Int { _terminalSize().width }
+  static var systemScreenWidth: Int { Platform.terminalWidth }
 
   struct Section {
     struct Element: Hashable {
@@ -385,44 +385,4 @@ internal extension BidirectionalCollection where Element == ParsableCommand.Type
     
     return arguments
   }
-}
-
-#if canImport(Glibc)
-import Glibc
-func ioctl(_ a: Int32, _ b: Int32, _ p: UnsafeMutableRawPointer) -> Int32 {
-  ioctl(CInt(a), UInt(b), p)
-}
-#elseif canImport(Darwin)
-import Darwin
-#elseif canImport(CRT)
-import CRT
-import WinSDK
-#endif
-
-func _terminalSize() -> (width: Int, height: Int) {
-#if os(WASI)
-  // WASI doesn't yet support terminal size
-  return (80, 25)
-#elseif os(Windows)
-  var csbi: CONSOLE_SCREEN_BUFFER_INFO = CONSOLE_SCREEN_BUFFER_INFO()
-  guard GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi) else {
-    return (80, 25)
-  }
-  return (width: Int(csbi.srWindow.Right - csbi.srWindow.Left) + 1,
-          height: Int(csbi.srWindow.Bottom - csbi.srWindow.Top) + 1)
-#else
-  var w = winsize()
-#if os(OpenBSD)
-  // TIOCGWINSZ is a complex macro, so we need the flattened value.
-  let tiocgwinsz = Int32(0x40087468)
-  let err = ioctl(STDOUT_FILENO, tiocgwinsz, &w)
-#else
-  let err = ioctl(STDOUT_FILENO, TIOCGWINSZ, &w)
-#endif
-  let width = Int(w.ws_col)
-  let height = Int(w.ws_row)
-  guard err == 0 else { return (80, 25) }
-  return (width: width > 0 ? width : 80,
-          height: height > 0 ? height : 25)
-#endif
 }
