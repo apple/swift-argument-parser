@@ -119,21 +119,24 @@ extension HelpTests {
                                           Build with configuration (default: debug)
                   --enable-automatic-resolution/--disable-automatic-resolution
                                           Use automatic resolution if Package.resolved file is
-                                          out-of-date (default: true)
+                                          out-of-date (default: --enable-automatic-resolution)
                   --enable-index-store/--disable-index-store
-                                          Use indexing-while-building feature (default: true)
+                                          Use indexing-while-building feature (default:
+                                          --enable-index-store)
                   --enable-package-manifest-caching/--disable-package-manifest-caching
-                                          Cache Package.swift manifests (default: true)
+                                          Cache Package.swift manifests (default:
+                                          --enable-package-manifest-caching)
                   --enable-prefetching/--disable-prefetching
-                                          (default: true)
+                                          (default: --enable-prefetching)
                   --enable-sandbox/--disable-sandbox
                                           Use sandbox when executing subprocesses (default:
-                                          true)
+                                          --enable-sandbox)
                   --enable-pubgrub-resolver/--disable-pubgrub-resolver
                                           [Experimental] Enable the new Pubgrub dependency
-                                          resolver (default: false)
+                                          resolver (default: --disable-pubgrub-resolver)
                   --static-swift-stdlib/--no-static-swift-stdlib
-                                          Link Swift stdlib statically (default: false)
+                                          Link Swift stdlib statically (default:
+                                          --no-static-swift-stdlib)
                   --package-path <package-path>
                                           Change working directory before any other operation
                                           (default: .)

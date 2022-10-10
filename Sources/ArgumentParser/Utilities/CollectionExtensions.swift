@@ -14,3 +14,13 @@ extension Collection {
     isEmpty ? replacement() : self
   }
 }
+
+extension MutableCollection {
+  mutating func withEach(_ body: (inout Element) throws -> Void) rethrows {
+    var i = startIndex
+    while i < endIndex {
+      try body(&self[i])
+      formIndex(after: &i)
+    }
+  }
+}

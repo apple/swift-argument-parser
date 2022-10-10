@@ -21,8 +21,26 @@ struct Authors: MDocComponent {
         "The"
         MDocMacro.DocumentName()
         "reference was written by"
-        ForEach(authors) { author, last in
-          Author(author: author, trailing: last ? "." : ",")
+        ForEach(authors) { author, index in
+          switch index {
+          case authors.count - 2 where authors.count > 2:
+            Author(
+              author: author,
+              trailing: ",")
+            "and"
+          case authors.count - 2:
+            Author(
+              author: author,
+              trailing: "and")
+          case authors.count - 1:
+            Author(
+              author: author,
+              trailing: ".")
+          default:
+            Author(
+              author: author,
+              trailing: ",")
+          }
         }
       }
     }

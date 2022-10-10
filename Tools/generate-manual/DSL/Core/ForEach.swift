@@ -11,9 +11,9 @@
 
 struct ForEach<C>: MDocComponent where C: Collection {
   var items: C
-  var builder: (C.Element, Bool) -> MDocComponent
+  var builder: (C.Element, C.Index) -> MDocComponent
 
-  init(_ items: C, @MDocBuilder builder: @escaping (C.Element, Bool) -> MDocComponent) {
+  init(_ items: C, @MDocBuilder builder: @escaping (C.Element, C.Index) -> MDocComponent) {
     self.items = items
     self.builder = builder
   }
@@ -21,14 +21,12 @@ struct ForEach<C>: MDocComponent where C: Collection {
   var body: MDocComponent {
     guard !items.isEmpty else { return Empty() }
     var currentIndex = items.startIndex
-    var last = false
     var components = [MDocComponent]()
-    repeat {
+    while currentIndex < items.endIndex {
       let item = items[currentIndex]
+      components.append(builder(item, currentIndex))
       currentIndex = items.index(after: currentIndex)
-      last = currentIndex == items.endIndex
-      components.append(builder(item, last))
-    } while !last
+    }
     return Container(children: components)
   }
 }

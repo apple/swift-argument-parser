@@ -17,8 +17,8 @@ final class NameSpecificationTests: XCTestCase {
 
 extension NameSpecificationTests {
   func testFlagNames_withNoPrefix() {
-    let key = InputKey(rawValue: "index")
-
+    let key = InputKey(name: "index", parent: .root)
+    
     XCTAssertEqual(FlagInversion.prefixedNo.enableDisableNamePair(for: key, name: .customLong("foo")).1, [.long("no-foo")])
     XCTAssertEqual(FlagInversion.prefixedNo.enableDisableNamePair(for: key, name: .customLong("foo-bar-baz")).1, [.long("no-foo-bar-baz")])
     XCTAssertEqual(FlagInversion.prefixedNo.enableDisableNamePair(for: key, name: .customLong("foo_bar_baz")).1, [.long("no_foo_bar_baz")])
@@ -26,7 +26,7 @@ extension NameSpecificationTests {
   }
 
   func testFlagNames_withEnableDisablePrefix() {
-    let key = InputKey(rawValue: "index")
+    let key = InputKey(name: "index", parent: .root)
     XCTAssertEqual(FlagInversion.prefixedEnableDisable.enableDisableNamePair(for: key, name: .long).0, [.long("enable-index")])
     XCTAssertEqual(FlagInversion.prefixedEnableDisable.enableDisableNamePair(for: key, name: .long).1, [.long("disable-index")])
 
@@ -42,8 +42,8 @@ extension NameSpecificationTests {
   }
 }
 
-fileprivate func Assert(nameSpecification: NameSpecification, key: String, makeNames expected: [Name], file: StaticString = #file, line: UInt = #line) {
-  let names = nameSpecification.makeNames(InputKey(rawValue: key))
+fileprivate func Assert(nameSpecification: NameSpecification, key: String, parent: InputKey.Parent = .root, makeNames expected: [Name], file: StaticString = #file, line: UInt = #line) {
+  let names = nameSpecification.makeNames(InputKey(name: key, parent: parent))
   Assert(names: names, expected: expected, file: file, line: line)
 }
 

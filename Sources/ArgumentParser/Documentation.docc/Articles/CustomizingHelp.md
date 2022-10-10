@@ -74,7 +74,7 @@ OPTIONS:
   -h, --help              Show help information.
 ```
 
-### Controlling Argument Visibility
+## Controlling Argument Visibility
 
 You can specify the visibility of any argument, option, or flag.
 
@@ -139,5 +139,58 @@ OPTIONS:
                           Use the remote access token. (experimental)
   --experimental-advanced-security
                           Use advanced security. (experimental)
+  -h, --help              Show help information.
+```
+
+## Grouping Arguments in the Help Screen
+
+When you provide a title in an `@OptionGroup` declaration, that type's 
+properties are grouped together under your title in the help screen. 
+For example, this command bundles similar arguments together under a 
+"Build Options" title:
+
+```swift
+struct BuildOptions: ParsableArguments {
+    @Option(help: "A setting to pass to the compiler.")
+    var compilerSetting: [String] = []
+
+    @Option(help: "A setting to pass to the linker.")
+    var linkerSetting: [String] = []
+}
+
+struct Example: ParsableCommand {
+    @Argument(help: "The input file to process.")
+    var inputFile: String
+
+    @Flag(help: "Show extra output.")
+    var verbose: Bool = false
+
+    @Option(help: "The path to a configuration file.")
+    var configFile: String?
+
+    @OptionGroup(title: "Build Options")
+    var buildOptions: BuildOptions
+}
+```
+
+This grouping is reflected in the command's help screen:
+
+```
+% example --help
+USAGE: example <input-file> [--verbose] [--config-file <config-file>] [--compiler-setting <compiler-setting> ...] [--linker-setting <linker-setting> ...]
+
+ARGUMENTS:
+  <input-file>            The input file to process.
+
+BUILD OPTIONS:
+  --compiler-setting <compiler-setting>
+                          A setting to pass to the compiler.
+  --linker-setting <linker-setting>
+                          A setting to pass to the linker.
+
+OPTIONS:
+  --verbose               Show extra output.
+  --config-file <config-file>
+                          The path to a configuration file.
   -h, --help              Show help information.
 ```

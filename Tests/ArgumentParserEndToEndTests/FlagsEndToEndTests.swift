@@ -96,6 +96,8 @@ fileprivate struct Foo: ParsableArguments {
   var sandbox: Bool = true
   @Flag(inversion: .prefixedEnableDisable)
   var requiredElement: Bool
+  @Flag(inversion: .prefixedEnableDisable)
+  var optional: Bool? = nil
 }
 
 extension FlagsEndToEndTests {
@@ -104,22 +106,25 @@ extension FlagsEndToEndTests {
       XCTAssertEqual(options.index, false)
       XCTAssertEqual(options.sandbox, true)
       XCTAssertEqual(options.requiredElement, true)
+      XCTAssertNil(options.optional)
     }
   }
 
   func testParsingEnableDisable_disableAll() throws {
-    AssertParse(Foo.self, ["--disable-index", "--disable-sandbox", "--disable-required-element"]) { options in
+    AssertParse(Foo.self, ["--disable-index", "--disable-sandbox", "--disable-required-element", "--disable-optional"]) { options in
       XCTAssertEqual(options.index, false)
       XCTAssertEqual(options.sandbox, false)
       XCTAssertEqual(options.requiredElement, false)
+      XCTAssertEqual(options.optional, false)
     }
   }
 
   func testParsingEnableDisable_enableAll() throws {
-    AssertParse(Foo.self, ["--enable-index", "--enable-sandbox", "--enable-required-element"]) { options in
+    AssertParse(Foo.self, ["--enable-index", "--enable-sandbox", "--enable-required-element", "--enable-optional"]) { options in
       XCTAssertEqual(options.index, true)
       XCTAssertEqual(options.sandbox, true)
       XCTAssertEqual(options.requiredElement, true)
+      XCTAssertEqual(options.optional, true)
     }
   }
 
@@ -157,11 +162,11 @@ enum Size: String, EnumerableFlag {
   static func help(for value: Size) -> ArgumentHelp? {
     switch value {
     case .small:
-      return "A smallish size"
+      return "A smallish size."
     case .medium:
-      return "Not too big, not too small"
+      return "Not too big, not too small."
     case .humongous:
-      return "Roughly the size of a barge"
+      return "Roughly the size of a barge."
     case .large, .extraLarge:
       return nil
     }
@@ -178,7 +183,7 @@ fileprivate struct Baz: ParsableArguments {
   @Flag()
   var color: Color
 
-  @Flag
+  @Flag(help: "The size to use.")
   var size: Size = .small
 
   @Flag()
@@ -252,6 +257,23 @@ extension FlagsEndToEndTests {
     }
   }
 
+  func testParsingCaseIterable_Help() throws {
+    AssertHelp(.default, for: Baz.self, equals: """
+            USAGE: baz --pink --purple --silver [--small] [--medium] [--large] [--extra-large] [--humongous] [--round] [--square] [--oblong]
+
+            OPTIONS:
+              --pink/--purple/--silver
+              -s, --small             A smallish size. (default: --small)
+              -m, --medium            Not too big, not too small.
+              -l, --large             The size to use.
+              --extra-large           The size to use.
+              --humongous, --huge     Roughly the size of a barge.
+              --round/--square/--oblong
+              -h, --help              Show help information.
+            
+            """)
+  }
+  
   func testParsingCaseIterable_Fails() throws {
     // Missing color
     XCTAssertThrowsError(try Baz.parse([]))

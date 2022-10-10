@@ -91,16 +91,16 @@ extension DefaultSubcommandEndToEndTests {
   fileprivate struct Plugin: ParsableCommand {
     @OptionGroup var options: CommonOptions
     @Argument var pluginName: String
-
-    @Argument(parsing: .unconditionalRemaining)
+    
+    @Argument(parsing: .captureForPassthrough)
     var pluginArguments: [String] = []
   }
 
   fileprivate struct NonDefault: ParsableCommand {
     @OptionGroup var options: CommonOptions
     @Argument var pluginName: String
-
-    @Argument(parsing: .unconditionalRemaining)
+    
+    @Argument(parsing: .captureForPassthrough)
     var pluginArguments: [String] = []
   }
 
