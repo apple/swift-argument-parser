@@ -41,7 +41,11 @@ extension Platform {
 // MARK: Exit codes
 
 #if os(Windows)
+import func WinSDK.GetStdHandle
+import func WinSDK.GetConsoleScreenBufferInfo
 import let WinSDK.ERROR_BAD_ARGUMENTS
+import let WinSDK.STD_OUTPUT_HANDLE
+import struct WinSDK.CONSOLE_SCREEN_BUFFER_INFO
 #endif
 
 extension Platform {
