@@ -38,7 +38,7 @@ fileprivate extension BidirectionalCollection where Element == ParsableCommand.T
   /// Returns the ArgumentSet for the last command in this stack, including
   /// help and version flags, when appropriate.
   func allArguments() -> ArgumentSet {
-    guard var arguments = self.last.map({ ArgumentSet($0, visibility: .private) })
+    guard var arguments = self.last.map({ ArgumentSet($0, visibility: .private, parent: .root) })
     else { return ArgumentSet() }
     self.versionArgumentDefinition().map { arguments.append($0) }
     self.helpArgumentDefinition().map { arguments.append($0) }
@@ -126,6 +126,7 @@ fileprivate extension ArgumentInfoV0 {
     self.init(
       kind: kind,
       shouldDisplay: argument.help.visibility.base == .default,
+      sectionTitle: argument.help.parentTitle.nonEmpty,
       isOptional: argument.help.options.contains(.isOptional),
       isRepeating: argument.help.options.contains(.isRepeating),
       names: argument.names.map(ArgumentInfoV0.NameInfoV0.init),

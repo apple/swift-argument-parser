@@ -121,7 +121,7 @@ enum MessageInfo {
         guard case ParserError.noArguments = parserError else { return usage }
         return "\n" + HelpGenerator(commandStack: [type.asCommand], visibility: .default).rendered()
       }()
-      let argumentSet = ArgumentSet(commandStack.last!, visibility: .default)
+      let argumentSet = ArgumentSet(commandStack.last!, visibility: .default, parent: .root)
       let message = argumentSet.errorDescription(error: parserError) ?? ""
       let helpAbstract = argumentSet.helpDescription(error: parserError) ?? ""
       self = .validation(message: message, usage: usage, help: helpAbstract)

@@ -84,7 +84,7 @@ extension HelpGenerationTests {
               --hidden-title <hidden-title>
               --hidden-flag
               --hidden-inverted-flag/--no-hidden-inverted-flag
-                                      (default: true)
+                                      (default: --hidden-inverted-flag)
               -h, --help              Show help information.
 
             """)
@@ -197,25 +197,25 @@ extension HelpGenerationTests {
 
   func testHelpWithDefaultValues() {
     AssertHelp(.default, for: D.self, equals: """
-            USAGE: d [<occupation>] [--name <name>] [--age <age>] [--logging <logging>] [--lucky <numbers> ...] [--optional] [--required] [--degree <degree>] [--directory <directory>] [--manual <manual>] [--unspecial <unspecial>] [--special <special>]
+      USAGE: d [<occupation>] [--name <name>] [--age <age>] [--logging <logging>] [--lucky <numbers> ...] [--optional] [--required] [--degree <degree>] [--directory <directory>] [--manual <manual>] [--unspecial <unspecial>] [--special <special>]
 
-            ARGUMENTS:
-              <occupation>            Your occupation. (default: --)
+      ARGUMENTS:
+        <occupation>            Your occupation. (default: --)
 
-            OPTIONS:
-              --name <name>           Your name. (default: John)
-              --age <age>             Your age. (default: 20)
-              --logging <logging>     Whether logging is enabled. (default: false)
-              --lucky <numbers>       Your lucky numbers. (default: 7, 14)
-              --optional/--required   Vegan diet. (default: optional)
-              --degree <degree>       Your degree. (default: bachelor)
-              --directory <directory> Directory. (default: current directory)
-              --manual <manual>       Manual Option. (default: default-value)
-              --unspecial <unspecial> Unspecialized Synthesized (default: one)
-              --special <special>     Specialized Synthesized (default: Apple)
-              -h, --help              Show help information.
+      OPTIONS:
+        --name <name>           Your name. (default: John)
+        --age <age>             Your age. (default: 20)
+        --logging <logging>     Whether logging is enabled. (default: false)
+        --lucky <numbers>       Your lucky numbers. (default: 7, 14)
+        --optional/--required   Vegan diet. (default: --optional)
+        --degree <degree>       Your degree.
+        --directory <directory> Directory. (default: current directory)
+        --manual <manual>       Manual Option. (default: default-value)
+        --unspecial <unspecial> Unspecialized Synthesized (default: 0)
+        --special <special>     Specialized Synthesized (default: Apple)
+        -h, --help              Show help information.
 
-            """)
+      """)
   }
 
   struct E: ParsableCommand {
@@ -264,7 +264,7 @@ extension HelpGenerationTests {
                USAGE: f [-s] [-c] [-l]
 
                OPTIONS:
-                 -s/-c/-l                Change the program output (default: list)
+                 -s/-c/-l                Change the program output (default: -l)
                  -h, --help              Show help information.
 
                """)
@@ -273,7 +273,7 @@ extension HelpGenerationTests {
                USAGE: g [--flag] [--no-flag]
 
                OPTIONS:
-                 --flag/--no-flag        Whether to flag (default: false)
+                 --flag/--no-flag        Whether to flag (default: --no-flag)
                  -h, --help              Show help information.
 
                """)
@@ -633,12 +633,12 @@ extension HelpGenerationTests {
 
   func testAllValueStrings() throws {
     XCTAssertEqual(AllValues.Manual.allValueStrings, ["bar"])
-    XCTAssertEqual(AllValues.UnspecializedSynthesized.allValueStrings, ["one", "two"])
+    XCTAssertEqual(AllValues.UnspecializedSynthesized.allValueStrings, ["0", "1"])
     XCTAssertEqual(AllValues.SpecializedSynthesized.allValueStrings, ["Apple", "Banana"])
   }
 
   func testAllValues() {
-    let opts = ArgumentSet(AllValues.self, visibility: .private)
+    let opts = ArgumentSet(AllValues.self, visibility: .private, parent: .root)
     XCTAssertEqual(AllValues.Manual.allValueStrings, opts[0].help.allValues)
     XCTAssertEqual(AllValues.Manual.allValueStrings, opts[1].help.allValues)
 

@@ -73,7 +73,13 @@ extension ArgumentSet {
     let helpOptions: ArgumentDefinition.Help.Options = initialValue != nil ? .isOptional : []
     let defaultValueString = initialValue == true ? "true" : nil
     
-    let help = ArgumentDefinition.Help(options: helpOptions, help: help, defaultValue: defaultValueString, key: key)
+    let help = ArgumentDefinition.Help(
+      allValues: [],
+      options: helpOptions,
+      help: help,
+      defaultValue: defaultValueString,
+      key: key,
+      isComposite: false)
     let arg = ArgumentDefinition(kind: .name(key: key, specification: name), help: help, completion: .default, update: .nullary({ (origin, name, values) in
       values.set(true, forKey: key, inputOrigin: origin)
     }), initial: { origin, values in
@@ -116,11 +122,14 @@ extension ArgumentSet {
     help: ArgumentHelp?) -> ArgumentSet
   {
     let helpOptions: ArgumentDefinition.Help.Options = required ? [] : .isOptional
-    
-    let enableHelp = ArgumentDefinition.Help(options: helpOptions, help: help, defaultValue: initialValue.map(String.init), key: key, isComposite: true)
-    let disableHelp = ArgumentDefinition.Help(options: [.isOptional], help: help, key: key)
-
+        
     let (enableNames, disableNames) = inversion.enableDisableNamePair(for: key, name: name)
+    let initialValueNames = initialValue.map {
+      $0 ? enableNames : disableNames
+    }
+    
+    let enableHelp = ArgumentDefinition.Help(allValues: [], options: helpOptions, help: help, defaultValue: initialValueNames?.first?.synopsisString, key: key, isComposite: true)
+    let disableHelp = ArgumentDefinition.Help(allValues: [], options: [.isOptional], help: help, defaultValue: nil, key: key, isComposite: false)
 
     var hasUpdated = false
     let enableArg = ArgumentDefinition(kind: .named(enableNames), help: enableHelp, completion: .default, update: .nullary({ (origin, name, values) in
@@ -138,7 +147,7 @@ extension ArgumentSet {
   
   /// Creates an argument set for an incrementing integer flag.
   static func counter(key: InputKey, name: NameSpecification, help: ArgumentHelp?) -> ArgumentSet {
-    let help = ArgumentDefinition.Help(options: [.isOptional, .isRepeating], help: help, key: key)
+    let help = ArgumentDefinition.Help(allValues: [], options: [.isOptional, .isRepeating], help: help, defaultValue: nil, key: key, isComposite: false)
     let arg = ArgumentDefinition(kind: .name(key: key, specification: name), help: help, completion: .default, update: .nullary({ (origin, name, values) in
       guard let a = values.element(forKey: key)?.value, let b = a as? Int else {
         throw ParserError.invalidState
@@ -148,69 +157,6 @@ extension ArgumentSet {
       values.set(0, forKey: key, inputOrigin: origin)
     })
     return ArgumentSet(arg)
-  }
-}
-
-// MARK: -
-
-extension ArgumentSet {
-  /// Create a unary / argument that parses the string as `A`.
-  init<A: ExpressibleByArgument>(key: InputKey, kind: ArgumentDefinition.Kind, parsingStrategy: ArgumentDefinition.ParsingStrategy = .default, parseType type: A.Type, name: NameSpecification, default initial: A?, help: ArgumentHelp?, completion: CompletionKind) {
-    var arg = ArgumentDefinition(key: key, kind: kind, parsingStrategy: parsingStrategy, parser: A.init(argument:), default: initial, completion: completion)
-    arg.help.updateArgumentHelp(help: help)
-    arg.help.defaultValue = initial.map { "\($0.defaultValueDescription)" }
-    self.init(arg)
-  }
-}
-
-extension ArgumentDefinition {
-  /// Create a unary / argument that parses using the given closure.
-  init<A>(key: InputKey, kind: ArgumentDefinition.Kind, parsingStrategy: ParsingStrategy = .default, parser: @escaping (String) -> A?, parseType type: A.Type = A.self, default initial: A?, completion: CompletionKind) {
-    self.init(key: key, kind: kind, parsingStrategy: parsingStrategy, parser: parser, parseType: type, default: initial, completion: completion, help: ArgumentDefinition.Help(key: key))
-  }
-
-  /// Create a unary / argument that parses using the given closure.
-  init<A: ExpressibleByArgument>(key: InputKey, kind: ArgumentDefinition.Kind, parsingStrategy: ParsingStrategy = .default, parser: @escaping (String) -> A?, parseType type: A.Type = A.self, default initial: A?, completion: CompletionKind) {
-    self.init(key: key, kind: kind, parsingStrategy: parsingStrategy, parser: parser, parseType: type, default: initial, completion: completion, help: ArgumentDefinition.Help(type: A.self, key: key))
-  }
-
-  private init<A>(key: InputKey, kind: ArgumentDefinition.Kind, parsingStrategy: ParsingStrategy = .default, parser: @escaping (String) -> A?, parseType type: A.Type = A.self, default initial: A?, completion: CompletionKind, help: ArgumentDefinition.Help) {
-    self.init(kind: kind, help: help, completion: completion, parsingStrategy: parsingStrategy, update: .unary({ (origin, name, value, values) in
-      guard let v = parser(value) else {
-        throw ParserError.unableToParseValue(origin, name, value, forKey: key)
-      }
-      values.set(v, forKey: key, inputOrigin: origin)
-    }), initial: { origin, values in
-      switch kind {
-      case .default:
-        values.set(initial, forKey: key, inputOrigin: InputOrigin(element: .defaultValue))
-      case .named, .positional:
-        values.set(initial, forKey: key, inputOrigin: origin)
-      }
-    })
-
-    self.help.options.formUnion(ArgumentDefinition.Help.Options(type: type))
-    self.help.defaultValue = initial.map { "\($0)" }
-    if initial != nil {
-      self = self.optional
-    }
-  }
-}
-
-extension ArgumentDefinition {
-  /// Creates an argument definition for a property that isn't parsed from the
-  /// command line.
-  ///
-  /// This initializer is used for any property defined on a `ParsableArguments`
-  /// type that isn't decorated with one of ArgumentParser's property wrappers.
-  init(unparsedKey: String, default defaultValue: Any?) {
-    self.init(
-      key: InputKey(rawValue: unparsedKey),
-      kind: .default,
-      parser: { _ in nil },
-      default: defaultValue,
-      completion: .default)
-    help.updateArgumentHelp(help: .private)
   }
 }
 
@@ -370,6 +316,10 @@ extension ArgumentSet {
           try update(origins, parsed.name, value, &result)
           usedOrigins.formUnion(origins)
         }
+        
+      case .postTerminator, .allUnrecognized:
+        // These parsing kinds are for arguments only.
+        throw ParserError.invalidState
       }
     }
     
@@ -488,7 +438,7 @@ extension ArgumentSet {
   func firstPositional(
     named name: String
   ) -> ArgumentDefinition? {
-    let key = InputKey(rawValue: name)
+    let key = InputKey(name: name, parent: .root)
     return first(where: { $0.help.keys.contains(key) })
   }
   
@@ -496,49 +446,84 @@ extension ArgumentSet {
     from unusedInput: SplitArguments,
     into result: inout ParsedValues
   ) throws {
-    // Filter out the inputs that aren't "whole" arguments, like `-h` and `-i`
-    // from the input `-hi`.
-    var argumentStack = unusedInput.elements.filter {
+    var endOfInput = unusedInput.elements.endIndex
+    
+    // If this argument set includes a definition that should collect all the
+    // post-terminator inputs, capture them before trying to fill other
+    // `@Argument` definitions.
+    if let postTerminatorArg = self.first(where: { def in
+      def.isRepeatingPositional && def.parsingStrategy == .postTerminator
+    }),
+       case let .unary(update) = postTerminatorArg.update,
+       let terminatorIndex = unusedInput.elements.firstIndex(where: \.isTerminator)
+    {
+      for input in unusedInput.elements[(terminatorIndex + 1)...] {
+        // Everything post-terminator is a value, force-unwrapping here is safe:
+        let value = input.value.valueString!
+        try update([.argumentIndex(input.index)], nil, value, &result)
+      }
+      
+      endOfInput = terminatorIndex
+    }
+
+    // Create a stack out of the remaining unused inputs that aren't "partial"
+    // arguments (i.e. the individual components of a `-vix` grouped short
+    // option input).
+    var argumentStack = unusedInput.elements[..<endOfInput].filter {
       $0.index.subIndex == .complete
-    }.map {
-      (InputOrigin.Element.argumentIndex($0.index), $0)
     }[...]
-    
     guard !argumentStack.isEmpty else { return }
-    
-    /// Pops arguments until reaching one that is a value (i.e., isn't dash-
-    /// prefixed).
-    func skipNonValues() {
-      while argumentStack.first?.1.isValue == false {
-        _ = argumentStack.popFirst()
+        
+    /// Pops arguments off the stack until the next valid value. Skips over
+    /// dash-prefixed inputs unless `unconditional` is `true`.
+    func next(unconditional: Bool) -> SplitArguments.Element? {
+      while let arg = argumentStack.popFirst() {
+        if arg.isValue || unconditional {
+          return arg
+        }
       }
+
+      return nil
     }
     
-    /// Pops the origin of the next argument to use.
-    ///
-    /// If `unconditional` is false, this skips over any non-"value" input.
-    func next(unconditional: Bool) -> InputOrigin.Element? {
-      if !unconditional {
-        skipNonValues()
-      }
-      return argumentStack.popFirst()?.0
-    }
-    
+    // For all positional arguments, consume one or more inputs.
+    var usedOrigins = InputOrigin()
     ArgumentLoop:
     for argumentDefinition in self {
       guard case .positional = argumentDefinition.kind else { continue }
+      switch argumentDefinition.parsingStrategy {
+      case .default, .allRemainingInput:
+        break
+      default:
+        continue ArgumentLoop
+      }
       guard case let .unary(update) = argumentDefinition.update else {
         preconditionFailure("Shouldn't see a nullary positional argument.")
       }
       let allowOptionsAsInput = argumentDefinition.parsingStrategy == .allRemainingInput
       
       repeat {
-        guard let origin = next(unconditional: allowOptionsAsInput) else {
+        guard let arg = next(unconditional: allowOptionsAsInput) else {
           break ArgumentLoop
         }
+        let origin: InputOrigin.Element = .argumentIndex(arg.index)
         let value = unusedInput.originalInput(at: origin)!
         try update([origin], nil, value, &result)
+        usedOrigins.insert(origin)
       } while argumentDefinition.isRepeatingPositional
+    }
+        
+    // If there's an `.allUnrecognized` argument array, collect leftover args.
+    if let allUnrecognizedArg = self.first(where: { def in
+      def.isRepeatingPositional && def.parsingStrategy == .allUnrecognized
+    }),
+       case let .unary(update) = allUnrecognizedArg.update
+    {
+      while let arg = argumentStack.popFirst() {
+        let origin: InputOrigin.Element = .argumentIndex(arg.index)
+        let value = unusedInput.originalInput(at: origin)!
+        try update([origin], nil, value, &result)
+      }
     }
   }
 }

@@ -140,7 +140,7 @@ extension CommandParser {
   /// possible.
   fileprivate mutating func parseCurrent(_ split: inout SplitArguments) throws -> ParsableCommand {
     // Build the argument set (i.e. information on how to parse):
-    let commandArguments = ArgumentSet(currentNode.element, visibility: .private)
+    let commandArguments = ArgumentSet(currentNode.element, visibility: .private, parent: .root)
     
     // Parse the arguments, ignoring anything unexpected
     let values = try commandArguments.lenientParse(
@@ -325,7 +325,7 @@ extension CommandParser {
     let completionValues = Array(args)
 
     // Generate the argument set and parse the argument to find in the set
-    let argset = ArgumentSet(current.element, visibility: .private)
+    let argset = ArgumentSet(current.element, visibility: .private, parent: .root)
     let parsedArgument = try! parseIndividualArg(argToMatch, at: 0).first!
     
     // Look up the specified argument and retrieve its custom completion function

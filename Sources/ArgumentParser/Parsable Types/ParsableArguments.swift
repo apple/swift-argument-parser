@@ -9,19 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if canImport(Glibc)
-import Glibc
-let _exit: (Int32) -> Never = Glibc.exit
-#elseif canImport(Darwin)
-import Darwin
-let _exit: (Int32) -> Never = Darwin.exit
-#elseif canImport(CRT)
-import CRT
-let _exit: (Int32) -> Never = ucrt._exit
-#elseif canImport(WASILibc)
-import WASILibc
-#endif
-
 /// A type that can be parsed from a program's command-line arguments.
 ///
 /// When you implement a `ParsableArguments` type, all properties must be declared with
@@ -59,14 +46,6 @@ struct _WrappedParsableCommand<P: ParsableArguments>: ParsableCommand {
   
   @OptionGroup var options: P
 }
-
-struct StandardError: TextOutputStream {
-  mutating func write(_ string: String) {
-    for byte in string.utf8 { putc(numericCast(byte), stderr) }
-  }
-}
-
-var standardError = StandardError()
 
 extension ParsableArguments {
   public mutating func validate() throws {}
@@ -208,7 +187,7 @@ extension ParsableArguments {
     withError error: Error? = nil
   ) -> Never {
     guard let error = error else {
-      _exit(ExitCode.success.rawValue)
+      Platform.exit(ExitCode.success.rawValue)
     }
     
     let messageInfo = MessageInfo(error: error, type: self)
@@ -217,10 +196,10 @@ extension ParsableArguments {
       if messageInfo.shouldExitCleanly {
         print(fullText)
       } else {
-        print(fullText, to: &standardError)
+        print(fullText, to: &Platform.standardError)
       }
     }
-    _exit(messageInfo.exitCode.rawValue)
+    Platform.exit(messageInfo.exitCode.rawValue)
   }
   
   /// Parses a new instance of this type from command-line arguments or exits
@@ -269,10 +248,10 @@ extension ArgumentSetProvider {
 }
 
 extension ArgumentSet {
-  init(_ type: ParsableArguments.Type, visibility: ArgumentVisibility) {
+  init(_ type: ParsableArguments.Type, visibility: ArgumentVisibility, parent: InputKey.Parent) {
     #if DEBUG
     do {
-      try type._validate()
+      try type._validate(parent: parent)
     } catch {
       assertionFailure("\(error)")
     }
@@ -280,23 +259,22 @@ extension ArgumentSet {
     
     let a: [ArgumentSet] = Mirror(reflecting: type.init())
       .children
-      .compactMap { child in
-        guard var codingKey = child.label else { return nil }
+      .compactMap { child -> ArgumentSet? in
+        guard let codingKey = child.label else { return nil }
         
         if let parsed = child.value as? ArgumentSetProvider {
           guard parsed._visibility.isAtLeastAsVisible(as: visibility)
             else { return nil }
 
-          // Property wrappers have underscore-prefixed names
-          codingKey = String(codingKey.first == "_"
-                              ? codingKey.dropFirst(1)
-                              : codingKey.dropFirst(0))
-          let key = InputKey(rawValue: codingKey)
+          let key = InputKey(name: codingKey, parent: parent)
           return parsed.argumentSet(for: key)
         } else {
+          let arg = ArgumentDefinition(
+            unparsedKey: codingKey,
+            default: nilOrValue(child.value), parent: parent)
+
           // Save a non-wrapped property as is
-          return ArgumentSet(
-            ArgumentDefinition(unparsedKey: codingKey, default: nilOrValue(child.value)))
+          return ArgumentSet(arg)
         }
       }
     self.init(

@@ -82,10 +82,10 @@ extension ParsableCommand {
   @_disfavoredOverload
   @available(*, deprecated, renamed: "helpMessage(for:includeHidden:columns:)")
   public static func helpMessage(
-    for subcommand: ParsableCommand.Type,
+    for _subcommand: ParsableCommand.Type,
     columns: Int? = nil
   ) -> String {
-    helpMessage(for: subcommand, includeHidden: false, columns: columns)
+    helpMessage(for: _subcommand, includeHidden: false, columns: columns)
   }
 
   /// Returns the text of the help screen for the given subcommand of this
@@ -160,7 +160,7 @@ extension ParsableCommand {
   /// `true` if this command contains any array arguments that are declared
   /// with `.unconditionalRemaining`.
   internal static var includesUnconditionalArguments: Bool {
-    ArgumentSet(self, visibility: .private).contains(where: {
+    ArgumentSet(self, visibility: .private, parent: .root).contains(where: {
       $0.isRepeatingPositional && $0.parsingStrategy == .allRemainingInput
     })
   }
