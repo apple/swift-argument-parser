@@ -6,7 +6,28 @@ Add new items at the end of the relevant section under **Unreleased**.
 
 ## [Unreleased]
 
-*No changes yet.*
+### Additions
+- You can now provide a title in an `@OptionGroup` declaration. Titled option groups are listed separately in the help screen under that title as a heading. ([#492])
+- Two new parsing strategies have been added for `@Argument` array properties:
+
+	- `.allUnrecognized` captures all unrecognized inputs after parsing known flags, options, and arguments.
+	- `.postTerminator` collects any inputs that follow the `--` terminator.
+
+  See the [`ArgumentArrayParsingStrategy` documentation][arrayparse-docs] for more. ([#496])
+- Default values are now supported for `@Argument` or `@Option` properties with optional type, allowing you to initialize those properties with `nil`. Providing a non-`nil` default value results in a warning, since optional properties with non-`nil` defaults don't need to be declared as optionals. ([#477], [#480])
+
+### Changes
+
+- The `.unconditionalRemaining` array parsing strategy has been deprecated and renamed to `.captureForPassthrough`, to better fit its semantic behavior and intended usage. See the [`ArgumentArrayParsingStrategy` documentation][arrayparse-docs] for more. ([#496])
+
+### Fixes
+
+- Invalid `init(from:)` decoding initializers are now correctly diagnosed by ArgumentParser's validators. ([#487])
+- Default values are now correctly displayed as flags for `@Flag` properties with inversions or `EnumerableFlag` types. ([#486])
+- The help display for non-string-backed raw representable types has been corrected to not show raw Swift values. Instead, the help display uses the type's customized `defaultValueDescription` and `allValues` implementations. ([#494])
+- Properties at different levels of a command hierarchy with the same Swift name but different argument names no longer collide. ([#495])
+
+[arrayparse-docs]: https://apple.github.io/swift-argument-parser/documentation/argumentparser/argumentarrayparsingstrategy
 
 ---
 
@@ -763,6 +784,14 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [#474]: https://github.com/apple/swift-argument-parser/pull/474
 [#475]: https://github.com/apple/swift-argument-parser/pull/475
 [#476]: https://github.com/apple/swift-argument-parser/pull/476
+[#477]: https://github.com/apple/swift-argument-parser/pull/477
+[#480]: https://github.com/apple/swift-argument-parser/pull/480
+[#486]: https://github.com/apple/swift-argument-parser/pull/486
+[#487]: https://github.com/apple/swift-argument-parser/pull/487
+[#492]: https://github.com/apple/swift-argument-parser/pull/492
+[#494]: https://github.com/apple/swift-argument-parser/pull/494
+[#495]: https://github.com/apple/swift-argument-parser/pull/495
+[#496]: https://github.com/apple/swift-argument-parser/pull/496
 
 <!-- Link references for contributors -->
 
