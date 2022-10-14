@@ -460,7 +460,7 @@ extension Argument {
     Optional @Arguments with default values should be declared as non-Optional.
     """)
   public init<T>(
-    wrappedValue: Optional<T>,
+    wrappedValue _wrappedValue: Optional<T>,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil
   ) where T: ExpressibleByArgument, Value == Optional<T> {
@@ -471,7 +471,7 @@ extension Argument {
         kind: .positional,
         help: help,
         parsingStrategy: .default,
-        initial: wrappedValue,
+        initial: _wrappedValue,
         completion: completion)
 
       return ArgumentSet(arg)
@@ -541,7 +541,7 @@ extension Argument {
     Optional @Arguments with default values should be declared as non-Optional.
     """)
   public init<T>(
-    wrappedValue: Optional<T>,
+    wrappedValue _wrappedValue: Optional<T>,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
     transform: @escaping (String) throws -> T
@@ -554,7 +554,7 @@ extension Argument {
         help: help,
         parsingStrategy: .default,
         transform: transform,
-        initial: wrappedValue,
+        initial: _wrappedValue,
         completion: completion)
 
       return ArgumentSet(arg)
