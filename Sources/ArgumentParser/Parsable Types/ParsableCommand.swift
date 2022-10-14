@@ -82,10 +82,10 @@ extension ParsableCommand {
   @_disfavoredOverload
   @available(*, deprecated, renamed: "helpMessage(for:includeHidden:columns:)")
   public static func helpMessage(
-    for subcommand: ParsableCommand.Type,
+    for _subcommand: ParsableCommand.Type,
     columns: Int? = nil
   ) -> String {
-    helpMessage(for: subcommand, includeHidden: false, columns: columns)
+    helpMessage(for: _subcommand, includeHidden: false, columns: columns)
   }
 
   /// Returns the text of the help screen for the given subcommand of this
