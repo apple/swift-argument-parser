@@ -84,7 +84,7 @@ extension CommandParser {
 
     switch error {
     case let .noValue(forKey: key):
-      let label = key.rawValue
+      let label = key.name
       guard label != "generateCompletionScript" else { break }
 
       // Retrieve the correct `ArgumentDefinition` for the required transformation
@@ -118,7 +118,7 @@ extension CommandParser {
             try! update(InputOrigin(elements: [.interactive]), name, str, &values)
           }
 
-          if values.elements[.init(rawValue: label)]!.value is [Any] {
+          if values.elements[InputKey(name: label, parent: .root)]!.value is [Any] {
             print("You select '\(strs.joined(separator: "', '"))'.\n")
           } else {
             print("You select '\(strs.last!)'.\n")

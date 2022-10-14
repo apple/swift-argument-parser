@@ -9,6 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+@testable
 import ArgumentParser
 import ArgumentParserToolInfo
 import XCTest
