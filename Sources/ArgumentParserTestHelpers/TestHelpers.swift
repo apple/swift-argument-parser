@@ -232,6 +232,10 @@ extension XCTest {
     exitCode: ExitCode = .success,
     file: StaticString = #file, line: UInt = #line) throws
   {
+    #if os(Windows)
+    throw XCTSkip("Unsupported on this platform")
+    #endif
+
     let arguments = Array(command.dropFirst())
     let commandName = String(command.first!)
     let commandURL = debugURL.appendingPathComponent(commandName)
@@ -286,6 +290,9 @@ extension XCTest {
     expected: String,
     file: StaticString = #file, line: UInt = #line
   ) throws {
+    #if os(Windows)
+    throw XCTSkip("Unsupported on this platform")
+    #endif
 
     let splitCommand = command.split(separator: " ")
     let arguments = splitCommand.dropFirst().map(String.init)
@@ -337,6 +344,10 @@ extension XCTest {
     file: StaticString = #file,
     line: UInt = #line
   ) throws {
+    #if os(Windows)
+    throw XCTSkip("Unsupported on this platform")
+    #endif
+
     let commandURL = debugURL.appendingPathComponent(command)
     var command = [
       "generate-manual", commandURL.path,
