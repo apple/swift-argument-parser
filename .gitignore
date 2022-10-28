@@ -5,3 +5,4 @@
 .swiftpm
 .vscode
 .*.sw?
+*.docc-build
