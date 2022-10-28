@@ -19,7 +19,7 @@ public protocol ExpressibleByArgument {
   /// command-line tool's help screen.
   var defaultValueDescription: String { get }
   
-  /// An array of all possible strings to that can convert to value of this
+  /// An array of all possible strings that can convert to a value of this
   /// type.
   ///
   /// The default implementation of this property returns an empty array.
