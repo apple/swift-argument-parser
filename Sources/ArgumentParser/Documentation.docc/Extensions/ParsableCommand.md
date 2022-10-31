@@ -20,6 +20,8 @@ struct Repeat: ParsableCommand {
 }
 ```
 
+> Note: The Swift compiler uses either the type marked with `@main` or a `main.swift` file as the entry point for an executable program. You can use either one, but not both — rename your `main.swift` file to the name of the command when you add `@main`.
+
 ## Topics
 
 ### Essentials

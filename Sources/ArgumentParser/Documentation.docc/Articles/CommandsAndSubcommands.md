@@ -175,6 +175,8 @@ extension Math.Statistics {
 
 Last but not least, we add the `@main` attribute to the root of our command tree, to tell the compiler to use that as the program's entry point. Upon execution, this parses the command-line arguments, determines whether a subcommand was selected, and then instantiates and calls the `run()` method on that particular subcommand.
 
+> Note: The Swift compiler uses either the type marked with `@main` or a `main.swift` file as the entry point for an executable program. You can use either one, but not both — rename your `main.swift` file to the name of your command when you add `@main`. In this case, rename it to `Math.swift`.
+
 ```swift
 @main
 struct Math: ParsableCommand {
