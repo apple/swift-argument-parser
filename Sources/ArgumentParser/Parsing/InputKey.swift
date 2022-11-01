@@ -72,7 +72,7 @@ struct InputKey: Hashable {
   /// - Parameter codingKey: The base ``CodingKey``
   /// - Parameter path: The list of ``CodingKey`` values that lead to this one. May be empty.
   @inlinable
-  init<C: CodingKey>(codingKey: C, path: [CodingKey]) {
+  init(codingKey: CodingKey, path: [CodingKey]) {
     self.init(name: codingKey.stringValue, parent: Parent(InputKey(path: path)))
   }
   
@@ -113,7 +113,7 @@ extension InputKey {
   ///
   /// - Parameter codingKey: The key to clean.
   /// - Returns: The cleaned key.
-  static func clean<C: CodingKey>(codingKey: C) -> String {
+  static func clean(codingKey: CodingKey) -> String {
     clean(codingKey: codingKey.stringValue)
   }
 }
