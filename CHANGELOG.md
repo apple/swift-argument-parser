@@ -10,6 +10,58 @@ Add new items at the end of the relevant section under **Unreleased**.
 
 ---
 
+## [1.2.0] - 2022-11-08
+
+### Additions
+
+- You can now provide a title in an `@OptionGroup` declaration. Titled option
+  groups are listed separately in the help screen under that title as a
+  heading. ([#492])
+- Two new parsing strategies have been added for `@Argument` array properties:
+
+  - `.allUnrecognized` captures all unrecognized inputs after parsing known
+    flags, options, and arguments.
+	- `.postTerminator` collects any inputs that follow the `--` terminator.
+
+  See the [`ArgumentArrayParsingStrategy` documentation][arrayparse-docs] for
+  more. ([#496])
+- Default values are now supported for `@Argument` or `@Option` properties with
+  optional type, allowing you to initialize those properties with `nil`.
+  Providing a non-`nil` default value results in a warning, since optional
+  properties with non-`nil` defaults don't need to be declared as optionals.
+  ([#477], [#480])
+
+### Changes
+
+- The `.unconditionalRemaining` array parsing strategy has been deprecated and
+  renamed to `.captureForPassthrough`, to better fit its semantic behavior and
+  intended usage. See the [`ArgumentArrayParsingStrategy`
+  documentation][arrayparse-docs] for more. ([#496])
+
+### Fixes
+
+- Invalid `init(from:)` decoding initializers are now correctly diagnosed by
+  ArgumentParser's validators. ([#487])
+- Default values are now correctly displayed as flags for `@Flag` properties
+  with inversions or `EnumerableFlag` types. ([#486])
+- The help display for non-string-backed raw representable types has been
+  corrected to not show raw Swift values. Instead, the help display uses the
+  type's customized `defaultValueDescription` and `allValues` implementations.
+  ([#494])
+- Properties at different levels of a command hierarchy with the same Swift name
+  but different argument names no longer collide. ([#495])
+- The `generate-manual` plugin name is improved when used from within Xcode.
+  ([#505])
+- Documentation fixes and improvements.
+
+The 1.2.0 release includes contributions from [allevato], [clayellis],
+[compnerd], [d-ronnqvist], [natecook1000], [randomeizer], and [rauhul].
+Thank you!
+
+[arrayparse-docs]: https://apple.github.io/swift-argument-parser/documentation/argumentparser/argumentarrayparsingstrategy
+
+---
+
 ## [1.1.4] - 2022-08-26
 
 ### Changes
@@ -691,7 +743,8 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 
 <!-- Link references for releases -->
 
-[Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.1.4...HEAD
+[Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.2.0...HEAD
+[1.2.0]: https://github.com/apple/swift-argument-parser/compare/1.1.4...1.2.0
 [1.1.4]: https://github.com/apple/swift-argument-parser/compare/1.1.3...1.1.4
 [1.1.3]: https://github.com/apple/swift-argument-parser/compare/1.1.2...1.1.3
 [1.1.2]: https://github.com/apple/swift-argument-parser/compare/1.1.1...1.1.2
@@ -763,6 +816,15 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [#474]: https://github.com/apple/swift-argument-parser/pull/474
 [#475]: https://github.com/apple/swift-argument-parser/pull/475
 [#476]: https://github.com/apple/swift-argument-parser/pull/476
+[#477]: https://github.com/apple/swift-argument-parser/pull/477
+[#480]: https://github.com/apple/swift-argument-parser/pull/480
+[#486]: https://github.com/apple/swift-argument-parser/pull/486
+[#487]: https://github.com/apple/swift-argument-parser/pull/487
+[#492]: https://github.com/apple/swift-argument-parser/pull/492
+[#494]: https://github.com/apple/swift-argument-parser/pull/494
+[#495]: https://github.com/apple/swift-argument-parser/pull/495
+[#496]: https://github.com/apple/swift-argument-parser/pull/496
+[#505]: https://github.com/apple/swift-argument-parser/pull/505
 
 <!-- Link references for contributors -->
 
@@ -770,14 +832,17 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [adellibovi]: https://github.com/apple/swift-argument-parser/commits?author=adellibovi
 [aleksey-mashanov]: https://github.com/apple/swift-argument-parser/commits?author=aleksey-mashanov
 [AliSoftware]: https://github.com/apple/swift-argument-parser/commits?author=AliSoftware
+[allevato]: https://github.com/apple/swift-argument-parser/commits?author=allevato
 [artemnovichkov]: https://github.com/apple/swift-argument-parser/commits?author=artemnovichkov
 [atierian]: https://github.com/apple/swift-argument-parser/commits?author=atierian
 [BradLarson]: https://github.com/apple/swift-argument-parser/commits?author=BradLarson
 [buttaface]: https://github.com/apple/swift-argument-parser/commits?author=buttaface
+[clayellis]: https://github.com/apple/swift-argument-parser/commits?author=clayellis
 [CodaFi]: https://github.com/apple/swift-argument-parser/commits?author=CodaFi
 [compnerd]: https://github.com/apple/swift-argument-parser/commits?author=compnerd
 [CraigSiemens]: https://github.com/apple/swift-argument-parser/commits?author=CraigSiemens
 [CypherPoet]: https://github.com/apple/swift-argument-parser/commits?author=CypherPoet
+[d-ronnqvist]: https://github.com/apple/swift-argument-parser/commits?author=d-ronnqvist
 [damuellen]: https://github.com/apple/swift-argument-parser/commits?author=damuellen
 [dduan]: https://github.com/apple/swift-argument-parser/commits?author=dduan
 [dirtyhabits97]: https://github.com/apple/swift-argument-parser/commits?author=dirtyhabits97
@@ -820,6 +885,7 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [NicFontana]: https://github.com/apple/swift-argument-parser/commits?author=NicFontana
 [owenv]: https://github.com/apple/swift-argument-parser/commits?author=owenv
 [pegasuze]: https://github.com/apple/swift-argument-parser/commits?author=pegasuze
+[randomeizer]: https://github.com/apple/swift-argument-parser/commits?author=randomeizer
 [rauhul]: https://github.com/apple/swift-argument-parser/commits?author=rauhul
 [rjstelling]: https://github.com/apple/swift-argument-parser/commits?author=rjstelling
 [Sajjon]: https://github.com/apple/swift-argument-parser/commits?author=Sajjon
