@@ -224,7 +224,7 @@
         },
         {
           "anchor" : "Controlling-Argument-Visibility",
-          "level" : 3,
+          "level" : 2,
           "text" : "Controlling Argument Visibility",
           "type" : "heading"
         },
@@ -378,6 +378,112 @@
             "                          Use the remote access token. (experimental)",
             "  --experimental-advanced-security",
             "                          Use advanced security. (experimental)",
+            "  -h, --help              Show help information."
+          ],
+          "syntax" : null,
+          "type" : "codeListing"
+        },
+        {
+          "anchor" : "Grouping-Arguments-in-the-Help-Screen",
+          "level" : 2,
+          "text" : "Grouping Arguments in the Help Screen",
+          "type" : "heading"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "When you provide a title in an ",
+              "type" : "text"
+            },
+            {
+              "code" : "@OptionGroup",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " declaration, that type’s",
+              "type" : "text"
+            },
+            {
+              "text" : " ",
+              "type" : "text"
+            },
+            {
+              "text" : "properties are grouped together under your title in the help screen.",
+              "type" : "text"
+            },
+            {
+              "text" : " ",
+              "type" : "text"
+            },
+            {
+              "text" : "For example, this command bundles similar arguments together under a",
+              "type" : "text"
+            },
+            {
+              "text" : " ",
+              "type" : "text"
+            },
+            {
+              "text" : "“Build Options” title:",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "code" : [
+            "struct BuildOptions: ParsableArguments {",
+            "    @Option(help: \"A setting to pass to the compiler.\")",
+            "    var compilerSetting: [String] = []",
+            "",
+            "    @Option(help: \"A setting to pass to the linker.\")",
+            "    var linkerSetting: [String] = []",
+            "}",
+            "",
+            "struct Example: ParsableCommand {",
+            "    @Argument(help: \"The input file to process.\")",
+            "    var inputFile: String",
+            "",
+            "    @Flag(help: \"Show extra output.\")",
+            "    var verbose: Bool = false",
+            "",
+            "    @Option(help: \"The path to a configuration file.\")",
+            "    var configFile: String?",
+            "",
+            "    @OptionGroup(title: \"Build Options\")",
+            "    var buildOptions: BuildOptions",
+            "}"
+          ],
+          "syntax" : "swift",
+          "type" : "codeListing"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "This grouping is reflected in the command’s help screen:",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "code" : [
+            "% example --help",
+            "USAGE: example <input-file> [--verbose] [--config-file <config-file>] [--compiler-setting <compiler-setting> ...] [--linker-setting <linker-setting> ...]",
+            "",
+            "ARGUMENTS:",
+            "  <input-file>            The input file to process.",
+            "",
+            "BUILD OPTIONS:",
+            "  --compiler-setting <compiler-setting>",
+            "                          A setting to pass to the compiler.",
+            "  --linker-setting <linker-setting>",
+            "                          A setting to pass to the linker.",
+            "",
+            "OPTIONS:",
+            "  --verbose               Show extra output.",
+            "  --config-file <config-file>",
+            "                          The path to a configuration file.",
             "  -h, --help              Show help information."
           ],
           "syntax" : null,

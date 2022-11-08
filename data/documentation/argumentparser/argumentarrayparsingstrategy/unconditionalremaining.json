@@ -1,26 +1,4 @@
 {
-  "abstract" : [
-    {
-      "text" : "Parse all remaining inputs after parsing any known options or flags,",
-      "type" : "text"
-    },
-    {
-      "text" : " ",
-      "type" : "text"
-    },
-    {
-      "text" : "including dash-prefixed inputs and the ",
-      "type" : "text"
-    },
-    {
-      "code" : "--",
-      "type" : "codeVoice"
-    },
-    {
-      "text" : " terminator.",
-      "type" : "text"
-    }
-  ],
   "hierarchy" : {
     "paths" : [
       [
@@ -72,6 +50,9 @@
       {
         "name" : "ArgumentParser"
       }
+    ],
+    "platforms" : [
+
     ],
     "role" : "symbol",
     "roleHeading" : "Type Property",
@@ -135,211 +116,6 @@
         }
       ],
       "kind" : "declarations"
-    },
-    {
-      "content" : [
-        {
-          "anchor" : "discussion",
-          "level" : 2,
-          "text" : "Discussion",
-          "type" : "heading"
-        },
-        {
-          "inlineContent" : [
-            {
-              "text" : "When you use the ",
-              "type" : "text"
-            },
-            {
-              "code" : "unconditionalRemaining",
-              "type" : "codeVoice"
-            },
-            {
-              "text" : " parsing strategy, the parser",
-              "type" : "text"
-            },
-            {
-              "text" : " ",
-              "type" : "text"
-            },
-            {
-              "text" : "stops parsing flags and options as soon as it encounters a positional",
-              "type" : "text"
-            },
-            {
-              "text" : " ",
-              "type" : "text"
-            },
-            {
-              "text" : "argument or an unrecognized flag. For example, for a parsable type",
-              "type" : "text"
-            },
-            {
-              "text" : " ",
-              "type" : "text"
-            },
-            {
-              "text" : "defined as following:",
-              "type" : "text"
-            }
-          ],
-          "type" : "paragraph"
-        },
-        {
-          "code" : [
-            "struct Options: ParsableArguments {",
-            "    @Flag",
-            "    var verbose: Bool = false",
-            "",
-            "    @Argument(parsing: .unconditionalRemaining)",
-            "    var words: [String] = []",
-            "}"
-          ],
-          "syntax" : null,
-          "type" : "codeListing"
-        },
-        {
-          "inlineContent" : [
-            {
-              "text" : "Parsing the input ",
-              "type" : "text"
-            },
-            {
-              "code" : "--verbose one two --verbose",
-              "type" : "codeVoice"
-            },
-            {
-              "text" : " includes the second",
-              "type" : "text"
-            },
-            {
-              "text" : " ",
-              "type" : "text"
-            },
-            {
-              "code" : "--verbose",
-              "type" : "codeVoice"
-            },
-            {
-              "text" : " flag in ",
-              "type" : "text"
-            },
-            {
-              "code" : "words",
-              "type" : "codeVoice"
-            },
-            {
-              "text" : ", resulting in",
-              "type" : "text"
-            },
-            {
-              "text" : " ",
-              "type" : "text"
-            },
-            {
-              "code" : "Options(verbose: true, words: [\"one\", \"two\", \"--verbose\"])",
-              "type" : "codeVoice"
-            },
-            {
-              "text" : ".",
-              "type" : "text"
-            }
-          ],
-          "type" : "paragraph"
-        },
-        {
-          "content" : [
-            {
-              "inlineContent" : [
-                {
-                  "text" : "This parsing strategy can be surprising for users, particularly",
-                  "type" : "text"
-                },
-                {
-                  "text" : " ",
-                  "type" : "text"
-                },
-                {
-                  "text" : "when combined with options and flags. Prefer ",
-                  "type" : "text"
-                },
-                {
-                  "code" : "remaining",
-                  "type" : "codeVoice"
-                },
-                {
-                  "text" : " whenever",
-                  "type" : "text"
-                },
-                {
-                  "text" : " ",
-                  "type" : "text"
-                },
-                {
-                  "text" : "possible, since users can always terminate options and flags with",
-                  "type" : "text"
-                },
-                {
-                  "text" : " ",
-                  "type" : "text"
-                },
-                {
-                  "text" : "the ",
-                  "type" : "text"
-                },
-                {
-                  "code" : "--",
-                  "type" : "codeVoice"
-                },
-                {
-                  "text" : " terminator. With the ",
-                  "type" : "text"
-                },
-                {
-                  "code" : "remaining",
-                  "type" : "codeVoice"
-                },
-                {
-                  "text" : " parsing strategy, the input",
-                  "type" : "text"
-                },
-                {
-                  "text" : " ",
-                  "type" : "text"
-                },
-                {
-                  "code" : "--verbose -- one two --verbose",
-                  "type" : "codeVoice"
-                },
-                {
-                  "text" : " would have the same result as the above",
-                  "type" : "text"
-                },
-                {
-                  "text" : " ",
-                  "type" : "text"
-                },
-                {
-                  "text" : "example: ",
-                  "type" : "text"
-                },
-                {
-                  "code" : "Options(verbose: true, words: [\"one\", \"two\", \"--verbose\"])",
-                  "type" : "codeVoice"
-                },
-                {
-                  "text" : ".",
-                  "type" : "text"
-                }
-              ],
-              "type" : "paragraph"
-            }
-          ],
-          "style" : "note",
-          "type" : "aside"
-        }
-      ],
-      "kind" : "content"
     }
   ],
   "schemaVersion" : {
@@ -456,27 +232,9 @@
 },
 "doc://ArgumentParser/documentation/ArgumentParser/ArgumentArrayParsingStrategy/unconditionalRemaining": {
   "abstract" : [
-    {
-      "text" : "Parse all remaining inputs after parsing any known options or flags,",
-      "type" : "text"
-    },
-    {
-      "text" : " ",
-      "type" : "text"
-    },
-    {
-      "text" : "including dash-prefixed inputs and the ",
-      "type" : "text"
-    },
-    {
-      "code" : "--",
-      "type" : "codeVoice"
-    },
-    {
-      "text" : " terminator.",
-      "type" : "text"
-    }
+
   ],
+  "deprecated" : true,
   "fragments" : [
     {
       "kind" : "keyword",

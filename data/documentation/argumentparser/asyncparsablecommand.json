@@ -188,7 +188,7 @@
                       "type" : "codeVoice"
                     },
                     {
-                      "text" : ", even if that command doesn’t use asynchronous code.",
+                      "text" : ", whether or not that command uses asynchronous code.",
                       "type" : "text"
                     }
                   ],
@@ -254,7 +254,7 @@
                       "type" : "codeVoice"
                     },
                     {
-                      "text" : ". No changes are needed for commands that don’t use asynchronous code.",
+                      "text" : ". No changes are needed for subcommands that don’t use asynchronous code.",
                       "type" : "text"
                     }
                   ],
@@ -264,6 +264,99 @@
             }
           ],
           "type" : "orderedList"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "The following example declares a ",
+              "type" : "text"
+            },
+            {
+              "code" : "CountLines",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " command that uses Foundation’s asynchronous ",
+              "type" : "text"
+            },
+            {
+              "code" : "FileHandle.AsyncBytes",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " to read the lines from a file:",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "code" : [
+            "import Foundation",
+            "",
+            "@main",
+            "struct CountLines: AsyncParsableCommand {",
+            "    @Argument(transform: URL.init(fileURLWithPath:))",
+            "    var inputFile: URL",
+            "",
+            "    mutating func run() async throws {",
+            "        let fileHandle = try FileHandle(forReadingFrom: inputFile)",
+            "        let lineCount = try await fileHandle.bytes.lines.reduce(into: 0) ",
+            "            { count, _ in count += 1 }",
+            "        print(lineCount)",
+            "    }",
+            "}"
+          ],
+          "syntax" : "swift",
+          "type" : "codeListing"
+        },
+        {
+          "content" : [
+            {
+              "inlineContent" : [
+                {
+                  "text" : "The Swift compiler uses either the type marked with ",
+                  "type" : "text"
+                },
+                {
+                  "code" : "@main",
+                  "type" : "codeVoice"
+                },
+                {
+                  "text" : " or a ",
+                  "type" : "text"
+                },
+                {
+                  "code" : "main.swift",
+                  "type" : "codeVoice"
+                },
+                {
+                  "text" : " file as the entry point for an executable program. You can use either one, but not both — rename your ",
+                  "type" : "text"
+                },
+                {
+                  "code" : "main.swift",
+                  "type" : "codeVoice"
+                },
+                {
+                  "text" : " file to the name of the command when you add ",
+                  "type" : "text"
+                },
+                {
+                  "code" : "@main",
+                  "type" : "codeVoice"
+                },
+                {
+                  "text" : ".",
+                  "type" : "text"
+                }
+              ],
+              "type" : "paragraph"
+            }
+          ],
+          "name" : "Note",
+          "style" : "note",
+          "type" : "aside"
         },
         {
           "anchor" : "Usage-in-Swift-55",

@@ -82,6 +82,15 @@
   "sections" : [
 
   ],
+  "seeAlsoSections" : [
+    {
+      "generated" : true,
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ParsableArguments\/helpMessage(columns:)"
+      ],
+      "title" : "Infrequently Used APIs"
+    }
+  ],
   "variants" : [
     {
       "paths" : [
@@ -143,6 +152,69 @@
   "title" : "ParsableArguments",
   "type" : "topic",
   "url" : "\/documentation\/argumentparser\/parsablearguments"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ParsableArguments/helpMessage(columns:)": {
+  "abstract" : [
+    {
+      "text" : "Returns the text of the help screen for this type.",
+      "type" : "text"
+    }
+  ],
+  "deprecated" : true,
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "static"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "keyword",
+      "text" : "func"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "helpMessage"
+    },
+    {
+      "kind" : "text",
+      "text" : "("
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "columns"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:Si",
+      "text" : "Int"
+    },
+    {
+      "kind" : "text",
+      "text" : "?) -> "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:SS",
+      "text" : "String"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ParsableArguments\/helpMessage(columns:)",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "helpMessage(columns:)",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/parsablearguments\/helpmessage(columns:)"
 },
 "doc://ArgumentParser/documentation/ArgumentParser/ParsableArguments/init()": {
   "abstract" : [

@@ -573,6 +573,62 @@
           "type" : "paragraph"
         },
         {
+          "content" : [
+            {
+              "inlineContent" : [
+                {
+                  "text" : "The Swift compiler uses either the type marked with ",
+                  "type" : "text"
+                },
+                {
+                  "code" : "@main",
+                  "type" : "codeVoice"
+                },
+                {
+                  "text" : " or a ",
+                  "type" : "text"
+                },
+                {
+                  "code" : "main.swift",
+                  "type" : "codeVoice"
+                },
+                {
+                  "text" : " file as the entry point for an executable program. You can use either one, but not both — rename your ",
+                  "type" : "text"
+                },
+                {
+                  "code" : "main.swift",
+                  "type" : "codeVoice"
+                },
+                {
+                  "text" : " file to the name of your command when you add ",
+                  "type" : "text"
+                },
+                {
+                  "code" : "@main",
+                  "type" : "codeVoice"
+                },
+                {
+                  "text" : ". In this case, rename it to ",
+                  "type" : "text"
+                },
+                {
+                  "code" : "Math.swift",
+                  "type" : "codeVoice"
+                },
+                {
+                  "text" : ".",
+                  "type" : "text"
+                }
+              ],
+              "type" : "paragraph"
+            }
+          ],
+          "name" : "Note",
+          "style" : "note",
+          "type" : "aside"
+        },
+        {
           "code" : [
             "@main",
             "struct Math: ParsableCommand {",

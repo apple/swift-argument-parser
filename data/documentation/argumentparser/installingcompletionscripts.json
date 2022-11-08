@@ -133,7 +133,7 @@
             {
               "inlineContent" : [
                 {
-                  "text" : "Your completion script must have the following filename format: ",
+                  "text" : "",
                   "type" : "text"
                 },
                 {
@@ -148,6 +148,7 @@
               "type" : "paragraph"
             }
           ],
+          "name" : "Your completion script must have the following filename format",
           "style" : "note",
           "type" : "aside"
         },

@@ -475,7 +475,7 @@
     },
     {
       "kind" : "genericParameter",
-      "text" : "Element"
+      "text" : "T"
     },
     {
       "kind" : "text",
@@ -560,7 +560,15 @@
 "doc://ArgumentParser/documentation/ArgumentParser/Option/init(name:parsing:help:completion:transform:)-74hnp": {
   "abstract" : [
     {
-      "text" : "Creates an array property with no default value that reads its values from zero or more labeled options, parsing each element with the given closure.",
+      "text" : "Creates an array property with no default value that reads its values from",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "text" : "zero or more labeled options, parsing each element with the given closure.",
       "type" : "text"
     }
   ],
@@ -575,7 +583,7 @@
     },
     {
       "kind" : "genericParameter",
-      "text" : "Element"
+      "text" : "T"
     },
     {
       "kind" : "text",
@@ -676,7 +684,7 @@
     },
     {
       "kind" : "typeIdentifier",
-      "text" : "Element"
+      "text" : "T"
     },
     {
       "kind" : "text",
@@ -716,7 +724,7 @@
     },
     {
       "kind" : "genericParameter",
-      "text" : "Element"
+      "text" : "T"
     },
     {
       "kind" : "text",
@@ -728,15 +736,24 @@
     },
     {
       "kind" : "text",
-      "text" : ": ["
+      "text" : ": "
     },
     {
       "kind" : "typeIdentifier",
-      "text" : "Element"
+      "preciseIdentifier" : "s:Sa",
+      "text" : "Array"
     },
     {
       "kind" : "text",
-      "text" : "], "
+      "text" : "<"
+    },
+    {
+      "kind" : "typeIdentifier",
+      "text" : "T"
+    },
+    {
+      "kind" : "text",
+      "text" : ">, "
     },
     {
       "kind" : "externalParam",
@@ -840,7 +857,7 @@
     },
     {
       "kind" : "genericParameter",
-      "text" : "Element"
+      "text" : "T"
     },
     {
       "kind" : "text",
@@ -852,15 +869,24 @@
     },
     {
       "kind" : "text",
-      "text" : ": ["
+      "text" : ": "
     },
     {
       "kind" : "typeIdentifier",
-      "text" : "Element"
+      "preciseIdentifier" : "s:Sa",
+      "text" : "Array"
     },
     {
       "kind" : "text",
-      "text" : "], "
+      "text" : "<"
+    },
+    {
+      "kind" : "typeIdentifier",
+      "text" : "T"
+    },
+    {
+      "kind" : "text",
+      "text" : ">, "
     },
     {
       "kind" : "externalParam",
@@ -957,7 +983,7 @@
     },
     {
       "kind" : "typeIdentifier",
-      "text" : "Element"
+      "text" : "T"
     },
     {
       "kind" : "text",

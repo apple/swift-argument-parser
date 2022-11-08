@@ -1,7 +1,7 @@
 {
   "abstract" : [
     {
-      "text" : "Creates a property with no default value, parsing with the given closure.",
+      "text" : "Creates a property with no default value.",
       "type" : "text"
     }
   ],
@@ -345,20 +345,6 @@
             }
           ],
           "name" : "completion"
-        },
-        {
-          "content" : [
-            {
-              "inlineContent" : [
-                {
-                  "text" : "A closure that converts a string into this property’s type or throws an error.",
-                  "type" : "text"
-                }
-              ],
-              "type" : "paragraph"
-            }
-          ],
-          "name" : "transform"
         }
       ]
     },
@@ -381,7 +367,7 @@
               "type" : "codeVoice"
             },
             {
-              "text" : " with no default value such as:",
+              "text" : " without a default value such as:",
               "type" : "text"
             }
           ],
@@ -389,8 +375,7 @@
         },
         {
           "code" : [
-            "@Option(transform: baz)",
-            "var foo: String"
+            "@Option var foo: String"
           ],
           "syntax" : "swift",
           "type" : "codeListing"
@@ -411,11 +396,12 @@
     {
       "generated" : true,
       "identifiers" : [
-        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Option\/init(name:parsing:help:completion:)-4yske",
         "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Option\/init(name:parsing:help:completion:)-7slrf",
-        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Option\/init(wrappedValue:name:parsing:help:completion:)-7ilku",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Option\/init(name:parsing:help:completion:)-5k0ug",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Option\/init(name:parsing:help:completion:transform:)-25g7b",
         "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Option\/init(wrappedValue:name:parsing:help:completion:transform:)-2llve",
-        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/SingleValueParsingStrategy"
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/SingleValueParsingStrategy",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Option\/init(wrappedValue:name:parsing:help:completion:)-7xcum"
       ],
       "title" : "Single Options"
     }
@@ -592,45 +578,13 @@
   "type" : "topic",
   "url" : "\/documentation\/argumentparser\/option"
 },
-"doc://ArgumentParser/documentation/ArgumentParser/Option/init(name:parsing:help:completion:)-4yske": {
+"doc://ArgumentParser/documentation/ArgumentParser/Option/init(name:parsing:help:completion:)-5k0ug": {
   "abstract" : [
     {
       "text" : "Creates a property with no default value.",
       "type" : "text"
     }
   ],
-  "conformance" : {
-    "availabilityPrefix" : [
-      {
-        "text" : "Available when",
-        "type" : "text"
-      }
-    ],
-    "conformancePrefix" : [
-      {
-        "text" : "Conforms when",
-        "type" : "text"
-      }
-    ],
-    "constraints" : [
-      {
-        "code" : "Value",
-        "type" : "codeVoice"
-      },
-      {
-        "text" : " conforms to ",
-        "type" : "text"
-      },
-      {
-        "code" : "ExpressibleByArgument",
-        "type" : "codeVoice"
-      },
-      {
-        "text" : ".",
-        "type" : "text"
-      }
-    ]
-  },
   "fragments" : [
     {
       "kind" : "identifier",
@@ -709,12 +663,12 @@
       "text" : "?)"
     }
   ],
-  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Option\/init(name:parsing:help:completion:)-4yske",
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Option\/init(name:parsing:help:completion:)-5k0ug",
   "kind" : "symbol",
   "role" : "symbol",
   "title" : "init(name:parsing:help:completion:)",
   "type" : "topic",
-  "url" : "\/documentation\/argumentparser\/option\/init(name:parsing:help:completion:)-4yske"
+  "url" : "\/documentation\/argumentparser\/option\/init(name:parsing:help:completion:)-5k0ug"
 },
 "doc://ArgumentParser/documentation/ArgumentParser/Option/init(name:parsing:help:completion:)-7slrf": {
   "abstract" : [
@@ -816,10 +770,143 @@
   "type" : "topic",
   "url" : "\/documentation\/argumentparser\/option\/init(name:parsing:help:completion:)-7slrf"
 },
-"doc://ArgumentParser/documentation/ArgumentParser/Option/init(name:parsing:help:completion:transform:)-2wf44": {
+"doc://ArgumentParser/documentation/ArgumentParser/Option/init(name:parsing:help:completion:transform:)-25g7b": {
   "abstract" : [
     {
       "text" : "Creates a property with no default value, parsing with the given closure.",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "identifier",
+      "text" : "init"
+    },
+    {
+      "kind" : "text",
+      "text" : "<"
+    },
+    {
+      "kind" : "genericParameter",
+      "text" : "T"
+    },
+    {
+      "kind" : "text",
+      "text" : ">("
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "name"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser17NameSpecificationV",
+      "text" : "NameSpecification"
+    },
+    {
+      "kind" : "text",
+      "text" : ", "
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "parsing"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser26SingleValueParsingStrategyV",
+      "text" : "SingleValueParsingStrategy"
+    },
+    {
+      "kind" : "text",
+      "text" : ", "
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "help"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser0A4HelpV",
+      "text" : "ArgumentHelp"
+    },
+    {
+      "kind" : "text",
+      "text" : "?, "
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "completion"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:14ArgumentParser14CompletionKindV",
+      "text" : "CompletionKind"
+    },
+    {
+      "kind" : "text",
+      "text" : "?, "
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "transform"
+    },
+    {
+      "kind" : "text",
+      "text" : ": ("
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:SS",
+      "text" : "String"
+    },
+    {
+      "kind" : "text",
+      "text" : ") "
+    },
+    {
+      "kind" : "keyword",
+      "text" : "throws"
+    },
+    {
+      "kind" : "text",
+      "text" : " -> "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "text" : "T"
+    },
+    {
+      "kind" : "text",
+      "text" : ")"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Option\/init(name:parsing:help:completion:transform:)-25g7b",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "init(name:parsing:help:completion:transform:)",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/option\/init(name:parsing:help:completion:transform:)-25g7b"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/Option/init(name:parsing:help:completion:transform:)-2wf44": {
+  "abstract" : [
+    {
+      "text" : "Creates a property with no default value.",
       "type" : "text"
     }
   ],
@@ -941,45 +1028,13 @@
   "type" : "topic",
   "url" : "\/documentation\/argumentparser\/option\/init(name:parsing:help:completion:transform:)-2wf44"
 },
-"doc://ArgumentParser/documentation/ArgumentParser/Option/init(wrappedValue:name:parsing:help:completion:)-7ilku": {
+"doc://ArgumentParser/documentation/ArgumentParser/Option/init(wrappedValue:name:parsing:help:completion:)-7xcum": {
   "abstract" : [
     {
       "text" : "Creates a property with a default value provided by standard Swift default value syntax.",
       "type" : "text"
     }
   ],
-  "conformance" : {
-    "availabilityPrefix" : [
-      {
-        "text" : "Available when",
-        "type" : "text"
-      }
-    ],
-    "conformancePrefix" : [
-      {
-        "text" : "Conforms when",
-        "type" : "text"
-      }
-    ],
-    "constraints" : [
-      {
-        "code" : "Value",
-        "type" : "codeVoice"
-      },
-      {
-        "text" : " conforms to ",
-        "type" : "text"
-      },
-      {
-        "code" : "ExpressibleByArgument",
-        "type" : "codeVoice"
-      },
-      {
-        "text" : ".",
-        "type" : "text"
-      }
-    ]
-  },
   "fragments" : [
     {
       "kind" : "identifier",
@@ -1074,17 +1129,17 @@
       "text" : "?)"
     }
   ],
-  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Option\/init(wrappedValue:name:parsing:help:completion:)-7ilku",
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/Option\/init(wrappedValue:name:parsing:help:completion:)-7xcum",
   "kind" : "symbol",
   "role" : "symbol",
   "title" : "init(wrappedValue:name:parsing:help:completion:)",
   "type" : "topic",
-  "url" : "\/documentation\/argumentparser\/option\/init(wrappedvalue:name:parsing:help:completion:)-7ilku"
+  "url" : "\/documentation\/argumentparser\/option\/init(wrappedvalue:name:parsing:help:completion:)-7xcum"
 },
 "doc://ArgumentParser/documentation/ArgumentParser/Option/init(wrappedValue:name:parsing:help:completion:transform:)-2llve": {
   "abstract" : [
     {
-      "text" : "Creates a property with a default value provided by standard Swift default value syntax, parsing with the given closure.",
+      "text" : "Creates a property with a default value provided by standard Swift default value syntax.",
       "type" : "text"
     }
   ],

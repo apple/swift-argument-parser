@@ -165,7 +165,7 @@
             "    var phrase: String",
             "",
             "    @Option(help: \"The number of times to repeat 'phrase'.\")",
-            "    var count: Int?",
+            "    var count: Int? = nil",
             "",
             "    mutating func run() throws {",
             "        let repeatCount = count ?? 2",
@@ -177,6 +177,54 @@
           ],
           "syntax" : "swift",
           "type" : "codeListing"
+        },
+        {
+          "content" : [
+            {
+              "inlineContent" : [
+                {
+                  "text" : "The Swift compiler uses either the type marked with ",
+                  "type" : "text"
+                },
+                {
+                  "code" : "@main",
+                  "type" : "codeVoice"
+                },
+                {
+                  "text" : " or a ",
+                  "type" : "text"
+                },
+                {
+                  "code" : "main.swift",
+                  "type" : "codeVoice"
+                },
+                {
+                  "text" : " file as the entry point for an executable program. You can use either one, but not both — rename your ",
+                  "type" : "text"
+                },
+                {
+                  "code" : "main.swift",
+                  "type" : "codeVoice"
+                },
+                {
+                  "text" : " file to the name of the command when you add ",
+                  "type" : "text"
+                },
+                {
+                  "code" : "@main",
+                  "type" : "codeVoice"
+                },
+                {
+                  "text" : ".",
+                  "type" : "text"
+                }
+              ],
+              "type" : "paragraph"
+            }
+          ],
+          "name" : "Note",
+          "style" : "note",
+          "type" : "aside"
         }
       ],
       "kind" : "content"
@@ -261,12 +309,6 @@
         "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ParsableCommand\/parseAsRoot(_:)"
       ],
       "title" : "Manually Parsing Input"
-    },
-    {
-      "identifiers" : [
-        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ParsableCommand\/helpMessage(for:columns:)"
-      ],
-      "title" : "Type Methods"
     }
   ],
   "variants" : [
@@ -580,94 +622,6 @@
   "title" : "configuration",
   "type" : "topic",
   "url" : "\/documentation\/argumentparser\/parsablecommand\/configuration-35km1"
-},
-"doc://ArgumentParser/documentation/ArgumentParser/ParsableCommand/helpMessage(for:columns:)": {
-  "abstract" : [
-    {
-      "text" : "Returns the text of the help screen for the given subcommand of this",
-      "type" : "text"
-    },
-    {
-      "text" : " ",
-      "type" : "text"
-    },
-    {
-      "text" : "command.",
-      "type" : "text"
-    }
-  ],
-  "deprecated" : true,
-  "fragments" : [
-    {
-      "kind" : "keyword",
-      "text" : "static"
-    },
-    {
-      "kind" : "text",
-      "text" : " "
-    },
-    {
-      "kind" : "keyword",
-      "text" : "func"
-    },
-    {
-      "kind" : "text",
-      "text" : " "
-    },
-    {
-      "kind" : "identifier",
-      "text" : "helpMessage"
-    },
-    {
-      "kind" : "text",
-      "text" : "("
-    },
-    {
-      "kind" : "externalParam",
-      "text" : "for"
-    },
-    {
-      "kind" : "text",
-      "text" : ": "
-    },
-    {
-      "kind" : "typeIdentifier",
-      "preciseIdentifier" : "s:14ArgumentParser15ParsableCommandP",
-      "text" : "ParsableCommand"
-    },
-    {
-      "kind" : "text",
-      "text" : ".Type, "
-    },
-    {
-      "kind" : "externalParam",
-      "text" : "columns"
-    },
-    {
-      "kind" : "text",
-      "text" : ": "
-    },
-    {
-      "kind" : "typeIdentifier",
-      "preciseIdentifier" : "s:Si",
-      "text" : "Int"
-    },
-    {
-      "kind" : "text",
-      "text" : "?) -> "
-    },
-    {
-      "kind" : "typeIdentifier",
-      "preciseIdentifier" : "s:SS",
-      "text" : "String"
-    }
-  ],
-  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ParsableCommand\/helpMessage(for:columns:)",
-  "kind" : "symbol",
-  "role" : "symbol",
-  "title" : "helpMessage(for:columns:)",
-  "type" : "topic",
-  "url" : "\/documentation\/argumentparser\/parsablecommand\/helpmessage(for:columns:)"
 },
 "doc://ArgumentParser/documentation/ArgumentParser/ParsableCommand/helpMessage(for:includeHidden:columns:)": {
   "abstract" : [

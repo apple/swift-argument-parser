@@ -203,15 +203,6 @@
                 "path" : "\/documentation\/argumentparser\/parsablecommand\/parseasroot(_:)",
                 "title" : "static func parseAsRoot([String]?) throws -> ParsableCommand",
                 "type" : "method"
-              },
-              {
-                "title" : "Type Methods",
-                "type" : "groupMarker"
-              },
-              {
-                "path" : "\/documentation\/argumentparser\/parsablecommand\/helpmessage(for:columns:)",
-                "title" : "static func helpMessage(for: ParsableCommand.Type, columns: Int?) -> String",
-                "type" : "method"
               }
             ],
             "path" : "\/documentation\/argumentparser\/parsablecommand",
@@ -294,18 +285,23 @@
                 "type" : "groupMarker"
               },
               {
-                "path" : "\/documentation\/argumentparser\/argument\/init(help:completion:)-6pqzn",
+                "path" : "\/documentation\/argumentparser\/argument\/init(help:completion:)-6mld0",
                 "title" : "init(help: ArgumentHelp?, completion: CompletionKind?)",
-                "type" : "init"
-              },
-              {
-                "path" : "\/documentation\/argumentparser\/argument\/init(help:completion:transform:)",
-                "title" : "init(help: ArgumentHelp?, completion: CompletionKind?, transform: (String) throws -> Value)",
                 "type" : "init"
               },
               {
                 "path" : "\/documentation\/argumentparser\/argument\/init(help:completion:)-4p94d",
                 "title" : "init<T>(help: ArgumentHelp?, completion: CompletionKind?)",
+                "type" : "init"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/argument\/init(help:completion:transform:)-3fjtc",
+                "title" : "init(help: ArgumentHelp?, completion: CompletionKind?, transform: (String) throws -> Value)",
+                "type" : "init"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/argument\/init(help:completion:transform:)-7yn32",
+                "title" : "init<T>(help: ArgumentHelp?, completion: CompletionKind?, transform: (String) throws -> T)",
                 "type" : "init"
               },
               {
@@ -324,34 +320,53 @@
               },
               {
                 "path" : "\/documentation\/argumentparser\/argument\/init(parsing:help:completion:)",
-                "title" : "init<Element>(parsing: ArgumentArrayParsingStrategy, help: ArgumentHelp?, completion: CompletionKind?)",
+                "title" : "init<T>(parsing: ArgumentArrayParsingStrategy, help: ArgumentHelp?, completion: CompletionKind?)",
                 "type" : "init"
               },
               {
                 "path" : "\/documentation\/argumentparser\/argument\/init(parsing:help:completion:transform:)",
-                "title" : "init<Element>(parsing: ArgumentArrayParsingStrategy, help: ArgumentHelp?, completion: CompletionKind?, transform: (String) throws -> Element)",
+                "title" : "init<T>(parsing: ArgumentArrayParsingStrategy, help: ArgumentHelp?, completion: CompletionKind?, transform: (String) throws -> T)",
                 "type" : "init"
               },
               {
                 "path" : "\/documentation\/argumentparser\/argument\/init(wrappedvalue:parsing:help:completion:)",
-                "title" : "init<Element>(wrappedValue: Value, parsing: ArgumentArrayParsingStrategy, help: ArgumentHelp?, completion: CompletionKind?)",
+                "title" : "init<T>(wrappedValue: Array<T>, parsing: ArgumentArrayParsingStrategy, help: ArgumentHelp?, completion: CompletionKind?)",
                 "type" : "init"
               },
               {
                 "path" : "\/documentation\/argumentparser\/argument\/init(wrappedvalue:parsing:help:completion:transform:)",
-                "title" : "init<Element>(wrappedValue: Value, parsing: ArgumentArrayParsingStrategy, help: ArgumentHelp?, completion: CompletionKind?, transform: (String) throws -> Element)",
+                "title" : "init<T>(wrappedValue: Array<T>, parsing: ArgumentArrayParsingStrategy, help: ArgumentHelp?, completion: CompletionKind?, transform: (String) throws -> T)",
                 "type" : "init"
               },
               {
                 "children" : [
                   {
-                    "title" : "Type Properties",
+                    "title" : "Parsing Strategies",
                     "type" : "groupMarker"
                   },
                   {
                     "path" : "\/documentation\/argumentparser\/argumentarrayparsingstrategy\/remaining",
                     "title" : "static var remaining: ArgumentArrayParsingStrategy",
                     "type" : "property"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/argumentarrayparsingstrategy\/allunrecognized",
+                    "title" : "static var allUnrecognized: ArgumentArrayParsingStrategy",
+                    "type" : "property"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/argumentarrayparsingstrategy\/postterminator",
+                    "title" : "static var postTerminator: ArgumentArrayParsingStrategy",
+                    "type" : "property"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/argumentarrayparsingstrategy\/captureforpassthrough",
+                    "title" : "static var captureForPassthrough: ArgumentArrayParsingStrategy",
+                    "type" : "property"
+                  },
+                  {
+                    "title" : "Deprecated",
+                    "type" : "groupMarker"
                   },
                   {
                     "path" : "\/documentation\/argumentparser\/argumentarrayparsingstrategy\/unconditionalremaining",
@@ -429,13 +444,13 @@
                 "type" : "groupMarker"
               },
               {
-                "path" : "\/documentation\/argumentparser\/option\/init(name:parsing:help:completion:)-4yske",
-                "title" : "init(name: NameSpecification, parsing: SingleValueParsingStrategy, help: ArgumentHelp?, completion: CompletionKind?)",
+                "path" : "\/documentation\/argumentparser\/option\/init(name:parsing:help:completion:)-7slrf",
+                "title" : "init<T>(name: NameSpecification, parsing: SingleValueParsingStrategy, help: ArgumentHelp?, completion: CompletionKind?)",
                 "type" : "init"
               },
               {
-                "path" : "\/documentation\/argumentparser\/option\/init(name:parsing:help:completion:)-7slrf",
-                "title" : "init<T>(name: NameSpecification, parsing: SingleValueParsingStrategy, help: ArgumentHelp?, completion: CompletionKind?)",
+                "path" : "\/documentation\/argumentparser\/option\/init(name:parsing:help:completion:)-5k0ug",
+                "title" : "init(name: NameSpecification, parsing: SingleValueParsingStrategy, help: ArgumentHelp?, completion: CompletionKind?)",
                 "type" : "init"
               },
               {
@@ -444,8 +459,8 @@
                 "type" : "init"
               },
               {
-                "path" : "\/documentation\/argumentparser\/option\/init(wrappedvalue:name:parsing:help:completion:)-7ilku",
-                "title" : "init(wrappedValue: Value, name: NameSpecification, parsing: SingleValueParsingStrategy, help: ArgumentHelp?, completion: CompletionKind?)",
+                "path" : "\/documentation\/argumentparser\/option\/init(name:parsing:help:completion:transform:)-25g7b",
+                "title" : "init<T>(name: NameSpecification, parsing: SingleValueParsingStrategy, help: ArgumentHelp?, completion: CompletionKind?, transform: (String) throws -> T)",
                 "type" : "init"
               },
               {
@@ -500,27 +515,32 @@
                 "type" : "struct"
               },
               {
+                "path" : "\/documentation\/argumentparser\/option\/init(wrappedvalue:name:parsing:help:completion:)-7xcum",
+                "title" : "init(wrappedValue: Value, name: NameSpecification, parsing: SingleValueParsingStrategy, help: ArgumentHelp?, completion: CompletionKind?)",
+                "type" : "init"
+              },
+              {
                 "title" : "Array Options",
                 "type" : "groupMarker"
               },
               {
                 "path" : "\/documentation\/argumentparser\/option\/init(name:parsing:help:completion:)-238hg",
-                "title" : "init<Element>(name: NameSpecification, parsing: ArrayParsingStrategy, help: ArgumentHelp?, completion: CompletionKind?)",
+                "title" : "init<T>(name: NameSpecification, parsing: ArrayParsingStrategy, help: ArgumentHelp?, completion: CompletionKind?)",
                 "type" : "init"
               },
               {
                 "path" : "\/documentation\/argumentparser\/option\/init(name:parsing:help:completion:transform:)-74hnp",
-                "title" : "init<Element>(name: NameSpecification, parsing: ArrayParsingStrategy, help: ArgumentHelp?, completion: CompletionKind?, transform: (String) throws -> Element)",
+                "title" : "init<T>(name: NameSpecification, parsing: ArrayParsingStrategy, help: ArgumentHelp?, completion: CompletionKind?, transform: (String) throws -> T)",
                 "type" : "init"
               },
               {
                 "path" : "\/documentation\/argumentparser\/option\/init(wrappedvalue:name:parsing:help:completion:)-1dtbf",
-                "title" : "init<Element>(wrappedValue: [Element], name: NameSpecification, parsing: ArrayParsingStrategy, help: ArgumentHelp?, completion: CompletionKind?)",
+                "title" : "init<T>(wrappedValue: Array<T>, name: NameSpecification, parsing: ArrayParsingStrategy, help: ArgumentHelp?, completion: CompletionKind?)",
                 "type" : "init"
               },
               {
                 "path" : "\/documentation\/argumentparser\/option\/init(wrappedvalue:name:parsing:help:completion:transform:)-1kpto",
-                "title" : "init<Element>(wrappedValue: [Element], name: NameSpecification, parsing: ArrayParsingStrategy, help: ArgumentHelp?, completion: CompletionKind?, transform: (String) throws -> Element)",
+                "title" : "init<T>(wrappedValue: Array<T>, name: NameSpecification, parsing: ArrayParsingStrategy, help: ArgumentHelp?, completion: CompletionKind?, transform: (String) throws -> T)",
                 "type" : "init"
               },
               {
@@ -595,6 +615,16 @@
               {
                 "path" : "\/documentation\/argumentparser\/option\/init(wrappedvalue:name:parsing:completion:help:)",
                 "title" : "init(wrappedValue: Value, name: NameSpecification, parsing: SingleValueParsingStrategy, completion: CompletionKind?, help: ArgumentHelp?)",
+                "type" : "init"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/option\/init(wrappedvalue:name:parsing:help:completion:)-4pl7h",
+                "title" : "init<T>(wrappedValue: Optional<T>, name: NameSpecification, parsing: SingleValueParsingStrategy, help: ArgumentHelp?, completion: CompletionKind?)",
+                "type" : "init"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/option\/init(wrappedvalue:name:parsing:help:completion:transform:)-6rqji",
+                "title" : "init<T>(wrappedValue: Optional<T>, name: NameSpecification, parsing: SingleValueParsingStrategy, help: ArgumentHelp?, completion: CompletionKind?, transform: (String) throws -> T)",
                 "type" : "init"
               },
               {
@@ -827,9 +857,18 @@
                 "type" : "groupMarker"
               },
               {
-                "path" : "\/documentation\/argumentparser\/optiongroup\/init(visibility:)",
-                "title" : "init(visibility: ArgumentVisibility)",
+                "path" : "\/documentation\/argumentparser\/optiongroup\/init(title:visibility:)",
+                "title" : "init(title: String, visibility: ArgumentVisibility)",
                 "type" : "init"
+              },
+              {
+                "title" : "Option Group Properties",
+                "type" : "groupMarker"
+              },
+              {
+                "path" : "\/documentation\/argumentparser\/optiongroup\/title",
+                "title" : "var title: String",
+                "type" : "property"
               },
               {
                 "title" : "Infrequently Used APIs",
@@ -1077,10 +1116,6 @@
                 "type" : "init"
               },
               {
-                "title" : "Type Methods",
-                "type" : "groupMarker"
-              },
-              {
                 "path" : "\/documentation\/argumentparser\/parsablearguments\/helpmessage(columns:)",
                 "title" : "static func helpMessage(columns: Int?) -> String",
                 "type" : "method"
@@ -1251,6 +1286,26 @@
                 "path" : "\/documentation\/argumentparser\/argumentvisibility\/private",
                 "title" : "static let `private`: ArgumentVisibility",
                 "type" : "property"
+              },
+              {
+                "title" : "Default Implementations",
+                "type" : "groupMarker"
+              },
+              {
+                "children" : [
+                  {
+                    "title" : "Operators",
+                    "type" : "groupMarker"
+                  },
+                  {
+                    "path" : "\/documentation\/argumentparser\/argumentvisibility\/!=(_:_:)",
+                    "title" : "static func != (Self, Self) -> Bool",
+                    "type" : "op"
+                  }
+                ],
+                "path" : "\/documentation\/argumentparser\/argumentvisibility\/equatable-implementations",
+                "title" : "Equatable Implementations",
+                "type" : "symbol"
               }
             ],
             "path" : "\/documentation\/argumentparser\/argumentvisibility",
@@ -1394,12 +1449,12 @@
                   {
                     "children" : [
                       {
-                        "path" : "\/documentation\/argumentparser\/expressiblebyargument\/defaultvaluedescription-940zv",
+                        "path" : "\/documentation\/argumentparser\/expressiblebyargument\/defaultvaluedescription-2vi00",
                         "title" : "var defaultValueDescription: String",
                         "type" : "property"
                       },
                       {
-                        "path" : "\/documentation\/argumentparser\/expressiblebyargument\/defaultvaluedescription-1dv6u",
+                        "path" : "\/documentation\/argumentparser\/expressiblebyargument\/defaultvaluedescription-940zv",
                         "title" : "var defaultValueDescription: String",
                         "type" : "property"
                       }
@@ -1421,17 +1476,17 @@
                   {
                     "children" : [
                       {
-                        "path" : "\/documentation\/argumentparser\/expressiblebyargument\/allvaluestrings-5keru",
-                        "title" : "static var allValueStrings: [String]",
-                        "type" : "property"
-                      },
-                      {
                         "path" : "\/documentation\/argumentparser\/expressiblebyargument\/allvaluestrings-6ptln",
                         "title" : "static var allValueStrings: [String]",
                         "type" : "property"
                       },
                       {
-                        "path" : "\/documentation\/argumentparser\/expressiblebyargument\/allvaluestrings-9o6vc",
+                        "path" : "\/documentation\/argumentparser\/expressiblebyargument\/allvaluestrings-4tymu",
+                        "title" : "static var allValueStrings: [String]",
+                        "type" : "property"
+                      },
+                      {
+                        "path" : "\/documentation\/argumentparser\/expressiblebyargument\/allvaluestrings-5keru",
                         "title" : "static var allValueStrings: [String]",
                         "type" : "property"
                       }
@@ -1831,6 +1886,6 @@
   "schemaVersion" : {
     "major" : 0,
     "minor" : 1,
-    "patch" : 0
+    "patch" : 1
   }
 }

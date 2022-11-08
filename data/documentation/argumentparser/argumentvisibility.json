@@ -78,6 +78,17 @@
       "kind" : "declarations"
     }
   ],
+  "relationshipsSections" : [
+    {
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/SQ",
+        "doc:\/\/ArgumentParser\/SH"
+      ],
+      "kind" : "relationships",
+      "title" : "Conforms To",
+      "type" : "conformsTo"
+    }
+  ],
   "schemaVersion" : {
     "major" : 0,
     "minor" : 3,
@@ -105,6 +116,13 @@
         "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentVisibility\/private"
       ],
       "title" : "Type Properties"
+    },
+    {
+      "generated" : true,
+      "identifiers" : [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentVisibility\/Equatable-Implementations"
+      ],
+      "title" : "Default Implementations"
     }
   ],
   "variants" : [
@@ -121,6 +139,16 @@
   ]
 , 
 "references": {
+"doc://ArgumentParser/SH": {
+  "identifier" : "doc:\/\/ArgumentParser\/SH",
+  "title" : "Swift.Hashable",
+  "type" : "unresolvable"
+},
+"doc://ArgumentParser/SQ": {
+  "identifier" : "doc:\/\/ArgumentParser\/SQ",
+  "title" : "Swift.Equatable",
+  "type" : "unresolvable"
+},
 "doc://ArgumentParser/documentation/ArgumentParser": {
   "abstract" : [
     {
@@ -202,6 +230,17 @@
   "title" : "ArgumentVisibility",
   "type" : "topic",
   "url" : "\/documentation\/argumentparser\/argumentvisibility"
+},
+"doc://ArgumentParser/documentation/ArgumentParser/ArgumentVisibility/Equatable-Implementations": {
+  "abstract" : [
+
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ArgumentVisibility\/Equatable-Implementations",
+  "kind" : "article",
+  "role" : "collectionGroup",
+  "title" : "Equatable Implementations",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/argumentvisibility\/equatable-implementations"
 },
 "doc://ArgumentParser/documentation/ArgumentParser/ArgumentVisibility/default": {
   "abstract" : [

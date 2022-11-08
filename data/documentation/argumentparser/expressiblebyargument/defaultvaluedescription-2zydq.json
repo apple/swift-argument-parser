@@ -16,8 +16,8 @@
   "defaultImplementationsSections" : [
     {
       "identifiers" : [
-        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExpressibleByArgument\/defaultValueDescription-940zv",
-        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExpressibleByArgument\/defaultValueDescription-1dv6u"
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExpressibleByArgument\/defaultValueDescription-2vi00",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExpressibleByArgument\/defaultValueDescription-940zv"
       ],
       "title" : "ExpressibleByArgument Implementations"
     }
@@ -191,7 +191,7 @@
   "type" : "topic",
   "url" : "\/documentation\/argumentparser\/expressiblebyargument"
 },
-"doc://ArgumentParser/documentation/ArgumentParser/ExpressibleByArgument/defaultValueDescription-1dv6u": {
+"doc://ArgumentParser/documentation/ArgumentParser/ExpressibleByArgument/defaultValueDescription-2vi00": {
   "abstract" : [
 
   ],
@@ -219,22 +219,6 @@
       },
       {
         "code" : "RawRepresentable",
-        "type" : "codeVoice"
-      },
-      {
-        "text" : " and ",
-        "type" : "text"
-      },
-      {
-        "code" : "RawValue",
-        "type" : "codeVoice"
-      },
-      {
-        "text" : " is ",
-        "type" : "text"
-      },
-      {
-        "code" : "String",
         "type" : "codeVoice"
       },
       {
@@ -266,12 +250,12 @@
       "text" : "String"
     }
   ],
-  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExpressibleByArgument\/defaultValueDescription-1dv6u",
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExpressibleByArgument\/defaultValueDescription-2vi00",
   "kind" : "symbol",
   "role" : "symbol",
   "title" : "defaultValueDescription",
   "type" : "topic",
-  "url" : "\/documentation\/argumentparser\/expressiblebyargument\/defaultvaluedescription-1dv6u"
+  "url" : "\/documentation\/argumentparser\/expressiblebyargument\/defaultvaluedescription-2vi00"
 },
 "doc://ArgumentParser/documentation/ArgumentParser/ExpressibleByArgument/defaultValueDescription-2zydq": {
   "abstract" : [

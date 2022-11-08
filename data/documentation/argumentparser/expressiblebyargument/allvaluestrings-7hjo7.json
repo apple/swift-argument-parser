@@ -1,7 +1,7 @@
 {
   "abstract" : [
     {
-      "text" : "An array of all possible strings to that can convert to value of this",
+      "text" : "An array of all possible strings that can convert to a value of this",
       "type" : "text"
     },
     {
@@ -16,9 +16,9 @@
   "defaultImplementationsSections" : [
     {
       "identifiers" : [
-        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExpressibleByArgument\/allValueStrings-5keru",
         "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExpressibleByArgument\/allValueStrings-6ptln",
-        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExpressibleByArgument\/allValueStrings-9o6vc"
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExpressibleByArgument\/allValueStrings-4tymu",
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExpressibleByArgument\/allValueStrings-5keru"
       ],
       "title" : "ExpressibleByArgument Implementations"
     }
@@ -232,6 +232,92 @@
   "type" : "topic",
   "url" : "\/documentation\/argumentparser\/expressiblebyargument"
 },
+"doc://ArgumentParser/documentation/ArgumentParser/ExpressibleByArgument/allValueStrings-4tymu": {
+  "abstract" : [
+
+  ],
+  "conformance" : {
+    "availabilityPrefix" : [
+      {
+        "text" : "Available when",
+        "type" : "text"
+      }
+    ],
+    "conformancePrefix" : [
+      {
+        "text" : "Conforms when",
+        "type" : "text"
+      }
+    ],
+    "constraints" : [
+      {
+        "code" : "Self",
+        "type" : "codeVoice"
+      },
+      {
+        "text" : " conforms to ",
+        "type" : "text"
+      },
+      {
+        "code" : "CaseIterable",
+        "type" : "codeVoice"
+      },
+      {
+        "text" : " and ",
+        "type" : "text"
+      },
+      {
+        "code" : "RawRepresentable",
+        "type" : "codeVoice"
+      },
+      {
+        "text" : ".",
+        "type" : "text"
+      }
+    ]
+  },
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "static"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "keyword",
+      "text" : "var"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "allValueStrings"
+    },
+    {
+      "kind" : "text",
+      "text" : ": ["
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:SS",
+      "text" : "String"
+    },
+    {
+      "kind" : "text",
+      "text" : "]"
+    }
+  ],
+  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExpressibleByArgument\/allValueStrings-4tymu",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "allValueStrings",
+  "type" : "topic",
+  "url" : "\/documentation\/argumentparser\/expressiblebyargument\/allvaluestrings-4tymu"
+},
 "doc://ArgumentParser/documentation/ArgumentParser/ExpressibleByArgument/allValueStrings-5keru": {
   "abstract" : [
 
@@ -359,7 +445,7 @@
 "doc://ArgumentParser/documentation/ArgumentParser/ExpressibleByArgument/allValueStrings-7hjo7": {
   "abstract" : [
     {
-      "text" : "An array of all possible strings to that can convert to value of this",
+      "text" : "An array of all possible strings that can convert to a value of this",
       "type" : "text"
     },
     {
@@ -414,116 +500,6 @@
   "title" : "allValueStrings",
   "type" : "topic",
   "url" : "\/documentation\/argumentparser\/expressiblebyargument\/allvaluestrings-7hjo7"
-},
-"doc://ArgumentParser/documentation/ArgumentParser/ExpressibleByArgument/allValueStrings-9o6vc": {
-  "abstract" : [
-
-  ],
-  "conformance" : {
-    "availabilityPrefix" : [
-      {
-        "text" : "Available when",
-        "type" : "text"
-      }
-    ],
-    "conformancePrefix" : [
-      {
-        "text" : "Conforms when",
-        "type" : "text"
-      }
-    ],
-    "constraints" : [
-      {
-        "code" : "Self",
-        "type" : "codeVoice"
-      },
-      {
-        "text" : " conforms to ",
-        "type" : "text"
-      },
-      {
-        "code" : "CaseIterable",
-        "type" : "codeVoice"
-      },
-      {
-        "text" : ", ",
-        "type" : "text"
-      },
-      {
-        "code" : "Self",
-        "type" : "codeVoice"
-      },
-      {
-        "text" : " conforms to ",
-        "type" : "text"
-      },
-      {
-        "code" : "RawRepresentable",
-        "type" : "codeVoice"
-      },
-      {
-        "text" : ", and ",
-        "type" : "text"
-      },
-      {
-        "code" : "RawValue",
-        "type" : "codeVoice"
-      },
-      {
-        "text" : " is ",
-        "type" : "text"
-      },
-      {
-        "code" : "String",
-        "type" : "codeVoice"
-      },
-      {
-        "text" : ".",
-        "type" : "text"
-      }
-    ]
-  },
-  "fragments" : [
-    {
-      "kind" : "keyword",
-      "text" : "static"
-    },
-    {
-      "kind" : "text",
-      "text" : " "
-    },
-    {
-      "kind" : "keyword",
-      "text" : "var"
-    },
-    {
-      "kind" : "text",
-      "text" : " "
-    },
-    {
-      "kind" : "identifier",
-      "text" : "allValueStrings"
-    },
-    {
-      "kind" : "text",
-      "text" : ": ["
-    },
-    {
-      "kind" : "typeIdentifier",
-      "preciseIdentifier" : "s:SS",
-      "text" : "String"
-    },
-    {
-      "kind" : "text",
-      "text" : "]"
-    }
-  ],
-  "identifier" : "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ExpressibleByArgument\/allValueStrings-9o6vc",
-  "kind" : "symbol",
-  "role" : "symbol",
-  "title" : "allValueStrings",
-  "type" : "topic",
-  "url" : "\/documentation\/argumentparser\/expressiblebyargument\/allvaluestrings-9o6vc"
 }
 }
 }

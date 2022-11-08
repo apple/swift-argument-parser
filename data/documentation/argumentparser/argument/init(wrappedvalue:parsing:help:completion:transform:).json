@@ -40,7 +40,7 @@
       },
       {
         "kind" : "genericParameter",
-        "text" : "Element"
+        "text" : "T"
       },
       {
         "kind" : "text",
@@ -56,11 +56,20 @@
       },
       {
         "kind" : "typeIdentifier",
-        "text" : "Value"
+        "preciseIdentifier" : "s:Sa",
+        "text" : "Array"
       },
       {
         "kind" : "text",
-        "text" : ", "
+        "text" : "<"
+      },
+      {
+        "kind" : "typeIdentifier",
+        "text" : "T"
+      },
+      {
+        "kind" : "text",
+        "text" : ">, "
       },
       {
         "kind" : "externalParam",
@@ -140,7 +149,7 @@
       },
       {
         "kind" : "typeIdentifier",
-        "text" : "Element"
+        "text" : "T"
       },
       {
         "kind" : "text",
@@ -178,7 +187,7 @@
             },
             {
               "kind" : "genericParameter",
-              "text" : "Element"
+              "text" : "T"
             },
             {
               "kind" : "text",
@@ -194,11 +203,20 @@
             },
             {
               "kind" : "typeIdentifier",
-              "text" : "Value"
+              "preciseIdentifier" : "s:Sa",
+              "text" : "Array"
             },
             {
               "kind" : "text",
-              "text" : ", "
+              "text" : "<"
+            },
+            {
+              "kind" : "typeIdentifier",
+              "text" : "T"
+            },
+            {
+              "kind" : "text",
+              "text" : ">, "
             },
             {
               "kind" : "externalParam",
@@ -297,7 +315,7 @@
             },
             {
               "kind" : "typeIdentifier",
-              "text" : "Element"
+              "text" : "T"
             },
             {
               "kind" : "text",
@@ -321,7 +339,7 @@
             },
             {
               "kind" : "typeIdentifier",
-              "text" : "Element"
+              "text" : "T"
             },
             {
               "kind" : "text",
@@ -347,14 +365,14 @@
               "type" : "paragraph"
             }
           ],
-          "name" : "initial"
+          "name" : "wrappedValue"
         },
         {
           "content" : [
             {
               "inlineContent" : [
                 {
-                  "text" : "The behavior to use when parsing multiple values",
+                  "text" : "The behavior to use when parsing multiple values from",
                   "type" : "text"
                 },
                 {
@@ -362,7 +380,7 @@
                   "type" : "text"
                 },
                 {
-                  "text" : "from the command-line arguments.",
+                  "text" : "the command-line arguments.",
                   "type" : "text"
                 }
               ],
@@ -384,6 +402,20 @@
             }
           ],
           "name" : "help"
+        },
+        {
+          "content" : [
+            {
+              "inlineContent" : [
+                {
+                  "text" : "Kind of completion provided to the user for this option.",
+                  "type" : "text"
+                }
+              ],
+              "type" : "paragraph"
+            }
+          ],
+          "name" : "completion"
         },
         {
           "content" : [
@@ -495,7 +527,15 @@
 "doc://ArgumentParser/documentation/ArgumentParser/Argument/init(parsing:help:completion:)": {
   "abstract" : [
     {
-      "text" : "Creates a property with no default value that reads an array from zero or more arguments.",
+      "text" : "Creates a property with no default value that reads an array from zero or",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "text" : "more arguments.",
       "type" : "text"
     }
   ],
@@ -510,7 +550,7 @@
     },
     {
       "kind" : "genericParameter",
-      "text" : "Element"
+      "text" : "T"
     },
     {
       "kind" : "text",
@@ -578,7 +618,15 @@
 "doc://ArgumentParser/documentation/ArgumentParser/Argument/init(parsing:help:completion:transform:)": {
   "abstract" : [
     {
-      "text" : "Creates a property with no default value that reads an array from zero or more arguments, parsing each element with the given closure.",
+      "text" : "Creates a property with no default value that reads an array from zero or",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "text" : "more arguments, parsing each element with the given closure.",
       "type" : "text"
     }
   ],
@@ -593,7 +641,7 @@
     },
     {
       "kind" : "genericParameter",
-      "text" : "Element"
+      "text" : "T"
     },
     {
       "kind" : "text",
@@ -677,7 +725,7 @@
     },
     {
       "kind" : "typeIdentifier",
-      "text" : "Element"
+      "text" : "T"
     },
     {
       "kind" : "text",
@@ -709,7 +757,7 @@
     },
     {
       "kind" : "genericParameter",
-      "text" : "Element"
+      "text" : "T"
     },
     {
       "kind" : "text",
@@ -725,11 +773,20 @@
     },
     {
       "kind" : "typeIdentifier",
-      "text" : "Value"
+      "preciseIdentifier" : "s:Sa",
+      "text" : "Array"
     },
     {
       "kind" : "text",
-      "text" : ", "
+      "text" : "<"
+    },
+    {
+      "kind" : "typeIdentifier",
+      "text" : "T"
+    },
+    {
+      "kind" : "text",
+      "text" : ">, "
     },
     {
       "kind" : "externalParam",
@@ -816,7 +873,7 @@
     },
     {
       "kind" : "genericParameter",
-      "text" : "Element"
+      "text" : "T"
     },
     {
       "kind" : "text",
@@ -832,11 +889,20 @@
     },
     {
       "kind" : "typeIdentifier",
-      "text" : "Value"
+      "preciseIdentifier" : "s:Sa",
+      "text" : "Array"
     },
     {
       "kind" : "text",
-      "text" : ", "
+      "text" : "<"
+    },
+    {
+      "kind" : "typeIdentifier",
+      "text" : "T"
+    },
+    {
+      "kind" : "text",
+      "text" : ">, "
     },
     {
       "kind" : "externalParam",
@@ -916,7 +982,7 @@
     },
     {
       "kind" : "typeIdentifier",
-      "text" : "Element"
+      "text" : "T"
     },
     {
       "kind" : "text",

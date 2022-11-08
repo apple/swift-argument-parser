@@ -214,15 +214,10 @@
     },
     {
       "identifiers" : [
-        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ParsableArguments\/init()"
-      ],
-      "title" : "Infrequently Used APIs"
-    },
-    {
-      "identifiers" : [
+        "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ParsableArguments\/init()",
         "doc:\/\/ArgumentParser\/documentation\/ArgumentParser\/ParsableArguments\/helpMessage(columns:)"
       ],
-      "title" : "Type Methods"
+      "title" : "Infrequently Used APIs"
     }
   ],
   "variants" : [

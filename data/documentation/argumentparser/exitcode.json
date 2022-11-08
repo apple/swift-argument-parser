@@ -585,7 +585,10 @@
 },
 "doc://ArgumentParser/documentation/ArgumentParser/ExitCode/validationFailure": {
   "abstract" : [
-
+    {
+      "text" : "An exit code that indicates that the user provided invalid input.",
+      "type" : "text"
+    }
   ],
   "fragments" : [
     {

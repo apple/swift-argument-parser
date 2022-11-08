@@ -54,6 +54,9 @@
   },
   "features": {
     "docs": {
+      "quickNavigation": {
+        "enable": false
+      }
     }
   }
 }
