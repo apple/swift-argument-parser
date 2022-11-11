@@ -67,7 +67,8 @@ public struct CommandConfiguration {
   /// - Parameters:
   ///   - commandName: The name of the command to use on the command line. If
   ///     `commandName` is `nil`, the command name is derived by converting
-  ///     the name of the command type to hyphen-separated lowercase words.
+  ///     the name of the command type to hyphen-separated lowercase words or
+  ///     by using the executable name if `shouldUseExecutableName` is `true`.
   ///   - shouldUseExecutableName: A Boolean value indicating whether to
   ///     use the executable's file name for the command name. If `commandName`
   ///     is non-`nil`, this value is ignored.
