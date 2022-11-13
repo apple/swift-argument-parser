@@ -83,7 +83,7 @@ extension Platform {
 #elseif canImport(CRT)
     ucrt._exit(code)
 #elseif canImport(WASILibc)
-    exit(code)
+    WASILibc.exit(code)
 #endif
   }
 }
