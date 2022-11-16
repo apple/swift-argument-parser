@@ -290,7 +290,7 @@ public struct ArgumentArrayParsingStrategy: Hashable {
 }
 
 // MARK: - @Argument T: ExpressibleByArgument Initializers
-extension Argument {
+extension Argument where Value: ExpressibleByArgument {
   /// Creates a property with a default value provided by standard Swift default
   /// value syntax.
   ///
@@ -309,7 +309,7 @@ extension Argument {
     wrappedValue: Value,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil
-  ) where Value: ExpressibleByArgument {
+  ) {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
         container: Bare<Value>.self,
@@ -338,7 +338,7 @@ extension Argument {
   public init(
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil
-  ) where Value: ExpressibleByArgument {
+  ) {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
         container: Bare<Value>.self,
@@ -459,6 +459,7 @@ extension Argument {
   @available(*, deprecated, message: """
     Optional @Arguments with default values should be declared as non-Optional.
     """)
+  @_disfavoredOverload
   public init<T>(
     wrappedValue _wrappedValue: Optional<T>,
     help: ArgumentHelp? = nil,
@@ -540,6 +541,7 @@ extension Argument {
   @available(*, deprecated, message: """
     Optional @Arguments with default values should be declared as non-Optional.
     """)
+  @_disfavoredOverload
   public init<T>(
     wrappedValue _wrappedValue: Optional<T>,
     help: ArgumentHelp? = nil,

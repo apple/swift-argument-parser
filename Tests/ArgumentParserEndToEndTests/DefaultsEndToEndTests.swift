@@ -793,3 +793,38 @@ extension DefaultsEndToEndTests {
     }
   }
 }
+
+// MARK: Overload selection
+
+extension DefaultsEndToEndTests {
+  private struct AbsolutePath: ExpressibleByArgument {
+    init(_ value: String) {}
+    init?(argument: String) {}
+  }
+  
+  private struct TwoPaths: ParsableCommand {
+    @Argument(help: .init("The path"))
+    var path1 = AbsolutePath("abc")
+
+    @Argument(help: "The path")
+    var path2 = AbsolutePath("abc")
+
+    @Option(help: .init("The path"))
+    var path3 = AbsolutePath("abc")
+
+    @Option(help: "The path")
+    var path4 = AbsolutePath("abc")
+  }
+  
+  /// Tests that a non-optional `Value` type is inferred, regardless of how the
+  /// initializer parameters are spelled. Previously, string literals and
+  /// `.init` calls for the help parameter inferred different generic types.
+  func testHelpInitInferredType() throws {
+    AssertParse(TwoPaths.self, []) { cmd in
+      XCTAssert(type(of: cmd.path1) == AbsolutePath.self)
+      XCTAssert(type(of: cmd.path2) == AbsolutePath.self)
+      XCTAssert(type(of: cmd.path3) == AbsolutePath.self)
+      XCTAssert(type(of: cmd.path4) == AbsolutePath.self)
+    }
+  }
+}
