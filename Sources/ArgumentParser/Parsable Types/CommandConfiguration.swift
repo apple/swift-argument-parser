@@ -38,6 +38,10 @@ public struct CommandConfiguration {
   /// A longer description of this command, to be shown in the extended help
   /// display.
   public var discussion: String
+
+  /// Additional detailed description of the argument to be shown in the
+  /// detailed help display and supplemental content such as generated manuals.
+  public var detailedDiscussion: String
   
   /// Version information for this command.
   public var version: String
@@ -67,6 +71,9 @@ public struct CommandConfiguration {
   ///     automatically generating a usage description. Passing an empty string
   ///     hides the usage string altogether.
   ///   - discussion: A longer description of the command.
+  ///   - detailedDiscussion: Additional detailed description to be shown in the
+  ///     detailed help display and supplemental content such as generated
+  ///     manuals.
   ///   - version: The version number for this command. When you provide a
   ///     non-empty string, the argument parser prints it if the user provides
   ///     a `--version` flag.
@@ -85,6 +92,7 @@ public struct CommandConfiguration {
     abstract: String = "",
     usage: String? = nil,
     discussion: String = "",
+    detailedDiscussion: String = "",
     version: String = "",
     shouldDisplay: Bool = true,
     subcommands: [ParsableCommand.Type] = [],
@@ -95,6 +103,7 @@ public struct CommandConfiguration {
     self.abstract = abstract
     self.usage = usage
     self.discussion = discussion
+    self.detailedDiscussion = detailedDiscussion
     self.version = version
     self.shouldDisplay = shouldDisplay
     self.subcommands = subcommands
@@ -110,6 +119,7 @@ public struct CommandConfiguration {
     abstract: String = "",
     usage: String? = nil,
     discussion: String = "",
+    detailedDiscussion: String = "",
     version: String = "",
     shouldDisplay: Bool = true,
     subcommands: [ParsableCommand.Type] = [],
@@ -121,6 +131,7 @@ public struct CommandConfiguration {
     self.abstract = abstract
     self.usage = usage
     self.discussion = discussion
+    self.detailedDiscussion = ""
     self.version = version
     self.shouldDisplay = shouldDisplay
     self.subcommands = subcommands
@@ -130,7 +141,7 @@ public struct CommandConfiguration {
 }
 
 extension CommandConfiguration {
-  @available(*, deprecated, message: "Use the memberwise initializer with the usage parameter.")
+  @available(*, deprecated, message: "Use the member-wise initializer with the usage parameter.")
   public init(
     commandName: String?,
     abstract: String,
@@ -146,6 +157,32 @@ extension CommandConfiguration {
       abstract: abstract,
       usage: "",
       discussion: discussion,
+      detailedDiscussion: "",
+      version: version,
+      shouldDisplay: shouldDisplay,
+      subcommands: subcommands,
+      defaultSubcommand: defaultSubcommand,
+      helpNames: helpNames)
+  }
+
+  @available(*, deprecated, message: "Use the member-wise initializer with the detailedDiscussion parameter.")
+  public init(
+    commandName: String?,
+    abstract: String,
+    usage: String,
+    discussion: String,
+    version: String,
+    shouldDisplay: Bool,
+    subcommands: [ParsableCommand.Type],
+    defaultSubcommand: ParsableCommand.Type?,
+    helpNames: NameSpecification?
+  ) {
+    self.init(
+      commandName: commandName,
+      abstract: abstract,
+      usage: usage,
+      discussion: discussion,
+      detailedDiscussion: "",
       version: version,
       shouldDisplay: shouldDisplay,
       subcommands: subcommands,

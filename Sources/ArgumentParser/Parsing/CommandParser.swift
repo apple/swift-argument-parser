@@ -15,7 +15,7 @@ struct CommandError: Error {
 }
 
 struct HelpRequested: Error {
-  var visibility: ArgumentVisibility
+  var options: HelpOptions
 }
 
 struct CommandParser {
@@ -85,15 +85,16 @@ extension CommandParser {
     requireSoloArgument: Bool = false
   ) throws {
     guard !requireSoloArgument || split.count == 1 else { return }
-    
-    // Look for help flags
-    guard !split.contains(anyOf: self.commandStack.getHelpNames(visibility: .default)) else {
-      throw HelpRequested(visibility: .default)
-    }
 
-    // Look for help-hidden flags
-    guard !split.contains(anyOf: self.commandStack.getHelpNames(visibility: .hidden)) else {
-      throw HelpRequested(visibility: .hidden)
+    // Search for various help flags [.default, .hidden] x [standard, detailed]
+    for visibility in [ArgumentVisibility.default, .hidden] {
+      for detailed in [false, true] {
+        let options = HelpOptions(visibility: visibility, detailed: detailed)
+        let helpNames = self.commandStack.getHelpNames(options: options)
+        if split.contains(anyOf: helpNames) {
+          throw HelpRequested(options: options)
+        }
+      }
     }
 
     // Look for dump-help flag
@@ -254,7 +255,7 @@ extension CommandParser {
     } catch let helpRequest as HelpRequested {
       return .success(HelpCommand(
         commandStack: commandStack,
-        visibility: helpRequest.visibility))
+        options: helpRequest.options))
     } catch {
       return .failure(CommandError(commandStack: commandStack, parserError: .invalidState))
     }

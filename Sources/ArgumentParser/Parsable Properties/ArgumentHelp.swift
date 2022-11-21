@@ -16,7 +16,13 @@ public struct ArgumentHelp {
   
   /// An expanded description of the argument, in plain text form.
   public var discussion: String = ""
-  
+
+  /// Additional detailed description of the argument, in plain text form.
+  ///
+  /// This discussion is shown in the detailed help display and supplemental
+  /// content such as generated manuals.
+  public var detailedDiscussion: String = ""
+
   /// An alternative name to use for the argument's value when showing usage
   /// information.
   ///
@@ -28,41 +34,17 @@ public struct ArgumentHelp {
   /// the extended help display.
   public var visibility: ArgumentVisibility = .default
 
-  /// A Boolean value indicating whether this argument should be shown in
-  /// the extended help display.
-  @available(*, deprecated, message: "Use visibility level instead.")
-  public var shouldDisplay: Bool {
-    get {
-      return visibility.base == .default
-    }
-    set {
-      visibility = newValue ? .default : .hidden
-    }
-  }
-  
-  /// Creates a new help instance.
-  @available(*, deprecated, message: "Use init(_:discussion:valueName:visibility:) instead.")
-  public init(
-    _ abstract: String = "",
-    discussion: String = "",
-    valueName: String? = nil,
-    shouldDisplay: Bool)
-  {
-    self.abstract = abstract
-    self.discussion = discussion
-    self.valueName = valueName
-    self.shouldDisplay = shouldDisplay
-  }
-
   /// Creates a new help instance.
   public init(
     _ abstract: String = "",
     discussion: String = "",
+    detailedDiscussion: String = "",
     valueName: String? = nil,
     visibility: ArgumentVisibility = .default)
   {
     self.abstract = abstract
     self.discussion = discussion
+    self.detailedDiscussion = detailedDiscussion
     self.valueName = valueName
     self.visibility = visibility
   }
@@ -81,5 +63,36 @@ public struct ArgumentHelp {
 extension ArgumentHelp: ExpressibleByStringInterpolation {
   public init(stringLiteral value: String) {
     self.abstract = value
+  }
+}
+
+// MARK: - Deprecated API
+extension ArgumentHelp {
+  /// A Boolean value indicating whether this argument should be shown in
+  /// the extended help display.
+  @available(*, deprecated, message: "Use visibility level instead.")
+  public var shouldDisplay: Bool {
+    get {
+      return visibility.base == .default
+    }
+    set {
+      visibility = newValue ? .default : .hidden
+    }
+  }
+
+  /// Creates a new help instance.
+  @available(*, deprecated, message: "Use init(_:discussion:detailedDiscussion:valueName:visibility:) instead.")
+  public init(
+    _ abstract: String = "",
+    discussion: String = "",
+    valueName: String? = nil,
+    shouldDisplay: Bool)
+  {
+    self.init(
+      abstract,
+      discussion: discussion,
+      detailedDiscussion: "",
+      valueName: valueName,
+      visibility: shouldDisplay ? .default : .hidden)
   }
 }

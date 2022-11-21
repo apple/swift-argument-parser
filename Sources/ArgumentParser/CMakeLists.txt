@@ -37,6 +37,7 @@ add_library(ArgumentParser
   Usage/DumpHelpGenerator.swift
   Usage/HelpCommand.swift
   Usage/HelpGenerator.swift
+  Usage/HelpOptions.swift
   Usage/MessageInfo.swift
   Usage/UsageGenerator.swift
 

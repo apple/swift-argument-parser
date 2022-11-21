@@ -24,11 +24,7 @@ struct Document: MDocComponent {
     Preamble(date: date, section: section, command: command)
     Name(command: command)
     Synopsis(command: command)
-    if multiPage {
-      MultiPageDescription(command: command)
-    } else {
-      SinglePageDescription(command: command)
-    }
+    Description(multipage: multiPage, command: command)
     Exit(section: section)
     if multiPage {
       SeeAlso(section: section, command: command)

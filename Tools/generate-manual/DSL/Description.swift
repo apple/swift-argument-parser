@@ -12,7 +12,8 @@
 import ArgumentParser
 import ArgumentParserToolInfo
 
-struct SinglePageDescription: MDocComponent {
+struct Description: MDocComponent {
+  var multipage: Bool
   var command: CommandInfoV0
 
   var body: MDocComponent {
@@ -25,6 +26,14 @@ struct SinglePageDescription: MDocComponent {
   var core: MDocComponent {
     if let discussion = command.discussion {
       discussion
+    }
+
+    if command.discussion != nil, command.detailedDiscussion != nil {
+      MDocMacro.ParagraphBreak()
+    }
+
+    if let detailedDiscussion = command.detailedDiscussion {
+      detailedDiscussion
     }
 
     List {
@@ -42,11 +51,23 @@ struct SinglePageDescription: MDocComponent {
         if let discussion = argument.discussion {
           discussion
         }
+
+        if argument.discussion != nil, argument.detailedDiscussion != nil {
+          MDocMacro.ParagraphBreak()
+        }
+
+        if let detailedDiscussion = argument.detailedDiscussion {
+          detailedDiscussion
+        }
       }
 
-      for subcommand in command.subcommands ?? [] {
-        MDocMacro.ListItem(title: MDocMacro.Emphasis(arguments: [subcommand.commandName]))
-        SinglePageDescription(command: subcommand).core
+      if !multipage {
+        for subcommand in command.subcommands ?? [] {
+          MDocMacro.ListItem(title: MDocMacro.Emphasis(arguments: [subcommand.commandName]))
+          Description(
+            multipage: multipage,
+            command: subcommand).core
+        }
       }
     }
   }

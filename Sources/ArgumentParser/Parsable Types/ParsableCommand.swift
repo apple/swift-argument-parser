@@ -109,7 +109,9 @@ extension ParsableCommand {
   ) -> String {
     HelpGenerator(
       commandStack: CommandParser(self).commandStack(for: subcommand),
-      visibility: includeHidden ? .hidden : .default)
+      options: .init(
+        visibility: includeHidden ? .hidden : .default,
+        detailed: false))
         .rendered(screenWidth: columns)
   }
 

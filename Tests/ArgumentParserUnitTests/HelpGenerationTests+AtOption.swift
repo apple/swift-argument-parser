@@ -179,6 +179,7 @@ extension HelpGenerationTests {
       var arg0: A? = nil
     }
 
+    @available(*, deprecated, message: "Included for test coverage")
     struct OptionalDefault: ParsableCommand {
       @Option(help: "example")
       var arg0: A? = A()
