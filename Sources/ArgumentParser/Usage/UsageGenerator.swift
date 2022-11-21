@@ -9,7 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-@_implementationOnly import Foundation
+@_implementationOnly import protocol Foundation.LocalizedError
 
 struct UsageGenerator {
   var toolName: String
