@@ -151,7 +151,7 @@ public struct ArgumentInfoV0: Codable, Hashable {
   public var abstract: String?
   /// Extended description of the argument's functionality.
   public var discussion: String?
-  /// Additional detailed description of the argument's functionality
+  /// Additional detailed description of the argument's functionality.
   ///
   /// This discussion is shown in the detailed help display and supplemental
   /// content such as generated manuals.
