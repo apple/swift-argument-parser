@@ -361,7 +361,7 @@ extension HelpGenerationTests {
   }
 
   func testOverviewButNoAbstractSpacing() {
-    let renderedHelp = HelpGenerator(J.self, visibility: .default)
+    let renderedHelp = HelpGenerator(J.self, options: .plain)
       .rendered()
     AssertEqualStringsIgnoringTrailingWhitespace(renderedHelp, """
     OVERVIEW:

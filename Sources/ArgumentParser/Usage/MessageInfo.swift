@@ -27,8 +27,8 @@ enum MessageInfo {
 
       // Exit early on built-in requests
       switch e.parserError {
-      case .helpRequested(let visibility):
-        self = .help(text: HelpGenerator(commandStack: e.commandStack, visibility: visibility).rendered())
+      case .helpRequested(let options):
+        self = .help(text: HelpGenerator(commandStack: e.commandStack, options: options).rendered())
         return
 
       case .dumpHelpRequested:
@@ -73,8 +73,9 @@ enum MessageInfo {
       parserError = .userValidationError(error)
     }
     
-    var usage = HelpGenerator(commandStack: commandStack, visibility: .default).usageMessage()
-    
+    var usage = HelpGenerator(
+      commandStack: commandStack, options: .plain).usageMessage()
+
     let commandNames = commandStack.map { $0._commandName }.joined(separator: " ")
     if let helpName = commandStack.getPrimaryHelpName() {
       if !usage.isEmpty {
@@ -96,7 +97,8 @@ enum MessageInfo {
           if let command = command {
             commandStack = CommandParser(type.asCommand).commandStack(for: command)
           }
-          self = .help(text: HelpGenerator(commandStack: commandStack, visibility: .default).rendered())
+          self = .help(text: HelpGenerator(
+            commandStack: commandStack, options: .plain).rendered())
         case .dumpRequest(let command):
           if let command = command {
             commandStack = CommandParser(type.asCommand).commandStack(for: command)
@@ -119,7 +121,8 @@ enum MessageInfo {
     } else if let parserError = parserError {
       let usage: String = {
         guard case ParserError.noArguments = parserError else { return usage }
-        return "\n" + HelpGenerator(commandStack: [type.asCommand], visibility: .default).rendered()
+        return "\n" + HelpGenerator(
+          commandStack: [type.asCommand], options: .plain).rendered()
       }()
       let argumentSet = ArgumentSet(commandStack.last!, visibility: .default, parent: .root)
       let message = argumentSet.errorDescription(error: parserError) ?? ""

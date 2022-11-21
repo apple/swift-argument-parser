@@ -10,6 +10,11 @@
 //===----------------------------------------------------------------------===//
 
 struct HelpCommand: ParsableCommand {
+  enum CodingKeys: CodingKey {
+    case subcommands
+    case help
+  }
+
   static var configuration = CommandConfiguration(
     commandName: "help",
     abstract: "Show subcommand help information.",
@@ -23,16 +28,32 @@ struct HelpCommand: ParsableCommand {
   var help = false
   
   private(set) var commandStack: [ParsableCommand.Type] = []
-  private(set) var visibility: ArgumentVisibility = .default
+  private(set) var options = HelpOptions.plain
 
-  init() {}
+  init() { }
+
+  init(from decoder: Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    self.subcommands = try container.decode([String].self, forKey: .subcommands)
+    self.help = try container.decode(Bool.self, forKey: .help)
+  }
   
+  init(
+    commandStack: [ParsableCommand.Type],
+    options: HelpOptions
+  ) {
+    self.commandStack = commandStack
+    self.options = options
+    self.subcommands = commandStack.map { $0._commandName }
+    self.help = false
+  }
+
   mutating func run() throws {
     throw CommandError(
       commandStack: commandStack,
-      parserError: .helpRequested(visibility: visibility))
+      parserError: .helpRequested(options: options))
   }
-  
+
   mutating func buildCommandStack(with parser: CommandParser) throws {
     commandStack = parser.commandStack(for: subcommands)
   }
@@ -41,25 +62,7 @@ struct HelpCommand: ParsableCommand {
   func generateHelp(screenWidth: Int) -> String {
     HelpGenerator(
       commandStack: commandStack,
-      visibility: visibility)
+      options: options)
       .rendered(screenWidth: screenWidth)
-  }
-  
-  enum CodingKeys: CodingKey {
-    case subcommands
-    case help
-  }
-  
-  init(from decoder: Decoder) throws {
-    let container = try decoder.container(keyedBy: CodingKeys.self)
-    self.subcommands = try container.decode([String].self, forKey: .subcommands)
-    self.help = try container.decode(Bool.self, forKey: .help)
-  }
-  
-  init(commandStack: [ParsableCommand.Type], visibility: ArgumentVisibility) {
-    self.commandStack = commandStack
-    self.visibility = visibility
-    self.subcommands = commandStack.map { $0._commandName }
-    self.help = false
   }
 }

@@ -196,9 +196,9 @@ struct CustomHelp: ParsableCommand {
 
 extension HelpTests {
   func testCustomHelpNames() {
-    let helpNames = [CustomHelp.self].getHelpNames(visibility: .default)
+    let helpNames = [CustomHelp.self].getHelpNames(options: .plain)
     XCTAssertEqual(helpNames, [.short("?"), .long("show-help")])
-    let helpHiddenNames = [CustomHelp.self].getHelpNames(visibility: .hidden)
+    let helpHiddenNames = [CustomHelp.self].getHelpNames(options: .init(visibility: .hidden, detailed: false))
     XCTAssertEqual(helpHiddenNames, [.long("show-help-hidden")])
 
     AssertFullErrorMessage(CustomHelp.self, ["--error"], """
@@ -219,9 +219,9 @@ struct NoHelp: ParsableCommand {
 
 extension HelpTests {
   func testNoHelpNames() {
-    let helpNames = [NoHelp.self].getHelpNames(visibility: .default)
+    let helpNames = [NoHelp.self].getHelpNames(options: .plain)
     XCTAssertEqual(helpNames, [])
-    let helpHiddenNames = [NoHelp.self].getHelpNames(visibility: .hidden)
+    let helpHiddenNames = [NoHelp.self].getHelpNames(options: .init(visibility: .hidden, detailed: false))
     XCTAssertEqual(helpHiddenNames, [])
 
     AssertFullErrorMessage(NoHelp.self, ["--error"], """
@@ -267,7 +267,7 @@ extension HelpTests {
     let names = [
       SubCommandCustomHelp.self,
       SubCommandCustomHelp.InheritHelp.self,
-    ].getHelpNames(visibility: .default)
+    ].getHelpNames(options: .plain)
     XCTAssertEqual(names, [.short("p"), .long("parent-help")])
   }
 
@@ -275,7 +275,7 @@ extension HelpTests {
     let names = [
       SubCommandCustomHelp.self,
       SubCommandCustomHelp.ModifiedHelp.self
-    ].getHelpNames(visibility: .default)
+    ].getHelpNames(options: .plain)
     XCTAssertEqual(names, [.short("s"), .long("subcommand-help")])
   }
 
@@ -284,7 +284,7 @@ extension HelpTests {
       SubCommandCustomHelp.self,
       SubCommandCustomHelp.ModifiedHelp.self,
       SubCommandCustomHelp.ModifiedHelp.InheritImmediateParentdHelp.self
-    ].getHelpNames(visibility: .default)
+    ].getHelpNames(options: .plain)
     XCTAssertEqual(names, [.short("s"), .long("subcommand-help")])
   }
 }
