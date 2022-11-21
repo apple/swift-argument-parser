@@ -1,6 +1,6 @@
 # Customizing Help for Commands
 
-Define your command's abstract, extended discussion, or usage string, and set the flags used to invoke the help display.
+Define your command's abstract, discussion, or usage string, and set the flags used to invoke the help display.
 
 ## Overview
 

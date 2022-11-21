@@ -28,12 +28,12 @@ struct Description: MDocComponent {
       discussion
     }
 
-    if command.discussion != nil, command.supplementalDiscussion != nil {
+    if command.discussion != nil, command.detailedDiscussion != nil {
       MDocMacro.ParagraphBreak()
     }
 
-    if let supplementalDiscussion = command.supplementalDiscussion {
-      supplementalDiscussion
+    if let detailedDiscussion = command.detailedDiscussion {
+      detailedDiscussion
     }
 
     List {
@@ -52,12 +52,12 @@ struct Description: MDocComponent {
           discussion
         }
 
-        if argument.discussion != nil, argument.supplementalDiscussion != nil {
+        if argument.discussion != nil, argument.detailedDiscussion != nil {
           MDocMacro.ParagraphBreak()
         }
 
-        if let supplementalDiscussion = argument.supplementalDiscussion {
-          supplementalDiscussion
+        if let detailedDiscussion = argument.detailedDiscussion {
+          detailedDiscussion
         }
       }
 

@@ -17,9 +17,11 @@ public struct ArgumentHelp {
   /// An expanded description of the argument, in plain text form.
   public var discussion: String = ""
 
-  /// Additional description of the argument for supplemental content, in plain
-  /// text form.
-  public var supplementalDiscussion: String = ""
+  /// Additional detailed description of the argument, in plain text form.
+  ///
+  /// This discussion is shown in the detailed help display and supplemental
+  /// content such as generated manuals.
+  public var detailedDiscussion: String = ""
 
   /// An alternative name to use for the argument's value when showing usage
   /// information.
@@ -36,13 +38,13 @@ public struct ArgumentHelp {
   public init(
     _ abstract: String = "",
     discussion: String = "",
-    supplementalDiscussion: String = "",
+    detailedDiscussion: String = "",
     valueName: String? = nil,
     visibility: ArgumentVisibility = .default)
   {
     self.abstract = abstract
     self.discussion = discussion
-    self.supplementalDiscussion = supplementalDiscussion
+    self.detailedDiscussion = detailedDiscussion
     self.valueName = valueName
     self.visibility = visibility
   }
@@ -79,7 +81,7 @@ extension ArgumentHelp {
   }
 
   /// Creates a new help instance.
-  @available(*, deprecated, message: "Use init(_:discussion:supplementalDiscussion:valueName:visibility:) instead.")
+  @available(*, deprecated, message: "Use init(_:discussion:detailedDiscussion:valueName:visibility:) instead.")
   public init(
     _ abstract: String = "",
     discussion: String = "",
@@ -89,7 +91,7 @@ extension ArgumentHelp {
     self.init(
       abstract,
       discussion: discussion,
-      supplementalDiscussion: "",
+      detailedDiscussion: "",
       valueName: valueName,
       visibility: shouldDisplay ? .default : .hidden)
   }

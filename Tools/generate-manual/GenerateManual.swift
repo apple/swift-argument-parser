@@ -31,7 +31,7 @@ struct GenerateManual: ParsableCommand {
       using the plugin which can be invoked via \
       `swift package generate-manual`.
       """,
-    supplementalDiscussion: """
+    detailedDiscussion: """
       The generate-manual tool invokes provided executable with the \
       `--experimental-dump-help` argument and decoding the output into a \
       `ToolInfo` structure provided by the `ArgumentParserToolInfo` library. \
@@ -60,7 +60,7 @@ struct GenerateManual: ParsableCommand {
         Manuals for executables are typically included in section 1, but may \
         also be found in other sections such as section 8.
         """,
-      supplementalDiscussion: """
+      detailedDiscussion: """
         A description of manual sections is included below:
         1) General Commands
         2) System Calls
