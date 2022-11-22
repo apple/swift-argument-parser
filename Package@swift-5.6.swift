@@ -24,6 +24,8 @@ var package = Package(
     ],
     dependencies: [],
     targets: [
+        .executableTarget(name: "HelpBuilder"),
+
         // Core Library
         .target(
             name: "ArgumentParser",
