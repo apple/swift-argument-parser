@@ -9,8 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-@_implementationOnly import Foundation
 @_implementationOnly import ArgumentParserToolInfo
+@_implementationOnly import class Foundation.JSONEncoder
 
 internal struct DumpHelpGenerator {
   var toolInfo: ToolInfoV0
