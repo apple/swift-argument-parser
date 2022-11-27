@@ -23,11 +23,13 @@ extension HelpComponent {
 @resultBuilder
 struct HelpBuilder {
   static func buildBlock(_ components: HelpComponent...) -> HelpComponent {
-    Dynamic(children: components, wrapSingleChild: false)
+    Container(children: components)
+      .dynamic(wrapSingleChild: false)
   }
 
   static func buildArray(_ components: [HelpComponent]) -> HelpComponent {
-    Dynamic(children: components, wrapSingleChild: false)
+    Container(children: components)
+      .dynamic(wrapSingleChild: false)
   }
 
   static func buildOptional(_ component: HelpComponent?) -> HelpComponent {
@@ -58,35 +60,6 @@ extension Empty: HelpComponent {
   }
 }
 
-struct Dynamic {
-  var body: HelpComponent
-
-  init(children: [HelpComponent], wrapSingleChild: Bool) {
-    let nonEmptyChildren = children
-      .map { $0.body }
-      .filter {
-        guard $0 is Empty else { return true }
-        return false
-      }
-
-    switch (nonEmptyChildren.count, wrapSingleChild) {
-    case (0, _):
-      // print("\(children) -> Empty()")
-      self.body = Empty()
-    case (1, false):
-      // print("\(children) -> \(type(of: nonEmptyChildren[0]))")
-      self.body = nonEmptyChildren[0]
-    default:
-      // print("\(children) -> Container(children: \(nonEmptyChildren))")
-      self.body = Container(children: nonEmptyChildren)
-    }
-  }
-}
-
-extension Dynamic: HelpComponent {
-  var hierarchicalDebugDescription: String { body.hierarchicalDebugDescription }
-}
-
 struct Container {
   var children: [HelpComponent]
 
@@ -96,8 +69,35 @@ struct Container {
 //      return false
 //    }
 //    precondition(allNonEmpty)
-    precondition(!children.isEmpty)
+    // precondition(!children.isEmpty)
     self.children = children
+  }
+
+  init(@HelpBuilder _ child: () -> HelpComponent) {
+    self.init(children: [child()])
+  }
+}
+
+extension Container {
+  func `dynamic`(wrapSingleChild: Bool) -> HelpComponent {
+    let nonEmptyChildren = children
+      // .map { $0.body }
+      .filter {
+        guard $0 is Empty else { return true }
+        return false
+      }
+
+    switch (nonEmptyChildren.count, wrapSingleChild) {
+    case (0, _):
+      // print("\(children) -> Empty()")
+      return Empty()
+    case (1, false):
+      // print("\(children) -> \(type(of: nonEmptyChildren[0]))")
+      return nonEmptyChildren[0]
+    default:
+      // print("\(children) -> Container(children: \(nonEmptyChildren))")
+      return Container(children: nonEmptyChildren)
+    }
   }
 }
 
@@ -146,15 +146,10 @@ extension ForEach: HelpComponent {
     let children = self.items
       .map(self.builder)
       .map(\.body)
-    return Dynamic(children: children, wrapSingleChild: false)
+    return Container(children: children)
+      .dynamic(wrapSingleChild: false)
   }
 }
-
-//struct LineBreak { }
-//
-//extension LineBreak: HelpComponent {
-//  var body: HelpComponent { Text("\n") }
-//}
 
 struct Text {
   var string: String
@@ -168,9 +163,7 @@ struct Text {
 
 extension Text: HelpComponent {
   var rendered: String { string + terminator }
-  var hierarchicalDebugDescription: String {
-    "Text(\"\(string)\")"
-  }
+  var hierarchicalDebugDescription: String { "Text(\"\(string)\")" }
 }
 
 struct Section {
@@ -185,7 +178,8 @@ struct Section {
 
 extension Section: HelpComponent {
   var body: HelpComponent {
-    let contents = Dynamic(children: [contents()], wrapSingleChild: true)
+    let contents = Container(children: [contents()])
+      .dynamic(wrapSingleChild: true)
     if contents.body is Empty {
       Empty()
     } else {
@@ -212,7 +206,9 @@ extension Help: HelpComponent {
       }
     }
 
-    Container(children: [Text("USAGE: \(self.usage)")])
+    Container {
+      Text("USAGE: \(self.usage)")
+    }
 
     ForEach(["abcd", "foo", "bar"]) { title in
       Section(title: title) {
