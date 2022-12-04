@@ -58,7 +58,7 @@ The 1.2.0 release includes contributions from [allevato], [clayellis],
 [compnerd], [d-ronnqvist], [natecook1000], [randomeizer], and [rauhul].
 Thank you!
 
-[arrayparse-docs]: https://apple.github.io/swift-argument-parser/documentation/argumentparser/argumentarrayparsingstrategy
+[arrayparse-docs]: https://swiftpackageindex.com/apple/swift-argument-parser/main/documentation/argumentparser/argumentarrayparsingstrategy
 
 ---
 
