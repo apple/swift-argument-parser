@@ -75,7 +75,7 @@ For guides, articles, and API documentation see the
 - [Getting Started with ArgumentParser](https://swiftpackageindex.com/apple/swift-argument-parser/documentation/argumentparser/gettingstarted)
 - [`ParsableCommand` documentation](https://swiftpackageindex.com/apple/swift-argument-parser/documentation/argumentparser/parsablecommand)
 
-[docs]: https://swiftpackageindex.com/apple/swift-argument-parser/main/documentation/argumentparser
+[docs]: https://swiftpackageindex.com/apple/swift-argument-parser/documentation/argumentparser
 
 #### Examples
 
