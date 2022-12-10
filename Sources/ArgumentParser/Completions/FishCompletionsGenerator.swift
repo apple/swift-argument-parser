@@ -1,77 +1,95 @@
 struct FishCompletionsGenerator {
   static func generateCompletionScript(_ type: ParsableCommand.Type) -> String {
     let programName = type._commandName
-    let helper = """
-    function _swift_\(programName)_using_command
-        set -l cmd (commandline -opc)
-        if [ (count $cmd) -eq (count $argv) ]
-            for i in (seq (count $argv))
-                if [ $cmd[$i] != $argv[$i] ]
-                    return 1
-                end
-            end
-            return 0
-        end
-        return 1
-    end
-    
-    """
-
+    let helperFunctions = [
+      FishScriptBuilder.preprocessorFunction(commandName: programName),
+      FishScriptBuilder.helperFunction(commandName: programName)
+    ]
     let completions = generateCompletions(commandChain: [programName], [type])
-        .joined(separator: "\n")
 
-    return helper + completions
+    return helperFunctions.joined(separator: "\n\n") + "\n\n" + completions.joined(separator: "\n")
   }
+}
 
-  static func generateCompletions(commandChain: [String], _ commands: [ParsableCommand.Type])
-      -> [String]
-  {
+// MARK: - Private functions
+
+extension FishCompletionsGenerator {
+  private static func generateCompletions(commandChain: [String], _ commands: [ParsableCommand.Type]) -> [String] {
     let type = commands.last!
     let isRootCommand = commands.count == 1
     let programName = commandChain[0]
     var subcommands = type.configuration.subcommands
       .filter { $0.configuration.shouldDisplay }
 
+    if !subcommands.isEmpty && isRootCommand {
+      subcommands.append(HelpCommand.self)
+    }
+
+    let helperFunctionName = FishScriptBuilder.helperFunctionName(commandName: programName)
+
+    var prefix = "complete -c \(programName) -n '\(helperFunctionName) \"\(commandChain.joined(separator: FishScriptBuilder.separator))\""
     if !subcommands.isEmpty {
-      if isRootCommand {
-        subcommands.append(HelpCommand.self)
-      }
+      prefix += " \"\(subcommands.map { $0._commandName }.joined(separator: FishScriptBuilder.separator))\""
+    }
+    prefix += "'"
+
+    func complete(suggestion: String) -> String {
+      "\(prefix) \(suggestion)"
     }
 
-    let prefix = "complete -c \(programName) -n '_swift_\(programName)_using_command"
-    /// We ask each suggestion to produce 2 pieces of information
-    /// - Parameters
-    ///   - ancestors: a list of "ancestor" which must be present in the current shell buffer for
-    ///                this suggestion to be considered. This could be a combination of (nested)
-    ///                subcommands and flags.
-    ///   - suggestion: text for the actual suggestion
-    /// - Returns: A completion expression
-    func complete(ancestors: [String], suggestion: String) -> String {
-      "\(prefix) \(ancestors.joined(separator: " "))' \(suggestion)"
-    }
-
-    let subcommandCompletions = subcommands.map { (subcommand: ParsableCommand.Type) -> String in
+    let subcommandCompletions = subcommands.map { subcommand in
       let escapedAbstract = subcommand.configuration.abstract.fishEscape()
       let suggestion = "-f -a '\(subcommand._commandName)' -d '\(escapedAbstract)'"
-      return complete(ancestors: commandChain, suggestion: suggestion)
+      return complete(suggestion: suggestion)
     }
 
     let argumentCompletions = commands
       .argumentsForHelp(visibility: .default)
-      .flatMap { $0.argumentSegments(commandChain) }
-      .map { complete(ancestors: $0, suggestion: $1) }
+      .compactMap { $0.argumentSegments(commandChain) }
+      .map { $0.joined(separator: " ") }
+      .map { complete(suggestion: $0) }
 
     let completionsFromSubcommands = subcommands.flatMap { subcommand in
       generateCompletions(commandChain: commandChain + [subcommand._commandName], [subcommand])
     }
 
-    return argumentCompletions + subcommandCompletions + completionsFromSubcommands
+    return completionsFromSubcommands + argumentCompletions + subcommandCompletions
   }
 }
 
-extension String {
-  fileprivate func fishEscape() -> String {
-    self.replacingOccurrences(of: "'", with: #"\'"#)
+extension ArgumentDefinition {
+  fileprivate func argumentSegments(_ commandChain: [String]) -> [String]? {
+    guard help.visibility.base == .default,
+          !names.isEmpty
+    else { return nil }
+
+    var results = names
+      .map{ $0.asFishSuggestion }
+
+    if !help.abstract.isEmpty {
+      results += ["-d '\(help.abstract.fishEscape())'"]
+    }
+
+    if isNullary {
+      return results
+    }
+
+    switch completion.kind {
+    case .default: return results
+    case .list(let list):
+      return results + ["-r -f -k -a '\(list.joined(separator: " "))'"]
+    case .file(let extensions):
+      let pattern = "*.{\(extensions.joined(separator: ","))}"
+      return results + ["-r -f -a '(for i in \(pattern); echo $i;end)'"]
+    case .directory:
+      return results + ["-r -f -a '(__fish_complete_directories)'"]
+    case .shellCommand(let shellCommand):
+      return results + ["-r -f -a '(\(shellCommand))'"]
+    case .custom:
+      let program = commandChain[0]
+      let subcommands = commandChain.dropFirst().joined(separator: " ")
+      return results + ["-r -f -a '(command \(program) ---completion \(subcommands) -- --custom (commandline -opc)[1..-1])'"]
+    }
   }
 }
 
@@ -86,70 +104,70 @@ extension Name {
       return "-o \(dashedName)"
     }
   }
+}
 
-  fileprivate var asFormattedFlag: String {
-    switch self {
-    case .long(let longName):
-      return "--\(longName)"
-    case .short(let shortName, _):
-      return "-\(shortName)"
-    case .longWithSingleDash(let dashedName):
-      return "-\(dashedName)"
-    }
+extension String {
+  fileprivate func fishEscape() -> String {
+    replacingOccurrences(of: "'", with: #"\'"#)
   }
 }
 
-extension ArgumentDefinition {
-  fileprivate func argumentSegments(_ commandChain: [String]) -> [([String], String)] {
-    guard help.visibility.base == .default else { return [] }
+private enum FishScriptBuilder {
 
-    var results = [([String], String)]()
-    var formattedFlags = [String]()
-    var flags = [String]()
-    switch self.kind {
-    case .positional, .default:
-      break
-    case .named(let names):
-      flags = names.map { $0.asFishSuggestion }
-      formattedFlags = names.map { $0.asFormattedFlag }
-      if !flags.isEmpty {
-        // add these flags to suggestions
-        var suggestion = "-f\(isNullary ? "" : " -r") \(flags.joined(separator: " "))"
-        if !help.abstract.isEmpty {
-          suggestion += " -d '\(help.abstract.fishEscape())'"
-        }
+  static var separator: String { " " }
 
-        results.append((commandChain, suggestion))
-      }
-    }
+  private static func preprocessorFunctionName(commandName: String) -> String {
+    "_swift_\(commandName)_preprocessor"
+  }
 
-    if isNullary {
-      return results
-    }
+  static func preprocessorFunction(commandName: String) -> String {
+    """
+    # A function which filters options which starts with "-" from $argv.
+    function \(preprocessorFunctionName(commandName: commandName))
+        set -l results
+        for i in (seq (count $argv))
+            switch (echo $argv[$i] | string sub -l 1)
+                case '-'
+                case '*'
+                    echo $argv[$i]
+            end
+        end
+    end
+    """
+  }
 
-    // each flag alternative gets its own completion suggestion
-    for flag in formattedFlags {
-      let ancestors = commandChain + [flag]
-      switch self.completion.kind {
-      case .default:
-        break
-      case .list(let list):
-        results.append((ancestors, "-f -k -a '\(list.joined(separator: " "))'"))
-      case .file(let extensions):
-        let pattern = "*.{\(extensions.joined(separator: ","))}"
-        results.append((ancestors, "-f -a '(for i in \(pattern); echo $i;end)'"))
-      case .directory:
-        results.append((ancestors, "-f -a '(__fish_complete_directories)'"))
-      case .shellCommand(let shellCommand):
-        results.append((ancestors, "-f -a '(\(shellCommand))'"))
-      case .custom:
-        let program = commandChain[0]
-        let subcommands = commandChain.dropFirst().joined(separator: " ")
-        let suggestion = "-f -a '(command \(program) ---completion \(subcommands) -- --custom (commandline -opc)[1..-1])'"
-        results.append((ancestors, suggestion))
-      }
-    }
+  static func helperFunctionName(commandName: String) -> String {
+    "_swift_" + commandName + "_using_command"
+  }
 
-    return results
+  static func helperFunction(commandName: String) -> String {
+    let functionName = helperFunctionName(commandName: commandName)
+    let preprocessorFunctionName = preprocessorFunctionName(commandName: commandName)
+    return """
+    function \(functionName)
+        set -l currentCommands (\(preprocessorFunctionName) (commandline -opc))
+        set -l expectedCommands (string split \"\(separator)\" $argv[1])
+        set -l subcommands (string split \"\(separator)\" $argv[2])
+        if [ (count $currentCommands) -ge (count $expectedCommands) ]
+            for i in (seq (count $expectedCommands))
+                if [ $currentCommands[$i] != $expectedCommands[$i] ]
+                    return 1
+                end
+            end
+            if [ (count $currentCommands) -eq (count $expectedCommands) ]
+                return 0
+            end
+            if [ (count $subcommands) -gt 1 ]
+                for i in (seq (count $subcommands))
+                    if [ $currentCommands[(math (count $expectedCommands) + 1)] = $subcommands[$i] ]
+                        return 1
+                    end
+                end
+            end
+            return 0
+        end
+        return 1
+    end
+    """
   }
 }
