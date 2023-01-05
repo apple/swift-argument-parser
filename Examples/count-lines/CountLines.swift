@@ -58,7 +58,7 @@ extension CountLines {
     }
     
     mutating func run() async throws {
-        guard #available(macOS 12, *) else {
+        guard #available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *) else {
           print("'count-lines' isn't supported on this platform.")
           return
         }
