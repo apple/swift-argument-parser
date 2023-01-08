@@ -63,8 +63,7 @@ extension ArgumentDefinition {
           !names.isEmpty
     else { return nil }
 
-    var results = names
-      .map{ $0.asFishSuggestion }
+    var results = names.map{ $0.asFishSuggestion }
 
     if !help.abstract.isEmpty {
       results += ["-d '\(help.abstract.fishEscape())'"]
