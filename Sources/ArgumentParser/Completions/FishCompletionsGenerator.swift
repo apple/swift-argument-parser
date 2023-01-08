@@ -2,8 +2,8 @@ struct FishCompletionsGenerator {
   static func generateCompletionScript(_ type: ParsableCommand.Type) -> String {
     let programName = type._commandName
     let helperFunctions = [
-      FishScriptBuilder.preprocessorFunction(commandName: programName),
-      FishScriptBuilder.helperFunction(commandName: programName)
+      preprocessorFunction(commandName: programName),
+      helperFunction(commandName: programName)
     ]
     let completions = generateCompletions(commandChain: [programName], [type])
 
@@ -25,11 +25,11 @@ extension FishCompletionsGenerator {
       subcommands.append(HelpCommand.self)
     }
 
-    let helperFunctionName = FishScriptBuilder.helperFunctionName(commandName: programName)
+    let helperFunctionName = helperFunctionName(commandName: programName)
 
-    var prefix = "complete -c \(programName) -n '\(helperFunctionName) \"\(commandChain.joined(separator: FishScriptBuilder.separator))\""
+    var prefix = "complete -c \(programName) -n '\(helperFunctionName) \"\(commandChain.joined(separator: separator))\""
     if !subcommands.isEmpty {
-      prefix += " \"\(subcommands.map { $0._commandName }.joined(separator: FishScriptBuilder.separator))\""
+      prefix += " \"\(subcommands.map { $0._commandName }.joined(separator: separator))\""
     }
     prefix += "'"
 
@@ -112,15 +112,15 @@ extension String {
   }
 }
 
-private enum FishScriptBuilder {
+extension FishCompletionsGenerator {
 
-  static var separator: String { " " }
+  private static var separator: String { " " }
 
   private static func preprocessorFunctionName(commandName: String) -> String {
     "_swift_\(commandName)_preprocessor"
   }
 
-  static func preprocessorFunction(commandName: String) -> String {
+  private static func preprocessorFunction(commandName: String) -> String {
     """
     # A function which filters options which starts with "-" from $argv.
     function \(preprocessorFunctionName(commandName: commandName))
@@ -136,11 +136,11 @@ private enum FishScriptBuilder {
     """
   }
 
-  static func helperFunctionName(commandName: String) -> String {
+  private static func helperFunctionName(commandName: String) -> String {
     "_swift_" + commandName + "_using_command"
   }
 
-  static func helperFunction(commandName: String) -> String {
+  private static func helperFunction(commandName: String) -> String {
     let functionName = helperFunctionName(commandName: commandName)
     let preprocessorFunctionName = preprocessorFunctionName(commandName: commandName)
     return """
