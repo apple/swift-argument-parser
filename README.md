@@ -93,9 +93,9 @@ You can also see examples of `ArgumentParser` adoption among Swift project tools
 
 ## Project Status
 
-The Swift Argument Parser package is source stable;
+The Swift Argument Parser package is source-stable;
 version numbers follow semantic versioning.
-Source breaking changes to public API can only land in a new major version.
+Source-breaking changes to public API can only land in a new major version.
 
 The public API of version 1.0.0 of the `swift-argument-parser` package
 consists of non-underscored declarations that are marked public in the `ArgumentParser` module.
@@ -105,7 +105,7 @@ as well as the package’s examples, tests, utilities, and documentation.
 
 Future minor versions of the package may introduce changes to these rules as needed.
 
-We'd like this package to quickly embrace Swift language and toolchain improvements that are relevant to its mandate.
+We want this package to quickly embrace Swift language and toolchain improvements that are relevant to its mandate.
 Accordingly, from time to time,
 we expect that new versions of this package will require clients to upgrade to a more recent Swift toolchain release.
 Requiring a new Swift release will only require a minor version bump.
