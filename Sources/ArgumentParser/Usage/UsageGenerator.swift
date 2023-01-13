@@ -116,6 +116,9 @@ extension ArgumentDefinition {
     if help.options.contains(.isOptional) {
       synopsis = "[\(synopsis)]"
     }
+    if parsingStrategy == .postTerminator {
+      synopsis = "-- \(synopsis)"
+    }
     return synopsis
   }
 }
