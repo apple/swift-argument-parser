@@ -217,4 +217,13 @@ extension UsageGenerationTests {
     _testSynopsis(N.self, expected: "example [--a] [--b]")
     _testSynopsis(N.self, visibility: .hidden, expected: "example [--a] [--b]")
   }
+  
+  struct O: ParsableArguments {
+    @Argument var a: String
+    @Argument(parsing: .postTerminator) var b: [String] = []
+  }
+  
+  func testSynopsisWithPostTerminatorParsingStrategy() {
+    _testSynopsis(O.self, expected: "example <a> -- [<b> ...]")
+  }
 }
