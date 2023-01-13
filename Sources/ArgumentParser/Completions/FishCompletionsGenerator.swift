@@ -37,7 +37,7 @@ extension FishCompletionsGenerator {
       "\(prefix) \(suggestion)"
     }
 
-    let subcommandCompletions = subcommands.map { subcommand in
+    let subcommandCompletions: [String] = subcommands.map { subcommand in
       let escapedAbstract = subcommand.configuration.abstract.fishEscape()
       let suggestion = "-f -a '\(subcommand._commandName)' -d '\(escapedAbstract)'"
       return complete(suggestion: suggestion)
