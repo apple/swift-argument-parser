@@ -638,7 +638,7 @@ extension HelpGenerationTests {
   }
 
   func testAllValues() {
-    let opts = ArgumentSet(AllValues.self, visibility: .private, parent: .root)
+    let opts = ArgumentSet(AllValues.self, visibility: .private, parent: nil)
     XCTAssertEqual(AllValues.Manual.allValueStrings, opts[0].help.allValues)
     XCTAssertEqual(AllValues.Manual.allValueStrings, opts[1].help.allValues)
 
