@@ -81,7 +81,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   }
 
   func testCodingKeyValidation() throws {
-    let parent = InputKey.Parent.key(InputKey(name: "parentKey", parent: .root))
+    let parent = InputKey(name: "parentKey", parent: nil)
     XCTAssertNil(ParsableArgumentsCodingKeyValidator.validate(A.self, parent: parent))
     XCTAssertNil(ParsableArgumentsCodingKeyValidator.validate(B.self, parent: parent))
 
@@ -130,7 +130,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   }
 
   func testCustomDecoderValidation() throws {
-    let parent = InputKey.Parent(InputKey(name: "foo", parent: .root))
+    let parent = InputKey(name: "foo", parent: nil)
         if let error = ParsableArgumentsCodingKeyValidator.validate(TypeWithInvalidDecoder.self, parent: parent)
       as? ParsableArgumentsCodingKeyValidator.InvalidDecoderError
     {
@@ -211,7 +211,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   }
 
   func testPositionalArgumentsValidation() throws {
-    let parent = InputKey.Parent(InputKey(name: "foo", parent: .root))
+    let parent = InputKey(name: "foo", parent: nil)
     XCTAssertNil(PositionalArgumentsValidator.validate(A.self, parent: parent))
     XCTAssertNil(PositionalArgumentsValidator.validate(F.self, parent: parent))
     XCTAssertNil(PositionalArgumentsValidator.validate(H.self, parent: parent))
@@ -246,7 +246,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   }
 
   func testUniqueNamesValidation_NoViolation() throws {
-    let parent = InputKey.Parent(InputKey(name: "foo", parent: .root))
+    let parent = InputKey(name: "foo", parent: nil)
     XCTAssertNil(ParsableArgumentsUniqueNamesValidator.validate(DifferentNames.self, parent: parent))
   }
 
@@ -260,7 +260,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   }
 
   func testUniqueNamesValidation_TwoOfSameName() throws {
-    if let error = ParsableArgumentsUniqueNamesValidator.validate(TwoOfTheSameName.self, parent: .root)
+    if let error = ParsableArgumentsUniqueNamesValidator.validate(TwoOfTheSameName.self, parent: nil)
       as? ParsableArgumentsUniqueNamesValidator.Error
     {
       XCTAssertEqual(error.description, "Multiple (2) `Option` or `Flag` arguments are named \"--foo\".")
@@ -288,7 +288,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   }
 
   func testUniqueNamesValidation_TwoDuplications() throws {
-    let parent = InputKey.Parent(InputKey(name: "option", parent: .root))
+    let parent = InputKey(name: "option", parent: nil)
     if let error = ParsableArgumentsUniqueNamesValidator.validate(MultipleUniquenessViolations.self, parent: parent)
       as? ParsableArgumentsUniqueNamesValidator.Error
     {
@@ -324,7 +324,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   }
 
   func testUniqueNamesValidation_ArgumentHasMultipleNames() throws {
-    if let error = ParsableArgumentsUniqueNamesValidator.validate(MultipleNamesPerArgument.self, parent: .root)
+    if let error = ParsableArgumentsUniqueNamesValidator.validate(MultipleNamesPerArgument.self, parent: nil)
       as? ParsableArgumentsUniqueNamesValidator.Error
     {
       XCTAssertEqual(error.description, "Multiple (2) `Option` or `Flag` arguments are named \"-v\".")
@@ -355,7 +355,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   }
 
   func testUniqueNamesValidation_MoreThanTwoDuplications() throws {
-    if let error = ParsableArgumentsUniqueNamesValidator.validate(FourDuplicateNames.self, parent: .root)
+    if let error = ParsableArgumentsUniqueNamesValidator.validate(FourDuplicateNames.self, parent: nil)
       as? ParsableArgumentsUniqueNamesValidator.Error
     {
       XCTAssertEqual(error.description, "Multiple (4) `Option` or `Flag` arguments are named \"--foo\".")
@@ -397,7 +397,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   }
 
   func testUniqueNamesValidation_DuplicatedFlagFirstLetters_ShortNames() throws {
-    if let error = ParsableArgumentsUniqueNamesValidator.validate(DuplicatedFirstLettersShortNames.self, parent: .root)
+    if let error = ParsableArgumentsUniqueNamesValidator.validate(DuplicatedFirstLettersShortNames.self, parent: nil)
       as? ParsableArgumentsUniqueNamesValidator.Error
     {
       XCTAssertEqual(error.description, "Multiple (3) `Option` or `Flag` arguments are named \"-f\".")
@@ -407,7 +407,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   }
 
   func testUniqueNamesValidation_DuplicatedFlagFirstLetters_LongNames() throws {
-    XCTAssertNil(ParsableArgumentsUniqueNamesValidator.validate(DuplicatedFirstLettersLongNames.self, parent: .root))
+    XCTAssertNil(ParsableArgumentsUniqueNamesValidator.validate(DuplicatedFirstLettersLongNames.self, parent: nil))
   }
     
   fileprivate struct HasOneNonsenseFlag: ParsableCommand {
@@ -439,7 +439,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   }
 
   func testNonsenseFlagsValidation_OneFlag() throws {
-    if let error = NonsenseFlagsValidator.validate(HasOneNonsenseFlag.self, parent: .root)
+    if let error = NonsenseFlagsValidator.validate(HasOneNonsenseFlag.self, parent: nil)
       as? NonsenseFlagsValidator.Error
     {
       XCTAssertEqual(
@@ -476,7 +476,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   }
 
   func testNonsenseFlagsValidation_MultipleFlags() throws {
-    if let error = NonsenseFlagsValidator.validate(MultipleNonsenseFlags.self, parent: .root)
+    if let error = NonsenseFlagsValidator.validate(MultipleNonsenseFlags.self, parent: nil)
         as? NonsenseFlagsValidator.Error
     {
       XCTAssertEqual(

@@ -828,3 +828,33 @@ extension DefaultsEndToEndTests {
     }
   }
 }
+
+extension DefaultsEndToEndTests {
+  private struct UnderscoredOptional: ParsableCommand {
+    @Option(name: .customLong("arg"))
+    var _arg: String?
+  }
+
+  private struct UnderscoredArray: ParsableCommand {
+    @Option(name: .customLong("columns"), parsing: .upToNextOption)
+    var _columns: [String] = []
+  }
+
+  func testUnderscoredOptional() throws {
+    AssertParse(UnderscoredOptional.self, []) { parsed in
+      XCTAssertNil(parsed._arg)
+    }
+    AssertParse(UnderscoredOptional.self, ["--arg", "foo"]) { parsed in
+      XCTAssertEqual(parsed._arg, "foo")
+    }
+  }
+
+  func testUnderscoredArray() throws {
+    AssertParse(UnderscoredArray.self, []) { parsed in
+      XCTAssertEqual(parsed._columns, [])
+    }
+    AssertParse(UnderscoredArray.self, ["--columns", "foo", "bar", "baz"]) { parsed in
+      XCTAssertEqual(parsed._columns, ["foo", "bar", "baz"])
+    }
+  }
+}

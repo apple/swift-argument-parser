@@ -132,7 +132,7 @@ struct BashCompletionsGenerator {
   ///
   /// These consist of completions that are defined as `.list` or `.custom`.
   fileprivate static func generateArgumentCompletions(_ commands: [ParsableCommand.Type]) -> [String] {
-    ArgumentSet(commands.last!, visibility: .default, parent: .root)
+    ArgumentSet(commands.last!, visibility: .default, parent: nil)
       .compactMap { arg -> String? in
         guard arg.isPositional else { return nil }
 
@@ -159,7 +159,7 @@ struct BashCompletionsGenerator {
 
   /// Returns the case-matching statements for supplying completions after an option or flag.
   fileprivate static func generateOptionHandlers(_ commands: [ParsableCommand.Type]) -> String {
-    ArgumentSet(commands.last!, visibility: .default, parent: .root)
+    ArgumentSet(commands.last!, visibility: .default, parent: nil)
       .compactMap { arg -> String? in
         let words = arg.bashCompletionWords()
         if words.isEmpty { return nil }

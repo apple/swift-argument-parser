@@ -248,7 +248,7 @@ extension ArgumentSetProvider {
 }
 
 extension ArgumentSet {
-  init(_ type: ParsableArguments.Type, visibility: ArgumentVisibility, parent: InputKey.Parent) {
+  init(_ type: ParsableArguments.Type, visibility: ArgumentVisibility, parent: InputKey?) {
     #if DEBUG
     do {
       try type._validate(parent: parent)
