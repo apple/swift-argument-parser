@@ -10,6 +10,13 @@ Add new items at the end of the relevant section under **Unreleased**.
 
 ---
 
+## [1.2.2] - 2023-02-02
+
+### Fixes
+
+- Fixes an issue introduced in version 1.2.0 where properties with underscored names couldn't be parsed. ([#548])
+- Improves the error message for cases where platform availability causes the synchronous `ParsableCommand.main()` static method to be run on an `AsyncParsableCommand` type. ([#547])
+
 ## [1.2.1] - 2023-01-12
 
 ### Changes
@@ -764,7 +771,8 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 
 <!-- Link references for releases -->
 
-[Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.2.1...HEAD
+[Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.2.2...HEAD
+[1.2.2]: https://github.com/apple/swift-argument-parser/compare/1.2.1...1.2.2
 [1.2.1]: https://github.com/apple/swift-argument-parser/compare/1.2.0...1.2.1
 [1.2.0]: https://github.com/apple/swift-argument-parser/compare/1.1.4...1.2.0
 [1.1.4]: https://github.com/apple/swift-argument-parser/compare/1.1.3...1.1.4
@@ -851,6 +859,8 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [#522]: https://github.com/apple/swift-argument-parser/pull/522
 [#535]: https://github.com/apple/swift-argument-parser/pull/535
 [#542]: https://github.com/apple/swift-argument-parser/pull/542
+[#547]: https://github.com/apple/swift-argument-parser/pull/547
+[#548]: https://github.com/apple/swift-argument-parser/pull/548
 
 <!-- Link references for contributors -->
 
