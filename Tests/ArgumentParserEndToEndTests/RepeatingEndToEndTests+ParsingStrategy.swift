@@ -11,14 +11,19 @@
 
 import XCTest
 import ArgumentParserTestHelpers
-import ArgumentParser
+@testable import ArgumentParser
 
 // MARK: - allUnrecognized
 
-fileprivate struct AllUnrecognizedArgs: ParsableArguments {
+fileprivate struct AllUnrecognizedArgs: ParsableCommand {
+  static var configuration: CommandConfiguration {
+    .init(version: "1.0")
+  }
+  
   @Flag var verbose: Bool = false
   @Flag(name: .customShort("f")) var useFiles: Bool = false
   @Flag(name: .customShort("i")) var useStandardInput: Bool = false
+  @Flag(name: .customShort("h")) var hoopla: Bool = false
   @Option var config = "debug"
   @Argument(parsing: .allUnrecognized) var names: [String] = []
 }
@@ -27,20 +32,33 @@ extension RepeatingEndToEndTests {
   func testParsing_repeatingAllUnrecognized() throws {
     AssertParse(AllUnrecognizedArgs.self, []) { cmd in
       XCTAssertFalse(cmd.verbose)
+      XCTAssertFalse(cmd.hoopla)
       XCTAssertEqual(cmd.names, [])
     }
     AssertParse(AllUnrecognizedArgs.self, ["foo", "--verbose", "-fi", "bar", "-z", "--other"]) { cmd in
       XCTAssertTrue(cmd.verbose)
       XCTAssertTrue(cmd.useFiles)
       XCTAssertTrue(cmd.useStandardInput)
+      XCTAssertFalse(cmd.hoopla)
       XCTAssertEqual(cmd.names, ["foo", "bar", "-z", "--other"])
     }
-    AssertParse(AllUnrecognizedArgs.self, []) { cmd in
-      XCTAssertFalse(cmd.verbose)
-      XCTAssertEqual(cmd.names, [])
-    }
   }
+  
+  func testParsing_repeatingAllUnrecognized_Builtin() throws {
+    AssertParse(AllUnrecognizedArgs.self, ["foo", "--verbose", "bar", "-z", "-h"]) { cmd in
+      XCTAssertTrue(cmd.verbose)
+      XCTAssertFalse(cmd.useFiles)
+      XCTAssertFalse(cmd.useStandardInput)
+      XCTAssertTrue(cmd.hoopla)
+      XCTAssertEqual(cmd.names, ["foo", "bar", "-z"])
+    }
 
+    AssertParseCommand(AllUnrecognizedArgs.self, HelpCommand.self, ["foo", "--verbose", "bar", "-z", "--help"]) { cmd in
+      // No need to test HelpCommand properties
+    }
+    XCTAssertThrowsError(try AllUnrecognizedArgs.parse(["foo", "--verbose", "--version"]))
+  }
+  
   func testParsing_repeatingAllUnrecognized_Fails() throws {
     // Only partially matches the `-fib` argument
     XCTAssertThrowsError(try PassthroughArgs.parse(["-fib"]))
@@ -140,7 +158,7 @@ extension RepeatingEndToEndTests {
 
 // MARK: - captureForPassthrough
 
-fileprivate struct PassthroughArgs: ParsableArguments {
+fileprivate struct PassthroughArgs: ParsableCommand {
   @Flag var verbose: Bool = false
   @Flag(name: .customShort("f")) var useFiles: Bool = false
   @Flag(name: .customShort("i")) var useStandardInput: Bool = false
@@ -219,6 +237,20 @@ extension RepeatingEndToEndTests {
       XCTAssertFalse(cmd.useFiles)
       XCTAssertFalse(cmd.useStandardInput)
       XCTAssertEqual(cmd.names, ["-one", "-two", "-three", "-if"])
+    }
+
+    AssertParse(PassthroughArgs.self, ["-one", "-two", "-three", "-if", "--help"]) { cmd in
+      XCTAssertFalse(cmd.verbose)
+      XCTAssertFalse(cmd.useFiles)
+      XCTAssertFalse(cmd.useStandardInput)
+      XCTAssertEqual(cmd.names, ["-one", "-two", "-three", "-if", "--help"])
+    }
+
+    AssertParse(PassthroughArgs.self, ["-one", "-two", "-three", "-if", "-h"]) { cmd in
+      XCTAssertFalse(cmd.verbose)
+      XCTAssertFalse(cmd.useFiles)
+      XCTAssertFalse(cmd.useStandardInput)
+      XCTAssertEqual(cmd.names, ["-one", "-two", "-three", "-if", "-h"])
     }
   }
 

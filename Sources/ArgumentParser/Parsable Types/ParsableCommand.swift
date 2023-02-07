@@ -165,17 +165,23 @@ extension ParsableCommand {
 extension ParsableCommand {
   /// `true` if this command contains any array arguments that are declared
   /// with `.unconditionalRemaining`.
-  internal static var includesUnconditionalArguments: Bool {
+  internal static var includesPassthroughArguments: Bool {
     ArgumentSet(self, visibility: .private, parent: nil).contains(where: {
       $0.isRepeatingPositional && $0.parsingStrategy == .allRemainingInput
+    })
+  }
+  
+  internal static var includesAllUnrecognizedArgument: Bool {
+    ArgumentSet(self, visibility: .private, parent: nil).contains(where: {
+      $0.isRepeatingPositional && $0.parsingStrategy == .allUnrecognized
     })
   }
   
   /// `true` if this command's default subcommand contains any array arguments
   /// that are declared with `.unconditionalRemaining`. This is `false` if
   /// there's no default subcommand.
-  internal static var defaultIncludesUnconditionalArguments: Bool {
-    configuration.defaultSubcommand?.includesUnconditionalArguments == true
+  internal static var defaultIncludesPassthroughArguments: Bool {
+    configuration.defaultSubcommand?.includesPassthroughArguments == true
   }
   
 #if DEBUG

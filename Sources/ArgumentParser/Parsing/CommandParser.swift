@@ -139,15 +139,17 @@ extension CommandParser {
   /// Extracts the current command from `split`, throwing if decoding isn't
   /// possible.
   fileprivate mutating func parseCurrent(_ split: inout SplitArguments) throws -> ParsableCommand {
-    // Build the argument set (i.e. information on how to parse):
-    let commandArguments = ArgumentSet(currentNode.element, visibility: .private, parent: nil)
-    
     // Parse the arguments, ignoring anything unexpected
-    let values = try commandArguments.lenientParse(
-      split,
-      subcommands: currentNode.element.configuration.subcommands,
-      defaultCapturesAll: currentNode.element.defaultIncludesUnconditionalArguments)
-
+    var parser = LenientParser(currentNode.element, split)
+    let values = try parser.parse()
+    
+    if currentNode.element.includesAllUnrecognizedArgument {
+      // If this command includes an all-unrecognized argument, any built-in
+      // flags will have been parsed into that argument. Check for flags
+      // before decoding.
+      try checkForBuiltInFlags(values.capturedUnrecognizedArguments)
+    }
+    
     // Decode the values from ParsedValues into the ParsableCommand:
     let decoder = ArgumentDecoder(values: values, previouslyDecoded: decodedArguments)
     var decodedResult: ParsableCommand
