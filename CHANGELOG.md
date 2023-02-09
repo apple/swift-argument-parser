@@ -10,12 +10,17 @@ Add new items at the end of the relevant section under **Unreleased**.
 
 ---
 
-## [1.2.2] - 2023-02-02
+## [1.2.2] - 2023-02-09
 
 ### Fixes
 
-- Fixes an issue introduced in version 1.2.0 where properties with underscored names couldn't be parsed. ([#548])
-- Improves the error message for cases where platform availability causes the synchronous `ParsableCommand.main()` static method to be run on an `AsyncParsableCommand` type. ([#547])
+- Arguments with the `.allUnrecognized` parsing strategy no longer consume
+  built-in flags like `--help` and `--version`. ([#550])
+- Fixes an issue introduced in version 1.2.0 where properties with underscored
+  names couldn't be parsed. ([#548])
+- Improves the error message for cases where platform availability causes the
+  synchronous `ParsableCommand.main()` static method to be run on an
+  `AsyncParsableCommand` type. ([#547])
 
 ## [1.2.1] - 2023-01-12
 
@@ -861,6 +866,7 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [#542]: https://github.com/apple/swift-argument-parser/pull/542
 [#547]: https://github.com/apple/swift-argument-parser/pull/547
 [#548]: https://github.com/apple/swift-argument-parser/pull/548
+[#550]: https://github.com/apple/swift-argument-parser/pull/550
 
 <!-- Link references for contributors -->
 
