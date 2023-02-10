@@ -4,12 +4,13 @@
 
 ### Single Options
 
-- ``init(name:parsing:help:completion:)-4yske``
 - ``init(name:parsing:help:completion:)-7slrf``
+- ``init(name:parsing:help:completion:)-5k0ug``
 - ``init(name:parsing:help:completion:transform:)-2wf44``
-- ``init(wrappedValue:name:parsing:help:completion:)-7ilku``
+- ``init(name:parsing:help:completion:transform:)-25g7b``
 - ``init(wrappedValue:name:parsing:help:completion:transform:)-2llve``
 - ``SingleValueParsingStrategy``
+- ``init(wrappedValue:name:parsing:help:completion:)-7xcum``
 
 ### Array Options
 
@@ -21,10 +22,11 @@
 
 ### Infrequently Used APIs
 
-- ``init()``
 - ``init(from:)``
 - ``wrappedValue``
 
 ### Deprecated APIs
 
 - ``init(wrappedValue:name:parsing:completion:help:)``
+- ``init(wrappedValue:name:parsing:help:completion:)-4pl7h``
+- ``init(wrappedValue:name:parsing:help:completion:transform:)-6rqji``

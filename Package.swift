@@ -68,19 +68,3 @@ var package = Package(
             resources: [.copy("CountLinesTest.txt")]),
     ]
 )
-
-#if swift(>=5.6) && os(macOS)
-package.targets.append(contentsOf: [
-    // Examples
-    .executableTarget(
-        name: "count-lines",
-        dependencies: ["ArgumentParser"],
-        path: "Examples/count-lines"),
-
-    // Tools
-    .executableTarget(
-        name: "changelog-authors",
-        dependencies: ["ArgumentParser"],
-        path: "Tools/changelog-authors"),
-    ])
-#endif

@@ -795,3 +795,68 @@ extension DefaultsEndToEndTests {
     }
   }
 }
+
+// MARK: Overload selection
+
+extension DefaultsEndToEndTests {
+  private struct AbsolutePath: ExpressibleByArgument {
+    init(_ value: String) {}
+    init?(argument: String) {}
+  }
+  
+  private struct TwoPaths: ParsableCommand {
+    @Argument(help: .init("The path"))
+    var path1 = AbsolutePath("abc")
+
+    @Argument(help: "The path")
+    var path2 = AbsolutePath("abc")
+
+    @Option(help: .init("The path"))
+    var path3 = AbsolutePath("abc")
+
+    @Option(help: "The path")
+    var path4 = AbsolutePath("abc")
+  }
+  
+  /// Tests that a non-optional `Value` type is inferred, regardless of how the
+  /// initializer parameters are spelled. Previously, string literals and
+  /// `.init` calls for the help parameter inferred different generic types.
+  func testHelpInitInferredType() throws {
+    AssertParse(TwoPaths.self, []) { cmd in
+      XCTAssert(type(of: cmd.path1) == AbsolutePath.self)
+      XCTAssert(type(of: cmd.path2) == AbsolutePath.self)
+      XCTAssert(type(of: cmd.path3) == AbsolutePath.self)
+      XCTAssert(type(of: cmd.path4) == AbsolutePath.self)
+    }
+  }
+}
+
+extension DefaultsEndToEndTests {
+  private struct UnderscoredOptional: ParsableCommand {
+    @Option(name: .customLong("arg"))
+    var _arg: String?
+  }
+
+  private struct UnderscoredArray: ParsableCommand {
+    @Option(name: .customLong("columns"), parsing: .upToNextOption)
+    var _columns: [String] = []
+  }
+
+  func testUnderscoredOptional() throws {
+    AssertParse(UnderscoredOptional.self, []) { parsed in
+      XCTAssertNil(parsed._arg)
+    }
+    AssertParse(UnderscoredOptional.self, ["--arg", "foo"]) { parsed in
+      XCTAssertEqual(parsed._arg, "foo")
+    }
+  }
+
+  func testUnderscoredArray() throws {
+    AssertParse(UnderscoredArray.self, []) { parsed in
+      XCTAssertEqual(parsed._columns, [])
+    }
+    AssertParse(UnderscoredArray.self, ["--columns", "foo", "bar", "baz"]) { parsed in
+      XCTAssertEqual(parsed._columns, ["foo", "bar", "baz"])
+    }
+  }
+}

@@ -22,7 +22,7 @@ func _testSynopsis<T: ParsableArguments>(
   file: StaticString = #file,
   line: UInt = #line
 ) {
-  let help = UsageGenerator(toolName: "example", parsable: T(), visibility: visibility, parent: .root)
+  let help = UsageGenerator(toolName: "example", parsable: T(), visibility: visibility, parent: nil)
   XCTAssertEqual(help.synopsis, expected, file: file, line: line)
 }
 
@@ -216,5 +216,14 @@ extension UsageGenerationTests {
   func testNonwrappedValues() {
     _testSynopsis(N.self, expected: "example [--a] [--b]")
     _testSynopsis(N.self, visibility: .hidden, expected: "example [--a] [--b]")
+  }
+  
+  struct O: ParsableArguments {
+    @Argument var a: String
+    @Argument(parsing: .postTerminator) var b: [String] = []
+  }
+  
+  func testSynopsisWithPostTerminatorParsingStrategy() {
+    _testSynopsis(O.self, expected: "example <a> -- [<b> ...]")
   }
 }

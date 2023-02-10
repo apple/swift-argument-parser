@@ -19,8 +19,8 @@ var package = Package(
             name: "ArgumentParser",
             targets: ["ArgumentParser"]),
         .plugin(
-            name: "GenerateManualPlugin",
-            targets: ["GenerateManualPlugin"]),
+            name: "GenerateManual",
+            targets: ["GenerateManual"]),
     ],
     dependencies: [],
     targets: [
@@ -40,7 +40,7 @@ var package = Package(
 
         // Plugins
         .plugin(
-            name: "GenerateManualPlugin",
+            name: "GenerateManual",
             capability: .command(
                 intent: .custom(
                     verb: "generate-manual",

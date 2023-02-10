@@ -118,7 +118,7 @@ extension CommandParser {
             try! update(InputOrigin(elements: [.interactive]), name, str, &values)
           }
 
-          if values.elements[InputKey(name: label, parent: .root)]!.value is [Any] {
+          if values.elements[InputKey(name: label, parent: nil)]!.value is [Any] {
             print("You select '\(strs.joined(separator: "', '"))'.\n")
           } else {
             print("You select '\(strs.last!)'.\n")

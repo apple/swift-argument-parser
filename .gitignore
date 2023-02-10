@@ -5,3 +5,6 @@
 .swiftpm
 .vscode
 .*.sw?
+*.docc-build
+*.vs
+Package.resolved

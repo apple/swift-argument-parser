@@ -10,7 +10,6 @@
 //===----------------------------------------------------------------------===//
 
 import PackagePlugin
-import Foundation
 
 @main
 struct GenerateManualPlugin: CommandPlugin {

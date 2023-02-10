@@ -246,30 +246,50 @@ _escaped-command
 """
 
 private let fishBaseCompletions = """
+# A function which filters options which starts with "-" from $argv.
+function _swift_base_preprocessor
+    set -l results
+    for i in (seq (count $argv))
+        switch (echo $argv[$i] | string sub -l 1)
+            case '-'
+            case '*'
+                echo $argv[$i]
+        end
+    end
+end
+
 function _swift_base_using_command
-    set -l cmd (commandline -opc)
-    if [ (count $cmd) -eq (count $argv) ]
-        for i in (seq (count $argv))
-            if [ $cmd[$i] != $argv[$i] ]
+    set -l currentCommands (_swift_base_preprocessor (commandline -opc))
+    set -l expectedCommands (string split " " $argv[1])
+    set -l subcommands (string split " " $argv[2])
+    if [ (count $currentCommands) -ge (count $expectedCommands) ]
+        for i in (seq (count $expectedCommands))
+            if [ $currentCommands[$i] != $expectedCommands[$i] ]
                 return 1
+            end
+        end
+        if [ (count $currentCommands) -eq (count $expectedCommands) ]
+            return 0
+        end
+        if [ (count $subcommands) -gt 1 ]
+            for i in (seq (count $subcommands))
+                if [ $currentCommands[(math (count $expectedCommands) + 1)] = $subcommands[$i] ]
+                    return 1
+                end
             end
         end
         return 0
     end
     return 1
 end
-complete -c base -n '_swift_base_using_command base' -f -r -l name -d 'The user\\'s name.'
-complete -c base -n '_swift_base_using_command base' -f -r -l kind
-complete -c base -n '_swift_base_using_command base --kind' -f -k -a 'one two custom-three'
-complete -c base -n '_swift_base_using_command base' -f -r -l other-kind
-complete -c base -n '_swift_base_using_command base --other-kind' -f -k -a '1 2 3'
-complete -c base -n '_swift_base_using_command base' -f -r -l path1
-complete -c base -n '_swift_base_using_command base --path1' -f -a '(for i in *.{}; echo $i;end)'
-complete -c base -n '_swift_base_using_command base' -f -r -l path2
-complete -c base -n '_swift_base_using_command base --path2' -f -a '(for i in *.{}; echo $i;end)'
-complete -c base -n '_swift_base_using_command base' -f -r -l path3
-complete -c base -n '_swift_base_using_command base --path3' -f -k -a 'a b c'
-complete -c base -n '_swift_base_using_command base' -f -s h -l help -d 'Show help information.'
+
+complete -c base -n '_swift_base_using_command \"base\"' -l name -d 'The user\\\'s name.'
+complete -c base -n '_swift_base_using_command \"base\"' -l kind -r -f -k -a 'one two custom-three'
+complete -c base -n '_swift_base_using_command \"base\"' -l other-kind -r -f -k -a '1 2 3'
+complete -c base -n '_swift_base_using_command \"base\"' -l path1 -r -f -a '(for i in *.{}; echo $i;end)'
+complete -c base -n '_swift_base_using_command \"base\"' -l path2 -r -f -a '(for i in *.{}; echo $i;end)'
+complete -c base -n '_swift_base_using_command \"base\"' -l path3 -r -f -k -a 'a b c'
+complete -c base -n '_swift_base_using_command \"base\"' -s h -l help -d 'Show help information.'
 """
 
 // MARK: - Test Hidden Subcommand
@@ -371,17 +391,42 @@ complete -F _parent parent
 """
 
 let fishHiddenCompletion = """
+# A function which filters options which starts with "-" from $argv.
+function _swift_parent_preprocessor
+    set -l results
+    for i in (seq (count $argv))
+        switch (echo $argv[$i] | string sub -l 1)
+            case '-'
+            case '*'
+                echo $argv[$i]
+        end
+    end
+end
+
 function _swift_parent_using_command
-    set -l cmd (commandline -opc)
-    if [ (count $cmd) -eq (count $argv) ]
-        for i in (seq (count $argv))
-            if [ $cmd[$i] != $argv[$i] ]
+    set -l currentCommands (_swift_parent_preprocessor (commandline -opc))
+    set -l expectedCommands (string split " " $argv[1])
+    set -l subcommands (string split " " $argv[2])
+    if [ (count $currentCommands) -ge (count $expectedCommands) ]
+        for i in (seq (count $expectedCommands))
+            if [ $currentCommands[$i] != $expectedCommands[$i] ]
                 return 1
+            end
+        end
+        if [ (count $currentCommands) -eq (count $expectedCommands) ]
+            return 0
+        end
+        if [ (count $subcommands) -gt 1 ]
+            for i in (seq (count $subcommands))
+                if [ $currentCommands[(math (count $expectedCommands) + 1)] = $subcommands[$i] ]
+                    return 1
+                end
             end
         end
         return 0
     end
     return 1
 end
-complete -c parent -n '_swift_parent_using_command parent' -f -s h -l help -d 'Show help information.'
+
+complete -c parent -n '_swift_parent_using_command \"parent\"' -s h -l help -d 'Show help information.'
 """

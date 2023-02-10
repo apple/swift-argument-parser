@@ -33,3 +33,4 @@
 ### Infrequently Used APIs
 
 - ``init()``
+- ``helpMessage(columns:)``

@@ -167,7 +167,7 @@ extension FlagInversion {
         case .short, .customShort:
           return includingShort ? element.name(for: key) : nil
         case .long:
-          let modifiedKey = key.with(newName: key.name.addingIntercappedPrefix(prefix))
+          let modifiedKey = InputKey(name: key.name.addingIntercappedPrefix(prefix), parent: key)
           return element.name(for: modifiedKey)
         case .customLong(let name, let withSingleDash):
           let modifiedName = name.addingPrefixWithAutodetectedStyle(prefix)

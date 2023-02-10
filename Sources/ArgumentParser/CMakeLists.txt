@@ -41,6 +41,7 @@ add_library(ArgumentParser
   Usage/UsageGenerator.swift
 
   Utilities/CollectionExtensions.swift
+  Utilities/Platform.swift
   Utilities/SequenceExtensions.swift
   Utilities/StringExtensions.swift
   Utilities/Tree.swift)

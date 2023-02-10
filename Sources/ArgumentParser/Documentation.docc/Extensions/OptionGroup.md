@@ -4,7 +4,11 @@
 
 ### Creating an Option Group
 
-- ``init(visibility:)``
+- ``init(title:visibility:)``
+
+### Option Group Properties
+
+- ``title``
 
 ### Infrequently Used APIs
 

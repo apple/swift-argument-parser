@@ -149,24 +149,29 @@ extension CommandParser {
   /// Extracts the current command from `split`, throwing if decoding isn't
   /// possible.
   fileprivate mutating func parseCurrent(_ split: inout SplitArguments) throws -> ParsableCommand {
-    // Build the argument set (i.e. information on how to parse):
-    let commandArguments = ArgumentSet(currentNode.element, visibility: .private, parent: .root)
-    
+    // Parse the arguments, ignoring anything unexpected.
+    var parser = LenientParser(currentNode.element, split)
+
     func getValues() throws -> ParsedValues {
       do {
         // Parse the arguments, ignoring anything unexpected
-        return try commandArguments.lenientParse(
-          split,
-          subcommands: currentNode.element.configuration.subcommands,
-          defaultCapturesAll: currentNode.element.defaultIncludesUnconditionalArguments)
+        return try parser.parse()
       } catch {
         // Try to fix error by interacting with the user
         guard canInteract(error: error, split: &split) else { throw error }
+        parser.inputArguments = split
         return try getValues()
       }
     }
     var values = try getValues()
     
+    if currentNode.element.includesAllUnrecognizedArgument {
+      // If this command includes an all-unrecognized argument, any built-in
+      // flags will have been parsed into that argument. Check for flags
+      // before decoding.
+      try checkForBuiltInFlags(values.capturedUnrecognizedArguments)
+    }
+
     func getDecoderAndResult() throws -> (ArgumentDecoder, ParsableCommand) {
       // Decode the values from ParsedValues into the ParsableCommand:
       let decoder = ArgumentDecoder(values: values, previouslyDecoded: decodedArguments)
@@ -176,7 +181,7 @@ extension CommandParser {
         return (decoder, decodedResult)
       } catch {
         // Try to fix error by interacting with the user
-        if canInteract(error: error, arguments: commandArguments, values: &values) {
+        if canInteract(error: error, arguments: parser.argumentSet, values: &values) {
           return try getDecoderAndResult()
         } else {
           // If decoding this command failed, see if they were asking for
@@ -353,7 +358,7 @@ extension CommandParser {
     let completionValues = Array(args)
 
     // Generate the argument set and parse the argument to find in the set
-    let argset = ArgumentSet(current.element, visibility: .private, parent: .root)
+    let argset = ArgumentSet(current.element, visibility: .private, parent: nil)
     let parsedArgument = try! parseIndividualArg(argToMatch, at: 0).first!
     
     // Look up the specified argument and retrieve its custom completion function

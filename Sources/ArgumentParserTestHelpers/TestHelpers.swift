@@ -14,6 +14,35 @@ import ArgumentParser
 import ArgumentParserToolInfo
 import XCTest
 
+@available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
+extension CollectionDifference.Change {
+  var offset: Int {
+    switch self {
+    case .insert(let offset, _, _):
+      return offset
+    case .remove(let offset, _, _):
+      return offset
+    }
+  }
+}
+
+@available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
+extension CollectionDifference.Change: Comparable where ChangeElement: Equatable {
+  public static func < (lhs: Self, rhs: Self) -> Bool {
+    guard lhs.offset == rhs.offset else {
+      return lhs.offset < rhs.offset
+    }
+    switch (lhs, rhs) {
+    case (.remove, .insert):
+      return true
+    case (.insert, .remove):
+      return false
+    default:
+      return true
+    }
+  }
+}
+
 // extensions to the ParsableArguments protocol to facilitate XCTestExpectation support
 public protocol TestableParsableArguments: ParsableArguments {
   var didValidateExpectation: XCTestExpectation { get }
@@ -53,7 +82,7 @@ public func AssertResultFailure<T, U: Error>(
   switch expression() {
   case .success:
     let msg = message()
-    XCTFail(msg.isEmpty ? "Incorrectly succeeded" : msg, file: (file), line: line)
+    XCTFail(msg.isEmpty ? "Incorrectly succeeded" : msg, file: file, line: line)
   case .failure:
     break
   }
@@ -62,10 +91,10 @@ public func AssertResultFailure<T, U: Error>(
 public func AssertErrorMessage<A>(_ type: A.Type, _ arguments: [String], _ errorMessage: String, file: StaticString = #file, line: UInt = #line) where A: ParsableArguments {
   do {
     _ = try A.parse(arguments)
-    XCTFail("Parsing should have failed.", file: (file), line: line)
+    XCTFail("Parsing should have failed.", file: file, line: line)
   } catch {
     // We expect to hit this path, i.e. getting an error:
-    XCTAssertEqual(A.message(for: error), errorMessage, file: (file), line: line)
+    XCTAssertEqual(A.message(for: error), errorMessage, file: file, line: line)
   }
 }
 
@@ -99,7 +128,7 @@ public func AssertParseCommand<A: ParsableCommand>(_ rootCommand: ParsableComman
     try closure(aCommand)
   } catch {
     let message = rootCommand.message(for: error)
-    XCTFail("\"\(message)\" — \(error)", file: (file), line: line)
+    XCTFail("\"\(message)\" — \(error)", file: file, line: line)
   }
 }
 
@@ -120,13 +149,54 @@ public func AssertParseCommand<A: ParsableCommand>(_ rootCommand: ParsableComman
   }
 }
 
-public func AssertEqualStringsIgnoringTrailingWhitespace(_ string1: String, _ string2: String, file: StaticString = #file, line: UInt = #line) {
-  let lines1 = string1.split(separator: "\n", omittingEmptySubsequences: false)
-  let lines2 = string2.split(separator: "\n", omittingEmptySubsequences: false)
-  
-  XCTAssertEqual(lines1.count, lines2.count, "Strings have different numbers of lines.", file: (file), line: line)
-  for (line1, line2) in zip(lines1, lines2) {
-    XCTAssertEqual(line1.trimmed(), line2.trimmed(), file: (file), line: line)
+public func AssertEqualStrings(actual: String, expected: String, file: StaticString = #file, line: UInt = #line) {
+  // If the input strings are not equal, create a simple diff for debugging...
+  guard actual != expected else {
+    // Otherwise they are equal, early exit.
+    return
+  }
+
+  // Split in the inputs into lines.
+  let actualLines = actual.split(separator: "\n", omittingEmptySubsequences: false)
+  let expectedLines = expected.split(separator: "\n", omittingEmptySubsequences: false)
+
+  // If collectionDifference is available, use it to make a nicer error message.
+  if #available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *) {
+    // Compute the changes between the two strings.
+    let changes = actualLines.difference(from: expectedLines).sorted()
+
+    // Render the changes into a diff style string.
+    var diff = ""
+    var expectedLines = expectedLines[...]
+    for change in changes {
+      if expectedLines.startIndex < change.offset {
+        for line in expectedLines[..<change.offset] {
+          diff += "  \(line)\n"
+        }
+        expectedLines = expectedLines[change.offset...].dropFirst()
+      }
+
+      switch change {
+      case .insert(_, let line, _):
+        diff += "- \(line)\n"
+      case .remove(_, let line, _):
+        diff += "+ \(line)\n"
+      }
+    }
+    for line in expectedLines {
+      diff += "  \(line)\n"
+    }
+    XCTFail("Strings are not equal.\n\(diff)", file: file, line: line)
+  } else {
+    XCTAssertEqual(
+      actualLines.count,
+      expectedLines.count,
+      "Strings have different numbers of lines.",
+      file: file,
+      line: line)
+    for (actualLine, expectedLine) in zip(actualLines, expectedLines) {
+      XCTAssertEqual(actualLine, expectedLine, file: file, line: line)
+    }
   }
 }
 
@@ -160,13 +230,11 @@ public func AssertHelp<T: ParsableArguments>(
     XCTFail(file: file, line: line)
   } catch {
     let helpString = T.fullMessage(for: error)
-    AssertEqualStringsIgnoringTrailingWhitespace(
-      helpString, expected, file: file, line: line)
+    AssertEqualStrings(actual: helpString, expected: expected, file: file, line: line)
   }
 
   let helpString = T.helpMessage(includeHidden: includeHidden, columns: nil)
-  AssertEqualStringsIgnoringTrailingWhitespace(
-    helpString, expected, file: file, line: line)
+  AssertEqualStrings(actual: helpString, expected: expected, file: file, line: line)
 }
 
 public func AssertHelp<T: ParsableCommand, U: ParsableCommand>(
@@ -194,8 +262,7 @@ public func AssertHelp<T: ParsableCommand, U: ParsableCommand>(
 
   let helpString = U.helpMessage(
     for: T.self, includeHidden: includeHidden, columns: nil)
-  AssertEqualStringsIgnoringTrailingWhitespace(
-    helpString, expected, file: file, line: line)
+  AssertEqualStrings(actual: helpString, expected: expected, file: file, line: line)
 }
 
 public func AssertDump<T: ParsableArguments>(
@@ -204,7 +271,7 @@ public func AssertDump<T: ParsableArguments>(
 ) throws {
   do {
     _ = try T.parse(["--experimental-dump-help"])
-    XCTFail(file: (file), line: line)
+    XCTFail(file: file, line: line)
   } catch {
     let dumpString = T.fullMessage(for: error)
     try AssertJSONEqualFromString(actual: dumpString, expected: expected, for: ToolInfoV0.self)
@@ -250,12 +317,16 @@ extension XCTest {
     exitCode: ExitCode = .success,
     file: StaticString = #file, line: UInt = #line) throws
   {
+    #if os(Windows)
+    throw XCTSkip("Unsupported on this platform")
+    #endif
+
     let arguments = Array(command.dropFirst())
     let commandName = String(command.first!)
     let commandURL = debugURL.appendingPathComponent(commandName)
     guard (try? commandURL.checkResourceIsReachable()) ?? false else {
       XCTFail("No executable at '\(commandURL.standardizedFileURL.path)'.",
-              file: (file), line: line)
+              file: file, line: line)
       return
     }
     
@@ -290,7 +361,11 @@ extension XCTest {
     let errorActual = String(data: errorData, encoding: .utf8)!.trimmingCharacters(in: .whitespacesAndNewlines)
     
     if let expected = expected {
-      AssertEqualStringsIgnoringTrailingWhitespace(expected, errorActual + outputActual, file: file, line: line)
+      AssertEqualStrings(
+        actual: errorActual + outputActual,
+        expected: expected,
+        file: file,
+        line: line)
     }
 
     XCTAssertEqual(process.terminationStatus, exitCode.rawValue, file: file, line: line)
@@ -304,6 +379,9 @@ extension XCTest {
     expected: String,
     file: StaticString = #file, line: UInt = #line
   ) throws {
+    #if os(Windows)
+    throw XCTSkip("Unsupported on this platform")
+    #endif
 
     let splitCommand = command.split(separator: " ")
     let arguments = splitCommand.dropFirst().map(String.init)
@@ -312,7 +390,7 @@ extension XCTest {
     let commandURL = debugURL.appendingPathComponent(commandName)
     guard (try? commandURL.checkResourceIsReachable()) ?? false else {
       XCTFail("No executable at '\(commandURL.standardizedFileURL.path)'.",
-              file: (file), line: line)
+              file: file, line: line)
       return
     }
 
@@ -332,7 +410,7 @@ extension XCTest {
 
     if #available(macOS 10.13, *) {
       guard (try? process.run()) != nil else {
-        XCTFail("Couldn't run command process.", file: (file), line: line)
+        XCTFail("Couldn't run command process.", file: file, line: line)
         return
       }
     } else {
@@ -355,6 +433,10 @@ extension XCTest {
     file: StaticString = #file,
     line: UInt = #line
   ) throws {
+    #if os(Windows)
+    throw XCTSkip("Unsupported on this platform")
+    #endif
+
     let commandURL = debugURL.appendingPathComponent(command)
     var command = [
       "generate-manual", commandURL.path,
