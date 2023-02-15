@@ -14,6 +14,7 @@ import ArgumentParserToolInfo
 
 struct SinglePageDescription: MDocComponent {
   var command: CommandInfoV0
+  var root: Bool
 
   var body: MDocComponent {
     Section(title: "description") {
@@ -23,6 +24,14 @@ struct SinglePageDescription: MDocComponent {
 
   @MDocBuilder
   var core: MDocComponent {
+    if !root, let abstract = command.abstract {
+      abstract
+    }
+
+    if !root, command.abstract != nil, command.discussion != nil {
+      MDocMacro.ParagraphBreak()
+    }
+
     if let discussion = command.discussion {
       discussion
     }
@@ -46,7 +55,7 @@ struct SinglePageDescription: MDocComponent {
 
       for subcommand in command.subcommands ?? [] {
         MDocMacro.ListItem(title: MDocMacro.Emphasis(arguments: [subcommand.commandName]))
-        SinglePageDescription(command: subcommand).core
+        SinglePageDescription(command: subcommand, root: false).core
       }
     }
   }
