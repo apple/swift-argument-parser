@@ -157,6 +157,8 @@ extension CommandParser {
         // Parse the arguments, ignoring anything unexpected
         return try parser.parse()
       } catch {
+        try checkForBuiltInFlags(split)
+        
         // Try to fix error by interacting with the user
         guard canInteract(error: error, split: &split) else { throw error }
         parser.inputArguments = split
@@ -180,13 +182,13 @@ extension CommandParser {
         let decodedResult = try currentNode.element.init(from: decoder)
         return (decoder, decodedResult)
       } catch {
-        // Try to fix error by interacting with the user
+        try checkForBuiltInFlags(split)
+
+        // Try to fix error by interacting with the user.
         if canInteract(error: error, arguments: parser.argumentSet, values: &values) {
           return try getDecoderAndResult()
         } else {
-          // If decoding this command failed, see if they were asking for
-          // help before propagating that parsing failure.
-          try checkForBuiltInFlags(split)
+          // Propagating the parsing failure if we aren't interacting.
           throw error
         }
       }
