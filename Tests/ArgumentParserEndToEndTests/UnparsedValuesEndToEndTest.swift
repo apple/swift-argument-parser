@@ -260,68 +260,68 @@ extension UnparsedValuesEndToEndTests {
 // MARK: Value + unparsed dictionary
 
 fileprivate struct Bamf: ParsableCommand {
-    @Flag var bamph: Bool = false
-    var bop: [String: String] = [:]
-    var bopp: [String: [String]] = [:]
+  @Flag var bamph: Bool = false
+  var bop: [String: String] = [:]
+  var bopp: [String: [String]] = [:]
 }
 
 extension UnparsedValuesEndToEndTests {
-    func testUnparsedNestedDictionary() {
-        AssertParse(Bamf.self, []) { bamf in
-            XCTAssertFalse(bamf.bamph)
-            XCTAssertEqual(bamf.bop, [:])
-            XCTAssertEqual(bamf.bopp, [:])
-        }
+  func testUnparsedNestedDictionary() {
+    AssertParse(Bamf.self, []) { bamf in
+      XCTAssertFalse(bamf.bamph)
+      XCTAssertEqual(bamf.bop, [:])
+      XCTAssertEqual(bamf.bopp, [:])
     }
+  }
 }
 
 // MARK: Value + unparsed enum with associated values
 
 fileprivate struct Qiqi: ParsableCommand {
-    @Flag var qiqiqi: Bool = false
-    var qiqii: Qiqii = .q("")
+  @Flag var qiqiqi: Bool = false
+  var qiqii: Qiqii = .q("")
 }
 
 fileprivate enum Qiqii: Codable, Equatable {
-    // Enums with associated values generate a Codable conformance
-    // which calls `KeyedDecodingContainer.nestedContainer(keyedBy:)`.
-    //
-    // There is no known case of anything ever actually using the
-    // `.nestedUnkeyedContainer()` method.
-    case q(String)
-    case i(Int)
+  // Enums with associated values generate a Codable conformance
+  // which calls `KeyedDecodingContainer.nestedContainer(keyedBy:)`.
+  //
+  // There is no known case of anything ever actually using the
+  // `.nestedUnkeyedContainer()` method.
+  case q(String)
+  case i(Int)
 }
 
 extension UnparsedValuesEndToEndTests {
-    func testUnparsedEnumWithAssociatedValues() {
-        AssertParse(Qiqi.self, []) { qiqi in
-            XCTAssertFalse(qiqi.qiqiqi)
-            XCTAssertEqual(qiqi.qiqii, .q(""))
-        }
+  func testUnparsedEnumWithAssociatedValues() {
+    AssertParse(Qiqi.self, []) { qiqi in
+      XCTAssertFalse(qiqi.qiqiqi)
+      XCTAssertEqual(qiqi.qiqii, .q(""))
     }
+  }
 }
 
 // MARK: Value + nested decodable inheriting class type
 
 fileprivate struct Fry: ParsableCommand {
-    @Flag var c: Bool = false
-    var toksVig: Vig = .init()
+  @Flag var c: Bool = false
+  var toksVig: Vig = .init()
 }
 
 fileprivate class Toks: Codable {
-    var a = "hello"
+  var a = "hello"
 }
 
 fileprivate final class Vig: Toks {
-    var b = "world"
+  var b = "world"
 }
 
 extension UnparsedValuesEndToEndTests {
-    func testUnparsedNestedInheritingClassType() {
-        AssertParse(Fry.self, []) { fry in
-            XCTAssertFalse(fry.c)
-            XCTAssertEqual(fry.toksVig.a, "hello")
-            XCTAssertEqual(fry.toksVig.b, "world")
-        }
+  func testUnparsedNestedInheritingClassType() {
+    AssertParse(Fry.self, []) { fry in
+      XCTAssertFalse(fry.c)
+      XCTAssertEqual(fry.toksVig.a, "hello")
+      XCTAssertEqual(fry.toksVig.b, "world")
     }
+  }
 }
