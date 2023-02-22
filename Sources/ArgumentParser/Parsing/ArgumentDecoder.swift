@@ -86,17 +86,7 @@ final class ParsedArgumentsContainer<K>: KeyedDecodingContainerProtocol where K 
   }
   
   var allKeys: [K] {
-    /// This logic selects only those element keys which satisfy both of two conditions:
-    ///
-    /// 1. The input key's path is exactly equal to this container's coding path,
-    ///    neither shallower nor deeper.
-    /// 2. An instance of this container's coding key type can be instantiated using
-    ///    the input key's name.
-    ///
-    /// This is, in essence, an iterative inverse of the `element(forKey:)` method.
-    self.decoder.values.elements.keys
-      .filter { $0.path == self.codingPath.map(\.stringValue) }
-      .compactMap { K.init(stringValue: $0.name) }
+    fatalError()
   }
   
   fileprivate func element(forKey key: K) -> ParsedValues.Element? {
