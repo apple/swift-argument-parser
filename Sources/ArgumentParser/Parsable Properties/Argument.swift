@@ -335,9 +335,11 @@ extension Argument where Value: ExpressibleByArgument {
   /// - Parameters:
   ///   - help: Information about how to use this argument.
   ///   - completion: Kind of completion provided to the user for this option.
+  ///   - initial: An `Optional` initial value.
   public init(
     help: ArgumentHelp? = nil,
-    completion: CompletionKind? = nil
+    completion: CompletionKind? = nil,
+    initial: Value? = nil
   ) {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
@@ -346,7 +348,7 @@ extension Argument where Value: ExpressibleByArgument {
         kind: .positional,
         help: help,
         parsingStrategy: .default,
-        initial: nil,
+        initial: initial,
         completion: completion)
 
       return ArgumentSet(arg)
@@ -407,10 +409,12 @@ extension Argument {
   ///   - completion: Kind of completion provided to the user for this option.
   ///   - transform: A closure that converts a string into this property's
   ///     element type or throws an error.
+  ///   - initial: An `Optional` initial value.
   public init(
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
-    transform: @escaping (String) throws -> Value
+    transform: @escaping (String) throws -> Value,
+    initial: Value? = nil
   ) {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
@@ -420,7 +424,7 @@ extension Argument {
         help: help,
         parsingStrategy: .default,
         transform: transform,
-        initial: nil,
+        initial: initial,
         completion: completion)
 
       return ArgumentSet(arg)
