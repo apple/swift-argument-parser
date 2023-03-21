@@ -110,11 +110,20 @@ extension ArgumentInteractiveTests {
     AssertParseCommand(StringArray.self, StringArray.self, [], lines: ["a b c"]) { value in
       XCTAssertEqual(value.values, ["a", "b", "c"])
     }
+    AssertParseCommand(StringArray.self, StringArray.self, [], lines: ["a 'b c'"]) { value in
+      XCTAssertEqual(value.values, ["a", "b c"])
+    }
+    AssertParseCommand(StringArray.self, StringArray.self, [], lines: ["a b 'c", "d e'"]) { value in
+      XCTAssertEqual(value.values, ["a", "b", "c\nd e"])
+    }
   }
 
   func testParsing_IntArray() throws {
     AssertParseCommand(IntArray.self, IntArray.self, [], lines: ["\(Int.min) \(0) \(Int.max)"]) { array in
       XCTAssertEqual(array.values, [.min, 0, .max])
+    }
+    AssertParseCommand(IntArray.self, IntArray.self, [], lines: ["10 11 1\\", "2"]) { array in
+      XCTAssertEqual(array.values, [10, 11, 12])
     }
   }
 

@@ -243,3 +243,94 @@ extension StringProtocol where SubSequence == Substring {
     isEmpty ? nil : self
   }
 }
+
+extension Substring {
+  fileprivate mutating func eat() -> Character? {
+    self.popFirst()
+  }
+  
+  fileprivate mutating func eat(_ ch: Character) -> Character? {
+    guard self.first == ch else { return nil }
+    return self.popFirst()
+  }
+}
+
+func readTokens(
+  from source: () -> String?
+) -> [String] {
+  var result: [String] = []
+  var quoteDelimiter: Character? = nil
+  var currentSubstring = ""
+
+  GetLine:
+  while let str = source() {
+    var slice = str[...]
+    
+    // Starting a new line mid-quoted section should include the newline in the token
+    if quoteDelimiter != nil {
+      currentSubstring.append("\n")
+    }
+    
+    while let ch = slice.eat() {
+      switch (ch, quoteDelimiter) {
+      case ("\\", nil):
+        // When NOT in quoted section, escape all quotes, newlines, spaces, and backslashes.
+        guard let nextCh = slice.eat() else {
+          // Note: An escaped newline is not included in a token
+          continue GetLine
+        }
+        switch nextCh {
+        case " ", "\\", "\"", "'":
+          break
+        default:
+          currentSubstring.append(ch)
+        }
+        currentSubstring.append(nextCh)
+        
+      case ("\\", let quoteDelimiter):
+        // When IN quoted section, escape closing quotes and backslashes.
+        guard let nextCh = slice.eat() else {
+          currentSubstring.append(ch)
+          continue GetLine
+        }
+        
+        switch nextCh {
+        case quoteDelimiter, "\\":
+          break
+        default:
+          currentSubstring.append(ch)
+        }
+        currentSubstring.append(nextCh)
+
+      case (quoteDelimiter, _):
+        // End of quoted section.
+        quoteDelimiter = nil
+        
+      case (" ", nil), ("\t", nil):
+        // Unescaped whitespace - skip empty substrings.
+        if !currentSubstring.isEmpty {
+          result.append(currentSubstring)
+          currentSubstring = ""
+        }
+        
+      case ("\"", nil), ("'", nil):
+        // Beginning of quoted section.
+        quoteDelimiter = ch
+        
+      default:
+        currentSubstring.append(ch)
+      }
+    }
+    
+    // If we've reached the end of a line and we aren't in a quoted section,
+    // break out of the parsing.
+    if quoteDelimiter == nil {
+      break
+    }
+  }
+  
+  if !currentSubstring.isEmpty {
+    result.append(currentSubstring)
+  }
+  return result
+}
