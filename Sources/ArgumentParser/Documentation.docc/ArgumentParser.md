@@ -10,7 +10,8 @@ Begin by declaring a type that defines
 the information that you need to collect from the command line.
 Decorate each stored property with one of `ArgumentParser`'s property wrappers,
 declare conformance to ``ParsableCommand``,
-and implement your command's logic in its `run()` method.
+and implement your command's logic in its `run()` method. 
+For `async` renditions of `run`, declare ``AsyncParsableCommand`` conformance instead.
 
 ```swift
 import ArgumentParser
