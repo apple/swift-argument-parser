@@ -139,10 +139,10 @@ extension Platform {
     // TIOCGWINSZ is a complex macro, so we need the flattened value.
     let tiocgwinsz = Int32(0x40087468)
     let err = ioctl(STDOUT_FILENO, tiocgwinsz, &w)
-#elseif canImport(Glibc)
-    let err = ioctl(STDOUT_FILENO, TIOCGWINSZ, &w)
 #elseif canImport(Musl)
     let err = ioctl(STDOUT_FILENO, UInt(TIOCGWINSZ), &w)
+#else
+    let err = ioctl(STDOUT_FILENO, TIOCGWINSZ, &w)
 #endif
     let width = Int(w.ws_col)
     let height = Int(w.ws_row)
