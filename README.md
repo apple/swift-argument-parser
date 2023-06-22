@@ -2,6 +2,7 @@
 
 ## Usage
 
+
 Begin by declaring a type that defines the information
 that you need to collect from the command line.
 Decorate each stored property with one of `ArgumentParser`'s property wrappers,
