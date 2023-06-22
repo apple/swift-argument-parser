@@ -11,6 +11,8 @@
 
 #if canImport(Glibc)
 import Glibc
+#elseif canImport(Musl)
+import Musl
 #elseif canImport(Darwin)
 import Darwin
 #elseif canImport(CRT)
@@ -78,6 +80,8 @@ extension Platform {
   static func exit(_ code: Int32) -> Never {
 #if canImport(Glibc)
     Glibc.exit(code)
+#elseif canImport(Musl)
+    Musl.exit(code)
 #elseif canImport(Darwin)
     Darwin.exit(code)
 #elseif canImport(CRT)
@@ -135,8 +139,10 @@ extension Platform {
     // TIOCGWINSZ is a complex macro, so we need the flattened value.
     let tiocgwinsz = Int32(0x40087468)
     let err = ioctl(STDOUT_FILENO, tiocgwinsz, &w)
-#else
+#elseif canImport(Glibc)
     let err = ioctl(STDOUT_FILENO, TIOCGWINSZ, &w)
+#elseif canImport(Musl)
+    let err = ioctl(STDOUT_FILENO, UInt(TIOCGWINSZ), &w)
 #endif
     let width = Int(w.ws_col)
     let height = Int(w.ws_row)
