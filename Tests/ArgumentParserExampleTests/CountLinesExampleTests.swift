@@ -17,10 +17,6 @@ import ArgumentParserTestHelpers
 final class CountLinesExampleTests: XCTestCase {
   func testCountLines() throws {
     guard #available(macOS 12, *) else { return }
-    // FIXME: CI is reporting macOS version 10.6 after passing this guard
-    try XCTSkipUnless(ProcessInfo.processInfo.isOperatingSystemAtLeast(
-      .init(majorVersion: 12, minorVersion: 0, patchVersion: 0)))
-    
     let testFile = try XCTUnwrap(Bundle.module.url(forResource: "CountLinesTest", withExtension: "txt"))
     try AssertExecuteCommand(command: "count-lines \(testFile.path)", expected: "20")
     try AssertExecuteCommand(command: "count-lines \(testFile.path) --prefix al", expected: "4")
@@ -28,10 +24,6 @@ final class CountLinesExampleTests: XCTestCase {
   
   func testCountLinesHelp() throws {
     guard #available(macOS 12, *) else { return }
-    // FIXME: CI is reporting macOS version 10.6 after passing this guard
-    try XCTSkipUnless(ProcessInfo.processInfo.isOperatingSystemAtLeast(
-      .init(majorVersion: 12, minorVersion: 0, patchVersion: 0)))
-
     let helpText = """
         USAGE: count-lines [<input-file>] [--prefix <prefix>] [--verbose]
 
