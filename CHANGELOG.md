@@ -10,6 +10,25 @@ Add new items at the end of the relevant section under **Unreleased**.
 
 ---
 
+## [1.2.3] - 2023-08-15
+
+### Additions
+
+- You can now use ArgumentParser with Musl libc. ([#574])
+
+### Fixes
+
+- Fixes a bug where single-page manuals did not include command abstracts for
+  subcommands. ([#552])
+- Fixes a bug where non-optional properties in ParsableCommands could cause
+  ArgumentParser to crash. You can now include properties like dictionaries in
+  ParsableCommands without issue. ([#554])
+- Fixes a configuration issue which would cause `ArgumentParserTestHelpers` to
+  fail to link when building for Windows. ([#579])
+
+The 1.2.3 release includes contributions from [compnerd], [gwynne],
+[MaxDesiatov], [natecook1000], and [rauhul]. Thank you!
+
 ## [1.2.2] - 2023-02-09
 
 ### Fixes
@@ -776,7 +795,8 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 
 <!-- Link references for releases -->
 
-[Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.2.2...HEAD
+[Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.2.3...HEAD
+[1.2.3]: https://github.com/apple/swift-argument-parser/compare/1.2.2...1.2.3
 [1.2.2]: https://github.com/apple/swift-argument-parser/compare/1.2.1...1.2.2
 [1.2.1]: https://github.com/apple/swift-argument-parser/compare/1.2.0...1.2.1
 [1.2.0]: https://github.com/apple/swift-argument-parser/compare/1.1.4...1.2.0
@@ -867,6 +887,10 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [#547]: https://github.com/apple/swift-argument-parser/pull/547
 [#548]: https://github.com/apple/swift-argument-parser/pull/548
 [#550]: https://github.com/apple/swift-argument-parser/pull/550
+[#552]: https://github.com/apple/swift-argument-parser/pull/552
+[#554]: https://github.com/apple/swift-argument-parser/pull/554
+[#574]: https://github.com/apple/swift-argument-parser/pull/574
+[#579]: https://github.com/apple/swift-argument-parser/pull/579
 
 <!-- Link references for contributors -->
 
@@ -897,6 +921,7 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [glessard]: https://github.com/apple/swift-argument-parser/commits?author=glessard
 [gmittert]: https://github.com/apple/swift-argument-parser/commits?author=gmittert
 [griffin-stewie]: https://github.com/apple/swift-argument-parser/commits?author=griffin-stewie
+[gwynne]: https://github.com/apple/swift-argument-parser/commits?author=gwynne
 [iainsmith]: https://github.com/apple/swift-argument-parser/commits?author=iainsmith
 [ian-twilightcoder]: https://github.com/apple/swift-argument-parser/commits?author=ian-twilightcoder
 [ibrahimoktay]: https://github.com/apple/swift-argument-parser/commits?author=ibrahimoktay
