@@ -94,6 +94,8 @@ extension Argument: CustomStringConvertible {
   }
 }
 
+extension Argument: Sendable where Value: Sendable { }
+
 extension Argument: DecodableParsedWrapper where Value: Decodable { }
 
 /// The strategy to use when parsing multiple values from positional arguments

@@ -88,6 +88,8 @@ public struct Option<Value>: Decodable, ParsedWrapper {
   }
 }
 
+extension Option: Sendable where Value: Sendable { }
+
 extension Option: CustomStringConvertible {
   public var description: String {
     switch _parsedValue {

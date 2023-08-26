@@ -109,6 +109,8 @@ public struct Flag<Value>: Decodable, ParsedWrapper {
   }
 }
 
+extension Flag: Sendable where Value: Sendable { }
+
 extension Flag: CustomStringConvertible {
   public var description: String {
     switch _parsedValue {
