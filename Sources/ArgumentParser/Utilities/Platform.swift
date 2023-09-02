@@ -21,7 +21,28 @@ import CRT
 import WASILibc
 #endif
 
-enum Platform {}
+@_implementationOnly import Foundation
+
+enum Platform {
+#if !os(Windows)
+  static func shell(path: String, arguments args: [String]) -> String? {
+    let task = Process()
+    task.launchPath = path
+    task.arguments = args
+    
+    let pipe = Pipe()
+    task.standardOutput = pipe
+    task.standardError = pipe
+    task.launch()
+    
+    let output = String(data: pipe.fileHandleForReading.readDataToEndOfFile(),
+                        encoding: .utf8)
+    task.waitUntilExit()
+    
+    return output
+  }
+#endif
+}
 
 // MARK: Shell
 
@@ -32,9 +53,11 @@ extension Platform {
 #if os(Windows)
     return nil
 #else
-    // FIXME: This retrieves the user's preferred shell, not necessarily the one currently in use.
-    guard let shellVar = getenv("SHELL") else { return nil }
-    let shellParts = String(cString: shellVar).split(separator: "/")
+    guard let shellName = shell(path: "/bin/ps", arguments: ["-oargs="])
+    else { return nil }
+    
+    let shellParts = String(cString: shellName).split(separator: "\n")
+    
     return shellParts.last.map(String.init)
 #endif
   }
@@ -101,7 +124,7 @@ extension Platform {
       for byte in string.utf8 { putc(numericCast(byte), stderr) }
     }
   }
-
+  
   /// The `stderr` output stream.
   static var standardError = StandardError()
 }
