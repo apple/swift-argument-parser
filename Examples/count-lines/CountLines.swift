@@ -17,7 +17,7 @@ import Foundation
 struct CountLines: AsyncParsableCommand {
     @Argument(
         help: "A file to count lines in. If omitted, counts the lines of stdin.",
-        completion: .file(), transform: URL.init(fileURLWithPath:))
+        completion: .file(), transform: { URL(fileURLWithPath: $0) })
     var inputFile: URL? = nil
     
     @Option(help: "Only count lines with this prefix.")

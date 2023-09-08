@@ -26,6 +26,15 @@ extension SendableTests {
     }
   }
 
+    private static func transformFactory(_ value: @autoclosure () -> NonSendableType) -> (String) -> MySendableClassType {
+        return { MySendableClassType($0) }
+    }
+
+    public final class NonSendableType {
+    init() {
+    }
+    }
+
   struct Foo: ParsableArguments, Sendable {
     @Flag()
     var foo: Bool = false
@@ -34,10 +43,14 @@ extension SendableTests {
     var custom: MyExpressibleType?
 
     @Option(transform: { MySendableClassType($0) })
-    var transformed: MySendableClassType
+    var transformed1: MySendableClassType
+
+    @Option(transform: transformFactory(NonSendableType()))
+    var transformed2: MySendableClassType
 
     @Argument()
     var arg: [MyExpressibleType]
+
   }
 
   struct Bar: ParsableCommand, Sendable {

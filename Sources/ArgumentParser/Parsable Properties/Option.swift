@@ -47,7 +47,7 @@
 ///     Hi Seungchin!
 ///     Congrats on making it to the ripe old age of 28!
 @propertyWrapper
-public struct Option<Value>: Decodable, ParsedWrapper {
+public struct Option<Value: Sendable>: Decodable, ParsedWrapper, Sendable {
   internal var _parsedValue: Parsed<Value>
   
   internal init(_parsedValue: Parsed<Value>) {
@@ -88,8 +88,6 @@ public struct Option<Value>: Decodable, ParsedWrapper {
   }
 }
 
-extension Option: Sendable where Value: Sendable { }
-
 extension Option: CustomStringConvertible {
   public var description: String {
     switch _parsedValue {
@@ -106,7 +104,7 @@ extension Option: DecodableParsedWrapper where Value: Decodable {}
 /// The strategy to use when parsing a single value from `@Option` arguments.
 ///
 /// - SeeAlso: ``ArrayParsingStrategy``
-public struct SingleValueParsingStrategy: Hashable {  
+public struct SingleValueParsingStrategy: Hashable {
   internal var base: ArgumentDefinition.ParsingStrategy
   
   /// Parse the input after the option. Expect it to be a value.
@@ -153,6 +151,8 @@ public struct SingleValueParsingStrategy: Hashable {
     self.init(base: .scanningForValue)
   }
 }
+
+extension SingleValueParsingStrategy: Sendable { }
 
 /// The strategy to use when parsing multiple values from `@Option` arguments into an
 /// array.
@@ -233,6 +233,8 @@ public struct ArrayParsingStrategy: Hashable {
     self.init(base: .allRemainingInput)
   }
 }
+
+extension ArrayParsingStrategy: Sendable { }
 
 // MARK: - @Option T: ExpressibleByArgument Initializers
 extension Option where Value: ExpressibleByArgument {
@@ -346,7 +348,7 @@ extension Option {
     parsing parsingStrategy: SingleValueParsingStrategy = .next,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
-    transform: @escaping (String) throws -> Value
+    transform: @escaping @Sendable (String) throws -> Value
   ) {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
@@ -380,7 +382,7 @@ extension Option {
     parsing parsingStrategy: SingleValueParsingStrategy = .next,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
-    transform: @escaping (String) throws -> Value
+    transform: @escaping @Sendable (String) throws -> Value
   ) {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
@@ -515,7 +517,7 @@ extension Option {
     parsing parsingStrategy: SingleValueParsingStrategy = .next,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
-    transform: @escaping (String) throws -> T
+    transform: @escaping @Sendable (String) throws -> T
   ) where Value == Optional<T> {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
@@ -542,7 +544,7 @@ extension Option {
     parsing parsingStrategy: SingleValueParsingStrategy = .next,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
-    transform: @escaping (String) throws -> T
+    transform: @escaping @Sendable (String) throws -> T
   ) where Value == Optional<T> {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
@@ -578,7 +580,7 @@ extension Option {
     parsing parsingStrategy: SingleValueParsingStrategy = .next,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
-    transform: @escaping (String) throws -> T
+    transform: @escaping @Sendable (String) throws -> T
   ) where Value == Optional<T> {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
@@ -687,7 +689,7 @@ extension Option {
     parsing parsingStrategy: ArrayParsingStrategy = .singleValue,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
-    transform: @escaping (String) throws -> T
+    transform: @escaping @Sendable (String) throws -> T
   ) where Value == Array<T> {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
@@ -726,7 +728,7 @@ extension Option {
     parsing parsingStrategy: ArrayParsingStrategy = .singleValue,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
-    transform: @escaping (String) throws -> T
+    transform: @escaping @Sendable (String) throws -> T
   ) where Value == Array<T> {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(

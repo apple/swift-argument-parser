@@ -15,12 +15,14 @@ enum Parsed<Value> {
   /// Internally, this wraps an `ArgumentSet`, but that’s not `public` since it’s
   /// an implementation detail.
   case value(Value)
-  case definition((InputKey) -> ArgumentSet)
+  case definition(@Sendable (InputKey) -> ArgumentSet)
   
-  internal init(_ makeSet: @escaping (InputKey) -> ArgumentSet) {
+  internal init(_ makeSet: @escaping @Sendable (InputKey) -> ArgumentSet) {
     self = .definition(makeSet)
   }
 }
+
+extension Parsed: Sendable where Value: Sendable { }
 
 /// A type that wraps a `Parsed` instance to act as a property wrapper.
 ///

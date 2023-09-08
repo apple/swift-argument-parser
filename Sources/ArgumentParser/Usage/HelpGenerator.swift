@@ -10,8 +10,8 @@
 //===----------------------------------------------------------------------===//
 
 internal struct HelpGenerator {
-  static var helpIndent = 2
-  static var labelColumnWidth = 26
+  static let helpIndent = 2
+  static let labelColumnWidth = 26
   static var systemScreenWidth: Int { Platform.terminalWidth }
 
   struct Section {
@@ -336,7 +336,7 @@ internal extension BidirectionalCollection where Element == ParsableCommand.Type
         key: InputKey(name: "", parent: nil),
         isComposite: false),
       completion: .default,
-      update: .nullary({ _, _, _ in })
+      update: .nullary({ _, _, _, _ in false })
     )
   }
   
@@ -353,7 +353,7 @@ internal extension BidirectionalCollection where Element == ParsableCommand.Type
         key: InputKey(name: "", parent: nil),
         isComposite: false),
       completion: .default,
-      update: .nullary({ _, _, _ in })
+      update: .nullary({ _, _, _, _ in false })
     )
   }
   
@@ -368,7 +368,7 @@ internal extension BidirectionalCollection where Element == ParsableCommand.Type
         key: InputKey(name: "", parent: nil),
         isComposite: false),
       completion: .default,
-      update: .nullary({ _, _, _ in })
+      update: .nullary({ _, _, _, _ in false })
     )
   }
   

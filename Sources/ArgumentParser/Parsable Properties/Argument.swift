@@ -291,8 +291,10 @@ public struct ArgumentArrayParsingStrategy: Hashable {
   }
 }
 
+extension ArgumentArrayParsingStrategy: Sendable { }
+
 // MARK: - @Argument T: ExpressibleByArgument Initializers
-extension Argument where Value: ExpressibleByArgument {
+extension Argument where Value: ExpressibleByArgument & Sendable {
   /// Creates a property with a default value provided by standard Swift default
   /// value syntax.
   ///
@@ -379,7 +381,7 @@ extension Argument {
     wrappedValue: Value,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
-    transform: @escaping (String) throws -> Value
+    transform: @escaping @Sendable (String) throws -> Value
   ) {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
@@ -412,7 +414,7 @@ extension Argument {
   public init(
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
-    transform: @escaping (String) throws -> Value
+    transform: @escaping @Sendable (String) throws -> Value
   ) {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
@@ -466,7 +468,7 @@ extension Argument {
     wrappedValue _wrappedValue: Optional<T>,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil
-  ) where T: ExpressibleByArgument, Value == Optional<T> {
+  ) where T: ExpressibleByArgument & Sendable, Value == Optional<T> {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
         container: Optional<T>.self,
@@ -523,7 +525,7 @@ extension Argument {
     wrappedValue _value: _OptionalNilComparisonType,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
-    transform: @escaping (String) throws -> T
+    transform: @escaping @Sendable (String) throws -> T
   ) where Value == Optional<T> {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
@@ -548,8 +550,8 @@ extension Argument {
     wrappedValue _wrappedValue: Optional<T>,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
-    transform: @escaping (String) throws -> T
-  ) where Value == Optional<T> {
+    transform: @escaping @Sendable (String) throws -> T
+  ) where T: Sendable, Value == Optional<T> {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
         container: Optional<T>.self,
@@ -578,7 +580,7 @@ extension Argument {
   public init<T>(
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
-    transform: @escaping (String) throws -> T
+    transform: @escaping @Sendable (String) throws -> T
   ) where Value == Optional<T> {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
@@ -611,7 +613,7 @@ extension Argument {
     parsing parsingStrategy: ArgumentArrayParsingStrategy = .remaining,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil
-  ) where T: ExpressibleByArgument, Value == Array<T> {
+  ) where T: ExpressibleByArgument & Sendable, Value == Array<T> {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
         container: Array<T>.self,
@@ -679,8 +681,8 @@ extension Argument {
     parsing parsingStrategy: ArgumentArrayParsingStrategy = .remaining,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
-    transform: @escaping (String) throws -> T
-  ) where Value == Array<T> {
+    transform: @escaping @Sendable (String) throws -> T
+  ) where T: Sendable, Value == Array<T> {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
         container: Array<T>.self,
@@ -717,7 +719,7 @@ extension Argument {
     parsing parsingStrategy: ArgumentArrayParsingStrategy = .remaining,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
-    transform: @escaping (String) throws -> T
+    transform: @escaping @Sendable (String) throws -> T
   ) where Value == Array<T> {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(

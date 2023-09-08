@@ -67,7 +67,7 @@
 ///     $ math
 ///     Error: Missing one of: '--add', '--multiply'
 @propertyWrapper
-public struct Flag<Value>: Decodable, ParsedWrapper {
+public struct Flag<Value: Sendable>: Decodable, ParsedWrapper {
   internal var _parsedValue: Parsed<Value>
 
   internal init(_parsedValue: Parsed<Value>) {
@@ -158,6 +158,8 @@ public struct FlagInversion: Hashable {
   }
 }
 
+extension FlagInversion: Sendable { }
+
 /// The options for treating enumeration-based flags as exclusive.
 public struct FlagExclusivity: Hashable {
   internal enum Representation {
@@ -183,6 +185,8 @@ public struct FlagExclusivity: Hashable {
     self.init(base: .chooseLast)
   }
 }
+
+extension FlagExclusivity: Sendable { }
 
 extension Flag where Value == Optional<Bool> {
   /// Creates a Boolean property that reads its value from the presence of
@@ -390,10 +394,6 @@ extension Flag where Value: EnumerableFlag {
     help: ArgumentHelp?
   ) {
     self.init(_parsedValue: .init { key in
-      // This gets flipped to `true` the first time one of these flags is
-      // encountered.
-      var hasUpdated = false
-      
       // Create a string representation of the default value. Since this is a
       // flag, the default value to show to the user is the `--value-name`
       // flag that a user would provide on the command line, not a Swift value.
@@ -435,8 +435,8 @@ extension Flag where Value: EnumerableFlag {
           help: help,
           parsingStrategy: .default,
           initialValue: initial,
-          update: .nullary({ (origin, name, values) in
-            hasUpdated = try ArgumentSet.updateFlag(key: key, value: value, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
+          update: .nullary({ (origin, name, values, hasUpdated) in
+            try ArgumentSet.updateFlag(key: key, value: value, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
           })
         )
       }
@@ -513,10 +513,6 @@ extension Flag {
     help: ArgumentHelp? = nil
   ) where Value == Element?, Element: EnumerableFlag {
     self.init(_parsedValue: .init { parentKey in
-      // This gets flipped to `true` the first time one of these flags is
-      // encountered.
-      var hasUpdated = false
-      
       let caseHelps = Element.allCases.map { Element.help(for: $0) }
       let hasCustomCaseHelp = caseHelps.contains(where: { $0 != nil })
 
@@ -533,8 +529,8 @@ extension Flag {
           key: parentKey,
           isComposite: !hasCustomCaseHelp)
 
-        return ArgumentDefinition.flag(name: name, key: parentKey, caseKey: caseKey, help: help, parsingStrategy: .default, initialValue: nil as Element?, update: .nullary({ (origin, name, values) in
-          hasUpdated = try ArgumentSet.updateFlag(key: parentKey, value: value, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
+        return ArgumentDefinition.flag(name: name, key: parentKey, caseKey: caseKey, help: help, parsingStrategy: .default, initialValue: nil as Element?, update: .nullary({ (origin, name, values, hasUpdated) in
+          try ArgumentSet.updateFlag(key: parentKey, value: value, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
         }))
 
       }
@@ -565,10 +561,11 @@ extension Flag {
           key: parentKey,
           isComposite: !hasCustomCaseHelp)
 
-        return ArgumentDefinition.flag(name: name, key: parentKey, caseKey: caseKey, help: help, parsingStrategy: .default, initialValue: initial, update: .nullary({ (origin, name, values) in
+        return ArgumentDefinition.flag(name: name, key: parentKey, caseKey: caseKey, help: help, parsingStrategy: .default, initialValue: initial, update: .nullary({ (origin, name, values, hasUpdated) in
           values.update(forKey: parentKey, inputOrigin: origin, initial: [Element](), closure: {
             $0.append(value)
           })
+          return true
         }))
       }
       return ArgumentSet(args)
@@ -615,7 +612,7 @@ extension Flag {
 }
 
 extension ArgumentDefinition {
-  static func flag<V>(name: NameSpecification, key: InputKey, caseKey: InputKey, help: Help, parsingStrategy: ArgumentDefinition.ParsingStrategy, initialValue: V?, update: Update) -> ArgumentDefinition {
+  static func flag<V: Sendable>(name: NameSpecification, key: InputKey, caseKey: InputKey, help: Help, parsingStrategy: ArgumentDefinition.ParsingStrategy, initialValue: V?, update: Update) -> ArgumentDefinition {
     return ArgumentDefinition(kind: .name(key: caseKey, specification: name), help: help, completion: .default, parsingStrategy: parsingStrategy, update: update, initial: { origin, values in
       if let initial = initialValue {
         values.set(initial, forKey: key, inputOrigin: origin)
@@ -623,3 +620,4 @@ extension ArgumentDefinition {
     })
   }
 }
+

@@ -13,8 +13,8 @@ struct ArgumentDefinition {
   /// A closure that modifies a `ParsedValues` instance to include this
   /// argument's value.
   enum Update {
-    typealias Nullary = (InputOrigin, Name?, inout ParsedValues) throws -> Void
-    typealias Unary = (InputOrigin, Name?, String, inout ParsedValues) throws -> Void
+    typealias Nullary = @Sendable (InputOrigin, Name?, inout ParsedValues, _ hasUpdated: Bool) throws -> Bool
+    typealias Unary = @Sendable (InputOrigin, Name?, String, inout ParsedValues) throws -> Void
     
     /// An argument that gets its value solely from its presence.
     case nullary(Nullary)
@@ -23,7 +23,7 @@ struct ArgumentDefinition {
     case unary(Unary)
   }
   
-  typealias Initial = (InputOrigin, inout ParsedValues) throws -> Void
+  typealias Initial = @Sendable (InputOrigin, inout ParsedValues) throws -> Void
   
   enum Kind {
     /// An option or flag, with a name and an optional value.
@@ -141,6 +141,9 @@ struct ArgumentDefinition {
     self.initial = initial
   }
 }
+
+extension ArgumentDefinition: Sendable { }
+extension ArgumentDefinition.Update: Sendable { }
 
 extension ArgumentDefinition: CustomDebugStringConvertible {
   var debugDescription: String {
@@ -268,7 +271,7 @@ extension ArgumentDefinition {
     kind: ArgumentDefinition.Kind,
     help: ArgumentHelp?,
     parsingStrategy: ParsingStrategy,
-    transform: @escaping (String) throws -> Container.Contained,
+    transform: @escaping @Sendable (String) throws -> Container.Contained,
     initial: Container.Initial?,
     completion: CompletionKind?
   ) where Container: ArgumentDefinitionContainer {
@@ -300,7 +303,7 @@ extension ArgumentDefinition {
     help: ArgumentHelp?,
     defaultValueDescription: String?,
     parsingStrategy: ParsingStrategy,
-    parser: @escaping (InputKey, InputOrigin, Name?, String) throws -> Container.Contained,
+    parser: @escaping @Sendable (InputKey, InputOrigin, Name?, String) throws -> Container.Contained,
     initial: Container.Initial?,
     completion: CompletionKind?
   ) where Container: ArgumentDefinitionContainer {
@@ -354,7 +357,7 @@ protocol ArgumentDefinitionContainerExpressibleByArgument:
   static func defaultValueDescription(_ initial: Initial?) -> String?
 }
 
-enum Bare<T> { }
+enum Bare<T>: Sendable { }
 
 extension Bare: ArgumentDefinitionContainer {
   typealias Contained = T

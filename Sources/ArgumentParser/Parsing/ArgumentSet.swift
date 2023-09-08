@@ -48,6 +48,8 @@ struct ArgumentSet {
   }
 }
 
+extension ArgumentSet: Sendable { }
+
 extension ArgumentSet: CustomDebugStringConvertible {
   var debugDescription: String {
     content
@@ -80,8 +82,9 @@ extension ArgumentSet {
       defaultValue: defaultValueString,
       key: key,
       isComposite: false)
-    let arg = ArgumentDefinition(kind: .name(key: key, specification: name), help: help, completion: .default, update: .nullary({ (origin, name, values) in
+    let arg = ArgumentDefinition(kind: .name(key: key, specification: name), help: help, completion: .default, update: .nullary({ (origin, name, values, hasUpdated) in
       values.set(true, forKey: key, inputOrigin: origin)
+      return true
     }), initial: { origin, values in
       if let initialValue = initialValue {
         values.set(initialValue, forKey: key, inputOrigin: origin)
@@ -131,16 +134,15 @@ extension ArgumentSet {
     let enableHelp = ArgumentDefinition.Help(allValues: [], options: helpOptions, help: help, defaultValue: initialValueNames?.first?.synopsisString, key: key, isComposite: true)
     let disableHelp = ArgumentDefinition.Help(allValues: [], options: [.isOptional], help: help, defaultValue: nil, key: key, isComposite: false)
 
-    var hasUpdated = false
-    let enableArg = ArgumentDefinition(kind: .named(enableNames), help: enableHelp, completion: .default, update: .nullary({ (origin, name, values) in
-        hasUpdated = try ArgumentSet.updateFlag(key: key, value: true, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
+    let enableArg = ArgumentDefinition(kind: .named(enableNames), help: enableHelp, completion: .default, update: .nullary({ (origin, name, values, hasUpdated) in
+        try ArgumentSet.updateFlag(key: key, value: true, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
     }), initial: { origin, values in
       if let initialValue = initialValue {
         values.set(initialValue, forKey: key, inputOrigin: origin)
       }
     })
-    let disableArg = ArgumentDefinition(kind: .named(disableNames), help: disableHelp, completion: .default, update: .nullary({ (origin, name, values) in
-        hasUpdated = try ArgumentSet.updateFlag(key: key, value: false, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
+    let disableArg = ArgumentDefinition(kind: .named(disableNames), help: disableHelp, completion: .default, update: .nullary({ (origin, name, values, hasUpdated) in
+        try ArgumentSet.updateFlag(key: key, value: false, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
     }), initial: { _, _ in })
     return ArgumentSet([enableArg, disableArg])
   }
@@ -148,11 +150,12 @@ extension ArgumentSet {
   /// Creates an argument set for an incrementing integer flag.
   static func counter(key: InputKey, name: NameSpecification, help: ArgumentHelp?) -> ArgumentSet {
     let help = ArgumentDefinition.Help(allValues: [], options: [.isOptional, .isRepeating], help: help, defaultValue: nil, key: key, isComposite: false)
-    let arg = ArgumentDefinition(kind: .name(key: key, specification: name), help: help, completion: .default, update: .nullary({ (origin, name, values) in
+    let arg = ArgumentDefinition(kind: .name(key: key, specification: name), help: help, completion: .default, update: .nullary({ (origin, name, values, hasUpdated) in
       guard let a = values.element(forKey: key)?.value, let b = a as? Int else {
         throw ParserError.invalidState
       }
       values.set(b + 1, forKey: key, inputOrigin: origin)
+      return true
     }), initial: { origin, values in
       values.set(0, forKey: key, inputOrigin: origin)
     })
@@ -519,7 +522,7 @@ struct LenientParser {
           guard parsed.value == nil else {
             throw ParserError.unexpectedValueForOption(origin, parsed.name, parsed.value!)
           }
-          try update([origin], parsed.name, &result)
+          _ = try update([origin], parsed.name, &result, false)
           usedOrigins.insert(origin)
         case let .unary(update):
           try parseValue(argument, parsed, origin, update, &result, &usedOrigins)

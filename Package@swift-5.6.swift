@@ -28,7 +28,9 @@ var package = Package(
         .target(
             name: "ArgumentParser",
             dependencies: ["ArgumentParserToolInfo"],
-            exclude: ["CMakeLists.txt"]),
+            exclude: ["CMakeLists.txt"],
+            swiftSettings: [.unsafeFlags(["-Xfrontend", "-strict-concurrency=complete"])]
+            ),
         .target(
             name: "ArgumentParserTestHelpers",
             dependencies: ["ArgumentParser", "ArgumentParserToolInfo"],
