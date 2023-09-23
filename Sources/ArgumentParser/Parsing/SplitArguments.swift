@@ -186,6 +186,8 @@ struct SplitArguments {
   }
 }
 
+extension SplitArguments: Equatable {}
+
 extension SplitArguments.Element: CustomDebugStringConvertible {
   var debugDescription: String {
     switch value {
@@ -272,14 +274,14 @@ extension SplitArguments {
   }
   
   /// Returns the position in `elements` of the given input origin.
-  mutating func position(of origin: InputOrigin.Element) -> Int? {
+  func position(of origin: InputOrigin.Element) -> Int? {
     guard case let .argumentIndex(index) = origin else { return nil }
     return elements.firstIndex(where: { $0.index == index })
   }
   
   /// Returns the position in `elements` of the first element after the given
   /// input origin.
-  mutating func position(after origin: InputOrigin.Element) -> Int? {
+  func position(after origin: InputOrigin.Element) -> Int? {
     guard case let .argumentIndex(index) = origin else { return nil }
     return elements.firstIndex(where: { $0.index > index })
   }
@@ -295,7 +297,7 @@ extension SplitArguments {
     return (.argumentIndex(element.index), element)
   }
   
-  mutating func extractJoinedElement(at origin: InputOrigin.Element) -> (InputOrigin.Element, String)? {
+  func extractJoinedElement(at origin: InputOrigin.Element) -> (InputOrigin.Element, String)? {
     guard case let .argumentIndex(index) = origin else { return nil }
     
     // Joined arguments only apply when parsing the first sub-element of a
@@ -500,11 +502,13 @@ extension SplitArguments {
         return $0.index.inputIndex
     }
     
-    // Now return all elements that are either:
+    // Now return all non-terminator elements that are either:
     // 1) `.complete`
     // 2) `.sub` but not in `completeIndexes`
     
     let extraElements = elements.filter {
+      if $0.isTerminator { return false }
+      
       switch $0.index.subIndex {
       case .complete:
         return true

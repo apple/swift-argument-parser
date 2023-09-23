@@ -28,6 +28,9 @@ struct ParsedValues {
   ///
   /// This is used for error output generation.
   var originalInput: [String]
+  
+  /// Any arguments that are captured into an `.allUnrecognized` argument.
+  var capturedUnrecognizedArguments = SplitArguments(originalInput: [])
 }
 
 extension ParsedValues {

@@ -9,20 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if canImport(Glibc)
-import Glibc
-#elseif canImport(Darwin)
-import Darwin
-#elseif canImport(CRT)
-import CRT
-#elseif canImport(WASILibc)
-import WASILibc
-#endif
-
-#if os(Windows)
-import let WinSDK.ERROR_BAD_ARGUMENTS
-#endif
-
 /// An error type that is presented to the user as an error with parsing their
 /// command-line input.
 public struct ValidationError: Error, CustomStringConvertible {
@@ -60,19 +46,13 @@ public struct ExitCode: Error, RawRepresentable, Hashable {
   }
   
   /// An exit code that indicates successful completion of a command.
-  public static let success = ExitCode(EXIT_SUCCESS)
+  public static let success = ExitCode(Platform.exitCodeSuccess)
   
   /// An exit code that indicates that the command failed.
-  public static let failure = ExitCode(EXIT_FAILURE)
+  public static let failure = ExitCode(Platform.exitCodeFailure)
   
   /// An exit code that indicates that the user provided invalid input.
-#if os(Windows)
-  public static let validationFailure = ExitCode(ERROR_BAD_ARGUMENTS)
-#elseif os(WASI)
-  public static let validationFailure = ExitCode(EXIT_FAILURE)
-#else
-  public static let validationFailure = ExitCode(EX_USAGE)
-#endif
+  public static let validationFailure = ExitCode(Platform.exitCodeValidationFailure)
 
   /// A Boolean value indicating whether this exit code represents the
   /// successful completion of a command.

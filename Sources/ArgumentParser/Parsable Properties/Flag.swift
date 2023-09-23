@@ -396,7 +396,7 @@ extension Flag where Value: EnumerableFlag {
       // flag, the default value to show to the user is the `--value-name`
       // flag that a user would provide on the command line, not a Swift value.
       let defaultValueFlag = initial.flatMap { value -> String? in
-        let defaultKey = InputKey(name: String(describing: value), parent: .key(key))
+        let defaultKey = InputKey(name: String(describing: value), parent: key)
         let defaultNames = Value.name(for: value).makeNames(defaultKey)
         return defaultNames.first?.synopsisString
       }
@@ -405,7 +405,7 @@ extension Flag where Value: EnumerableFlag {
       let hasCustomCaseHelp = caseHelps.contains(where: { $0 != nil })
       
       let args = Value.allCases.enumerated().map { (i, value) -> ArgumentDefinition in
-        let caseKey = InputKey(name: String(describing: value), parent: .key(key))
+        let caseKey = InputKey(name: String(describing: value), parent: key)
         let name = Value.name(for: value)
         
         let helpForCase = caseHelps[i] ?? help
@@ -519,7 +519,7 @@ extension Flag {
       let hasCustomCaseHelp = caseHelps.contains(where: { $0 != nil })
 
       let args = Element.allCases.enumerated().map { (i, value) -> ArgumentDefinition in
-        let caseKey = InputKey(name: String(describing: value), parent: .key(parentKey))
+        let caseKey = InputKey(name: String(describing: value), parent: parentKey)
         let name = Element.name(for: value)
         let helpForCase = hasCustomCaseHelp ? (caseHelps[i] ?? help) : help
 
@@ -552,7 +552,7 @@ extension Flag {
       let hasCustomCaseHelp = caseHelps.contains(where: { $0 != nil })
 
       let args = Element.allCases.enumerated().map { (i, value) -> ArgumentDefinition in
-        let caseKey = InputKey(name: String(describing: value), parent: .key(parentKey))
+        let caseKey = InputKey(name: String(describing: value), parent: parentKey)
         let name = Element.name(for: value)
         let helpForCase = hasCustomCaseHelp ? (caseHelps[i] ?? help) : help
         let help = ArgumentDefinition.Help(

@@ -9,16 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if canImport(Glibc)
-import Glibc
-#elseif canImport(Darwin)
-import Darwin
-#elseif canImport(CRT)
-import CRT
-#elseif canImport(WASILibc)
-import WASILibc
-#endif
-
 /// A shell for which the parser can generate a completion script.
 public struct CompletionShell: RawRepresentable, Hashable, CaseIterable {
   public var rawValue: String
@@ -44,14 +34,7 @@ public struct CompletionShell: RawRepresentable, Hashable, CaseIterable {
 
   /// Returns an instance representing the current shell, if recognized.
   public static func autodetected() -> CompletionShell? {
-#if os(Windows)
-    return nil
-#else
-    // FIXME: This retrieves the user's preferred shell, not necessarily the one currently in use.
-    guard let shellVar = getenv("SHELL") else { return nil }
-    let shellParts = String(cString: shellVar).split(separator: "/")
-    return CompletionShell(rawValue: String(shellParts.last ?? ""))
-#endif
+    Platform.shellName.flatMap(CompletionShell.init(rawValue:))
   }
   
   /// An array of all supported shells for completion scripts.

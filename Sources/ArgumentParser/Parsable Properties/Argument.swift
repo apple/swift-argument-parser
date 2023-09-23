@@ -104,55 +104,193 @@ public struct ArgumentArrayParsingStrategy: Hashable {
   /// Parse only unprefixed values from the command-line input, ignoring
   /// any inputs that have a dash prefix. This is the default strategy.
   ///
-  /// For example, for a parsable type defined as following:
+  /// `remaining` is the default parsing strategy for argument arrays.
   ///
-  ///     struct Options: ParsableArguments {
-  ///         @Flag var verbose: Bool
-  ///         @Argument(parsing: .remaining) var words: [String]
+  /// For example, the `Example` command defined below has a `words` array that
+  /// uses the `remaining` parsing strategy:
+  ///
+  ///     @main
+  ///     struct Example: ParsableCommand {
+  ///         @Flag var verbose = false
+  ///
+  ///         @Argument(parsing: .remaining)
+  ///         var words: [String]
+  ///
+  ///         func run() {
+  ///             print(words.joined(separator: "\n"))
+  ///         }
   ///     }
   ///
-  /// Parsing the input `--verbose one two` or `one two --verbose` would result
-  /// in `Options(verbose: true, words: ["one", "two"])`. Parsing the input
-  /// `one two --other` would result in an unknown option error for `--other`.
+  /// Any non-dash-prefixed inputs will be captured in the `words` array.
   ///
-  /// This is the default strategy for parsing argument arrays.
+  /// ```
+  /// $ example --verbose one two
+  /// one
+  /// two
+  /// $ example one two --verbose
+  /// one
+  /// two
+  /// $ example one two --other
+  /// Error: Unknown option '--other'
+  /// ```
+  ///
+  /// If a user uses the `--` terminator in their input, all following inputs
+  /// will be captured in `words`.
+  ///
+  /// ```
+  /// $ example one two -- --verbose --other
+  /// one
+  /// two
+  /// --verbose
+  /// --other
+  /// ```
   public static var remaining: ArgumentArrayParsingStrategy {
     self.init(base: .default)
+  }
+  
+  /// After parsing, capture all unrecognized inputs in this argument array.
+  ///
+  /// You can use the `allUnrecognized` parsing strategy to suppress
+  /// "unexpected argument" errors or to capture unrecognized inputs for further
+  /// processing.
+  ///
+  /// For example, the `Example` command defined below has an `other` array that
+  /// uses the `allUnrecognized` parsing strategy:
+  ///
+  ///     @main
+  ///     struct Example: ParsableCommand {
+  ///         @Flag var verbose = false
+  ///         @Argument var name: String
+  ///
+  ///         @Argument(parsing: .allUnrecognized)
+  ///         var other: [String]
+  ///
+  ///         func run() {
+  ///             print(other.joined(separator: "\n"))
+  ///         }
+  ///     }
+  ///
+  /// After parsing the `--verbose` flag and `<name>` argument, any remaining
+  /// input is captured in the `other` array.
+  ///
+  /// ```
+  /// $ example --verbose Negin one two
+  /// one
+  /// two
+  /// $ example Asa --verbose --other -zzz
+  /// --other
+  /// -zzz
+  /// ```
+  public static var allUnrecognized: ArgumentArrayParsingStrategy {
+    self.init(base: .allUnrecognized)
+  }
+  
+  /// Before parsing, capture all inputs that follow the `--` terminator in this
+  /// argument array.
+  ///
+  /// For example, the `Example` command defined below has a `words` array that
+  /// uses the `postTerminator` parsing strategy:
+  ///
+  ///     @main
+  ///     struct Example: ParsableCommand {
+  ///         @Flag var verbose = false
+  ///         @Argument var name = ""
+  ///
+  ///         @Argument(parsing: .postTerminator)
+  ///         var words: [String]
+  ///
+  ///         func run() {
+  ///             print(words.joined(separator: "\n"))
+  ///         }
+  ///     }
+  ///
+  /// Before looking for the `--verbose` flag and `<name>` argument, any inputs
+  /// after the `--` terminator are captured into the `words` array.
+  ///
+  /// ```
+  /// $ example --verbose Asa -- one two --other
+  /// one
+  /// two
+  /// --other
+  /// $ example Asa Extra -- one two --other
+  /// Error: Unexpected argument 'Extra'
+  /// ```
+  ///
+  /// - Note: This parsing strategy can be surprising for users, since it
+  ///   changes the behavior of the `--` terminator. Prefer ``remaining``
+  ///   whenever possible.
+  public static var postTerminator: ArgumentArrayParsingStrategy {
+    self.init(base: .postTerminator)
   }
   
   /// Parse all remaining inputs after parsing any known options or flags,
   /// including dash-prefixed inputs and the `--` terminator.
   ///
-  /// When you use the `unconditionalRemaining` parsing strategy, the parser
-  /// stops parsing flags and options as soon as it encounters a positional
-  /// argument or an unrecognized flag. For example, for a parsable type
-  /// defined as following:
+  /// You can use the `captureForPassthrough` parsing strategy if you need to
+  /// capture a user's input to manually pass it unchanged to another command.
   ///
-  ///     struct Options: ParsableArguments {
-  ///         @Flag
-  ///         var verbose: Bool = false
+  /// When you use this parsing strategy, the parser stops parsing flags and
+  /// options as soon as it encounters a positional argument or an unrecognized
+  /// flag, and captures all remaining inputs in the array argument.
   ///
-  ///         @Argument(parsing: .unconditionalRemaining)
+  /// For example, the `Example` command defined below has an `words` array that
+  /// uses the `captureForPassthrough` parsing strategy:
+  ///
+  ///     @main
+  ///     struct Example: ParsableCommand {
+  ///         @Flag var verbose = false
+  ///
+  ///         @Argument(parsing: .captureForPassthrough)
   ///         var words: [String] = []
+  ///
+  ///         func run() {
+  ///             print(words.joined(separator: "\n"))
+  ///         }
   ///     }
   ///
-  /// Parsing the input `--verbose one two --verbose` includes the second
-  /// `--verbose` flag in `words`, resulting in
-  /// `Options(verbose: true, words: ["one", "two", "--verbose"])`.
+  /// Any values after the first unrecognized input are captured in the `words`
+  /// array.
+  ///
+  /// ```
+  /// $ example --verbose one two --other
+  /// one
+  /// two
+  /// --other
+  /// $ example one two --verbose
+  /// one
+  /// two
+  /// --verbose
+  /// ```
+  ///
+  /// With the `captureForPassthrough` parsing strategy, the `--` terminator
+  /// is included in the captured values.
+  ///
+  /// ```
+  /// $ example --verbose one two -- --other
+  /// one
+  /// two
+  /// --
+  /// --other
+  /// ```
   ///
   /// - Note: This parsing strategy can be surprising for users, particularly
-  ///   when combined with options and flags. Prefer `remaining` whenever
-  ///   possible, since users can always terminate options and flags with
-  ///   the `--` terminator. With the `remaining` parsing strategy, the input
-  ///   `--verbose -- one two --verbose` would have the same result as the above
-  ///   example: `Options(verbose: true, words: ["one", "two", "--verbose"])`.
-  public static var unconditionalRemaining: ArgumentArrayParsingStrategy {
+  ///   when combined with options and flags. Prefer ``remaining`` or
+  ///   ``allUnrecognized`` whenever possible, since users can always terminate
+  ///   options and flags with the `--` terminator. With the `remaining`
+  ///   parsing strategy, the input `--verbose -- one two --other` would have
+  ///   the same result as the first example above.
+  public static var captureForPassthrough: ArgumentArrayParsingStrategy {
     self.init(base: .allRemainingInput)
+  }
+  
+  @available(*, deprecated, renamed: "captureForPassthrough")
+  public static var unconditionalRemaining: ArgumentArrayParsingStrategy {
+    .captureForPassthrough
   }
 }
 
 // MARK: - @Argument T: ExpressibleByArgument Initializers
-extension Argument {
+extension Argument where Value: ExpressibleByArgument {
   /// Creates a property with a default value provided by standard Swift default
   /// value syntax.
   ///
@@ -171,7 +309,7 @@ extension Argument {
     wrappedValue: Value,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil
-  ) where Value: ExpressibleByArgument {
+  ) {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
         container: Bare<Value>.self,
@@ -200,7 +338,7 @@ extension Argument {
   public init(
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil
-  ) where Value: ExpressibleByArgument {
+  ) {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
         container: Bare<Value>.self,
@@ -321,8 +459,9 @@ extension Argument {
   @available(*, deprecated, message: """
     Optional @Arguments with default values should be declared as non-Optional.
     """)
+  @_disfavoredOverload
   public init<T>(
-    wrappedValue: Optional<T>,
+    wrappedValue _wrappedValue: Optional<T>,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil
   ) where T: ExpressibleByArgument, Value == Optional<T> {
@@ -333,7 +472,7 @@ extension Argument {
         kind: .positional,
         help: help,
         parsingStrategy: .default,
-        initial: wrappedValue,
+        initial: _wrappedValue,
         completion: completion)
 
       return ArgumentSet(arg)
@@ -402,8 +541,9 @@ extension Argument {
   @available(*, deprecated, message: """
     Optional @Arguments with default values should be declared as non-Optional.
     """)
+  @_disfavoredOverload
   public init<T>(
-    wrappedValue: Optional<T>,
+    wrappedValue _wrappedValue: Optional<T>,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
     transform: @escaping (String) throws -> T
@@ -416,7 +556,7 @@ extension Argument {
         help: help,
         parsingStrategy: .default,
         transform: transform,
-        initial: wrappedValue,
+        initial: _wrappedValue,
         completion: completion)
 
       return ArgumentSet(arg)

@@ -33,7 +33,3 @@
 ### Supporting Types
 
 - ``FlagExclusivity``
-
-### Deprecated APIs
-
-- ``init()``

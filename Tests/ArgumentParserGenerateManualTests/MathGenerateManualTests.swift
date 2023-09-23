@@ -35,6 +35,7 @@ final class MathGenerateManualTests: XCTestCase {
       .It Fl h , -help
       Show help information.
       .It Em add
+      Print the sum of the values.
       .Bl -tag -width 6n
       .It Fl x , -hex-output
       Use hexadecimal notation for the result.
@@ -46,6 +47,7 @@ final class MathGenerateManualTests: XCTestCase {
       Show help information.
       .El
       .It Em multiply
+      Print the product of the values.
       .Bl -tag -width 6n
       .It Fl x , -hex-output
       Use hexadecimal notation for the result.
@@ -57,12 +59,14 @@ final class MathGenerateManualTests: XCTestCase {
       Show help information.
       .El
       .It Em stats
+      Calculate descriptive statistics.
       .Bl -tag -width 6n
       .It Fl -version
       Show the version.
       .It Fl h , -help
       Show help information.
       .It Em average
+      Print the average of the values.
       .Bl -tag -width 6n
       .It Fl -kind Ar kind
       The kind of average to provide.
@@ -74,6 +78,7 @@ final class MathGenerateManualTests: XCTestCase {
       Show help information.
       .El
       .It Em stdev
+      Print the standard deviation of the values.
       .Bl -tag -width 6n
       .It Ar values...
       A group of floating-point values to operate on.
@@ -83,6 +88,7 @@ final class MathGenerateManualTests: XCTestCase {
       Show help information.
       .El
       .It Em quantiles
+      Print the quantiles of the values (TBD).
       .Bl -tag -width 6n
       .It Ar one-of-four
       .It Ar custom-arg

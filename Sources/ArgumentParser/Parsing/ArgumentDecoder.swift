@@ -103,6 +103,13 @@ final class ParsedArgumentsContainer<K>: KeyedDecodingContainerProtocol where K 
   }
   
   func decode<T>(_ type: T.Type, forKey key: K) throws -> T where T : Decodable {
+    let parsedElement = element(forKey: key)
+    if parsedElement?.inputOrigin.isDefaultValue ?? false, let rawValue = parsedElement?.value {
+      guard let value = rawValue as? T else {
+        throw InternalParseError.wrongType(rawValue, forKey: parsedElement!.key)
+      }
+      return value
+    }
     let subDecoder = SingleValueDecoder(userInfo: decoder.userInfo, underlying: decoder, codingPath: codingPath + [key], key: InputKey(codingKey: key, path: codingPath), parsedElement: element(forKey: key))
     return try type.init(from: subDecoder)
   }

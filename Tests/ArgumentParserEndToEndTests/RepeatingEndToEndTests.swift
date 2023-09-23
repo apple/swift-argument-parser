@@ -137,7 +137,7 @@ fileprivate struct Inner: ParsableCommand {
   @Flag
   var verbose: Bool = false
 
-  @Argument(parsing: .unconditionalRemaining)
+  @Argument(parsing: .captureForPassthrough)
   var files: [String] = []
 }
 
@@ -320,96 +320,6 @@ extension RepeatingEndToEndTests {
       XCTAssertFalse(weazle.verbose)
       XCTAssertEqual(weazle.names, ["one", "two", "three", "--other", "--verbose"])
     }
-  }
-}
-
-// MARK: -
-
-fileprivate struct Foozle: ParsableArguments {
-  @Flag var verbose: Bool = false
-  @Flag(name: .customShort("f")) var useFiles: Bool = false
-  @Flag(name: .customShort("i")) var useStandardInput: Bool = false
-  @Option var config = "debug"
-  @Argument(parsing: .unconditionalRemaining) var names: [String] = []
-}
-
-extension RepeatingEndToEndTests {
-  func testParsing_repeatingUnconditionalArgument() throws {
-    AssertParse(Foozle.self, []) { foozle in
-      XCTAssertFalse(foozle.verbose)
-      XCTAssertEqual(foozle.names, [])
-    }
-
-    AssertParse(Foozle.self, ["--other"]) { foozle in
-      XCTAssertFalse(foozle.verbose)
-      XCTAssertEqual(foozle.names, ["--other"])
-    }
-
-    AssertParse(Foozle.self, ["--verbose", "one", "two", "three"]) { foozle in
-      XCTAssertTrue(foozle.verbose)
-      XCTAssertEqual(foozle.names, ["one", "two", "three"])
-    }
-
-    AssertParse(Foozle.self, ["one", "two", "three", "--other", "--verbose"]) { foozle in
-      XCTAssertFalse(foozle.verbose)
-      XCTAssertEqual(foozle.names, ["one", "two", "three", "--other", "--verbose"])
-    }
-
-    AssertParse(Foozle.self, ["--verbose", "--other", "one", "two", "three"]) { foozle in
-      XCTAssertTrue(foozle.verbose)
-      XCTAssertEqual(foozle.names, ["--other", "one", "two", "three"])
-    }
-
-    AssertParse(Foozle.self, ["--verbose", "--other", "one", "--", "two", "three"]) { foozle in
-      XCTAssertTrue(foozle.verbose)
-      XCTAssertEqual(foozle.names, ["--other", "one", "--", "two", "three"])
-    }
-
-    AssertParse(Foozle.self, ["--other", "one", "--", "two", "three", "--verbose"]) { foozle in
-      XCTAssertFalse(foozle.verbose)
-      XCTAssertEqual(foozle.names, ["--other", "one", "--", "two", "three", "--verbose"])
-    }
-
-    AssertParse(Foozle.self, ["--", "--verbose", "--other", "one", "two", "three"]) { foozle in
-      XCTAssertFalse(foozle.verbose)
-      XCTAssertEqual(foozle.names, ["--", "--verbose", "--other", "one", "two", "three"])
-    }
-
-    AssertParse(Foozle.self, ["-one", "-two", "three"]) { foozle in
-      XCTAssertFalse(foozle.verbose)
-      XCTAssertFalse(foozle.useFiles)
-      XCTAssertFalse(foozle.useStandardInput)
-      XCTAssertEqual(foozle.names, ["-one", "-two", "three"])
-    }
-
-    AssertParse(Foozle.self, ["--config", "release", "one", "two", "--config", "debug"]) { foozle in
-      XCTAssertEqual(foozle.config, "release")
-      XCTAssertEqual(foozle.names, ["one", "two", "--config", "debug"])
-    }
-
-    AssertParse(Foozle.self, ["--config", "release", "--config", "debug", "one", "two"]) { foozle in
-      XCTAssertEqual(foozle.config, "debug")
-      XCTAssertEqual(foozle.names, ["one", "two"])
-    }
-
-    AssertParse(Foozle.self, ["-if", "-one", "-two", "three"]) { foozle in
-      XCTAssertFalse(foozle.verbose)
-      XCTAssertTrue(foozle.useFiles)
-      XCTAssertTrue(foozle.useStandardInput)
-      XCTAssertEqual(foozle.names, ["-one", "-two", "three"])
-    }
-
-    AssertParse(Foozle.self, ["-one", "-two", "-three", "-if"]) { foozle in
-      XCTAssertFalse(foozle.verbose)
-      XCTAssertFalse(foozle.useFiles)
-      XCTAssertFalse(foozle.useStandardInput)
-      XCTAssertEqual(foozle.names, ["-one", "-two", "-three", "-if"])
-    }
-  }
-
-  func testParsing_repeatingUnconditionalArgument_Fails() throws {
-    // Only partially matches the `-fob` argument
-    XCTAssertThrowsError(try Foozle.parse(["-fib"]))
   }
 }
 

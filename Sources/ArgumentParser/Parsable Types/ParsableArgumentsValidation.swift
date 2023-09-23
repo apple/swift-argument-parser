@@ -10,7 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 fileprivate protocol ParsableArgumentsValidator {
-  static func validate(_ type: ParsableArguments.Type, parent: InputKey.Parent) -> ParsableArgumentsValidatorError?
+  static func validate(_ type: ParsableArguments.Type, parent: InputKey?) -> ParsableArgumentsValidatorError?
 }
 
 enum ValidatorErrorKind {
@@ -37,7 +37,7 @@ struct ParsableArgumentsValidationError: Error, CustomStringConvertible {
 }
 
 extension ParsableArguments {
-  static func _validate(parent: InputKey.Parent) throws {
+  static func _validate(parent: InputKey?) throws {
     let validators: [ParsableArgumentsValidator.Type] = [
       PositionalArgumentsValidator.self,
       ParsableArgumentsCodingKeyValidator.self,
@@ -80,7 +80,7 @@ struct PositionalArgumentsValidator: ParsableArgumentsValidator {
     var kind: ValidatorErrorKind { .failure }
   }
   
-  static func validate(_ type: ParsableArguments.Type, parent: InputKey.Parent) -> ParsableArgumentsValidatorError? {
+  static func validate(_ type: ParsableArguments.Type, parent: InputKey?) -> ParsableArgumentsValidatorError? {
     let sets: [ArgumentSet] = Mirror(reflecting: type.init())
       .children
       .compactMap { child in
@@ -190,7 +190,7 @@ struct ParsableArgumentsCodingKeyValidator: ParsableArgumentsValidator {
     }
   }
   
-  static func validate(_ type: ParsableArguments.Type, parent: InputKey.Parent) -> ParsableArgumentsValidatorError? {
+  static func validate(_ type: ParsableArguments.Type, parent: InputKey?) -> ParsableArgumentsValidatorError? {
     let argumentKeys: [InputKey] = Mirror(reflecting: type.init())
       .children
       .compactMap { child in
@@ -235,7 +235,7 @@ struct ParsableArgumentsUniqueNamesValidator: ParsableArgumentsValidator {
     var kind: ValidatorErrorKind { .failure }
   }
 
-  static func validate(_ type: ParsableArguments.Type, parent: InputKey.Parent) -> ParsableArgumentsValidatorError? {
+  static func validate(_ type: ParsableArguments.Type, parent: InputKey?) -> ParsableArgumentsValidatorError? {
     let argSets: [ArgumentSet] = Mirror(reflecting: type.init())
       .children
       .compactMap { child in
@@ -283,7 +283,7 @@ struct NonsenseFlagsValidator: ParsableArgumentsValidator {
     var kind: ValidatorErrorKind { .warning }
   }
 
-  static func validate(_ type: ParsableArguments.Type, parent: InputKey.Parent) -> ParsableArgumentsValidatorError? {
+  static func validate(_ type: ParsableArguments.Type, parent: InputKey?) -> ParsableArgumentsValidatorError? {
     let argSets: [ArgumentSet] = Mirror(reflecting: type.init())
       .children
       .compactMap { child in

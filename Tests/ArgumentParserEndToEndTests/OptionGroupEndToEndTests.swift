@@ -109,52 +109,66 @@ extension OptionGroupEndToEndTests {
   }
 }
 
-fileprivate struct DuplicatedFlagOption: ParsableArguments {
+fileprivate struct DuplicatedFlagGroupCustom: ParsableArguments {
   @Flag(name: .customLong("duplicated-option"))
   var duplicated: Bool = false
-  
-  enum CodingKeys: CodingKey {
-    case duplicated
-  }
 }
 
-fileprivate struct DuplicatedFlagCommand: ParsableCommand {
+fileprivate struct DuplicatedFlagGroupCustomCommand: ParsableCommand {
+  @Flag var duplicated: Bool = false
+  @OptionGroup var option: DuplicatedFlagGroupCustom
+}
 
-  @Flag
+fileprivate struct DuplicatedFlagGroupLong: ParsableArguments {
+  @Flag var duplicated: Bool = false
+}
+
+fileprivate struct DuplicatedFlagGroupLongCommand: ParsableCommand {
+  @Flag(name: .customLong("duplicated-option"))
   var duplicated: Bool = false
-  
-  @OptionGroup var option: DuplicatedFlagOption
-  
-  enum CodingKeys: CodingKey {
-    case duplicated
-    case option
-  }
+  @OptionGroup var option: DuplicatedFlagGroupLong
 }
 
 extension OptionGroupEndToEndTests {
   func testUniqueNamesForDuplicatedFlag_NoFlags() throws {
-    AssertParseCommand(DuplicatedFlagCommand.self, DuplicatedFlagCommand.self, []) { command in
+    AssertParse(DuplicatedFlagGroupCustomCommand.self, []) { command in
+      XCTAssertFalse(command.duplicated)
+      XCTAssertFalse(command.option.duplicated)
+    }
+    AssertParse(DuplicatedFlagGroupLongCommand.self, []) { command in
       XCTAssertFalse(command.duplicated)
       XCTAssertFalse(command.option.duplicated)
     }
   }
   
   func testUniqueNamesForDuplicatedFlag_RootOnly() throws {
-    AssertParseCommand(DuplicatedFlagCommand.self, DuplicatedFlagCommand.self, ["--duplicated"]) { command in
+    AssertParse(DuplicatedFlagGroupCustomCommand.self, ["--duplicated"]) { command in
       XCTAssertTrue(command.duplicated)
       XCTAssertFalse(command.option.duplicated)
     }
-  }
-  
-  func testUniqueNamesForDuplicatedFlag_OptionOnly() throws {
-    AssertParseCommand(DuplicatedFlagCommand.self, DuplicatedFlagCommand.self, ["--duplicated-option"]) { command in
+    AssertParse(DuplicatedFlagGroupLongCommand.self, ["--duplicated"]) { command in
       XCTAssertFalse(command.duplicated)
       XCTAssertTrue(command.option.duplicated)
     }
   }
   
+  func testUniqueNamesForDuplicatedFlag_OptionOnly() throws {
+    AssertParse(DuplicatedFlagGroupCustomCommand.self, ["--duplicated-option"]) { command in
+      XCTAssertFalse(command.duplicated)
+      XCTAssertTrue(command.option.duplicated)
+    }
+    AssertParse(DuplicatedFlagGroupLongCommand.self, ["--duplicated-option"]) { command in
+      XCTAssertTrue(command.duplicated)
+      XCTAssertFalse(command.option.duplicated)
+    }
+  }
+  
   func testUniqueNamesForDuplicatedFlag_RootAndOption() throws {
-    AssertParseCommand(DuplicatedFlagCommand.self, DuplicatedFlagCommand.self, ["--duplicated", "--duplicated-option"]) { command in
+    AssertParse(DuplicatedFlagGroupCustomCommand.self, ["--duplicated", "--duplicated-option"]) { command in
+      XCTAssertTrue(command.duplicated)
+      XCTAssertTrue(command.option.duplicated)
+    }
+    AssertParse(DuplicatedFlagGroupLongCommand.self, ["--duplicated", "--duplicated-option"]) { command in
       XCTAssertTrue(command.duplicated)
       XCTAssertTrue(command.option.duplicated)
     }

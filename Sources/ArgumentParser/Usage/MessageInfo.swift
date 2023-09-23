@@ -9,12 +9,13 @@
 //
 //===----------------------------------------------------------------------===//
 
-@_implementationOnly import Foundation
+@_implementationOnly import protocol Foundation.LocalizedError
+@_implementationOnly import class Foundation.NSError
 
 enum MessageInfo {
   case help(text: String)
   case validation(message: String, usage: String, help: String)
-  case other(message: String, exitCode: Int32)
+  case other(message: String, exitCode: ExitCode)
   
   init(error: Error, type: ParsableArguments.Type) {
     var commandStack: [ParsableCommand.Type]
@@ -105,15 +106,15 @@ enum MessageInfo {
         case .message(let message):
           self = .help(text: message)
         }
-      case let error as ExitCode:
-        self = .other(message: "", exitCode: error.rawValue)
+      case let exitCode as ExitCode:
+        self = .other(message: "", exitCode: exitCode)
       case let error as LocalizedError where error.errorDescription != nil:
-        self = .other(message: error.errorDescription!, exitCode: EXIT_FAILURE)
+        self = .other(message: error.errorDescription!, exitCode: .failure)
       default:
         if Swift.type(of: error) is NSError.Type {
-          self = .other(message: error.localizedDescription, exitCode: EXIT_FAILURE)
+          self = .other(message: error.localizedDescription, exitCode: .failure)
         } else {
-          self = .other(message: String(describing: error), exitCode: EXIT_FAILURE)
+          self = .other(message: String(describing: error), exitCode: .failure)
         }
       }
     } else if let parserError = parserError {
@@ -121,12 +122,12 @@ enum MessageInfo {
         guard case ParserError.noArguments = parserError else { return usage }
         return "\n" + HelpGenerator(commandStack: [type.asCommand], visibility: .default).rendered()
       }()
-      let argumentSet = ArgumentSet(commandStack.last!, visibility: .default, parent: .root)
+      let argumentSet = ArgumentSet(commandStack.last!, visibility: .default, parent: nil)
       let message = argumentSet.errorDescription(error: parserError) ?? ""
       let helpAbstract = argumentSet.helpDescription(error: parserError) ?? ""
       self = .validation(message: message, usage: usage, help: helpAbstract)
     } else {
-      self = .other(message: String(describing: error), exitCode: EXIT_FAILURE)
+      self = .other(message: String(describing: error), exitCode: .failure)
     }
   }
   
@@ -165,7 +166,7 @@ enum MessageInfo {
     switch self {
     case .help: return ExitCode.success
     case .validation: return ExitCode.validationFailure
-    case .other(_, let code): return ExitCode(code)
+    case .other(_, let exitCode): return exitCode
     }
   }
 }

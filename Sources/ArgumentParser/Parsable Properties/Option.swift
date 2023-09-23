@@ -233,7 +233,7 @@ public struct ArrayParsingStrategy: Hashable {
 }
 
 // MARK: - @Option T: ExpressibleByArgument Initializers
-extension Option {
+extension Option where Value: ExpressibleByArgument {
   /// Creates a property with a default value provided by standard Swift default value syntax.
   ///
   /// This method is called to initialize an `Option` with a default value such as:
@@ -254,7 +254,7 @@ extension Option {
     parsing parsingStrategy: SingleValueParsingStrategy = .next,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil
-  ) where Value: ExpressibleByArgument {
+  ) {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
         container: Bare<Value>.self,
@@ -278,7 +278,7 @@ extension Option {
     parsing parsingStrategy: SingleValueParsingStrategy = .next,
     completion: CompletionKind?,
     help: ArgumentHelp?
-  ) where Value: ExpressibleByArgument {
+  ) {
     self.init(
       wrappedValue: wrappedValue,
       name: name,
@@ -304,7 +304,7 @@ extension Option {
     parsing parsingStrategy: SingleValueParsingStrategy = .next,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil
-  ) where Value: ExpressibleByArgument {
+  ) {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
         container: Bare<Value>.self,
@@ -432,6 +432,7 @@ extension Option {
   @available(*, deprecated, message: """
     Optional @Options with default values should be declared as non-Optional.
     """)
+  @_disfavoredOverload
   public init<T>(
     wrappedValue: Optional<T>,
     name: NameSpecification = .long,
@@ -532,6 +533,7 @@ extension Option {
   @available(*, deprecated, message: """
     Optional @Options with default values should be declared as non-Optional.
     """)
+  @_disfavoredOverload
   public init<T>(
     wrappedValue: Optional<T>,
     name: NameSpecification = .long,

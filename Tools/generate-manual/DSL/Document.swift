@@ -27,7 +27,7 @@ struct Document: MDocComponent {
     if multiPage {
       MultiPageDescription(command: command)
     } else {
-      SinglePageDescription(command: command)
+      SinglePageDescription(command: command, root: true)
     }
     Exit(section: section)
     if multiPage {
