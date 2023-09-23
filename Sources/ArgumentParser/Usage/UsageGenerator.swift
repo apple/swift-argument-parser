@@ -10,6 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 @_implementationOnly import protocol Foundation.LocalizedError
+@_implementationOnly import struct Foundation.URL
 
 struct UsageGenerator {
   var toolName: String
