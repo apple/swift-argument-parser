@@ -26,10 +26,10 @@ extension StringQuoteTests {
       ("\t", "'\t'"),
       ("with'quote", "with'quote"), // no need to quote, so don't escape quote character either
       ("with'quote and space", "'with\\'quote and space'"), // quote the string and escape the quote character within
-      ("'\\\\'' '''", "'\\\'\\\\\\\'\\\' \\\'\\\'\\\''"),
+      ("'\\\\'' '''", "'\\'\\\\\\'\\' \\'\\'\\''"),
       ("\"\\\\\"\" \"\"\"", "'\"\\\\\"\" \"\"\"'"),
       ("word+symbol", "'word+symbol'"),
-      ("@£$%'^*(", "'@£$%\\\'^*('")
+      ("@£$%'^*(", "'@£$%\\'^*('")
     ]
     for test in quoteTests {
       XCTAssertEqual(test.0.quotedIfContains(charactersToQuote), test.1)
