@@ -60,6 +60,10 @@ var package = Package(
             name: "repeat",
             dependencies: ["ArgumentParser"],
             path: "Examples/repeat"),
+        .executableTarget(
+            name: "extendable",
+            dependencies: ["ArgumentParser"],
+            path: "Examples/extendable"),
 
         // Tools
         .executableTarget(
