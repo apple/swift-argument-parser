@@ -9,15 +9,26 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if canImport(Glibc)
-import Glibc
-#elseif canImport(Darwin)
-import Darwin
-#elseif canImport(CRT)
-import CRT
-#elseif canImport(WASILibc)
-import WASILibc
-#endif
+enum _EitherOutputStream<A: TextOutputStream, B: TextOutputStream>: TextOutputStream {
+  case a(A)
+  case b(B)
+
+  mutating func write(_ string: String) {
+    switch self {
+    case .a(var stream):
+      stream.write(string)
+      self = .a(stream)
+    case .b(var stream):
+      stream.write(string)
+      self = .b(stream)
+    }
+  }
+
+  init(_ useA: Bool, _ a: A, _ b: B) {
+    self = useA ? .a(a) : .b(b)
+  }
+}
+
 
 extension CommandParser {
   /// Get input from the user's typing or from the parameters of the test.
@@ -39,17 +50,19 @@ extension CommandParser {
   mutating func canInteract(error: Error, split: inout SplitArguments) -> Bool {
     // Check if it's under test.
     if lineStack == nil {
-      guard
-        // Check if the command is executed in an interactive shell.
-        isatty(STDOUT_FILENO) == 1, isatty(STDIN_FILENO) == 1
-      else { return false }
+      guard Platform.isInteractive else { return false }
     }
+    var output = _EitherOutputStream(
+      lineStack == nil, Platform.standardOutput, Platform.nullOutput)
+
     guard rootCommand.configuration.shouldPromptForMissing else { return false }
     guard let error = error as? ParserError else { return false }
     guard case let .missingValueForOption(inputOrigin, name) = error else { return false }
 
-    let input = ask("? Please enter value for '\(name.synopsisString)': ",
-                    getInput: { getInput() })
+    let input = ask(
+      "? Please enter value for '\(name.synopsisString)': ",
+      to: &output,
+      getInput: { getInput() })
 
     let inputIndex = inputOrigin.elements.first!.baseIndex! + 1
     split._elements.insert(.init(value: .value(input),
@@ -74,11 +87,11 @@ extension CommandParser {
   mutating func canInteract(error: Error, arguments: ArgumentSet, values: inout ParsedValues) -> Bool {
     // Check if it's under test.
     if lineStack == nil {
-      guard
-        // Check if the command is executed in an interactive shell.
-        isatty(STDOUT_FILENO) == 1, isatty(STDIN_FILENO) == 1
-      else { return false }
+      guard Platform.isInteractive else { return false }
     }
+    var output = _EitherOutputStream(
+      lineStack == nil, Platform.standardOutput, Platform.nullOutput)
+
     guard rootCommand.configuration.shouldPromptForMissing else { return false }
     guard let error = error as? ParserError else { return false }
 
@@ -112,22 +125,26 @@ extension CommandParser {
           storeNormalValues(label: label, updateBy: updateBy, arguments: arguments)
         } else {
           let selected = choose("? Please select '\(label)': ",
-                                from: allValues, getInput: { self.getInput() })
+                                from: allValues,
+                                to: &output,
+                                getInput: { self.getInput() })
           let strs = selected.map { allValues[$0] }
           for str in strs {
             try! update(InputOrigin(elements: [.interactive]), name, str, &values)
           }
 
           if values.elements[InputKey(name: label, parent: nil)]!.value is [Any] {
-            print("You select '\(strs.joined(separator: "', '"))'.\n")
+            print("You select '\(strs.joined(separator: "', '"))'.\n", to: &output)
           } else {
-            print("You select '\(strs.last!)'.\n")
+            print("You select '\(strs.last!)'.\n", to: &output)
           }
         }
       } else {
         // Enumerable Flag
         let selected = choose("? Please select '\(label)': ",
-                              from: possibilities, getInput: { self.getInput() })
+                              from: possibilities,
+                              to: &output,
+                              getInput: { self.getInput() })
         let strs = selected.map { possibilities[$0] }
         for str in strs {
           let definition = args.first { str == "\($0)" }!
@@ -136,12 +153,12 @@ extension CommandParser {
           do {
             try update(InputOrigin(elements: [.interactive]), name, &values)
           } catch {
-            print("You select '\(strs[0])'.\n")
+            print("You select '\(strs[0])'.\n", to: &output)
             return true
           }
         }
 
-        print("You select '\(strs.joined(separator: "', '"))'.\n")
+        print("You select '\(strs.joined(separator: "', '"))'.\n", to: &output)
       }
 
       return true
@@ -157,8 +174,13 @@ extension CommandParser {
     updateBy: (String) throws -> Void,
     arguments: ArgumentSet
   ) {
-    let strs = ask("? Please enter '\(label)': ",
-                   type: [String].self, getInput: { self.getInput() })
+    var output = _EitherOutputStream(
+      lineStack == nil, Platform.standardOutput, Platform.nullOutput)
+    let strs = ask(
+      "? Please enter '\(label)': ",
+      type: [String].self,
+      to: &output,
+      getInput: { self.getInput() })
     for str in strs {
       do {
         try updateBy(str)
@@ -170,7 +192,7 @@ extension CommandParser {
         else { return }
         let generator = ErrorMessageGenerator(arguments: arguments, error: error)
         let description = generator.makeErrorMessage() ?? error.localizedDescription
-        print("Error: " + description + ".\n")
+        print("Error: " + description + ".\n", to: &output)
         replaceInvalidValue(original: original, updateBy: updateBy, arguments: arguments)
       }
     }
@@ -181,7 +203,9 @@ extension CommandParser {
     updateBy: (String) throws -> Void,
     arguments: ArgumentSet
   ) {
-    let input = ask("? Please replace '\(original)': ", getInput: { self.getInput() })
+    var output = _EitherOutputStream(
+      lineStack == nil, Platform.standardOutput, Platform.nullOutput)
+    let input = ask("? Please replace '\(original)': ", to: &output, getInput: { self.getInput() })
     do {
       try updateBy(input)
     } catch {
@@ -192,7 +216,7 @@ extension CommandParser {
       else { return }
       let generator = ErrorMessageGenerator(arguments: arguments, error: error)
       let description = generator.makeErrorMessage() ?? error.localizedDescription
-      print("Error: " + description + ".\n")
+      print("Error: " + description + ".\n", to: &output)
       replaceInvalidValue(original: original, updateBy: updateBy, arguments: arguments)
     }
   }

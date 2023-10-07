@@ -25,11 +25,12 @@
 ///   - prompt: The message to display.
 ///   - getInput: Get input from the user's typing or other ways.
 /// - Returns: The string casted to the type requested.
-internal func ask(
+internal func ask<Target: TextOutputStream>(
   _ prompt: String,
+  to output: inout Target,
   getInput: () -> String? = { readLine() }
 ) -> String {
-  ask(prompt, type: String.self, getInput: getInput)
+  ask(prompt, type: String.self, to: &output, getInput: getInput)
 }
 
 /// Ask single value from the user after displaying a prompt.
@@ -52,17 +53,18 @@ internal func ask(
 ///   - type: The value type expected the user enters.
 ///   - getInput: Get input from the user's typing or other ways.
 /// - Returns: The string casted to the type requested.
-internal func ask<T: ExpressibleByArgument>(
+internal func ask<T: ExpressibleByArgument, Target: TextOutputStream>(
   _ prompt: String,
   type: T.Type,
+  to output: inout Target,
   getInput: () -> String? = { readLine() }
 ) -> T {
-  print(prompt, terminator: "")
+  print(prompt, terminator: "", to: &output)
 
   let input = getInput() ?? ""
   guard let value = T(argument: input) else {
-    print("Error: The type of '\(input)' is not \(type).\n")
-    return ask(prompt, type: type)
+    print("Error: The type of '\(input)' is not \(type).\n", to: &output)
+    return ask(prompt, type: type, to: &output)
   }
 
   return value
@@ -90,19 +92,20 @@ internal func ask<T: ExpressibleByArgument>(
 ///   - type: The type of array you expected the user enters.
 ///   - getInput: Get input from the user's typing or other ways.
 /// - Returns: The string casted to the type requested.
-internal func ask<E: ExpressibleByArgument>(
+internal func ask<E: ExpressibleByArgument, Target: TextOutputStream>(
   _ prompt: String,
   type: [E].Type,
+  to output: inout Target,
   getInput: () -> String? = { readLine() }
 ) -> [E] {
-  print(prompt, terminator: "")
+  print(prompt, terminator: "", to: &output)
 
   var result: [E] = []
   let input = getInput() ?? ""
   for str in input.components(separatedBy: " ") {
     guard let val = E(argument: str) else {
-      print("Error: The type of '\(str)' is not \(E.self).\n")
-      return ask(prompt, type: type)
+      print("Error: The type of '\(str)' is not \(E.self).\n", to: &output)
+      return ask(prompt, type: type, to: &output)
     }
     result.append(val)
   }

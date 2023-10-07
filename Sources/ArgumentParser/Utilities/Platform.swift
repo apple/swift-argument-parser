@@ -88,9 +88,19 @@ extension Platform {
   }
 }
 
-// MARK: Standard error
+// MARK: Standard out/error
 
 extension Platform {
+  /// A type that represents the `stdout` output stream.
+  struct StandardOutput: TextOutputStream {
+    mutating func write(_ string: String) {
+      for byte in string.utf8 { putc(numericCast(byte), stdout) }
+    }
+  }
+
+  /// The `stdout` output stream.
+  static var standardOutput = StandardOutput()
+  
   /// A type that represents the `stderr` output stream.
   struct StandardError: TextOutputStream {
     mutating func write(_ string: String) {
@@ -100,6 +110,14 @@ extension Platform {
 
   /// The `stderr` output stream.
   static var standardError = StandardError()
+  
+  /// A type that discard all output.
+  struct NullOutput: TextOutputStream {
+    mutating func write(_ string: String) {}
+  }
+
+  /// The discarding output stream, equivalent to `dev/null`.
+  static var nullOutput = NullOutput()
 }
 
 // MARK: Terminal size
@@ -152,3 +170,14 @@ extension Platform {
   }
 }
 
+// MARK: Interactive terminal
+
+extension Platform {
+  static var isInteractive: Bool {
+    isatty(STDOUT_FILENO) == 1 && isatty(STDIN_FILENO) == 1
+  }
+  
+  static var isTerminal: Bool {
+    getenv("TERM") != nil
+  }
+}

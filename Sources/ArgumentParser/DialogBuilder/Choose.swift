@@ -37,28 +37,29 @@
 ///   - choices: Items to choose from.
 ///   - getInput: Get input from the user's typing or other ways.
 /// - Returns: The user selected indices.
-internal func choose(
+internal func choose<Target: TextOutputStream>(
   _ prompt: String,
   from choices: [String],
+  to output: inout Target,
   getInput: () -> String? = { readLine() }
 ) -> [Int] {
   let range = 1 ... choices.count
-  choices.enumerated().forEach { print("\($0 + 1). \($1)") }
+  choices.enumerated().forEach { print("\($0 + 1). \($1)", to: &output) }
 
   while true {
     var selected: [Int] = []
-    print(prompt, terminator: "")
+    print(prompt, terminator: "", to: &output)
 
     let nums = getInput()?.components(separatedBy: " ") ?? [""]
     for num in nums {
       guard let index = Int(num) else {
-        print("Error: '\(num)' is not a serial number.\n")
+        print("Error: '\(num)' is not a serial number.\n", to: &output)
         selected.removeAll()
         break
       }
 
       guard range.contains(index) else {
-        print("Error: '\(index)' is not in the range \(range.lowerBound) - \(range.upperBound).\n")
+        print("Error: '\(index)' is not in the range \(range.lowerBound) - \(range.upperBound).\n", to: &output)
         selected.removeAll()
         break
       }

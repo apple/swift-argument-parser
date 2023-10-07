@@ -29,11 +29,15 @@
 ///   - prompt: The message to display.
 ///   - getInput: Get input from the user's typing or other ways.
 /// - Returns: The user decision.
-internal func check(_ prompt: String, getInput: () -> String? = { readLine() }) -> Bool {
-  print(prompt)
+internal func check<Target: TextOutputStream>(
+  _ prompt: String,
+  to output: inout Target,
+  getInput: () -> String? = { readLine() }
+) -> Bool {
+  print(prompt, to: &output)
 
   while true {
-    print("? Please enter [y]es or [n]o: ", terminator: "")
+    print("? Please enter [y]es or [n]o: ", terminator: "", to: &output)
 
     let input = getInput()?
       .trimmingCharacters(in: .whitespaces)
