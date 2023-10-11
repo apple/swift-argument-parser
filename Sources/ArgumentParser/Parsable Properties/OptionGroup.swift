@@ -104,7 +104,7 @@ public struct OptionGroup<Value: ParsableArguments>: Decodable, ParsedWrapper {
   }
 }
 
-extension OptionGroup: Sendable where Value: Sendable { }
+extension OptionGroup: @unchecked Sendable where Value: Sendable { }
 
 extension OptionGroup: CustomStringConvertible {
   public var description: String {

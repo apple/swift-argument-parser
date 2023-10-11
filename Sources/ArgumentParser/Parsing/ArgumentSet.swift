@@ -48,8 +48,6 @@ struct ArgumentSet {
   }
 }
 
-extension ArgumentSet: Sendable { }
-
 extension ArgumentSet: CustomDebugStringConvertible {
   var debugDescription: String {
     content

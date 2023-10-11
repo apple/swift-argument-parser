@@ -67,7 +67,7 @@
 ///     $ math
 ///     Error: Missing one of: '--add', '--multiply'
 @propertyWrapper
-public struct Flag<Value: Sendable>: Decodable, ParsedWrapper {
+public struct Flag<Value>: Decodable, ParsedWrapper {
   internal var _parsedValue: Parsed<Value>
 
   internal init(_parsedValue: Parsed<Value>) {
@@ -109,7 +109,7 @@ public struct Flag<Value: Sendable>: Decodable, ParsedWrapper {
   }
 }
 
-extension Flag: Sendable where Value: Sendable { }
+extension Flag: @unchecked Sendable where Value: Sendable { }
 
 extension Flag: CustomStringConvertible {
   public var description: String {
@@ -612,7 +612,7 @@ extension Flag {
 }
 
 extension ArgumentDefinition {
-  static func flag<V: Sendable>(name: NameSpecification, key: InputKey, caseKey: InputKey, help: Help, parsingStrategy: ArgumentDefinition.ParsingStrategy, initialValue: V?, update: Update) -> ArgumentDefinition {
+  static func flag<V>(name: NameSpecification, key: InputKey, caseKey: InputKey, help: Help, parsingStrategy: ArgumentDefinition.ParsingStrategy, initialValue: V?, update: Update) -> ArgumentDefinition {
     return ArgumentDefinition(kind: .name(key: caseKey, specification: name), help: help, completion: .default, parsingStrategy: parsingStrategy, update: update, initial: { origin, values in
       if let initial = initialValue {
         values.set(initial, forKey: key, inputOrigin: origin)
