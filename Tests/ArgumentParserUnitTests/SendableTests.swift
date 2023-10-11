@@ -15,53 +15,49 @@ import XCTest
 final class SendableTests: XCTestCase {}
 
 extension SendableTests {
-
-  public struct MyExpressibleType: ExpressibleByArgument {
-    public init?(argument: String) {
-    }
+  struct MyExpressibleType: ExpressibleByArgument {
+    public init?(argument: String) {}
   }
-
-  public final class MySendableClassType: Sendable {
-    init(_: String) {
-    }
+  
+  final class SendableClassType: Sendable {
+    init(_: String) {}
   }
-
-    private static func transformFactory(_ value: @autoclosure () -> NonSendableType) -> (String) -> MySendableClassType {
-        return { MySendableClassType($0) }
-    }
-
-    public final class NonSendableType {
-    init() {
-    }
-    }
-
+  
+  final class NonSendableClassType {
+    init() {}
+  }
+  
+  static func transformFactory(
+    _ value: @autoclosure () -> NonSendableClassType
+  ) -> @Sendable (String) -> SendableClassType {
+    return { SendableClassType($0) }
+  }
+  
   struct Foo: ParsableArguments, Sendable {
     @Flag()
     var foo: Bool = false
-
+    
     @Option()
     var custom: MyExpressibleType?
-
-    @Option(transform: { MySendableClassType($0) })
-    var transformed1: MySendableClassType
-
-    @Option(transform: transformFactory(NonSendableType()))
-    var transformed2: MySendableClassType
+    
+    @Option(transform: { SendableClassType($0) })
+    var transformed1: SendableClassType
+    
+    @Option(transform: transformFactory(NonSendableClassType()))
+    var transformed2: SendableClassType
 
     @Argument()
     var arg: [MyExpressibleType]
-
   }
-
+  
   struct Bar: ParsableCommand, Sendable {
     @OptionGroup
     var foo: Foo
   }
-
+  
   struct Baz: AsyncParsableCommand, Sendable {
     @OptionGroup
     var bar: Foo
   }
-
 }
 

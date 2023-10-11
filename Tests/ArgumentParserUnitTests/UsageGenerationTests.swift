@@ -122,7 +122,8 @@ extension UsageGenerationTests {
   struct I: ParsableArguments {
     enum Color {
         case red, blue
-        static func transform(_ string: String) throws -> Color {
+        
+        @Sendable static func transform(_ string: String) throws -> Color {
           switch string {
           case "red":
             return .red
