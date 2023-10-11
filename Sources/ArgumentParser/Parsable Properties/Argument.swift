@@ -94,8 +94,7 @@ extension Argument: CustomStringConvertible {
   }
 }
 
-extension Argument: @unchecked Sendable where Value: Sendable { }
-
+extension Argument: Sendable where Value: Sendable { }
 extension Argument: DecodableParsedWrapper where Value: Decodable { }
 
 /// The strategy to use when parsing multiple values from positional arguments
@@ -381,7 +380,7 @@ extension Argument {
     wrappedValue: Value,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
-    transform: @escaping (String) throws -> Value
+    transform: @Sendable @escaping (String) throws -> Value
   ) {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
@@ -414,7 +413,7 @@ extension Argument {
   public init(
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
-    transform: @escaping (String) throws -> Value
+    transform: @Sendable @escaping (String) throws -> Value
   ) {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
@@ -525,7 +524,7 @@ extension Argument {
     wrappedValue _value: _OptionalNilComparisonType,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
-    transform: @escaping (String) throws -> T
+    transform: @Sendable @escaping (String) throws -> T
   ) where Value == Optional<T> {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
@@ -550,7 +549,7 @@ extension Argument {
     wrappedValue _wrappedValue: Optional<T>,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
-    transform: @escaping (String) throws -> T
+    transform: @Sendable @escaping (String) throws -> T
   ) where Value == Optional<T> {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
@@ -580,7 +579,7 @@ extension Argument {
   public init<T>(
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
-    transform: @escaping (String) throws -> T
+    transform: @Sendable @escaping (String) throws -> T
   ) where Value == Optional<T> {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
@@ -681,7 +680,7 @@ extension Argument {
     parsing parsingStrategy: ArgumentArrayParsingStrategy = .remaining,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
-    transform: @escaping (String) throws -> T
+    transform: @Sendable @escaping (String) throws -> T
   ) where Value == Array<T> {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
@@ -719,7 +718,7 @@ extension Argument {
     parsing parsingStrategy: ArgumentArrayParsingStrategy = .remaining,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
-    transform: @escaping (String) throws -> T
+    transform: @Sendable @escaping (String) throws -> T
   ) where Value == Array<T> {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(

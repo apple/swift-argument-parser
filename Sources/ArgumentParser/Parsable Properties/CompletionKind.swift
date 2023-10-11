@@ -28,7 +28,7 @@ public struct CompletionKind {
     case shellCommand(String)
 
     /// Generate completions using the given closure.
-    case custom(([String]) -> [String])
+    case custom(@Sendable ([String]) -> [String])
   }
   
   internal var kind: Kind
@@ -59,10 +59,10 @@ public struct CompletionKind {
   }
   
   /// Generate completions using the given closure.
-  public static func custom(_ completion: @escaping ([String]) -> [String]) -> CompletionKind {
+  public static func custom(_ completion: @Sendable @escaping ([String]) -> [String]) -> CompletionKind {
     CompletionKind(kind: .custom(completion))
   }
 }
 
 extension CompletionKind: Sendable { }
-extension CompletionKind.Kind: @unchecked Sendable { }
+extension CompletionKind.Kind: Sendable { }

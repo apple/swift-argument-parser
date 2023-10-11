@@ -109,7 +109,7 @@ public struct Flag<Value>: Decodable, ParsedWrapper {
   }
 }
 
-extension Flag: @unchecked Sendable where Value: Sendable { }
+extension Flag: Sendable where Value: Sendable {}
 
 extension Flag: CustomStringConvertible {
   public var description: String {
