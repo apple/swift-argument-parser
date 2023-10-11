@@ -435,8 +435,8 @@ extension Flag where Value: EnumerableFlag {
           help: help,
           parsingStrategy: .default,
           initialValue: initial,
-          update: .nullary({ (origin, name, values, hasUpdated) in
-            try ArgumentSet.updateFlag(key: key, value: value, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
+          update: .nullary({ (origin, name, values) in
+            try ArgumentSet.updateFlag(key: key, value: value, origin: origin, values: &values, exclusivity: exclusivity)
           })
         )
       }
@@ -529,8 +529,8 @@ extension Flag {
           key: parentKey,
           isComposite: !hasCustomCaseHelp)
 
-        return ArgumentDefinition.flag(name: name, key: parentKey, caseKey: caseKey, help: help, parsingStrategy: .default, initialValue: nil as Element?, update: .nullary({ (origin, name, values, hasUpdated) in
-          try ArgumentSet.updateFlag(key: parentKey, value: value, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
+        return ArgumentDefinition.flag(name: name, key: parentKey, caseKey: caseKey, help: help, parsingStrategy: .default, initialValue: nil as Element?, update: .nullary({ (origin, name, values) in
+          try ArgumentSet.updateFlag(key: parentKey, value: value, origin: origin, values: &values, exclusivity: exclusivity)
         }))
 
       }
@@ -561,11 +561,10 @@ extension Flag {
           key: parentKey,
           isComposite: !hasCustomCaseHelp)
 
-        return ArgumentDefinition.flag(name: name, key: parentKey, caseKey: caseKey, help: help, parsingStrategy: .default, initialValue: initial, update: .nullary({ (origin, name, values, hasUpdated) in
+        return ArgumentDefinition.flag(name: name, key: parentKey, caseKey: caseKey, help: help, parsingStrategy: .default, initialValue: initial, update: .nullary({ (origin, name, values) in
           values.update(forKey: parentKey, inputOrigin: origin, initial: [Element](), closure: {
             $0.append(value)
           })
-          return true
         }))
       }
       return ArgumentSet(args)

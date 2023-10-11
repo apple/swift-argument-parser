@@ -336,7 +336,7 @@ internal extension BidirectionalCollection where Element == ParsableCommand.Type
         key: InputKey(name: "", parent: nil),
         isComposite: false),
       completion: .default,
-      update: .nullary({ _, _, _, _ in false })
+      update: .nullary({ _, _, _ in })
     )
   }
   
@@ -353,7 +353,7 @@ internal extension BidirectionalCollection where Element == ParsableCommand.Type
         key: InputKey(name: "", parent: nil),
         isComposite: false),
       completion: .default,
-      update: .nullary({ _, _, _, _ in false })
+      update: .nullary({ _, _, _ in })
     )
   }
   
@@ -368,7 +368,7 @@ internal extension BidirectionalCollection where Element == ParsableCommand.Type
         key: InputKey(name: "", parent: nil),
         isComposite: false),
       completion: .default,
-      update: .nullary({ _, _, _, _ in false })
+      update: .nullary({ _, _, _ in })
     )
   }
   

@@ -13,8 +13,8 @@ struct ArgumentDefinition {
   /// A closure that modifies a `ParsedValues` instance to include this
   /// argument's value.
   enum Update {
-    typealias Nullary = @Sendable (InputOrigin, Name?, inout ParsedValues, _ hasUpdated: Bool) throws -> Bool
-    typealias Unary = @Sendable (InputOrigin, Name?, String, inout ParsedValues) throws -> Void
+    typealias Nullary = (InputOrigin, Name?, inout ParsedValues) throws -> Void
+    typealias Unary = (InputOrigin, Name?, String, inout ParsedValues) throws -> Void
     
     /// An argument that gets its value solely from its presence.
     case nullary(Nullary)

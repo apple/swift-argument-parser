@@ -80,9 +80,8 @@ extension ArgumentSet {
       defaultValue: defaultValueString,
       key: key,
       isComposite: false)
-    let arg = ArgumentDefinition(kind: .name(key: key, specification: name), help: help, completion: .default, update: .nullary({ (origin, name, values, hasUpdated) in
+    let arg = ArgumentDefinition(kind: .name(key: key, specification: name), help: help, completion: .default, update: .nullary({ (origin, name, values) in
       values.set(true, forKey: key, inputOrigin: origin)
-      return true
     }), initial: { origin, values in
       if let initialValue = initialValue {
         values.set(initialValue, forKey: key, inputOrigin: origin)
@@ -91,7 +90,14 @@ extension ArgumentSet {
     return ArgumentSet(arg)
   }
 
-  static func updateFlag<Value: Equatable>(key: InputKey, value: Value, origin: InputOrigin, values: inout ParsedValues, hasUpdated: Bool, exclusivity: FlagExclusivity) throws -> Bool {
+  static func updateFlag<Value: Equatable>(key: InputKey, value: Value, origin: InputOrigin, values: inout ParsedValues, exclusivity: FlagExclusivity) throws {
+    let hasUpdated: Bool
+    if let previous = values.element(forKey: key) {
+      hasUpdated = !previous.inputOrigin.elements.isEmpty
+    } else {
+      hasUpdated = false
+    }
+    
     switch (hasUpdated, exclusivity.base) {
     case (true, .exclusive):
       // This value has already been set.
@@ -109,7 +115,6 @@ extension ArgumentSet {
     case (false, _), (_, .chooseLast):
       values.set(value, forKey: key, inputOrigin: origin)
     }
-    return true
   }
   
   /// Creates an argument set for a pair of inverted Boolean flags.
@@ -132,15 +137,15 @@ extension ArgumentSet {
     let enableHelp = ArgumentDefinition.Help(allValues: [], options: helpOptions, help: help, defaultValue: initialValueNames?.first?.synopsisString, key: key, isComposite: true)
     let disableHelp = ArgumentDefinition.Help(allValues: [], options: [.isOptional], help: help, defaultValue: nil, key: key, isComposite: false)
 
-    let enableArg = ArgumentDefinition(kind: .named(enableNames), help: enableHelp, completion: .default, update: .nullary({ (origin, name, values, hasUpdated) in
-        try ArgumentSet.updateFlag(key: key, value: true, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
+    let enableArg = ArgumentDefinition(kind: .named(enableNames), help: enableHelp, completion: .default, update: .nullary({ (origin, name, values) in
+        try ArgumentSet.updateFlag(key: key, value: true, origin: origin, values: &values, exclusivity: exclusivity)
     }), initial: { origin, values in
       if let initialValue = initialValue {
         values.set(initialValue, forKey: key, inputOrigin: origin)
       }
     })
-    let disableArg = ArgumentDefinition(kind: .named(disableNames), help: disableHelp, completion: .default, update: .nullary({ (origin, name, values, hasUpdated) in
-        try ArgumentSet.updateFlag(key: key, value: false, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
+    let disableArg = ArgumentDefinition(kind: .named(disableNames), help: disableHelp, completion: .default, update: .nullary({ (origin, name, values) in
+        try ArgumentSet.updateFlag(key: key, value: false, origin: origin, values: &values, exclusivity: exclusivity)
     }), initial: { _, _ in })
     return ArgumentSet([enableArg, disableArg])
   }
@@ -148,12 +153,11 @@ extension ArgumentSet {
   /// Creates an argument set for an incrementing integer flag.
   static func counter(key: InputKey, name: NameSpecification, help: ArgumentHelp?) -> ArgumentSet {
     let help = ArgumentDefinition.Help(allValues: [], options: [.isOptional, .isRepeating], help: help, defaultValue: nil, key: key, isComposite: false)
-    let arg = ArgumentDefinition(kind: .name(key: key, specification: name), help: help, completion: .default, update: .nullary({ (origin, name, values, hasUpdated) in
+    let arg = ArgumentDefinition(kind: .name(key: key, specification: name), help: help, completion: .default, update: .nullary({ (origin, name, values) in
       guard let a = values.element(forKey: key)?.value, let b = a as? Int else {
         throw ParserError.invalidState
       }
       values.set(b + 1, forKey: key, inputOrigin: origin)
-      return true
     }), initial: { origin, values in
       values.set(0, forKey: key, inputOrigin: origin)
     })
@@ -520,7 +524,7 @@ struct LenientParser {
           guard parsed.value == nil else {
             throw ParserError.unexpectedValueForOption(origin, parsed.name, parsed.value!)
           }
-          _ = try update([origin], parsed.name, &result, false)
+          _ = try update([origin], parsed.name, &result)
           usedOrigins.insert(origin)
         case let .unary(update):
           try parseValue(argument, parsed, origin, update, &result, &usedOrigins)
