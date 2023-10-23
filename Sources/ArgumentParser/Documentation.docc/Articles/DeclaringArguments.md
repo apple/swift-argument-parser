@@ -469,13 +469,12 @@ Verbose: true, files: ["file1.swift", "file2.swift", "--other"]
 Verbose: false, files: ["--", "--verbose", "file1.swift", "file2.swift", "--other"]
 ```
 
-### Ignoring unknown arguments/flags/options
-Different versions of CLI tool may have full or partial set of supported flags and options.
+### Ignoring unknown arguments
 
-By default, `ArgumentParser` throws the error if unknown arguments/flags/options are passed to command input.
-But in some cases that is convenient to just ignore unknowns and process supported ones.
+Different versions of a CLI tool may have full or partial sets of supported flags and options.
 
-To achieve non-failable behaviour on unknown parameter, just collect unknowns in special `@Argument` with `.allUnrecognized` strategy.
+By default, `ArgumentParser` throws an error if unknown arguments are passed as command input.
+When appropriate, you can process supported arguments and ignore unknown ones by collecting unknowns in special `@Argument` with the `.allUnrecognized` strategy.
 
 ```swift
 struct Example: ParsableCommand {
@@ -490,7 +489,8 @@ struct Example: ParsableCommand {
 }
 ```
 
-This way any unknown parameters are just omitted.
+This way any unknown parameters are silently captured in the `unknowns` array.
+
 ```
 % example --flag --verbose --option abc file1.swift
 Verbose: true
