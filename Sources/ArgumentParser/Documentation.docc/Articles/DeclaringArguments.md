@@ -468,3 +468,30 @@ Verbose: true, files: ["file1.swift", "file2.swift", "--other"]
 % example -- --verbose file1.swift file2.swift --other
 Verbose: false, files: ["--", "--verbose", "file1.swift", "file2.swift", "--other"]
 ```
+
+### Ignoring unknown arguments
+
+Different versions of a CLI tool may have full or partial sets of supported flags and options.
+
+By default, `ArgumentParser` throws an error if unknown arguments are passed as command input.
+When appropriate, you can process supported arguments and ignore unknown ones by collecting unknowns in special `@Argument` with the `.allUnrecognized` strategy.
+
+```swift
+struct Example: ParsableCommand {
+    @Flag var verbose = false
+    
+    @Argument(parsing: .allUnrecognized)
+    var unknowns: [String] = []
+
+    func run() throws {
+        print("Verbose: \(verbose)")
+    }
+}
+```
+
+This way any unknown parameters are silently captured in the `unknowns` array.
+
+```
+% example --flag --verbose --option abc file1.swift
+Verbose: true
+```
