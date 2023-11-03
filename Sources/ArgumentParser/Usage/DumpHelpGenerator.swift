@@ -154,7 +154,7 @@ fileprivate extension ArgumentInfoV0.KindV0 {
       switch argument.update {
       case .nullary:
         self = .flag
-      case .unary:
+      case .unary, .tuplary:
         self = .option
       }
     case .positional:

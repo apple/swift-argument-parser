@@ -830,3 +830,66 @@ extension Option {
     })
   }
 }
+
+// MARK: - Option tuples
+
+extension Option {
+  public init<
+    T: ExpressibleByArgument,
+    U: ExpressibleByArgument,
+    each V: ExpressibleByArgument
+  >(
+    name: NameSpecification = .long,
+    parsing parsingStrategy: SingleValueParsingStrategy = .next,
+    help: ArgumentHelp? = nil,
+    completion: CompletionKind? = nil
+  ) where Value == (T, U, repeat each V) {
+    self.init(_parsedValue: .init { key in
+      let arg = ArgumentDefinition.tupleOption(
+        key: key,
+        name: name,
+        parsingStrategy: parsingStrategy,
+        help: help,
+        completion: completion,
+        valueCount: 2 + packCount(repeat (each V).self)) { origin, name, values, parsedValues in
+          switch initVariadicValues(T.self, U.self, repeat (each V).self, with: values) {
+          case .success(let value):
+            parsedValues.set(value, forKey: key, inputOrigin: origin)
+          case .failure(let error):
+            throw ParserError.unableToParseValue(
+              origin, name, values[error.index], forKey: key, originalError: nil)
+          }
+        }
+      return ArgumentSet(arg)
+    })
+  }
+}
+
+fileprivate struct InitFailure: Error {
+  var index: Int
+}
+
+fileprivate func initVariadicValues<each T: ExpressibleByArgument>(
+  _ elem: repeat (each T).Type, with arr: [String]
+) -> Result<(repeat each T), InitFailure> {
+  var arr = arr[...]
+  func pairYs<V: ExpressibleByArgument>(_ v: V.Type) throws -> V {
+    guard let value = V.init(argument: arr.popFirst()!) else {
+      throw InitFailure(index: arr.startIndex - 1)
+    }
+    return value
+  }
+  
+  do {
+    return .success(try (repeat pairYs(each elem)))
+  } catch {
+    return .failure(error as! InitFailure)
+  }
+}
+
+fileprivate func packCount<each T>(_ el: repeat each T) -> Int {
+  var count = 0
+  func increment<U>(_ u: U) { count += 1 }
+  repeat (increment(each el))
+  return count
+}
