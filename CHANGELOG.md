@@ -6,7 +6,15 @@ Add new items at the end of the relevant section under **Unreleased**.
 
 ## [Unreleased]
 
-*No changes yet.*
+### Additions
+
+- Help screens now include possible options for `ExpressibleByArgument` types
+  with non empty `allValueStrings`. Types also conforming to `CaseIterable` do
+  not need to manually implement `allValueStrings`, instead it is derived from
+  `allCases`. ([#594])
+
+<!-- Add: "Don't remove nested option group titles (#592)" -->
+<!-- Add: "Document ability to skip unknown parameters (#572)" -->
 
 ---
 
@@ -891,6 +899,7 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [#554]: https://github.com/apple/swift-argument-parser/pull/554
 [#574]: https://github.com/apple/swift-argument-parser/pull/574
 [#579]: https://github.com/apple/swift-argument-parser/pull/579
+[#579]: https://github.com/apple/swift-argument-parser/pull/594
 
 <!-- Link references for contributors -->
 

@@ -77,7 +77,8 @@ final class MathExampleTests: XCTestCase {
           <values>                A group of floating-point values to operate on.
 
         OPTIONS:
-          --kind <kind>           The kind of average to provide. (default: mean)
+          --kind <kind>           The kind of average to provide. (values: mean,
+                                  median, mode; default: mean)
           --version               Show the version.
           -h, --help              Show help information.
         """

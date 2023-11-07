@@ -211,8 +211,9 @@ extension HelpGenerationTests {
         --degree <degree>       Your degree.
         --directory <directory> Directory. (default: current directory)
         --manual <manual>       Manual Option. (default: default-value)
-        --unspecial <unspecial> Unspecialized Synthesized (default: 0)
-        --special <special>     Specialized Synthesized (default: Apple)
+        --unspecial <unspecial> Unspecialized Synthesized (values: 0, 1; default: 0)
+        --special <special>     Specialized Synthesized (values: Apple, Banana;
+                                default: Apple)
         -h, --help              Show help information.
 
       """)
