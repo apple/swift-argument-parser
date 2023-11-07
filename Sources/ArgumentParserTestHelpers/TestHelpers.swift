@@ -256,18 +256,22 @@ public func AssertDump<T: ParsableArguments>(
     XCTFail(file: file, line: line)
   } catch {
     let dumpString = T.fullMessage(for: error)
-    try AssertJSONEqualFromString(actual: dumpString, expected: expected, for: ToolInfoV0.self)
+    try AssertJSONEqualFromString(actual: dumpString, expected: expected, for: ToolInfoV0.self, file: file, line: line)
   }
 
-  try AssertJSONEqualFromString(actual: T._dumpHelp(), expected: expected, for: ToolInfoV0.self)
+  try AssertJSONEqualFromString(actual: T._dumpHelp(), expected: expected, for: ToolInfoV0.self, file: file, line: line)
 }
 
-public func AssertJSONEqualFromString<T: Codable & Equatable>(actual: String, expected: String, for type: T.Type) throws {
-  let actualJSONData = try XCTUnwrap(actual.data(using: .utf8))
-  let actualDumpJSON = try XCTUnwrap(JSONDecoder().decode(type, from: actualJSONData))
+public func AssertJSONEqualFromString<T: Codable & Equatable>(actual: String, expected: String, for type: T.Type, file: StaticString = #file, line: UInt = #line) throws {
+  if #available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *) {
+    AssertEqualStrings(actual: actual, expected: expected, file: file, line: line)
+  }
 
-  let expectedJSONData = try XCTUnwrap(expected.data(using: .utf8))
-  let expectedDumpJSON = try XCTUnwrap(JSONDecoder().decode(type, from: expectedJSONData))
+  let actualJSONData = try XCTUnwrap(actual.data(using: .utf8), file: file, line: line)
+  let actualDumpJSON = try XCTUnwrap(JSONDecoder().decode(type, from: actualJSONData), file: file, line: line)
+
+  let expectedJSONData = try XCTUnwrap(expected.data(using: .utf8), file: file, line: line)
+  let expectedDumpJSON = try XCTUnwrap(JSONDecoder().decode(type, from: expectedJSONData), file: file, line: line)
   XCTAssertEqual(actualDumpJSON, expectedDumpJSON)
 }
 
@@ -359,7 +363,8 @@ extension XCTest {
   public func AssertJSONOutputEqual(
     command: String,
     expected: String,
-    file: StaticString = #file, line: UInt = #line
+    file: StaticString = #file,
+    line: UInt = #line
   ) throws {
     #if os(Windows)
     throw XCTSkip("Unsupported on this platform")
@@ -402,7 +407,7 @@ extension XCTest {
 
     let outputString = try XCTUnwrap(String(data: output.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8))
     XCTAssertTrue(error.fileHandleForReading.readDataToEndOfFile().isEmpty, "Error occurred with `--experimental-dump-help`")
-    try AssertJSONEqualFromString(actual: outputString, expected: expected, for: ToolInfoV0.self)
+    try AssertJSONEqualFromString(actual: outputString, expected: expected, for: ToolInfoV0.self, file: file, line: line)
     #else
     throw XCTSkip("Not supported on this platform")
     #endif

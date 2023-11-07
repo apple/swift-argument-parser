@@ -48,7 +48,7 @@ struct ArgumentDefinition {
     var options: Options
     var defaultValue: String?
     var keys: [InputKey]
-    var allValues: [String]
+    var allValueStrings: [String]
     var isComposite: Bool
     var abstract: String
     var discussion: String
@@ -57,7 +57,7 @@ struct ArgumentDefinition {
     var parentTitle: String
 
     init(
-      allValues: [String],
+      allValueStrings: [String],
       options: Options,
       help: ArgumentHelp?,
       defaultValue: String?,
@@ -67,7 +67,7 @@ struct ArgumentDefinition {
       self.options = options
       self.defaultValue = defaultValue
       self.keys = [key]
-      self.allValues = allValues
+      self.allValueStrings = allValueStrings
       self.isComposite = isComposite
       self.abstract = help?.abstract ?? ""
       self.discussion = help?.discussion ?? ""
@@ -222,7 +222,7 @@ extension ArgumentDefinition {
       container: Bare<Any>.self,
       key: InputKey(name: unparsedKey, parent: parent),
       kind: .default,
-      allValues: [],
+      allValueStrings: [],
       help: .private,
       defaultValueDescription: nil,
       parsingStrategy: .default,
@@ -247,7 +247,7 @@ extension ArgumentDefinition {
       container: Container.self,
       key: key,
       kind: kind,
-      allValues: Container.Contained.allValueStrings,
+      allValueStrings: Container.Contained.allValueStrings,
       help: help,
       defaultValueDescription: Container.defaultValueDescription(initial),
       parsingStrategy: parsingStrategy,
@@ -276,7 +276,7 @@ extension ArgumentDefinition {
       container: Container.self,
       key: key,
       kind: kind,
-      allValues: [],
+      allValueStrings: [],
       help: help,
       defaultValueDescription: nil,
       parsingStrategy: parsingStrategy,
@@ -296,7 +296,7 @@ extension ArgumentDefinition {
     container: Container.Type,
     key: InputKey,
     kind: ArgumentDefinition.Kind,
-    allValues: [String],
+    allValueStrings: [String],
     help: ArgumentHelp?,
     defaultValueDescription: String?,
     parsingStrategy: ParsingStrategy,
@@ -307,7 +307,7 @@ extension ArgumentDefinition {
     self.init(
       kind: kind,
       help: .init(
-        allValues: allValues,
+        allValueStrings: allValueStrings,
         options: Container.helpOptions.union(initial != nil ? [.isOptional] : []),
         help: help,
         defaultValue: defaultValueDescription,

@@ -419,7 +419,7 @@ extension Flag where Value: EnumerableFlag {
         }
         
         let help = ArgumentDefinition.Help(
-          allValues: [],
+          allValueStrings: [],
           options: initial != nil ? .isOptional : [],
           help: helpForCase,
           defaultValue: defaultValueString,
@@ -524,7 +524,7 @@ extension Flag {
         let helpForCase = hasCustomCaseHelp ? (caseHelps[i] ?? help) : help
 
         let help = ArgumentDefinition.Help(
-          allValues: [],
+          allValueStrings: [],
           options: [.isOptional],
           help: helpForCase,
           defaultValue: nil,
@@ -556,7 +556,7 @@ extension Flag {
         let name = Element.name(for: value)
         let helpForCase = hasCustomCaseHelp ? (caseHelps[i] ?? help) : help
         let help = ArgumentDefinition.Help(
-          allValues: [],
+          allValueStrings: [],
           options: [.isOptional],
           help: helpForCase,
           defaultValue: nil,
