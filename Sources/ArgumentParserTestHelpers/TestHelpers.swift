@@ -131,55 +131,73 @@ public func AssertParseCommand<A: ParsableCommand>(_ rootCommand: ParsableComman
   }
 }
 
-public func AssertEqualStrings(actual: String, expected: String, file: StaticString = #file, line: UInt = #line) {
+public func AssertEqualStrings(
+  actual: String,
+  expected: String,
+  file: StaticString = #file,
+  line: UInt = #line
+) {
   // If the input strings are not equal, create a simple diff for debugging...
   guard actual != expected else {
     // Otherwise they are equal, early exit.
     return
   }
 
-  // Split in the inputs into lines.
-  let actualLines = actual.split(separator: "\n", omittingEmptySubsequences: false)
-  let expectedLines = expected.split(separator: "\n", omittingEmptySubsequences: false)
+  let stringComparison: String
 
   // If collectionDifference is available, use it to make a nicer error message.
   if #available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *) {
-    // Compute the changes between the two strings.
-    let changes = actualLines.difference(from: expectedLines).sorted()
+    let actualLines = actual.components(separatedBy: .newlines)
+    let expectedLines = expected.components(separatedBy: .newlines)
 
-    // Render the changes into a diff style string.
-    var diff = ""
-    var expectedLines = expectedLines[...]
-    for change in changes {
-      if expectedLines.startIndex < change.offset {
-        for line in expectedLines[..<change.offset] {
-          diff += "  \(line)\n"
-        }
-        expectedLines = expectedLines[change.offset...].dropFirst()
-      }
+    let difference = actualLines.difference(from: expectedLines)
 
+    var result = ""
+
+    var insertions = [Int: String]()
+    var removals = [Int: String]()
+
+    for change in difference {
       switch change {
-      case .insert(_, let line, _):
-        diff += "- \(line)\n"
-      case .remove(_, let line, _):
-        diff += "+ \(line)\n"
+      case .insert(let offset, let element, _):
+        insertions[offset] = element
+      case .remove(let offset, let element, _):
+        removals[offset] = element
       }
     }
-    for line in expectedLines {
-      diff += "  \(line)\n"
+
+    var expectedLine = 0
+    var actualLine = 0
+
+    while expectedLine < expectedLines.count || actualLine < actualLines.count {
+      if let removal = removals[expectedLine] {
+        result += "–\(removal)\n"
+        expectedLine += 1
+      } else if let insertion = insertions[actualLine] {
+        result += "+\(insertion)\n"
+        actualLine += 1
+      } else {
+        result += " \(expectedLines[expectedLine])\n"
+        expectedLine += 1
+        actualLine += 1
+      }
     }
-    XCTFail("Strings are not equal.\n\(diff)", file: file, line: line)
+
+    stringComparison = result
   } else {
-    XCTAssertEqual(
-      actualLines.count,
-      expectedLines.count,
-      "Strings have different numbers of lines.",
-      file: file,
-      line: line)
-    for (actualLine, expectedLine) in zip(actualLines, expectedLines) {
-      XCTAssertEqual(actualLine, expectedLine, file: file, line: line)
-    }
+    stringComparison = """
+      Expected:
+      \(expected)
+
+      Actual:
+      \(actual)
+      """
   }
+
+  XCTFail(
+    "Actual output does not match the expected output:\n\(stringComparison)",
+    file: file,
+    line: line)
 }
 
 public func AssertHelp<T: ParsableArguments>(
