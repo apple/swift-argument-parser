@@ -10,6 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 @_implementationOnly import protocol Foundation.LocalizedError
+@_implementationOnly import struct Foundation.URL
 
 struct UsageGenerator {
   var toolName: String
@@ -18,8 +19,7 @@ struct UsageGenerator {
 
 extension UsageGenerator {
   init(definition: ArgumentSet) {
-    let toolName = CommandLine.arguments[0].split(separator: "/").last.map(String.init) ?? "<command>"
-    self.init(toolName: toolName, definition: definition)
+    self.init(toolName: Self.executableName, definition: definition)
   }
   
   init(toolName: String, parsable: ParsableArguments, visibility: ArgumentVisibility, parent: InputKey?) {
@@ -34,6 +34,20 @@ extension UsageGenerator {
 }
 
 extension UsageGenerator {
+  /// Will generate a tool name from the name of the executed file if possible.
+  ///
+  /// If no tool name can be generated, `"<command>"` will be returned.
+  static var executableName: String {
+    if let name = URL(fileURLWithPath: CommandLine.arguments[0]).pathComponents.last {
+      // We quote the name if it contains whitespace to avoid confusion with
+      // subcommands but otherwise leave properly quoting/escaping the command
+      // up to the user running the tool
+      return name.quotedIfContains(.whitespaces)
+    } else {
+      return "<command>"
+    }
+  }
+  
   /// The tool synopsis.
   ///
   /// In `roff`.

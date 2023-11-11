@@ -4,7 +4,7 @@
 
 ### Creating a Configuration
 
-- ``init(commandName:abstract:usage:discussion:version:shouldDisplay:subcommands:defaultSubcommand:helpNames:)``
+- ``init(commandName:shouldUseExecutableName:abstract:usage:discussion:version:shouldDisplay:subcommands:defaultSubcommand:helpNames:)``
 
 ### Customizing the Help Screen
 
@@ -21,6 +21,7 @@
 ### Defining Command Properties
 
 - ``commandName``
+- ``shouldUseExecutableName``
 - ``version``
 - ``shouldDisplay``
 

@@ -9,6 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+@_implementationOnly import Foundation
+
 extension StringProtocol where SubSequence == Substring {
   func wrapped(to columns: Int, wrappingIndent: Int = 0) -> String {
     let columns = columns - wrappingIndent
@@ -118,6 +120,32 @@ extension StringProtocol where SubSequence == Substring {
       result += character.lowercased()
     }
     return result
+  }
+  
+  /// Returns a new single-quoted string if this string contains any characters
+  /// from the specified character set. Any existing occurrences of the `'`
+  /// character will be escaped.
+  ///
+  /// Examples:
+  ///
+  ///     "alone".quotedIfContains(.whitespaces)
+  ///     // alone
+  ///     "with space".quotedIfContains(.whitespaces)
+  ///     // 'with space'
+  ///     "with'quote".quotedIfContains(.whitespaces)
+  ///     // with'quote
+  ///     "with'quote and space".quotedIfContains(.whitespaces)
+  ///     // 'with\'quote and space'
+  func quotedIfContains(_ chars: CharacterSet) -> String {
+    guard !isEmpty else { return "" }
+    
+    if self.rangeOfCharacter(from: chars) != nil {
+      // Prepend and append a single quote to self, escaping any other occurrences of the character
+      let quote = "'"
+      return quote + self.replacingOccurrences(of: quote, with: "\\\(quote)") + quote
+    }
+    
+    return String(self)
   }
   
   /// Returns the edit distance between this string and the provided target string.
