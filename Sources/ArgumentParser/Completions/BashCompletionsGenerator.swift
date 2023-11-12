@@ -210,9 +210,11 @@ extension ArgumentDefinition {
       return """
         if declare -F _filedir >/dev/null; then
           \(safeExts.map { "_filedir '\($0)'" }.joined(separator:"\n  "))
+          _filedir -d
         else
           COMPREPLY=(
             \(safeExts.map { "$(compgen -f -X '!*.\($0)' -- \"$cur\")" }.joined(separator: "\n    "))
+            $(compgen -d -- "$cur")
           )
         fi
         """
