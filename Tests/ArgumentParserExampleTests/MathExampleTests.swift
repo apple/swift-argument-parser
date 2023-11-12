@@ -337,12 +337,14 @@ _math_stats_quantiles() {
               _filedir 'md'
               _filedir 'TXT'
               _filedir 'MD'
+              _filedir -d
             else
               COMPREPLY=(
                 $(compgen -f -X '!*.txt' -- "$cur")
                 $(compgen -f -X '!*.md' -- "$cur")
                 $(compgen -f -X '!*.TXT' -- "$cur")
                 $(compgen -f -X '!*.MD' -- "$cur")
+                $(compgen -d -- "$cur")
               )
             fi
             return
