@@ -315,7 +315,7 @@ extension DumpHelpGenerationTests {
   "serializationVersion" : 0
 }
 """
-  
+
   static let mathDumpText: String = """
 {
   "command" : {
@@ -925,6 +925,7 @@ extension DumpHelpGenerationTests {
   },
   "serializationVersion" : 0
 }
+
 """
 
   static let mathAddDumpText: String = """
@@ -1010,6 +1011,7 @@ extension DumpHelpGenerationTests {
   },
   "serializationVersion" : 0
 }
+
 """
 
   static let mathMultiplyDumpText: String = """
@@ -1095,6 +1097,7 @@ extension DumpHelpGenerationTests {
   },
   "serializationVersion" : 0
 }
+
 """
 
   static let mathStatsDumpText: String = """
@@ -1500,5 +1503,6 @@ extension DumpHelpGenerationTests {
   },
   "serializationVersion" : 0
 }
+
 """
 }

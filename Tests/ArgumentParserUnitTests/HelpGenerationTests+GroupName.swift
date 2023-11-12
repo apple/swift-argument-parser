@@ -339,9 +339,11 @@ extension HelpGenerationTests {
       ARGUMENTS:
         <name>                  example
 
-      OPTIONS:
+      FLAGS GROUP:
         --verbose               example
         --oversharing           example
+
+      OPTIONS:
         --existing-user         example
         -h, --help              Show help information.
       

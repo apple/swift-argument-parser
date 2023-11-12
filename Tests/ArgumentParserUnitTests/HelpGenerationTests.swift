@@ -639,14 +639,14 @@ extension HelpGenerationTests {
 
   func testAllValues() {
     let opts = ArgumentSet(AllValues.self, visibility: .private, parent: nil)
-    XCTAssertEqual(AllValues.Manual.allValueStrings, opts[0].help.allValues)
-    XCTAssertEqual(AllValues.Manual.allValueStrings, opts[1].help.allValues)
+    XCTAssertEqual(AllValues.Manual.allValueStrings, opts[0].help.allValueStrings)
+    XCTAssertEqual(AllValues.Manual.allValueStrings, opts[1].help.allValueStrings)
 
-    XCTAssertEqual(AllValues.UnspecializedSynthesized.allValueStrings, opts[2].help.allValues)
-    XCTAssertEqual(AllValues.UnspecializedSynthesized.allValueStrings, opts[3].help.allValues)
+    XCTAssertEqual(AllValues.UnspecializedSynthesized.allValueStrings, opts[2].help.allValueStrings)
+    XCTAssertEqual(AllValues.UnspecializedSynthesized.allValueStrings, opts[3].help.allValueStrings)
 
-    XCTAssertEqual(AllValues.SpecializedSynthesized.allValueStrings, opts[4].help.allValues)
-    XCTAssertEqual(AllValues.SpecializedSynthesized.allValueStrings, opts[5].help.allValues)
+    XCTAssertEqual(AllValues.SpecializedSynthesized.allValueStrings, opts[4].help.allValueStrings)
+    XCTAssertEqual(AllValues.SpecializedSynthesized.allValueStrings, opts[5].help.allValueStrings)
   }
 
   struct Q: ParsableArguments {
