@@ -120,16 +120,57 @@ extension Platform {
     (80, 25)
   }
   
-  /// Returns the current terminal size, or the default if the size is
-  /// unavailable.
-  static func terminalSize() -> (width: Int, height: Int) {
+  /// The terminal size specified by the COLUMNS and LINES overrides
+  /// (if present).
+  ///
+  /// Per the [Linux environ(7) manpage][linenv]:
+  ///
+  /// ```
+  /// * COLUMNS and LINES tell applications about the window size,
+  ///   possibly overriding the actual size.
+  /// ```
+  ///
+  /// And the [FreeBSD environ(7) version][bsdenv]:
+  ///
+  /// ```
+  /// COLUMNS    The user's preferred width in column positions for the
+  ///            terminal.  Utilities such as ls(1) and who(1) use this
+  ///            to format output into columns.   If  unset  or  empty,
+  ///            utilities  will use an ioctl(2) call to ask the termi-
+  ///            nal driver for the width.
+  /// ```
+  ///
+  /// > Note: Always ignored on Windows.
+  ///
+  /// [linenv]: https://man7.org/linux/man-pages/man7/environ.7.html:~:text=COLUMNS
+  /// [bsdenv]: https://man.freebsd.org/cgi/man.cgi?environ(7)#:~:text=COLUMNS
+  static func overridenTerminalSize() -> (width: Int, height: Int) {
+    var width = 0, height = 0
+
+#if !os(Windows) && !os(WASI)
+    if let colsCStr = getenv("COLUMNS"), let colsVal = Int(String(cString: colsCStr)) {
+      width = colsVal
+    }
+    if let linesCStr = getenv("LINES"), let linesVal = Int(String(cString: linesCStr)) {
+      height = linesVal
+    }
+#endif
+
+    return (width: width, height: height)
+  }
+  
+  /// The current terminal size as reported by the windowing system,
+  /// if available.
+  ///
+  /// Returns (0,0) if no reported size is available.
+  static func reportedTerminalSize() -> (width: Int, height: Int) {
 #if os(WASI)
     // WASI doesn't yet support terminal size
-    return defaultTerminalSize
+    return (width: 0, height: 0)
 #elseif os(Windows)
-    var csbi: CONSOLE_SCREEN_BUFFER_INFO = CONSOLE_SCREEN_BUFFER_INFO()
+    var csbi = CONSOLE_SCREEN_BUFFER_INFO()
     guard GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi) else {
-      return defaultTerminalSize
+      return (width: 0, height: 0)
     }
     return (width: Int(csbi.srWindow.Right - csbi.srWindow.Left) + 1,
             height: Int(csbi.srWindow.Bottom - csbi.srWindow.Top) + 1)
@@ -144,12 +185,29 @@ extension Platform {
 #else
     let err = ioctl(STDOUT_FILENO, TIOCGWINSZ, &w)
 #endif
-    let width = Int(w.ws_col)
-    let height = Int(w.ws_row)
-    guard err == 0 else { return defaultTerminalSize }
-    return (width: width > 0 ? width : defaultTerminalSize.width,
-            height: height > 0 ? height : defaultTerminalSize.height)
+    guard err == 0 else { return (width: 0, height: 0) }
+
+    let width = Int(w.ws_col), height = Int(w.ws_row)
+    
+    return (width: Swift.max(width, 0), height: Swift.max(height, 0))
 #endif
+  }
+  
+  /// Returns the current terminal size, or the default if the size is
+  /// unavailable.
+  static func terminalSize() -> (width: Int, height: Int) {
+    let overridden = overridenTerminalSize()
+    
+    if overridden.width > 0, overridden.height > 0 { return overridden }
+    
+    let reported = reportedTerminalSize()
+    
+    return (
+      width:  overridden.width  > 0 ? overridden.width  :
+        (reported.width  > 0 ? reported.width  : defaultTerminalSize.width),
+      height: overridden.height > 0 ? overridden.height :
+        (reported.height > 0 ? reported.height : defaultTerminalSize.height)
+    )
   }
   
   /// The current terminal size, or the default if the width is unavailable.
