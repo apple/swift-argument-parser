@@ -13,6 +13,12 @@ import XCTest
 import ArgumentParserTestHelpers
 
 final class RepeatExampleTests: XCTestCase {
+  override func setUp() {
+    #if !os(Windows) && !os(WASI)
+    unsetenv("COLUMNS")
+    #endif
+  }
+
   func testRepeat() throws {
     try AssertExecuteCommand(command: "repeat hello", expected: """
         hello

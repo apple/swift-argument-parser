@@ -809,27 +809,11 @@ extension HelpGenerationTests {
   func testColumnsEnvironmentOverride() throws {
     #if os(Windows) || os(WASI)
     throw XCTSkip("Unsupported on this platform")
-    #elseif Xcode
-    throw XCTSkip("Test cannot be run in Xcode (unable to detect if parallel tests are in effect)")
-    #else // N.B.: If #endif is used here, Xcode generates a spurious "code will never be executed" warning
-    
-    #if os(macOS)
-    if CommandLine.arguments.count >= 3,
-       CommandLine.arguments[1...2] == ["-XCTest", "ArgumentParserUnitTests.HelpGenerationTests/testColumnsEnvironmentOverride"]
-    {
-        throw XCTSkip("Test is not compatible with --parallel")
-    }
-    #elseif os(Linux)
-    if CommandLine.arguments.count >= 2,
-       CommandLine.arguments[1] == "ArgumentParserUnitTests.HelpGenerationTests/testColumnsEnvironmentOverride"
-    {
-        throw XCTSkip("Test is not compatible with --parallel")
-    }
     #endif
-    
+
     defer { unsetenv("COLUMNS") }
     unsetenv("COLUMNS")
-    AssertHelp(.default, for: WideHelp.self, equals: """
+    AssertHelp(.default, for: WideHelp.self, columns: nil, equals: """
       USAGE: wide-help [<argument>]
       
       ARGUMENTS:
@@ -841,7 +825,7 @@ extension HelpGenerationTests {
       """)
 
     setenv("COLUMNS", "60", 1)
-    AssertHelp(.default, for: WideHelp.self, equals: """
+    AssertHelp(.default, for: WideHelp.self, columns: nil, equals: """
       USAGE: wide-help [<argument>]
       
       ARGUMENTS:
@@ -854,7 +838,7 @@ extension HelpGenerationTests {
       """)
 
     setenv("COLUMNS", "79", 1)
-    AssertHelp(.default, for: WideHelp.self, equals: """
+    AssertHelp(.default, for: WideHelp.self, columns: nil, equals: """
       USAGE: wide-help [<argument>]
       
       ARGUMENTS:
@@ -865,6 +849,5 @@ extension HelpGenerationTests {
         -h, --help              Show help information.
       
       """)
-    #endif
   }
 }
