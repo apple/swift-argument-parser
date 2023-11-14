@@ -798,3 +798,53 @@ extension HelpGenerationTests {
       """)
   }
 }
+
+extension HelpGenerationTests {
+  private struct WideHelp: ParsableCommand {
+    @Argument(help: "54 characters of help, so as to wrap when columns < 80")
+    var argument: String?
+  }
+  
+  func testColumnsEnvironmentOverride() throws {
+    #if os(Windows) || os(WASI)
+    throw XCTSkip("Unsupported on this platform")
+    #endif
+    
+    AssertHelp(.default, for: WideHelp.self, equals: """
+      USAGE: wide-help [<argument>]
+      
+      ARGUMENTS:
+        <argument>              54 characters of help, so as to wrap when columns < 80
+      
+      OPTIONS:
+        -h, --help              Show help information.
+      
+      """)
+
+    setenv("COLUMNS", "60", 1)
+    AssertHelp(.default, for: WideHelp.self, equals: """
+      USAGE: wide-help [<argument>]
+      
+      ARGUMENTS:
+        <argument>              54 characters of help, so as to
+                                wrap when columns < 80
+      
+      OPTIONS:
+        -h, --help              Show help information.
+      
+      """)
+
+    setenv("COLUMNS", "79", 1)
+    AssertHelp(.default, for: WideHelp.self, equals: """
+      USAGE: wide-help [<argument>]
+      
+      ARGUMENTS:
+        <argument>              54 characters of help, so as to wrap when columns <
+                                80
+      
+      OPTIONS:
+        -h, --help              Show help information.
+      
+      """)
+  }
+}
