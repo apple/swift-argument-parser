@@ -810,6 +810,7 @@ extension HelpGenerationTests {
     throw XCTSkip("Unsupported on this platform")
     #endif
     
+    unsetenv("COLUMNS")
     AssertHelp(.default, for: WideHelp.self, equals: """
       USAGE: wide-help [<argument>]
       
