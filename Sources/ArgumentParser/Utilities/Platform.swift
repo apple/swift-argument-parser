@@ -29,14 +29,23 @@ extension Platform {
   /// The name of the user's preferred shell, if detectable from the
   /// environment.
   static var shellName: String? {
-#if os(Windows)
-    return nil
-#else
     // FIXME: This retrieves the user's preferred shell, not necessarily the one currently in use.
     guard let shellVar = getenv("SHELL") else { return nil }
-    let shellParts = String(cString: shellVar).split(separator: "/")
-    return shellParts.last.map(String.init)
+    let shellStr = String(cString: shellVar)
+#if os(Windows)
+    let shellParts = shellStr.split(whereSeparator: { $0 == "\\" || $0 == "/" })
+    let shellName = shellParts.last.map {
+      if $0.hasSuffix(".exe") {
+        return String($0.dropLast(4))
+      } else {
+        return String($0)
+      }
+    }
+#else
+    let shellParts = shellStr.split(separator: "/")
+    let shellName = shellParts.last.map(String.init)
 #endif
+    return shellName?.lowercased()
   }
 }
 
