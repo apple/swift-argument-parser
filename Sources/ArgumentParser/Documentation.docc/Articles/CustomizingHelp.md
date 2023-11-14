@@ -74,6 +74,82 @@ OPTIONS:
   -h, --help              Show help information.
 ```
 
+## Enumerating Possible Values
+
+When an argument or option has a fixed set of possible values, listing these values in the help screen can simplify use of your tool. You can customize the displayed set of values for custom ``ExpressibleByArgument`` types by implementing ``ExpressibleByArgument/allValueStrings``. Despite the name, ``ExpressibleByArgument/allValueStrings`` does _not_ need to be an exhaustive list of possible values.
+
+```swift
+enum Fruit: String, ExpressibleByArgument {
+    case apple
+    case banana
+    case coconut
+    case dragonFruit = "dragon-fruit"
+
+    static var allValueStrings: [String] {
+        ["apple", "banana", "coconut", "dragon-fruit"]
+    }
+}
+
+struct FruitStore: ParsableCommand {
+    @Argument(help: "The fruit to purchase")
+    var fruit: Fruit
+  
+    @Option(help: "The number of fruit to purchase")
+    var quantity: Int = 1
+}
+```
+
+The help screen includes the list of values in the description of the `<fruit>` argument:
+
+```
+USAGE: fruit-store <fruit> [--quantity <quantity>]
+
+ARGUMENTS:
+  <fruit>                 The fruit to purchase (values: apple, banana,
+                          coconut, dragon-fruit)
+
+OPTIONS:
+  --quantity <quantity>   The number of fruit to purchase (default: 1)
+  -h, --help              Show help information.
+```
+
+### Deriving Possible Values
+
+ExpressibleByArgument types that conform to ``CaseIterable`` do not need to manually specify ``ExpressibleByArgument/allValueStrings``. Instead, a list of possible values is derived from the type's cases, as in this updated example:
+
+```swift
+enum Fruit: String, CaseIterable, ExpressibleByArgument {
+    case apple
+    case banana
+    case coconut
+    case dragonFruit = "dragon-fruit"
+}
+
+struct FruitStore: ParsableCommand {
+    @Argument(help: "The fruit to purchase")
+    var fruit: Fruit
+  
+    @Option(help: "The number of fruit to purchase")
+    var quantity: Int = 1
+}
+```
+
+The help screen still contains all the possible values.
+
+```
+USAGE: fruit-store <fruit> [--quantity <quantity>]
+
+ARGUMENTS:
+  <fruit>                 The fruit to purchase (values: apple, banana,
+                          coconut, dragon-fruit)
+
+OPTIONS:
+  --quantity <quantity>   The number of fruit to purchase (default: 1)
+  -h, --help              Show help information.
+```
+
+For an ``ExpressibleByArgument`` and ``CaseIterable`` type with many cases, you may still want to implement ``ExpressibleByArgument/allValueStrings`` to avoid an overly long list of values appearing in the help screen. For these types it is recommended to include the most common possible values.
+
 ## Controlling Argument Visibility
 
 You can specify the visibility of any argument, option, or flag.
@@ -144,10 +220,7 @@ OPTIONS:
 
 ## Grouping Arguments in the Help Screen
 
-When you provide a title in an `@OptionGroup` declaration, that type's 
-properties are grouped together under your title in the help screen. 
-For example, this command bundles similar arguments together under a 
-"Build Options" title:
+When you provide a title in an `@OptionGroup` declaration, that type's  properties are grouped together under your title in the help screen. For example, this command bundles similar arguments together under a  "Build Options" title:
 
 ```swift
 struct BuildOptions: ParsableArguments {

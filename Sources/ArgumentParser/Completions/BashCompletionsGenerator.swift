@@ -187,18 +187,46 @@ extension ArgumentDefinition {
   }
 
   /// Returns the bash completions that can follow this argument's `--name`.
+  ///
+  /// Uses bash-completion for file and directory values if available.
   fileprivate func bashValueCompletion(_ commands: [ParsableCommand.Type]) -> String {
     switch completion.kind {
     case .default:
       return ""
       
-    case .file(_):
-      // TODO: Use '_filedir' when available
-      // FIXME: Use the extensions array
-      return #"COMPREPLY=( $(compgen -f -- "$cur") )"#
+    case .file(let extensions) where extensions.isEmpty:
+      return """
+        if declare -F _filedir >/dev/null; then
+          _filedir
+        else
+          COMPREPLY=( $(compgen -f -- "$cur") )
+        fi
+        """
+
+    case .file(let extensions):
+      var safeExts = extensions.map { String($0.flatMap { $0 == "'" ? ["\\", "'"] : [$0] }) }
+      safeExts.append(contentsOf: safeExts.map { $0.uppercased() })
+      
+      return """
+        if declare -F _filedir >/dev/null; then
+          \(safeExts.map { "_filedir '\($0)'" }.joined(separator:"\n  "))
+          _filedir -d
+        else
+          COMPREPLY=(
+            \(safeExts.map { "$(compgen -f -X '!*.\($0)' -- \"$cur\")" }.joined(separator: "\n    "))
+            $(compgen -d -- "$cur")
+          )
+        fi
+        """
 
     case .directory:
-      return #"COMPREPLY=( $(compgen -d -- "$cur") )"#
+      return """
+        if declare -F _filedir >/dev/null; then
+          _filedir -d
+        else
+          COMPREPLY=( $(compgen -d -- "$cur") )
+        fi
+        """
       
     case .list(let list):
       return #"COMPREPLY=( $(compgen -W "\#(list.joined(separator: " "))" -- "$cur") )"#
