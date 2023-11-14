@@ -332,11 +332,29 @@ _math_stats_quantiles() {
     fi
     case $prev in
         --file)
-            COMPREPLY=( $(compgen -f -- "$cur") )
+            if declare -F _filedir >/dev/null; then
+              _filedir 'txt'
+              _filedir 'md'
+              _filedir 'TXT'
+              _filedir 'MD'
+              _filedir -d
+            else
+              COMPREPLY=(
+                $(compgen -f -X '!*.txt' -- "$cur")
+                $(compgen -f -X '!*.md' -- "$cur")
+                $(compgen -f -X '!*.TXT' -- "$cur")
+                $(compgen -f -X '!*.MD' -- "$cur")
+                $(compgen -d -- "$cur")
+              )
+            fi
             return
         ;;
         --directory)
-            COMPREPLY=( $(compgen -d -- "$cur") )
+            if declare -F _filedir >/dev/null; then
+              _filedir -d
+            else
+              COMPREPLY=( $(compgen -d -- "$cur") )
+            fi
             return
         ;;
         --shell)

@@ -195,11 +195,19 @@ _base() {
             return
         ;;
         --path1)
-            COMPREPLY=( $(compgen -f -- "$cur") )
+            if declare -F _filedir >/dev/null; then
+              _filedir
+            else
+              COMPREPLY=( $(compgen -f -- "$cur") )
+            fi
             return
         ;;
         --path2)
-            COMPREPLY=( $(compgen -f -- "$cur") )
+            if declare -F _filedir >/dev/null; then
+              _filedir
+            else
+              COMPREPLY=( $(compgen -f -- "$cur") )
+            fi
             return
         ;;
         --path3)
