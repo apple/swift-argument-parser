@@ -15,6 +15,12 @@ import XCTest
 import ArgumentParserTestHelpers
 
 final class CountLinesExampleTests: XCTestCase {
+  override func setUp() {
+    #if !os(Windows) && !os(WASI)
+    unsetenv("COLUMNS")
+    #endif
+  }
+  
   func testCountLines() throws {
     guard #available(macOS 12, *) else { return }
     let testFile = try XCTUnwrap(Bundle.module.url(forResource: "CountLinesTest", withExtension: "txt"))

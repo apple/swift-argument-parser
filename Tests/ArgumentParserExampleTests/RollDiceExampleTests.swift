@@ -13,6 +13,12 @@ import XCTest
 import ArgumentParserTestHelpers
 
 final class RollDiceExampleTests: XCTestCase {
+  override func setUp() {
+    #if !os(Windows) && !os(WASI)
+    unsetenv("COLUMNS")
+    #endif
+  }
+
   func testRollDice() throws {
     try AssertExecuteCommand(command: "roll --times 6")
   }

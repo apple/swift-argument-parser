@@ -203,6 +203,7 @@ public func AssertEqualStrings(
 public func AssertHelp<T: ParsableArguments>(
   _ visibility: ArgumentVisibility,
   for _: T.Type,
+  columns: Int? = 80,
   equals expected: String,
   file: StaticString = #file,
   line: UInt = #line
@@ -229,11 +230,11 @@ public func AssertHelp<T: ParsableArguments>(
     _ = try T.parse([flag])
     XCTFail(file: file, line: line)
   } catch {
-    let helpString = T.fullMessage(for: error)
+    let helpString = T.fullMessage(for: error, columns: columns)
     AssertEqualStrings(actual: helpString, expected: expected, file: file, line: line)
   }
 
-  let helpString = T.helpMessage(includeHidden: includeHidden, columns: nil)
+  let helpString = T.helpMessage(includeHidden: includeHidden, columns: columns)
   AssertEqualStrings(actual: helpString, expected: expected, file: file, line: line)
 }
 
@@ -241,6 +242,7 @@ public func AssertHelp<T: ParsableCommand, U: ParsableCommand>(
   _ visibility: ArgumentVisibility,
   for _: T.Type,
   root _: U.Type,
+  columns: Int? = 80,
   equals expected: String,
   file: StaticString = #file,
   line: UInt = #line
@@ -261,7 +263,7 @@ public func AssertHelp<T: ParsableCommand, U: ParsableCommand>(
   }
 
   let helpString = U.helpMessage(
-    for: T.self, includeHidden: includeHidden, columns: nil)
+    for: T.self, includeHidden: includeHidden, columns: columns)
   AssertEqualStrings(actual: helpString, expected: expected, file: file, line: line)
 }
 

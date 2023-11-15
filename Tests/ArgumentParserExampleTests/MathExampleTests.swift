@@ -14,6 +14,12 @@ import ArgumentParser
 import ArgumentParserTestHelpers
 
 final class MathExampleTests: XCTestCase {
+  override func setUp() {
+    #if !os(Windows) && !os(WASI)
+    unsetenv("COLUMNS")
+    #endif
+  }
+
   func testMath_Simple() throws {
     try AssertExecuteCommand(command: "math 1 2 3 4 5", expected: "15")
     try AssertExecuteCommand(command: "math multiply 1 2 3 4 5", expected: "120")
