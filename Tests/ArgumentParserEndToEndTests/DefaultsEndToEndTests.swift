@@ -385,7 +385,27 @@ fileprivate struct OptionPropertyInitArguments_Default: ParsableArguments {
   var transformedData: String = "test"
 }
 
-fileprivate struct OptionPropertyInitArguments_NoDefault_NoTransform: ParsableArguments {
+fileprivate struct RequiredOptionPropertyInitArguments_Initial: ParsableArguments {
+  @Option(initial: "test")
+  var data: String
+}
+
+fileprivate struct OptionalOptionPropertyInitArguments_Initial: ParsableArguments {
+    @Option(initial: "test")
+    var data: String?
+}
+
+fileprivate struct RequiredOptionPropertyInitArguments_Transform_Initial: ParsableArguments {
+  @Option(transform: exclaim, initial: "test")
+  var data: String
+}
+
+fileprivate struct OptionalOptionPropertyInitArguments_Transform_Initial: ParsableArguments {
+  @Option(transform: exclaim, initial: "test")
+  var data: String?
+}
+
+fileprivate struct RequiredOptionPropertyInitArguments_NoDefault_NoTransform: ParsableArguments {
   @Option()
   var data: String
 }
@@ -412,10 +432,55 @@ extension DefaultsEndToEndTests {
 
   /// Tests that *not* providing a default value still parses the argument correctly from the command-line.
   /// This test is almost certainly duplicated by others in the repository, but allows for quick use of test filtering during development on the initialization functionality.
-  func testParsing_OptionPropertyInit_NoDefault_NoTransform() throws {
-    AssertParse(OptionPropertyInitArguments_NoDefault_NoTransform.self, ["--data", "test"]) { arguments in
+  func testParsing_RequiredOptionPropertyInit_NoDefault_NoTransform() throws {
+    AssertParse(RequiredOptionPropertyInitArguments_NoDefault_NoTransform.self, ["--data", "test"]) { arguments in
       XCTAssertEqual(arguments.data, "test")
     }
+  }
+
+  func testParsing_RequiredOptionPropertyInit_NoDefault_NoTransform_NoInput_Fails() throws {
+    XCTAssertThrowsError(try RequiredOptionPropertyInitArguments_NoDefault_NoTransform.parse([]))
+    XCTAssertThrowsError(try RequiredOptionPropertyInitArguments_NoDefault_NoTransform.parse(["--data"]))
+  }
+
+  func testParsing_RequiredOptionPropertyInitArguments_Initial_UsesInitialValue() {
+    AssertParse(RequiredOptionPropertyInitArguments_Initial.self, []) { arguments in
+      XCTAssertEqual(arguments.data, "test")
+    }
+  }
+
+  func testParsing_RequiredOptionPropertyInitArguments_Initial_IncompleteInput_Fails() throws {
+    XCTAssertThrowsError(try RequiredOptionPropertyInitArguments_Initial.parse(["--data"]))
+  }
+
+  func testParsing_OptionalOptionPropertyInitArguments_Initial_UsesInitialValue() {
+    AssertParse(OptionalOptionPropertyInitArguments_Initial.self, []) { arguments in
+      XCTAssertEqual(arguments.data, "test")
+    }
+  }
+
+  func testParsing_OptionalOptionPropertyInitArguments_Initial_IncompleteInput_Fails() throws {
+    XCTAssertThrowsError(try OptionalOptionPropertyInitArguments_Initial.parse(["--data"]))
+  }
+
+  func testParsing_RequiredOptionPropertyInitArguments_Transform_Initial_UsesInitialValue() {
+    AssertParse(RequiredOptionPropertyInitArguments_Transform_Initial.self, []) { arguments in
+      XCTAssertEqual(arguments.data, "test")
+    }
+  }
+
+  func testParsing_RequiredOptionPropertyInitArguments_Transform_Initial_IncompleteInput_Fails() throws {
+    XCTAssertThrowsError(try RequiredOptionPropertyInitArguments_Transform_Initial.parse(["--data"]))
+  }
+
+  func testParsing_OptionalOptionPropertyInitArguments_Transform_Initial_UsesInitialValue() {
+    AssertParse(OptionalOptionPropertyInitArguments_Transform_Initial.self, []) { arguments in
+      XCTAssertEqual(arguments.data, "test")
+    }
+  }
+
+  func testParsing_OptionalOptionPropertyInitArguments_Transform_Initial_IncompleteInput_Fails() throws {
+    XCTAssertThrowsError(try OptionalOptionPropertyInitArguments_Transform_Initial.parse(["--data"]))
   }
 
   /// Tests that using default property initialization syntax on a property with a `transform` function provided parses the default value for the argument when nothing is provided from the command-line.
@@ -439,12 +504,22 @@ extension DefaultsEndToEndTests {
       XCTAssertEqual(arguments.transformedData, "test!")
     }
   }
+
+  func testParsing_OptionPropertyInit_NoDefault_Transform_NoInput_Fails() throws {
+    XCTAssertThrowsError(try OptionPropertyInitArguments_NoDefault_Transform.parse([]))
+    XCTAssertThrowsError(try OptionPropertyInitArguments_NoDefault_Transform.parse(["--transformed-data"]))
+  }
 }
 
 
 fileprivate struct ArgumentPropertyInitArguments_Default_NoTransform: ParsableArguments {
   @Argument
   var data: String = "test"
+}
+
+fileprivate struct ArgumentPropertyInitArguments_Initial_NoTransform: ParsableArguments {
+  @Argument(initial: "test")
+  var data: String
 }
 
 fileprivate struct ArgumentPropertyInitArguments_NoDefault_NoTransform: ParsableArguments {
@@ -454,7 +529,12 @@ fileprivate struct ArgumentPropertyInitArguments_NoDefault_NoTransform: Parsable
 
 fileprivate struct ArgumentPropertyInitArguments_Default_Transform: ParsableArguments {
   @Argument(transform: exclaim)
-    var transformedData: String = "test"
+  var transformedData: String = "test"
+}
+
+fileprivate struct ArgumentPropertyInitArguments_Transform_Initial: ParsableArguments {
+  @Argument(transform: exclaim, initial: "test")
+  var transformedData: String
 }
 
 fileprivate struct ArgumentPropertyInitArguments_NoDefault_Transform: ParsableArguments {
@@ -466,6 +546,12 @@ extension DefaultsEndToEndTests {
   /// Tests that using default property initialization syntax parses the default value for the argument when nothing is provided from the command-line.
   func testParsing_ArgumentPropertyInit_Default_NoTransform_UseDefault() throws {
     AssertParse(ArgumentPropertyInitArguments_Default_NoTransform.self, []) { arguments in
+      XCTAssertEqual(arguments.data, "test")
+    }
+  }
+
+  func testParsing_ArgumentPropertyInit_Initial_NoTransform_UseDefault() throws {
+    AssertParse(ArgumentPropertyInitArguments_Initial_NoTransform.self, []) { arguments in
       XCTAssertEqual(arguments.data, "test")
     }
   }
@@ -488,6 +574,12 @@ extension DefaultsEndToEndTests {
   /// Tests that using default property initialization syntax on a property with a `transform` function provided parses the default value for the argument when nothing is provided from the command-line.
   func testParsing_ArgumentPropertyInit_Default_Transform_UseDefault() throws {
     AssertParse(ArgumentPropertyInitArguments_Default_Transform.self, []) { arguments in
+      XCTAssertEqual(arguments.transformedData, "test")
+    }
+  }
+
+  func testParsing_ArgumentPropertyInit_Transform_Initial_UseDefault() throws {
+    AssertParse(ArgumentPropertyInitArguments_Transform_Initial.self, []) { arguments in
       XCTAssertEqual(arguments.transformedData, "test")
     }
   }

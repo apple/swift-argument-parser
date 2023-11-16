@@ -299,11 +299,13 @@ extension Option where Value: ExpressibleByArgument {
   ///   - parsingStrategy: The behavior to use when looking for this option's value.
   ///   - help: Information about how to use this option.
   ///   - completion: Kind of completion provided to the user for this option.
+  ///   - initial: An `Optional` initial value.
   public init(
     name: NameSpecification = .long,
     parsing parsingStrategy: SingleValueParsingStrategy = .next,
     help: ArgumentHelp? = nil,
-    completion: CompletionKind? = nil
+    completion: CompletionKind? = nil,
+    initial: Value? = nil
   ) {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
@@ -312,7 +314,7 @@ extension Option where Value: ExpressibleByArgument {
         kind: .name(key: key, specification: name),
         help: help,
         parsingStrategy: parsingStrategy.base,
-        initial: nil,
+        initial: initial,
         completion: completion)
 
       return ArgumentSet(arg)
@@ -373,12 +375,15 @@ extension Option {
   ///   - parsingStrategy: The behavior to use when looking for this option's value.
   ///   - help: Information about how to use this option.
   ///   - completion: Kind of completion provided to the user for this option.
+  ///   - transform: A closure that converts a string into this property's type
+  ///   - initial: An `Optional` initial value.
   public init(
     name: NameSpecification = .long,
     parsing parsingStrategy: SingleValueParsingStrategy = .next,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
-    transform: @escaping (String) throws -> Value
+    transform: @escaping (String) throws -> Value,
+    initial: Value? = nil
   ) {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
@@ -388,7 +393,7 @@ extension Option {
         help: help,
         parsingStrategy: parsingStrategy.base,
         transform: transform,
-        initial: nil,
+        initial: initial,
         completion: completion)
 
       return ArgumentSet(arg)
@@ -466,11 +471,13 @@ extension Option {
   ///     value.
   ///   - help: Information about how to use this option.
   ///   - completion: Kind of completion provided to the user for this option.
+  ///   - initial: An `Optional` initial value.
   public init<T>(
     name: NameSpecification = .long,
     parsing parsingStrategy: SingleValueParsingStrategy = .next,
     help: ArgumentHelp? = nil,
-    completion: CompletionKind? = nil
+    completion: CompletionKind? = nil,
+    initial: T? = nil
   ) where T: ExpressibleByArgument, Value == Optional<T> {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
@@ -479,7 +486,7 @@ extension Option {
         kind: .name(key: key, specification: name),
         help: help,
         parsingStrategy: parsingStrategy.base,
-        initial: nil,
+        initial: initial,
         completion: completion)
 
       return ArgumentSet(arg)
@@ -507,13 +514,15 @@ extension Option {
   ///   - completion: Kind of completion provided to the user for this option.
   ///   - transform: A closure that converts a string into this property's type
   ///   or throws an error.
+  ///   - initial: An `Optional` initial value.
   public init<T>(
     wrappedValue _value: _OptionalNilComparisonType,
     name: NameSpecification = .long,
     parsing parsingStrategy: SingleValueParsingStrategy = .next,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
-    transform: @escaping (String) throws -> T
+    transform: @escaping (String) throws -> T,
+    initial: T? = nil
   ) where Value == Optional<T> {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
@@ -523,7 +532,7 @@ extension Option {
         help: help,
         parsingStrategy: parsingStrategy.base,
         transform: transform,
-        initial: nil,
+        initial: initial,
         completion: completion)
 
       return ArgumentSet(arg)
