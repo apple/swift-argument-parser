@@ -59,6 +59,7 @@ public struct CompletionKind {
   }
   
   /// Generate completions using the given closure.
+  @preconcurrency
   public static func custom(_ completion: @Sendable @escaping ([String]) -> [String]) -> CompletionKind {
     CompletionKind(kind: .custom(completion))
   }

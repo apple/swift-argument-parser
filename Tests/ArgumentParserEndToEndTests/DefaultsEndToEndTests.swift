@@ -373,7 +373,7 @@ extension DefaultsEndToEndTests {
   }
 }
 
-@Sendable fileprivate func exclaim(_ input: String) throws -> String {
+fileprivate func exclaim(_ input: String) throws -> String {
   return input + "!"
 }
 

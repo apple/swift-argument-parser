@@ -228,7 +228,7 @@ fileprivate struct Wobble: ParsableArguments {
   struct Name: Equatable, Sendable {
     var value: String
 
-    @Sendable init(_ value: String) throws {
+    init(_ value: String) throws {
       if value == "bad" { throw WobbleError() }
       self.value = value
     }

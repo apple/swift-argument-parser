@@ -376,6 +376,7 @@ extension Argument {
   ///   - completion: Kind of completion provided to the user for this option.
   ///   - transform: A closure that converts a string into this property's type
   ///     or throws an error.
+  @preconcurrency
   public init(
     wrappedValue: Value,
     help: ArgumentHelp? = nil,
@@ -410,6 +411,7 @@ extension Argument {
   ///   - completion: Kind of completion provided to the user for this option.
   ///   - transform: A closure that converts a string into this property's
   ///     element type or throws an error.
+  @preconcurrency
   public init(
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
@@ -520,6 +522,7 @@ extension Argument {
   ///   - completion: Kind of completion provided to the user for this option.
   ///   - transform: A closure that converts a string into this property's
   ///     element type or throws an error.
+  @preconcurrency
   public init<T>(
     wrappedValue _value: _OptionalNilComparisonType,
     help: ArgumentHelp? = nil,
@@ -545,6 +548,7 @@ extension Argument {
     Optional @Arguments with default values should be declared as non-Optional.
     """)
   @_disfavoredOverload
+  @preconcurrency
   public init<T>(
     wrappedValue _wrappedValue: Optional<T>,
     help: ArgumentHelp? = nil,
@@ -576,6 +580,7 @@ extension Argument {
   ///   - completion: Kind of completion provided to the user for this option.
   ///   - transform: A closure that converts a string into this property's
   ///     element type or throws an error.
+  @preconcurrency
   public init<T>(
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
@@ -675,6 +680,7 @@ extension Argument {
   ///   - completion: Kind of completion provided to the user for this option.
   ///   - transform: A closure that converts a string into this property's
   ///     element type or throws an error.
+  @preconcurrency
   public init<T>(
     wrappedValue: Array<T>,
     parsing parsingStrategy: ArgumentArrayParsingStrategy = .remaining,
@@ -714,6 +720,7 @@ extension Argument {
   ///   - completion: Kind of completion provided to the user for this option.
   ///   - transform: A closure that converts a string into this property's
   ///     element type or throws an error.
+  @preconcurrency
   public init<T>(
     parsing parsingStrategy: ArgumentArrayParsingStrategy = .remaining,
     help: ArgumentHelp? = nil,

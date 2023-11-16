@@ -343,6 +343,7 @@ extension Option {
   ///   - completion: Kind of completion provided to the user for this option.
   ///   - transform: A closure that converts a string into this property's
   ///     element type or throws an error.
+  @preconcurrency
   public init(
     wrappedValue: Value,
     name: NameSpecification = .long,
@@ -378,6 +379,7 @@ extension Option {
   ///   - parsingStrategy: The behavior to use when looking for this option's value.
   ///   - help: Information about how to use this option.
   ///   - completion: Kind of completion provided to the user for this option.
+  @preconcurrency
   public init(
     name: NameSpecification = .long,
     parsing parsingStrategy: SingleValueParsingStrategy = .next,
@@ -512,6 +514,7 @@ extension Option {
   ///   - completion: Kind of completion provided to the user for this option.
   ///   - transform: A closure that converts a string into this property's type
   ///   or throws an error.
+  @preconcurrency
   public init<T>(
     wrappedValue _value: _OptionalNilComparisonType,
     name: NameSpecification = .long,
@@ -539,6 +542,7 @@ extension Option {
     Optional @Options with default values should be declared as non-Optional.
     """)
   @_disfavoredOverload
+  @preconcurrency
   public init<T>(
     wrappedValue: Optional<T>,
     name: NameSpecification = .long,
@@ -576,6 +580,7 @@ extension Option {
   ///   - help: Information about how to use this option.
   ///   - completion: Kind of completion provided to the user for this option.
   ///   - transform: A closure that converts a string into this property's type or throws an error.
+  @preconcurrency
   public init<T>(
     name: NameSpecification = .long,
     parsing parsingStrategy: SingleValueParsingStrategy = .next,
@@ -684,6 +689,7 @@ extension Option {
   ///   - completion: Kind of completion provided to the user for this option.
   ///   - transform: A closure that converts a string into this property's
   ///     element type or throws an error.
+  @preconcurrency
   public init<T>(
     wrappedValue: Array<T>,
     name: NameSpecification = .long,
@@ -724,6 +730,7 @@ extension Option {
   ///   - completion: Kind of completion provided to the user for this option.
   ///   - transform: A closure that converts a string into this property's
   ///   element type or throws an error.
+  @preconcurrency
   public init<T>(
     name: NameSpecification = .long,
     parsing parsingStrategy: ArrayParsingStrategy = .singleValue,

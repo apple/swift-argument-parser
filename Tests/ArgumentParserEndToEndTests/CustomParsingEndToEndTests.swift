@@ -40,14 +40,14 @@ fileprivate struct Foo: ParsableCommand {
     case first(Int)
     case second(Int)
 
-    @Sendable static func makeFirst(_ str: String) throws -> Subgroup {
+    static func makeFirst(_ str: String) throws -> Subgroup {
       guard let value = Int(str) else {
         throw ValidationError("Not a valid integer for 'first'")
       }
       return .first(value)
     }
 
-    @Sendable static func makeSecond(_ str: String) throws -> Subgroup {
+    static func makeSecond(_ str: String) throws -> Subgroup {
       guard let value = Int(str) else {
         throw ValidationError("Not a valid integer for 'second'")
       }
