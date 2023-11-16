@@ -131,60 +131,79 @@ public func AssertParseCommand<A: ParsableCommand>(_ rootCommand: ParsableComman
   }
 }
 
-public func AssertEqualStrings(actual: String, expected: String, file: StaticString = #file, line: UInt = #line) {
+public func AssertEqualStrings(
+  actual: String,
+  expected: String,
+  file: StaticString = #file,
+  line: UInt = #line
+) {
   // If the input strings are not equal, create a simple diff for debugging...
   guard actual != expected else {
     // Otherwise they are equal, early exit.
     return
   }
 
-  // Split in the inputs into lines.
-  let actualLines = actual.split(separator: "\n", omittingEmptySubsequences: false)
-  let expectedLines = expected.split(separator: "\n", omittingEmptySubsequences: false)
+  let stringComparison: String
 
   // If collectionDifference is available, use it to make a nicer error message.
   if #available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *) {
-    // Compute the changes between the two strings.
-    let changes = actualLines.difference(from: expectedLines).sorted()
+    let actualLines = actual.components(separatedBy: .newlines)
+    let expectedLines = expected.components(separatedBy: .newlines)
 
-    // Render the changes into a diff style string.
-    var diff = ""
-    var expectedLines = expectedLines[...]
-    for change in changes {
-      if expectedLines.startIndex < change.offset {
-        for line in expectedLines[..<change.offset] {
-          diff += "  \(line)\n"
-        }
-        expectedLines = expectedLines[change.offset...].dropFirst()
-      }
+    let difference = actualLines.difference(from: expectedLines)
 
+    var result = ""
+
+    var insertions = [Int: String]()
+    var removals = [Int: String]()
+
+    for change in difference {
       switch change {
-      case .insert(_, let line, _):
-        diff += "- \(line)\n"
-      case .remove(_, let line, _):
-        diff += "+ \(line)\n"
+      case .insert(let offset, let element, _):
+        insertions[offset] = element
+      case .remove(let offset, let element, _):
+        removals[offset] = element
       }
     }
-    for line in expectedLines {
-      diff += "  \(line)\n"
+
+    var expectedLine = 0
+    var actualLine = 0
+
+    while expectedLine < expectedLines.count || actualLine < actualLines.count {
+      if let removal = removals[expectedLine] {
+        result += "–\(removal)\n"
+        expectedLine += 1
+      } else if let insertion = insertions[actualLine] {
+        result += "+\(insertion)\n"
+        actualLine += 1
+      } else {
+        result += " \(expectedLines[expectedLine])\n"
+        expectedLine += 1
+        actualLine += 1
+      }
     }
-    XCTFail("Strings are not equal.\n\(diff)", file: file, line: line)
+
+    stringComparison = result
   } else {
-    XCTAssertEqual(
-      actualLines.count,
-      expectedLines.count,
-      "Strings have different numbers of lines.",
-      file: file,
-      line: line)
-    for (actualLine, expectedLine) in zip(actualLines, expectedLines) {
-      XCTAssertEqual(actualLine, expectedLine, file: file, line: line)
-    }
+    stringComparison = """
+      Expected:
+      \(expected)
+
+      Actual:
+      \(actual)
+      """
   }
+
+  XCTFail(
+    "Actual output does not match the expected output:\n\(stringComparison)",
+    file: file,
+    line: line)
 }
 
 public func AssertHelp<T: ParsableArguments>(
   _ visibility: ArgumentVisibility,
   for _: T.Type,
+  columns: Int? = 80,
   equals expected: String,
   file: StaticString = #file,
   line: UInt = #line
@@ -211,11 +230,11 @@ public func AssertHelp<T: ParsableArguments>(
     _ = try T.parse([flag])
     XCTFail(file: file, line: line)
   } catch {
-    let helpString = T.fullMessage(for: error)
+    let helpString = T.fullMessage(for: error, columns: columns)
     AssertEqualStrings(actual: helpString, expected: expected, file: file, line: line)
   }
 
-  let helpString = T.helpMessage(includeHidden: includeHidden, columns: nil)
+  let helpString = T.helpMessage(includeHidden: includeHidden, columns: columns)
   AssertEqualStrings(actual: helpString, expected: expected, file: file, line: line)
 }
 
@@ -223,6 +242,7 @@ public func AssertHelp<T: ParsableCommand, U: ParsableCommand>(
   _ visibility: ArgumentVisibility,
   for _: T.Type,
   root _: U.Type,
+  columns: Int? = 80,
   equals expected: String,
   file: StaticString = #file,
   line: UInt = #line
@@ -243,7 +263,7 @@ public func AssertHelp<T: ParsableCommand, U: ParsableCommand>(
   }
 
   let helpString = U.helpMessage(
-    for: T.self, includeHidden: includeHidden, columns: nil)
+    for: T.self, includeHidden: includeHidden, columns: columns)
   AssertEqualStrings(actual: helpString, expected: expected, file: file, line: line)
 }
 
@@ -256,18 +276,22 @@ public func AssertDump<T: ParsableArguments>(
     XCTFail(file: file, line: line)
   } catch {
     let dumpString = T.fullMessage(for: error)
-    try AssertJSONEqualFromString(actual: dumpString, expected: expected, for: ToolInfoV0.self)
+    try AssertJSONEqualFromString(actual: dumpString, expected: expected, for: ToolInfoV0.self, file: file, line: line)
   }
 
-  try AssertJSONEqualFromString(actual: T._dumpHelp(), expected: expected, for: ToolInfoV0.self)
+  try AssertJSONEqualFromString(actual: T._dumpHelp(), expected: expected, for: ToolInfoV0.self, file: file, line: line)
 }
 
-public func AssertJSONEqualFromString<T: Codable & Equatable>(actual: String, expected: String, for type: T.Type) throws {
-  let actualJSONData = try XCTUnwrap(actual.data(using: .utf8))
-  let actualDumpJSON = try XCTUnwrap(JSONDecoder().decode(type, from: actualJSONData))
+public func AssertJSONEqualFromString<T: Codable & Equatable>(actual: String, expected: String, for type: T.Type, file: StaticString = #file, line: UInt = #line) throws {
+  if #available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *) {
+    AssertEqualStrings(actual: actual, expected: expected, file: file, line: line)
+  }
 
-  let expectedJSONData = try XCTUnwrap(expected.data(using: .utf8))
-  let expectedDumpJSON = try XCTUnwrap(JSONDecoder().decode(type, from: expectedJSONData))
+  let actualJSONData = try XCTUnwrap(actual.data(using: .utf8), file: file, line: line)
+  let actualDumpJSON = try XCTUnwrap(JSONDecoder().decode(type, from: actualJSONData), file: file, line: line)
+
+  let expectedJSONData = try XCTUnwrap(expected.data(using: .utf8), file: file, line: line)
+  let expectedDumpJSON = try XCTUnwrap(JSONDecoder().decode(type, from: expectedJSONData), file: file, line: line)
   XCTAssertEqual(actualDumpJSON, expectedDumpJSON)
 }
 
@@ -359,7 +383,8 @@ extension XCTest {
   public func AssertJSONOutputEqual(
     command: String,
     expected: String,
-    file: StaticString = #file, line: UInt = #line
+    file: StaticString = #file,
+    line: UInt = #line
   ) throws {
     #if os(Windows)
     throw XCTSkip("Unsupported on this platform")
@@ -402,7 +427,7 @@ extension XCTest {
 
     let outputString = try XCTUnwrap(String(data: output.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8))
     XCTAssertTrue(error.fileHandleForReading.readDataToEndOfFile().isEmpty, "Error occurred with `--experimental-dump-help`")
-    try AssertJSONEqualFromString(actual: outputString, expected: expected, for: ToolInfoV0.self)
+    try AssertJSONEqualFromString(actual: outputString, expected: expected, for: ToolInfoV0.self, file: file, line: line)
     #else
     throw XCTSkip("Not supported on this platform")
     #endif

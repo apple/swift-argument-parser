@@ -151,8 +151,23 @@ internal struct HelpGenerator {
       assert(arg.help.visibility.isAtLeastAsVisible(as: visibility))
       
       let synopsis: String
-      let description: String
-      
+      let abstract: String
+
+      let allValueStrings = arg.help.allValueStrings.filter { !$0.isEmpty }
+      let defaultValue = arg.help.defaultValue ?? ""
+
+      let allAndDefaultValues: String
+      switch (!allValueStrings.isEmpty, !defaultValue.isEmpty) {
+      case (false, false):
+        allAndDefaultValues = ""
+      case (true, false):
+        allAndDefaultValues = "(values: \(allValueStrings.joined(separator: ", ")))"
+      case (false, true):
+        allAndDefaultValues = "(default: \(defaultValue))"
+      case (true, true):
+        allAndDefaultValues = "(values: \(allValueStrings.joined(separator: ", ")); default: \(defaultValue))"
+      }
+
       if arg.help.isComposite {
         // If this argument is composite, we have a group of arguments to
         // output together.
@@ -164,32 +179,24 @@ internal struct HelpGenerator {
           .lazy
           .map { $0.synopsisForHelp }
           .joined(separator: "/")
-
-        let defaultValue = arg.help.defaultValue
-          .map { "(default: \($0))" } ?? ""
-
-        let descriptionString = groupedArgs
+        abstract = groupedArgs
           .lazy
           .map { $0.help.abstract }
-          .first { !$0.isEmpty }
-
-        description = [descriptionString, defaultValue]
-          .lazy
-          .compactMap { $0 }
-          .filter { !$0.isEmpty }
-          .joined(separator: " ")
+          .first { !$0.isEmpty } ?? ""
       } else {
         synopsis = arg.synopsisForHelp
-
-        let defaultValue = arg.help.defaultValue.flatMap { $0.isEmpty ? nil : "(default: \($0))" }
-        description = [arg.help.abstract, defaultValue]
-          .lazy
-          .compactMap { $0 }
-          .filter { !$0.isEmpty }
-          .joined(separator: " ")
+        abstract = arg.help.abstract
       }
       
-      let element = Section.Element(label: synopsis, abstract: description, discussion: arg.help.discussion)
+      let description = [abstract, allAndDefaultValues]
+        .lazy
+        .filter { !$0.isEmpty }
+        .joined(separator: " ")
+
+      let element = Section.Element(
+        label: synopsis,
+        abstract: description,
+        discussion: arg.help.discussion)
       switch (arg.kind, arg.help.parentTitle) {
       case (_, let sectionTitle) where !sectionTitle.isEmpty:
         if !titledSections.keys.contains(sectionTitle) {
@@ -329,7 +336,7 @@ internal extension BidirectionalCollection where Element == ParsableCommand.Type
     return ArgumentDefinition(
       kind: .named([.long("version")]),
       help: .init(
-        allValues: [],
+        allValueStrings: [],
         options: [.isOptional],
         help: "Show the version.",
         defaultValue: nil,
@@ -346,7 +353,7 @@ internal extension BidirectionalCollection where Element == ParsableCommand.Type
     return ArgumentDefinition(
       kind: .named(names),
       help: .init(
-        allValues: [],
+        allValueStrings: [],
         options: [.isOptional],
         help: "Show help information.",
         defaultValue: nil,
@@ -361,7 +368,7 @@ internal extension BidirectionalCollection where Element == ParsableCommand.Type
     return ArgumentDefinition(
       kind: .named([.long("experimental-dump-help")]),
       help: .init(
-        allValues: [],
+        allValueStrings: [],
         options: [.isOptional],
         help: ArgumentHelp("Dump help information as JSON."),
         defaultValue: nil,

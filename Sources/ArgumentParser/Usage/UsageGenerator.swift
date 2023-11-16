@@ -430,12 +430,12 @@ extension ErrorMessageGenerator {
 
 private extension ArgumentDefinition {
   var formattedValueList: String {
-    if help.allValues.isEmpty {
+    if help.allValueStrings.isEmpty {
       return ""
     }
 
-    if help.allValues.count < 6 {
-      let quotedValues = help.allValues.map { "'\($0)'" }
+    if help.allValueStrings.count < 6 {
+      let quotedValues = help.allValueStrings.map { "'\($0)'" }
       let validList: String
       if quotedValues.count <= 2 {
         validList = quotedValues.joined(separator: " and ")
@@ -444,7 +444,7 @@ private extension ArgumentDefinition {
       }
       return ". Please provide one of \(validList)."
     } else {
-      let bulletValueList = help.allValues.map { "  - \($0)" }.joined(separator: "\n")
+      let bulletValueList = help.allValueStrings.map { "  - \($0)" }.joined(separator: "\n")
       return ". Please provide one of the following:\n\(bulletValueList)"
     }
   }
