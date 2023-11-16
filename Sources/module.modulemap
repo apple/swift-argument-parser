@@ -1,0 +1,4 @@
+module CTools {
+  header "CTools.h"
+  requires cplusplus
+}

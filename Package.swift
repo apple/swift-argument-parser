@@ -15,17 +15,18 @@ import PackageDescription
 var package = Package(
     name: "swift-argument-parser",
     products: [
-        .library(
-            name: "ArgumentParser",
-            targets: ["ArgumentParser"]),
+        .library(name: "ArgumentParser", targets: ["ArgumentParser"]),
+        .library(name: "CTools", targets: ["CTools"])
     ],
     dependencies: [],
     targets: [
         // Core Library
+      .target(name: "CTools"),
         .target(
             name: "ArgumentParser",
-            dependencies: ["ArgumentParserToolInfo"],
-            exclude: ["CMakeLists.txt"]),
+            dependencies: ["ArgumentParserToolInfo", "CTools"],
+            exclude: ["CMakeLists.txt"],
+            swiftSettings: [.unsafeFlags(["-cxx-interoperability-mode=default"])]),
         .target(
             name: "ArgumentParserTestHelpers",
             dependencies: ["ArgumentParser", "ArgumentParserToolInfo"],
@@ -39,15 +40,18 @@ var package = Package(
         .executableTarget(
             name: "roll",
             dependencies: ["ArgumentParser"],
-            path: "Examples/roll"),
+            path: "Examples/roll",
+            swiftSettings: [.unsafeFlags(["-cxx-interoperability-mode=default"])]),
         .executableTarget(
             name: "math",
             dependencies: ["ArgumentParser"],
-            path: "Examples/math"),
+            path: "Examples/math",
+            swiftSettings: [.unsafeFlags(["-cxx-interoperability-mode=default"])]),
         .executableTarget(
             name: "repeat",
             dependencies: ["ArgumentParser"],
-            path: "Examples/repeat"),
+            path: "Examples/repeat",
+            swiftSettings: [.unsafeFlags(["-cxx-interoperability-mode=default"])]),
 
         // Tests
         .testTarget(

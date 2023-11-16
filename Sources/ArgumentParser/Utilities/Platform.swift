@@ -21,31 +21,11 @@ import CRT
 import WASILibc
 #endif
 
-@_implementationOnly import Foundation
+import CTools
 
-enum Platform {
-#if !os(Windows)
-  static func shell(path: String, arguments args: [String]) -> String? {
-    let task = Process()
-    task.launchPath = path
-    task.arguments = args
-    
-    let pipe = Pipe()
-    task.standardOutput = pipe
-    task.standardError = pipe
-    task.launch()
-    
-    let output = String(data: pipe.fileHandleForReading.readDataToEndOfFile(),
-                        encoding: .utf8)
-    task.waitUntilExit()
-    
-    return output
-  }
-#endif
-}
+enum Platform { }
 
 // MARK: Shell
-
 extension Platform {
   /// The name of the user's preferred shell, if detectable from the
   /// environment.
@@ -53,18 +33,13 @@ extension Platform {
 #if os(Windows)
     return nil
 #else
-    guard let shellName = shell(path: "/bin/ps", arguments: ["-oargs="])
-    else { return nil }
     
-    let shellParts = String(cString: shellName).split(separator: "\n")
-    
-    return shellParts.last.map(String.init)
+    return String(cString: shellPath())
 #endif
   }
 }
 
 // MARK: Exit codes
-
 #if os(Windows)
 import func WinSDK.GetStdHandle
 import func WinSDK.GetConsoleScreenBufferInfo
