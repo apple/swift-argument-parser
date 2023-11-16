@@ -211,8 +211,9 @@ extension HelpGenerationTests {
         --degree <degree>       Your degree.
         --directory <directory> Directory. (default: current directory)
         --manual <manual>       Manual Option. (default: default-value)
-        --unspecial <unspecial> Unspecialized Synthesized (default: 0)
-        --special <special>     Specialized Synthesized (default: Apple)
+        --unspecial <unspecial> Unspecialized Synthesized (values: 0, 1; default: 0)
+        --special <special>     Specialized Synthesized (values: Apple, Banana;
+                                default: Apple)
         -h, --help              Show help information.
 
       """)
@@ -639,14 +640,14 @@ extension HelpGenerationTests {
 
   func testAllValues() {
     let opts = ArgumentSet(AllValues.self, visibility: .private, parent: nil)
-    XCTAssertEqual(AllValues.Manual.allValueStrings, opts[0].help.allValues)
-    XCTAssertEqual(AllValues.Manual.allValueStrings, opts[1].help.allValues)
+    XCTAssertEqual(AllValues.Manual.allValueStrings, opts[0].help.allValueStrings)
+    XCTAssertEqual(AllValues.Manual.allValueStrings, opts[1].help.allValueStrings)
 
-    XCTAssertEqual(AllValues.UnspecializedSynthesized.allValueStrings, opts[2].help.allValues)
-    XCTAssertEqual(AllValues.UnspecializedSynthesized.allValueStrings, opts[3].help.allValues)
+    XCTAssertEqual(AllValues.UnspecializedSynthesized.allValueStrings, opts[2].help.allValueStrings)
+    XCTAssertEqual(AllValues.UnspecializedSynthesized.allValueStrings, opts[3].help.allValueStrings)
 
-    XCTAssertEqual(AllValues.SpecializedSynthesized.allValueStrings, opts[4].help.allValues)
-    XCTAssertEqual(AllValues.SpecializedSynthesized.allValueStrings, opts[5].help.allValues)
+    XCTAssertEqual(AllValues.SpecializedSynthesized.allValueStrings, opts[4].help.allValueStrings)
+    XCTAssertEqual(AllValues.SpecializedSynthesized.allValueStrings, opts[5].help.allValueStrings)
   }
 
   struct Q: ParsableArguments {
@@ -795,6 +796,58 @@ extension HelpGenerationTests {
     XCTAssertEqual(CustomUsageHidden.fullMessage(for: ValidationError("Test")), """
       Error: Test
         See 'custom-usage-hidden --help' for more information.
+      """)
+  }
+}
+
+extension HelpGenerationTests {
+  private struct WideHelp: ParsableCommand {
+    @Argument(help: "54 characters of help, so as to wrap when columns < 80")
+    var argument: String?
+  }
+  
+  func testColumnsEnvironmentOverride() throws {
+    #if os(Windows) || os(WASI)
+    throw XCTSkip("Unsupported on this platform")
+    #endif
+
+    defer { unsetenv("COLUMNS") }
+    unsetenv("COLUMNS")
+    AssertHelp(.default, for: WideHelp.self, columns: nil, equals: """
+      USAGE: wide-help [<argument>]
+      
+      ARGUMENTS:
+        <argument>              54 characters of help, so as to wrap when columns < 80
+      
+      OPTIONS:
+        -h, --help              Show help information.
+      
+      """)
+
+    setenv("COLUMNS", "60", 1)
+    AssertHelp(.default, for: WideHelp.self, columns: nil, equals: """
+      USAGE: wide-help [<argument>]
+      
+      ARGUMENTS:
+        <argument>              54 characters of help, so as to
+                                wrap when columns < 80
+      
+      OPTIONS:
+        -h, --help              Show help information.
+      
+      """)
+
+    setenv("COLUMNS", "79", 1)
+    AssertHelp(.default, for: WideHelp.self, columns: nil, equals: """
+      USAGE: wide-help [<argument>]
+      
+      ARGUMENTS:
+        <argument>              54 characters of help, so as to wrap when columns <
+                                80
+      
+      OPTIONS:
+        -h, --help              Show help information.
+      
       """)
   }
 }

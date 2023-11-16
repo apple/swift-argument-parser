@@ -17,7 +17,7 @@ enum MessageInfo {
   case validation(message: String, usage: String, help: String)
   case other(message: String, exitCode: ExitCode)
   
-  init(error: Error, type: ParsableArguments.Type) {
+  init(error: Error, type: ParsableArguments.Type, columns: Int? = nil) {
     var commandStack: [ParsableCommand.Type]
     var parserError: ParserError? = nil
     
@@ -29,7 +29,7 @@ enum MessageInfo {
       // Exit early on built-in requests
       switch e.parserError {
       case .helpRequested(let visibility):
-        self = .help(text: HelpGenerator(commandStack: e.commandStack, visibility: visibility).rendered())
+        self = .help(text: HelpGenerator(commandStack: e.commandStack, visibility: visibility).rendered(screenWidth: columns))
         return
 
       case .dumpHelpRequested:
@@ -64,7 +64,7 @@ enum MessageInfo {
       
     case let e as ParserError:
       // Send ParserErrors back through the CommandError path
-      self.init(error: CommandError(commandStack: [type.asCommand], parserError: e), type: type)
+      self.init(error: CommandError(commandStack: [type.asCommand], parserError: e), type: type, columns: columns)
       return
 
     default:
@@ -97,7 +97,7 @@ enum MessageInfo {
           if let command = command {
             commandStack = CommandParser(type.asCommand).commandStack(for: command)
           }
-          self = .help(text: HelpGenerator(commandStack: commandStack, visibility: .default).rendered())
+          self = .help(text: HelpGenerator(commandStack: commandStack, visibility: .default).rendered(screenWidth: columns))
         case .dumpRequest(let command):
           if let command = command {
             commandStack = CommandParser(type.asCommand).commandStack(for: command)
@@ -120,7 +120,7 @@ enum MessageInfo {
     } else if let parserError = parserError {
       let usage: String = {
         guard case ParserError.noArguments = parserError else { return usage }
-        return "\n" + HelpGenerator(commandStack: [type.asCommand], visibility: .default).rendered()
+        return "\n" + HelpGenerator(commandStack: [type.asCommand], visibility: .default).rendered(screenWidth: columns)
       }()
       let argumentSet = ArgumentSet(commandStack.last!, visibility: .default, parent: nil)
       let message = argumentSet.errorDescription(error: parserError) ?? ""

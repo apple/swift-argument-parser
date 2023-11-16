@@ -74,7 +74,7 @@ extension ArgumentSet {
     let defaultValueString = initialValue == true ? "true" : nil
     
     let help = ArgumentDefinition.Help(
-      allValues: [],
+      allValueStrings: [],
       options: helpOptions,
       help: help,
       defaultValue: defaultValueString,
@@ -134,8 +134,8 @@ extension ArgumentSet {
       $0 ? enableNames : disableNames
     }
     
-    let enableHelp = ArgumentDefinition.Help(allValues: [], options: helpOptions, help: help, defaultValue: initialValueNames?.first?.synopsisString, key: key, isComposite: true)
-    let disableHelp = ArgumentDefinition.Help(allValues: [], options: [.isOptional], help: help, defaultValue: nil, key: key, isComposite: false)
+    let enableHelp = ArgumentDefinition.Help(allValueStrings: [], options: helpOptions, help: help, defaultValue: initialValueNames?.first?.synopsisString, key: key, isComposite: true)
+    let disableHelp = ArgumentDefinition.Help(allValueStrings: [], options: [.isOptional], help: help, defaultValue: nil, key: key, isComposite: false)
 
     let enableArg = ArgumentDefinition(kind: .named(enableNames), help: enableHelp, completion: .default, update: .nullary({ (origin, name, values) in
         try ArgumentSet.updateFlag(key: key, value: true, origin: origin, values: &values, exclusivity: exclusivity)
@@ -152,7 +152,7 @@ extension ArgumentSet {
   
   /// Creates an argument set for an incrementing integer flag.
   static func counter(key: InputKey, name: NameSpecification, help: ArgumentHelp?) -> ArgumentSet {
-    let help = ArgumentDefinition.Help(allValues: [], options: [.isOptional, .isRepeating], help: help, defaultValue: nil, key: key, isComposite: false)
+    let help = ArgumentDefinition.Help(allValueStrings: [], options: [.isOptional, .isRepeating], help: help, defaultValue: nil, key: key, isComposite: false)
     let arg = ArgumentDefinition(kind: .name(key: key, specification: name), help: help, completion: .default, update: .nullary({ (origin, name, values) in
       guard let a = values.element(forKey: key)?.value, let b = a as? Int else {
         throw ParserError.invalidState

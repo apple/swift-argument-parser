@@ -155,6 +155,8 @@ extension HelpGenerationTests {
   enum AtOptionEBA {
     // ExpressibleByArgument
     struct A: ExpressibleByArgument {
+      static var allValueStrings: [String] { ["A()"] }
+      var defaultValueDescription: String { "A()" }
       init() { }
       init?(argument: String) { self.init() }
     }
@@ -206,7 +208,7 @@ extension HelpGenerationTests {
       USAGE: bare-no-default --arg0 <arg0>
 
       OPTIONS:
-        --arg0 <arg0>           example
+        --arg0 <arg0>           example (values: A())
         -h, --help              Show help information.
 
       """)
@@ -217,7 +219,7 @@ extension HelpGenerationTests {
       USAGE: bare-default [--arg0 <arg0>]
 
       OPTIONS:
-        --arg0 <arg0>           example (default: A())
+        --arg0 <arg0>           example (values: A(); default: A())
         -h, --help              Show help information.
 
       """)
@@ -228,7 +230,7 @@ extension HelpGenerationTests {
       USAGE: optional-no-default [--arg0 <arg0>]
 
       OPTIONS:
-        --arg0 <arg0>           example
+        --arg0 <arg0>           example (values: A())
         -h, --help              Show help information.
 
       """)
@@ -239,7 +241,7 @@ extension HelpGenerationTests {
       USAGE: optional-default-nil [--arg0 <arg0>]
 
       OPTIONS:
-        --arg0 <arg0>           example
+        --arg0 <arg0>           example (values: A())
         -h, --help              Show help information.
 
       """)
@@ -250,7 +252,7 @@ extension HelpGenerationTests {
       USAGE: array-no-default --arg0 <arg0> ...
 
       OPTIONS:
-        --arg0 <arg0>           example
+        --arg0 <arg0>           example (values: A())
         -h, --help              Show help information.
 
       """)
@@ -261,7 +263,7 @@ extension HelpGenerationTests {
       USAGE: array-default-empty [--arg0 <arg0> ...]
 
       OPTIONS:
-        --arg0 <arg0>           example
+        --arg0 <arg0>           example (values: A())
         -h, --help              Show help information.
 
       """)
@@ -272,7 +274,7 @@ extension HelpGenerationTests {
       USAGE: array-default [--arg0 <arg0> ...]
 
       OPTIONS:
-        --arg0 <arg0>           example (default: A())
+        --arg0 <arg0>           example (values: A(); default: A())
         -h, --help              Show help information.
 
       """)
@@ -283,6 +285,8 @@ extension HelpGenerationTests {
   enum AtOptionEBATransform {
     // ExpressibleByArgument with Transform
     struct A: ExpressibleByArgument {
+      static var allValueStrings: [String] { ["A()"] }
+      var defaultValueDescription: String { "A()" }
       init() { }
       init?(argument: String) { self.init() }
     }

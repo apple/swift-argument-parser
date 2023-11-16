@@ -139,8 +139,15 @@ public struct ArgumentInfoV0: Codable, Hashable {
   public var valueName: String?
   /// Default value of the argument is none is specified on the command line.
   public var defaultValue: String?
+  // NOTE: this property will not be renamed to 'allValueStrings' to avoid
+  // breaking compatibility with the current serialized format.
   /// List of all valid values.
   public var allValues: [String]?
+  /// List of all valid values.
+  public var allValueStrings: [String]? {
+    get { self.allValues }
+    set { self.allValues = newValue }
+  }
 
   /// Short description of the argument's functionality.
   public var abstract: String?
@@ -174,9 +181,10 @@ public struct ArgumentInfoV0: Codable, Hashable {
 
     self.valueName = valueName?.nonEmpty
     self.defaultValue = defaultValue?.nonEmpty
-    self.allValues = allValues?.nonEmpty
+    self.allValueStrings = allValues?.nonEmpty
 
     self.abstract = abstract?.nonEmpty
     self.discussion = discussion?.nonEmpty
   }
 }
+

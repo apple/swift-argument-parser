@@ -251,7 +251,7 @@ extension HelpGenerationTests {
       USAGE: bare-no-default <arg0>
 
       ARGUMENTS:
-        <arg0>                  example
+        <arg0>                  example (values: A())
 
       OPTIONS:
         -h, --help              Show help information.
@@ -267,7 +267,7 @@ extension HelpGenerationTests {
       USAGE: bare-default [<arg0>]
 
       ARGUMENTS:
-        <arg0>                  example (default: A())
+        <arg0>                  example (values: A(); default: A())
 
       OPTIONS:
         -h, --help              Show help information.
@@ -283,7 +283,7 @@ extension HelpGenerationTests {
       USAGE: optional-no-default [<arg0>]
 
       ARGUMENTS:
-        <arg0>                  example
+        <arg0>                  example (values: A())
 
       OPTIONS:
         -h, --help              Show help information.
@@ -299,7 +299,7 @@ extension HelpGenerationTests {
       USAGE: optional-default-nil [<arg0>]
 
       ARGUMENTS:
-        <arg0>                  example
+        <arg0>                  example (values: A())
 
       OPTIONS:
         -h, --help              Show help information.
@@ -315,7 +315,7 @@ extension HelpGenerationTests {
       USAGE: array-no-default <arg0> ...
 
       ARGUMENTS:
-        <arg0>                  example
+        <arg0>                  example (values: A())
 
       OPTIONS:
         -h, --help              Show help information.
@@ -331,7 +331,7 @@ extension HelpGenerationTests {
       USAGE: array-default-empty [<arg0> ...]
 
       ARGUMENTS:
-        <arg0>                  example
+        <arg0>                  example (values: A())
 
       OPTIONS:
         -h, --help              Show help information.
@@ -347,7 +347,7 @@ extension HelpGenerationTests {
       USAGE: array-default [<arg0> ...]
 
       ARGUMENTS:
-        <arg0>                  example (default: A())
+        <arg0>                  example (values: A(); default: A())
 
       OPTIONS:
         -h, --help              Show help information.

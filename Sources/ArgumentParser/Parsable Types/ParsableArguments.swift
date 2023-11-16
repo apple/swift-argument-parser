@@ -112,6 +112,23 @@ extension ParsableArguments {
     MessageInfo(error: error, type: self).fullText(for: self)
   }
 
+  /// Returns a full message for the given error, including usage information,
+  /// if appropriate.
+  ///
+  /// - Parameters:
+  ///   - error: An error to generate a message for.
+  ///   - columns: The column width to use when wrapping long line in the
+  ///     help screen. If `columns` is `nil`, uses the current terminal
+  ///     width, or a default value of `80` if the terminal width is not
+  ///     available.
+  /// - Returns: A message that can be displayed to the user.
+  public static func fullMessage(
+    for error: Error,
+    columns: Int?
+  ) -> String {
+    MessageInfo(error: error, type: self, columns: columns).fullText(for: self)
+  }
+
   /// Returns the text of the help screen for this type.
   ///
   /// - Parameters:

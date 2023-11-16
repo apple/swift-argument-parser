@@ -79,8 +79,10 @@ public struct OptionGroup<Value: ParsableArguments>: Decodable, ParsedWrapper {
   ) {
     self.init(_parsedValue: .init { parentKey in
       var args = ArgumentSet(Value.self, visibility: .private, parent: parentKey)
-      args.content.withEach {
-        $0.help.parentTitle = title
+      if !title.isEmpty {
+        args.content.withEach {
+          $0.help.parentTitle = title
+        }
       }
       return args
     })

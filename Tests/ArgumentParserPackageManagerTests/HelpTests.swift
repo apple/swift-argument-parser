@@ -14,6 +14,11 @@ import XCTest
 import ArgumentParserTestHelpers
 
 final class HelpTests: XCTestCase {
+  override func setUp() {
+    #if !os(Windows) && !os(WASI)
+    unsetenv("COLUMNS")
+    #endif
+  }
 }
 
 func getErrorText<T: ParsableArguments>(_: T.Type, _ arguments: [String]) -> String {
