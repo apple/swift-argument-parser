@@ -14,6 +14,11 @@ import ArgumentParser
 import ArgumentParserTestHelpers
 
 final class Tests: XCTestCase {
+  override func setUp() {
+    #if !os(Windows) && !os(WASI)
+    unsetenv("COLUMNS")
+    #endif
+  }
 }
 
 extension Tests {

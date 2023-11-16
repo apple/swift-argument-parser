@@ -17,7 +17,7 @@ struct Comparison: Codable {
 
 struct Commit: Codable {
   var sha: String
-  var author: Author
+  var author: Author?
 }
 
 struct Author: Codable {
