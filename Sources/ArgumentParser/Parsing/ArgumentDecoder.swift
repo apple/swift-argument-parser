@@ -106,7 +106,7 @@ final class ParsedArgumentsContainer<K>: KeyedDecodingContainerProtocol where K 
     let parsedElement = element(forKey: key)
     if parsedElement?.inputOrigin.isDefaultValue ?? false, let rawValue = parsedElement?.value {
       guard let value = rawValue as? T else {
-        throw InternalParseError.wrongType(rawValue, forKey: parsedElement!.key)
+        throw InternalParseError.wrongType(valueRepresentation: "\(rawValue)", forKey: parsedElement!.key)
       }
       return value
     }
@@ -201,7 +201,7 @@ struct SingleValueDecoder: Decoder {
         throw ParserError.noValue(forKey: InputKey(codingKey: last, path: errorPath))
       }
       guard let s = e.value as? T else {
-        throw InternalParseError.wrongType(e.value, forKey: e.key)
+        throw InternalParseError.wrongType(valueRepresentation: "nil", forKey: e.key)
       }
       return s
     }
@@ -231,7 +231,7 @@ struct SingleValueDecoder: Decoder {
     mutating func decode<T>(_ type: T.Type) throws -> T where T : Decodable {
       guard let next = array.getNext() else { fatalError() }
       guard let t = next as? T else {
-        throw InternalParseError.wrongType(next, forKey: parsedElement.key)
+        throw InternalParseError.wrongType(valueRepresentation: "\(next)", forKey: parsedElement.key)
       }
       return t
     }

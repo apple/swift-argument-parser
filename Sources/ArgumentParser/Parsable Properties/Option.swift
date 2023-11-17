@@ -99,12 +99,13 @@ extension Option: CustomStringConvertible {
   }
 }
 
+extension Option: Sendable where Value: Sendable {}
 extension Option: DecodableParsedWrapper where Value: Decodable {}
 
 /// The strategy to use when parsing a single value from `@Option` arguments.
 ///
 /// - SeeAlso: ``ArrayParsingStrategy``
-public struct SingleValueParsingStrategy: Hashable {  
+public struct SingleValueParsingStrategy: Hashable {
   internal var base: ArgumentDefinition.ParsingStrategy
   
   /// Parse the input after the option. Expect it to be a value.
@@ -151,6 +152,8 @@ public struct SingleValueParsingStrategy: Hashable {
     self.init(base: .scanningForValue)
   }
 }
+
+extension SingleValueParsingStrategy: Sendable { }
 
 /// The strategy to use when parsing multiple values from `@Option` arguments into an
 /// array.
@@ -231,6 +234,8 @@ public struct ArrayParsingStrategy: Hashable {
     self.init(base: .allRemainingInput)
   }
 }
+
+extension ArrayParsingStrategy: Sendable { }
 
 // MARK: - @Option T: ExpressibleByArgument Initializers
 extension Option where Value: ExpressibleByArgument {
@@ -338,13 +343,14 @@ extension Option {
   ///   - completion: Kind of completion provided to the user for this option.
   ///   - transform: A closure that converts a string into this property's
   ///     element type or throws an error.
+  @preconcurrency
   public init(
     wrappedValue: Value,
     name: NameSpecification = .long,
     parsing parsingStrategy: SingleValueParsingStrategy = .next,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
-    transform: @escaping (String) throws -> Value
+    transform: @Sendable @escaping (String) throws -> Value
   ) {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
@@ -373,12 +379,13 @@ extension Option {
   ///   - parsingStrategy: The behavior to use when looking for this option's value.
   ///   - help: Information about how to use this option.
   ///   - completion: Kind of completion provided to the user for this option.
+  @preconcurrency
   public init(
     name: NameSpecification = .long,
     parsing parsingStrategy: SingleValueParsingStrategy = .next,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
-    transform: @escaping (String) throws -> Value
+    transform: @Sendable @escaping (String) throws -> Value
   ) {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
@@ -507,13 +514,14 @@ extension Option {
   ///   - completion: Kind of completion provided to the user for this option.
   ///   - transform: A closure that converts a string into this property's type
   ///   or throws an error.
+  @preconcurrency
   public init<T>(
     wrappedValue _value: _OptionalNilComparisonType,
     name: NameSpecification = .long,
     parsing parsingStrategy: SingleValueParsingStrategy = .next,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
-    transform: @escaping (String) throws -> T
+    transform: @Sendable @escaping (String) throws -> T
   ) where Value == Optional<T> {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
@@ -534,13 +542,14 @@ extension Option {
     Optional @Options with default values should be declared as non-Optional.
     """)
   @_disfavoredOverload
+  @preconcurrency
   public init<T>(
     wrappedValue: Optional<T>,
     name: NameSpecification = .long,
     parsing parsingStrategy: SingleValueParsingStrategy = .next,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
-    transform: @escaping (String) throws -> T
+    transform: @Sendable @escaping (String) throws -> T
   ) where Value == Optional<T> {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
@@ -571,12 +580,13 @@ extension Option {
   ///   - help: Information about how to use this option.
   ///   - completion: Kind of completion provided to the user for this option.
   ///   - transform: A closure that converts a string into this property's type or throws an error.
+  @preconcurrency
   public init<T>(
     name: NameSpecification = .long,
     parsing parsingStrategy: SingleValueParsingStrategy = .next,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
-    transform: @escaping (String) throws -> T
+    transform: @Sendable @escaping (String) throws -> T
   ) where Value == Optional<T> {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
@@ -679,13 +689,14 @@ extension Option {
   ///   - completion: Kind of completion provided to the user for this option.
   ///   - transform: A closure that converts a string into this property's
   ///     element type or throws an error.
+  @preconcurrency
   public init<T>(
     wrappedValue: Array<T>,
     name: NameSpecification = .long,
     parsing parsingStrategy: ArrayParsingStrategy = .singleValue,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
-    transform: @escaping (String) throws -> T
+    transform: @Sendable @escaping (String) throws -> T
   ) where Value == Array<T> {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
@@ -719,12 +730,13 @@ extension Option {
   ///   - completion: Kind of completion provided to the user for this option.
   ///   - transform: A closure that converts a string into this property's
   ///   element type or throws an error.
+  @preconcurrency
   public init<T>(
     name: NameSpecification = .long,
     parsing parsingStrategy: ArrayParsingStrategy = .singleValue,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
-    transform: @escaping (String) throws -> T
+    transform: @Sendable @escaping (String) throws -> T
   ) where Value == Array<T> {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(

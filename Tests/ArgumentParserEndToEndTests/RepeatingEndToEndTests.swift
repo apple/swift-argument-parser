@@ -225,7 +225,7 @@ extension RepeatingEndToEndTests {
 
 fileprivate struct Wobble: ParsableArguments {
   struct WobbleError: Error {}
-  struct Name: Equatable {
+  struct Name: Equatable, Sendable {
     var value: String
 
     init(_ value: String) throws {

@@ -9,7 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if os(macOS) && swift(>=5.7)
+#if os(macOS)
 
 import XCTest
 import ArgumentParserTestHelpers

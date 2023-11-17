@@ -78,6 +78,8 @@ public struct ArgumentHelp {
   }
 }
 
+extension ArgumentHelp: Sendable { }
+
 extension ArgumentHelp: ExpressibleByStringInterpolation {
   public init(stringLiteral value: String) {
     self.abstract = value

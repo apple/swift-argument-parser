@@ -13,7 +13,7 @@
 /// label.
 public struct NameSpecification: ExpressibleByArrayLiteral {
   /// An individual property name translation.
-  public struct Element: Hashable {
+  public struct Element: Hashable, Sendable {
     internal enum Representation: Hashable {
       case long
       case customLong(_ name: String, withSingleDash: Bool)
@@ -79,6 +79,8 @@ public struct NameSpecification: ExpressibleByArrayLiteral {
     self.init(elements)
   }
 }
+
+extension NameSpecification: Sendable { }
 
 extension NameSpecification {
   /// Use the property's name converted to lowercase with words separated by
