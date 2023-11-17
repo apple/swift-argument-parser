@@ -6,6 +6,14 @@ Add new items at the end of the relevant section under **Unreleased**.
 
 ## [Unreleased]
 
+### Changes
+
+- The `@Option`, `@Argument`, `@Flag`, and `@OptionGroup` property wrappers now conditionally conform to `Sendable` when the wrapper's `Value` type conforms. With this change, you can mark `ParsableCommand` types as `Sendable` when you want to be able to pass a parsed command across concurrent contexts. ([#582])
+
+  *Migration:* Users that aren't ready to resolve sendability warnings can add the `@preconcurrency` attribute to `import ArgumentParser` statements.
+
+- To support migration to `Sendable` annotation, the minimum Swift version for `swift-argument-parser` has been increased to Swift 5.7. Users of older Swift versions will be able to continue using version 1.2.3 of the library. ([#582])
+
 ### Additions
 
 - Help screens now include possible options for `ExpressibleByArgument` types
@@ -13,8 +21,12 @@ Add new items at the end of the relevant section under **Unreleased**.
   not need to manually implement `allValueStrings`, instead it is derived from
   `allCases`. ([#594])
 
-<!-- Add: "Don't remove nested option group titles (#592)" -->
-<!-- Add: "Document ability to skip unknown parameters (#572)" -->
+### Fixes
+
+- The titles for nested option groups are preserved when embedded into commands without specifying a new title. ([#592])
+- Bash completion scripts now respect the extensions given in a `.file(...)` completion kind. ([#590])
+- When wrapping help and error messages, the library now uses the `COLUMNS` environment variable when set, instead of immediately falling back to 80 columns. ([#596])
+- Documentation improvements. ([#572], [#565])
 
 ---
 
@@ -897,9 +909,15 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [#550]: https://github.com/apple/swift-argument-parser/pull/550
 [#552]: https://github.com/apple/swift-argument-parser/pull/552
 [#554]: https://github.com/apple/swift-argument-parser/pull/554
+[#565]: https://github.com/apple/swift-argument-parser/pull/565
+[#572]: https://github.com/apple/swift-argument-parser/pull/572
 [#574]: https://github.com/apple/swift-argument-parser/pull/574
 [#579]: https://github.com/apple/swift-argument-parser/pull/579
-[#579]: https://github.com/apple/swift-argument-parser/pull/594
+[#582]: https://github.com/apple/swift-argument-parser/pull/582
+[#590]: https://github.com/apple/swift-argument-parser/pull/590
+[#592]: https://github.com/apple/swift-argument-parser/pull/592
+[#594]: https://github.com/apple/swift-argument-parser/pull/594
+[#596]: https://github.com/apple/swift-argument-parser/pull/596
 
 <!-- Link references for contributors -->
 
