@@ -45,14 +45,14 @@ public struct OptionGroup<Value: ParsableArguments>: Decodable, ParsedWrapper {
     self._visibility = .default
   }
   
-  public init(from decoder: Decoder) throws {
-    if let d = decoder as? SingleValueDecoder,
+  public init(from _decoder: Decoder) throws {
+    if let d = _decoder as? SingleValueDecoder,
       let value = try? d.previousValue(Value.self)
     {
       self.init(_parsedValue: .value(value))
     } else {
-      try self.init(_decoder: decoder)
-      if let d = decoder as? SingleValueDecoder {
+      try self.init(_decoder: _decoder)
+      if let d = _decoder as? SingleValueDecoder {
         d.saveValue(wrappedValue)
       }
     }

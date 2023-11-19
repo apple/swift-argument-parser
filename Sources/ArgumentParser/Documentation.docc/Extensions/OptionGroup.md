@@ -13,7 +13,6 @@
 ### Infrequently Used APIs
 
 - ``init()``
-- ``init(from:)``
 - ``wrappedValue``
 - ``description``
 
