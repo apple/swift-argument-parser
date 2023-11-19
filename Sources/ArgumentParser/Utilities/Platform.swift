@@ -9,6 +9,16 @@
 //
 //===----------------------------------------------------------------------===//
 
+extension CommandLine {
+  /// Accesses the command line arguments in a concurrency-safe way.
+  ///
+  /// Workaround for https://github.com/apple/swift/issues/66213
+  static let _staticArguments: [String] =
+    UnsafeBufferPointer(start: unsafeArgv, count: Int(argc))
+      .compactMap { String(validatingUTF8: $0!)
+  }
+}
+
 #if canImport(Glibc)
 import Glibc
 #elseif canImport(Musl)
@@ -103,7 +113,9 @@ extension Platform {
   }
 
   /// The `stderr` output stream.
-  static var standardError = StandardError()
+  static var standardError: StandardError {
+    StandardError()
+  }
 }
 
 // MARK: Terminal size

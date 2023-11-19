@@ -18,7 +18,8 @@ struct UsageGenerator {
 
 extension UsageGenerator {
   init(definition: ArgumentSet) {
-    let toolName = CommandLine.arguments[0].split(separator: "/").last.map(String.init) ?? "<command>"
+    let toolName = CommandLine._staticArguments[0]
+      .split(separator: "/").last.map(String.init) ?? "<command>"
     self.init(toolName: toolName, definition: definition)
   }
   
