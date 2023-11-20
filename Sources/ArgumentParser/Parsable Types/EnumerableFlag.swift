@@ -15,17 +15,19 @@
 /// For example, the `Size` enumeration declared here can be used as the type of
 /// a `@Flag` property:
 ///
-///     enum Size: String, EnumerableFlag {
-///         case small, medium, large, extraLarge
-///     }
+/// ```swift
+/// enum Size: String, EnumerableFlag {
+///     case small, medium, large, extraLarge
+/// }
 ///
-///     struct Example: ParsableCommand {
-///         @Flag var sizes: [Size]
+/// struct Example: ParsableCommand {
+///     @Flag var sizes: [Size]
 ///
-///         mutating func run() {
-///             print(sizes)
-///         }
+///     mutating func run() {
+///         print(sizes)
 ///     }
+/// }
+/// ```
 ///
 /// By default, each case name is converted to a flag by using the `.long` name
 /// specification, so a user can call `example` like this:
@@ -36,17 +38,19 @@
 /// Provide alternative or additional name specifications for each case by
 /// implementing the `name(for:)` static method on your `EnumerableFlag` type.
 ///
-///     extension Size {
-///         static func name(for value: Self) -> NameSpecification {
-///             switch value {
-///             case .extraLarge:
-///                 return [.customShort("x"), .long]
-///             default:
-///                 return .shortAndLong
-///             }
+/// ```swift
+/// extension Size {
+///     static func name(for value: Self) -> NameSpecification {
+///         switch value {
+///         case .extraLarge:
+///             return [.customShort("x"), .long]
+///         default:
+///             return .shortAndLong
 ///         }
 ///     }
-///
+/// }
+/// ```
+/// 
 /// With this extension, a user can use short or long versions of the flags:
 ///
 ///     $ example -s -l -x --medium

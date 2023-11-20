@@ -27,7 +27,6 @@
 
 ### Infrequently Used APIs
 
-- ``init(from:)``
 - ``wrappedValue``
 
 ### Supporting Types

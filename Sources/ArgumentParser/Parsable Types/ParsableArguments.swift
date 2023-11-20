@@ -101,15 +101,12 @@ extension ParsableArguments {
     MessageInfo(error: error, type: self).message
   }
   
-  /// Returns a full message for the given error, including usage information,
-  /// if appropriate.
-  ///
-  /// - Parameter error: An error to generate a message for.
-  /// - Returns: A message that can be displayed to the user.
+  @available(*, deprecated, renamed: "fullMessage(for:columns:)")
+  @_disfavoredOverload
   public static func fullMessage(
-    for error: Error
+    for _error: Error
   ) -> String {
-    MessageInfo(error: error, type: self).fullText(for: self)
+    MessageInfo(error: _error, type: self).fullText(for: self)
   }
 
   /// Returns a full message for the given error, including usage information,
@@ -124,7 +121,7 @@ extension ParsableArguments {
   /// - Returns: A message that can be displayed to the user.
   public static func fullMessage(
     for error: Error,
-    columns: Int?
+    columns: Int? = nil
   ) -> String {
     MessageInfo(error: error, type: self, columns: columns).fullText(for: self)
   }
@@ -140,9 +137,9 @@ extension ParsableArguments {
   @_disfavoredOverload
   @available(*, deprecated, message: "Use helpMessage(includeHidden:columns:) instead.")
   public static func helpMessage(
-    columns: Int?
+    columns _columns: Int?
   ) -> String {
-    helpMessage(includeHidden: false, columns: columns)
+    helpMessage(includeHidden: false, columns: _columns)
   }
 
   /// Returns the text of the help screen for this type.
