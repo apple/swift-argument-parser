@@ -34,6 +34,11 @@ extension CompletionScriptTests {
   }
   
   struct Base: ParsableCommand {
+    static var configuration = CommandConfiguration(
+      commandName: "base-test",
+      subcommands: [SubCommand.self]
+    )
+
     @Option(help: "The user's name.") var name: String
     @Option() var kind: Kind
     @Option(completion: .list(["1", "2", "3"])) var otherKind: Kind
@@ -43,6 +48,12 @@ extension CompletionScriptTests {
     @Option(completion: .list(["a", "b", "c"])) var path3: Path
     
     @Flag(help: .hidden) var verbose = false
+
+   struct SubCommand: ParsableCommand {
+     static var configuration = CommandConfiguration(
+       commandName: "sub-command"
+     )
+   }
   }
 
   func testBase_Zsh() throws {
@@ -138,12 +149,12 @@ extension CompletionScriptTests {
 }
 
 private let zshBaseCompletions = """
-#compdef base
+#compdef base-test
 local context state state_descr line
-_base_commandname=$words[1]
+_base_test_commandname=$words[1]
 typeset -A opt_args
 
-_base() {
+_base-test() {
     integer ret=1
     local -a args
     args+=(
@@ -154,6 +165,50 @@ _base() {
         '--path2:path2:_files'
         '--path3:path3:(a b c)'
         '(-h --help)'{-h,--help}'[Show help information.]'
+        '(-): :->command'
+        '(-)*:: :->arg'
+    )
+    _arguments -w -s -S $args[@] && ret=0
+    case $state in
+        (command)
+            local subcommands
+            subcommands=(
+                'sub-command:'
+                'help:Show subcommand help information.'
+            )
+            _describe "subcommand" subcommands
+            ;;
+        (arg)
+            case ${words[1]} in
+                (sub-command)
+                    _base-test_sub-command
+                    ;;
+                (help)
+                    _base-test_help
+                    ;;
+            esac
+            ;;
+    esac
+
+    return ret
+}
+
+_base-test_sub-command() {
+    integer ret=1
+    local -a args
+    args+=(
+        '(-h --help)'{-h,--help}'[Show help information.]'
+    )
+    _arguments -w -s -S $args[@] && ret=0
+
+    return ret
+}
+
+_base-test_help() {
+    integer ret=1
+    local -a args
+    args+=(
+        ':subcommands:'
     )
     _arguments -w -s -S $args[@] && ret=0
 
@@ -166,17 +221,17 @@ _custom_completion() {
     _describe '' completions
 }
 
-_base
+_base-test
 """
 
 private let bashBaseCompletions = """
 #!/bin/bash
 
-_base() {
+_base_test() {
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
     COMPREPLY=()
-    opts="--name --kind --other-kind --path1 --path2 --path3 -h --help"
+    opts="--name --kind --other-kind --path1 --path2 --path3 -h --help sub-command help"
     if [[ $COMP_CWORD == "1" ]]; then
         COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
         return
@@ -215,11 +270,37 @@ _base() {
             return
         ;;
     esac
+    case ${COMP_WORDS[1]} in
+        (sub-command)
+            _base_test_sub-command 2
+            return
+            ;;
+        (help)
+            _base_test_help 2
+            return
+            ;;
+    esac
+    COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
+}
+_base_test_sub_command() {
+    opts="-h --help"
+    if [[ $COMP_CWORD == "$1" ]]; then
+        COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
+        return
+    fi
+    COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
+}
+_base_test_help() {
+    opts=""
+    if [[ $COMP_CWORD == "$1" ]]; then
+        COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
+        return
+    fi
     COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
 }
 
 
-complete -F _base base
+complete -F _base_test base-test
 """
 
 private let zshEscapedCompletion = """
@@ -252,7 +333,7 @@ _escaped-command
 
 private let fishBaseCompletions = """
 # A function which filters options which starts with "-" from $argv.
-function _swift_base_preprocessor
+function _swift_base-test_preprocessor
     set -l results
     for i in (seq (count $argv))
         switch (echo $argv[$i] | string sub -l 1)
@@ -263,8 +344,8 @@ function _swift_base_preprocessor
     end
 end
 
-function _swift_base_using_command
-    set -l currentCommands (_swift_base_preprocessor (commandline -opc))
+function _swift_base-test_using_command
+    set -l currentCommands (_swift_base-test_preprocessor (commandline -opc))
     set -l expectedCommands (string split " " $argv[1])
     set -l subcommands (string split " " $argv[2])
     if [ (count $currentCommands) -ge (count $expectedCommands) ]
@@ -288,13 +369,16 @@ function _swift_base_using_command
     return 1
 end
 
-complete -c base -n '_swift_base_using_command \"base\"' -l name -d 'The user\\\'s name.'
-complete -c base -n '_swift_base_using_command \"base\"' -l kind -r -f -k -a 'one two custom-three'
-complete -c base -n '_swift_base_using_command \"base\"' -l other-kind -r -f -k -a '1 2 3'
-complete -c base -n '_swift_base_using_command \"base\"' -l path1 -r -f -a '(for i in *.{}; echo $i;end)'
-complete -c base -n '_swift_base_using_command \"base\"' -l path2 -r -f -a '(for i in *.{}; echo $i;end)'
-complete -c base -n '_swift_base_using_command \"base\"' -l path3 -r -f -k -a 'a b c'
-complete -c base -n '_swift_base_using_command \"base\"' -s h -l help -d 'Show help information.'
+complete -c base-test -n '_swift_base-test_using_command "base-test sub-command"' -s h -l help -d 'Show help information.'
+complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command help"' -l name -d 'The user\\\'s name.'
+complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command help"' -l kind -r -f -k -a 'one two custom-three'
+complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command help"' -l other-kind -r -f -k -a '1 2 3'
+complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command help"' -l path1 -r -f -a '(for i in *.{}; echo $i;end)'
+complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command help"' -l path2 -r -f -a '(for i in *.{}; echo $i;end)'
+complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command help"' -l path3 -r -f -k -a 'a b c'
+complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command help"' -s h -l help -d 'Show help information.'
+complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command help"' -f -a 'sub-command' -d ''
+complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command help"' -f -a 'help' -d 'Show subcommand help information.'
 """
 
 // MARK: - Test Hidden Subcommand
