@@ -18,18 +18,20 @@
 /// For example, the following program declares a flag that lets a user indicate
 /// that seconds should be included when printing the time.
 ///
-///     @main
-///     struct Time: ParsableCommand {
-///         @Flag var includeSeconds = false
+/// ```swift
+/// @main
+/// struct Time: ParsableCommand {
+///     @Flag var includeSeconds = false
 ///
-///         mutating func run() {
-///             if includeSeconds {
-///                 print(Date.now.formatted(.dateTime.hour().minute().second()))
-///             } else {
-///                 print(Date.now.formatted(.dateTime.hour().minute()))
-///             }
+///     mutating func run() {
+///         if includeSeconds {
+///             print(Date.now.formatted(.dateTime.hour().minute().second()))
+///         } else {
+///             print(Date.now.formatted(.dateTime.hour().minute()))
 ///         }
 ///     }
+/// }
+/// ```
 ///
 /// `includeSeconds` has a default value of `false`, but becomes `true` if
 /// `--include-seconds` is provided on the command line.

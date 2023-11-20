@@ -22,19 +22,21 @@
 ///
 /// For example, the following program defines three options:
 ///
-///     @main
-///     struct Greet: ParsableCommand {
-///         @Option var greeting = "Hello"
-///         @Option var age: Int? = nil
-///         @Option var name: String
+/// ```swift
+/// @main
+/// struct Greet: ParsableCommand {
+///     @Option var greeting = "Hello"
+///     @Option var age: Int? = nil
+///     @Option var name: String
 ///
-///         mutating func run() {
-///             print("\(greeting) \(name)!")
-///             if let age = age {
-///                 print("Congrats on making it to the ripe old age of \(age)!")
-///             }
+///     mutating func run() {
+///         print("\(greeting) \(name)!")
+///         if let age = age {
+///             print("Congrats on making it to the ripe old age of \(age)!")
 ///         }
 ///     }
+/// }
+/// ```
 ///
 /// `greeting` has a default value of `"Hello"`, which can be overridden by
 /// providing a different string as an argument, while `age` defaults to `nil`.

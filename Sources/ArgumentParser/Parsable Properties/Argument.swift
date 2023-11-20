@@ -21,15 +21,17 @@
 /// argument is required, while `greeting` is optional because it has a default
 /// value.
 ///
-///     @main
-///     struct Greet: ParsableCommand {
-///         @Argument var name: String
-///         @Argument var greeting: String = "Hello"
+/// ```swift
+/// @main
+/// struct Greet: ParsableCommand {
+///     @Argument var name: String
+///     @Argument var greeting: String = "Hello"
 ///
-///         mutating func run() {
-///             print("\(greeting) \(name)!")
-///         }
+///     mutating func run() {
+///         print("\(greeting) \(name)!")
 ///     }
+/// }
+/// ```
 ///
 /// You can call this program with just a name or with a name and a
 /// greeting. When you supply both arguments, the first argument is always

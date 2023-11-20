@@ -14,17 +14,19 @@
 /// Use an option group to include a group of options, flags, or arguments
 /// declared in a parsable type.
 ///
-///     struct GlobalOptions: ParsableArguments {
-///         @Flag(name: .shortAndLong)
-///         var verbose: Bool
+/// ```swift
+/// struct GlobalOptions: ParsableArguments {
+///     @Flag(name: .shortAndLong)
+///     var verbose: Bool
 ///
-///         @Argument var values: [Int]
-///     }
+///     @Argument var values: [Int]
+/// }
 ///
-///     struct Options: ParsableArguments {
-///         @Option var name: String
-///         @OptionGroup var globals: GlobalOptions
-///     }
+/// struct Options: ParsableArguments {
+///     @Option var name: String
+///     @OptionGroup var globals: GlobalOptions
+/// }
+/// ```
 ///
 /// The flag and positional arguments declared as part of `GlobalOptions` are
 /// included when parsing `Options`.
