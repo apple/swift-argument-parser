@@ -13,7 +13,7 @@ import XCTest
 @testable import ArgumentParser
 import ArgumentParserTestHelpers
 
-extension SplitArguments.InputIndex: ExpressibleByIntegerLiteral {
+extension ArgumentParser.SplitArguments.InputIndex: Swift.ExpressibleByIntegerLiteral {
   public init(integerLiteral value: Int) {
     self.init(rawValue: value)
   }

@@ -12,7 +12,7 @@
 import ArgumentParser
 import Foundation
 
-extension Date: ExpressibleByArgument {
+extension Foundation.Date: ArgumentParser.ExpressibleByArgument {
   // parsed as `yyyy-mm-dd`
   public init?(argument: String) {
     // ensure the input argument is composed of exactly 3 components separated
