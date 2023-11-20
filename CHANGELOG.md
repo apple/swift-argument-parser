@@ -24,9 +24,10 @@ Add new items at the end of the relevant section under **Unreleased**.
 ### Fixes
 
 - The titles for nested option groups are preserved when embedded into commands without specifying a new title. ([#592])
-- Bash completion scripts now respect the extensions given in a `.file(...)` completion kind. ([#590])
 - When wrapping help and error messages, the library now uses the `COLUMNS` environment variable when set, instead of immediately falling back to 80 columns. ([#596])
-- Documentation improvements. ([#572], [#565])
+- Bash completion scripts now respect the extensions given in a `.file(...)` completion kind. ([#590])
+- Bash completion scripts now properly escape command names that include hyphens. ([#573])
+- Documentation improvements. ([#572], [#565], [#602])
 
 ---
 
@@ -911,6 +912,7 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [#554]: https://github.com/apple/swift-argument-parser/pull/554
 [#565]: https://github.com/apple/swift-argument-parser/pull/565
 [#572]: https://github.com/apple/swift-argument-parser/pull/572
+[#573]: https://github.com/apple/swift-argument-parser/pull/573
 [#574]: https://github.com/apple/swift-argument-parser/pull/574
 [#579]: https://github.com/apple/swift-argument-parser/pull/579
 [#582]: https://github.com/apple/swift-argument-parser/pull/582
@@ -918,6 +920,7 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [#592]: https://github.com/apple/swift-argument-parser/pull/592
 [#594]: https://github.com/apple/swift-argument-parser/pull/594
 [#596]: https://github.com/apple/swift-argument-parser/pull/596
+[#602]: https://github.com/apple/swift-argument-parser/pull/602
 
 <!-- Link references for contributors -->
 
