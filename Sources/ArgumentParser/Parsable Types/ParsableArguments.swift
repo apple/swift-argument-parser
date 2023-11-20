@@ -210,7 +210,8 @@ extension ParsableArguments {
       if messageInfo.shouldExitCleanly {
         print(fullText)
       } else {
-        print(fullText, to: &Platform.standardError)
+        var errorOut = Platform.standardError
+        print(fullText, to: &errorOut)
       }
     }
     Platform.exit(messageInfo.exitCode.rawValue)

@@ -63,7 +63,7 @@ extension ParsableCommand {
     _ arguments: [String]? = nil
   ) throws -> ParsableCommand {
     var parser = CommandParser(self)
-    let arguments = arguments ?? Array(CommandLine.arguments.dropFirst())
+    let arguments = arguments ?? Array(CommandLine._staticArguments.dropFirst())
     return try parser.parse(arguments: arguments).get()
   }
   
