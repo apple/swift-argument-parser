@@ -22,7 +22,7 @@
 ### Handling Errors
 
 - ``message(for:)``
-- ``fullMessage(for:)``
+- ``fullMessage(for:columns:)``
 - ``exitCode(for:)``
 
 ### Generating Completion Scripts
@@ -33,4 +33,3 @@
 ### Infrequently Used APIs
 
 - ``init()``
-- ``helpMessage(columns:)``

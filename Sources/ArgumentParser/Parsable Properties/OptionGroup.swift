@@ -14,17 +14,19 @@
 /// Use an option group to include a group of options, flags, or arguments
 /// declared in a parsable type.
 ///
-///     struct GlobalOptions: ParsableArguments {
-///         @Flag(name: .shortAndLong)
-///         var verbose: Bool
+/// ```swift
+/// struct GlobalOptions: ParsableArguments {
+///     @Flag(name: .shortAndLong)
+///     var verbose: Bool
 ///
-///         @Argument var values: [Int]
-///     }
+///     @Argument var values: [Int]
+/// }
 ///
-///     struct Options: ParsableArguments {
-///         @Option var name: String
-///         @OptionGroup var globals: GlobalOptions
-///     }
+/// struct Options: ParsableArguments {
+///     @Option var name: String
+///     @OptionGroup var globals: GlobalOptions
+/// }
+/// ```
 ///
 /// The flag and positional arguments declared as part of `GlobalOptions` are
 /// included when parsing `Options`.
@@ -45,14 +47,14 @@ public struct OptionGroup<Value: ParsableArguments>: Decodable, ParsedWrapper {
     self._visibility = .default
   }
   
-  public init(from decoder: Decoder) throws {
-    if let d = decoder as? SingleValueDecoder,
+  public init(from _decoder: Decoder) throws {
+    if let d = _decoder as? SingleValueDecoder,
       let value = try? d.previousValue(Value.self)
     {
       self.init(_parsedValue: .value(value))
     } else {
-      try self.init(_decoder: decoder)
-      if let d = decoder as? SingleValueDecoder {
+      try self.init(_decoder: _decoder)
+      if let d = _decoder as? SingleValueDecoder {
         d.saveValue(wrappedValue)
       }
     }

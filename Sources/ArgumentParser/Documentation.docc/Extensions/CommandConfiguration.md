@@ -24,7 +24,3 @@
 - ``version``
 - ``shouldDisplay``
 
-### Deprecated APIs
-
-- ``init(commandName:abstract:discussion:version:shouldDisplay:subcommands:defaultSubcommand:helpNames:)``
-

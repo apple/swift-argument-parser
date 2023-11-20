@@ -22,19 +22,21 @@
 ///
 /// For example, the following program defines three options:
 ///
-///     @main
-///     struct Greet: ParsableCommand {
-///         @Option var greeting = "Hello"
-///         @Option var age: Int? = nil
-///         @Option var name: String
+/// ```swift
+/// @main
+/// struct Greet: ParsableCommand {
+///     @Option var greeting = "Hello"
+///     @Option var age: Int? = nil
+///     @Option var name: String
 ///
-///         mutating func run() {
-///             print("\(greeting) \(name)!")
-///             if let age = age {
-///                 print("Congrats on making it to the ripe old age of \(age)!")
-///             }
+///     mutating func run() {
+///         print("\(greeting) \(name)!")
+///         if let age = age {
+///             print("Congrats on making it to the ripe old age of \(age)!")
 ///         }
 ///     }
+/// }
+/// ```
 ///
 /// `greeting` has a default value of `"Hello"`, which can be overridden by
 /// providing a different string as an argument, while `age` defaults to `nil`.
@@ -54,8 +56,8 @@ public struct Option<Value>: Decodable, ParsedWrapper {
     self._parsedValue = _parsedValue
   }
   
-  public init(from decoder: Decoder) throws {
-    try self.init(_decoder: decoder)
+  public init(from _decoder: Decoder) throws {
+    try self.init(_decoder: _decoder)
   }
 
   /// This initializer works around a quirk of property wrappers, where the
@@ -278,14 +280,14 @@ extension Option where Value: ExpressibleByArgument {
     Swap the order of the 'help' and 'completion' arguments.
     """)
   public init(
-    wrappedValue: Value,
+    wrappedValue _wrappedValue: Value,
     name: NameSpecification = .long,
     parsing parsingStrategy: SingleValueParsingStrategy = .next,
     completion: CompletionKind?,
     help: ArgumentHelp?
   ) {
     self.init(
-      wrappedValue: wrappedValue,
+      wrappedValue: _wrappedValue,
       name: name,
       parsing: parsingStrategy,
       help: help,
@@ -441,7 +443,7 @@ extension Option {
     """)
   @_disfavoredOverload
   public init<T>(
-    wrappedValue: Optional<T>,
+    wrappedValue _wrappedValue: Optional<T>,
     name: NameSpecification = .long,
     parsing parsingStrategy: SingleValueParsingStrategy = .next,
     help: ArgumentHelp? = nil,
@@ -454,7 +456,7 @@ extension Option {
         kind: .name(key: key, specification: name),
         help: help,
         parsingStrategy: parsingStrategy.base,
-        initial: wrappedValue,
+        initial: _wrappedValue,
         completion: completion)
 
       return ArgumentSet(arg)
@@ -544,7 +546,7 @@ extension Option {
   @_disfavoredOverload
   @preconcurrency
   public init<T>(
-    wrappedValue: Optional<T>,
+    wrappedValue _wrappedValue: Optional<T>,
     name: NameSpecification = .long,
     parsing parsingStrategy: SingleValueParsingStrategy = .next,
     help: ArgumentHelp? = nil,
@@ -559,7 +561,7 @@ extension Option {
         help: help,
         parsingStrategy: parsingStrategy.base,
         transform: transform,
-        initial: wrappedValue,
+        initial: _wrappedValue,
         completion: completion)
 
       return ArgumentSet(arg)
