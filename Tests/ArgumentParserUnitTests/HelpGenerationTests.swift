@@ -807,10 +807,7 @@ extension HelpGenerationTests {
   }
   
   func testColumnsEnvironmentOverride() throws {
-    #if os(Windows) || os(WASI)
-    throw XCTSkip("Unsupported on this platform")
-    #endif
-
+#if !(os(Windows) || os(WASI))
     defer { unsetenv("COLUMNS") }
     unsetenv("COLUMNS")
     AssertHelp(.default, for: WideHelp.self, columns: nil, equals: """
@@ -849,5 +846,6 @@ extension HelpGenerationTests {
         -h, --help              Show help information.
       
       """)
+#endif
   }
 }
