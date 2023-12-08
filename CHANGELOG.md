@@ -44,7 +44,7 @@ Add new items at the end of the relevant section under **Unreleased**.
 - Bash completion scripts now properly escape command names that include hyphens. ([#573])
 - Documentation improvements. ([#572], [#565], [#602])
 
-The 1.2.3 release includes contributions from [Alkenso], [compnerd], [gwynne],
+The 1.3.0 release includes contributions from [Alkenso], [compnerd], [gwynne],
 [kennyyork], [natecook1000], [rauhul], [robertmryan], and [vlm]. Thank you!
 
 ---
