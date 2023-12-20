@@ -21,6 +21,11 @@ Add new items at the end of the relevant section under **Unreleased**.
 
   *Migration:* Users that aren't ready to resolve sendability warnings can add the
   `@preconcurrency` attribute to `import ArgumentParser` statements.
+  
+  As part of this update, changes to the `CommandLine.arguments` array before a command's
+  `main` or `parse...` methods are called are no longer observed. Instead of making
+  changes to `CommandLine.arguments`, pass an updated array of arguments to the command's
+  method.
 
 - To support migration to `Sendable` annotation, the minimum Swift version for
   `swift-argument-parser` has been increased to Swift 5.7. Users of older Swift versions
