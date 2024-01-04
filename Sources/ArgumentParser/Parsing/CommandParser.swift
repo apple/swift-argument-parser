@@ -84,7 +84,7 @@ extension CommandParser {
     _ split: SplitArguments,
     requireSoloArgument: Bool = false
   ) throws {
-    guard !requireSoloArgument || split.count == 1 else { return }
+    guard !requireSoloArgument || split.originalInput.count == 1 else { return }
     
     // Look for help flags
     guard !split.contains(anyOf: self.commandStack.getHelpNames(visibility: .default)) else {
