@@ -17,13 +17,16 @@
 struct DecodedArguments {
   var type: ParsableArguments.Type
   var value: ParsableArguments
+  var isOptionGroup: Bool = false
 
   var commandType: ParsableCommand.Type? {
-    type as? ParsableCommand.Type
+    if isOptionGroup { return nil }
+    return type as? ParsableCommand.Type
   }
 
   var command: ParsableCommand? {
-    value as? ParsableCommand
+    if isOptionGroup { return nil }
+    return value as? ParsableCommand
   }
 }
 
@@ -182,7 +185,7 @@ struct SingleValueDecoder: Decoder {
   }
 
   func saveValue<T: ParsableArguments>(_ value: T, type: T.Type = T.self) {
-    underlying.previouslyDecoded.append(DecodedArguments(type: type, value: value))
+    underlying.previouslyDecoded.append(DecodedArguments(type: type, value: value, isOptionGroup: true))
   }
   
   struct SingleValueContainer: SingleValueDecodingContainer {

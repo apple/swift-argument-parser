@@ -514,6 +514,31 @@ extension HelpGenerationTests {
     
     """)
   }
+
+  struct ParsableCommandOption : ParsableCommand {
+    struct Group: ParsableCommand {
+      @Option
+      var opt: Int = 0
+    }
+    @OptionGroup
+    var options: Group
+    @Argument
+    var arg: String = ""
+  }
+
+  func testHelpWithParsableCommandOption() {
+    AssertHelp(.default, for: ParsableCommandOption.self, equals: """
+    USAGE: parsable-command-option [--opt <opt>] [<arg>]
+
+    ARGUMENTS:
+      <arg>
+
+    OPTIONS:
+      --opt <opt>             (default: 0)
+      -h, --help              Show help information.
+
+    """)
+  }
 }
 
 extension HelpGenerationTests {
