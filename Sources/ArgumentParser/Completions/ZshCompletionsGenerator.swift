@@ -137,7 +137,7 @@ extension ArgumentDefinition {
   func zshCompletionString(_ commands: [ParsableCommand.Type]) -> String? {
     guard help.visibility.base == .default else { return nil }
     
-    var inputs: String
+    let inputs: String
     switch update {
     case .unary:
       inputs = ":\(valueName):\(zshActionString(commands))"
@@ -150,19 +150,34 @@ extension ArgumentDefinition {
     case 0:
       line = ""
     case 1:
+      let star = isRepeatableOption ? "*" : ""
       line = """
-      \(names[0].synopsisString)\(zshCompletionAbstract)
+      \(star)\(names[0].synopsisString)\(zshCompletionAbstract)
       """
     default:
       let synopses = names.map { $0.synopsisString }
+      let suppression = isRepeatableOption ? "*" : "(\(synopses.joined(separator: " ")))"
       line = """
-      (\(synopses.joined(separator: " ")))'\
+      \(suppression)'\
       {\(synopses.joined(separator: ","))}\
       '\(zshCompletionAbstract)
       """
     }
     
     return "'\(line)\(inputs)'"
+  }
+
+  /// - returns: `true` if I'm an option and can be tab-completed multiple times in one command line. For example, `ssh` allows the `-L` option to be given multiple times, to establish multiple port forwardings.
+  private var isRepeatableOption: Bool {
+    guard
+      case .named(_) = kind,
+      help.options.contains(.isRepeating)
+    else { return false }
+
+    switch parsingStrategy {
+    case .default, .unconditional: return true
+    default: return false
+    }
   }
 
   /// Returns the zsh "action" for an argument completion string.
