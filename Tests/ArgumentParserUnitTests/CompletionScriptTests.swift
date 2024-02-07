@@ -29,7 +29,7 @@ extension CompletionScriptTests {
     }
   }
     
-  enum Kind: String, ExpressibleByArgument, CaseIterable {
+  enum Kind: String, ExpressibleByArgument, EnumerableFlag {
     case one, two, three = "custom-three"
   }
   
@@ -48,7 +48,9 @@ extension CompletionScriptTests {
     @Option(completion: .list(["a", "b", "c"])) var path3: Path
     
     @Flag(help: .hidden) var verbose = false
-
+    @Flag var allowedKinds: [Kind] = []
+    @Flag var kindCounter: Int
+    
     @Option() var rep1: [String]
     @Option(name: [.short, .long]) var rep2: [String]
 
@@ -167,6 +169,10 @@ _base-test() {
         '--path1:path1:_files'
         '--path2:path2:_files'
         '--path3:path3:(a b c)'
+        '--one'
+        '--two'
+        '--three'
+        '*--kind-counter'
         '*--rep1:rep1:'
         '*'{-r,--rep2}':rep2:'
         '(-h --help)'{-h,--help}'[Show help information.]'
@@ -236,7 +242,7 @@ _base_test() {
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
     COMPREPLY=()
-    opts="--name --kind --other-kind --path1 --path2 --path3 --rep1 -r --rep2 -h --help sub-command help"
+    opts="--name --kind --other-kind --path1 --path2 --path3 --one --two --three --kind-counter --rep1 -r --rep2 -h --help sub-command help"
     if [[ $COMP_CWORD == "1" ]]; then
         COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
         return
@@ -389,6 +395,10 @@ complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-comman
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command help"' -l path1 -r -f -a '(for i in *.{}; echo $i;end)'
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command help"' -l path2 -r -f -a '(for i in *.{}; echo $i;end)'
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command help"' -l path3 -r -f -k -a 'a b c'
+complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command help"' -l one
+complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command help"' -l two
+complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command help"' -l three
+complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command help"' -l kind-counter
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command help"' -l rep1
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command help"' -s r -l rep2
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command help"' -s h -l help -d 'Show help information.'
