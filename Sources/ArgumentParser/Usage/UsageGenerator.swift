@@ -9,7 +9,13 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if swift(>=5.11)
+internal import protocol Foundation.LocalizedError
+#elseif swift(>=5.10)
+import protocol Foundation.LocalizedError
+#else
 @_implementationOnly import protocol Foundation.LocalizedError
+#endif
 
 struct UsageGenerator {
   var toolName: String
