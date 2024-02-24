@@ -295,8 +295,47 @@ extension ArgumentDefinition {
       initial: initial,
       completion: completion)
   }
-
-  private init<Container>(
+  
+  init<Container>(
+    dictionaryContainer: Container.Type,
+    key: InputKey,
+    kind: ArgumentDefinition.Kind,
+    help: ArgumentHelp?,
+    parsingStrategy: ParsingStrategy,
+    separator: Character,
+    initial: Container.Initial?,
+    completion: CompletionKind?
+  ) where Container: ArgumentDefinitionDictionaryContainer {
+    self.init(
+      container: dictionaryContainer,
+      key: key,
+      kind: kind,
+      allValueStrings: [],
+      help: help,
+      defaultValueDescription: nil,
+      parsingStrategy: parsingStrategy,
+      parser: { key, origin, name, input -> ((Container.Key, Container.Value)) in
+        let split = input.split(separator: separator, maxSplits: 1, omittingEmptySubsequences: false)
+          .map { String($0) }
+        guard split.count == 2 else {
+          throw ParserError.missingSeparator(
+            separator: separator, originalInput: input)
+        }
+        guard let dictKey = Container.Key(argument: split[0]) else {
+          throw ParserError.unableToParseValue(
+            origin, name, split[0], forKey: key, originalError: nil)
+        }
+        guard let dictValue = Container.Value(argument: split[1]) else {
+          throw ParserError.unableToParseValue(
+            origin, name, split[1], forKey: key, originalError: nil)
+        }
+        return (dictKey, dictValue)
+      },
+      initial: initial,
+      completion: completion)
+  }
+  
+  init<Container>(
     container: Container.Type,
     key: InputKey,
     kind: ArgumentDefinition.Kind,
@@ -323,7 +362,7 @@ extension ArgumentDefinition {
       parsingStrategy: parsingStrategy,
       update: .unary({ (origin, name, valueString, parsedValues) in
         let value = try parser(key, origin, name, valueString)
-        Container.update(
+        try Container.update(
           parsedValues: &parsedValues,
           value: value,
           key: key,
@@ -352,7 +391,7 @@ protocol ArgumentDefinitionContainer {
     parsedValues: inout ParsedValues,
     value: Contained,
     key: InputKey,
-    origin: InputOrigin)
+    origin: InputOrigin) throws
 }
 
 protocol ArgumentDefinitionContainerExpressibleByArgument:
@@ -448,5 +487,66 @@ where Element: ExpressibleByArgument {
       .lazy
       .map { $0.defaultValueDescription }
       .joined(separator: ", ")
+  }
+}
+
+// MARK: - Container abstractions for Dictionary<K, V>
+
+protocol ArgumentDefinitionDictionaryContainer: ArgumentDefinitionContainer
+  where Initial == Dictionary<Key, Value>, Contained == (Key, Value)
+{
+  associatedtype Key: Hashable, ExpressibleByArgument
+  associatedtype Value: ExpressibleByArgument
+}
+
+protocol DictionaryMergeBehavior {
+  static func update<K: Hashable, V>(_ dict: inout [K: V], key: K, value: V) throws
+}
+
+struct UseFirst: DictionaryMergeBehavior {
+  static func update<K: Hashable, V>(_ dict: inout [K: V], key: K, value: V) throws {
+    if !dict.keys.contains(key) {
+      dict[key] = value
+    }
+  }
+}
+
+struct UseLast: DictionaryMergeBehavior {
+  static func update<K: Hashable, V>(_ dict: inout [K: V], key: K, value: V) throws {
+    dict[key] = value
+  }
+}
+
+struct UniqueKey: DictionaryMergeBehavior {
+  static func update<K: Hashable, V>(_ dict: inout [K: V], key: K, value: V) throws {
+    if dict.keys.contains(key) {
+      throw ParserError.duplicateKey(String(describing: key))
+    }
+    dict[key] = value
+  }
+}
+
+struct DictionaryContainer<Key, Value, Merge>: ArgumentDefinitionDictionaryContainer
+  where Key: Hashable & ExpressibleByArgument, Value: ExpressibleByArgument,
+        Merge: DictionaryMergeBehavior
+{
+  typealias Contained = (Key, Value)
+  typealias Initial = Dictionary<Key, Value>
+
+  static var helpOptions: ArgumentDefinition.Help.Options { [.isRepeating] }
+
+  static func update(
+    parsedValues: inout ParsedValues,
+    value: (Key, Value),
+    key: InputKey,
+    origin: InputOrigin
+  ) throws {
+    try parsedValues.update(
+      forKey: key,
+      inputOrigin: origin,
+      initial: Initial(),
+      closure: {
+        try Merge.update(&$0, key: value.0, value: value.1)
+      })
   }
 }

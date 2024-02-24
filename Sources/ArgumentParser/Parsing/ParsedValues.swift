@@ -57,23 +57,27 @@ extension ParsedValues {
   }
 
   mutating func update<A>(
-    forKey key: InputKey, inputOrigin: InputOrigin, initial: A,
-    closure: (inout A) -> Void
-  ) {
+    forKey key: InputKey,
+    inputOrigin: InputOrigin,
+    initial: A,
+    closure: (inout A) throws -> Void
+  ) rethrows {
     var e =
       element(forKey: key)
       ?? Element(key: key, value: initial, inputOrigin: InputOrigin())
     var v = (e.value as? A) ?? initial
-    closure(&v)
+    try closure(&v)
     e.value = v
     e.inputOrigin.formUnion(inputOrigin)
     set(e)
   }
 
   mutating func update<A>(
-    forKey key: InputKey, inputOrigin: InputOrigin, initial: [A],
-    closure: (inout [A]) -> Void
-  ) {
+    forKey key: InputKey,
+    inputOrigin: InputOrigin,
+    initial: [A],
+    closure: (inout [A]) throws -> Void
+  ) rethrows {
     var e =
       element(forKey: key)
       ?? Element(key: key, value: initial, inputOrigin: InputOrigin())
@@ -83,7 +87,7 @@ extension ParsedValues {
       v.removeAll()
       e.shouldClearArrayIfParsed = false
     }
-    closure(&v)
+    try closure(&v)
     e.value = v
     e.inputOrigin.formUnion(inputOrigin)
     set(e)

@@ -21,9 +21,14 @@ struct Repeat: ParsableCommand {
 
   @Argument(help: "The phrase to repeat.")
   var phrase: String
+  
+//  @Argument(exclusivity: .requireUnique)
+//  var info: [String: Int]
 
   mutating func run() throws {
     let repeatCount = count ?? 2
+
+//    dump(info)
 
     for i in 1...repeatCount {
       if includeCounter {

@@ -312,6 +312,32 @@ public struct ArgumentArrayParsingStrategy: Hashable {
 
 extension ArgumentArrayParsingStrategy: Sendable {}
 
+/// The strategy to use when parsing multiple key-value pairs from positional
+/// arguments into a dictionary.
+public struct DictionaryKeyExclusivity: Hashable {
+  enum Representation {
+    case useFirst
+    case useLast
+    case unique
+  }
+  
+  internal var base: Representation
+  
+  public static var useFirst: DictionaryKeyExclusivity {
+    self.init(base: .useFirst)
+  }
+  
+  public static var useLast: DictionaryKeyExclusivity {
+    self.init(base: .useLast)
+  }
+  
+  public static var requireUnique: DictionaryKeyExclusivity {
+    self.init(base: .unique)
+  }
+}
+
+extension DictionaryKeyExclusivity: Sendable { }
+
 // MARK: - @Argument T: ExpressibleByArgument Initializers
 extension Argument where Value: ExpressibleByArgument {
   /// Creates a property with a default value provided by standard Swift default
@@ -785,5 +811,100 @@ extension Argument {
 
         return ArgumentSet(arg)
       })
+  }
+}
+
+// MARK: - @Argument Dictionary<K, V> Initializers
+extension Argument {
+  private init<Container>(
+    dictionaryContainer: Container.Type,
+    help: ArgumentHelp?,
+    completion: CompletionKind?,
+    separator: Character,
+    initial: Container.Initial?
+  ) where Container: ArgumentDefinitionDictionaryContainer {
+    self.init(_parsedValue: .init { key in
+      let arg = ArgumentDefinition(
+        dictionaryContainer: dictionaryContainer,
+        key: key,
+        kind: .positional,
+        help: help,
+        parsingStrategy: .default,
+        separator: separator,
+        initial: initial,
+        completion: completion)
+      return ArgumentSet(arg)
+    })
+  }
+  
+  @preconcurrency
+  public init<K: ExpressibleByArgument, V: ExpressibleByArgument>(
+    wrappedValue: Value,
+    help: ArgumentHelp? = nil,
+    completion: CompletionKind? = nil,
+    separator: Character = ":",
+    exclusivity: DictionaryKeyExclusivity = .useLast
+  ) where Value == Dictionary<K, V> {
+    switch exclusivity.base {
+    case .useFirst:
+      self.init(
+        dictionaryContainer: DictionaryContainer<K, V, UseFirst>.self,
+        help: help,
+        completion: completion,
+        separator: separator,
+        initial: wrappedValue
+      )
+    case .useLast:
+      self.init(
+        dictionaryContainer: DictionaryContainer<K, V, UseLast>.self,
+        help: help,
+        completion: completion,
+        separator: separator,
+        initial: wrappedValue
+      )
+    case .unique:
+      self.init(
+        dictionaryContainer: DictionaryContainer<K, V, UniqueKey>.self,
+        help: help,
+        completion: completion,
+        separator: separator,
+        initial: wrappedValue
+      )
+    }
+  }
+
+  @preconcurrency
+  public init<K: ExpressibleByArgument, V: ExpressibleByArgument>(
+    help: ArgumentHelp? = nil,
+    completion: CompletionKind? = nil,
+    separator: Character = ":",
+    exclusivity: DictionaryKeyExclusivity = .useLast
+  ) where Value == Dictionary<K, V> {
+    switch exclusivity.base {
+    case .useFirst:
+      self.init(
+        dictionaryContainer: DictionaryContainer<K, V, UseFirst>.self,
+        help: help,
+        completion: completion,
+        separator: separator,
+        initial: nil
+      )
+    case .useLast:
+      self.init(
+        dictionaryContainer: DictionaryContainer<K, V, UseLast>.self,
+        help: help,
+        completion: completion,
+        separator: separator,
+        initial: nil
+      )
+    case .unique:
+      self.init(
+        dictionaryContainer: DictionaryContainer<K, V, UniqueKey>.self,
+        help: help,
+        completion: completion,
+        separator: separator,
+        initial: nil
+      )
+    }
   }
 }

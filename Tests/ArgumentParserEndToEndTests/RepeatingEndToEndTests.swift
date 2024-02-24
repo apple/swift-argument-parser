@@ -432,3 +432,19 @@ extension RepeatingEndToEndTests {
     XCTAssertLessThan(timeFor40, timeFor20 * 10)
   }
 }
+
+extension RepeatingEndToEndTests {
+  struct DictionaryCommand: ParsableCommand {
+    @Argument
+    var info: [String: Int]
+  }
+  
+  func testDictionaryParsing() throws {
+    AssertParse(DictionaryCommand.self, ["one:1", "two:2"]) { dict in
+      XCTAssertEqual(dict.info, [
+        "one": 1,
+        "two": 2,
+      ])
+    }
+  }
+}

@@ -37,6 +37,8 @@ enum ParserError: Error {
   case missingSubcommand
   case userValidationError(Error)
   case noArguments(Error)
+  case missingSeparator(separator: Character, originalInput: String)
+  case duplicateKey(String)
 }
 
 /// These are errors used internally to the parsing, and will not be exposed to the help generation.

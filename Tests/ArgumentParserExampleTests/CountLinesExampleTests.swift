@@ -25,6 +25,7 @@ final class CountLinesExampleTests: XCTestCase {
     guard #available(macOS 12, *) else { return }
     let testFile = try XCTUnwrap(
       Bundle.module.url(forResource: "CountLinesTest", withExtension: "txt"))
+    print(testFile.path)
     try AssertExecuteCommand(
       command: "count-lines \(testFile.path)", expected: "20")
     try AssertExecuteCommand(
