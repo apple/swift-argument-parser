@@ -55,16 +55,16 @@ extension ParsedValues {
     elements[key]
   }
   
-  mutating func update<A>(forKey key: InputKey, inputOrigin: InputOrigin, initial: A, closure: (inout A) -> Void) {
+  mutating func update<A>(forKey key: InputKey, inputOrigin: InputOrigin, initial: A, closure: (inout A) throws -> Void) rethrows {
     var e = element(forKey: key) ?? Element(key: key, value: initial, inputOrigin: InputOrigin())
     var v = (e.value as? A ) ?? initial
-    closure(&v)
+    try closure(&v)
     e.value = v
     e.inputOrigin.formUnion(inputOrigin)
     set(e)
   }
   
-  mutating func update<A>(forKey key: InputKey, inputOrigin: InputOrigin, initial: [A], closure: (inout [A]) -> Void) {
+  mutating func update<A>(forKey key: InputKey, inputOrigin: InputOrigin, initial: [A], closure: (inout [A]) throws -> Void) rethrows {
     var e = element(forKey: key) ?? Element(key: key, value: initial, inputOrigin: InputOrigin())
     var v = (e.value as? [A] ) ?? initial
     // The first time a value is parsed from command line, empty array of any default values.
@@ -72,7 +72,7 @@ extension ParsedValues {
       v.removeAll()
       e.shouldClearArrayIfParsed = false
     }
-    closure(&v)
+    try closure(&v)
     e.value = v
     e.inputOrigin.formUnion(inputOrigin)
     set(e)

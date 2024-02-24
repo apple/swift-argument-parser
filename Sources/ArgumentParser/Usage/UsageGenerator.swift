@@ -197,6 +197,10 @@ extension ErrorMessageGenerator {
       return noValueMessage(key: k)
     case .unableToParseValue(let o, let n, let v, forKey: let k, originalError: let e):
       return unableToParseValueMessage(origin: o, name: n, value: v, key: k, error: e)
+    case .missingSeparator(let sep, let input):
+      return "Missing separator '\(sep)' in: \(input)"
+    case .duplicateKey(let key):
+      return "Duplicate key '\(key)'"
     case .invalidOption(let str):
       return "Invalid option: \(str)"
     case .nonAlphanumericShortOption(let c):
