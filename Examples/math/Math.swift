@@ -15,7 +15,7 @@ import ArgumentParser
 struct Math: ParsableCommand {
     // Customize your command's help and subcommands by implementing the
     // `configuration` property.
-    static var configuration = CommandConfiguration(
+    static let configuration = CommandConfiguration(
         // Optional abstracts and discussions are used for help output.
         abstract: "A utility for performing maths.",
 
@@ -50,7 +50,7 @@ extension Math {
     }
 
     struct Add: ParsableCommand {
-        static var configuration =
+        static let configuration =
             CommandConfiguration(abstract: "Print the sum of the values.")
 
         // The `@OptionGroup` attribute includes the flags, options, and
@@ -64,7 +64,7 @@ extension Math {
     }
 
     struct Multiply: ParsableCommand {
-        static var configuration =
+        static let configuration =
             CommandConfiguration(abstract: "Print the product of the values.")
 
         @OptionGroup var options: Options
@@ -79,7 +79,7 @@ extension Math {
 // In practice, these nested types could be broken out into different files.
 extension Math {
     struct Statistics: ParsableCommand {
-        static var configuration = CommandConfiguration(
+        static let configuration = CommandConfiguration(
             // Command names are automatically generated from the type name
             // by default; you can specify an override here.
             commandName: "stats",
@@ -90,7 +90,7 @@ extension Math {
 
 extension Math.Statistics {
     struct Average: ParsableCommand {
-        static var configuration = CommandConfiguration(
+        static let configuration = CommandConfiguration(
             abstract: "Print the average of the values.",
             version: "1.5.0-alpha")
 
@@ -160,7 +160,7 @@ extension Math.Statistics {
     }
 
     struct StandardDeviation: ParsableCommand {
-        static var configuration = CommandConfiguration(
+        static let configuration = CommandConfiguration(
             commandName: "stdev",
             abstract: "Print the standard deviation of the values.")
 
@@ -184,7 +184,7 @@ extension Math.Statistics {
     }
 
     struct Quantiles: ParsableCommand {
-        static var configuration = CommandConfiguration(
+        static let configuration = CommandConfiguration(
             abstract: "Print the quantiles of the values (TBD).")
 
         @Argument(completion: .list(["alphabet", "alligator", "branch", "braggart"]))

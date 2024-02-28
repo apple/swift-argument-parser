@@ -34,7 +34,7 @@ extension CompletionScriptTests {
   }
   
   struct Base: ParsableCommand {
-    static var configuration = CommandConfiguration(
+    static let configuration = CommandConfiguration(
       commandName: "base-test",
       subcommands: [SubCommand.self]
     )
@@ -55,7 +55,7 @@ extension CompletionScriptTests {
     @Option(name: [.short, .long]) var rep2: [String]
 
    struct SubCommand: ParsableCommand {
-     static var configuration = CommandConfiguration(
+     static let configuration = CommandConfiguration(
        commandName: "sub-command"
      )
    }
@@ -408,11 +408,11 @@ complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-comman
 
 // MARK: - Test Hidden Subcommand
 struct Parent: ParsableCommand {
-    static var configuration = CommandConfiguration(subcommands: [HiddenChild.self])
+    static let configuration = CommandConfiguration(subcommands: [HiddenChild.self])
 }
 
 struct HiddenChild: ParsableCommand {
-    static var configuration = CommandConfiguration(shouldDisplay: false)
+    static let configuration = CommandConfiguration(shouldDisplay: false)
 }
 
 extension CompletionScriptTests {

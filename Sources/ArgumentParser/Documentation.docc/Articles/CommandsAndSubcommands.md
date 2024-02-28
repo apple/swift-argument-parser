@@ -39,7 +39,7 @@ Start by defining the root `Math` command. You can provide a static ``ParsableCo
 
 ```swift
 struct Math: ParsableCommand {
-    static var configuration = CommandConfiguration(
+    static let configuration = CommandConfiguration(
         abstract: "A utility for performing maths.",
         subcommands: [Add.self, Multiply.self, Statistics.self],
         defaultSubcommand: Add.self)
@@ -72,7 +72,7 @@ It's time to define our first two subcommands: `Add` and `Multiply`. Both of the
 ```swift
 extension Math {
     struct Add: ParsableCommand {
-        static var configuration
+        static let configuration
             = CommandConfiguration(abstract: "Print the sum of the values.")
 
         @OptionGroup var options: Math.Options
@@ -84,7 +84,7 @@ extension Math {
     }
 
     struct Multiply: ParsableCommand {
-        static var configuration
+        static let configuration
             = CommandConfiguration(abstract: "Print the product of the values.")
 
         @OptionGroup var options: Math.Options
@@ -102,7 +102,7 @@ Next, we'll define `Statistics`, the third subcommand of `Math`. The `Statistics
 ```swift
 extension Math {
     struct Statistics: ParsableCommand {
-        static var configuration = CommandConfiguration(
+        static let configuration = CommandConfiguration(
             commandName: "stats",
             abstract: "Calculate descriptive statistics.",
             subcommands: [Average.self, StandardDeviation.self])
@@ -115,7 +115,7 @@ Let's finish our subcommands with the `Average` and `StandardDeviation` types. E
 ```swift
 extension Math.Statistics {
     struct Average: ParsableCommand {
-        static var configuration = CommandConfiguration(
+        static let configuration = CommandConfiguration(
             abstract: "Print the average of the values.")
 
         enum Kind: String, ExpressibleByArgument {
@@ -148,7 +148,7 @@ extension Math.Statistics {
     }
 
     struct StandardDeviation: ParsableCommand {
-        static var configuration = CommandConfiguration(
+        static let configuration = CommandConfiguration(
             commandName: "stdev",
             abstract: "Print the standard deviation of the values.")
 

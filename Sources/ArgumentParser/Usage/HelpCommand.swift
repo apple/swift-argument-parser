@@ -10,7 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 struct HelpCommand: ParsableCommand {
-  static var configuration = CommandConfiguration(
+  static let configuration = CommandConfiguration(
     commandName: "help",
     abstract: "Show subcommand help information.",
     helpNames: [])

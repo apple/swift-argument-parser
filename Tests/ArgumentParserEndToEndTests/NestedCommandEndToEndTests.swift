@@ -19,7 +19,7 @@ final class NestedCommandEndToEndTests: XCTestCase {
 // MARK: Single value String
 
 fileprivate struct Foo: ParsableCommand {
-  static var configuration =
+  static let configuration =
     CommandConfiguration(subcommands: [Build.self, Package.self])
 
   @Flag(name: .short)
@@ -33,7 +33,7 @@ fileprivate struct Foo: ParsableCommand {
   }
 
   struct Package: ParsableCommand {
-    static var configuration =
+    static let configuration =
       CommandConfiguration(subcommands: [Clean.self, Config.self])
 
     @Flag(name: .short)

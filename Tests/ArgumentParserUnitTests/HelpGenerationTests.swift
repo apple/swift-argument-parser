@@ -304,7 +304,7 @@ extension HelpGenerationTests {
       @Argument
       var argument: String = ""
     }
-    static var configuration = CommandConfiguration(subcommands: [CommandWithVeryLongName.self,ShortCommand.self,AnotherCommandWithVeryLongName.self,AnotherCommand.self])
+    static let configuration = CommandConfiguration(subcommands: [CommandWithVeryLongName.self,ShortCommand.self,AnotherCommandWithVeryLongName.self,AnotherCommand.self])
   }
 
   func testHelpWithSubcommands() {
@@ -342,7 +342,7 @@ extension HelpGenerationTests {
   }
 
   struct I: ParsableCommand {
-    static var configuration = CommandConfiguration(version: "1.0.0")
+    static let configuration = CommandConfiguration(version: "1.0.0")
   }
 
   func testHelpWithVersion() {
@@ -358,7 +358,7 @@ extension HelpGenerationTests {
   }
 
   struct J: ParsableCommand {
-    static var configuration = CommandConfiguration(discussion: "test")
+    static let configuration = CommandConfiguration(discussion: "test")
   }
 
   func testOverviewButNoAbstractSpacing() {
@@ -422,7 +422,7 @@ extension HelpGenerationTests {
   struct M: ParsableCommand {
   }
   struct N: ParsableCommand {
-    static var configuration = CommandConfiguration(subcommands: [M.self], defaultSubcommand: M.self)
+    static let configuration = CommandConfiguration(subcommands: [M.self], defaultSubcommand: M.self)
   }
 
   func testHelpWithDefaultCommand() {

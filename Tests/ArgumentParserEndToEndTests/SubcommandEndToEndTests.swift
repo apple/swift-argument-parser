@@ -19,14 +19,14 @@ final class SubcommandEndToEndTests: XCTestCase {
 // MARK: Single value String
 
 fileprivate struct Foo: ParsableCommand {
-  static var configuration =
+  static let configuration =
     CommandConfiguration(subcommands: [CommandA.self, CommandB.self])
 
   @Option() var name: String
 }
 
 fileprivate struct CommandA: ParsableCommand {
-  static var configuration = CommandConfiguration(commandName: "a")
+  static let configuration = CommandConfiguration(commandName: "a")
 
   @OptionGroup() var foo: Foo
 
@@ -34,7 +34,7 @@ fileprivate struct CommandA: ParsableCommand {
 }
 
 fileprivate struct CommandB: ParsableCommand {
-  static var configuration = CommandConfiguration(commandName: "b")
+  static let configuration = CommandConfiguration(commandName: "b")
 
   @OptionGroup() var foo: Foo
 
@@ -154,7 +154,7 @@ struct BaseCommand: ParsableCommand {
 
   static let baseFlagValue = "base"
 
-  static var configuration = CommandConfiguration(
+  static let configuration = CommandConfiguration(
     commandName: "base",
     subcommands: [SubCommand.self]
   )
@@ -173,7 +173,7 @@ extension BaseCommand {
   struct SubCommand : ParsableCommand {
     static let subFlagValue = "sub"
 
-    static var configuration = CommandConfiguration(
+    static let configuration = CommandConfiguration(
       commandName: "sub",
       subcommands: [SubSubCommand.self]
     )
@@ -193,7 +193,7 @@ extension BaseCommand.SubCommand {
   struct SubSubCommand : ParsableCommand, TestableParsableArguments {
     let didValidateExpectation = XCTestExpectation(singleExpectation: "did validate subcommand")
 
-    static var configuration = CommandConfiguration(
+    static let configuration = CommandConfiguration(
       commandName: "subsub"
     )
 
@@ -238,7 +238,7 @@ extension SubcommandEndToEndTests {
 // MARK: Version flags
 
 private struct A: ParsableCommand {
-  static var configuration = CommandConfiguration(
+  static let configuration = CommandConfiguration(
     version: "1.0.0",
     subcommands: [HasVersionFlag.self, NoVersionFlag.self])
 
