@@ -21,7 +21,7 @@ extension ExitCodeTests {
   struct A: ParsableArguments {}
   struct E: Error {}
   struct C: ParsableCommand {
-    static var configuration = CommandConfiguration(version: "v1")
+    static let configuration = CommandConfiguration(version: "v1")
   }
   
   func testExitCodes() {

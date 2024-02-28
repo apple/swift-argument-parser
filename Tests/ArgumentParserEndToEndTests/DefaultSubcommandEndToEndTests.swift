@@ -19,7 +19,7 @@ final class DefaultSubcommandEndToEndTests: XCTestCase {
 // MARK: -
 
 private struct Main: ParsableCommand {
-  static var configuration = CommandConfiguration(
+  static let configuration = CommandConfiguration(
     subcommands: [Default.self, Foo.self, Bar.self],
     defaultSubcommand: Default.self
   )
@@ -72,7 +72,7 @@ extension DefaultSubcommandEndToEndTests {
 
 extension DefaultSubcommandEndToEndTests {
   fileprivate struct MyCommand: ParsableCommand {
-    static var configuration = CommandConfiguration(
+    static let configuration = CommandConfiguration(
       subcommands: [Plugin.self, NonDefault.self, Other.self],
       defaultSubcommand: Plugin.self
     )
