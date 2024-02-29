@@ -382,6 +382,7 @@ extension Option {
   ///   - help: Information about how to use this option.
   ///   - completion: Kind of completion provided to the user for this option.
   @preconcurrency
+  @_disfavoredOverload
   public init(
     name: NameSpecification = .long,
     parsing parsingStrategy: SingleValueParsingStrategy = .next,
