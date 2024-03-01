@@ -221,6 +221,14 @@ extension OptionalEndToEndTests {
       }
       return foo
     })
-    var test: Foo?
+    var testOption: Foo?
+    
+    @Argument(transform: {
+      guard let foo = Foo(string: $0) else {
+        throw MyError()
+      }
+      return foo
+    })
+    var testArgument: Foo?
   }
 }

@@ -414,6 +414,7 @@ extension Argument {
   ///   - transform: A closure that converts a string into this property's
   ///     element type or throws an error.
   @preconcurrency
+  @_disfavoredOverload
   public init(
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
