@@ -2,15 +2,15 @@
 
 ## Topics
 
-### Single Options
+### Single-Value Options
 
-- ``init(name:parsing:help:completion:)-7slrf``
 - ``init(name:parsing:help:completion:)-4yske``
+- ``init(name:parsing:help:completion:)-7slrf``
+- ``init(wrappedValue:name:parsing:help:completion:)-7ilku``
 - ``init(name:parsing:help:completion:transform:)-2wf44``
 - ``init(name:parsing:help:completion:transform:)-25g7b``
 - ``init(wrappedValue:name:parsing:help:completion:transform:)-2llve``
 - ``SingleValueParsingStrategy``
-- ``init(wrappedValue:name:parsing:help:completion:)-7ilku``
 
 ### Array Options
 
