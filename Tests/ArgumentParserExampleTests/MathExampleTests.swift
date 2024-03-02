@@ -29,7 +29,7 @@ final class MathExampleTests: XCTestCase {
     let helpText = """
         OVERVIEW: A utility for performing maths.
 
-        USAGE: math <subcommand>
+        USAGE: math <add|multiply|stats>
 
         OPTIONS:
           --version               Show the version.
