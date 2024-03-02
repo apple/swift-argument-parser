@@ -44,7 +44,6 @@ extension HelpGenerationTests {
     var ripeness: Ripeness = .perfect
   }
   
-  // TODO: walk docs for all the places that print usage with "(values: " and assess for turning into a test/updating docs
   func testFruitStoreHelp() {
     AssertHelp(.default, for: FruitStore.self, equals: """
             USAGE: fruit_store [<purchase|sample|return>] <fruit> [--quantity <quantity>] [--ripeness <under|perfect|over>]
