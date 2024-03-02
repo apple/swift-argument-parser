@@ -77,7 +77,7 @@ final class MathExampleTests: XCTestCase {
     let helpText = """
         OVERVIEW: Print the average of the values.
 
-        USAGE: math stats average [--kind <kind>] [<values> ...]
+        USAGE: math stats average [--kind <mean|median|mode>] [<values> ...]
 
         ARGUMENTS:
           <values>                A group of floating-point values to operate on.
@@ -128,7 +128,7 @@ final class MathExampleTests: XCTestCase {
       command: "math stats average --kind mode",
       expected: """
             Error: Please provide at least one value to calculate the mode.
-            Usage: math stats average [--kind <kind>] [<values> ...]
+            Usage: math stats average [--kind <mean|median|mode>] [<values> ...]
               See 'math stats average --help' for more information.
             """,
       exitCode: .validationFailure)

@@ -104,7 +104,11 @@ extension ArgumentDefinition {
 
       switch update {
       case .unary:
-        return "\(name.synopsisString) <\(valueName)>"
+        if help.allValueStrings.count > 1 && help.allValueStrings.count < 6 {
+          return "\(name.synopsisString) <\(help.allValueStrings.joined(separator: "|"))>"
+        } else {
+          return "\(name.synopsisString) <\(valueName)>"
+        }
       case .nullary:
         return name.synopsisString
       }
