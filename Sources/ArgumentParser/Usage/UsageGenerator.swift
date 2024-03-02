@@ -104,8 +104,9 @@ extension ArgumentDefinition {
 
       switch update {
       case .unary:
-        if help.allValueStrings.count > 1 && help.allValueStrings.count < 6 {
-          return "\(name.synopsisString) <\(help.allValueStrings.joined(separator: "|"))>"
+        let joinedValues = help.allValueStrings.joined(separator: "|")
+        if help.allValueStrings.count > 1 && joinedValues.count <= 40 {
+          return "\(name.synopsisString) <\(joinedValues)>"
         } else {
           return "\(name.synopsisString) <\(valueName)>"
         }
@@ -113,7 +114,12 @@ extension ArgumentDefinition {
         return name.synopsisString
       }
     case .positional:
-      return "<\(valueName)>"
+      let joinedValues = help.allValueStrings.joined(separator: "|")
+      if help.allValueStrings.count > 1 && joinedValues.count <= 40 {
+        return "<\(joinedValues)>"
+      } else {
+        return "<\(valueName)>"
+      }
     case .default:
       return ""
     }
