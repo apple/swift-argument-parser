@@ -73,6 +73,28 @@ final class MathExampleTests: XCTestCase {
     try AssertExecuteCommand(command: "math help add --help", expected: helpText)
   }
   
+  func testMath_StatsHelp() throws {
+    let helpText = """
+        OVERVIEW: Calculate descriptive statistics.
+        
+        USAGE: math stats <average|stdev|quantiles>
+        
+        OPTIONS:
+          --version               Show the version.
+          -h, --help              Show help information.
+        
+        SUBCOMMANDS:
+          average                 Print the average of the values.
+          stdev                   Print the standard deviation of the values.
+          quantiles               Print the quantiles of the values (TBD).
+        
+          See 'math help stats <subcommand>' for detailed help.
+        """
+    try AssertExecuteCommand(command: "math stats -h", expected: helpText)
+    try AssertExecuteCommand(command: "math stats --help", expected: helpText)
+    try AssertExecuteCommand(command: "math help stats", expected: helpText)
+  }
+  
   func testMath_StatsMeanHelp() throws {
     let helpText = """
         OVERVIEW: Print the average of the values.
