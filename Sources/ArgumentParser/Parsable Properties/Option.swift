@@ -226,11 +226,11 @@ public struct ArrayParsingStrategy: Hashable {
   /// through the terminator `--`. That is the more common approach. For example:
   /// ```swift
   /// struct Options: ParsableArguments {
-  ///     @Option var name: String
+  ///     @Option var title: String
   ///     @Argument var remainder: [String]
   /// }
   /// ```
-  /// would parse the input `--name Foo -- Bar --baz` such that the `remainder`
+  /// would parse the input `--title Foo -- Bar --baz` such that the `remainder`
   /// would hold the value `["Bar", "--baz"]`.
   public static var remaining: ArrayParsingStrategy {
     self.init(base: .allRemainingInput)
@@ -305,7 +305,7 @@ extension Option where Value: ExpressibleByArgument {
   /// that has an `ExpressibleByArgument` type, but without a default value:
   ///
   /// ```swift
-  /// @Option var name: String
+  /// @Option var title: String
   /// ```
   ///
   /// - Parameters:
@@ -660,7 +660,8 @@ extension Option {
   /// property with a default value:
   ///
   /// ```swift
-  /// @Option var char: [Character] = []
+  /// @Option(name: .customLong("char"))
+  /// var chars: [Character] = []
   /// ```
   ///
   /// - Parameters:
@@ -704,7 +705,8 @@ extension Option {
   /// property without a default value:
   ///
   /// ```swift
-  /// @Option var char: [Character]
+  /// @Option(name: .customLong("char"))
+  /// var chars: [Character]
   /// ```
   ///
   /// - Parameters:
@@ -744,8 +746,8 @@ extension Option {
   /// property with a transform closure and a default value:
   ///
   /// ```swift
-  /// @Option(transform: { $0.first ?? " " })
-  /// var char: [Character] = []
+  /// @Option(name: .customLong("char"), transform: { $0.first ?? " " })
+  /// var chars: [Character] = []
   /// ```
   ///
   /// - Parameters:
@@ -792,8 +794,8 @@ extension Option {
   /// property with a transform closure and without a default value:
   ///
   /// ```swift
-  /// @Option(transform: { $0.first ?? " " })
-  /// var char: [Character]
+  /// @Option(name: .customLong("char"), transform: { $0.first ?? " " })
+  /// var chars: [Character]
   /// ```
   ///
   /// - Parameters:
