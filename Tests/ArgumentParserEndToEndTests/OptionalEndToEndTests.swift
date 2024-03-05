@@ -206,3 +206,29 @@ extension OptionalEndToEndTests {
     XCTAssertThrowsError(try Bar.parse(["-f", "--name", "A"]))
   }
 }
+
+extension OptionalEndToEndTests {
+  // Compilation test: https://github.com/apple/swift-argument-parser/issues/618
+  private struct Command: ParsableCommand {
+    struct MyError: Error {}
+    struct Foo {
+      init?(string: String) { return nil }
+    }
+
+    @Option(transform: {
+      guard let foo = Foo(string: $0) else {
+        throw MyError()
+      }
+      return foo
+    })
+    var testOption: Foo?
+    
+    @Argument(transform: {
+      guard let foo = Foo(string: $0) else {
+        throw MyError()
+      }
+      return foo
+    })
+    var testArgument: Foo?
+  }
+}
