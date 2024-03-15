@@ -10,6 +10,34 @@ Add new items at the end of the relevant section under **Unreleased**.
 
 ---
 
+## [1.3.1] - 2024-03-15
+
+### Changes
+
+- The `CommandConfigration` type is now designated as `Sendable`. ([#615])
+- The library uses `internal` imports instead of ``@_implementationOnly` annotations
+  in Swift versions where permitted. ([#616])
+
+### Fixes
+
+- `@Option`- and `@Argument`-annotated optional properties that use a `transform` closure
+  for parsing can now be declared without ambiguity. ([#619])
+
+- The help flag is now recognized more consistently when a default subcommand has been
+  specified. ([#612])
+
+- Options that use the `.upToNextOption` parsing strategy can now recognize an attached
+  value (e.g. `--numbers=1 2 3`). ([#610])
+
+- Generated completion scripts for `zsh` handle repeatable options correctly. ([#614])
+
+- Documentation improvements and clarifications. ([#607], [#611], [#617], [#621]) 
+
+- Build improvements for CMake builds. ([#606], [#608])
+
+The 1.3.1 release includes contributions from [Coeur], [compnerd], [keith], [MaxDesiatov],
+[mayoff], and [natecook1000]. Thank you!
+
 ## [1.3.0] - 2023-12-06
 
 ### Changes
@@ -839,7 +867,8 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 
 <!-- Link references for releases -->
 
-[Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.3.0...HEAD
+[Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.3.1...HEAD
+[1.3.1]: https://github.com/apple/swift-argument-parser/compare/1.3.0...1.3.1
 [1.3.0]: https://github.com/apple/swift-argument-parser/compare/1.2.3...1.3.0
 [1.2.3]: https://github.com/apple/swift-argument-parser/compare/1.2.2...1.2.3
 [1.2.2]: https://github.com/apple/swift-argument-parser/compare/1.2.1...1.2.2
@@ -945,6 +974,18 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [#594]: https://github.com/apple/swift-argument-parser/pull/594
 [#596]: https://github.com/apple/swift-argument-parser/pull/596
 [#602]: https://github.com/apple/swift-argument-parser/pull/602
+[#606]: https://github.com/apple/swift-argument-parser/pull/606
+[#607]: https://github.com/apple/swift-argument-parser/pull/607
+[#608]: https://github.com/apple/swift-argument-parser/pull/608
+[#610]: https://github.com/apple/swift-argument-parser/pull/610
+[#611]: https://github.com/apple/swift-argument-parser/pull/611
+[#612]: https://github.com/apple/swift-argument-parser/pull/612
+[#614]: https://github.com/apple/swift-argument-parser/pull/614
+[#615]: https://github.com/apple/swift-argument-parser/pull/615
+[#616]: https://github.com/apple/swift-argument-parser/pull/616
+[#617]: https://github.com/apple/swift-argument-parser/pull/617
+[#619]: https://github.com/apple/swift-argument-parser/pull/619
+[#621]: https://github.com/apple/swift-argument-parser/pull/621
 
 <!-- Link references for contributors -->
 
@@ -961,6 +1002,7 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [Chamepp]: https://github.com/apple/swift-argument-parser/commits?author=Chamepp
 [clayellis]: https://github.com/apple/swift-argument-parser/commits?author=clayellis
 [CodaFi]: https://github.com/apple/swift-argument-parser/commits?author=CodaFi
+[Coeur]: https://github.com/apple/swift-argument-parser/commits?author=Coeur
 [compnerd]: https://github.com/apple/swift-argument-parser/commits?author=compnerd
 [CraigSiemens]: https://github.com/apple/swift-argument-parser/commits?author=CraigSiemens
 [CypherPoet]: https://github.com/apple/swift-argument-parser/commits?author=CypherPoet
@@ -1000,6 +1042,7 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [MarcoEidinger]: https://github.com/apple/swift-argument-parser/commits?author=MarcoEidinger
 [MartinP7r]: https://github.com/apple/swift-argument-parser/commits?author=MartinP7r
 [MaxDesiatov]: https://github.com/apple/swift-argument-parser/commits?author=MaxDesiatov
+[mayoff]: https://github.com/apple/swift-argument-parser/commits?author=mayoff
 [McNight]: https://github.com/apple/swift-argument-parser/commits?author=McNight
 [mdznr]: https://github.com/apple/swift-argument-parser/commits?author=mdznr
 [miggs597]: https://github.com/apple/swift-argument-parser/commits?author=miggs597
