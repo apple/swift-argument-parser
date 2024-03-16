@@ -10,7 +10,7 @@ Add new items at the end of the relevant section under **Unreleased**.
 
 ---
 
-## [1.3.1] - 2024-03-15
+## [1.3.1] - 2024-03-16
 
 ### Changes
 
