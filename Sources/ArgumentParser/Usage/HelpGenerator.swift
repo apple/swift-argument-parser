@@ -111,9 +111,15 @@ internal struct HelpGenerator {
     } else {
       var usage = UsageGenerator(toolName: toolName, definition: [currentArgSet])
         .synopsis
-      if !currentCommand.configuration.subcommands.isEmpty {
+      let subcommands = currentCommand.configuration.subcommands.filter { $0.configuration.shouldDisplay }
+      if !subcommands.isEmpty {
         if usage.last != " " { usage += " " }
-        usage += "<subcommand>"
+        let joinedSubcommands = subcommands.map { $0._commandName }.joined(separator: "|")
+        if subcommands.count > 1 && joinedSubcommands.count <= 40 {
+          usage += "<\(joinedSubcommands)>"
+        } else {
+          usage += "<subcommand>"
+        }
       }
       self.usage = usage
     }
