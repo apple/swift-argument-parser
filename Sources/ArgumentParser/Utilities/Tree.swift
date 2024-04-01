@@ -85,7 +85,9 @@ extension Tree where Element == ParsableCommand.Type {
   }
   
   func firstChild(withName name: String) -> Tree? {
-    children.first(where: { $0.element._commandName == name })
+      children.first(where: {
+          $0.element._commandName == name || $0.element.configuration.aliases.contains(name)
+      })
   }
   
   convenience init(root command: ParsableCommand.Type) throws {
@@ -94,11 +96,16 @@ extension Tree where Element == ParsableCommand.Type {
       if subcommand == command {
         throw InitializationError.recursiveSubcommand(subcommand)
       }
+      // We don't allow an alias that has the same name as the command itself.
+      if subcommand.configuration.aliases.contains(subcommand._commandName) {
+        throw InitializationError.aliasMatchingCommand(subcommand)
+      }
       try addChild(Tree(root: subcommand))
     }
   }
     
   enum InitializationError: Error {
     case recursiveSubcommand(ParsableCommand.Type)
+    case aliasMatchingCommand(ParsableCommand.Type)
   }
 }
