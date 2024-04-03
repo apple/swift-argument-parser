@@ -21,9 +21,9 @@ include(CTest)
 include(GNUInstallDirs)
 include(SwiftSupport)
 
-find_package(dispatch CONFIG)
-find_package(Foundation CONFIG)
-find_package(XCTest CONFIG)
+find_package(dispatch QUIET CONFIG)
+find_package(Foundation QUIET CONFIG)
+find_package(XCTest QUIET CONFIG)
 
 add_subdirectory(Sources)
 if(BUILD_EXAMPLES)
