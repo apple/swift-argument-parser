@@ -90,7 +90,11 @@ extension Tree where Element == ParsableCommand.Type {
   
   convenience init(root command: ParsableCommand.Type) throws {
     self.init(command)
+    var subcommandNames = Set<String>()
     for subcommand in command.configuration.subcommands {
+      if !subcommandNames.insert(subcommand._commandName).inserted {
+        throw InitializationError.matchingCommandNames(command, subcommand._commandName)
+      }
       if subcommand == command {
         throw InitializationError.recursiveSubcommand(subcommand)
       }
@@ -100,5 +104,6 @@ extension Tree where Element == ParsableCommand.Type {
     
   enum InitializationError: Error {
     case recursiveSubcommand(ParsableCommand.Type)
+    case matchingCommandNames(ParsableCommand.Type, String)
   }
 }

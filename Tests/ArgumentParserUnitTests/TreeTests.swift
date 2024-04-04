@@ -70,3 +70,35 @@ extension TreeTests {
     XCTAssertThrowsError(try Tree(root: Root.asCommand))
   }
 }
+
+extension TreeTests {
+  struct RootWithSubs: ParsableCommand {
+    static let configuration = CommandConfiguration(subcommands: [Sub.self, SubTwo.self])
+
+    struct Sub: ParsableCommand {
+    }
+
+    struct SubTwo: ParsableCommand {
+      static let configuration = CommandConfiguration(commandName: "sub")
+    }
+  }
+
+  struct RootWithNestedSubs: ParsableCommand {
+    static let configuration = CommandConfiguration(subcommands: [Sub.self])
+
+    struct Sub: ParsableCommand {
+      static let configuration = CommandConfiguration(subcommands: [Nested.self, NestedTwo.self])
+      struct Nested: ParsableCommand {
+      }
+
+      struct NestedTwo: ParsableCommand {
+        static let configuration = CommandConfiguration(commandName: "nested")
+      }
+    }
+  }
+
+  func testInitializationWithMatchingCommandNames() {
+    XCTAssertThrowsError(try Tree(root: RootWithSubs.asCommand))
+    XCTAssertThrowsError(try Tree(root: RootWithNestedSubs.asCommand))
+  }
+}

@@ -41,6 +41,8 @@ struct CommandParser {
       self.commandTree = try Tree(root: rootCommand)
     } catch Tree<ParsableCommand.Type>.InitializationError.recursiveSubcommand(let command) {
       fatalError("The ParsableCommand \"\(command)\" can't have itself as its own subcommand.")
+    } catch Tree<ParsableCommand.Type>.InitializationError.matchingCommandNames(let command, let commandName) {
+      fatalError("Ambiguous subcommand name \"\(commandName)\" encountered in ParsableCommand \"\(command)\"")
     } catch {
       fatalError("Unexpected error: \(error).")
     }
