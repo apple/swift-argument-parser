@@ -113,6 +113,22 @@ extension ParsableCommand {
         .rendered(screenWidth: columns)
   }
 
+  /// Returns the usage text for the given subcommand of this command.
+  ///
+  /// - Parameters:
+  ///   - includeHidden: Include hidden help information in the generated
+  ///     message.
+  /// - Returns: The usage text for this type.
+  public static func usageString(
+    for subcommand: ParsableCommand.Type,
+    includeHidden: Bool = false
+  ) -> String {
+    HelpGenerator(
+      commandStack: CommandParser(self).commandStack(for: subcommand),
+      visibility: includeHidden ? .hidden : .default)
+        .usage
+  }
+
   /// Executes this command, or one of its subcommands, with the given
   /// arguments.
   ///
