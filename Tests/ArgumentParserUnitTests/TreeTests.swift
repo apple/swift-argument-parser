@@ -64,9 +64,30 @@ extension TreeTests {
   struct Sub: ParsableCommand {
     static let configuration = CommandConfiguration(subcommands: [Sub.self])
   }
+
+  struct RootWithNamedNestedSub: ParsableCommand {
+    static let configuration = CommandConfiguration(subcommands: [NestedSub.self])
+
+    struct NestedSub: ParsableCommand {
+      static let configuration = CommandConfiguration(commandName: "sub", aliases: ["sub"])
+    }
+  }
     
+  struct RootWithNestedSub: ParsableCommand {
+    static let configuration = CommandConfiguration(subcommands: [NestedSub.self])
+
+    struct NestedSub: ParsableCommand {
+      static let configuration = CommandConfiguration(aliases: ["nested-sub"])
+    }
+  }
+
   func testInitializationWithRecursiveSubcommand() {
     XCTAssertThrowsError(try Tree(root: A.asCommand))
     XCTAssertThrowsError(try Tree(root: Root.asCommand))
+  }
+
+  func testInitializationWithMatchingAliases() {
+    XCTAssertThrowsError(try Tree(root: RootWithNamedNestedSub.asCommand))
+    XCTAssertThrowsError(try Tree(root: RootWithNestedSub.asCommand))
   }
 }

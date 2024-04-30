@@ -215,6 +215,9 @@ internal struct HelpGenerator {
       configuration.subcommands.compactMap { command in
         guard command.configuration.shouldDisplay else { return nil }
         var label = command._commandName
+        for alias in command.configuration.aliases {
+            label += ", \(alias)"
+        }
         if command == configuration.defaultSubcommand {
             label += " (default)"
         }

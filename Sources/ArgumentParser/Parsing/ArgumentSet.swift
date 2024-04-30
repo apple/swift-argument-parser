@@ -495,7 +495,10 @@ struct LenientParser {
         // parsing to skip over unrecognized input, but if the current
         // command or the matched subcommand captures all remaining input,
         // then we want to break out of parsing at this point.
-        if let matchedSubcommand = subcommands.first(where: { $0._commandName == argument }) {
+        let matchedSubcommand = subcommands.first(where: { 
+          $0._commandName == argument || $0.configuration.aliases.contains(argument) 
+        })
+        if let matchedSubcommand {
           if !matchedSubcommand.includesPassthroughArguments && defaultCapturesForPassthrough {
             continue ArgumentLoop
           } else if matchedSubcommand.includesPassthroughArguments {

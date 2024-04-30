@@ -37,7 +37,7 @@ final class MathExampleTests: XCTestCase {
 
         SUBCOMMANDS:
           add (default)           Print the sum of the values.
-          multiply                Print the product of the values.
+          multiply, mul           Print the product of the values.
           stats                   Calculate descriptive statistics.
 
           See 'math help <subcommand>' for detailed help.
