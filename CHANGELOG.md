@@ -6,9 +6,100 @@ Add new items at the end of the relevant section under **Unreleased**.
 
 ## [Unreleased]
 
-*No changes yet.*
+*No new changes.*
 
 ---
+
+## [1.3.1] - 2024-03-16
+
+### Changes
+
+- The `CommandConfigration` type is now designated as `Sendable`. ([#615])
+- The library uses `internal` imports instead of ``@_implementationOnly` annotations
+  in Swift versions where permitted. ([#616])
+
+### Fixes
+
+- `@Option`- and `@Argument`-annotated optional properties that use a `transform` closure
+  for parsing can now be declared without ambiguity. ([#619])
+
+- The help flag is now recognized more consistently when a default subcommand has been
+  specified. ([#612])
+
+- Options that use the `.upToNextOption` parsing strategy can now recognize an attached
+  value (e.g. `--numbers=1 2 3`). ([#610])
+
+- Generated completion scripts for `zsh` handle repeatable options correctly. ([#614])
+
+- Documentation improvements and clarifications. ([#607], [#611], [#617], [#621]) 
+
+- Build improvements for CMake builds. ([#606], [#608])
+
+The 1.3.1 release includes contributions from [Coeur], [compnerd], [keith], [MaxDesiatov],
+[mayoff], and [natecook1000]. Thank you!
+
+## [1.3.0] - 2023-12-06
+
+### Changes
+
+- The `@Option`, `@Argument`, `@Flag`, and `@OptionGroup` property wrappers now 
+  conditionally conform to `Sendable` when the wrapper's `Value` type conforms. With this
+  change, you can mark `ParsableCommand` types as `Sendable` when you want to be able to
+  pass a parsed command across concurrent contexts. ([#582])
+
+  *Migration:* Users that aren't ready to resolve sendability warnings can add the
+  `@preconcurrency` attribute to `import ArgumentParser` statements.
+  
+  As part of this update, changes to the `CommandLine.arguments` array before a command's
+  `main` or `parse...` methods are called are no longer observed. Instead of making
+  changes to `CommandLine.arguments`, pass an updated array of arguments to the command's
+  method.
+
+- To support migration to `Sendable` annotation, the minimum Swift version for
+  `swift-argument-parser` has been increased to Swift 5.7. Users of older Swift versions
+  will be able to continue using version 1.2.3 of the library. ([#582])
+
+### Additions
+
+- Help screens now include possible options for `ExpressibleByArgument` types
+  with non empty `allValueStrings`. Types also conforming to `CaseIterable` do
+  not need to manually implement `allValueStrings`, instead it is derived from
+  `allCases`. ([#594])
+
+### Fixes
+
+- The titles for nested option groups are preserved when embedded into commands without
+  specifying a new title. ([#592])
+- When wrapping help and error messages, the library now uses the `COLUMNS` environment
+  variable when set, instead of immediately falling back to 80 columns. ([#596])
+- Bash completion scripts now respect the extensions given in a `.file(...)` completion
+  kind. ([#590])
+- Bash completion scripts now properly escape command names that include hyphens. ([#573])
+- Documentation improvements. ([#572], [#565], [#602])
+
+The 1.3.0 release includes contributions from [Alkenso], [compnerd], [gwynne],
+[kennyyork], [natecook1000], [rauhul], [robertmryan], and [vlm]. Thank you!
+
+---
+
+## [1.2.3] - 2023-08-15
+
+### Additions
+
+- You can now use ArgumentParser with Musl libc. ([#574])
+
+### Fixes
+
+- Fixes a bug where single-page manuals did not include command abstracts for
+  subcommands. ([#552])
+- Fixes a bug where non-optional properties in ParsableCommands could cause
+  ArgumentParser to crash. You can now include properties like dictionaries in
+  ParsableCommands without issue. ([#554])
+- Fixes a configuration issue which would cause `ArgumentParserTestHelpers` to
+  fail to link when building for Windows. ([#579])
+
+The 1.2.3 release includes contributions from [compnerd], [gwynne],
+[MaxDesiatov], [natecook1000], and [rauhul]. Thank you!
 
 ## [1.2.2] - 2023-02-09
 
@@ -776,7 +867,10 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 
 <!-- Link references for releases -->
 
-[Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.2.2...HEAD
+[Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.3.1...HEAD
+[1.3.1]: https://github.com/apple/swift-argument-parser/compare/1.3.0...1.3.1
+[1.3.0]: https://github.com/apple/swift-argument-parser/compare/1.2.3...1.3.0
+[1.2.3]: https://github.com/apple/swift-argument-parser/compare/1.2.2...1.2.3
 [1.2.2]: https://github.com/apple/swift-argument-parser/compare/1.2.1...1.2.2
 [1.2.1]: https://github.com/apple/swift-argument-parser/compare/1.2.0...1.2.1
 [1.2.0]: https://github.com/apple/swift-argument-parser/compare/1.1.4...1.2.0
@@ -867,6 +961,31 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [#547]: https://github.com/apple/swift-argument-parser/pull/547
 [#548]: https://github.com/apple/swift-argument-parser/pull/548
 [#550]: https://github.com/apple/swift-argument-parser/pull/550
+[#552]: https://github.com/apple/swift-argument-parser/pull/552
+[#554]: https://github.com/apple/swift-argument-parser/pull/554
+[#565]: https://github.com/apple/swift-argument-parser/pull/565
+[#572]: https://github.com/apple/swift-argument-parser/pull/572
+[#573]: https://github.com/apple/swift-argument-parser/pull/573
+[#574]: https://github.com/apple/swift-argument-parser/pull/574
+[#579]: https://github.com/apple/swift-argument-parser/pull/579
+[#582]: https://github.com/apple/swift-argument-parser/pull/582
+[#590]: https://github.com/apple/swift-argument-parser/pull/590
+[#592]: https://github.com/apple/swift-argument-parser/pull/592
+[#594]: https://github.com/apple/swift-argument-parser/pull/594
+[#596]: https://github.com/apple/swift-argument-parser/pull/596
+[#602]: https://github.com/apple/swift-argument-parser/pull/602
+[#606]: https://github.com/apple/swift-argument-parser/pull/606
+[#607]: https://github.com/apple/swift-argument-parser/pull/607
+[#608]: https://github.com/apple/swift-argument-parser/pull/608
+[#610]: https://github.com/apple/swift-argument-parser/pull/610
+[#611]: https://github.com/apple/swift-argument-parser/pull/611
+[#612]: https://github.com/apple/swift-argument-parser/pull/612
+[#614]: https://github.com/apple/swift-argument-parser/pull/614
+[#615]: https://github.com/apple/swift-argument-parser/pull/615
+[#616]: https://github.com/apple/swift-argument-parser/pull/616
+[#617]: https://github.com/apple/swift-argument-parser/pull/617
+[#619]: https://github.com/apple/swift-argument-parser/pull/619
+[#621]: https://github.com/apple/swift-argument-parser/pull/621
 
 <!-- Link references for contributors -->
 
@@ -874,6 +993,7 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [adellibovi]: https://github.com/apple/swift-argument-parser/commits?author=adellibovi
 [aleksey-mashanov]: https://github.com/apple/swift-argument-parser/commits?author=aleksey-mashanov
 [AliSoftware]: https://github.com/apple/swift-argument-parser/commits?author=AliSoftware
+[Alkenso]: https://github.com/apple/swift-argument-parser/commits?author=Alkenso
 [allevato]: https://github.com/apple/swift-argument-parser/commits?author=allevato
 [artemnovichkov]: https://github.com/apple/swift-argument-parser/commits?author=artemnovichkov
 [atierian]: https://github.com/apple/swift-argument-parser/commits?author=atierian
@@ -882,6 +1002,7 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [Chamepp]: https://github.com/apple/swift-argument-parser/commits?author=Chamepp
 [clayellis]: https://github.com/apple/swift-argument-parser/commits?author=clayellis
 [CodaFi]: https://github.com/apple/swift-argument-parser/commits?author=CodaFi
+[Coeur]: https://github.com/apple/swift-argument-parser/commits?author=Coeur
 [compnerd]: https://github.com/apple/swift-argument-parser/commits?author=compnerd
 [CraigSiemens]: https://github.com/apple/swift-argument-parser/commits?author=CraigSiemens
 [CypherPoet]: https://github.com/apple/swift-argument-parser/commits?author=CypherPoet
@@ -897,6 +1018,7 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [glessard]: https://github.com/apple/swift-argument-parser/commits?author=glessard
 [gmittert]: https://github.com/apple/swift-argument-parser/commits?author=gmittert
 [griffin-stewie]: https://github.com/apple/swift-argument-parser/commits?author=griffin-stewie
+[gwynne]: https://github.com/apple/swift-argument-parser/commits?author=gwynne
 [iainsmith]: https://github.com/apple/swift-argument-parser/commits?author=iainsmith
 [ian-twilightcoder]: https://github.com/apple/swift-argument-parser/commits?author=ian-twilightcoder
 [ibrahimoktay]: https://github.com/apple/swift-argument-parser/commits?author=ibrahimoktay
@@ -920,6 +1042,7 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [MarcoEidinger]: https://github.com/apple/swift-argument-parser/commits?author=MarcoEidinger
 [MartinP7r]: https://github.com/apple/swift-argument-parser/commits?author=MartinP7r
 [MaxDesiatov]: https://github.com/apple/swift-argument-parser/commits?author=MaxDesiatov
+[mayoff]: https://github.com/apple/swift-argument-parser/commits?author=mayoff
 [McNight]: https://github.com/apple/swift-argument-parser/commits?author=McNight
 [mdznr]: https://github.com/apple/swift-argument-parser/commits?author=mdznr
 [miggs597]: https://github.com/apple/swift-argument-parser/commits?author=miggs597
@@ -934,6 +1057,7 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [rauhul]: https://github.com/apple/swift-argument-parser/commits?author=rauhul
 [rickrizzo]: https://github.com/apple/swift-argument-parser/commits?author=rickrizzo
 [rjstelling]: https://github.com/apple/swift-argument-parser/commits?author=rjstelling
+[robertmryan]: https://github.com/apple/swift-argument-parser/commits?author=robertmryan
 [Sajjon]: https://github.com/apple/swift-argument-parser/commits?author=Sajjon
 [schlagelk]: https://github.com/apple/swift-argument-parser/commits?author=schlagelk
 [SergeyPetrachkov]: https://github.com/apple/swift-argument-parser/commits?author=SergeyPetrachkov
@@ -944,6 +1068,7 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [thomasvl]: https://github.com/apple/swift-argument-parser/commits?author=thomasvl
 [TiagoMaiaL]: https://github.com/apple/swift-argument-parser/commits?author=TiagoMaiaL
 [toddthomas]: https://github.com/apple/swift-argument-parser/commits?author=toddthomas
+[vlm]: https://github.com/apple/swift-argument-parser/commits?author=vlm
 [werm098]: https://github.com/apple/swift-argument-parser/commits?author=werm098
 [Wevah]: https://github.com/apple/swift-argument-parser/commits?author=Wevah
 [Wildchild9]: https://github.com/apple/swift-argument-parser/commits?author=Wildchild9

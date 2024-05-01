@@ -4,7 +4,7 @@
 
 ### Single Arguments
 
-- ``init(help:completion:)-6mld0``
+- ``init(help:completion:)-6pqzn``
 - ``init(help:completion:)-4p94d``
 - ``init(help:completion:transform:)-3fjtc``
 - ``init(help:completion:transform:)-7yn32``
@@ -21,5 +21,4 @@
 
 ### Infrequently Used APIs
 
-- ``init(from:)``
 - ``wrappedValue``

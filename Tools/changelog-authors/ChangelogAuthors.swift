@@ -94,7 +94,7 @@ struct ChangelogAuthors: AsyncParsableCommand {
   mutating func run() async throws {
     let (data, _) = try await URLSession.shared.data(from: try comparisonURL())
     let comparison = try JSONDecoder().decode(Comparison.self, from: data)
-    let authors = comparison.commits.map({ $0.author })
+    let authors = comparison.commits.compactMap({ $0.author })
       .uniqued(by: { $0.login })
       .sorted(by: { $0.login.lowercased() < $1.login.lowercased() })
     

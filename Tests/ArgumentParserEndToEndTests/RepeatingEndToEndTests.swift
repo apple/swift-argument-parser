@@ -210,6 +210,24 @@ extension RepeatingEndToEndTests {
       XCTAssertEqual(qux.names, ["one", "two"])
       XCTAssertNil(qux.extra)
     }
+
+    AssertParse(Qux.self, ["--verbose", "--names=one"]) { qux in
+      XCTAssertTrue(qux.verbose)
+      XCTAssertEqual(qux.names, ["one"])
+      XCTAssertNil(qux.extra)
+    }
+
+    AssertParse(Qux.self, ["--verbose", "--names=one", "two"]) { qux in
+      XCTAssertTrue(qux.verbose)
+      XCTAssertEqual(qux.names, ["one", "two"])
+      XCTAssertNil(qux.extra)
+    }
+
+    AssertParse(Qux.self, ["--names=one", "--verbose", "two"]) { qux in
+      XCTAssertTrue(qux.verbose)
+      XCTAssertEqual(qux.names, ["one"])
+      XCTAssertEqual(qux.extra, "two")
+    }
   }
 
   func testParsing_repeatingStringUpToNext_Fails() throws {
@@ -225,7 +243,7 @@ extension RepeatingEndToEndTests {
 
 fileprivate struct Wobble: ParsableArguments {
   struct WobbleError: Error {}
-  struct Name: Equatable {
+  struct Name: Equatable, Sendable {
     var value: String
 
     init(_ value: String) throws {

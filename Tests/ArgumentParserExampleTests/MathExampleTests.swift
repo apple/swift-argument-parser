@@ -14,6 +14,12 @@ import ArgumentParser
 import ArgumentParserTestHelpers
 
 final class MathExampleTests: XCTestCase {
+  override func setUp() {
+    #if !os(Windows) && !os(WASI)
+    unsetenv("COLUMNS")
+    #endif
+  }
+
   func testMath_Simple() throws {
     try AssertExecuteCommand(command: "math 1 2 3 4 5", expected: "15")
     try AssertExecuteCommand(command: "math multiply 1 2 3 4 5", expected: "120")
@@ -31,7 +37,7 @@ final class MathExampleTests: XCTestCase {
 
         SUBCOMMANDS:
           add (default)           Print the sum of the values.
-          multiply                Print the product of the values.
+          multiply, mul           Print the product of the values.
           stats                   Calculate descriptive statistics.
 
           See 'math help <subcommand>' for detailed help.
@@ -77,7 +83,8 @@ final class MathExampleTests: XCTestCase {
           <values>                A group of floating-point values to operate on.
 
         OPTIONS:
-          --kind <kind>           The kind of average to provide. (default: mean)
+          --kind <kind>           The kind of average to provide. (values: mean,
+                                  median, mode; default: mean)
           --version               Show the version.
           -h, --help              Show help information.
         """
@@ -332,11 +339,29 @@ _math_stats_quantiles() {
     fi
     case $prev in
         --file)
-            COMPREPLY=( $(compgen -f -- "$cur") )
+            if declare -F _filedir >/dev/null; then
+              _filedir 'txt'
+              _filedir 'md'
+              _filedir 'TXT'
+              _filedir 'MD'
+              _filedir -d
+            else
+              COMPREPLY=(
+                $(compgen -f -X '!*.txt' -- "$cur")
+                $(compgen -f -X '!*.md' -- "$cur")
+                $(compgen -f -X '!*.TXT' -- "$cur")
+                $(compgen -f -X '!*.MD' -- "$cur")
+                $(compgen -d -- "$cur")
+              )
+            fi
             return
         ;;
         --directory)
-            COMPREPLY=( $(compgen -d -- "$cur") )
+            if declare -F _filedir >/dev/null; then
+              _filedir -d
+            else
+              COMPREPLY=( $(compgen -d -- "$cur") )
+            fi
             return
         ;;
         --shell)

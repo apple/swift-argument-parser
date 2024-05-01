@@ -11,7 +11,7 @@
 
 import XCTest
 import ArgumentParserTestHelpers
-import ArgumentParser
+@testable import ArgumentParser
 
 final class DefaultSubcommandEndToEndTests: XCTestCase {
 }
@@ -19,7 +19,7 @@ final class DefaultSubcommandEndToEndTests: XCTestCase {
 // MARK: -
 
 private struct Main: ParsableCommand {
-  static var configuration = CommandConfiguration(
+  static let configuration = CommandConfiguration(
     subcommands: [Default.self, Foo.self, Bar.self],
     defaultSubcommand: Default.self
   )
@@ -72,7 +72,7 @@ extension DefaultSubcommandEndToEndTests {
 
 extension DefaultSubcommandEndToEndTests {
   fileprivate struct MyCommand: ParsableCommand {
-    static var configuration = CommandConfiguration(
+    static let configuration = CommandConfiguration(
       subcommands: [Plugin.self, NonDefault.self, Other.self],
       defaultSubcommand: Plugin.self
     )
@@ -189,5 +189,30 @@ extension DefaultSubcommandEndToEndTests {
     XCTAssertThrowsError(try MyCommand.parseAsRoot([]))
     XCTAssertThrowsError(try MyCommand.parseAsRoot(["--verbose"]))
     XCTAssertThrowsError(try MyCommand.parseAsRoot(["plugin", "--verbose", "my-plugin"]))
+  }
+}
+
+extension DefaultSubcommandEndToEndTests {
+  struct RootWithPassthroughDefault: ParsableCommand {
+    static let configuration = CommandConfiguration(
+      subcommands: [PassthroughDefault.self],
+      defaultSubcommand: PassthroughDefault.self,
+      helpNames: [.short, .long, .customLong("help", withSingleDash: true)]
+    )
+  }
+  
+  struct PassthroughDefault: ParsableCommand {
+    @Argument(parsing: .captureForPassthrough)
+    var remaining: [String] = []
+  }
+
+  // Test fix for https://github.com/apple/swift-package-manager/issues/7218
+  func testHelpWithPassthroughDefault() throws {
+    AssertParseCommand(
+      RootWithPassthroughDefault.self, HelpCommand.self, ["-h"]) { _ in }
+    AssertParseCommand(
+      RootWithPassthroughDefault.self, HelpCommand.self, ["-help"]) { _ in }
+    AssertParseCommand(
+      RootWithPassthroughDefault.self, HelpCommand.self, ["--help"]) { _ in }
   }
 }

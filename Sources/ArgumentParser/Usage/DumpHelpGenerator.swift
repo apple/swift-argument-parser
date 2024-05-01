@@ -9,11 +9,19 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if swift(>=5.11)
+internal import ArgumentParserToolInfo
+internal import class Foundation.JSONEncoder
+#elseif swift(>=5.10)
+import ArgumentParserToolInfo
+import class Foundation.JSONEncoder
+#else
 @_implementationOnly import ArgumentParserToolInfo
 @_implementationOnly import class Foundation.JSONEncoder
+#endif
 
 internal struct DumpHelpGenerator {
-  var toolInfo: ToolInfoV0
+  private var toolInfo: ToolInfoV0
 
   init(_ type: ParsableArguments.Type) {
     self.init(commandStack: [type.asCommand])
@@ -133,7 +141,7 @@ fileprivate extension ArgumentInfoV0 {
       preferredName: argument.names.preferredName.map(ArgumentInfoV0.NameInfoV0.init),
       valueName: argument.valueName,
       defaultValue: argument.help.defaultValue,
-      allValues: argument.help.allValues,
+      allValues: argument.help.allValueStrings,
       abstract: argument.help.abstract,
       discussion: argument.help.discussion)
   }

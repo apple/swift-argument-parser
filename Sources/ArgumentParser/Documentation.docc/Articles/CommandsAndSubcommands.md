@@ -28,7 +28,7 @@ OPTIONS:
   -h, --help              Show help information.
 
 SUBCOMMANDS:
-  average                 Print the average of the values.
+  average, avg            Print the average of the values.
   stdev                   Print the standard deviation of the values.
   quantiles               Print the quantiles of the values (TBD).
 
@@ -39,7 +39,7 @@ Start by defining the root `Math` command. You can provide a static ``ParsableCo
 
 ```swift
 struct Math: ParsableCommand {
-    static var configuration = CommandConfiguration(
+    static let configuration = CommandConfiguration(
         abstract: "A utility for performing maths.",
         subcommands: [Add.self, Multiply.self, Statistics.self],
         defaultSubcommand: Add.self)
@@ -72,7 +72,7 @@ It's time to define our first two subcommands: `Add` and `Multiply`. Both of the
 ```swift
 extension Math {
     struct Add: ParsableCommand {
-        static var configuration
+        static let configuration
             = CommandConfiguration(abstract: "Print the sum of the values.")
 
         @OptionGroup var options: Math.Options
@@ -84,8 +84,9 @@ extension Math {
     }
 
     struct Multiply: ParsableCommand {
-        static var configuration
-            = CommandConfiguration(abstract: "Print the product of the values.")
+        static let configuration = CommandConfiguration(
+            abstract: "Print the product of the values.",
+            aliases: ["mul"])
 
         @OptionGroup var options: Math.Options
 
@@ -97,12 +98,23 @@ extension Math {
 }
 ```
 
+One thing to note is the aliases parameter for `CommandConfiguration`. This is useful for subcommands
+to define alternative names that can be used to invoke them. In this case we've defined a shorthand
+for multiply named mul, so you could invoke the `Multiply` command for our program by either of the below:
+
+```
+% math multiply 10 15 7
+1050
+% math mul 10 15 7
+1050
+```
+
 Next, we'll define `Statistics`, the third subcommand of `Math`. The `Statistics` command specifies a custom command name (`stats`) in its configuration, overriding the default derived from the type name (`statistics`). It also declares two additional subcommands, meaning that it acts as a forked branch in the command tree, and not a leaf.
 
 ```swift
 extension Math {
     struct Statistics: ParsableCommand {
-        static var configuration = CommandConfiguration(
+        static let configuration = CommandConfiguration(
             commandName: "stats",
             abstract: "Calculate descriptive statistics.",
             subcommands: [Average.self, StandardDeviation.self])
@@ -115,8 +127,9 @@ Let's finish our subcommands with the `Average` and `StandardDeviation` types. E
 ```swift
 extension Math.Statistics {
     struct Average: ParsableCommand {
-        static var configuration = CommandConfiguration(
-            abstract: "Print the average of the values.")
+        static let configuration = CommandConfiguration(
+            abstract: "Print the average of the values.",
+            aliases: ["avg"])
 
         enum Kind: String, ExpressibleByArgument {
             case mean, median, mode
@@ -148,7 +161,7 @@ extension Math.Statistics {
     }
 
     struct StandardDeviation: ParsableCommand {
-        static var configuration = CommandConfiguration(
+        static let configuration = CommandConfiguration(
             commandName: "stdev",
             abstract: "Print the standard deviation of the values.")
 

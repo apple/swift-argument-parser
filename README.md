@@ -6,6 +6,8 @@ Begin by declaring a type that defines the information
 that you need to collect from the command line.
 Decorate each stored property with one of `ArgumentParser`'s property wrappers,
 and then declare conformance to `ParsableCommand` and add the `@main` attribute.
+(Note, for `async` renditions of `run`, conform to `AsyncParsableCommand` rather
+than `ParsableCommand`.) 
 Finally, implement your command's logic in the `run()` method.
 
 ```swift
@@ -74,6 +76,7 @@ For guides, articles, and API documentation see the
 - [ArgumentParser documentation][docs]
 - [Getting Started with ArgumentParser](https://swiftpackageindex.com/apple/swift-argument-parser/documentation/argumentparser/gettingstarted)
 - [`ParsableCommand` documentation](https://swiftpackageindex.com/apple/swift-argument-parser/documentation/argumentparser/parsablecommand)
+- [`AsyncParsableCommand` documentation](https://swiftpackageindex.com/apple/swift-argument-parser/documentation/argumentparser/asyncparsablecommand)
 
 [docs]: https://swiftpackageindex.com/apple/swift-argument-parser/documentation/argumentparser
 
@@ -120,7 +123,7 @@ let package = Package(
     // name, platforms, products, etc.
     dependencies: [
         // other dependencies
-        .package(url: "https://github.com/apple/swift-argument-parser", from: "1.2.0"),
+        .package(url: "https://github.com/apple/swift-argument-parser", from: "1.3.0"),
     ],
     targets: [
         .executableTarget(name: "<command-line-tool>", dependencies: [
@@ -140,4 +143,5 @@ swift-argument-parser | Minimum Swift Version
 ----------------------|----------------------
 `0.0.1 ..< 0.2.0`     | 5.1
 `0.2.0 ..< 1.1.0`     | 5.2
-`1.1.0 ...`           | 5.5
+`1.1.0 ..< 1.3.0`     | 5.5
+`1.3.0 ...`           | 5.7

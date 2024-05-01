@@ -41,11 +41,13 @@ struct CommandParser {
       self.commandTree = try Tree(root: rootCommand)
     } catch Tree<ParsableCommand.Type>.InitializationError.recursiveSubcommand(let command) {
       fatalError("The ParsableCommand \"\(command)\" can't have itself as its own subcommand.")
+    } catch Tree<ParsableCommand.Type>.InitializationError.aliasMatchingCommand(let command) {
+      fatalError("The ParsableCommand \"\(command)\" can't have an alias with the same name as the command itself.")
     } catch {
       fatalError("Unexpected error: \(error).")
     }
     self.currentNode = commandTree
-    
+
     // A command tree that has a depth greater than zero gets a `help`
     // subcommand.
     if !commandTree.isLeaf {
@@ -84,7 +86,7 @@ extension CommandParser {
     _ split: SplitArguments,
     requireSoloArgument: Bool = false
   ) throws {
-    guard !requireSoloArgument || split.count == 1 else { return }
+    guard !requireSoloArgument || split.originalInput.count == 1 else { return }
     
     // Look for help flags
     guard !split.contains(anyOf: self.commandStack.getHelpNames(visibility: .default)) else {

@@ -4,7 +4,7 @@
 
 ### Creating a Configuration
 
-- ``init(commandName:abstract:usage:discussion:version:shouldDisplay:subcommands:defaultSubcommand:helpNames:)``
+- ``init(commandName:abstract:usage:discussion:version:shouldDisplay:subcommands:defaultSubcommand:helpNames:aliases:)``
 
 ### Customizing the Help Screen
 
@@ -23,8 +23,4 @@
 - ``commandName``
 - ``version``
 - ``shouldDisplay``
-
-### Deprecated APIs
-
-- ``init(commandName:abstract:discussion:version:shouldDisplay:subcommands:defaultSubcommand:helpNames:)``
-
+- ``aliases``

@@ -21,7 +21,7 @@ import PackageDescription
 let package = Package(
     name: "Count",
     dependencies: [
-        .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.2.0"),
+        .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.3.0"),
     ],
     targets: [
         .executableTarget(
@@ -287,3 +287,31 @@ struct RuntimeError: Error, CustomStringConvertible {
     }
 }
 ```
+
+
+## Next Steps … Swift concurrency
+
+`ArgumentParser` supports Swift concurrency, notably `async` renditions of `run`. If you use `async` rendition of `run`, conform to `AsyncParsableCommand` instead of `ParsableCommand`.
+
+```swift
+@main
+struct FileUtility: AsyncParsableCommand {
+    @Argument(
+        help: "File to be parsed.",
+        transform: URL.init(fileURLWithPath:)
+    )
+    var file: URL
+
+    mutating func run() async throws {
+        let handle = try FileHandle(forReadingFrom: file)
+
+        for try await line in handle.bytes.lines {
+            // do something with each line
+        }
+
+        try handle.close()
+    }
+}
+```
+
+> Note: If you accidentally use `ParsableCommand` with an `async` rendition of `run`, the app may never reach your `run` function and may only show the `USAGE` text. If you are using `async` version of `run`, you must use `AsyncParsableCommand`.

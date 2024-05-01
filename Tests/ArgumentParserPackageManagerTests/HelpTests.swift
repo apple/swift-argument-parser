@@ -14,6 +14,11 @@ import XCTest
 import ArgumentParserTestHelpers
 
 final class HelpTests: XCTestCase {
+  override func setUp() {
+    #if !os(Windows) && !os(WASI)
+    unsetenv("COLUMNS")
+    #endif
+  }
 }
 
 func getErrorText<T: ParsableArguments>(_: T.Type, _ arguments: [String]) -> String {
@@ -243,7 +248,7 @@ extension HelpTests {
 }
 
 struct SubCommandCustomHelp: ParsableCommand {
-  static var configuration = CommandConfiguration (
+  static let configuration = CommandConfiguration (
     helpNames: [.customShort("p"), .customLong("parent-help")]
   )
 
@@ -252,7 +257,7 @@ struct SubCommandCustomHelp: ParsableCommand {
   }
 
   struct ModifiedHelp: ParsableCommand {
-    static var configuration = CommandConfiguration (
+    static let configuration = CommandConfiguration (
       helpNames: [.customShort("s"), .customLong("subcommand-help")]
     )
 

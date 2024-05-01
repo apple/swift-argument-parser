@@ -20,9 +20,11 @@ public protocol ExpressibleByArgument {
   var defaultValueDescription: String { get }
   
   /// An array of all possible strings that can convert to a value of this
-  /// type.
+  /// type, for display in the help screen.
   ///
-  /// The default implementation of this property returns an empty array.
+  /// The default implementation of this property returns an empty array. If the
+  /// conforming type is also `CaseIterable`, the default implementation returns
+  /// an array with a value for each case.
   static var allValueStrings: [String] { get }
 
   /// The completion kind to use for options or arguments of this type that

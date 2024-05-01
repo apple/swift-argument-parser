@@ -8,7 +8,7 @@ In addition to configuring the command name and subcommands, as described in <do
 
 ```swift
 struct Repeat: ParsableCommand {
-    static var configuration = CommandConfiguration(
+    static let configuration = CommandConfiguration(
         abstract: "Repeats your input phrase.",
         usage: """
             repeat <phrase>

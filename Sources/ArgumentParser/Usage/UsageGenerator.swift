@@ -9,7 +9,13 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if swift(>=5.11)
+internal import protocol Foundation.LocalizedError
+#elseif swift(>=5.10)
+import protocol Foundation.LocalizedError
+#else
 @_implementationOnly import protocol Foundation.LocalizedError
+#endif
 
 struct UsageGenerator {
   var toolName: String
@@ -18,7 +24,8 @@ struct UsageGenerator {
 
 extension UsageGenerator {
   init(definition: ArgumentSet) {
-    let toolName = CommandLine.arguments[0].split(separator: "/").last.map(String.init) ?? "<command>"
+    let toolName = CommandLine._staticArguments[0]
+      .split(separator: "/").last.map(String.init) ?? "<command>"
     self.init(toolName: toolName, definition: definition)
   }
   
@@ -430,12 +437,12 @@ extension ErrorMessageGenerator {
 
 private extension ArgumentDefinition {
   var formattedValueList: String {
-    if help.allValues.isEmpty {
+    if help.allValueStrings.isEmpty {
       return ""
     }
 
-    if help.allValues.count < 6 {
-      let quotedValues = help.allValues.map { "'\($0)'" }
+    if help.allValueStrings.count < 6 {
+      let quotedValues = help.allValueStrings.map { "'\($0)'" }
       let validList: String
       if quotedValues.count <= 2 {
         validList = quotedValues.joined(separator: " and ")
@@ -444,7 +451,7 @@ private extension ArgumentDefinition {
       }
       return ". Please provide one of \(validList)."
     } else {
-      let bulletValueList = help.allValues.map { "  - \($0)" }.joined(separator: "\n")
+      let bulletValueList = help.allValueStrings.map { "  - \($0)" }.joined(separator: "\n")
       return ". Please provide one of the following:\n\(bulletValueList)"
     }
   }

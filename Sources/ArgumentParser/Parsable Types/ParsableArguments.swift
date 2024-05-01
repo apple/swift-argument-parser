@@ -101,15 +101,29 @@ extension ParsableArguments {
     MessageInfo(error: error, type: self).message
   }
   
+  @available(*, deprecated, renamed: "fullMessage(for:columns:)")
+  @_disfavoredOverload
+  public static func fullMessage(
+    for _error: Error
+  ) -> String {
+    MessageInfo(error: _error, type: self).fullText(for: self)
+  }
+
   /// Returns a full message for the given error, including usage information,
   /// if appropriate.
   ///
-  /// - Parameter error: An error to generate a message for.
+  /// - Parameters:
+  ///   - error: An error to generate a message for.
+  ///   - columns: The column width to use when wrapping long line in the
+  ///     help screen. If `columns` is `nil`, uses the current terminal
+  ///     width, or a default value of `80` if the terminal width is not
+  ///     available.
   /// - Returns: A message that can be displayed to the user.
   public static func fullMessage(
-    for error: Error
+    for error: Error,
+    columns: Int? = nil
   ) -> String {
-    MessageInfo(error: error, type: self).fullText(for: self)
+    MessageInfo(error: error, type: self, columns: columns).fullText(for: self)
   }
 
   /// Returns the text of the help screen for this type.
@@ -123,9 +137,9 @@ extension ParsableArguments {
   @_disfavoredOverload
   @available(*, deprecated, message: "Use helpMessage(includeHidden:columns:) instead.")
   public static func helpMessage(
-    columns: Int?
+    columns _columns: Int?
   ) -> String {
-    helpMessage(includeHidden: false, columns: columns)
+    helpMessage(includeHidden: false, columns: _columns)
   }
 
   /// Returns the text of the help screen for this type.
@@ -196,7 +210,8 @@ extension ParsableArguments {
       if messageInfo.shouldExitCleanly {
         print(fullText)
       } else {
-        print(fullText, to: &Platform.standardError)
+        var errorOut = Platform.standardError
+        print(fullText, to: &errorOut)
       }
     }
     Platform.exit(messageInfo.exitCode.rawValue)
@@ -215,6 +230,18 @@ extension ParsableArguments {
     } catch {
       exit(withError: error)
     }
+  }
+
+  /// Returns the usage text for this type.
+  ///
+  /// - Parameters:
+  ///   - includeHidden: Include hidden help information in the generated
+  ///     message.
+  /// - Returns: The usage text for this type.
+  public static func usageString(
+    includeHidden: Bool = false
+  ) -> String {
+    HelpGenerator(self, visibility: includeHidden ? .hidden : .default).usage
   }
 }
 

@@ -18,18 +18,20 @@
 /// For example, the following program declares a flag that lets a user indicate
 /// that seconds should be included when printing the time.
 ///
-///     @main
-///     struct Time: ParsableCommand {
-///         @Flag var includeSeconds = false
+/// ```swift
+/// @main
+/// struct Time: ParsableCommand {
+///     @Flag var includeSeconds = false
 ///
-///         mutating func run() {
-///             if includeSeconds {
-///                 print(Date.now.formatted(.dateTime.hour().minute().second()))
-///             } else {
-///                 print(Date.now.formatted(.dateTime.hour().minute()))
-///             }
+///     mutating func run() {
+///         if includeSeconds {
+///             print(Date.now.formatted(.dateTime.hour().minute().second()))
+///         } else {
+///             print(Date.now.formatted(.dateTime.hour().minute()))
 ///         }
 ///     }
+/// }
+/// ```
 ///
 /// `includeSeconds` has a default value of `false`, but becomes `true` if
 /// `--include-seconds` is provided on the command line.
@@ -74,8 +76,8 @@ public struct Flag<Value>: Decodable, ParsedWrapper {
     self._parsedValue = _parsedValue
   }
   
-  public init(from decoder: Decoder) throws {
-    try self.init(_decoder: decoder)
+  public init(from _decoder: Decoder) throws {
+    try self.init(_decoder: _decoder)
   }
 
   /// This initializer works around a quirk of property wrappers, where the
@@ -108,6 +110,8 @@ public struct Flag<Value>: Decodable, ParsedWrapper {
     }
   }
 }
+
+extension Flag: Sendable where Value: Sendable {}
 
 extension Flag: CustomStringConvertible {
   public var description: String {
@@ -156,6 +160,8 @@ public struct FlagInversion: Hashable {
   }
 }
 
+extension FlagInversion: Sendable { }
+
 /// The options for treating enumeration-based flags as exclusive.
 public struct FlagExclusivity: Hashable {
   internal enum Representation {
@@ -181,6 +187,8 @@ public struct FlagExclusivity: Hashable {
     self.init(base: .chooseLast)
   }
 }
+
+extension FlagExclusivity: Sendable { }
 
 extension Flag where Value == Optional<Bool> {
   /// Creates a Boolean property that reads its value from the presence of
@@ -388,10 +396,6 @@ extension Flag where Value: EnumerableFlag {
     help: ArgumentHelp?
   ) {
     self.init(_parsedValue: .init { key in
-      // This gets flipped to `true` the first time one of these flags is
-      // encountered.
-      var hasUpdated = false
-      
       // Create a string representation of the default value. Since this is a
       // flag, the default value to show to the user is the `--value-name`
       // flag that a user would provide on the command line, not a Swift value.
@@ -419,7 +423,7 @@ extension Flag where Value: EnumerableFlag {
         }
         
         let help = ArgumentDefinition.Help(
-          allValues: [],
+          allValueStrings: [],
           options: initial != nil ? .isOptional : [],
           help: helpForCase,
           defaultValue: defaultValueString,
@@ -434,7 +438,7 @@ extension Flag where Value: EnumerableFlag {
           parsingStrategy: .default,
           initialValue: initial,
           update: .nullary({ (origin, name, values) in
-            hasUpdated = try ArgumentSet.updateFlag(key: key, value: value, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
+            try ArgumentSet.updateFlag(key: key, value: value, origin: origin, values: &values, exclusivity: exclusivity)
           })
         )
       }
@@ -511,10 +515,6 @@ extension Flag {
     help: ArgumentHelp? = nil
   ) where Value == Element?, Element: EnumerableFlag {
     self.init(_parsedValue: .init { parentKey in
-      // This gets flipped to `true` the first time one of these flags is
-      // encountered.
-      var hasUpdated = false
-      
       let caseHelps = Element.allCases.map { Element.help(for: $0) }
       let hasCustomCaseHelp = caseHelps.contains(where: { $0 != nil })
 
@@ -524,7 +524,7 @@ extension Flag {
         let helpForCase = hasCustomCaseHelp ? (caseHelps[i] ?? help) : help
 
         let help = ArgumentDefinition.Help(
-          allValues: [],
+          allValueStrings: [],
           options: [.isOptional],
           help: helpForCase,
           defaultValue: nil,
@@ -532,7 +532,7 @@ extension Flag {
           isComposite: !hasCustomCaseHelp)
 
         return ArgumentDefinition.flag(name: name, key: parentKey, caseKey: caseKey, help: help, parsingStrategy: .default, initialValue: nil as Element?, update: .nullary({ (origin, name, values) in
-          hasUpdated = try ArgumentSet.updateFlag(key: parentKey, value: value, origin: origin, values: &values, hasUpdated: hasUpdated, exclusivity: exclusivity)
+          try ArgumentSet.updateFlag(key: parentKey, value: value, origin: origin, values: &values, exclusivity: exclusivity)
         }))
 
       }
@@ -556,7 +556,7 @@ extension Flag {
         let name = Element.name(for: value)
         let helpForCase = hasCustomCaseHelp ? (caseHelps[i] ?? help) : help
         let help = ArgumentDefinition.Help(
-          allValues: [],
+          allValueStrings: [],
           options: [.isOptional],
           help: helpForCase,
           defaultValue: nil,
@@ -621,3 +621,4 @@ extension ArgumentDefinition {
     })
   }
 }
+

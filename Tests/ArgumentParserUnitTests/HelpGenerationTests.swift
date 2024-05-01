@@ -16,7 +16,7 @@ import ArgumentParserTestHelpers
 final class HelpGenerationTests: XCTestCase {
 }
 
-extension URL: ExpressibleByArgument {
+extension Foundation.URL: ArgumentParser.ExpressibleByArgument {
   public init?(argument: String) {
     guard let url = URL(string: argument) else {
       return nil
@@ -211,8 +211,9 @@ extension HelpGenerationTests {
         --degree <degree>       Your degree.
         --directory <directory> Directory. (default: current directory)
         --manual <manual>       Manual Option. (default: default-value)
-        --unspecial <unspecial> Unspecialized Synthesized (default: 0)
-        --special <special>     Specialized Synthesized (default: Apple)
+        --unspecial <unspecial> Unspecialized Synthesized (values: 0, 1; default: 0)
+        --special <special>     Specialized Synthesized (values: Apple, Banana;
+                                default: Apple)
         -h, --help              Show help information.
 
       """)
@@ -303,7 +304,7 @@ extension HelpGenerationTests {
       @Argument
       var argument: String = ""
     }
-    static var configuration = CommandConfiguration(subcommands: [CommandWithVeryLongName.self,ShortCommand.self,AnotherCommandWithVeryLongName.self,AnotherCommand.self])
+    static let configuration = CommandConfiguration(subcommands: [CommandWithVeryLongName.self,ShortCommand.self,AnotherCommandWithVeryLongName.self,AnotherCommand.self])
   }
 
   func testHelpWithSubcommands() {
@@ -341,7 +342,7 @@ extension HelpGenerationTests {
   }
 
   struct I: ParsableCommand {
-    static var configuration = CommandConfiguration(version: "1.0.0")
+    static let configuration = CommandConfiguration(version: "1.0.0")
   }
 
   func testHelpWithVersion() {
@@ -357,7 +358,7 @@ extension HelpGenerationTests {
   }
 
   struct J: ParsableCommand {
-    static var configuration = CommandConfiguration(discussion: "test")
+    static let configuration = CommandConfiguration(discussion: "test")
   }
 
   func testOverviewButNoAbstractSpacing() {
@@ -421,7 +422,7 @@ extension HelpGenerationTests {
   struct M: ParsableCommand {
   }
   struct N: ParsableCommand {
-    static var configuration = CommandConfiguration(subcommands: [M.self], defaultSubcommand: M.self)
+    static let configuration = CommandConfiguration(subcommands: [M.self], defaultSubcommand: M.self)
   }
 
   func testHelpWithDefaultCommand() {
@@ -639,14 +640,14 @@ extension HelpGenerationTests {
 
   func testAllValues() {
     let opts = ArgumentSet(AllValues.self, visibility: .private, parent: nil)
-    XCTAssertEqual(AllValues.Manual.allValueStrings, opts[0].help.allValues)
-    XCTAssertEqual(AllValues.Manual.allValueStrings, opts[1].help.allValues)
+    XCTAssertEqual(AllValues.Manual.allValueStrings, opts[0].help.allValueStrings)
+    XCTAssertEqual(AllValues.Manual.allValueStrings, opts[1].help.allValueStrings)
 
-    XCTAssertEqual(AllValues.UnspecializedSynthesized.allValueStrings, opts[2].help.allValues)
-    XCTAssertEqual(AllValues.UnspecializedSynthesized.allValueStrings, opts[3].help.allValues)
+    XCTAssertEqual(AllValues.UnspecializedSynthesized.allValueStrings, opts[2].help.allValueStrings)
+    XCTAssertEqual(AllValues.UnspecializedSynthesized.allValueStrings, opts[3].help.allValueStrings)
 
-    XCTAssertEqual(AllValues.SpecializedSynthesized.allValueStrings, opts[4].help.allValues)
-    XCTAssertEqual(AllValues.SpecializedSynthesized.allValueStrings, opts[5].help.allValues)
+    XCTAssertEqual(AllValues.SpecializedSynthesized.allValueStrings, opts[4].help.allValueStrings)
+    XCTAssertEqual(AllValues.SpecializedSynthesized.allValueStrings, opts[5].help.allValueStrings)
   }
 
   struct Q: ParsableArguments {
@@ -679,7 +680,7 @@ extension HelpGenerationTests {
     static let configuration = CommandConfiguration(
       commandName: "parserBug",
       subcommands: [Sub.self])
-    
+
     struct CommonOptions: ParsableCommand {
       @Flag(help: "example flag")
       var example: Bool = false
@@ -688,12 +689,12 @@ extension HelpGenerationTests {
     struct Sub: ParsableCommand {
       @OptionGroup()
       var commonOptions: CommonOptions
-      
+
       @Argument(help: "Non-mandatory argument")
       var argument: String?
     }
   }
-  
+
   func testIssue278() {
     AssertHelp(.default, for: ParserBug.Sub.self, root: ParserBug.self, equals: """
       USAGE: parserBug sub [--example] [<argument>]
@@ -707,42 +708,87 @@ extension HelpGenerationTests {
 
       """)
   }
+}
+
+extension HelpGenerationTests {
+  struct NonCustomUsage: ParsableCommand {
+    struct ExampleSubcommand: ParsableCommand {
+      static let configuration = CommandConfiguration()
+      @Argument var output: String
+    }
+
+    static let configuration = CommandConfiguration(
+      subcommands: [ExampleSubcommand.self])
+
+    @Argument var file: String
+    @Flag var verboseMode = false
+  }
 
   struct CustomUsageShort: ParsableCommand {
-    static var configuration: CommandConfiguration {
-      CommandConfiguration(usage: """
+    static let configuration = CommandConfiguration(
+      usage: """
         example [--verbose] <file-name>
         """)
-    }
-    
+
     @Argument var file: String
     @Flag var verboseMode = false
   }
   
   struct CustomUsageLong: ParsableCommand {
-    static var configuration: CommandConfiguration {
-      CommandConfiguration(usage: """
+    static let configuration = CommandConfiguration(
+      usage: """
         example <file-name>
         example --verbose <file-name>
         example --help
         """)
-    }
-    
+
     @Argument var file: String
     @Flag var verboseMode = false
   }
 
   struct CustomUsageHidden: ParsableCommand {
-    static var configuration: CommandConfiguration {
-      CommandConfiguration(usage: "")
-    }
+    static let configuration = CommandConfiguration(usage: "")
     
     @Argument var file: String
     @Flag var verboseMode = false
   }
 
-  func testCustomUsageHelp() {
-    XCTAssertEqual(CustomUsageShort.helpMessage(columns: 80), """
+  func test_usageCustomization_helpMessage() {
+    AssertEqualStrings(
+      actual: NonCustomUsage.helpMessage(columns: 80),
+      expected: """
+      USAGE: non-custom-usage <file> [--verbose-mode] <subcommand>
+
+      ARGUMENTS:
+        <file>
+
+      OPTIONS:
+        --verbose-mode
+        -h, --help              Show help information.
+      
+      SUBCOMMANDS:
+        example-subcommand
+
+        See 'non-custom-usage help <subcommand>' for detailed help.
+      """)
+
+    AssertEqualStrings(
+      actual: NonCustomUsage.helpMessage(
+        for: NonCustomUsage.ExampleSubcommand.self, columns: 80),
+      expected: """
+      USAGE: non-custom-usage example-subcommand <output>
+
+      ARGUMENTS:
+        <output>
+
+      OPTIONS:
+        -h, --help              Show help information.
+
+      """)
+
+    AssertEqualStrings(
+      actual: CustomUsageShort.helpMessage(columns: 80),
+      expected: """
       USAGE: example [--verbose] <file-name>
 
       ARGUMENTS:
@@ -754,7 +800,9 @@ extension HelpGenerationTests {
       
       """)
     
-    XCTAssertEqual(CustomUsageLong.helpMessage(columns: 80), """
+    AssertEqualStrings(
+      actual: CustomUsageLong.helpMessage(columns: 80),
+      expected: """
       USAGE: example <file-name>
              example --verbose <file-name>
              example --help
@@ -768,7 +816,9 @@ extension HelpGenerationTests {
       
       """)
     
-    XCTAssertEqual(CustomUsageHidden.helpMessage(columns: 80), """
+    AssertEqualStrings(
+      actual: CustomUsageHidden.helpMessage(columns: 80),
+      expected: """
       ARGUMENTS:
         <file>
 
@@ -779,22 +829,122 @@ extension HelpGenerationTests {
       """)
   }
   
-  func testCustomUsageError() {
-    XCTAssertEqual(CustomUsageShort.fullMessage(for: ValidationError("Test")), """
+  func test_usageCustomization_fullMessage() {
+    AssertEqualStrings(
+      actual: NonCustomUsage.fullMessage(for: ValidationError("Test")),
+      expected: """
+      Error: Test
+      Usage: non-custom-usage <file> [--verbose-mode] <subcommand>
+        See 'non-custom-usage --help' for more information.
+      """)
+
+    AssertEqualStrings(
+      actual: CustomUsageShort.fullMessage(for: ValidationError("Test")),
+      expected: """
       Error: Test
       Usage: example [--verbose] <file-name>
         See 'custom-usage-short --help' for more information.
       """)
-    XCTAssertEqual(CustomUsageLong.fullMessage(for: ValidationError("Test")), """
+
+    AssertEqualStrings(
+      actual: CustomUsageLong.fullMessage(for: ValidationError("Test")),
+      expected: """
       Error: Test
       Usage: example <file-name>
              example --verbose <file-name>
              example --help
         See 'custom-usage-long --help' for more information.
       """)
-    XCTAssertEqual(CustomUsageHidden.fullMessage(for: ValidationError("Test")), """
+
+    AssertEqualStrings(
+      actual: CustomUsageHidden.fullMessage(for: ValidationError("Test")),
+      expected: """
       Error: Test
         See 'custom-usage-hidden --help' for more information.
       """)
+  }
+
+  func test_usageCustomization_usageString() {
+    AssertEqualStrings(
+      actual: NonCustomUsage.usageString(),
+      expected: """
+      non-custom-usage <file> [--verbose-mode] <subcommand>
+      """)
+
+    AssertEqualStrings(
+      actual: NonCustomUsage.usageString(
+        for: NonCustomUsage.ExampleSubcommand.self),
+      expected: """
+      non-custom-usage example-subcommand <output>
+      """)
+
+    AssertEqualStrings(
+      actual: CustomUsageShort.usageString(),
+      expected: """
+      example [--verbose] <file-name>
+      """)
+
+    AssertEqualStrings(
+      actual: CustomUsageLong.usageString(),
+      expected: """
+      example <file-name>
+      example --verbose <file-name>
+      example --help
+      """)
+
+    AssertEqualStrings(
+      actual: CustomUsageHidden.usageString(),
+      expected: """
+      """)
+  }
+}
+
+extension HelpGenerationTests {
+  private struct WideHelp: ParsableCommand {
+    @Argument(help: "54 characters of help, so as to wrap when columns < 80")
+    var argument: String?
+  }
+  
+  func testColumnsEnvironmentOverride() throws {
+#if !(os(Windows) || os(WASI))
+    defer { unsetenv("COLUMNS") }
+    unsetenv("COLUMNS")
+    AssertHelp(.default, for: WideHelp.self, columns: nil, equals: """
+      USAGE: wide-help [<argument>]
+      
+      ARGUMENTS:
+        <argument>              54 characters of help, so as to wrap when columns < 80
+      
+      OPTIONS:
+        -h, --help              Show help information.
+      
+      """)
+
+    setenv("COLUMNS", "60", 1)
+    AssertHelp(.default, for: WideHelp.self, columns: nil, equals: """
+      USAGE: wide-help [<argument>]
+      
+      ARGUMENTS:
+        <argument>              54 characters of help, so as to
+                                wrap when columns < 80
+      
+      OPTIONS:
+        -h, --help              Show help information.
+      
+      """)
+
+    setenv("COLUMNS", "79", 1)
+    AssertHelp(.default, for: WideHelp.self, columns: nil, equals: """
+      USAGE: wide-help [<argument>]
+      
+      ARGUMENTS:
+        <argument>              54 characters of help, so as to wrap when columns <
+                                80
+      
+      OPTIONS:
+        -h, --help              Show help information.
+      
+      """)
+#endif
   }
 }

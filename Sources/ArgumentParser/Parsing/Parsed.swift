@@ -22,6 +22,15 @@ enum Parsed<Value> {
   }
 }
 
+// Note: This type uses `@unchecked Sendable` to work around a sendability
+// warning that would otherwise arise:
+//
+// Initial values (that are only conditionally `Sendable`) are captured in
+// what would otherwise need to be an always-`@Sendable` closure.
+// This isn't actually an issue, since the only time the wrapper type is
+// actually sendable is when the value is.
+extension Parsed: @unchecked Sendable where Value: Sendable {}
+
 /// A type that wraps a `Parsed` instance to act as a property wrapper.
 ///
 /// This protocol simplifies the implementations of property wrappers that

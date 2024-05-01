@@ -10,7 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 /// The configuration for a command.
-public struct CommandConfiguration {
+public struct CommandConfiguration: Sendable {
   /// The name of the command to use on the command line.
   ///
   /// If `nil`, the command name is derived by converting the name of
@@ -54,7 +54,14 @@ public struct CommandConfiguration {
   
   /// Flag names to be used for help.
   public var helpNames: NameSpecification?
-  
+
+  /// An array of aliases for the command's name.
+  ///
+  /// All of the aliases MUST not match the actual command's name,
+  /// whether that be the derived name if `commandName` is not provided,
+  /// or `commandName` itself if provided.
+  public var aliases: [String]
+
   /// Creates the configuration for a command.
   ///
   /// - Parameters:
@@ -80,6 +87,9 @@ public struct CommandConfiguration {
   ///     with a simulated Boolean property named `help`. If `helpNames` is
   ///     `nil`, the names are inherited from the parent command, if any, or
   ///     are `-h` and `--help`.
+  ///   - aliases: An array of aliases for the command's name. All of the aliases
+  ///     MUST not match the actual command name, whether that be the derived name
+  ///     if `commandName` is not provided, or `commandName` itself if provided.
   public init(
     commandName: String? = nil,
     abstract: String = "",
@@ -89,7 +99,8 @@ public struct CommandConfiguration {
     shouldDisplay: Bool = true,
     subcommands: [ParsableCommand.Type] = [],
     defaultSubcommand: ParsableCommand.Type? = nil,
-    helpNames: NameSpecification? = nil
+    helpNames: NameSpecification? = nil,
+    aliases: [String] = []
   ) {
     self.commandName = commandName
     self.abstract = abstract
@@ -100,6 +111,7 @@ public struct CommandConfiguration {
     self.subcommands = subcommands
     self.defaultSubcommand = defaultSubcommand
     self.helpNames = helpNames
+    self.aliases = aliases
   }
 
   /// Creates the configuration for a command with a "super-command".
@@ -114,7 +126,8 @@ public struct CommandConfiguration {
     shouldDisplay: Bool = true,
     subcommands: [ParsableCommand.Type] = [],
     defaultSubcommand: ParsableCommand.Type? = nil,
-    helpNames: NameSpecification? = nil
+    helpNames: NameSpecification? = nil,
+    aliases: [String] = []
   ) {
     self.commandName = commandName
     self._superCommandName = _superCommandName
@@ -126,13 +139,39 @@ public struct CommandConfiguration {
     self.subcommands = subcommands
     self.defaultSubcommand = defaultSubcommand
     self.helpNames = helpNames
+    self.aliases = aliases
   }
 }
 
 extension CommandConfiguration {
-  @available(*, deprecated, message: "Use the memberwise initializer with the usage parameter.")
+  @available(*, deprecated, message: "Use the memberwise initializer with the aliases parameter.")
   public init(
-    commandName: String?,
+    commandName: String? = nil,
+    abstract: String = "",
+    usage: String? = nil,
+    discussion: String = "",
+    version: String = "",
+    shouldDisplay: Bool = true,
+    subcommands: [ParsableCommand.Type] = [],
+    defaultSubcommand: ParsableCommand.Type? = nil,
+    helpNames: NameSpecification? = nil
+  ) {
+    self.init(
+      commandName: commandName,
+      abstract: abstract,
+      usage: usage,
+      discussion: discussion,
+      version: version,
+      shouldDisplay: shouldDisplay,
+      subcommands: subcommands,
+      defaultSubcommand: defaultSubcommand,
+      helpNames: helpNames,
+      aliases: [])
+  }
+
+  @available(*, deprecated, message: "Use the memberwise initializer with the usage and aliases parameters.")
+  public init(
+    commandName _commandName: String?,
     abstract: String,
     discussion: String,
     version: String,
@@ -142,7 +181,7 @@ extension CommandConfiguration {
     helpNames: NameSpecification?
   ) {
     self.init(
-      commandName: commandName,
+      commandName: _commandName,
       abstract: abstract,
       usage: "",
       discussion: discussion,
@@ -150,6 +189,7 @@ extension CommandConfiguration {
       shouldDisplay: shouldDisplay,
       subcommands: subcommands,
       defaultSubcommand: defaultSubcommand,
-      helpNames: helpNames)
+      helpNames: helpNames,
+      aliases: [])
   }
 }

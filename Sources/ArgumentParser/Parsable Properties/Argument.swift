@@ -21,15 +21,17 @@
 /// argument is required, while `greeting` is optional because it has a default
 /// value.
 ///
-///     @main
-///     struct Greet: ParsableCommand {
-///         @Argument var name: String
-///         @Argument var greeting: String = "Hello"
+/// ```swift
+/// @main
+/// struct Greet: ParsableCommand {
+///     @Argument var name: String
+///     @Argument var greeting: String = "Hello"
 ///
-///         mutating func run() {
-///             print("\(greeting) \(name)!")
-///         }
+///     mutating func run() {
+///         print("\(greeting) \(name)!")
 ///     }
+/// }
+/// ```
 ///
 /// You can call this program with just a name or with a name and a
 /// greeting. When you supply both arguments, the first argument is always
@@ -49,8 +51,8 @@ public struct Argument<Value>:
     self._parsedValue = _parsedValue
   }
   
-  public init(from decoder: Decoder) throws {
-    try self.init(_decoder: decoder)
+  public init(from _decoder: Decoder) throws {
+    try self.init(_decoder: _decoder)
   }
 
   /// This initializer works around a quirk of property wrappers, where the
@@ -94,6 +96,7 @@ extension Argument: CustomStringConvertible {
   }
 }
 
+extension Argument: Sendable where Value: Sendable { }
 extension Argument: DecodableParsedWrapper where Value: Decodable { }
 
 /// The strategy to use when parsing multiple values from positional arguments
@@ -185,8 +188,8 @@ public struct ArgumentArrayParsingStrategy: Hashable {
     self.init(base: .allUnrecognized)
   }
   
-  /// Before parsing, capture all inputs that follow the `--` terminator in this
-  /// argument array.
+  /// Before parsing arguments, capture all inputs that follow the `--`
+  /// terminator in this argument array.
   ///
   /// For example, the `Example` command defined below has a `words` array that
   /// uses the `postTerminator` parsing strategy:
@@ -215,6 +218,14 @@ public struct ArgumentArrayParsingStrategy: Hashable {
   /// $ example Asa Extra -- one two --other
   /// Error: Unexpected argument 'Extra'
   /// ```
+  ///
+  /// Because options are parsed before arguments, an option that consumes or
+  /// suppresses the `--` terminator can prevent a `postTerminator` argument
+  /// array from capturing any input. In particular, the
+  /// ``SingleValueParsingStrategy/unconditional``,
+  /// ``ArrayParsingStrategy/unconditionalSingleValue``, and
+  /// ``ArrayParsingStrategy/remaining`` parsing strategies can all consume
+  /// the terminator as part of their values.
   ///
   /// - Note: This parsing strategy can be surprising for users, since it
   ///   changes the behavior of the `--` terminator. Prefer ``remaining``
@@ -288,6 +299,8 @@ public struct ArgumentArrayParsingStrategy: Hashable {
     .captureForPassthrough
   }
 }
+
+extension ArgumentArrayParsingStrategy: Sendable { }
 
 // MARK: - @Argument T: ExpressibleByArgument Initializers
 extension Argument where Value: ExpressibleByArgument {
@@ -373,11 +386,12 @@ extension Argument {
   ///   - completion: Kind of completion provided to the user for this option.
   ///   - transform: A closure that converts a string into this property's type
   ///     or throws an error.
+  @preconcurrency
   public init(
     wrappedValue: Value,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
-    transform: @escaping (String) throws -> Value
+    transform: @Sendable @escaping (String) throws -> Value
   ) {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
@@ -407,10 +421,12 @@ extension Argument {
   ///   - completion: Kind of completion provided to the user for this option.
   ///   - transform: A closure that converts a string into this property's
   ///     element type or throws an error.
+  @preconcurrency
+  @_disfavoredOverload
   public init(
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
-    transform: @escaping (String) throws -> Value
+    transform: @Sendable @escaping (String) throws -> Value
   ) {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
@@ -517,11 +533,12 @@ extension Argument {
   ///   - completion: Kind of completion provided to the user for this option.
   ///   - transform: A closure that converts a string into this property's
   ///     element type or throws an error.
+  @preconcurrency
   public init<T>(
     wrappedValue _value: _OptionalNilComparisonType,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
-    transform: @escaping (String) throws -> T
+    transform: @Sendable @escaping (String) throws -> T
   ) where Value == Optional<T> {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
@@ -542,11 +559,12 @@ extension Argument {
     Optional @Arguments with default values should be declared as non-Optional.
     """)
   @_disfavoredOverload
+  @preconcurrency
   public init<T>(
     wrappedValue _wrappedValue: Optional<T>,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
-    transform: @escaping (String) throws -> T
+    transform: @Sendable @escaping (String) throws -> T
   ) where Value == Optional<T> {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
@@ -573,10 +591,11 @@ extension Argument {
   ///   - completion: Kind of completion provided to the user for this option.
   ///   - transform: A closure that converts a string into this property's
   ///     element type or throws an error.
+  @preconcurrency
   public init<T>(
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
-    transform: @escaping (String) throws -> T
+    transform: @Sendable @escaping (String) throws -> T
   ) where Value == Optional<T> {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
@@ -672,12 +691,13 @@ extension Argument {
   ///   - completion: Kind of completion provided to the user for this option.
   ///   - transform: A closure that converts a string into this property's
   ///     element type or throws an error.
+  @preconcurrency
   public init<T>(
     wrappedValue: Array<T>,
     parsing parsingStrategy: ArgumentArrayParsingStrategy = .remaining,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
-    transform: @escaping (String) throws -> T
+    transform: @Sendable @escaping (String) throws -> T
   ) where Value == Array<T> {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
@@ -711,11 +731,12 @@ extension Argument {
   ///   - completion: Kind of completion provided to the user for this option.
   ///   - transform: A closure that converts a string into this property's
   ///     element type or throws an error.
+  @preconcurrency
   public init<T>(
     parsing parsingStrategy: ArgumentArrayParsingStrategy = .remaining,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
-    transform: @escaping (String) throws -> T
+    transform: @Sendable @escaping (String) throws -> T
   ) where Value == Array<T> {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition(
