@@ -26,7 +26,9 @@ extension CollectionDifference.Change {
 }
 
 @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
-extension CollectionDifference.Change: Comparable where ChangeElement: Equatable {
+extension CollectionDifference.Change: Swift.Comparable 
+  where ChangeElement: Equatable
+{
   public static func < (lhs: Self, rhs: Self) -> Bool {
     guard lhs.offset == rhs.offset else {
       return lhs.offset < rhs.offset
