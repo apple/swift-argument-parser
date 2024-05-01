@@ -712,40 +712,42 @@ extension HelpGenerationTests {
 
 extension HelpGenerationTests {
   struct NonCustomUsage: ParsableCommand {
-    static let configuration = CommandConfiguration()
+    struct ExampleSubcommand: ParsableCommand {
+      static let configuration = CommandConfiguration()
+      @Argument var output: String
+    }
+
+    static let configuration = CommandConfiguration(
+      subcommands: [ExampleSubcommand.self])
 
     @Argument var file: String
     @Flag var verboseMode = false
   }
 
   struct CustomUsageShort: ParsableCommand {
-    static var configuration: CommandConfiguration {
-      CommandConfiguration(usage: """
+    static let configuration = CommandConfiguration(
+      usage: """
         example [--verbose] <file-name>
         """)
-    }
-    
+
     @Argument var file: String
     @Flag var verboseMode = false
   }
   
   struct CustomUsageLong: ParsableCommand {
-    static var configuration: CommandConfiguration {
-      CommandConfiguration(usage: """
+    static let configuration = CommandConfiguration(
+      usage: """
         example <file-name>
         example --verbose <file-name>
         example --help
         """)
-    }
-    
+
     @Argument var file: String
     @Flag var verboseMode = false
   }
 
   struct CustomUsageHidden: ParsableCommand {
-    static var configuration: CommandConfiguration {
-      CommandConfiguration(usage: "")
-    }
+    static let configuration = CommandConfiguration(usage: "")
     
     @Argument var file: String
     @Flag var verboseMode = false
@@ -755,13 +757,31 @@ extension HelpGenerationTests {
     AssertEqualStrings(
       actual: NonCustomUsage.helpMessage(columns: 80),
       expected: """
-      USAGE: non-custom-usage <file> [--verbose-mode]
+      USAGE: non-custom-usage <file> [--verbose-mode] <subcommand>
 
       ARGUMENTS:
         <file>
 
       OPTIONS:
         --verbose-mode
+        -h, --help              Show help information.
+      
+      SUBCOMMANDS:
+        example-subcommand
+
+        See 'non-custom-usage help <subcommand>' for detailed help.
+      """)
+
+    AssertEqualStrings(
+      actual: NonCustomUsage.helpMessage(
+        for: NonCustomUsage.ExampleSubcommand.self, columns: 80),
+      expected: """
+      USAGE: non-custom-usage example-subcommand <output>
+
+      ARGUMENTS:
+        <output>
+
+      OPTIONS:
         -h, --help              Show help information.
 
       """)
@@ -814,7 +834,7 @@ extension HelpGenerationTests {
       actual: NonCustomUsage.fullMessage(for: ValidationError("Test")),
       expected: """
       Error: Test
-      Usage: non-custom-usage <file> [--verbose-mode]
+      Usage: non-custom-usage <file> [--verbose-mode] <subcommand>
         See 'non-custom-usage --help' for more information.
       """)
 
@@ -848,7 +868,14 @@ extension HelpGenerationTests {
     AssertEqualStrings(
       actual: NonCustomUsage.usageString(),
       expected: """
-      non-custom-usage <file> [--verbose-mode]
+      non-custom-usage <file> [--verbose-mode] <subcommand>
+      """)
+
+    AssertEqualStrings(
+      actual: NonCustomUsage.usageString(
+        for: NonCustomUsage.ExampleSubcommand.self),
+      expected: """
+      non-custom-usage example-subcommand <output>
       """)
 
     AssertEqualStrings(
