@@ -231,6 +231,18 @@ extension ParsableArguments {
       exit(withError: error)
     }
   }
+
+  /// Returns the usage text for this type.
+  ///
+  /// - Parameters:
+  ///   - includeHidden: Include hidden help information in the generated
+  ///     message.
+  /// - Returns: The usage text for this type.
+  public static func usageString(
+    includeHidden: Bool = false
+  ) -> String {
+    HelpGenerator(self, visibility: includeHidden ? .hidden : .default).usage
+  }
 }
 
 /// Unboxes the given value if it is a `nil` value.
