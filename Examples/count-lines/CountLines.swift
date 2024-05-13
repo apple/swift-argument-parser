@@ -31,7 +31,7 @@ struct CountLines: AsyncParsableCommand {
 extension CountLines {
     var fileHandle: FileHandle {
         get throws {
-            guard let inputFile = inputFile else {
+            guard let inputFile else {
                 return .standardInput
             }
             return try FileHandle(forReadingFrom: inputFile)
@@ -50,7 +50,7 @@ extension CountLines {
             print("Lines from stdin", terminator: "")
         }
         
-        if let prefix = prefix {
+        if let prefix {
             print(", prefixed by '\(prefix)'", terminator: "")
         }
         

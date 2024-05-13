@@ -146,18 +146,18 @@ public struct CommandConfiguration: Sendable {
 extension CommandConfiguration {
   @available(*, deprecated, message: "Use the memberwise initializer with the aliases parameter.")
   public init(
-    commandName: String? = nil,
-    abstract: String = "",
-    usage: String? = nil,
-    discussion: String = "",
-    version: String = "",
-    shouldDisplay: Bool = true,
-    subcommands: [ParsableCommand.Type] = [],
-    defaultSubcommand: ParsableCommand.Type? = nil,
-    helpNames: NameSpecification? = nil
+    commandName _commandName: String?,
+    abstract: String,
+    usage: String?,
+    discussion: String,
+    version: String,
+    shouldDisplay: Bool,
+    subcommands: [ParsableCommand.Type],
+    defaultSubcommand: ParsableCommand.Type?,
+    helpNames: NameSpecification?
   ) {
     self.init(
-      commandName: commandName,
+      commandName: _commandName,
       abstract: abstract,
       usage: usage,
       discussion: discussion,

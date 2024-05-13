@@ -14,7 +14,7 @@ Add new items at the end of the relevant section under **Unreleased**.
 
 ### Changes
 
-- The `CommandConfigration` type is now designated as `Sendable`. ([#615])
+- The `CommandConfiguration` type is now designated as `Sendable`. ([#615])
 - The library uses `internal` imports instead of ``@_implementationOnly` annotations
   in Swift versions where permitted. ([#616])
 
