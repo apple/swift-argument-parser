@@ -82,9 +82,10 @@ enum MessageInfo {
       parserError = .userValidationError(error)
     }
     
-    var usage = HelpGenerator(commandStack: commandStack, visibility: .default).usageMessage()
+    let generator = HelpGenerator(commandStack: commandStack, visibility: .default)
+    var usage = generator.usageMessage()
+    let commandNames = generator.getCommandNames()
     
-    let commandNames = commandStack.map { $0._commandName }.joined(separator: " ")
     if let helpName = commandStack.getPrimaryHelpName() {
       if !usage.isEmpty {
         usage += "\n"

@@ -169,7 +169,7 @@ struct Simple: ParsableArguments {
   @Argument() var max: Int
 
   static var helpText = """
-        USAGE: simple [--verbose] [--min <min>] <max>
+        USAGE: \(getFirstArgument()) [--verbose] [--min <min>] <max>
 
         ARGUMENTS:
           <max>
@@ -195,6 +195,7 @@ extension HelpTests {
 
 struct CustomHelp: ParsableCommand {
   static let configuration = CommandConfiguration(
+    commandName: "custom-help",
     helpNames: [.customShort("?"), .customLong("show-help")]
   )
 }
@@ -216,6 +217,7 @@ extension HelpTests {
 
 struct NoHelp: ParsableCommand {
   static let configuration = CommandConfiguration(
+    commandName: "no-help",
     helpNames: []
   )
 

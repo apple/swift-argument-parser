@@ -89,6 +89,7 @@ internal struct HelpGenerator {
   var commandStack: [ParsableCommand.Type]
   var abstract: String
   var usage: String
+  var commandNames: String
   var sections: [Section]
   var discussionSections: [DiscussionSection]
   
@@ -101,15 +102,22 @@ internal struct HelpGenerator {
     self.commandStack = commandStack
 
     // Build the tool name and subcommand name from the command configuration
-    var toolName = commandStack.map { $0._commandName }.joined(separator: " ")
     if let superName = commandStack.first!.configuration._superCommandName {
-      toolName = "\(superName) \(toolName)"
+        self.commandNames = commandStack.map { $0._commandName }.joined(separator: " ")
+        self.commandNames = "\(superName) \(commandNames)"
+    } else {
+      // If the user explicitly provided a command name, use this. Otherwise default to showing argv[0].
+      let binaryName = CommandLine._staticArguments[0].split(separator: "/").last.map(String.init) ?? "<command>"
+      self.commandNames = commandStack[0].configuration.commandName ?? binaryName
+      if commandStack.count > 1 {
+        self.commandNames += " " + commandStack[1...].map { $0._commandName }.joined(separator: " ")
+      }
     }
 
     if let usage = currentCommand.configuration.usage {
       self.usage = usage
     } else {
-      var usage = UsageGenerator(toolName: toolName, definition: [currentArgSet])
+      var usage = UsageGenerator(toolName: self.commandNames, definition: [currentArgSet])
         .synopsis
       if !currentCommand.configuration.subcommands.isEmpty {
         if usage.last != " " { usage += " " }
@@ -245,7 +253,11 @@ internal struct HelpGenerator {
     guard !usage.isEmpty else { return "" }
     return "Usage: \(usage.hangingIndentingEachLine(by: 7))"
   }
-  
+
+  func getCommandNames() -> String {
+    return self.commandNames
+  }
+
   var includesSubcommands: Bool {
     guard let subcommandSection = sections.first(where: { $0.header == .subcommands })
       else { return false }

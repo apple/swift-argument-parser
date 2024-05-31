@@ -41,7 +41,7 @@ extension HelpGenerationTests {
 
   func testHelp() {
     AssertHelp(.default, for: A.self, equals: """
-            USAGE: a --name <name> [--title <title>]
+            USAGE: \(getFirstArgument()) --name <name> [--title <title>]
 
             OPTIONS:
               --name <name>           Your name
@@ -63,7 +63,7 @@ extension HelpGenerationTests {
 
   func testHelpWithHidden() {
     AssertHelp(.default, for: B.self, equals: """
-            USAGE: b --name <name> [--title <title>]
+            USAGE: \(getFirstArgument()) --name <name> [--title <title>]
 
             OPTIONS:
               --name <name>           Your name
@@ -73,7 +73,7 @@ extension HelpGenerationTests {
             """)
 
     AssertHelp(.hidden, for: B.self, equals: """
-            USAGE: b --name <name> [--title <title>] [<hidden-name>] [--hidden-title <hidden-title>] [--hidden-flag] [--hidden-inverted-flag] [--no-hidden-inverted-flag]
+            USAGE: \(getFirstArgument()) --name <name> [--title <title>] [<hidden-name>] [--hidden-title <hidden-title>] [--hidden-flag] [--hidden-inverted-flag] [--no-hidden-inverted-flag]
 
             ARGUMENTS:
               <hidden-name>
@@ -98,7 +98,7 @@ extension HelpGenerationTests {
 
   func testHelpWithDiscussion() {
     AssertHelp(.default, for: C.self, equals: """
-            USAGE: c --name <name>
+            USAGE: \(getFirstArgument()) --name <name>
 
             OPTIONS:
               --name <name>           Your name.
@@ -121,7 +121,7 @@ extension HelpGenerationTests {
 
   func testHelpWithDefaultValueButNoDiscussion() {
     AssertHelp(.default, for: Issue27.self, equals: """
-            USAGE: issue27 [--two <two>] --three <three> [--four <four>] [--five <five>]
+            USAGE: \(getFirstArgument()) [--two <two>] --three <three> [--four <four>] [--five <five>]
 
             OPTIONS:
               --two <two>             (default: 42)
@@ -151,6 +151,8 @@ extension HelpGenerationTests {
   }
 
   struct D: ParsableCommand {
+    static let configuration = CommandConfiguration(commandName: "d")
+
     @Argument(help: "Your occupation.")
     var occupation: String = "--"
 
@@ -220,6 +222,8 @@ extension HelpGenerationTests {
   }
 
   struct E: ParsableCommand {
+    static let configuration = CommandConfiguration(commandName: "e")
+      
     enum OutputBehaviour: String, EnumerableFlag {
       case stats, count, list
 
@@ -233,6 +237,8 @@ extension HelpGenerationTests {
   }
 
   struct F: ParsableCommand {
+    static let configuration = CommandConfiguration(commandName: "f")
+      
     enum OutputBehaviour: String, EnumerableFlag {
       case stats, count, list
 
@@ -246,6 +252,8 @@ extension HelpGenerationTests {
   }
 
   struct G: ParsableCommand {
+    static let configuration = CommandConfiguration(commandName: "g")
+      
     @Flag(inversion: .prefixedNo, help: "Whether to flag")
     var flag: Bool = false
   }
@@ -304,7 +312,7 @@ extension HelpGenerationTests {
       @Argument
       var argument: String = ""
     }
-    static let configuration = CommandConfiguration(subcommands: [CommandWithVeryLongName.self,ShortCommand.self,AnotherCommandWithVeryLongName.self,AnotherCommand.self])
+    static let configuration = CommandConfiguration(commandName: "h", subcommands: [CommandWithVeryLongName.self,ShortCommand.self,AnotherCommandWithVeryLongName.self,AnotherCommand.self])
   }
 
   func testHelpWithSubcommands() {
@@ -342,7 +350,7 @@ extension HelpGenerationTests {
   }
 
   struct I: ParsableCommand {
-    static let configuration = CommandConfiguration(version: "1.0.0")
+    static let configuration = CommandConfiguration(commandName: "i", version: "1.0.0")
   }
 
   func testHelpWithVersion() {
@@ -358,7 +366,7 @@ extension HelpGenerationTests {
   }
 
   struct J: ParsableCommand {
-    static let configuration = CommandConfiguration(discussion: "test")
+    static let configuration = CommandConfiguration(commandName: "j", discussion: "test")
   }
 
   func testOverviewButNoAbstractSpacing() {
@@ -377,6 +385,8 @@ extension HelpGenerationTests {
   }
 
   struct K: ParsableCommand {
+    static let configuration = CommandConfiguration(commandName: "k")
+      
     @Argument(help: "A list of paths.")
     var paths: [String] = []
 
@@ -409,7 +419,7 @@ extension HelpGenerationTests {
 
   func testHelpWithMultipleCustomNames() {
     AssertHelp(.default, for: L.self, equals: """
-    USAGE: l [--remote <remote>]
+    USAGE: \(getFirstArgument()) [--remote <remote>]
 
     OPTIONS:
       -t, -x, -y, --remote, --when, --time, -other, --there <remote>
@@ -422,7 +432,7 @@ extension HelpGenerationTests {
   struct M: ParsableCommand {
   }
   struct N: ParsableCommand {
-    static let configuration = CommandConfiguration(subcommands: [M.self], defaultSubcommand: M.self)
+    static let configuration = CommandConfiguration(commandName: "n", subcommands: [M.self], defaultSubcommand: M.self)
   }
 
   func testHelpWithDefaultCommand() {
@@ -461,7 +471,7 @@ extension HelpGenerationTests {
 
   func testHelpWithDefaultValueForArray() {
     AssertHelp(.default, for: P.self, equals: """
-    USAGE: p [-o <o> ...] [<remainder> ...]
+    USAGE: \(getFirstArgument()) [-o <o> ...] [<remainder> ...]
 
     ARGUMENTS:
       <remainder>             Help Message (default: large)
@@ -662,7 +672,7 @@ extension HelpGenerationTests {
 
   func testHelpWithPrivate() {
     AssertHelp(.default, for: Q.self, equals: """
-            USAGE: q --name <name> [--title <title>]
+            USAGE: \(getFirstArgument()) --name <name> [--title <title>]
 
             OPTIONS:
               --name <name>           Your name
@@ -718,6 +728,7 @@ extension HelpGenerationTests {
     }
 
     static let configuration = CommandConfiguration(
+      commandName: "non-custom-usage",
       subcommands: [ExampleSubcommand.self])
 
     @Argument var file: String
@@ -726,6 +737,7 @@ extension HelpGenerationTests {
 
   struct CustomUsageShort: ParsableCommand {
     static let configuration = CommandConfiguration(
+      commandName: "custom-usage-short",
       usage: """
         example [--verbose] <file-name>
         """)
@@ -736,6 +748,7 @@ extension HelpGenerationTests {
   
   struct CustomUsageLong: ParsableCommand {
     static let configuration = CommandConfiguration(
+      commandName: "custom-usage-long",
       usage: """
         example <file-name>
         example --verbose <file-name>
@@ -747,7 +760,7 @@ extension HelpGenerationTests {
   }
 
   struct CustomUsageHidden: ParsableCommand {
-    static let configuration = CommandConfiguration(usage: "")
+    static let configuration = CommandConfiguration(commandName: "custom-usage-hidden", usage: "")
     
     @Argument var file: String
     @Flag var verboseMode = false
@@ -901,6 +914,8 @@ extension HelpGenerationTests {
 
 extension HelpGenerationTests {
   private struct WideHelp: ParsableCommand {
+    static var configuration = CommandConfiguration(commandName: "wide-help")
+
     @Argument(help: "54 characters of help, so as to wrap when columns < 80")
     var argument: String?
   }

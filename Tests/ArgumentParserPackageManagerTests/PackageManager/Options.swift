@@ -89,6 +89,7 @@ struct Options: ParsableArguments {
 
 struct Package: ParsableCommand {
   static let configuration = CommandConfiguration(
+    commandName: "package",
     subcommands: [Clean.self, Config.self, Describe.self, GenerateXcodeProject.self, Hidden.self])
 }
 

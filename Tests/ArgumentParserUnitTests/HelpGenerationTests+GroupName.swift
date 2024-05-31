@@ -53,6 +53,8 @@ extension HelpGenerationTests {
   }
   
   fileprivate struct AllVisible: ParsableCommand {
+    static let configuration = CommandConfiguration(commandName: "all-visible")
+      
     @OptionGroup(title: "Flags Group")
     var flags: Flags
     
@@ -67,6 +69,8 @@ extension HelpGenerationTests {
   }
   
   fileprivate struct ContainsOptionGroup: ParsableCommand {
+    static let configuration = CommandConfiguration(commandName: "all-visible")
+
     @OptionGroup(title: "Flags Group")
     var flags: Flags
     
@@ -122,6 +126,8 @@ extension HelpGenerationTests {
   }
   
   fileprivate struct Combined: ParsableCommand {
+    static let configuration = CommandConfiguration(commandName: "combined")
+
     @OptionGroup(title: "Extras")
     var flags: Flags
     
@@ -179,6 +185,8 @@ extension HelpGenerationTests {
   }
   
   fileprivate struct HiddenGroups: ParsableCommand {
+    static let configuration = CommandConfiguration(commandName: "hidden-groups")
+
     @OptionGroup(title: "Flags Group", visibility: .hidden)
     var flags: Flags
     
@@ -222,7 +230,7 @@ extension HelpGenerationTests {
   
   fileprivate struct ParentWithGroups: ParsableCommand {
     static var configuration: CommandConfiguration {
-      .init(subcommands: [ChildWithGroups.self])
+      .init(commandName: "parent-with-groups", subcommands: [ChildWithGroups.self])
     }
     
     @OptionGroup(title: "Extras")
@@ -328,6 +336,8 @@ extension HelpGenerationTests {
   }
 
   fileprivate struct GroupsWithUnnamedGroups: ParsableCommand {
+    static let configuration = CommandConfiguration(commandName: "groups-with-unnamed-groups")
+      
     @OptionGroup
     var extras: ContainsOptionGroup
   }
@@ -351,6 +361,8 @@ extension HelpGenerationTests {
   }
 
   fileprivate struct GroupsWithNamedGroups: ParsableCommand {
+    static let configuration = CommandConfiguration(commandName: "groups-with-named-groups")
+
     @OptionGroup(title: "Nested")
     var extras: ContainsOptionGroup
   }

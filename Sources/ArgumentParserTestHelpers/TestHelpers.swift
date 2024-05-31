@@ -119,6 +119,10 @@ public func AssertParse<A>(_ type: A.Type, _ arguments: [String], file: StaticSt
   }
 }
 
+public func getFirstArgument() -> String {
+  return CommandLine.arguments[0].split(separator: "/").last.map(String.init) ?? "<command>"
+}
+
 public func AssertParseCommand<A: ParsableCommand>(_ rootCommand: ParsableCommand.Type, _ type: A.Type, _ arguments: [String], file: StaticString = #file, line: UInt = #line, closure: (A) throws -> Void) {
   do {
     let command = try rootCommand.parseAsRoot(arguments)

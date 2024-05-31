@@ -22,41 +22,57 @@ extension HelpGenerationTests {
     struct A { }
 
     struct BareNoDefault: ParsableCommand {
+      static let configuration = CommandConfiguration(commandName: "bare-no-default")
+        
       @Argument(help: "example", transform: { _ in A() })
       var arg0: A
     }
 
     struct BareDefault: ParsableCommand {
+      static let configuration = CommandConfiguration(commandName: "bare-default")
+        
       @Argument(help: "example", transform: { _ in A() })
       var arg0: A = A()
     }
 
     struct OptionalNoDefault: ParsableCommand {
+      static let configuration = CommandConfiguration(commandName: "optional-no-default")
+        
       @Argument(help: "example", transform: { _ in A() })
       var arg0: A?
     }
 
     struct OptionalDefaultNil: ParsableCommand {
+      static let configuration = CommandConfiguration(commandName: "optional-default-nil")
+
       @Argument(help: "example", transform: { _ in A() })
       var arg0: A? = nil
     }
 
     struct OptionalDefault: ParsableCommand {
+      static let configuration = CommandConfiguration(commandName: "optional-default")
+
       @Argument(help: "example", transform: { _ in A() })
       var arg0: A? = A()
     }
 
     struct ArrayNoDefault: ParsableCommand {
+      static let configuration = CommandConfiguration(commandName: "array-no-default")
+
       @Argument(help: "example", transform: { _ in A() })
       var arg0: [A]
     }
 
     struct ArrayDefaultEmpty: ParsableCommand {
+      static let configuration = CommandConfiguration(commandName: "array-default-empty")
+
       @Argument(help: "example", transform: { _ in A() })
       var arg0: [A] = []
     }
 
     struct ArrayDefault: ParsableCommand {
+      static let configuration = CommandConfiguration(commandName: "array-default")
+
       @Argument(help: "example", transform: { _ in A() })
       var arg0: [A] = [A()]
     }
@@ -202,42 +218,58 @@ extension HelpGenerationTests {
     }
 
     struct BareNoDefault: ParsableCommand {
+      static let configuration = CommandConfiguration(commandName: "bare-no-default")
+
       @Argument(help: "example")
       var arg0: A
     }
 
     struct BareDefault: ParsableCommand {
+      static let configuration = CommandConfiguration(commandName: "bare-default")
+
       @Argument(help: "example")
       var arg0: A = A()
     }
 
     struct OptionalNoDefault: ParsableCommand {
+      static let configuration = CommandConfiguration(commandName: "optional-no-default")
+
       @Argument(help: "example")
       var arg0: A?
     }
 
     struct OptionalDefaultNil: ParsableCommand {
+      static let configuration = CommandConfiguration(commandName: "optional-default-nil")
+
       @Argument(help: "example")
       var arg0: A? = nil
     }
 
     @available(*, deprecated, message: "Included for test coverage")
     struct OptionalDefault: ParsableCommand {
+      static let configuration = CommandConfiguration(commandName: "optional-default")
+
       @Argument(help: "example")
       var arg0: A? = A()
     }
 
     struct ArrayNoDefault: ParsableCommand {
+      static let configuration = CommandConfiguration(commandName: "array-no-default")
+
       @Argument(help: "example")
       var arg0: [A]
     }
 
     struct ArrayDefaultEmpty: ParsableCommand {
+      static let configuration = CommandConfiguration(commandName: "array-default-empty")
+
       @Argument(help: "example")
       var arg0: [A] = []
     }
 
     struct ArrayDefault: ParsableCommand {
+      static let configuration = CommandConfiguration(commandName: "array-default")
+
       @Argument(help: "example")
       var arg0: [A] = [A()]
     }
@@ -367,41 +399,57 @@ extension HelpGenerationTests {
     }
 
     struct BareNoDefault: ParsableCommand {
+      static let configuration = CommandConfiguration(commandName: "bare-no-default")
+
       @Argument(help: "example", transform: { _ in A() })
       var arg0: A
     }
 
     struct BareDefault: ParsableCommand {
+      static let configuration = CommandConfiguration(commandName: "bare-default")
+
       @Argument(help: "example", transform: { _ in A() })
       var arg0: A = A()
     }
 
     struct OptionalNoDefault: ParsableCommand {
+      static let configuration = CommandConfiguration(commandName: "optional-no-default")
+
       @Argument(help: "example", transform: { _ in A() })
       var arg0: A?
     }
 
     struct OptionalDefaultNil: ParsableCommand {
+      static let configuration = CommandConfiguration(commandName: "optional-default-nil")
+
       @Argument(help: "example", transform: { _ in A() })
       var arg0: A? = nil
     }
 
     struct OptionalDefault: ParsableCommand {
+      static let configuration = CommandConfiguration(commandName: "optional-default")
+
       @Argument(help: "example", transform: { _ in A() })
       var arg0: A? = A()
     }
 
     struct ArrayNoDefault: ParsableCommand {
+      static let configuration = CommandConfiguration(commandName: "array-no-default")
+
       @Argument(help: "example", transform: { _ in A() })
       var arg0: [A]
     }
 
     struct ArrayDefaultEmpty: ParsableCommand {
+      static let configuration = CommandConfiguration(commandName: "array-default-empty")
+
       @Argument(help: "example", transform: { _ in A() })
       var arg0: [A] = []
     }
 
     struct ArrayDefault: ParsableCommand {
+      static let configuration = CommandConfiguration(commandName: "array-default")
+
       @Argument(help: "example", transform: { _ in A() })
       var arg0: [A] = [A()]
     }

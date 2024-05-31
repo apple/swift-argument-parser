@@ -29,12 +29,12 @@ fileprivate enum UserValidationError: LocalizedError {
 
 fileprivate struct Foo: ParsableArguments {
   static var usageString: String = """
-    Usage: foo [--count <count>] [<names> ...] [--version] [--throw]
-      See 'foo --help' for more information.
+    Usage: \(getFirstArgument()) [--count <count>] [<names> ...] [--version] [--throw]
+      See '\(getFirstArgument()) --help' for more information.
     """
 
   static var helpString: String = """
-    USAGE: foo [--count <count>] [<names> ...] [--version] [--throw]
+    USAGE: \(getFirstArgument()) [--count <count>] [<names> ...] [--version] [--throw]
 
     ARGUMENTS:
       <names>
