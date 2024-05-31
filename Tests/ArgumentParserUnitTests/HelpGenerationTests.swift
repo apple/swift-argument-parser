@@ -910,6 +910,76 @@ extension HelpGenerationTests {
       expected: """
       """)
   }
+
+  struct FunSubCommand: ParsableCommand {}
+
+  struct NoCommandName: ParsableCommand {
+    @Flag(inversion: .prefixedNo, help: "Whether to flag")
+    var flag: Bool = false
+  }
+
+  struct WithCommandName: ParsableCommand {
+    static var configuration = CommandConfiguration(commandName: "with-command-name")
+
+    @Flag(inversion: .prefixedNo, help: "Whether to flag")
+    var flag: Bool = false
+  }
+
+  struct NoCommandNameWithSubCommands: ParsableCommand {
+      static var configuration = CommandConfiguration(subcommands: [FunSubCommand.self])
+
+      @Flag(inversion: .prefixedNo, help: "Whether to flag")
+      var flag: Bool = false
+  }
+
+  struct WithCommandNameWithSubCommand: ParsableCommand {
+    static var configuration = CommandConfiguration(commandName: "with-command-name", subcommands: [FunSubCommand.self])
+
+    @Flag(inversion: .prefixedNo, help: "Whether to flag")
+    var flag: Bool = false
+  }
+
+  func testParsableCommandWithNoCommandName() {
+    AssertHelp(.default, for: NoCommandName.self, equals: """
+               USAGE: \(getFirstArgument()) [--flag] [--no-flag]
+
+               OPTIONS:
+                 --flag/--no-flag        Whether to flag (default: --no-flag)
+                 -h, --help              Show help information.
+
+               """)
+  }
+
+  func testParsableCommandWithCommandName() {
+    AssertHelp(.default, for: WithCommandName.self, equals: """
+               USAGE: with-command-name [--flag] [--no-flag]
+
+               OPTIONS:
+                 --flag/--no-flag        Whether to flag (default: --no-flag)
+                 -h, --help              Show help information.
+
+               """)
+  }
+
+  func testParsableCommandWithNoCommandNameAndSubCommand() {
+    AssertHelp(.default, for: FunSubCommand.self, root: NoCommandNameWithSubCommands.self, equals: """
+              USAGE: \(getFirstArgument()) fun-sub-command
+
+              OPTIONS:
+                -h, --help              Show help information.
+
+              """)
+  }
+
+  func testParsableCommandWithCommandNameAndSubCommand() {
+    AssertHelp(.default, for: FunSubCommand.self, root: WithCommandNameWithSubCommand.self, equals: """
+               USAGE: with-command-name fun-sub-command
+
+               OPTIONS:
+                 -h, --help              Show help information.
+
+               """)
+  }
 }
 
 extension HelpGenerationTests {
