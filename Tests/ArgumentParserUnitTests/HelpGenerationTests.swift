@@ -514,6 +514,44 @@ extension HelpGenerationTests {
     
     """)
   }
+
+  struct WithSubgroups: ParsableCommand {
+    static let configuration = CommandConfiguration(
+      commandName: "subgroupings"
+    ) {
+      CommandGroup(name: "Broken") {
+        Foo.self
+        Bar.self
+      }
+
+      M.self
+
+      CommandGroup(name: "Complicated") {
+        N.self
+      }
+    }
+  }
+
+  func testHelpSubcommandGroups() throws {
+    AssertHelp(.default, for: WithSubgroups.self, equals: """
+    USAGE: subgroupings <subcommand>
+
+    OPTIONS:
+      -h, --help              Show help information.
+
+    SUBCOMMANDS:
+      m
+
+    BROKEN SUBCOMMANDS:
+      foo                     Perform some foo
+      bar                     Perform bar operations
+
+    COMPLICATED SUBCOMMANDS:
+      n
+
+      See 'subgroupings help <subcommand>' for detailed help.
+    """)
+  }
 }
 
 extension HelpGenerationTests {
