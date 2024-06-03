@@ -642,6 +642,63 @@ extension Flag {
       help: help
     )
   }
+
+  private init<Element>(
+    initial: Value?,
+    help: ArgumentHelp? = nil
+  ) where Value: SetAlgebra<Element>, Element: EnumerableFlag {
+    self.init(
+      _parsedValue: .init { parentKey in
+        let caseHelps = Element.allCases.map { Element.help(for: $0) }
+        let hasCustomCaseHelp = caseHelps.contains(where: { $0 != nil })
+
+        let args = Element.allCases.enumerated().map {
+          (i, value) -> ArgumentDefinition in
+          let caseKey = InputKey(
+            name: String(describing: value), parent: parentKey)
+          let name = Element.name(for: value)
+          let helpForCase = hasCustomCaseHelp ? (caseHelps[i] ?? help) : help
+          let help = ArgumentDefinition.Help(
+            allValueStrings: [],
+            options: [.isOptional],
+            help: helpForCase,
+            defaultValue: nil,
+            key: parentKey,
+            isComposite: !hasCustomCaseHelp)
+
+          return ArgumentDefinition.flag(
+            name: name, key: parentKey, caseKey: caseKey, help: help,
+            parsingStrategy: .default, initialValue: initial,
+            update: .nullary({ (origin, name, values) in
+              values.update(
+                forKey: parentKey, inputOrigin: origin, initial: Value(),
+                closure: {
+                  $0.insert(value)
+                })
+            }))
+        }
+        return ArgumentSet(args)
+      })
+  }
+
+  public init<Element>(
+    wrappedValue: Value,
+    help: ArgumentHelp? = nil
+  ) where Value: SetAlgebra<Element>, Element: EnumerableFlag {
+    self.init(
+      initial: wrappedValue,
+      help: help
+    )
+  }
+
+  public init<Element>(
+    help: ArgumentHelp? = nil
+  ) where Value: SetAlgebra<Element>, Element: EnumerableFlag {
+    self.init(
+      initial: nil,
+      help: help
+    )
+  }
 }
 
 extension ArgumentDefinition {
