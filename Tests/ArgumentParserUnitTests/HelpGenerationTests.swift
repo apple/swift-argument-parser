@@ -527,10 +527,16 @@ extension HelpGenerationTests {
         Bar.self
       }
 
-      M.self
+      if true {
+        M.self
+      } else {
+        // nothing here
+      }
 
       CommandGroup(name: "Complicated") {
-        N.self
+        if #available(macOS 10.10, *) {
+          N.self
+        }
       }
     }
   }

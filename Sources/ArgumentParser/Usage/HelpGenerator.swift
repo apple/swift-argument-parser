@@ -310,7 +310,7 @@ internal struct HelpGenerator {
   var includesSubcommands: Bool {
     guard let subcommandSection = sections.first(where: { 
       switch $0.header {
-      case .groupedSubcommands(_), .subcommands: return true
+      case .groupedSubcommands, .subcommands: return true
       case .options, .positionalArguments, .title(_): return false
       }
     }) else { return false }

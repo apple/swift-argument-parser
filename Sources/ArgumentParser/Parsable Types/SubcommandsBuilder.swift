@@ -12,16 +12,36 @@
 /// Build a set of subcommands which can potentially be grouped.
 @resultBuilder
 public struct SubcommandsBuilder {
-  public static func buildExpression(_ single: ParsableCommand.Type) -> Subcommand {
-    return .single(single)
+  public static func buildExpression(_ single: ParsableCommand.Type) -> [Subcommand] {
+    return [.single(single)]
   }
 
-  public static func buildExpression(_ group: CommandGroup) -> Subcommand {
-    return .group(group)
+  public static func buildExpression(_ group: CommandGroup) -> [Subcommand] {
+    return [.group(group)]
   }
 
-  public static func buildBlock(_ subcommands: Subcommand...) -> [Subcommand] {
-      return subcommands
+  public static func buildBlock(_ subcommands: [Subcommand]...) -> [Subcommand] {
+    return subcommands.flatMap { $0 }
+  }
+
+  public static func buildOptional(_ component: [Subcommand]?) -> [Subcommand] {
+    return component ?? []
+  }
+
+  public static func buildEither(first component: [Subcommand]) -> [Subcommand] {
+    return component
+  }
+
+  public static func buildEither(second component: [Subcommand]) -> [Subcommand] {
+    return component
+  }
+
+  public static func buildLimitedAvailability(_ component: [Subcommand]) -> [Subcommand] {
+    return component
+  }
+
+  public static func buildArray(_ components: [[Subcommand]]) -> [Subcommand] {
+    return components.flatMap { $0 }
   }
 }
 

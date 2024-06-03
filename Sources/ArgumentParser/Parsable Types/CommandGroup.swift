@@ -36,7 +36,31 @@ public struct CommandGroup: Sendable {
 /// Result builder that forms a list of commands.
 @resultBuilder
 public struct CommandsBuilder {
-  public static func buildBlock(_ commands: ParsableCommand.Type...) -> [ParsableCommand.Type] {
-      return commands
+  public static func buildExpression(_ command: ParsableCommand.Type) -> [ParsableCommand.Type] {
+    return [command]
+  }
+
+  public static func buildBlock(_ commands: [ParsableCommand.Type]...) -> [ParsableCommand.Type] {
+    return commands.flatMap { $0 }
+  }
+
+  public static func buildOptional(_ commands: [ParsableCommand.Type]?) -> [ParsableCommand.Type] {
+    return commands ?? []
+  }
+
+  public static func buildEither(first commands: [ParsableCommand.Type]) -> [ParsableCommand.Type] {
+    return commands
+  }
+
+  public static func buildEither(second commands: [ParsableCommand.Type]) -> [ParsableCommand.Type] {
+    return commands
+  }
+
+  public static func buildLimitedAvailability(_ commands: [ParsableCommand.Type]) -> [ParsableCommand.Type] {
+    return commands
+  }
+
+  public static func buildArray(_ commands: [[any ParsableCommand.Type]]) -> [any ParsableCommand.Type] {
+    return commands.flatMap { $0 }
   }
 }
