@@ -52,7 +52,7 @@ internal struct HelpGenerator {
       case subcommands
       case options
       case title(String)
-      case groupedSubcommands(String)
+      case groupedSubcommands(String, String?)
 
       var description: String {
         switch self {
@@ -64,8 +64,17 @@ internal struct HelpGenerator {
           return "Options"
         case .title(let name):
           return name
-        case .groupedSubcommands(let name):
+        case .groupedSubcommands(let name, _):
           return "\(name) Subcommands"
+        }
+      }
+
+      var abstract: String? {
+        switch self {
+        case .positionalArguments, .subcommands, .options, .title:
+          return nil
+        case .groupedSubcommands(_, let abstract):
+          return abstract
         }
       }
     }
@@ -79,8 +88,14 @@ internal struct HelpGenerator {
       guard !elements.isEmpty else { return "" }
       
       let renderedElements = elements.map { $0.rendered(screenWidth: screenWidth) }.joined()
-      return "\(String(describing: header).uppercased()):\n"
-        + renderedElements
+
+      var renderedHeader = String(describing: header).uppercased() + ":"
+      if let abstract = header.abstract {
+        renderedHeader += " "
+        renderedHeader += abstract.wrapped(to: screenWidth)
+      }
+
+      return renderedHeader + "\n" + renderedElements
     }
   }
   
@@ -217,7 +232,8 @@ internal struct HelpGenerator {
 
     // Create section for a grouping of subcommands.
     func subcommandSection(
-      header: Section.Header, 
+      header: Section.Header,
+      abstract: String? = nil,
       subcommands: [ParsableCommand.Type]
     ) -> Section {
       let subcommandElements: [Section.Element] =
@@ -235,7 +251,10 @@ internal struct HelpGenerator {
             abstract: command.configuration.abstract)
       }
 
-      return Section(header: header, elements: subcommandElements)
+      return Section(
+        header: header,
+        elements: subcommandElements
+      )
     }
 
     // Sections for all of the grouped subcommands.
@@ -247,7 +266,7 @@ internal struct HelpGenerator {
 
         case .group(let group):
           return subcommandSection(
-            header: .groupedSubcommands(group.name),
+            header: .groupedSubcommands(group.name, group.abstract),
             subcommands: group.subcommands
           )
         }
