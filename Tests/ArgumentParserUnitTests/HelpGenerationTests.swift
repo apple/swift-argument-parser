@@ -517,25 +517,16 @@ extension HelpGenerationTests {
 
   struct WithSubgroups: ParsableCommand {
     static let configuration = CommandConfiguration(
-      commandName: "subgroupings"
-    ) {
-      CommandGroup(name: "Broken") {
-        Foo.self
-        Bar.self
-      }
-
-      if true {
-        M.self
-      } else {
-        // nothing here
-      }
-
-      CommandGroup(name: "Complicated") {
-        if #available(macOS 10.10, *) {
-          N.self
-        }
-      }
-    }
+      commandName: "subgroupings",
+      subcommands: [ M.self ],
+      groupedSubcommands: [
+        CommandGroup(
+          name: "Broken",
+          subcommands: [ Foo.self, Bar.self ]
+        ),
+        CommandGroup(name: "Complicated", subcommands: [ N.self ])
+      ]
+    )
   }
 
   func testHelpSubcommandGroups() throws {

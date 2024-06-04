@@ -238,41 +238,27 @@ internal struct HelpGenerator {
       return Section(header: header, elements: subcommandElements)
     }
 
-    // Sections for all of the grouped subcommands.
-    let groupedSubcommands: [Section] = configuration.groupedSubcommands
-      .compactMap { subcommand in
-        switch subcommand {
-        case .single(_):
-          return nil
-
-        case .group(let group):
-          return subcommandSection(
-            header: .groupedSubcommands(group.name),
-            subcommands: group.subcommands
-          )
-        }
-      }
-
     // Section for the ungrouped subcommands.
     let ungroupedSubcommands: Section = subcommandSection(
       header: .subcommands,
-      subcommands: configuration.groupedSubcommands.compactMap {
-        switch $0 {
-        case .single(let command):
-          return command
-
-        case .group(_):
-          return nil
-        }
-      }
+      subcommands: configuration.ungroupedSubcommands
     )
+
+    // Sections for all of the grouped subcommands.
+    let groupedSubcommands: [Section] = configuration.groupedSubcommands
+      .compactMap { group in
+        return subcommandSection(
+          header: .groupedSubcommands(group.name),
+          subcommands: group.subcommands
+        )
+      }
 
     // Combine the compiled groups in this order:
     // - arguments
     // - named sections
     // - options/flags
-    // - grouped subcommands
     // - ungrouped subcommands
+    // - grouped subcommands
     return [
       Section(header: .positionalArguments, elements: positionalElements),
     ] + sectionTitles.map { name in
