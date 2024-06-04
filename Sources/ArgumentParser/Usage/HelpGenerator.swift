@@ -238,20 +238,29 @@ internal struct HelpGenerator {
       return Section(header: header, elements: subcommandElements)
     }
 
-    // Section for the ungrouped subcommands.
-    let ungroupedSubcommands: Section = subcommandSection(
-      header: .subcommands,
-      subcommands: configuration.ungroupedSubcommands
-    )
+    // All of the subcommand sections.
+    var subcommands: [Section] = []
 
-    // Sections for all of the grouped subcommands.
-    let groupedSubcommands: [Section] = configuration.groupedSubcommands
-      .compactMap { group in
-        return subcommandSection(
-          header: .groupedSubcommands(group.name),
-          subcommands: group.subcommands
+    // Add section for the ungrouped subcommands, if there are any.
+    if !configuration.ungroupedSubcommands.isEmpty {
+      subcommands.append(
+        subcommandSection(
+          header: .subcommands,
+          subcommands: configuration.ungroupedSubcommands
         )
-      }
+      )
+    }
+
+    // Add sections for all of the grouped subcommands.
+    subcommands.append(
+      contentsOf: configuration.groupedSubcommands
+        .compactMap { group in
+          return subcommandSection(
+            header: .groupedSubcommands(group.name),
+            subcommands: group.subcommands
+          )
+        }
+    )
 
     // Combine the compiled groups in this order:
     // - arguments
@@ -265,8 +274,7 @@ internal struct HelpGenerator {
       Section(header: .title(name), elements: titledSections[name, default: []])
     } + [
       Section(header: .options, elements: optionElements),
-      ungroupedSubcommands
-    ] + groupedSubcommands
+    ] + subcommands
   }
   
   func usageMessage() -> String {
