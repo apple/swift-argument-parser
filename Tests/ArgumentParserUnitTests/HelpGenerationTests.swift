@@ -519,10 +519,7 @@ extension HelpGenerationTests {
     static let configuration = CommandConfiguration(
       commandName: "subgroupings"
     ) {
-      CommandGroup(
-        name: "Broken",
-        abstract: "These commands are currently non-functional due to XYZ."
-      ) {
+      CommandGroup(name: "Broken") {
         Foo.self
         Bar.self
       }
@@ -542,7 +539,7 @@ extension HelpGenerationTests {
   }
 
   func testHelpSubcommandGroups() throws {
-    AssertHelp(.default, for: WithSubgroups.self, columns: 50, equals: """
+    AssertHelp(.default, for: WithSubgroups.self, equals: """
     USAGE: subgroupings <subcommand>
 
     OPTIONS:
@@ -551,8 +548,7 @@ extension HelpGenerationTests {
     SUBCOMMANDS:
       m
 
-    BROKEN SUBCOMMANDS: These commands are currently non-functional due
-    to XYZ.
+    BROKEN SUBCOMMANDS:
       foo                     Perform some foo
       bar                     Perform bar operations
 
