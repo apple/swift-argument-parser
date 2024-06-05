@@ -33,6 +33,11 @@ extension CompletionScriptTests {
     case one, two, three = "custom-three"
   }
   
+  struct NestedArguments: ParsableArguments {
+    @Argument(completion: .custom { _ in ["t", "u", "v"] })
+    var nestedArgument: String
+  }
+  
   struct Base: ParsableCommand {
     static let configuration = CommandConfiguration(
       commandName: "base-test",
@@ -53,12 +58,15 @@ extension CompletionScriptTests {
     
     @Option() var rep1: [String]
     @Option(name: [.short, .long]) var rep2: [String]
-
-   struct SubCommand: ParsableCommand {
-     static let configuration = CommandConfiguration(
-       commandName: "sub-command"
-     )
-   }
+    
+    @Argument(completion: .custom { _ in ["q", "r", "s"] }) var argument: String
+    @OptionGroup var nested: NestedArguments
+    
+    struct SubCommand: ParsableCommand {
+      static let configuration = CommandConfiguration(
+        commandName: "sub-command"
+      )
+    }
   }
 
   func testBase_Zsh() throws {
@@ -111,6 +119,13 @@ extension CompletionScriptTests {
 
     @Option(name: .customShort("z"), completion: .custom { _ in ["x", "y", "z"] })
     var three: String
+    
+    @OptionGroup var nested: NestedArguments
+    
+    struct NestedArguments: ParsableArguments {
+      @Argument(completion: .custom { _ in ["g", "h", "i"] })
+      var four: String
+    }
   }
   
   func verifyCustomOutput(
@@ -134,8 +149,10 @@ extension CompletionScriptTests {
     try verifyCustomOutput("--one", expectedOutput: "a\nb\nc")
     try verifyCustomOutput("two", expectedOutput: "d\ne\nf")
     try verifyCustomOutput("-z", expectedOutput: "x\ny\nz")
+    try verifyCustomOutput("nested.four", expectedOutput: "g\nh\ni")
     
     XCTAssertThrowsError(try verifyCustomOutput("--bad", expectedOutput: ""))
+    XCTAssertThrowsError(try verifyCustomOutput("four", expectedOutput: ""))
   }
 }
 
@@ -175,6 +192,8 @@ _base-test() {
         '*--kind-counter'
         '*--rep1:rep1:'
         '*'{-r,--rep2}':rep2:'
+        ':argument:{_custom_completion $_base_test_commandname ---completion  -- argument $words}'
+        ':nested-argument:{_custom_completion $_base_test_commandname ---completion  -- nested.nestedArgument $words}'
         '(-h --help)'{-h,--help}'[Show help information.]'
         '(-): :->command'
         '(-)*:: :->arg'
@@ -243,6 +262,8 @@ _base_test() {
     prev="${COMP_WORDS[COMP_CWORD-1]}"
     COMPREPLY=()
     opts="--name --kind --other-kind --path1 --path2 --path3 --one --two --three --kind-counter --rep1 -r --rep2 -h --help sub-command help"
+    opts="$opts $("${COMP_WORDS[0]}" ---completion  -- argument "${COMP_WORDS[@]}")"
+    opts="$opts $("${COMP_WORDS[0]}" ---completion  -- nested.nestedArgument "${COMP_WORDS[@]}")"
     if [[ $COMP_CWORD == "1" ]]; then
         COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
         return
