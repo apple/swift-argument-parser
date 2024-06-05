@@ -32,9 +32,14 @@ struct SinglePageDescription: MDocComponent {
       MDocMacro.ParagraphBreak()
     }
 
-    if let discussion = command.discussion {
-      discussion
-    }
+      if let discussion = command.discussion {
+          if case let .staticText(text) = discussion {
+              text
+          } else if case let .enumerated(values) = discussion {
+              // TODO: to fix
+              ""
+          }
+      }
 
     List {
       for argument in command.arguments ?? [] {
@@ -48,9 +53,14 @@ struct SinglePageDescription: MDocComponent {
           MDocMacro.ParagraphBreak()
         }
 
-        if let discussion = argument.discussion {
-          discussion
-        }
+          if let discussion = command.discussion {
+              if case let .staticText(text) = discussion {
+                  text
+              } else if case let .enumerated(values) = discussion {
+                  // TODO: to fix
+                  ""
+              }
+          }
       }
 
       for subcommand in command.subcommands ?? [] {

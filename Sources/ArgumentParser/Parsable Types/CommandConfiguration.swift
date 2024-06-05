@@ -11,6 +11,24 @@
 
 /// The configuration for a command.
 public struct CommandConfiguration: Sendable {
+  public enum Discussion: Sendable {
+    case staticText(String)
+    case enumerated([Value])
+
+    public struct Value: Sendable {
+      var name: String
+      var discussion: String
+    }
+
+    public var isEmpty: Bool {
+      switch self {
+      case .staticText(let s):
+        return s.isEmpty
+      case .enumerated(let values):
+        return values.isEmpty
+      }
+    }
+  }
   /// The name of the command to use on the command line.
   ///
   /// If `nil`, the command name is derived by converting the name of
@@ -23,10 +41,10 @@ public struct CommandConfiguration: Sendable {
   /// with a common dash-prefix, like `git`'s and `swift`'s constellation of
   /// independent commands.
   public var _superCommandName: String?
-  
+
   /// A one-line description of this command.
   public var abstract: String
-  
+
   /// A customized usage string to be shown in the help display and error
   /// messages.
   ///
@@ -37,21 +55,21 @@ public struct CommandConfiguration: Sendable {
 
   /// A longer description of this command, to be shown in the extended help
   /// display.
-  public var discussion: String
-  
+  public var discussion: Discussion
+
   /// Version information for this command.
   public var version: String
 
   /// A Boolean value indicating whether this command should be shown in
   /// the extended help display.
   public var shouldDisplay: Bool
-  
+
   /// An array of the types that define subcommands for this command.
   public var subcommands: [ParsableCommand.Type]
-  
+
   /// The default command type to run if no subcommand is given.
   public var defaultSubcommand: ParsableCommand.Type?
-  
+
   /// Flag names to be used for help.
   public var helpNames: NameSpecification?
 
@@ -105,7 +123,66 @@ public struct CommandConfiguration: Sendable {
     self.commandName = commandName
     self.abstract = abstract
     self.usage = usage
-    self.discussion = discussion
+    self.discussion = .staticText(discussion)
+    self.version = version
+    self.shouldDisplay = shouldDisplay
+    self.subcommands = subcommands
+    self.defaultSubcommand = defaultSubcommand
+    self.helpNames = helpNames
+    self.aliases = aliases
+  }
+
+  /// Creates the configuration for a command.
+  ///
+  /// - Parameters:
+  ///   - commandName: The name of the command to use on the command line. If
+  ///     `commandName` is `nil`, the command name is derived by converting
+  ///     the name of the command type to hyphen-separated lowercase words.
+  ///   - abstract: A one-line description of the command.
+  ///   - usage: A custom usage description for the command. When you provide
+  ///     a non-`nil` string, the argument parser uses `usage` instead of
+  ///     automatically generating a usage description. Passing an empty string
+  ///     hides the usage string altogether.
+  ///   - options: A type that implements EnumerableOption.
+  ///   - version: The version number for this command. When you provide a
+  ///     non-empty string, the argument parser prints it if the user provides
+  ///     a `--version` flag.
+  ///   - shouldDisplay: A Boolean value indicating whether the command
+  ///     should be shown in the extended help display.
+  ///   - subcommands: An array of the types that define subcommands for the
+  ///     command.
+  ///   - defaultSubcommand: The default command type to run if no subcommand
+  ///     is given.
+  ///   - helpNames: The flag names to use for requesting help, when combined
+  ///     with a simulated Boolean property named `help`. If `helpNames` is
+  ///     `nil`, the names are inherited from the parent command, if any, or
+  ///     are `-h` and `--help`.
+  ///   - aliases: An array of aliases for the command's name. All of the aliases
+  ///     MUST not match the actual command name, whether that be the derived name
+  ///     if `commandName` is not provided, or `commandName` itself if provided.
+  public init(
+    commandName: String? = nil,
+    abstract: String = "",
+    usage: String? = nil,
+    options: (any EnumerableOption.Type)?,
+    version: String = "",
+    shouldDisplay: Bool = true,
+    subcommands: [ParsableCommand.Type] = [],
+    defaultSubcommand: ParsableCommand.Type? = nil,
+    helpNames: NameSpecification? = nil,
+    aliases: [String] = []
+  ) {
+    self.commandName = commandName
+    self.abstract = abstract
+    self.usage = usage
+    // TODO: to format
+    self.discussion = .enumerated(
+      options?.allCases.compactMap({
+        $0 as? any EnumerableOption
+      })
+      .compactMap({
+          Discussion.Value(name: $0.name, discussion: $0.help?.abstract ?? "")}) ?? []
+    )
     self.version = version
     self.shouldDisplay = shouldDisplay
     self.subcommands = subcommands
@@ -133,7 +210,7 @@ public struct CommandConfiguration: Sendable {
     self._superCommandName = _superCommandName
     self.abstract = abstract
     self.usage = usage
-    self.discussion = discussion
+    self.discussion = .staticText(discussion)
     self.version = version
     self.shouldDisplay = shouldDisplay
     self.subcommands = subcommands

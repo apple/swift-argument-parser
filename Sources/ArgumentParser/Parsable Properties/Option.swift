@@ -239,6 +239,129 @@ public struct ArrayParsingStrategy: Hashable {
 
 extension ArrayParsingStrategy: Sendable { }
 
+// TODO: to format and create separate file
+public protocol EnumerableOption: CaseIterable, Equatable, ExpressibleByArgument, RawRepresentable<String> {
+    var name: String { get }
+
+    var help: ArgumentHelp? { get }
+
+    init(_ string: String) throws
+}
+
+extension EnumerableOption {
+    public var help: ArgumentHelp? {
+        nil
+    }
+
+    public init(_ string: String) throws {
+        guard let val = Self(rawValue: string) else {
+          throw ValidationError("Invalid string argument (\(string)) for type \(Self.self)")
+        }
+      self = val
+    }
+}
+
+// MARK: - @Option T: EnumerableOption Initializers
+extension Option where Value: EnumerableOption {
+    /// Creates a property with a default value that reads its value from a
+    /// labeled option.
+    ///
+    /// This initializer is used when you declare an `@Option`-attributed property
+    /// that has an `EnumerableOption` type, providing a default value:
+    ///
+    /// ```swift
+    ///  enum Color: EnumerableOption {
+    ///      case blue
+    ///      case red
+    ///      case yellow
+    ///
+    ///      // ...
+    ///  }
+    ///
+    /// @Option var title: Color = .blue
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - wrappedValue: A default value to use for this property, provided
+    ///     implicitly by the compiler during property wrapper initialization.
+    ///   - name: A specification for what names are allowed for this option.
+    ///   - parsingStrategy: The behavior to use when looking for this option's
+    ///     value.
+    ///   - abstract: A short description about the option.
+    ///   - completion: The type of command-line completion provided for this
+    ///     option.
+    public init(
+      wrappedValue: Value,
+      name: NameSpecification = .long,
+      parsing parsingStrategy: SingleValueParsingStrategy = .next,
+      abstract: String,
+      completion: CompletionKind? = nil
+    ) {
+      self.init(_parsedValue: .init { key in
+        let arg = ArgumentDefinition(
+            container: Bare<Value.RawValue>.self,
+          key: key,
+          kind: .name(key: key, specification: name),
+          help: .init(
+            abstract,
+            options: Value.self
+          ),
+          parsingStrategy: parsingStrategy.base,
+            initial: wrappedValue.rawValue,
+          completion: completion)
+
+        return ArgumentSet(arg)
+      })
+    }
+
+    /// Creates a required property that reads its value from a labeled option.
+    ///
+    /// This initializer is used when you declare an `@Option`-attributed property
+    /// that has an `EnumerableOption` type, but without a default value:
+    ///
+    /// ```swift
+    /// enum Color: EnumerableOption {
+    ///      case blue
+    ///      case red
+    ///      case yellow
+    ///
+    ///      // ...
+    ///  }
+    ///
+    /// @Option var color: Color
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - name: A specification for what names are allowed for this option.
+    ///   - parsingStrategy: The behavior to use when looking for this option's
+    ///     value.
+    ///   - help: A short description about the option.
+    ///   - completion: The type of command-line completion provided for this
+    ///     option.
+    public init(
+      name: NameSpecification = .long,
+      parsing parsingStrategy: SingleValueParsingStrategy = .next,
+      abstract: String,
+      completion: CompletionKind? = nil
+    ) {
+      self.init(_parsedValue: .init { key in
+        let arg = ArgumentDefinition(
+            container: Bare<Value>.self,
+          key: key,
+          kind: .name(key: key, specification: name),
+          help: .init(
+            abstract,
+            options: Value.self
+          ),
+          parsingStrategy: parsingStrategy.base,
+          initial: nil,
+          completion: completion)
+
+        return ArgumentSet(arg)
+      })
+    }
+}
+
 // MARK: - @Option T: ExpressibleByArgument Initializers
 extension Option where Value: ExpressibleByArgument {
   /// Creates a property with a default value that reads its value from a

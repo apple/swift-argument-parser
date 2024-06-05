@@ -78,7 +78,7 @@ fileprivate extension ArgumentSet {
         argument.help.valueName = group.map(\.valueName).first { !$0.isEmpty } ?? ""
         argument.help.defaultValue = group.compactMap(\.help.defaultValue).first
         argument.help.abstract = group.map(\.help.abstract).first { !$0.isEmpty } ?? ""
-        argument.help.discussion = group.map(\.help.discussion).first { !$0.isEmpty } ?? ""
+        argument.help.discussion = group.map(\.help.discussion).first { !$0.isEmpty } ?? .staticString("")
       }
       arguments.append(argument)
     }
@@ -89,6 +89,17 @@ fileprivate extension ArgumentSet {
 fileprivate extension ToolInfoV0 {
   init(commandStack: [ParsableCommand.Type]) {
     self.init(command: CommandInfoV0(commandStack: commandStack))
+  }
+}
+
+fileprivate extension CommandInfoV0.DiscussionV0 {
+  init(_ discussion: CommandConfiguration.Discussion) {
+    switch discussion {
+    case .staticText(let s):
+      self = .staticText(s)
+    case .enumerated(let values):
+      self = .enumerated(values.map({ ValueV0(name: $0.name, discussion: $0.discussion)}))
+    }
   }
 }
 
@@ -121,16 +132,37 @@ fileprivate extension CommandInfoV0 {
       superCommands: superCommands,
       commandName: command._commandName,
       abstract: command.configuration.abstract,
-      discussion: command.configuration.discussion,
+      discussion: .init(command.configuration.discussion),
       defaultSubcommand: defaultSubcommand,
       subcommands: subcommands,
       arguments: arguments)
   }
 }
 
+fileprivate extension ArgumentInfoV0.DiscussionV0 {
+  init(_ values: [ArgumentInfoV0.DiscussionV0.ValueV0]) {
+    self = .enumerated(values)
+  }
+
+  init(_ text: String) {
+    self = .staticText(text)
+  }
+}
+
 fileprivate extension ArgumentInfoV0 {
+  // TODO: to format
   init?(argument: ArgumentDefinition) {
     guard let kind = ArgumentInfoV0.KindV0(argument: argument) else { return nil }
+    let discussion: ArgumentInfoV0.DiscussionV0? = {
+      switch argument.help.discussion {
+      case .enumerated(let type):
+        guard let values = type.allCases as? [any EnumerableOption] else { return nil }
+        return ArgumentInfoV0.DiscussionV0.enumerated(values.map({ ArgumentInfoV0.DiscussionV0.ValueV0.init(name: $0.name, discussion: $0.help?.abstract ?? "no abstract available.")}))
+      case .staticString(let text):
+        return ArgumentInfoV0.DiscussionV0.staticText(text)
+      }
+    }()
+
     self.init(
       kind: kind,
       shouldDisplay: argument.help.visibility.base == .default,
@@ -143,7 +175,8 @@ fileprivate extension ArgumentInfoV0 {
       defaultValue: argument.help.defaultValue,
       allValues: argument.help.allValueStrings,
       abstract: argument.help.abstract,
-      discussion: argument.help.discussion)
+      discussion: discussion
+    )
   }
 }
 

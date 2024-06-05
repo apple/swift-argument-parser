@@ -39,7 +39,11 @@ public struct ArgumentHelp {
       visibility = newValue ? .default : .hidden
     }
   }
-  
+
+  // TODO: to format
+  /// - Note: Experimental - a test parameter to implement JSON output capabilities.
+  public var options: (any EnumerableOption.Type)?
+
   /// Creates a new help instance.
   @available(*, deprecated, message: "Use init(_:discussion:valueName:visibility:) instead.")
   public init(
@@ -65,6 +69,20 @@ public struct ArgumentHelp {
     self.discussion = discussion
     self.valueName = valueName
     self.visibility = visibility
+  }
+
+  /// Creates a new help instance.
+  public init<T>(
+    _ abstract: String = "",
+    options: T.Type,
+    valueName: String? = nil,
+    visibility: ArgumentVisibility = .default) where T: EnumerableOption
+  {
+    self.abstract = abstract
+    self.discussion = ""
+    self.valueName = valueName
+    self.visibility = visibility
+    self.options = T.self
   }
 
   /// A `Help` instance that shows an argument only in the extended help display.

@@ -18,7 +18,12 @@ struct MultiPageDescription: MDocComponent {
   var body: MDocComponent {
     Section(title: "description") {
       if let discussion = command.discussion {
-        discussion
+          if case let .staticText(text) = discussion {
+              text
+          } else if case let .enumerated(values) = discussion {
+              // TODO: To fix
+              ""
+          }
       }
 
       List {
@@ -33,9 +38,14 @@ struct MultiPageDescription: MDocComponent {
             MDocMacro.ParagraphBreak()
           }
 
-          if let discussion = argument.discussion {
-            discussion
-          }
+            if let discussion = command.discussion {
+                if case let .staticText(text) = discussion {
+                    text
+                } else if case let .enumerated(values) = discussion {
+                    // TODO: To fix
+                    ""
+                }
+            }
         }
       }
     }

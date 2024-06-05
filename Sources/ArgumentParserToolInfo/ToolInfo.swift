@@ -42,6 +42,69 @@ public struct ToolInfoV0: Codable, Hashable {
 /// All information about a particular command, including arguments and
 /// subcommands.
 public struct CommandInfoV0: Codable, Hashable {
+  public enum DiscussionV0: Codable, Hashable {
+    case staticText(String)
+    case enumerated([ValueV0])
+
+    public struct ValueV0: Codable, Hashable {
+      var name: String
+      var discussion: String
+
+      public init(name: String, discussion: String) {
+        self.name = name
+        self.discussion = discussion
+      }
+    }
+
+    public init(_ text: String) {
+      self = .staticText(text)
+    }
+
+    public init(_ values: [ValueV0]) {
+      self = .enumerated(values)
+    }
+
+    enum CodingKeys: String, CodingKey {
+      case enumerated = "command_values"
+      case staticText = "command_text"
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+      var container = encoder.singleValueContainer()
+      switch self {
+      case .staticText(let s):
+        try container.encode(s)
+      case .enumerated(let s):
+        try container.encode(s)
+      }
+    }
+
+    public init(from decoder: any Decoder) throws {
+      let container = try decoder.singleValueContainer()
+      if let value = try? container.decode(String.self) {
+        self = .staticText(value)
+        return
+      }
+      if let values = try? container.decode([ValueV0].self) {
+        self = .enumerated(values)
+        return
+      }
+      throw DecodingError.typeMismatch(DiscussionV0.self, DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Unexpected assosiated type for DiscussionV0."))
+    }
+
+    public var isEmpty: Bool {
+      switch self {
+      case .staticText(let s):
+        return s.isEmpty
+      case .enumerated(let values):
+        return values.isEmpty
+      }
+    }
+
+    public var nonEmpty: Self? {
+      return isEmpty ? nil : self
+    }
+  }
   /// Super commands and tools.
   public var superCommands: [String]?
 
@@ -50,7 +113,7 @@ public struct CommandInfoV0: Codable, Hashable {
   /// Short description of the command's functionality.
   public var abstract: String?
   /// Extended description of the command's functionality.
-  public var discussion: String?
+  public var discussion: DiscussionV0?
 
   /// Optional name of the subcommand invoked when the command is invoked with
   /// no arguments.
@@ -64,7 +127,7 @@ public struct CommandInfoV0: Codable, Hashable {
     superCommands: [String],
     commandName: String,
     abstract: String,
-    discussion: String,
+    discussion: DiscussionV0,
     defaultSubcommand: String?,
     subcommands: [CommandInfoV0],
     arguments: [ArgumentInfoV0]
@@ -117,6 +180,70 @@ public struct ArgumentInfoV0: Codable, Hashable {
     case flag
   }
 
+  public enum DiscussionV0: Codable, Hashable {
+    case staticText(String)
+    case enumerated([ValueV0])
+
+    public struct ValueV0: Codable, Hashable {
+      var name: String
+      var discussion: String
+
+      public init(name: String, discussion: String) {
+        self.name = name
+        self.discussion = discussion
+      }
+    }
+
+    public init(_ text: String) {
+      self = .staticText(text)
+    }
+
+    public init(_ values: [ValueV0]) {
+      self = .enumerated(values)
+    }
+
+    enum CodingKeys: String, CodingKey {
+      case enumerated = "kind_values"
+      case staticText = "kind_text"
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+      var container = encoder.singleValueContainer()
+      switch self {
+      case .staticText(let s):
+        try container.encode(s)
+      case .enumerated(let s):
+        try container.encode(s)
+      }
+    }
+
+    public init(from decoder: any Decoder) throws {
+      let container = try decoder.singleValueContainer()
+      if let value = try? container.decode(String.self) {
+        self = .staticText(value)
+        return
+      }
+      if let values = try? container.decode([ValueV0].self) {
+        self = .enumerated(values)
+        return
+      }
+      throw DecodingError.typeMismatch(DiscussionV0.self, DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Unexpected assosiated type for ArgumentInfoV0."))
+    }
+
+    public var isEmpty: Bool {
+      switch self {
+      case .staticText(let s):
+        return s.isEmpty
+      case .enumerated(let values):
+        return values.isEmpty
+      }
+    }
+
+    public var nonEmpty: Self? {
+      return isEmpty ? nil : self
+    }
+  }
+
   /// Kind of argument the ArgumentInfo describes.
   public var kind: KindV0
 
@@ -152,7 +279,7 @@ public struct ArgumentInfoV0: Codable, Hashable {
   /// Short description of the argument's functionality.
   public var abstract: String?
   /// Extended description of the argument's functionality.
-  public var discussion: String?
+  public var discussion: DiscussionV0?
 
   public init(
     kind: KindV0,
@@ -166,7 +293,7 @@ public struct ArgumentInfoV0: Codable, Hashable {
     defaultValue: String?,
     allValues: [String]?,
     abstract: String?,
-    discussion: String?
+    discussion: DiscussionV0?
   ) {
     self.kind = kind
 

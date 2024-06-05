@@ -18,19 +18,72 @@ internal struct HelpGenerator {
     struct Element: Hashable {
       var label: String
       var abstract: String = ""
-      var discussion: String = ""
-      
+      var discussion: Discussion = .staticString("")
+
+      enum Discussion: Hashable {
+        case staticString(String)
+        case enumerable([Option])
+
+        struct Option: Hashable {
+          var name: String
+          var help: String
+        }
+
+        public init(_ discussion: ArgumentDefinition.Help.Discussion) {
+          switch discussion {
+          case .staticString(let s):
+            self = .staticString(s)
+          case .enumerated(let type):
+            let values = (type.allCases as? [any EnumerableOption]) ?? []
+            // TODO: to format
+            self = .enumerable(values.compactMap({ Option(name: $0.name, help: $0.help?.abstract ?? "")}))
+          }
+        }
+      }
+
       var paddedLabel: String {
         String(repeating: " ", count: HelpGenerator.helpIndent) + label
       }
-      
+
+      // TODO: to format
       func rendered(screenWidth: Int) -> String {
         let paddedLabel = self.paddedLabel
         let wrappedAbstract = self.abstract
           .wrapped(to: screenWidth, wrappingIndent: HelpGenerator.labelColumnWidth)
-        let wrappedDiscussion = self.discussion.isEmpty
+
+        var wrappedDiscussion = ""
+
+        if case let .staticString(discussionText) = discussion {
+          wrappedDiscussion = discussionText.isEmpty
           ? ""
-          : self.discussion.wrapped(to: screenWidth, wrappingIndent: HelpGenerator.helpIndent * 4) + "\n"
+          : discussionText.wrapped(to: screenWidth, wrappingIndent: HelpGenerator.helpIndent * 4) + "\n"
+        } else if case let .enumerable(options) = discussion {
+          var formattedHelp: String = ""
+          // Padded label
+          for opt in options {
+            let paddedOptionLabel = String(repeating: " ", count: HelpGenerator.helpIndent * 3) + opt.name
+            // need to add "- " to each beginning of the wrapped help, without it affecting the indentation.
+            let discussionDash = "- "
+            let wrappedHelp = String(
+              (discussionDash + opt.help)
+                .wrapped(to: screenWidth, wrappingIndent: HelpGenerator.labelColumnWidth + 2)
+            )
+
+            let renderedHelp: String = {
+              if paddedOptionLabel.count < HelpGenerator.labelColumnWidth {
+                // render after the padded label
+                return String(paddedOptionLabel + wrappedHelp.dropFirst(paddedOptionLabel.count + discussionDash.count))
+              } else {
+                // render in a new line.
+                return "\n" + wrappedHelp
+              }
+            }()
+            formattedHelp += renderedHelp + "\n"
+          }
+
+          wrappedDiscussion = formattedHelp
+        }
+
         let renderedAbstract: String = {
           guard !abstract.isEmpty else { return "" }
           if paddedLabel.count < HelpGenerator.labelColumnWidth {
@@ -90,7 +143,6 @@ internal struct HelpGenerator {
   var abstract: String
   var usage: String
   var sections: [Section]
-  var discussionSections: [DiscussionSection]
   
   init(commandStack: [ParsableCommand.Type], visibility: ArgumentVisibility) {
     guard let currentCommand = commandStack.last else {
@@ -127,7 +179,6 @@ internal struct HelpGenerator {
     }
 
     self.sections = HelpGenerator.generateSections(commandStack: commandStack, visibility: visibility)
-    self.discussionSections = []
   }
   
   init(_ type: ParsableArguments.Type, visibility: ArgumentVisibility) {
@@ -196,7 +247,8 @@ internal struct HelpGenerator {
       let element = Section.Element(
         label: synopsis,
         abstract: description,
-        discussion: arg.help.discussion)
+        discussion: .init(arg.help.discussion)
+      )
       switch (arg.kind, arg.help.parentTitle) {
       case (_, let sectionTitle) where !sectionTitle.isEmpty:
         if !titledSections.keys.contains(sectionTitle) {
@@ -251,7 +303,7 @@ internal struct HelpGenerator {
       else { return false }
     return !subcommandSection.elements.isEmpty
   }
-  
+
   func rendered(screenWidth: Int? = nil) -> String {
     let screenWidth = screenWidth ?? HelpGenerator.systemScreenWidth
     let renderedSections = sections

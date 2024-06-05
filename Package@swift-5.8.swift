@@ -90,6 +90,10 @@ var package = Package(
             name: "ArgumentParserUnitTests",
             dependencies: ["ArgumentParser", "ArgumentParserTestHelpers"],
             exclude: ["CMakeLists.txt"]),
+        .testTarget(
+            name: "LocalBranchTests",
+            dependencies: ["ArgumentParser", "ArgumentParserTestHelpers"],
+            exclude: ["CMakeLists.txt"]),
     ]
 )
 

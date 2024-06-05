@@ -59,7 +59,61 @@ extension DumpHelpGenerationTests {
     @OptionGroup(title: "Other")
     var options: Options
   }
-  
+
+  struct C: ParsableCommand {
+    enum Color: String, EnumerableOption {
+      init?(argument: String) {
+        guard let color = Color(rawValue: argument) else {
+          return nil
+        }
+
+        self = color
+      }
+
+      case blue
+      case red
+      case yellow
+
+      var name: String {
+        self.rawValue
+      }
+
+      var help: ArgumentHelp? {
+        switch self {
+        case .blue:
+            .init(
+              "A blue color, like the sky!",
+              valueName: rawValue,
+              visibility: .default
+            )
+        case .red:
+            .init(
+              "A red color, like a rose!",
+              valueName: rawValue,
+              visibility: .default
+            )
+        case .yellow:
+            .init(
+              "A yellow color, like the sun!",
+              valueName: rawValue,
+              visibility: .default
+            )
+        }
+      }
+
+      public static func help(for value: Color) -> ArgumentHelp? {
+        return value.help
+      }
+
+      public static func name(for value: Color) -> String {
+        value.rawValue
+      }
+    }
+
+    @Option(abstract: "A color to select.")
+    var color: Color
+  }
+
   public func testDumpA() throws {
     try AssertDump(for: A.self, equals: Self.aDumpText)
   }
@@ -67,7 +121,11 @@ extension DumpHelpGenerationTests {
   public func testDumpB() throws {
     try AssertDump(for: B.self, equals: Self.bDumpText)
   }
-  
+
+  public func testDumpC() throws {
+    try AssertDump(for: C.self, equals: Self.cDumpText)
+  }
+
   public func testDumpExampleCommands() throws {
     struct TestCase {
       let expected: String
@@ -315,6 +373,76 @@ extension DumpHelpGenerationTests {
   "serializationVersion" : 0
 }
 """
+
+    static let cDumpText: String = """
+  {
+    "command" : {
+      "arguments" : [
+        {
+          "abstract" : "color",
+          "allValues" : [
+            "blue",
+            "red",
+            "yellow"
+          ],
+          "discussion" : [
+            {
+              "discussion" : "A blue color, like the sky!",
+              "name" : "blue"
+            },
+            {
+              "discussion" : "A red color, like a rose!",
+              "name" : "red"
+            },
+            {
+              "discussion" : "A yellow color, like the sun!",
+              "name" : "yellow"
+            }
+          ],
+          "isOptional" : false,
+          "isRepeating" : false,
+          "kind" : "option",
+          "names" : [
+            {
+              "kind" : "long",
+              "name" : "color"
+            }
+          ],
+          "preferredName" : {
+            "kind" : "long",
+            "name" : "color"
+          },
+          "shouldDisplay" : true,
+          "valueName" : "color"
+        },
+        {
+          "abstract" : "Show help information.",
+          "isOptional" : true,
+          "isRepeating" : false,
+          "kind" : "flag",
+          "names" : [
+            {
+              "kind" : "short",
+              "name" : "h"
+            },
+            {
+              "kind" : "long",
+              "name" : "help"
+            }
+          ],
+          "preferredName" : {
+            "kind" : "long",
+            "name" : "help"
+          },
+          "shouldDisplay" : true,
+          "valueName" : "help"
+        }
+      ],
+      "commandName" : "c"
+    },
+    "serializationVersion" : 0
+  }
+  """
 
   static let mathDumpText: String = """
 {
