@@ -15,6 +15,7 @@ add_library(ArgumentParser
   "Parsable Properties/OptionGroup.swift"
 
   "Parsable Types/AsyncParsableCommand.swift"
+  "Parsable Types/CommandGroup.swift"
   "Parsable Types/CommandConfiguration.swift"
   "Parsable Types/EnumerableFlag.swift"
   "Parsable Types/ExpressibleByArgument.swift"
