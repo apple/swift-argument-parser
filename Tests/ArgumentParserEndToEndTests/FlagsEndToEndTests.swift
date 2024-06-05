@@ -179,7 +179,9 @@ enum Shape: String, EnumerableFlag {
   case oblong
 }
 
-fileprivate struct Baz: ParsableArguments {
+fileprivate struct Baz: ParsableArguments, ParsableCommand {
+  static let configuration = CommandConfiguration(commandName: "baz")
+
   @Flag()
   var color: Color
 

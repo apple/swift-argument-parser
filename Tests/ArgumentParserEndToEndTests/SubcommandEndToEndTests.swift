@@ -20,7 +20,7 @@ final class SubcommandEndToEndTests: XCTestCase {
 
 fileprivate struct Foo: ParsableCommand {
   static let configuration =
-    CommandConfiguration(subcommands: [CommandA.self, CommandB.self])
+    CommandConfiguration(commandName: "foo", subcommands: [CommandA.self, CommandB.self])
 
   @Option() var name: String
 }

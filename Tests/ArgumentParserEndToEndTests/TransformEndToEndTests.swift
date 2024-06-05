@@ -37,8 +37,8 @@ extension Convert {
 fileprivate struct FooOption: Convert, ParsableArguments {
 
   static var usageString: String = """
-  Usage: foo_option --string <int_str>
-    See 'foo_option --help' for more information.
+  Usage: \(getFirstArgument()) --string <int_str>
+    See '\(getFirstArgument()) --help' for more information.
   """
   static var help: String = "Help:  --string <int_str>  Convert string to integer\n"
   
@@ -48,7 +48,8 @@ fileprivate struct FooOption: Convert, ParsableArguments {
 }
 
 fileprivate struct BarOption: Convert, ParsableCommand {
-    
+  static var configuration = CommandConfiguration(commandName: "bar-option")
+
   static var usageString: String = """
   Usage: bar-option [--strings <int_str> ...]
     See 'bar-option --help' for more information.
@@ -100,8 +101,8 @@ extension TransformEndToEndTests {
 fileprivate struct FooArgument: Convert, ParsableArguments {
 
   static var usageString: String = """
-  Usage: foo_argument <int_str>
-    See 'foo_argument --help' for more information.
+  Usage: \(getFirstArgument()) <int_str>
+    See '\(getFirstArgument()) --help' for more information.
   """
   static var help: String = "Help:  <int_str>  Convert string to integer\n"
   
@@ -115,6 +116,7 @@ fileprivate struct FooArgument: Convert, ParsableArguments {
 }
 
 fileprivate struct BarArgument: Convert, ParsableCommand {
+  static var configuration = CommandConfiguration(commandName: "bar-argument")
     
   static var usageString: String = """
   Usage: bar-argument [<int_str> ...]
