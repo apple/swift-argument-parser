@@ -88,7 +88,7 @@ extension ArgumentDefinition {
   func customCompletionCall(_ commands: [ParsableCommand.Type]) -> String {
     let subcommandNames = commands.dropFirst().map { $0._commandName }.joined(separator: " ")
     let argumentName = names.preferredName?.synopsisString
-          ?? self.help.keys.first?.name ?? "---"
+          ?? self.help.keys.first?.fullPathString ?? "---"
     return "---completion \(subcommandNames) -- \(argumentName)"
   }
 }

@@ -343,7 +343,8 @@ extension CommandParser {
       completionFunction = f
 
     case .value(let str):
-      guard let matchedArgument = argset.firstPositional(named: str),
+      guard let key = InputKey(fullPathString: str),
+        let matchedArgument = argset.firstPositional(withKey: key),
         case .custom(let f) = matchedArgument.completion.kind
         else { throw ParserError.invalidState }
       completionFunction = f
