@@ -71,7 +71,7 @@ extension SubcommandEndToEndTests {
     let helpB = Foo.message(for: CleanExit.helpRequest(CommandB.self))
 
     AssertEqualStrings(actual: helpFoo, expected: """
-            USAGE: foo --name <name> <subcommand>
+            USAGE: foo --name <name> <a|b>
 
             OPTIONS:
               --name <name>

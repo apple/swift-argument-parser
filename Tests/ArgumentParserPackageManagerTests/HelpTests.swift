@@ -50,7 +50,7 @@ extension HelpTests {
     XCTAssertEqual(
       getErrorText(Package.self, ["help"]).trimmingLines(),
       """
-                USAGE: package <subcommand>
+                USAGE: package <clean|config|describe|generate-xcodeproj>
 
                 OPTIONS:
                   -h, --help              Show help information.
@@ -69,7 +69,7 @@ extension HelpTests {
     XCTAssertEqual(
       Package.message(for: CleanExit.helpRequest()).trimmingLines(),
       """
-                USAGE: package <subcommand>
+                USAGE: package <clean|config|describe|generate-xcodeproj>
 
                 OPTIONS:
                   -h, --help              Show help information.
@@ -97,7 +97,7 @@ extension HelpTests {
     XCTAssertEqual(
       getErrorText(Package.self, ["help", "config"], screenWidth: 80).trimmingLines(),
       """
-                USAGE: package config <subcommand>
+                USAGE: package config <get-mirror|set-mirror|unset-mirror>
 
                 OPTIONS:
                   -h, --help              Show help information.

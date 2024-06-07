@@ -197,7 +197,7 @@ extension HelpGenerationTests {
 
   func testHelpWithDefaultValues() {
     AssertHelp(.default, for: D.self, equals: """
-      USAGE: d [<occupation>] [--name <name>] [--age <age>] [--logging <logging>] [--lucky <numbers> ...] [--optional] [--required] [--degree <degree>] [--directory <directory>] [--manual <manual>] [--unspecial <unspecial>] [--special <special>]
+      USAGE: d [<occupation>] [--name <name>] [--age <age>] [--logging <logging>] [--lucky <numbers> ...] [--optional] [--required] [--degree <degree>] [--directory <directory>] [--manual <manual>] [--unspecial <0|1>] [--special <Apple|Banana>]
 
       ARGUMENTS:
         <occupation>            Your occupation. (default: --)
