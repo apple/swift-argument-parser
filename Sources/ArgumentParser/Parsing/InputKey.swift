@@ -56,16 +56,14 @@ extension InputKey: CustomStringConvertible {
 }
 
 extension InputKey {
-  private static var separator: String { "." }
+  private static var separator: Character { "." }
   
   var fullPathString: String {
-    fullPath
-      .joined(separator: Self.separator)
+    fullPath.joined(separator: .init(Self.separator))
   }
   
   init?(fullPathString: String) {
-    let fullPath = fullPathString
-      .components(separatedBy: Self.separator)
+    let fullPath = fullPathString.split(separator: Self.separator).map(String.init)
     
     guard let name = fullPath.last else { return nil }
     
