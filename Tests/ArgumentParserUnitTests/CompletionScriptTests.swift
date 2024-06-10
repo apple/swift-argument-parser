@@ -422,6 +422,8 @@ complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-comman
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command help"' -l kind-counter
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command help"' -l rep1
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command help"' -s r -l rep2
+complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command help"' -r -f -a '(command base-test ---completion  -- argument (commandline -opc)[1..-1])'
+complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command help"' -r -f -a '(command base-test ---completion  -- nested.nestedArgument (commandline -opc)[1..-1])'
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command help"' -s h -l help -d 'Show help information.'
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command help"' -f -a 'sub-command' -d ''
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command help"' -f -a 'help' -d 'Show subcommand help information.'
