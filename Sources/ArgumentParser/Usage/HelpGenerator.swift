@@ -267,21 +267,6 @@ internal struct HelpGenerator {
     }
 
     let configuration = commandStack.last!.configuration
-//<<<<<<< HEAD
-//    let subcommandElements: [Section.Element] =
-//    configuration.subcommands.compactMap { command in
-//      guard command.configuration.shouldDisplay else { return nil }
-//      var label = command._commandName
-//      for alias in command.configuration.aliases {
-//        label += ", \(alias)"
-//      }
-//      if command == configuration.defaultSubcommand {
-//        label += " (default)"
-//      }
-//      return Section.Element(
-//        label: label,
-//        abstract: command.configuration.abstract)
-//=======
 
     // Create section for a grouping of subcommands.
     func subcommandSection(

@@ -87,6 +87,9 @@ extension DumpHelpGenerationTests {
 
     @Option(abstract: "Another color to select!")
     var defaultColor: Color = .red
+
+    @Option(abstract: "An optional color.")
+    var opt: Color?
   }
 
   public func testDumpA() throws {
@@ -409,6 +412,34 @@ extension DumpHelpGenerationTests {
           },
           "shouldDisplay" : true,
           "valueName" : "default-color"
+        },
+        {
+          "abstract" : "An optional color.",
+          "allValues" : [
+            "blue",
+            "red",
+            "yellow"
+          ],
+          "discussion" : {
+            "blue" : "A blue color, like the sky!",
+            "red" : "A red color, like a rose!",
+            "yellow" : "A yellow color, like the sun!"
+          },
+          "isOptional" : true,
+          "isRepeating" : false,
+          "kind" : "option",
+          "names" : [
+            {
+              "kind" : "long",
+              "name" : "opt"
+            }
+          ],
+          "preferredName" : {
+            "kind" : "long",
+            "name" : "opt"
+          },
+          "shouldDisplay" : true,
+          "valueName" : "opt"
         },
         {
           "abstract" : "Show help information.",

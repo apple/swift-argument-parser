@@ -1039,6 +1039,24 @@ OPTIONS:
 
 """)
   }
+
+  struct Optional: ParsableCommand {
+    @Option(abstract: "Optional option type.") var optional: OptionValues?
+  }
+
+  func testOptionalEnumerableOptionValue() {
+    AssertHelp(.default, for: Optional.self, equals: """
+    USAGE: optional [--optional <optional>]
+
+    OPTIONS:
+      --optional <optional>   Optional option type.
+          blue                - The color of the sky.
+          red                 - The color of a rose.
+          yellow              - The color of the sun.
+      -h, --help              Show help information.
+
+    """)
+  }
 }
 
 extension HelpGenerationTests {

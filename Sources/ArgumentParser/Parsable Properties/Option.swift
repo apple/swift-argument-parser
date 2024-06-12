@@ -548,6 +548,90 @@ extension Option {
   }
 }
 
+// MARK: - @Option Optional<T: EnumerableOptionValue> Initializers
+extension Option {
+  /// Creates an optional property that reads its value from a labeled option,
+  /// with an explicit `nil` default.
+  ///
+  /// This initializer allows a user to provide a `nil` default value for an
+  /// optional `@Option`-marked property:
+  ///
+  /// ```swift
+  /// @Option var count: Int? = nil
+  /// ```
+  ///
+  /// - Parameters:
+  ///   - name: A specification for what names are allowed for this option.
+  ///   - parsingStrategy: The behavior to use when looking for this option's
+  ///     value.
+  ///   - help: Information about how to use this option.
+  ///   - completion: The type of command-line completion provided for this
+  ///     option.
+  public init<T>(
+    wrappedValue _value: _OptionalNilComparisonType,
+    name: NameSpecification = .long,
+    parsing parsingStrategy: SingleValueParsingStrategy = .next,
+    abstract: String = "",
+    completion: CompletionKind? = nil
+  ) where T: EnumerableOptionValue, Value == Optional<T> {
+    self.init(_parsedValue: .init { key in
+      let arg = ArgumentDefinition(
+        container: Optional<T>.self,
+        key: key,
+        kind: .name(key: key, specification: name),
+        help: .init(
+          abstract,
+          options: T.self
+        ),
+        parsingStrategy: parsingStrategy.base,
+        initial: nil,
+        completion: completion)
+
+      return ArgumentSet(arg)
+    })
+  }
+
+  /// Creates an optional property that reads its value from a labeled option.
+  ///
+  /// This initializer is used when you declare an `@Option`-attributed property
+  /// with an optional type and no default value:
+  ///
+  /// ```swift
+  /// @Option var count: Int?
+  /// ```
+  ///
+  /// - Parameters:
+  ///   - name: A specification for what names are allowed for this option.
+  ///   - parsingStrategy: The behavior to use when looking for this option's
+  ///     value.
+  ///   - help: Information about how to use this option.
+  ///   - completion: The type of command-line completion provided for this
+  ///     option.
+  public init<T>(
+    name: NameSpecification = .long,
+    parsing parsingStrategy: SingleValueParsingStrategy = .next,
+    abstract: String = "",
+    completion: CompletionKind? = nil
+  ) where T: EnumerableOptionValue, Value == Optional<T> {
+    self.init(_parsedValue: .init { key in
+      let arg = ArgumentDefinition(
+        container: Optional<T>.self,
+        key: key,
+        kind: .name(key: key, specification: name),
+        help: .init(
+          abstract,
+          options: T.self
+        ),
+        parsingStrategy: parsingStrategy.base,
+        initial: nil,
+        completion: completion)
+
+      return ArgumentSet(arg)
+    })
+  }
+}
+
+
 // MARK: - @Option Optional<T: ExpressibleByArgument> Initializers
 extension Option {
   /// Creates an optional property that reads its value from a labeled option,
