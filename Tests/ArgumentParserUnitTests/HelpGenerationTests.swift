@@ -900,6 +900,109 @@ extension HelpGenerationTests {
 }
 
 extension HelpGenerationTests {
+  enum OptionValues: String, EnumerableOptionValue {
+    case blue
+    case red
+    case yellow
+
+    public var description: String {
+      switch self {
+      case .blue:
+        return "The color of the sky."
+      case .red:
+        return "The color of a rose."
+      case .yellow:
+        return "The color of the sun."
+      }
+    }
+  }
+
+  struct CustomOption: ParsableCommand {
+    @Option(abstract: "An option with enumerable values.") var opt: OptionValues
+  }
+
+  func testEnumerableOptionValuesWithoutDefault() {
+    AssertHelp(.default, for: CustomOption.self, equals: """
+USAGE: custom-option --opt <opt>
+
+OPTIONS:
+  --opt <opt>             An option with enumerable values.
+      blue                - The color of the sky.
+      red                 - The color of a rose.
+      yellow              - The color of the sun.
+  -h, --help              Show help information.
+
+""")
+  }
+
+  struct CustomOptionWithDefault: ParsableCommand {
+    @Option(abstract: "An option with enumerable values and a custom default.") var opt: OptionValues = .red
+  }
+
+  func testEnumerableOptionValuesWithDefault() {
+    AssertHelp(.default, for: CustomOptionWithDefault.self, equals: """
+USAGE: custom-option-with-default [--opt <opt>]
+
+OPTIONS:
+  --opt <opt>             An option with enumerable values and a custom
+                          default. (default: red)
+      blue                - The color of the sky.
+      red                 - The color of a rose.
+      yellow              - The color of the sun.
+  -h, --help              Show help information.
+
+""")
+  }
+
+  struct StaticTextDiscussion: ParsableCommand {
+    @Option(help: ArgumentHelp(discussion: "This is a discussion.")) var text: OptionValues = .red
+  }
+
+  func testWithStaticTextDiscussion() {
+    AssertHelp(.default, for: StaticTextDiscussion.self, equals: """
+USAGE: static-text-discussion [--text <text>]
+
+OPTIONS:
+  --text <text>           (values: blue, red, yellow; default: red)
+        This is a discussion.
+  -h, --help              Show help information.
+
+""")
+  }
+}
+
+extension HelpGenerationTests {
+  enum Empty: EnumerableOptionValue {
+    var description: String {
+      return "none"
+    }
+
+    var rawValue: String {
+      return "nil"
+    }
+
+    init?(rawValue: String) {
+      return nil
+    }
+  }
+
+  struct EmptyCommand: ParsableCommand {
+    @Option(abstract: "An option with no values.") var empty: Empty
+  }
+
+  func testEmptyOptionValues() {
+    AssertHelp(.default, for: EmptyCommand.self, equals: """
+    USAGE: empty-command --empty <empty>
+
+    OPTIONS:
+      --empty <empty>         An option with no values.
+      -h, --help              Show help information.
+
+    """)
+  }
+}
+
+extension HelpGenerationTests {
   private struct WideHelp: ParsableCommand {
     @Argument(help: "54 characters of help, so as to wrap when columns < 80")
     var argument: String?

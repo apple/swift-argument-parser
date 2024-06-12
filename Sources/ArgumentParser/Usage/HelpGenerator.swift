@@ -18,25 +18,25 @@ internal struct HelpGenerator {
     struct Element: Hashable {
       var label: String
       var abstract: String = ""
-      var discussion: Discussion = .staticString("")
+      var discussion: Discussion?
 
       enum Discussion: Hashable {
-        case staticString(String)
-        case enumerable([Option])
+        case staticText(String)
+        case enumerable([OptionValue])
 
-        struct Option: Hashable {
+        struct OptionValue: Hashable {
           var name: String
           var help: String
         }
 
-        public init(_ discussion: ArgumentDefinition.Help.Discussion) {
+        public init?(_ discussion: ArgumentDefinition.Help.Discussion?) {
+          guard let discussion else { return nil }
           switch discussion {
-          case .staticString(let s):
-            self = .staticString(s)
+          case .staticText(let s):
+            self = .staticText(s)
           case .enumerated(let type):
-            let values = (type.allCases as? [any EnumerableOption]) ?? []
-            // TODO: to format
-            self = .enumerable(values.compactMap({ Option(name: $0.name, help: $0.help?.abstract ?? "")}))
+            let values = (type.allCases as? [any EnumerableOptionValue]) ?? []
+            self = .enumerable(values.compactMap { OptionValue(name: $0.name, help: $0.description) })
           }
         }
       }
@@ -45,7 +45,6 @@ internal struct HelpGenerator {
         String(repeating: " ", count: HelpGenerator.helpIndent) + label
       }
 
-      // TODO: to format
       func rendered(screenWidth: Int) -> String {
         let paddedLabel = self.paddedLabel
         let wrappedAbstract = self.abstract
@@ -53,7 +52,7 @@ internal struct HelpGenerator {
 
         var wrappedDiscussion = ""
 
-        if case let .staticString(discussionText) = discussion {
+        if case let .staticText(discussionText) = discussion {
           wrappedDiscussion = discussionText.isEmpty
           ? ""
           : discussionText.wrapped(to: screenWidth, wrappingIndent: HelpGenerator.helpIndent * 4) + "\n"
@@ -72,7 +71,8 @@ internal struct HelpGenerator {
             let renderedHelp: String = {
               if paddedOptionLabel.count < HelpGenerator.labelColumnWidth {
                 // render after the padded label
-                return String(paddedOptionLabel + wrappedHelp.dropFirst(paddedOptionLabel.count + discussionDash.count))
+                let toDrop = paddedOptionLabel.count + discussionDash.count
+                return String(paddedOptionLabel + wrappedHelp.dropFirst(toDrop))
               } else {
                 // render in a new line.
                 return "\n" + wrappedHelp
@@ -95,8 +95,8 @@ internal struct HelpGenerator {
           }
         }()
         return paddedLabel
-          + renderedAbstract + "\n"
-          + wrappedDiscussion
+        + renderedAbstract + "\n"
+        + wrappedDiscussion
       }
     }
     
@@ -122,7 +122,6 @@ internal struct HelpGenerator {
     
     var header: Header
     var elements: [Element]
-    var discussion: String = ""
     var isSubcommands: Bool = false
     
     func rendered(screenWidth: Int) -> String {
@@ -169,28 +168,28 @@ internal struct HelpGenerator {
       }
       self.usage = usage
     }
-    
+
     self.abstract = currentCommand.configuration.abstract
-    if !currentCommand.configuration.discussion.isEmpty {
+    if case let .staticText(discussion) = currentCommand.configuration.discussion {
       if !self.abstract.isEmpty {
         self.abstract += "\n"
       }
-      self.abstract += "\n\(currentCommand.configuration.discussion)"
+      self.abstract += "\n\(discussion)"
     }
 
     self.sections = HelpGenerator.generateSections(commandStack: commandStack, visibility: visibility)
   }
-  
+
   init(_ type: ParsableArguments.Type, visibility: ArgumentVisibility) {
     self.init(commandStack: [type.asCommand], visibility: visibility)
   }
 
   private static func generateSections(commandStack: [ParsableCommand.Type], visibility: ArgumentVisibility) -> [Section] {
     guard !commandStack.isEmpty else { return [] }
-    
+
     var positionalElements: [Section.Element] = []
     var optionElements: [Section.Element] = []
-    
+
     // Simulate an ordered dictionary using a dictionary and array for ordering.
     var titledSections: [String: [Section.Element]] = [:]
     var sectionTitles: [String] = []
@@ -200,11 +199,13 @@ internal struct HelpGenerator {
     var args = commandStack.argumentsForHelp(visibility: visibility)[...]
     while let arg = args.popFirst() {
       assert(arg.help.visibility.isAtLeastAsVisible(as: visibility))
-      
+
       let synopsis: String
       let abstract: String
 
-      let allValueStrings = arg.help.allValueStrings.filter { !$0.isEmpty }
+      let allValueStrings = (arg.help.discussion?.isComposite ?? false)
+      ? []
+      : arg.help.allValueStrings.filter { !$0.isEmpty }
       let defaultValue = arg.help.defaultValue ?? ""
 
       let allAndDefaultValues: String
@@ -238,7 +239,7 @@ internal struct HelpGenerator {
         synopsis = arg.synopsisForHelp
         abstract = arg.help.abstract
       }
-      
+
       let description = [abstract, allAndDefaultValues]
         .lazy
         .filter { !$0.isEmpty }
@@ -261,21 +262,21 @@ internal struct HelpGenerator {
         optionElements.append(element)
       }
     }
-    
+
     let configuration = commandStack.last!.configuration
     let subcommandElements: [Section.Element] =
-      configuration.subcommands.compactMap { command in
-        guard command.configuration.shouldDisplay else { return nil }
-        var label = command._commandName
-        for alias in command.configuration.aliases {
-            label += ", \(alias)"
-        }
-        if command == configuration.defaultSubcommand {
-            label += " (default)"
-        }
-        return Section.Element(
-          label: label,
-          abstract: command.configuration.abstract)
+    configuration.subcommands.compactMap { command in
+      guard command.configuration.shouldDisplay else { return nil }
+      var label = command._commandName
+      for alias in command.configuration.aliases {
+        label += ", \(alias)"
+      }
+      if command == configuration.defaultSubcommand {
+        label += " (default)"
+      }
+      return Section.Element(
+        label: label,
+        abstract: command.configuration.abstract)
     }
     
     // Combine the compiled groups in this order:
@@ -327,11 +328,11 @@ internal struct HelpGenerator {
           See '\(names.joined(separator: " ")) <subcommand>' for detailed help.
         """
     }
-    
+
     let renderedUsage = usage.isEmpty
-      ? ""
-      : "USAGE: \(usage.hangingIndentingEachLine(by: 7))\n\n"
-    
+    ? ""
+    : "USAGE: \(usage.hangingIndentingEachLine(by: 7))\n\n"
+
     return """
     \(renderedAbstract)\
     \(renderedUsage)\
@@ -378,16 +379,16 @@ internal extension BidirectionalCollection where Element == ParsableCommand.Type
   func getHelpNames(visibility: ArgumentVisibility) -> [Name] {
     self.last(where: { $0.configuration.helpNames != nil })
       .map { $0.configuration.helpNames!.generateHelpNames(visibility: visibility) }
-      ?? CommandConfiguration.defaultHelpNames.generateHelpNames(visibility: visibility)
+    ?? CommandConfiguration.defaultHelpNames.generateHelpNames(visibility: visibility)
   }
 
   func getPrimaryHelpName() -> Name? {
     getHelpNames(visibility: .default).preferredName
   }
-  
+
   func versionArgumentDefinition() -> ArgumentDefinition? {
     guard contains(where: { !$0.configuration.version.isEmpty })
-      else { return nil }
+    else { return nil }
     return ArgumentDefinition(
       kind: .named([.long("version")]),
       help: .init(
@@ -401,7 +402,7 @@ internal extension BidirectionalCollection where Element == ParsableCommand.Type
       update: .nullary({ _, _, _ in })
     )
   }
-  
+
   func helpArgumentDefinition() -> ArgumentDefinition? {
     let names = getHelpNames(visibility: .default)
     guard !names.isEmpty else { return nil }
@@ -418,7 +419,7 @@ internal extension BidirectionalCollection where Element == ParsableCommand.Type
       update: .nullary({ _, _, _ in })
     )
   }
-  
+
   func dumpHelpArgumentDefinition() -> ArgumentDefinition {
     return ArgumentDefinition(
       kind: .named([.long("experimental-dump-help")]),
@@ -433,18 +434,18 @@ internal extension BidirectionalCollection where Element == ParsableCommand.Type
       update: .nullary({ _, _, _ in })
     )
   }
-  
+
   /// Returns the ArgumentSet for the last command in this stack, including
   /// help and version flags, when appropriate.
   func argumentsForHelp(visibility: ArgumentVisibility) -> ArgumentSet {
     guard var arguments = self.last.map({ ArgumentSet($0, visibility: visibility, parent: nil) })
-      else { return ArgumentSet() }
+    else { return ArgumentSet() }
     self.versionArgumentDefinition().map { arguments.append($0) }
     self.helpArgumentDefinition().map { arguments.append($0) }
-    
+
     // To add when 'dump-help' is public API:
     // arguments.append(self.dumpHelpArgumentDefinition())
-    
+
     return arguments
   }
 }

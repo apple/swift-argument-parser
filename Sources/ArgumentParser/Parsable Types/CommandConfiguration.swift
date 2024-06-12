@@ -20,13 +20,14 @@ public struct CommandConfiguration: Sendable {
       var discussion: String
     }
 
-    public var isEmpty: Bool {
-      switch self {
-      case .staticText(let s):
-        return s.isEmpty
-      case .enumerated(let values):
-        return values.isEmpty
-      }
+    public init?(_ text: String?) {
+      guard let text, !text.isEmpty else { return nil }
+      self = .staticText(text)
+    }
+
+    public init?(_ values: [String: String]?) {
+      guard let values, !values.isEmpty else { return nil }
+      self = .enumerated(values.map { .init(name: $0.0, discussion: $0.1) })
     }
   }
   /// The name of the command to use on the command line.
@@ -55,7 +56,11 @@ public struct CommandConfiguration: Sendable {
 
   /// A longer description of this command, to be shown in the extended help
   /// display.
-  public var discussion: Discussion
+  ///
+  /// Can include specific abstracts about the argument's possible values (e.g.
+  /// for a custom `EnumerableOptionValue` type), or can describe
+  /// a static block of text that extends the description of the argument.
+  public var discussion: Discussion?
 
   /// Version information for this command.
   public var version: String
@@ -112,7 +117,7 @@ public struct CommandConfiguration: Sendable {
     commandName: String? = nil,
     abstract: String = "",
     usage: String? = nil,
-    discussion: String = "",
+    discussion: String? = nil,
     version: String = "",
     shouldDisplay: Bool = true,
     subcommands: [ParsableCommand.Type] = [],
@@ -123,7 +128,7 @@ public struct CommandConfiguration: Sendable {
     self.commandName = commandName
     self.abstract = abstract
     self.usage = usage
-    self.discussion = .staticText(discussion)
+    self.discussion = .init(discussion)
     self.version = version
     self.shouldDisplay = shouldDisplay
     self.subcommands = subcommands
@@ -164,7 +169,7 @@ public struct CommandConfiguration: Sendable {
     commandName: String? = nil,
     abstract: String = "",
     usage: String? = nil,
-    options: (any EnumerableOption.Type)?,
+    options: (any EnumerableOptionValue.Type)?,
     version: String = "",
     shouldDisplay: Bool = true,
     subcommands: [ParsableCommand.Type] = [],
@@ -175,14 +180,16 @@ public struct CommandConfiguration: Sendable {
     self.commandName = commandName
     self.abstract = abstract
     self.usage = usage
-    // TODO: to format
-    self.discussion = .enumerated(
-      options?.allCases.compactMap({
-        $0 as? any EnumerableOption
-      })
-      .compactMap({
-          Discussion.Value(name: $0.name, discussion: $0.help?.abstract ?? "")}) ?? []
-    )
+    if let options {
+      self.discussion = .enumerated(
+        options
+          .allCases
+          .compactMap { $0 as? any EnumerableOptionValue }
+          .compactMap {
+            Discussion.Value(name: $0.name, discussion: $0.description)
+          }
+      )
+    }
     self.version = version
     self.shouldDisplay = shouldDisplay
     self.subcommands = subcommands
@@ -198,7 +205,7 @@ public struct CommandConfiguration: Sendable {
     _superCommandName: String,
     abstract: String = "",
     usage: String? = nil,
-    discussion: String = "",
+    discussion: String? = nil,
     version: String = "",
     shouldDisplay: Bool = true,
     subcommands: [ParsableCommand.Type] = [],
@@ -210,7 +217,7 @@ public struct CommandConfiguration: Sendable {
     self._superCommandName = _superCommandName
     self.abstract = abstract
     self.usage = usage
-    self.discussion = .staticText(discussion)
+    self.discussion = .init(discussion)
     self.version = version
     self.shouldDisplay = shouldDisplay
     self.subcommands = subcommands

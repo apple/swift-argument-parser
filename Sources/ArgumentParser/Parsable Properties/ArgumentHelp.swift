@@ -15,8 +15,8 @@ public struct ArgumentHelp {
   public var abstract: String = ""
   
   /// An expanded description of the argument, in plain text form.
-  public var discussion: String = ""
-  
+  public var discussion: String?
+
   /// An alternative name to use for the argument's value when showing usage
   /// information.
   ///
@@ -40,15 +40,14 @@ public struct ArgumentHelp {
     }
   }
 
-  // TODO: to format
-  /// - Note: Experimental - a test parameter to implement JSON output capabilities.
-  public var options: (any EnumerableOption.Type)?
+  /// - Note: Experimental property to retain custom `@Option` type information about its possible values.
+  public var options: (any EnumerableOptionValue.Type)?
 
   /// Creates a new help instance.
   @available(*, deprecated, message: "Use init(_:discussion:valueName:visibility:) instead.")
   public init(
     _ abstract: String = "",
-    discussion: String = "",
+    discussion: String? = nil,
     valueName: String? = nil,
     shouldDisplay: Bool)
   {
@@ -61,7 +60,7 @@ public struct ArgumentHelp {
   /// Creates a new help instance.
   public init(
     _ abstract: String = "",
-    discussion: String = "",
+    discussion: String? = nil,
     valueName: String? = nil,
     visibility: ArgumentVisibility = .default)
   {
@@ -76,7 +75,7 @@ public struct ArgumentHelp {
     _ abstract: String = "",
     options: T.Type,
     valueName: String? = nil,
-    visibility: ArgumentVisibility = .default) where T: EnumerableOption
+    visibility: ArgumentVisibility = .default) where T: EnumerableOptionValue
   {
     self.abstract = abstract
     self.discussion = ""

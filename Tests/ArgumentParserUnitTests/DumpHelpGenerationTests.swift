@@ -61,15 +61,7 @@ extension DumpHelpGenerationTests {
   }
 
   struct C: ParsableCommand {
-    enum Color: String, EnumerableOption {
-      init?(argument: String) {
-        guard let color = Color(rawValue: argument) else {
-          return nil
-        }
-
-        self = color
-      }
-
+    enum Color: String, EnumerableOptionValue {
       case blue
       case red
       case yellow
@@ -78,40 +70,23 @@ extension DumpHelpGenerationTests {
         self.rawValue
       }
 
-      var help: ArgumentHelp? {
+      var description: String {
         switch self {
         case .blue:
-            .init(
-              "A blue color, like the sky!",
-              valueName: rawValue,
-              visibility: .default
-            )
+          "A blue color, like the sky!"
         case .red:
-            .init(
-              "A red color, like a rose!",
-              valueName: rawValue,
-              visibility: .default
-            )
+          "A red color, like a rose!"
         case .yellow:
-            .init(
-              "A yellow color, like the sun!",
-              valueName: rawValue,
-              visibility: .default
-            )
+          "A yellow color, like the sun!"
         }
-      }
-
-      public static func help(for value: Color) -> ArgumentHelp? {
-        return value.help
-      }
-
-      public static func name(for value: Color) -> String {
-        value.rawValue
       }
     }
 
     @Option(abstract: "A color to select.")
     var color: Color
+
+    @Option(abstract: "Another color to select!")
+    var defaultColor: Color = .red
   }
 
   public func testDumpA() throws {
@@ -374,31 +349,22 @@ extension DumpHelpGenerationTests {
 }
 """
 
-    static let cDumpText: String = """
+  static let cDumpText: String = """
   {
     "command" : {
       "arguments" : [
         {
-          "abstract" : "color",
+          "abstract" : "A color to select.",
           "allValues" : [
             "blue",
             "red",
             "yellow"
           ],
-          "discussion" : [
-            {
-              "discussion" : "A blue color, like the sky!",
-              "name" : "blue"
-            },
-            {
-              "discussion" : "A red color, like a rose!",
-              "name" : "red"
-            },
-            {
-              "discussion" : "A yellow color, like the sun!",
-              "name" : "yellow"
-            }
-          ],
+          "discussion" : {
+            "blue" : "A blue color, like the sky!",
+            "red" : "A red color, like a rose!",
+            "yellow" : "A yellow color, like the sun!"
+          },
           "isOptional" : false,
           "isRepeating" : false,
           "kind" : "option",
@@ -414,6 +380,35 @@ extension DumpHelpGenerationTests {
           },
           "shouldDisplay" : true,
           "valueName" : "color"
+        },
+        {
+          "abstract" : "Another color to select!",
+          "allValues" : [
+            "blue",
+            "red",
+            "yellow"
+          ],
+          "defaultValue" : "red",
+          "discussion" : {
+            "blue" : "A blue color, like the sky!",
+            "red" : "A red color, like a rose!",
+            "yellow" : "A yellow color, like the sun!"
+          },
+          "isOptional" : true,
+          "isRepeating" : false,
+          "kind" : "option",
+          "names" : [
+            {
+              "kind" : "long",
+              "name" : "default-color"
+            }
+          ],
+          "preferredName" : {
+            "kind" : "long",
+            "name" : "default-color"
+          },
+          "shouldDisplay" : true,
+          "valueName" : "default-color"
         },
         {
           "abstract" : "Show help information.",
