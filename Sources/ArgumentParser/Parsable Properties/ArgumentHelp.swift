@@ -70,20 +70,6 @@ public struct ArgumentHelp {
     self.visibility = visibility
   }
 
-  /// Creates a new help instance.
-  public init<T>(
-    _ abstract: String = "",
-    options: T.Type,
-    valueName: String? = nil,
-    visibility: ArgumentVisibility = .default) where T: EnumerableOptionValue
-  {
-    self.abstract = abstract
-    self.discussion = ""
-    self.valueName = valueName
-    self.visibility = visibility
-    self.options = T.self
-  }
-
   /// A `Help` instance that shows an argument only in the extended help display.
   public static var hidden: ArgumentHelp {
     ArgumentHelp(visibility: .hidden)

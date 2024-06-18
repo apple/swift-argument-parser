@@ -45,35 +45,13 @@ struct ArgumentDefinition {
       static let isRepeating = Options(rawValue: 1 << 1)
     }
 
-    enum Discussion {
-      case staticText(String)
-      case enumerated(any EnumerableOptionValue.Type)
-
-      var isEmpty: Bool {
-        switch self {
-        case .staticText(let s):
-          return s.isEmpty
-        case .enumerated(let values):
-          return values.allCases.isEmpty
-        }
-      }
-
-      var isComposite: Bool {
-        if case .enumerated = self {
-          return true
-        }
-
-        return false
-      }
-    }
-
     var options: Options
     var defaultValue: String?
     var keys: [InputKey]
     var allValueStrings: [String]
     var isComposite: Bool
     var abstract: String
-    var discussion: Discussion?
+    var discussion: ArgumentDiscussion?
     var valueName: String
     var visibility: ArgumentVisibility
     var parentTitle: String
@@ -92,11 +70,7 @@ struct ArgumentDefinition {
       self.allValueStrings = allValueStrings
       self.isComposite = isComposite
       self.abstract = help?.abstract ?? ""
-      if let options = help?.options {
-        self.discussion = .enumerated(options)
-      } else if let text = help?.discussion {
-        self.discussion = .staticText(text)
-      }
+      self.discussion = .init(help?.discussion, help?.options)
       self.valueName = help?.valueName ?? ""
       self.visibility = help?.visibility ?? .default
       self.parentTitle = ""

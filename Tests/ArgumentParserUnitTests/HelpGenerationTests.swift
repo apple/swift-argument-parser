@@ -988,7 +988,7 @@ extension HelpGenerationTests {
   }
 
   struct CustomOption: ParsableCommand {
-    @Option(abstract: "An option with enumerable values.") var opt: OptionValues
+    @Option(help: "An option with enumerable values.") var opt: OptionValues
   }
 
   func testEnumerableOptionValuesWithoutDefault() {
@@ -997,16 +997,16 @@ USAGE: custom-option --opt <opt>
 
 OPTIONS:
   --opt <opt>             An option with enumerable values.
-      blue                - The color of the sky.
-      red                 - The color of a rose.
-      yellow              - The color of the sun.
+        blue              - The color of the sky.
+        red               - The color of a rose.
+        yellow            - The color of the sun.
   -h, --help              Show help information.
 
 """)
   }
 
   struct CustomOptionWithDefault: ParsableCommand {
-    @Option(abstract: "An option with enumerable values and a custom default.") var opt: OptionValues = .red
+    @Option(help: "An option with enumerable values and a custom default.") var opt: OptionValues = .red
   }
 
   func testEnumerableOptionValuesWithDefault() {
@@ -1016,32 +1016,16 @@ USAGE: custom-option-with-default [--opt <opt>]
 OPTIONS:
   --opt <opt>             An option with enumerable values and a custom
                           default. (default: red)
-      blue                - The color of the sky.
-      red                 - The color of a rose.
-      yellow              - The color of the sun.
-  -h, --help              Show help information.
-
-""")
-  }
-
-  struct StaticTextDiscussion: ParsableCommand {
-    @Option(help: ArgumentHelp(discussion: "This is a discussion.")) var text: OptionValues = .red
-  }
-
-  func testWithStaticTextDiscussion() {
-    AssertHelp(.default, for: StaticTextDiscussion.self, equals: """
-USAGE: static-text-discussion [--text <text>]
-
-OPTIONS:
-  --text <text>           (values: blue, red, yellow; default: red)
-        This is a discussion.
+        blue              - The color of the sky.
+        red               - The color of a rose.
+        yellow            - The color of the sun.
   -h, --help              Show help information.
 
 """)
   }
 
   struct Optional: ParsableCommand {
-    @Option(abstract: "Optional option type.") var optional: OptionValues?
+    @Option(help: "Optional option type.") var optional: OptionValues?
   }
 
   func testOptionalEnumerableOptionValue() {
@@ -1050,9 +1034,77 @@ OPTIONS:
 
     OPTIONS:
       --optional <optional>   Optional option type.
-          blue                - The color of the sky.
-          red                 - The color of a rose.
-          yellow              - The color of the sun.
+            blue              - The color of the sky.
+            red               - The color of a rose.
+            yellow            - The color of the sun.
+      -h, --help              Show help information.
+
+    """)
+  }
+
+
+  struct NoAbstract: ParsableCommand {
+    @Option var a: OptionValues
+    @Option var b: OptionValues = .red
+  }
+
+  func testEnumerableOptionValue_NoAbstract() {
+    AssertHelp(.default, for: NoAbstract.self, equals: """
+    USAGE: no-abstract --a <a> [--b <b>]
+
+    OPTIONS:
+      --a <a>
+            blue              - The color of the sky.
+            red               - The color of a rose.
+            yellow            - The color of the sun.
+      --b <b>                 (default: red)
+            blue              - The color of the sky.
+            red               - The color of a rose.
+            yellow            - The color of the sun.
+      -h, --help              Show help information.
+
+    """)
+  }
+
+  struct Preamble: ParsableCommand {
+    @Option(help: 
+        .init(
+          discussion:
+            """
+    A preamble. This will be appended to the top \
+    of the discussion block, before the list of option values.
+    """
+        )
+    )
+    var a: OptionValues
+
+    @Option(help:
+        .init(
+          "An abstract.",
+          discussion: "A discussion."
+        )
+    )
+    var b: OptionValues?
+  }
+
+  func testEnumerableValuesWithPreamble() {
+    AssertHelp(.default, for: Preamble.self, equals: """
+    USAGE: preamble --a <a> [--b <b>]
+
+    OPTIONS:
+      --a <a>
+            A preamble. This will be appended to the top of the discussion block,
+            before the list of option values.
+            Values:
+              blue            - The color of the sky.
+              red             - The color of a rose.
+              yellow          - The color of the sun.
+      --b <b>                 An abstract.
+            A discussion.
+            Values:
+              blue            - The color of the sky.
+              red             - The color of a rose.
+              yellow          - The color of the sun.
       -h, --help              Show help information.
 
     """)
@@ -1075,7 +1127,7 @@ extension HelpGenerationTests {
   }
 
   struct EmptyCommand: ParsableCommand {
-    @Option(abstract: "An option with no values.") var empty: Empty
+    @Option(help: "An option with no values.") var empty: Empty
   }
 
   func testEmptyOptionValues() {

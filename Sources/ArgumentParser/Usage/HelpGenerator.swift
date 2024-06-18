@@ -18,28 +18,7 @@ internal struct HelpGenerator {
     struct Element: Hashable {
       var label: String
       var abstract: String = ""
-      var discussion: Discussion?
-
-      enum Discussion: Hashable {
-        case staticText(String)
-        case enumerable([OptionValue])
-
-        struct OptionValue: Hashable {
-          var name: String
-          var help: String
-        }
-
-        public init?(_ discussion: ArgumentDefinition.Help.Discussion?) {
-          guard let discussion else { return nil }
-          switch discussion {
-          case .staticText(let s):
-            self = .staticText(s)
-          case .enumerated(let type):
-            let values = (type.allCases as? [any EnumerableOptionValue]) ?? []
-            self = .enumerable(values.compactMap { OptionValue(name: $0.name, help: $0.description) })
-          }
-        }
-      }
+      var discussion: ArgumentDiscussion?
 
       var paddedLabel: String {
         String(repeating: " ", count: HelpGenerator.helpIndent) + label
@@ -56,15 +35,24 @@ internal struct HelpGenerator {
           wrappedDiscussion = discussionText.isEmpty
           ? ""
           : discussionText.wrapped(to: screenWidth, wrappingIndent: HelpGenerator.helpIndent * 4) + "\n"
-        } else if case let .enumerable(options) = discussion {
+        } else if case let .enumerated(preamble, options) = discussion {
           var formattedHelp: String = ""
+          var discussionIndentFactor = 4
+
+          // If there is a preamble, append this to the formatted text
+          if let preamble {
+            formattedHelp += preamble.wrapped(to: screenWidth, wrappingIndent: HelpGenerator.helpIndent * discussionIndentFactor) + "\n"
+            formattedHelp += "Values:\n".wrapped(to: screenWidth, wrappingIndent: HelpGenerator.helpIndent * discussionIndentFactor)
+            discussionIndentFactor += 1
+          }
+
           // Padded label
-          for opt in options {
-            let paddedOptionLabel = String(repeating: " ", count: HelpGenerator.helpIndent * 3) + opt.name
+          for opt in options.allCases {
+            let paddedOptionLabel = String(repeating: " ", count: HelpGenerator.helpIndent * discussionIndentFactor) + opt.name
             // need to add "- " to each beginning of the wrapped help, without it affecting the indentation.
             let discussionDash = "- "
             let wrappedHelp = String(
-              (discussionDash + opt.help)
+              (discussionDash + opt.description)
                 .wrapped(to: screenWidth, wrappingIndent: HelpGenerator.labelColumnWidth + 2)
             )
 
@@ -206,7 +194,7 @@ internal struct HelpGenerator {
       let synopsis: String
       let abstract: String
 
-      let allValueStrings = (arg.help.discussion?.isComposite ?? false)
+      let allValueStrings = (arg.help.discussion?.isEnumerated ?? false)
       ? []
       : arg.help.allValueStrings.filter { !$0.isEmpty }
       let defaultValue = arg.help.defaultValue ?? ""
@@ -251,7 +239,7 @@ internal struct HelpGenerator {
       let element = Section.Element(
         label: synopsis,
         abstract: description,
-        discussion: .init(arg.help.discussion)
+        discussion: arg.help.discussion
       )
       switch (arg.kind, arg.help.parentTitle) {
       case (_, let sectionTitle) where !sectionTitle.isEmpty:

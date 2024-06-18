@@ -82,14 +82,17 @@ extension DumpHelpGenerationTests {
       }
     }
 
-    @Option(abstract: "A color to select.")
+    @Option(help: "A color to select.")
     var color: Color
 
-    @Option(abstract: "Another color to select!")
+    @Option(help: "Another color to select!")
     var defaultColor: Color = .red
 
-    @Option(abstract: "An optional color.")
+    @Option(help: "An optional color.")
     var opt: Color?
+
+    @Option(help: .init(discussion: "A preamble for the list of values in the discussion section."))
+    var extra: Color
   }
 
   public func testDumpA() throws {
@@ -364,9 +367,11 @@ extension DumpHelpGenerationTests {
             "yellow"
           ],
           "discussion" : {
-            "blue" : "A blue color, like the sky!",
-            "red" : "A red color, like a rose!",
-            "yellow" : "A yellow color, like the sun!"
+            "values" : {
+              "blue" : "A blue color, like the sky!",
+              "red" : "A red color, like a rose!",
+              "yellow" : "A yellow color, like the sun!"
+            }
           },
           "isOptional" : false,
           "isRepeating" : false,
@@ -393,9 +398,11 @@ extension DumpHelpGenerationTests {
           ],
           "defaultValue" : "red",
           "discussion" : {
-            "blue" : "A blue color, like the sky!",
-            "red" : "A red color, like a rose!",
-            "yellow" : "A yellow color, like the sun!"
+            "values" : {
+              "blue" : "A blue color, like the sky!",
+              "red" : "A red color, like a rose!",
+              "yellow" : "A yellow color, like the sun!"
+            }
           },
           "isOptional" : true,
           "isRepeating" : false,
@@ -421,9 +428,11 @@ extension DumpHelpGenerationTests {
             "yellow"
           ],
           "discussion" : {
-            "blue" : "A blue color, like the sky!",
-            "red" : "A red color, like a rose!",
-            "yellow" : "A yellow color, like the sun!"
+            "values" : {
+              "blue" : "A blue color, like the sky!",
+              "red" : "A red color, like a rose!",
+              "yellow" : "A yellow color, like the sun!"
+            }
           },
           "isOptional" : true,
           "isRepeating" : false,
@@ -440,6 +449,36 @@ extension DumpHelpGenerationTests {
           },
           "shouldDisplay" : true,
           "valueName" : "opt"
+        },
+        {
+          "allValues" : [
+            "blue",
+            "red",
+            "yellow"
+          ],
+          "discussion" : {
+            "preamble" : "A preamble for the list of values in the discussion section.",
+            "values" : {
+              "blue" : "A blue color, like the sky!",
+              "red" : "A red color, like a rose!",
+              "yellow" : "A yellow color, like the sun!"
+            }
+          },
+          "isOptional" : false,
+          "isRepeating" : false,
+          "kind" : "option",
+          "names" : [
+            {
+              "kind" : "long",
+              "name" : "extra"
+            }
+          ],
+          "preferredName" : {
+            "kind" : "long",
+            "name" : "extra"
+          },
+          "shouldDisplay" : true,
+          "valueName" : "extra"
         },
         {
           "abstract" : "Show help information.",

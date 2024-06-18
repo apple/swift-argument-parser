@@ -33,7 +33,7 @@
 /// }
 ///
 /// struct Hat: ParsableCommand {
-///     @Option var color: Color
+///     @Option(abstract: "A color for my hat.") var color: Color
 ///
 ///     mutating func run() {
 ///       print("The color of my hat is: \(color.rawValue)")
@@ -41,9 +41,9 @@
 /// }
 /// ```
 ///
-/// As `EnumerableOptionValue` implements `RawRepresentable` and constrains the `RawValue` to be a `String` type, it is up to the user
-/// to implement the required properties. Much of this can be omitted if the user specifies a raw type that their `EumerableOptionValue` type implements,
-/// but the user will be required to implement a `description` property in every case, like the above example.
+/// As `EnumerableOptionValue` implements `RawRepresentable`, it is up to the user to implement the required properties. Much
+/// of this can be omitted if the `EumerableOptionValue` type specifies a raw type that it implements, but the user will be
+/// required to implement a `description` property in every case, like the above example.
 ///
 /// By default, the `name` of an `EnumerableOptionValue` is its raw value. To provide a custom name, implement the `name` property
 /// in your `EnumerableOptionValue` type, like this:
@@ -62,7 +62,7 @@
 ///   }
 /// }
 /// ```
-public protocol EnumerableOptionValue: CaseIterable, ExpressibleByArgument, RawRepresentable where RawValue == String {
+public protocol EnumerableOptionValue: CaseIterable, ExpressibleByArgument, RawRepresentable where RawValue: ExpressibleByArgument, AllCases == [Self] {
   /// The  name of the `@Option` value.
   ///
   /// The default implementation for this property returns the `rawValue` of this type.
@@ -76,14 +76,16 @@ public protocol EnumerableOptionValue: CaseIterable, ExpressibleByArgument, RawR
 
 extension EnumerableOptionValue {
   public init?(argument: String) {
-    guard let arg = Self(rawValue: argument) else {
+    guard let rawValue = RawValue(argument: argument),
+          let value = Self.init(rawValue: rawValue)
+    else {
       return nil
     }
 
-    self = arg
+    self = value
   }
 
   public var name: String {
-    rawValue
+    String(describing: rawValue)
   }
 }

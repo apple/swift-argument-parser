@@ -39,43 +39,47 @@ public struct ToolInfoV0: Codable, Hashable {
   }
 }
 
+/// A structure containing an extended description for a command.
 public enum Discussion: Codable, Hashable {
   case staticText(String)
-  case enumerated([String: String])
+  case enumerated(preamble: String? = nil, [String: String])
 
   public init?(_ text: String) {
     guard !text.isEmpty else { return nil }
     self = .staticText(text)
   }
 
-  public init?(_ values: [String: String]) {
+  public init?(_ preamble: String? = nil, _ values: [String: String]) {
     guard !values.isEmpty else { return nil }
     self = .enumerated(values)
   }
 
   enum CodingKeys: String, CodingKey {
+    case preamble
     case enumerated = "values"
     case staticText = "discussion"
   }
 
   public func encode(to encoder: any Encoder) throws {
-    var container = encoder.singleValueContainer()
+    var container = encoder.container(keyedBy: CodingKeys.self)
     switch self {
     case .staticText(let s):
-      try container.encode(s)
-    case .enumerated(let s):
-      try container.encode(s)
+      try container.encode(s, forKey: .staticText)
+    case .enumerated(let preamble, let values):
+      try container.encodeIfPresent(preamble, forKey: .preamble)
+      try container.encode(values, forKey: .enumerated)
     }
   }
 
   public init(from decoder: any Decoder) throws {
-    let container = try decoder.singleValueContainer()
-    if let value = try? container.decode(String.self) {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    if let value = try container.decodeIfPresent(String.self, forKey: .staticText) {
       self = .staticText(value)
       return
     }
-    if let values = try? container.decode([String: String].self) {
-      self = .enumerated(values)
+    if let values = try container.decodeIfPresent([String: String].self, forKey: .enumerated) {
+      let preamble = try? container.decodeIfPresent(String.self, forKey: .preamble)
+      self = .enumerated(preamble: preamble, values)
       return
     }
     throw DecodingError.typeMismatch(

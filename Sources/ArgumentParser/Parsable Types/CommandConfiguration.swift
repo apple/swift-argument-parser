@@ -11,25 +11,6 @@
 
 /// The configuration for a command.
 public struct CommandConfiguration: Sendable {
-  public enum Discussion: Sendable {
-    case staticText(String)
-    case enumerated([Value])
-
-    public struct Value: Sendable {
-      var name: String
-      var discussion: String
-    }
-
-    public init?(_ text: String?) {
-      guard let text, !text.isEmpty else { return nil }
-      self = .staticText(text)
-    }
-
-    public init?(_ values: [String: String]?) {
-      guard let values, !values.isEmpty else { return nil }
-      self = .enumerated(values.map { .init(name: $0.0, discussion: $0.1) })
-    }
-  }
   /// The name of the command to use on the command line.
   ///
   /// If `nil`, the command name is derived by converting the name of
@@ -60,7 +41,7 @@ public struct CommandConfiguration: Sendable {
   /// Can include specific abstracts about the argument's possible values (e.g.
   /// for a custom `EnumerableOptionValue` type), or can describe
   /// a static block of text that extends the description of the argument.
-  public var discussion: Discussion?
+  public var discussion: ArgumentDiscussion?
 
   /// Version information for this command.
   public var version: String
@@ -139,6 +120,7 @@ public struct CommandConfiguration: Sendable {
     abstract: String = "",
     usage: String? = nil,
     discussion: String? = nil,
+    options: (any EnumerableOptionValue.Type)? = nil,
     version: String = "",
     shouldDisplay: Bool = true,
     subcommands ungroupedSubcommands: [ParsableCommand.Type] = [],
@@ -150,72 +132,7 @@ public struct CommandConfiguration: Sendable {
     self.commandName = commandName
     self.abstract = abstract
     self.usage = usage
-    self.discussion = .init(discussion)
-    self.version = version
-    self.shouldDisplay = shouldDisplay
-    self.ungroupedSubcommands = ungroupedSubcommands
-    self.groupedSubcommands = groupedSubcommands
-    self.defaultSubcommand = defaultSubcommand
-    self.helpNames = helpNames
-    self.aliases = aliases
-  }
-
-  /// Creates the configuration for a command.
-  ///
-  /// - Parameters:
-  ///   - commandName: The name of the command to use on the command line. If
-  ///     `commandName` is `nil`, the command name is derived by converting
-  ///     the name of the command type to hyphen-separated lowercase words.
-  ///   - abstract: A one-line description of the command.
-  ///   - usage: A custom usage description for the command. When you provide
-  ///     a non-`nil` string, the argument parser uses `usage` instead of
-  ///     automatically generating a usage description. Passing an empty string
-  ///     hides the usage string altogether.
-  ///   - options: A type that implements EnumerableOption.
-  ///   - version: The version number for this command. When you provide a
-  ///     non-empty string, the argument parser prints it if the user provides
-  ///     a `--version` flag.
-  ///   - shouldDisplay: A Boolean value indicating whether the command
-  ///     should be shown in the extended help display.
-  ///   - ungroupedSubcommands: An array of the types that define subcommands
-  ///     for the command that are not part of any command group.
-  ///   - groupedSubcommands: An array of command groups, each of which defines
-  ///     subcommands that are part of that logical group.
-  ///   - defaultSubcommand: The default command type to run if no subcommand
-  ///     is given.
-  ///   - helpNames: The flag names to use for requesting help, when combined
-  ///     with a simulated Boolean property named `help`. If `helpNames` is
-  ///     `nil`, the names are inherited from the parent command, if any, or
-  ///     are `-h` and `--help`.
-  ///   - aliases: An array of aliases for the command's name. All of the aliases
-  ///     MUST not match the actual command name, whether that be the derived name
-  ///     if `commandName` is not provided, or `commandName` itself if provided.
-  public init(
-    commandName: String? = nil,
-    abstract: String = "",
-    usage: String? = nil,
-    options: (any EnumerableOptionValue.Type)?,
-    version: String = "",
-    shouldDisplay: Bool = true,
-    subcommands ungroupedSubcommands: [ParsableCommand.Type] = [],
-    groupedSubcommands: [CommandGroup] = [],
-    defaultSubcommand: ParsableCommand.Type? = nil,
-    helpNames: NameSpecification? = nil,
-    aliases: [String] = []
-  ) {
-    self.commandName = commandName
-    self.abstract = abstract
-    self.usage = usage
-    if let options {
-      self.discussion = .enumerated(
-        options
-          .allCases
-          .compactMap { $0 as? any EnumerableOptionValue }
-          .compactMap {
-            Discussion.Value(name: $0.name, discussion: $0.description)
-          }
-      )
-    }
+    self.discussion = .init(discussion, options)
     self.version = version
     self.shouldDisplay = shouldDisplay
     self.ungroupedSubcommands = ungroupedSubcommands

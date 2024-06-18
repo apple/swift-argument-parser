@@ -78,7 +78,7 @@ fileprivate extension ArgumentSet {
         argument.help.valueName = group.map(\.valueName).first { !$0.isEmpty } ?? ""
         argument.help.defaultValue = group.compactMap(\.help.defaultValue).first
         argument.help.abstract = group.map(\.help.abstract).first { !$0.isEmpty } ?? ""
-        argument.help.discussion = group.compactMap(\.help.discussion).first { !$0.isEmpty }
+        argument.help.discussion = group.compactMap(\.help.discussion).first
       }
       arguments.append(argument)
     }
@@ -93,15 +93,19 @@ fileprivate extension ToolInfoV0 {
 }
 
 fileprivate extension Discussion {
-  init?(_ discussion: CommandConfiguration.Discussion?) {
+  init?(_ discussion: ArgumentDiscussion?) {
     guard let discussion else { return nil }
     switch discussion {
     case .staticText(let s):
       self = .staticText(s)
-    case .enumerated(let values):
-      self = .enumerated(values.reduce(into: [String: String]()) {
-        $0[$1.name] = $1.discussion
-      })
+    case .enumerated(let preamble, let values):
+      self = .enumerated(
+        preamble: preamble,
+        values
+          .allCases
+          .reduce(into: [String: String]()) {
+            $0[$1.name] = $1.description
+          })
     }
   }
 }
@@ -145,20 +149,6 @@ fileprivate extension CommandInfoV0 {
 fileprivate extension ArgumentInfoV0 {
   init?(argument: ArgumentDefinition) {
     guard let kind = ArgumentInfoV0.KindV0(argument: argument) else { return nil }
-    let discussion: Discussion? = {
-      guard let discussion = argument.help.discussion else { return nil }
-      switch discussion {
-      case .enumerated(let type):
-        guard let values = type.allCases as? [any EnumerableOptionValue] else { return nil }
-        return Discussion.enumerated(values
-          .reduce(into: [String: String]()) {
-            $0[$1.name] = $1.description
-          })
-      case .staticText(let text):
-        return Discussion.staticText(text)
-      }
-    }()
-
     self.init(
       kind: kind,
       shouldDisplay: argument.help.visibility.base == .default,
@@ -171,7 +161,7 @@ fileprivate extension ArgumentInfoV0 {
       defaultValue: argument.help.defaultValue,
       allValues: argument.help.allValueStrings,
       abstract: argument.help.abstract,
-      discussion: discussion
+      discussion: .init(argument.help.discussion)
     )
   }
 }
