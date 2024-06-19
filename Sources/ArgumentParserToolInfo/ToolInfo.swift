@@ -39,6 +39,72 @@ public struct ToolInfoV0: Codable, Hashable {
   }
 }
 
+/// A structure containing an extended description for a command.
+public enum Discussion: Codable, Hashable {
+  case staticText(String)
+  case enumerated(preamble: String? = nil, [OptionValue])
+
+  public struct OptionValue: Codable, Hashable {
+    public var value: String
+    public var description: String
+
+    public init(name: String, description: String) {
+      self.value = name
+      self.description = description
+    }
+  }
+
+  public init?(_ text: String) {
+    guard !text.isEmpty else { return nil }
+    self = .staticText(text)
+  }
+
+  public init?(_ preamble: String? = nil, _ values: [OptionValue]) {
+    guard !values.isEmpty else { return nil }
+    self = .enumerated(values)
+  }
+
+  enum CodingKeys: String, CodingKey {
+    case preamble
+    case enumerated = "values"
+    case staticText = "discussion"
+  }
+
+  public func encode(to encoder: any Encoder) throws {
+    switch self {
+    case .staticText(let s):
+      var container = encoder.singleValueContainer()
+      try container.encode(s)
+    case .enumerated(let preamble, let values):
+      var container = encoder.container(keyedBy: CodingKeys.self)
+      try container.encodeIfPresent(preamble, forKey: .preamble)
+      try container.encode(values, forKey: .enumerated)
+    }
+  }
+
+  public init(from decoder: any Decoder) throws {
+    if let container = try? decoder.container(keyedBy: CodingKeys.self),
+       container.contains(.enumerated),
+       let values = try container.decodeIfPresent([OptionValue].self, forKey: .enumerated) {
+      let preamble = try? container.decodeIfPresent(String.self, forKey: .preamble)
+      self = .enumerated(preamble: preamble, values)
+      return
+    } else if let container = try? decoder.singleValueContainer() {
+      let value = try container.decode(String.self)
+      self = .staticText(value)
+      return
+    }
+
+    throw DecodingError.typeMismatch(
+      Discussion.self,
+      DecodingError.Context(
+        codingPath: decoder.codingPath,
+        debugDescription: "Unexpected associated type for Discussion."
+      )
+    )
+  }
+}
+
 /// All information about a particular command, including arguments and
 /// subcommands.
 public struct CommandInfoV0: Codable, Hashable {
@@ -50,7 +116,11 @@ public struct CommandInfoV0: Codable, Hashable {
   /// Short description of the command's functionality.
   public var abstract: String?
   /// Extended description of the command's functionality.
-  public var discussion: String?
+  ///
+  /// Can include specific abstracts about the argument's possible values (e.g.
+  /// for a custom `EnumerableOptionValue` type), or can describe
+  /// a static block of text that extends the description of the argument.
+  public var discussion: Discussion?
 
   /// Optional name of the subcommand invoked when the command is invoked with
   /// no arguments.
@@ -64,7 +134,7 @@ public struct CommandInfoV0: Codable, Hashable {
     superCommands: [String],
     commandName: String,
     abstract: String,
-    discussion: String,
+    discussion: Discussion?,
     defaultSubcommand: String?,
     subcommands: [CommandInfoV0],
     arguments: [ArgumentInfoV0]
@@ -73,8 +143,7 @@ public struct CommandInfoV0: Codable, Hashable {
 
     self.commandName = commandName
     self.abstract = abstract.nonEmpty
-    self.discussion = discussion.nonEmpty
-
+    self.discussion = discussion
     self.defaultSubcommand = defaultSubcommand?.nonEmpty
     self.subcommands = subcommands.nonEmpty
     self.arguments = arguments.nonEmpty
@@ -152,7 +221,11 @@ public struct ArgumentInfoV0: Codable, Hashable {
   /// Short description of the argument's functionality.
   public var abstract: String?
   /// Extended description of the argument's functionality.
-  public var discussion: String?
+  ///
+  /// Can include specific abstracts about the argument's possible values
+  /// (e.g. for a custom `EnumerableOptionValue` type), or can
+  /// describe a static text extending the description of the argument.
+  public var discussion: Discussion?
 
   public init(
     kind: KindV0,
@@ -166,7 +239,7 @@ public struct ArgumentInfoV0: Codable, Hashable {
     defaultValue: String?,
     allValues: [String]?,
     abstract: String?,
-    discussion: String?
+    discussion: Discussion?
   ) {
     self.kind = kind
 
@@ -184,7 +257,7 @@ public struct ArgumentInfoV0: Codable, Hashable {
     self.allValueStrings = allValues?.nonEmpty
 
     self.abstract = abstract?.nonEmpty
-    self.discussion = discussion?.nonEmpty
+    self.discussion = discussion
   }
 }
 

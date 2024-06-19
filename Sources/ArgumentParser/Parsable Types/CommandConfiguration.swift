@@ -23,10 +23,10 @@ public struct CommandConfiguration: Sendable {
   /// with a common dash-prefix, like `git`'s and `swift`'s constellation of
   /// independent commands.
   public var _superCommandName: String?
-  
+
   /// A one-line description of this command.
   public var abstract: String
-  
+
   /// A customized usage string to be shown in the help display and error
   /// messages.
   ///
@@ -37,15 +37,19 @@ public struct CommandConfiguration: Sendable {
 
   /// A longer description of this command, to be shown in the extended help
   /// display.
-  public var discussion: String
-  
+  ///
+  /// Can include specific abstracts about the argument's possible values (e.g.
+  /// for a custom `EnumerableOptionValue` type), or can describe
+  /// a static block of text that extends the description of the argument.
+  public var discussion: ArgumentDiscussion?
+
   /// Version information for this command.
   public var version: String
 
   /// A Boolean value indicating whether this command should be shown in
   /// the extended help display.
   public var shouldDisplay: Bool
-  
+
   /// An array of the types that define subcommands for this command.
   ///
   /// This property "flattens" the grouping structure of the subcommands.
@@ -70,7 +74,7 @@ public struct CommandConfiguration: Sendable {
 
   /// The default command type to run if no subcommand is given.
   public var defaultSubcommand: ParsableCommand.Type?
-  
+
   /// Flag names to be used for help.
   public var helpNames: NameSpecification?
 
@@ -115,7 +119,8 @@ public struct CommandConfiguration: Sendable {
     commandName: String? = nil,
     abstract: String = "",
     usage: String? = nil,
-    discussion: String = "",
+    discussion: String? = nil,
+    options: (any EnumerableOptionValue.Type)? = nil,
     version: String = "",
     shouldDisplay: Bool = true,
     subcommands ungroupedSubcommands: [ParsableCommand.Type] = [],
@@ -127,7 +132,7 @@ public struct CommandConfiguration: Sendable {
     self.commandName = commandName
     self.abstract = abstract
     self.usage = usage
-    self.discussion = discussion
+    self.discussion = .init(discussion, options)
     self.version = version
     self.shouldDisplay = shouldDisplay
     self.ungroupedSubcommands = ungroupedSubcommands
@@ -144,7 +149,7 @@ public struct CommandConfiguration: Sendable {
     _superCommandName: String,
     abstract: String = "",
     usage: String? = nil,
-    discussion: String = "",
+    discussion: String? = nil,
     version: String = "",
     shouldDisplay: Bool = true,
     subcommands ungroupedSubcommands: [ParsableCommand.Type] = [],
@@ -157,7 +162,7 @@ public struct CommandConfiguration: Sendable {
     self._superCommandName = _superCommandName
     self.abstract = abstract
     self.usage = usage
-    self.discussion = discussion
+    self.discussion = .init(discussion)
     self.version = version
     self.shouldDisplay = shouldDisplay
     self.ungroupedSubcommands = ungroupedSubcommands
