@@ -101,11 +101,8 @@ fileprivate extension Discussion {
     case .enumerated(let preamble, let values):
       self = .enumerated(
         preamble: preamble,
-        values
-          .allCases
-          .reduce(into: [String: String]()) {
-            $0[$1.name] = $1.description
-          })
+        values.allCases.map { .init(name: $0.name, description: $0.description) }
+      )
     }
   }
 }

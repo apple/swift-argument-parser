@@ -93,6 +93,9 @@ extension DumpHelpGenerationTests {
 
     @Option(help: .init(discussion: "A preamble for the list of values in the discussion section."))
     var extra: Color
+
+    @Option(help: .init(discussion: "A discussion."))
+    var discussion: String
   }
 
   public func testDumpA() throws {
@@ -367,11 +370,20 @@ extension DumpHelpGenerationTests {
             "yellow"
           ],
           "discussion" : {
-            "values" : {
-              "blue" : "A blue color, like the sky!",
-              "red" : "A red color, like a rose!",
-              "yellow" : "A yellow color, like the sun!"
-            }
+            "values" : [
+              {
+                "description" : "A blue color, like the sky!",
+                "value" : "blue"
+              },
+              {
+                "description" : "A red color, like a rose!",
+                "value" : "red"
+              },
+              {
+                "description" : "A yellow color, like the sun!",
+                "value" : "yellow"
+              }
+            ]
           },
           "isOptional" : false,
           "isRepeating" : false,
@@ -398,11 +410,20 @@ extension DumpHelpGenerationTests {
           ],
           "defaultValue" : "red",
           "discussion" : {
-            "values" : {
-              "blue" : "A blue color, like the sky!",
-              "red" : "A red color, like a rose!",
-              "yellow" : "A yellow color, like the sun!"
-            }
+            "values" : [
+              {
+                "description" : "A blue color, like the sky!",
+                "value" : "blue"
+              },
+              {
+                "description" : "A red color, like a rose!",
+                "value" : "red"
+              },
+              {
+                "description" : "A yellow color, like the sun!",
+                "value" : "yellow"
+              }
+            ]
           },
           "isOptional" : true,
           "isRepeating" : false,
@@ -428,11 +449,20 @@ extension DumpHelpGenerationTests {
             "yellow"
           ],
           "discussion" : {
-            "values" : {
-              "blue" : "A blue color, like the sky!",
-              "red" : "A red color, like a rose!",
-              "yellow" : "A yellow color, like the sun!"
-            }
+            "values" : [
+              {
+                "description" : "A blue color, like the sky!",
+                "value" : "blue"
+              },
+              {
+                "description" : "A red color, like a rose!",
+                "value" : "red"
+              },
+              {
+                "description" : "A yellow color, like the sun!",
+                "value" : "yellow"
+              }
+            ]
           },
           "isOptional" : true,
           "isRepeating" : false,
@@ -458,11 +488,20 @@ extension DumpHelpGenerationTests {
           ],
           "discussion" : {
             "preamble" : "A preamble for the list of values in the discussion section.",
-            "values" : {
-              "blue" : "A blue color, like the sky!",
-              "red" : "A red color, like a rose!",
-              "yellow" : "A yellow color, like the sun!"
-            }
+            "values" : [
+              {
+                "description" : "A blue color, like the sky!",
+                "value" : "blue"
+              },
+              {
+                "description" : "A red color, like a rose!",
+                "value" : "red"
+              },
+              {
+                "description" : "A yellow color, like the sun!",
+                "value" : "yellow"
+              }
+            ]
           },
           "isOptional" : false,
           "isRepeating" : false,
@@ -479,6 +518,24 @@ extension DumpHelpGenerationTests {
           },
           "shouldDisplay" : true,
           "valueName" : "extra"
+        },
+        {
+          "discussion" : "A discussion.",
+          "isOptional" : false,
+          "isRepeating" : false,
+          "kind" : "option",
+          "names" : [
+            {
+              "kind" : "long",
+              "name" : "discussion"
+            }
+          ],
+          "preferredName" : {
+            "kind" : "long",
+            "name" : "discussion"
+          },
+          "shouldDisplay" : true,
+          "valueName" : "discussion"
         },
         {
           "abstract" : "Show help information.",

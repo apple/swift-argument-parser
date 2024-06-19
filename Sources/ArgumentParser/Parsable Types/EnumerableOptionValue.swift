@@ -33,7 +33,7 @@
 /// }
 ///
 /// struct Hat: ParsableCommand {
-///     @Option(abstract: "A color for my hat.") var color: Color
+///     @Option(help: "A color for my hat.") var color: Color
 ///
 ///     mutating func run() {
 ///       print("The color of my hat is: \(color.rawValue)")

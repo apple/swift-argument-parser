@@ -42,14 +42,24 @@ public struct ToolInfoV0: Codable, Hashable {
 /// A structure containing an extended description for a command.
 public enum Discussion: Codable, Hashable {
   case staticText(String)
-  case enumerated(preamble: String? = nil, [String: String])
+  case enumerated(preamble: String? = nil, [OptionValue])
+
+  public struct OptionValue: Codable, Hashable {
+    public var value: String
+    public var description: String
+
+    public init(name: String, description: String) {
+      self.value = name
+      self.description = description
+    }
+  }
 
   public init?(_ text: String) {
     guard !text.isEmpty else { return nil }
     self = .staticText(text)
   }
 
-  public init?(_ preamble: String? = nil, _ values: [String: String]) {
+  public init?(_ preamble: String? = nil, _ values: [OptionValue]) {
     guard !values.isEmpty else { return nil }
     self = .enumerated(values)
   }
@@ -61,27 +71,30 @@ public enum Discussion: Codable, Hashable {
   }
 
   public func encode(to encoder: any Encoder) throws {
-    var container = encoder.container(keyedBy: CodingKeys.self)
     switch self {
     case .staticText(let s):
-      try container.encode(s, forKey: .staticText)
+      var container = encoder.singleValueContainer()
+      try container.encode(s)
     case .enumerated(let preamble, let values):
+      var container = encoder.container(keyedBy: CodingKeys.self)
       try container.encodeIfPresent(preamble, forKey: .preamble)
       try container.encode(values, forKey: .enumerated)
     }
   }
 
   public init(from decoder: any Decoder) throws {
-    let container = try decoder.container(keyedBy: CodingKeys.self)
-    if let value = try container.decodeIfPresent(String.self, forKey: .staticText) {
-      self = .staticText(value)
-      return
-    }
-    if let values = try container.decodeIfPresent([String: String].self, forKey: .enumerated) {
+    if let container = try? decoder.container(keyedBy: CodingKeys.self),
+       container.contains(.enumerated),
+       let values = try container.decodeIfPresent([OptionValue].self, forKey: .enumerated) {
       let preamble = try? container.decodeIfPresent(String.self, forKey: .preamble)
       self = .enumerated(preamble: preamble, values)
       return
+    } else if let container = try? decoder.singleValueContainer() {
+      let value = try container.decode(String.self)
+      self = .staticText(value)
+      return
     }
+
     throw DecodingError.typeMismatch(
       Discussion.self,
       DecodingError.Context(

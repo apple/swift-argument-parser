@@ -49,20 +49,21 @@ internal struct HelpGenerator {
           // Padded label
           for opt in options.allCases {
             let paddedOptionLabel = String(repeating: " ", count: HelpGenerator.helpIndent * discussionIndentFactor) + opt.name
-            // need to add "- " to each beginning of the wrapped help, without it affecting the indentation.
-            let discussionDash = "- "
+            // Adds a hyphen (`-`) to the beginning of each value description,
+            // without it affecting the proper indentation level.
+            let hyphen = "- "
             let wrappedHelp = String(
-              (discussionDash + opt.description)
+              (hyphen + opt.description)
                 .wrapped(to: screenWidth, wrappingIndent: HelpGenerator.labelColumnWidth + 2)
             )
 
             let renderedHelp: String = {
               if paddedOptionLabel.count < HelpGenerator.labelColumnWidth {
-                // render after the padded label
-                let toDrop = paddedOptionLabel.count + discussionDash.count
+                // Render after the padded label.
+                let toDrop = paddedOptionLabel.count + hyphen.count
                 return String(paddedOptionLabel + wrappedHelp.dropFirst(toDrop))
               } else {
-                // render in a new line.
+                // Render in a new line.
                 return "\n" + wrappedHelp
               }
             }()
