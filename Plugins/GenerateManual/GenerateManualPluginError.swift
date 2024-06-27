@@ -10,7 +10,11 @@
 //===----------------------------------------------------------------------===//
 
 import Foundation
+#if swift(>=6)
 @preconcurrency import PackagePlugin
+#else
+import PackagePlugin
+#endif
 
 enum GenerateManualPluginError: Error {
   case unknownBuildConfiguration(String)
