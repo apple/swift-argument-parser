@@ -10,7 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 import Foundation
-import PackagePlugin
+@preconcurrency import PackagePlugin
 
 enum GenerateManualPluginError: Error {
   case unknownBuildConfiguration(String)
