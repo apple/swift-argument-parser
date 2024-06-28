@@ -17,15 +17,15 @@ extension CommandLine {
 }
 
 #if canImport(Glibc)
-import Glibc
+@preconcurrency import Glibc
 #elseif canImport(Musl)
-import Musl
+@preconcurrency import Musl
 #elseif canImport(Darwin)
 import Darwin
 #elseif canImport(CRT)
-import CRT
+@preconcurrency import CRT
 #elseif canImport(WASILibc)
-import WASILibc
+@preconcurrency import WASILibc
 #endif
 
 enum Platform {}
