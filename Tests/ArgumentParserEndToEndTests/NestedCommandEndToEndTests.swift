@@ -54,7 +54,7 @@ fileprivate struct Foo: ParsableCommand {
   }
 }
 
-fileprivate func AssertParseFooCommand<A>(_ type: A.Type, _ arguments: [String], file: StaticString = #file, line: UInt = #line, closure: (A) throws -> Void) where A: ParsableCommand {
+fileprivate func AssertParseFooCommand<A>(_ type: A.Type, _ arguments: [String], file: StaticString = #filePath, line: UInt = #line, closure: (A) throws -> Void) where A: ParsableCommand {
   AssertParseCommand(Foo.self, type, arguments, file: file, line: line, closure: closure)
 }
 

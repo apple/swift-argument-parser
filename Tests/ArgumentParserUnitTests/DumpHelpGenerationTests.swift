@@ -12,12 +12,7 @@ import XCTest
 import ArgumentParserTestHelpers
 @testable import ArgumentParser
 
-final class DumpHelpGenerationTests: XCTestCase {
-  public static let allTests = [
-    ("testDumpExampleCommands", testDumpExampleCommands),
-    ("testDumpA", testDumpA)
-  ]
-}
+final class DumpHelpGenerationTests: XCTestCase {}
 
 extension DumpHelpGenerationTests {
   struct A: ParsableCommand {

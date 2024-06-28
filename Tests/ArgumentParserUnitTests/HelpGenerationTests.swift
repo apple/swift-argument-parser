@@ -283,10 +283,10 @@ extension HelpGenerationTests {
   struct H: ParsableCommand {
     struct CommandWithVeryLongName: ParsableCommand {}
     struct ShortCommand: ParsableCommand {
-      static var configuration: CommandConfiguration = CommandConfiguration(abstract: "Test short command name.")
+      static let configuration: CommandConfiguration = CommandConfiguration(abstract: "Test short command name.")
     }
     struct AnotherCommandWithVeryLongName: ParsableCommand {
-      static var configuration: CommandConfiguration = CommandConfiguration(abstract: "Test long command name.")
+      static let configuration: CommandConfiguration = CommandConfiguration(abstract: "Test long command name.")
     }
     struct AnotherCommand: ParsableCommand {
       @Option()
@@ -474,7 +474,7 @@ extension HelpGenerationTests {
   }
     
   struct Foo: ParsableCommand {
-    public static var configuration = CommandConfiguration(
+    public static let configuration = CommandConfiguration(
       commandName: "foo",
       abstract: "Perform some foo",
       subcommands: [
@@ -681,7 +681,7 @@ extension HelpGenerationTests {
   struct AllValues: ParsableCommand {
     enum Manual: Int, ExpressibleByArgument {
       case foo
-      static var allValueStrings = ["bar"]
+      static let allValueStrings = ["bar"]
     }
 
     enum UnspecializedSynthesized: Int, CaseIterable, ExpressibleByArgument {

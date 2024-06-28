@@ -19,7 +19,7 @@ func _testSynopsis<T: ParsableArguments>(
   _ type: T.Type,
   visibility: ArgumentVisibility = .default,
   expected: String,
-  file: StaticString = #file,
+  file: StaticString = #filePath,
   line: UInt = #line
 ) {
   let help = UsageGenerator(toolName: "example", parsable: T(), visibility: visibility, parent: nil)

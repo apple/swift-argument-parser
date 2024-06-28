@@ -17,7 +17,7 @@ extension Package {
 }
 
 extension Package.Config {
-  public static var configuration = CommandConfiguration(
+  public static let configuration = CommandConfiguration(
     subcommands: [GetMirror.self, SetMirror.self, UnsetMirror.self])
   
   /// Print mirror configuration for the given package dependency
