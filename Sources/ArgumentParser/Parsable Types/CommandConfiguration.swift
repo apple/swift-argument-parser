@@ -15,6 +15,10 @@ public struct CommandConfiguration: Sendable {
   ///
   /// If `nil`, the command name is derived by converting the name of
   /// the command type to hyphen-separated lowercase words.
+  /// 
+  /// NOTE: In help and usage texts if this is the root command and commandName is
+  /// `nil`, the name shown will be derived from the binary being invoked (argv[0]),
+  /// otherwise `commandName` will be displayed.
   public var commandName: String?
 
   /// The name of this command's "super-command". (experimental)
