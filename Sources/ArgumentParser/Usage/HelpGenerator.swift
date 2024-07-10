@@ -162,11 +162,11 @@ internal struct HelpGenerator {
     }
 
     self.abstract = currentCommand.configuration.abstract
-    if case let .staticText(discussion) = currentCommand.configuration.discussion {
+    if !currentCommand.configuration.discussion.isEmpty {
       if !self.abstract.isEmpty {
         self.abstract += "\n"
       }
-      self.abstract += "\n\(discussion)"
+      self.abstract += "\n\(currentCommand.configuration.discussion)"
     }
 
     self.sections = HelpGenerator.generateSections(commandStack: commandStack, visibility: visibility)

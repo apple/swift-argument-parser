@@ -272,71 +272,16 @@ extension Option where Value: ExpressibleByArgument {
         container: Bare<Value>.self,
         key: key,
         kind: .name(key: key, specification: name),
-        help: help,
-        parsingStrategy: parsingStrategy.base,
-        initial: wrappedValue,
-        completion: completion)
-
-      return ArgumentSet(arg)
-    })
-  }
-
-  /// Creates a required property that reads its value from a labeled option.
-  ///
-  /// This initializer is used when you declare an `@Option`-attributed property
-  /// that has an `EnumerableOptionValue` type, providing a default value:
-  ///
-  /// ```swift
-  /// enum Color: String, EnumerableOptionValue {
-  ///   case red
-  ///   case blue
-  ///   case yellow
-  ///
-  ///   public var description: String {
-  ///     switch self {
-  ///       case .red:
-  ///         return "A red color."
-  ///       case .blue:
-  ///         return "A blue color."
-  ///       case .yellow:
-  ///         return "A yellow color."
-  ///     }
-  ///   }
-  /// }
-  ///
-  /// @Option var color: Color = .red
-  /// ```
-  ///
-  /// - Parameters:
-  ///   - name: A specification for what names are allowed for this option.
-  ///   - parsingStrategy: The behavior to use when looking for this option's
-  ///     value.
-  ///   - help: Information about how to use this option. If a discussion property is added, this will
-  ///     be appended to the top of the list of `EnumerableOptionValue` descriptions.
-  ///   - completion: The type of command-line completion provided for this
-  ///     option.
-  public init(
-    wrappedValue: Value,
-    name: NameSpecification = .long,
-    parsing parsingStrategy: SingleValueParsingStrategy = .next,
-    help: ArgumentHelp? = nil,
-    completion: CompletionKind? = nil
-  ) where Value: EnumerableOptionValue {
-    self.init(_parsedValue: .init { key in
-      let arg = ArgumentDefinition(
-        container: Bare<Value>.self,
-        key: key,
-        kind: .name(key: key, specification: name),
         help: .init(
           help?.abstract ?? "",
           discussion: help?.discussion,
-          options: Value.self,
           valueName: help?.valueName,
-          visibility: help?.visibility ?? .default
+          visibility: help?.visibility ?? .default,
+          options: Value.self as? (any EnumerableOptionValue.Type)
         ),
         parsingStrategy: parsingStrategy.base,
         initial: wrappedValue,
-        completion: nil)
+        completion: completion)
 
       return ArgumentSet(arg)
     })
@@ -387,89 +332,19 @@ extension Option where Value: ExpressibleByArgument {
         container: Bare<Value>.self,
         key: key,
         kind: .name(key: key, specification: name),
-        help: help,
+        help: .init(
+          help?.abstract ?? "",
+          discussion: help?.discussion,
+          valueName: help?.valueName,
+          visibility: help?.visibility ?? .default,
+          options: Value.self as? (any EnumerableOptionValue.Type)
+        ),
         parsingStrategy: parsingStrategy.base,
         initial: nil,
         completion: completion)
 
       return ArgumentSet(arg)
     })
-  }
-
-  /// Creates a required property that reads its value from a labeled option.
-  ///
-  /// This initializer is used when you declare an `@Option`-attributed property
-  /// that has an `EnumerableOptionValue` type, but without a default value:
-  ///
-  /// ```swift
-  /// enum Color: String, EnumerableOptionValue {
-  ///   case red
-  ///   case blue
-  ///   case yellow
-  ///
-  ///   public var description: String {
-  ///     switch self {
-  ///       case .red:
-  ///         return "A red color."
-  ///       case .blue:
-  ///         return "A blue color."
-  ///       case .yellow:
-  ///         return "A yellow color."
-  ///     }
-  ///   }
-  /// }
-  ///
-  /// @Option var color: Color
-  /// ```
-  ///
-  /// - Parameters:
-  ///   - name: A specification for what names are allowed for this option.
-  ///   - parsingStrategy: The behavior to use when looking for this option's
-  ///     value.
-  ///   - help: Information about how to use this option. If a discussion property is added, this will
-  ///     be appended to the top of the list of `EnumerableOptionValue` descriptions.
-  ///   - completion: The type of command-line completion provided for this
-  ///     option.
-  public init(
-    name: NameSpecification = .long,
-    parsing parsingStrategy: SingleValueParsingStrategy = .next,
-    help: ArgumentHelp? = nil,
-    completion: CompletionKind? = nil
-  ) where Value: EnumerableOptionValue {
-    self.init(_parsedValue: .init { key in
-      let arg = ArgumentDefinition(
-        container: Bare<Value>.self,
-        key: key,
-        kind: .name(key: key, specification: name),
-        help: .init(
-          help?.abstract ?? "",
-          discussion: help?.discussion,
-          options: Value.self,
-          valueName: help?.valueName,
-          visibility: help?.visibility ?? .default
-        ),
-        parsingStrategy: parsingStrategy.base,
-        initial: nil,
-        completion: nil)
-
-      return ArgumentSet(arg)
-    })
-  }
-}
-
-fileprivate extension ArgumentHelp {
-  init<T>(
-    _ abstract: String = "",
-    discussion: String? = nil,
-    options: T.Type,
-    valueName: String? = nil,
-    visibility: ArgumentVisibility = .default) where T: EnumerableOptionValue
-  {
-    self.abstract = abstract
-    self.discussion = discussion
-    self.valueName = valueName
-    self.visibility = visibility
-    self.options = T.self
   }
 }
 
@@ -566,129 +441,6 @@ extension Option {
   }
 }
 
-// MARK: - @Option Optional<T: EnumerableOptionValue> Initializers
-extension Option {
-  /// Creates an optional property that reads its value from a labeled option,
-  /// with an explicit `nil` default.
-  ///
-  /// This initializer allows a user to provide a `nil` default value for an
-  /// optional `@Option`-marked property:
-  ///
-  /// ```swift
-  /// enum Color: String, EnumerableOptionValue {
-  ///   case red
-  ///   case blue
-  ///   case yellow
-  ///
-  ///   public var description: String {
-  ///     switch self {
-  ///       case .red:
-  ///         return "A red color."
-  ///       case .blue:
-  ///         return "A blue color."
-  ///       case .yellow:
-  ///         return "A yellow color."
-  ///     }
-  ///   }
-  /// }
-  /// @Option var color: Color? = nil
-  /// ```
-  ///
-  /// - Parameters:
-  ///   - name: A specification for what names are allowed for this option.
-  ///   - parsingStrategy: The behavior to use when looking for this option's
-  ///     value.
-  ///   - help: Information about how to use this option. If a discussion property is added, this will
-  ///     be appended to the top of the list of `EnumerableOptionValue` descriptions.
-  ///   - completion: The type of command-line completion provided for this
-  ///     option.
-  public init<T>(
-    wrappedValue _value: _OptionalNilComparisonType,
-    name: NameSpecification = .long,
-    parsing parsingStrategy: SingleValueParsingStrategy = .next,
-    help: ArgumentHelp? = nil,
-    completion: CompletionKind? = nil
-  ) where T: EnumerableOptionValue, Value == Optional<T> {
-    self.init(_parsedValue: .init { key in
-      let arg = ArgumentDefinition(
-        container: Optional<T>.self,
-        key: key,
-        kind: .name(key: key, specification: name),
-        help: .init(
-          help?.abstract ?? "",
-          discussion: help?.discussion,
-          options: T.self,
-          valueName: help?.valueName,
-          visibility: help?.visibility ?? .default
-        ),
-        parsingStrategy: parsingStrategy.base,
-        initial: nil,
-        completion: completion)
-
-      return ArgumentSet(arg)
-    })
-  }
-
-  /// Creates an optional property that reads its value from a labeled option.
-  ///
-  /// This initializer is used when you declare an `@Option`-attributed property
-  /// with an optional type and no default value:
-  ///
-  /// ```swift
-  /// enum Color: String, EnumerableOptionValue {
-  ///   case red
-  ///   case blue
-  ///   case yellow
-  ///
-  ///   public var description: String {
-  ///     switch self {
-  ///       case .red:
-  ///         return "A red color."
-  ///       case .blue:
-  ///         return "A blue color."
-  ///       case .yellow:
-  ///         return "A yellow color."
-  ///     }
-  ///   }
-  /// }
-  /// @Option var color: Color?
-  /// ```
-  ///
-  /// - Parameters:
-  ///   - name: A specification for what names are allowed for this option.
-  ///   - parsingStrategy: The behavior to use when looking for this option's
-  ///     value.
-  ///   - help: Information about how to use this option. If a discussion property is added, this will
-  ///     be appended to the top of the list of `EnumerableOptionValue` descriptions.
-  ///   - completion: The type of command-line completion provided for this
-  ///     option.
-  public init<T>(
-    name: NameSpecification = .long,
-    parsing parsingStrategy: SingleValueParsingStrategy = .next,
-    help: ArgumentHelp? = nil,
-    completion: CompletionKind? = nil
-  ) where T: EnumerableOptionValue, Value == Optional<T> {
-    self.init(_parsedValue: .init { key in
-      let arg = ArgumentDefinition(
-        container: Optional<T>.self,
-        key: key,
-        kind: .name(key: key, specification: name),
-        help: .init(
-          help?.abstract ?? "",
-          discussion: help?.discussion,
-          options: T.self,
-          valueName: help?.valueName,
-          visibility: help?.visibility ?? .default
-        ),
-        parsingStrategy: parsingStrategy.base,
-        initial: nil,
-        completion: completion)
-
-      return ArgumentSet(arg)
-    })
-  }
-}
-
 
 // MARK: - @Option Optional<T: ExpressibleByArgument> Initializers
 extension Option {
@@ -721,7 +473,13 @@ extension Option {
         container: Optional<T>.self,
         key: key,
         kind: .name(key: key, specification: name),
-        help: help,
+        help: .init(
+          help?.abstract ?? "",
+          discussion: help?.discussion,
+          valueName: help?.valueName,
+          visibility: help?.visibility ?? .default,
+          options: T.self as? (any EnumerableOptionValue.Type)
+        ),
         parsingStrategy: parsingStrategy.base,
         initial: nil,
         completion: completion)
@@ -782,7 +540,13 @@ extension Option {
         container: Optional<T>.self,
         key: key,
         kind: .name(key: key, specification: name),
-        help: help,
+        help: .init(
+          help?.abstract ?? "",
+          discussion: help?.discussion,
+          valueName: help?.valueName,
+          visibility: help?.visibility ?? .default,
+          options: T.self as? (any EnumerableOptionValue.Type)
+        ),
         parsingStrategy: parsingStrategy.base,
         initial: nil,
         completion: completion)

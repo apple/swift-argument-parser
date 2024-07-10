@@ -41,7 +41,7 @@ public struct CommandConfiguration: Sendable {
   /// Can include specific abstracts about the argument's possible values (e.g.
   /// for a custom `EnumerableOptionValue` type), or can describe
   /// a static block of text that extends the description of the argument.
-  public var discussion: ArgumentDiscussion?
+  public var discussion: String
 
   /// Version information for this command.
   public var version: String
@@ -119,8 +119,7 @@ public struct CommandConfiguration: Sendable {
     commandName: String? = nil,
     abstract: String = "",
     usage: String? = nil,
-    discussion: String? = nil,
-    options: (any EnumerableOptionValue.Type)? = nil,
+    discussion: String = "",
     version: String = "",
     shouldDisplay: Bool = true,
     subcommands ungroupedSubcommands: [ParsableCommand.Type] = [],
@@ -132,7 +131,7 @@ public struct CommandConfiguration: Sendable {
     self.commandName = commandName
     self.abstract = abstract
     self.usage = usage
-    self.discussion = .init(discussion, options)
+    self.discussion = discussion
     self.version = version
     self.shouldDisplay = shouldDisplay
     self.ungroupedSubcommands = ungroupedSubcommands
@@ -149,7 +148,7 @@ public struct CommandConfiguration: Sendable {
     _superCommandName: String,
     abstract: String = "",
     usage: String? = nil,
-    discussion: String? = nil,
+    discussion: String = "",
     version: String = "",
     shouldDisplay: Bool = true,
     subcommands ungroupedSubcommands: [ParsableCommand.Type] = [],
@@ -162,7 +161,7 @@ public struct CommandConfiguration: Sendable {
     self._superCommandName = _superCommandName
     self.abstract = abstract
     self.usage = usage
-    self.discussion = .init(discussion)
+    self.discussion = discussion
     self.version = version
     self.shouldDisplay = shouldDisplay
     self.ungroupedSubcommands = ungroupedSubcommands

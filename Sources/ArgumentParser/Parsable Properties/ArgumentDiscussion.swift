@@ -79,7 +79,7 @@
 ///
 /// In any case where the argument type is not `EnumerableOptionValue`, the default implementation
 /// will use the `.staticText` case and will print a block of discussion text.
-public enum ArgumentDiscussion {
+enum ArgumentDiscussion {
   case staticText(String)
   case enumerated(preamble: String? = nil, any EnumerableOptionValue.Type)
 

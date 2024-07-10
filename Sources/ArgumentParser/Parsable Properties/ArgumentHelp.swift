@@ -62,12 +62,14 @@ public struct ArgumentHelp {
     _ abstract: String = "",
     discussion: String? = nil,
     valueName: String? = nil,
-    visibility: ArgumentVisibility = .default)
+    visibility: ArgumentVisibility = .default,
+    options: (any EnumerableOptionValue.Type)? = nil)
   {
     self.abstract = abstract
     self.discussion = discussion
     self.valueName = valueName
     self.visibility = visibility
+    self.options = options
   }
 
   /// A `Help` instance that shows an argument only in the extended help display.
