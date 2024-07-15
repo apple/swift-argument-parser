@@ -51,6 +51,23 @@ struct InputKey: Hashable {
 
 extension InputKey: CustomStringConvertible {
   var description: String {
-    fullPath.joined(separator: ".")
+      fullPathString
+  }
+}
+
+extension InputKey {
+  private static var separator: Character { "." }
+  
+  var fullPathString: String {
+    fullPath.joined(separator: .init(Self.separator))
+  }
+  
+  init?(fullPathString: String) {
+    let fullPath = fullPathString.split(separator: Self.separator).map(String.init)
+    
+    guard let name = fullPath.last else { return nil }
+    
+    self.name = name
+    self.path = fullPath.dropLast()
   }
 }
