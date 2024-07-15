@@ -131,7 +131,7 @@ extension CompletionScriptTests {
   func verifyCustomOutput(
     _ arg: String,
     expectedOutput: String,
-    file: StaticString = #file, line: UInt = #line
+    file: StaticString = #filePath, line: UInt = #line
   ) throws {
     do {
       _ = try Custom.parse(["---completion", "--", arg])
