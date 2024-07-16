@@ -26,6 +26,8 @@ import Darwin
 @preconcurrency import CRT
 #elseif canImport(WASILibc)
 @preconcurrency import WASILibc
+#elseif canImport(Android)
+@preconcurrency import Android
 #endif
 
 enum Platform {}
@@ -95,6 +97,8 @@ extension Platform {
     ucrt._exit(code)
 #elseif canImport(WASILibc)
     WASILibc.exit(code)
+#elseif canImport(Android)
+    Android.exit(code)
 #endif
   }
 }
@@ -117,7 +121,7 @@ extension Platform {
 
 // MARK: Terminal size
 
-#if canImport(Glibc)
+#if canImport(Glibc) || canImport(Android)
 func ioctl(_ a: Int32, _ b: Int32, _ p: UnsafeMutableRawPointer) -> Int32 {
   ioctl(CInt(a), UInt(b), p)
 }
