@@ -10,6 +10,26 @@ Add new items at the end of the relevant section under **Unreleased**.
 
 ---
 
+## [1.5.0] - 2024-07-18
+
+### Additions
+
+- Subcommands can now be grouped into sections, to enable a better help display
+  for commands with many subcommands. ([#644])
+- Improved unofficial support for Android and riscv64 platforms. ([#649], [#651])
+
+### Fixes
+
+- Command-line completion scripts correctly complete for arguments that are 
+  included via option group. ([#648])
+- Several warnings when compiling with strict concurrency enabled, or in Swift
+  6 language mode, are now silenced. ([#650])
+
+The 1.5.0 release includes contributions from [CraigSiemens], [DougGregor], 
+[finagolfin], [futurejones], and [natecook1000]. Thank you!
+
+---
+
 ## [1.4.0] - 2024-05-21
 
 ### Additions
@@ -892,7 +912,8 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 
 <!-- Link references for releases -->
 
-[Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.4.0...HEAD
+[Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.5.0...HEAD
+[1.5.0]: https://github.com/apple/swift-argument-parser/compare/1.4.0...1.5.0
 [1.4.0]: https://github.com/apple/swift-argument-parser/compare/1.3.1...1.4.0
 [1.3.1]: https://github.com/apple/swift-argument-parser/compare/1.3.0...1.3.1
 [1.3.0]: https://github.com/apple/swift-argument-parser/compare/1.2.3...1.3.0
@@ -1016,6 +1037,11 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [#627]: https://github.com/apple/swift-argument-parser/pull/627
 [#634]: https://github.com/apple/swift-argument-parser/pull/634
 [#636]: https://github.com/apple/swift-argument-parser/pull/636
+[#644]: https://github.com/apple/swift-argument-parser/pull/644
+[#648]: https://github.com/apple/swift-argument-parser/pull/648
+[#649]: https://github.com/apple/swift-argument-parser/pull/649
+[#650]: https://github.com/apple/swift-argument-parser/pull/650
+[#651]: https://github.com/apple/swift-argument-parser/pull/651
 
 <!-- Link references for contributors -->
 
@@ -1042,11 +1068,14 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [dcantah]: https://github.com/apple/swift-argument-parser/commits?author=dcantah
 [dduan]: https://github.com/apple/swift-argument-parser/commits?author=dduan
 [dirtyhabits97]: https://github.com/apple/swift-argument-parser/commits?author=dirtyhabits97
+[DougGregor]: https://github.com/apple/swift-argument-parser/commits?author=DougGregor
 [drewmccormack]: https://github.com/apple/swift-argument-parser/commits?author=drewmccormack
 [elliottwilliams]: https://github.com/apple/swift-argument-parser/commits?author=elliottwilliams
 [erica]: https://github.com/apple/swift-argument-parser/commits?author=erica
+[finagolfin]: https://github.com/apple/swift-argument-parser/commits?author=finagolfin
 [floam]: https://github.com/apple/swift-argument-parser/commits?author=floam
 [Frizlab]: https://github.com/apple/swift-argument-parser/commits?author=Frizlab
+[futurejones]: https://github.com/apple/swift-argument-parser/commits?author=futurejones
 [glessard]: https://github.com/apple/swift-argument-parser/commits?author=glessard
 [gmittert]: https://github.com/apple/swift-argument-parser/commits?author=gmittert
 [griffin-stewie]: https://github.com/apple/swift-argument-parser/commits?author=griffin-stewie
