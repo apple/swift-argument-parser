@@ -913,7 +913,7 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 <!-- Link references for releases -->
 
 [Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.5.0...HEAD
-[1.4.0]: https://github.com/apple/swift-argument-parser/compare/1.4.0...1.5.0
+[1.5.0]: https://github.com/apple/swift-argument-parser/compare/1.4.0...1.5.0
 [1.4.0]: https://github.com/apple/swift-argument-parser/compare/1.3.1...1.4.0
 [1.3.1]: https://github.com/apple/swift-argument-parser/compare/1.3.0...1.3.1
 [1.3.0]: https://github.com/apple/swift-argument-parser/compare/1.2.3...1.3.0
