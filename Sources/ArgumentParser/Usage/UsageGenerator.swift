@@ -114,12 +114,7 @@ extension ArgumentDefinition {
         return name.synopsisString
       }
     case .positional:
-      let joinedValues = help.allValueStrings.joined(separator: "|")
-      if help.allValueStrings.count > 1 && joinedValues.count <= 40 {
-        return "<\(joinedValues)>"
-      } else {
-        return "<\(valueName)>"
-      }
+      return "<\(valueName)>"
     case .default:
       return ""
     }

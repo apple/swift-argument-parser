@@ -29,7 +29,7 @@ final class MathExampleTests: XCTestCase {
     let helpText = """
         OVERVIEW: A utility for performing maths.
 
-        USAGE: math <add|multiply|stats>
+        USAGE: math <subcommand>
 
         OPTIONS:
           --version               Show the version.
@@ -77,14 +77,14 @@ final class MathExampleTests: XCTestCase {
     let helpText = """
         OVERVIEW: Calculate descriptive statistics.
         
-        USAGE: math stats <average|stdev|quantiles>
+        USAGE: math stats <subcommand>
         
         OPTIONS:
           --version               Show the version.
           -h, --help              Show help information.
         
         SUBCOMMANDS:
-          average                 Print the average of the values.
+          average, avg            Print the average of the values.
           stdev                   Print the standard deviation of the values.
           quantiles               Print the quantiles of the values (TBD).
         

@@ -102,7 +102,7 @@ struct FruitStore: ParsableCommand {
 The help screen includes the list of values in the description of the `<fruit>` argument:
 
 ```
-USAGE: fruit-store <apple|banana|coconut|dragon-fruit> [--quantity <quantity>]
+USAGE: fruit-store <fruit> [--quantity <quantity>]
 
 ARGUMENTS:
   <fruit>                 The fruit to purchase (values: apple, banana,
@@ -137,7 +137,7 @@ struct FruitStore: ParsableCommand {
 The help screen still contains all the possible values.
 
 ```
-USAGE: fruit-store <apple|banana|coconut|dragon-fruit> [--quantity <quantity>]
+USAGE: fruit-store <fruit> [--quantity <quantity>]
 
 ARGUMENTS:
   <fruit>                 The fruit to purchase (values: apple, banana,

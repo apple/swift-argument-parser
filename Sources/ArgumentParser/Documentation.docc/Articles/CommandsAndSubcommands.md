@@ -22,7 +22,7 @@ You can build a program with commands and subcommands by defining multiple comma
 % math stats
 OVERVIEW: Calculate descriptive statistics.
 
-USAGE: math stats <average|stdev|quantiles>
+USAGE: math stats <subcommand>
 
 OPTIONS:
   -h, --help              Show help information.

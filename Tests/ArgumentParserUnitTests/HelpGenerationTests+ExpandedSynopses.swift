@@ -46,7 +46,7 @@ extension HelpGenerationTests {
   
   func testFruitStoreHelp() {
     AssertHelp(.default, for: FruitStore.self, equals: """
-            USAGE: fruit_store [<purchase|sample|return>] <fruit> [--quantity <quantity>] [--ripeness <under|perfect|over>]
+            USAGE: fruit_store [<action>] <fruit> [--quantity <quantity>] [--ripeness <under|perfect|over>]
 
             ARGUMENTS:
               <action>                The transaction type (values: purchase, sample,
