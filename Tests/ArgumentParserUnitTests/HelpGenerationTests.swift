@@ -283,10 +283,10 @@ extension HelpGenerationTests {
   struct H: ParsableCommand {
     struct CommandWithVeryLongName: ParsableCommand {}
     struct ShortCommand: ParsableCommand {
-      static var configuration: CommandConfiguration = CommandConfiguration(abstract: "Test short command name.")
+      static let configuration: CommandConfiguration = CommandConfiguration(abstract: "Test short command name.")
     }
     struct AnotherCommandWithVeryLongName: ParsableCommand {
-      static var configuration: CommandConfiguration = CommandConfiguration(abstract: "Test long command name.")
+      static let configuration: CommandConfiguration = CommandConfiguration(abstract: "Test long command name.")
     }
     struct AnotherCommand: ParsableCommand {
       @Option()
@@ -474,7 +474,7 @@ extension HelpGenerationTests {
   }
     
   struct Foo: ParsableCommand {
-    public static var configuration = CommandConfiguration(
+    public static let configuration = CommandConfiguration(
       commandName: "foo",
       abstract: "Perform some foo",
       subcommands: [
@@ -512,6 +512,76 @@ extension HelpGenerationTests {
                               Bar Strength
       -h, -help, --help       Show help information.
     
+    """)
+  }
+
+  struct WithSubgroups: ParsableCommand {
+    static let configuration = CommandConfiguration(
+      commandName: "subgroupings",
+      subcommands: [ M.self ],
+      groupedSubcommands: [
+        CommandGroup(
+          name: "Broken",
+          subcommands: [ Foo.self, Bar.self ]
+        ),
+        CommandGroup(name: "Complicated", subcommands: [ N.self ])
+      ]
+    )
+  }
+
+  func testHelpSubcommandGroups() throws {
+    AssertHelp(.default, for: WithSubgroups.self, equals: """
+    USAGE: subgroupings <subcommand>
+
+    OPTIONS:
+      -h, --help              Show help information.
+
+    SUBCOMMANDS:
+      m
+
+    BROKEN SUBCOMMANDS:
+      foo                     Perform some foo
+      bar                     Perform bar operations
+
+    COMPLICATED SUBCOMMANDS:
+      n
+
+      See 'subgroupings help <subcommand>' for detailed help.
+    """)
+  }
+
+  struct OnlySubgroups: ParsableCommand {
+    static let configuration = CommandConfiguration(
+      commandName: "subgroupings",
+      groupedSubcommands: [
+        CommandGroup(
+          name: "Broken",
+          subcommands: [ Foo.self, Bar.self ]
+        ),
+        CommandGroup(
+          name: "Complicated",
+          subcommands: [ M.self, N.self ]
+        )
+      ]
+    )
+  }
+
+  func testHelpOnlySubcommandGroups() throws {
+    AssertHelp(.default, for: OnlySubgroups.self, equals: """
+    USAGE: subgroupings <subcommand>
+
+    OPTIONS:
+      -h, --help              Show help information.
+
+    BROKEN SUBCOMMANDS:
+      foo                     Perform some foo
+      bar                     Perform bar operations
+
+    COMPLICATED SUBCOMMANDS:
+      m
+      n
+
+      See 'subgroupings help <subcommand>' for detailed help.
     """)
   }
 }
@@ -611,7 +681,7 @@ extension HelpGenerationTests {
   struct AllValues: ParsableCommand {
     enum Manual: Int, ExpressibleByArgument {
       case foo
-      static var allValueStrings = ["bar"]
+      static let allValueStrings = ["bar"]
     }
 
     enum UnspecializedSynthesized: Int, CaseIterable, ExpressibleByArgument {
@@ -680,7 +750,7 @@ extension HelpGenerationTests {
     static let configuration = CommandConfiguration(
       commandName: "parserBug",
       subcommands: [Sub.self])
-    
+
     struct CommonOptions: ParsableCommand {
       @Flag(help: "example flag")
       var example: Bool = false
@@ -689,12 +759,12 @@ extension HelpGenerationTests {
     struct Sub: ParsableCommand {
       @OptionGroup()
       var commonOptions: CommonOptions
-      
+
       @Argument(help: "Non-mandatory argument")
       var argument: String?
     }
   }
-  
+
   func testIssue278() {
     AssertHelp(.default, for: ParserBug.Sub.self, root: ParserBug.self, equals: """
       USAGE: parserBug sub [--example] [<argument>]
@@ -708,42 +778,87 @@ extension HelpGenerationTests {
 
       """)
   }
+}
+
+extension HelpGenerationTests {
+  struct NonCustomUsage: ParsableCommand {
+    struct ExampleSubcommand: ParsableCommand {
+      static let configuration = CommandConfiguration()
+      @Argument var output: String
+    }
+
+    static let configuration = CommandConfiguration(
+      subcommands: [ExampleSubcommand.self])
+
+    @Argument var file: String
+    @Flag var verboseMode = false
+  }
 
   struct CustomUsageShort: ParsableCommand {
-    static var configuration: CommandConfiguration {
-      CommandConfiguration(usage: """
+    static let configuration = CommandConfiguration(
+      usage: """
         example [--verbose] <file-name>
         """)
-    }
-    
+
     @Argument var file: String
     @Flag var verboseMode = false
   }
   
   struct CustomUsageLong: ParsableCommand {
-    static var configuration: CommandConfiguration {
-      CommandConfiguration(usage: """
+    static let configuration = CommandConfiguration(
+      usage: """
         example <file-name>
         example --verbose <file-name>
         example --help
         """)
-    }
-    
+
     @Argument var file: String
     @Flag var verboseMode = false
   }
 
   struct CustomUsageHidden: ParsableCommand {
-    static var configuration: CommandConfiguration {
-      CommandConfiguration(usage: "")
-    }
+    static let configuration = CommandConfiguration(usage: "")
     
     @Argument var file: String
     @Flag var verboseMode = false
   }
 
-  func testCustomUsageHelp() {
-    XCTAssertEqual(CustomUsageShort.helpMessage(columns: 80), """
+  func test_usageCustomization_helpMessage() {
+    AssertEqualStrings(
+      actual: NonCustomUsage.helpMessage(columns: 80),
+      expected: """
+      USAGE: non-custom-usage <file> [--verbose-mode] <subcommand>
+
+      ARGUMENTS:
+        <file>
+
+      OPTIONS:
+        --verbose-mode
+        -h, --help              Show help information.
+      
+      SUBCOMMANDS:
+        example-subcommand
+
+        See 'non-custom-usage help <subcommand>' for detailed help.
+      """)
+
+    AssertEqualStrings(
+      actual: NonCustomUsage.helpMessage(
+        for: NonCustomUsage.ExampleSubcommand.self, columns: 80),
+      expected: """
+      USAGE: non-custom-usage example-subcommand <output>
+
+      ARGUMENTS:
+        <output>
+
+      OPTIONS:
+        -h, --help              Show help information.
+
+      """)
+
+    AssertEqualStrings(
+      actual: CustomUsageShort.helpMessage(columns: 80),
+      expected: """
       USAGE: example [--verbose] <file-name>
 
       ARGUMENTS:
@@ -755,7 +870,9 @@ extension HelpGenerationTests {
       
       """)
     
-    XCTAssertEqual(CustomUsageLong.helpMessage(columns: 80), """
+    AssertEqualStrings(
+      actual: CustomUsageLong.helpMessage(columns: 80),
+      expected: """
       USAGE: example <file-name>
              example --verbose <file-name>
              example --help
@@ -769,7 +886,9 @@ extension HelpGenerationTests {
       
       """)
     
-    XCTAssertEqual(CustomUsageHidden.helpMessage(columns: 80), """
+    AssertEqualStrings(
+      actual: CustomUsageHidden.helpMessage(columns: 80),
+      expected: """
       ARGUMENTS:
         <file>
 
@@ -780,22 +899,72 @@ extension HelpGenerationTests {
       """)
   }
   
-  func testCustomUsageError() {
-    XCTAssertEqual(CustomUsageShort.fullMessage(for: ValidationError("Test")), """
+  func test_usageCustomization_fullMessage() {
+    AssertEqualStrings(
+      actual: NonCustomUsage.fullMessage(for: ValidationError("Test")),
+      expected: """
+      Error: Test
+      Usage: non-custom-usage <file> [--verbose-mode] <subcommand>
+        See 'non-custom-usage --help' for more information.
+      """)
+
+    AssertEqualStrings(
+      actual: CustomUsageShort.fullMessage(for: ValidationError("Test")),
+      expected: """
       Error: Test
       Usage: example [--verbose] <file-name>
         See 'custom-usage-short --help' for more information.
       """)
-    XCTAssertEqual(CustomUsageLong.fullMessage(for: ValidationError("Test")), """
+
+    AssertEqualStrings(
+      actual: CustomUsageLong.fullMessage(for: ValidationError("Test")),
+      expected: """
       Error: Test
       Usage: example <file-name>
              example --verbose <file-name>
              example --help
         See 'custom-usage-long --help' for more information.
       """)
-    XCTAssertEqual(CustomUsageHidden.fullMessage(for: ValidationError("Test")), """
+
+    AssertEqualStrings(
+      actual: CustomUsageHidden.fullMessage(for: ValidationError("Test")),
+      expected: """
       Error: Test
         See 'custom-usage-hidden --help' for more information.
+      """)
+  }
+
+  func test_usageCustomization_usageString() {
+    AssertEqualStrings(
+      actual: NonCustomUsage.usageString(),
+      expected: """
+      non-custom-usage <file> [--verbose-mode] <subcommand>
+      """)
+
+    AssertEqualStrings(
+      actual: NonCustomUsage.usageString(
+        for: NonCustomUsage.ExampleSubcommand.self),
+      expected: """
+      non-custom-usage example-subcommand <output>
+      """)
+
+    AssertEqualStrings(
+      actual: CustomUsageShort.usageString(),
+      expected: """
+      example [--verbose] <file-name>
+      """)
+
+    AssertEqualStrings(
+      actual: CustomUsageLong.usageString(),
+      expected: """
+      example <file-name>
+      example --verbose <file-name>
+      example --help
+      """)
+
+    AssertEqualStrings(
+      actual: CustomUsageHidden.usageString(),
+      expected: """
       """)
   }
 }

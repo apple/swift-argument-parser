@@ -26,7 +26,9 @@ extension CollectionDifference.Change {
 }
 
 @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
-extension CollectionDifference.Change: Comparable where ChangeElement: Equatable {
+extension CollectionDifference.Change: Swift.Comparable 
+  where ChangeElement: Equatable
+{
   public static func < (lhs: Self, rhs: Self) -> Bool {
     guard lhs.offset == rhs.offset else {
       return lhs.offset < rhs.offset
@@ -75,7 +77,7 @@ extension XCTestExpectation {
 public func AssertResultFailure<T, U: Error>(
   _ expression: @autoclosure () -> Result<T, U>,
   _ message: @autoclosure () -> String = "",
-  file: StaticString = #file,
+  file: StaticString = #filePath,
   line: UInt = #line)
 {
   switch expression() {
@@ -87,7 +89,7 @@ public func AssertResultFailure<T, U: Error>(
   }
 }
 
-public func AssertErrorMessage<A>(_ type: A.Type, _ arguments: [String], _ errorMessage: String, file: StaticString = #file, line: UInt = #line) where A: ParsableArguments {
+public func AssertErrorMessage<A>(_ type: A.Type, _ arguments: [String], _ errorMessage: String, file: StaticString = #filePath, line: UInt = #line) where A: ParsableArguments {
   do {
     _ = try A.parse(arguments)
     XCTFail("Parsing should have failed.", file: file, line: line)
@@ -97,7 +99,7 @@ public func AssertErrorMessage<A>(_ type: A.Type, _ arguments: [String], _ error
   }
 }
 
-public func AssertFullErrorMessage<A>(_ type: A.Type, _ arguments: [String], _ errorMessage: String, file: StaticString = #file, line: UInt = #line) where A: ParsableArguments {
+public func AssertFullErrorMessage<A>(_ type: A.Type, _ arguments: [String], _ errorMessage: String, file: StaticString = #filePath, line: UInt = #line) where A: ParsableArguments {
   do {
     _ = try A.parse(arguments)
     XCTFail("Parsing should have failed.", file: (file), line: line)
@@ -107,7 +109,7 @@ public func AssertFullErrorMessage<A>(_ type: A.Type, _ arguments: [String], _ e
   }
 }
 
-public func AssertParse<A>(_ type: A.Type, _ arguments: [String], file: StaticString = #file, line: UInt = #line, closure: (A) throws -> Void) where A: ParsableArguments {
+public func AssertParse<A>(_ type: A.Type, _ arguments: [String], file: StaticString = #filePath, line: UInt = #line, closure: (A) throws -> Void) where A: ParsableArguments {
   do {
     let parsed = try type.parse(arguments)
     try closure(parsed)
@@ -117,7 +119,7 @@ public func AssertParse<A>(_ type: A.Type, _ arguments: [String], file: StaticSt
   }
 }
 
-public func AssertParseCommand<A: ParsableCommand>(_ rootCommand: ParsableCommand.Type, _ type: A.Type, _ arguments: [String], file: StaticString = #file, line: UInt = #line, closure: (A) throws -> Void) {
+public func AssertParseCommand<A: ParsableCommand>(_ rootCommand: ParsableCommand.Type, _ type: A.Type, _ arguments: [String], file: StaticString = #filePath, line: UInt = #line, closure: (A) throws -> Void) {
   do {
     let command = try rootCommand.parseAsRoot(arguments)
     guard let aCommand = command as? A else {
@@ -134,7 +136,7 @@ public func AssertParseCommand<A: ParsableCommand>(_ rootCommand: ParsableComman
 public func AssertEqualStrings(
   actual: String,
   expected: String,
-  file: StaticString = #file,
+  file: StaticString = #filePath,
   line: UInt = #line
 ) {
   // If the input strings are not equal, create a simple diff for debugging...
@@ -205,7 +207,7 @@ public func AssertHelp<T: ParsableArguments>(
   for _: T.Type,
   columns: Int? = 80,
   equals expected: String,
-  file: StaticString = #file,
+  file: StaticString = #filePath,
   line: UInt = #line
 ) {
   let flag: String
@@ -244,7 +246,7 @@ public func AssertHelp<T: ParsableCommand, U: ParsableCommand>(
   root _: U.Type,
   columns: Int? = 80,
   equals expected: String,
-  file: StaticString = #file,
+  file: StaticString = #filePath,
   line: UInt = #line
 ) {
   let includeHidden: Bool
@@ -269,7 +271,7 @@ public func AssertHelp<T: ParsableCommand, U: ParsableCommand>(
 
 public func AssertDump<T: ParsableArguments>(
   for _: T.Type, equals expected: String,
-  file: StaticString = #file, line: UInt = #line
+  file: StaticString = #filePath, line: UInt = #line
 ) throws {
   do {
     _ = try T.parse(["--experimental-dump-help"])
@@ -282,7 +284,7 @@ public func AssertDump<T: ParsableArguments>(
   try AssertJSONEqualFromString(actual: T._dumpHelp(), expected: expected, for: ToolInfoV0.self, file: file, line: line)
 }
 
-public func AssertJSONEqualFromString<T: Codable & Equatable>(actual: String, expected: String, for type: T.Type, file: StaticString = #file, line: UInt = #line) throws {
+public func AssertJSONEqualFromString<T: Codable & Equatable>(actual: String, expected: String, for type: T.Type, file: StaticString = #filePath, line: UInt = #line) throws {
   if #available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *) {
     AssertEqualStrings(actual: actual, expected: expected, file: file, line: line)
   }
@@ -307,7 +309,7 @@ extension XCTest {
     command: String,
     expected: String? = nil,
     exitCode: ExitCode = .success,
-    file: StaticString = #file, line: UInt = #line) throws
+    file: StaticString = #filePath, line: UInt = #line) throws
   {
     try AssertExecuteCommand(
       command: command.split(separator: " ").map(String.init),
@@ -321,7 +323,7 @@ extension XCTest {
     command: [String],
     expected: String? = nil,
     exitCode: ExitCode = .success,
-    file: StaticString = #file, line: UInt = #line) throws
+    file: StaticString = #filePath, line: UInt = #line) throws
   {
     #if os(Windows)
     throw XCTSkip("Unsupported on this platform")
@@ -383,7 +385,7 @@ extension XCTest {
   public func AssertJSONOutputEqual(
     command: String,
     expected: String,
-    file: StaticString = #file,
+    file: StaticString = #filePath,
     line: UInt = #line
   ) throws {
     #if os(Windows)
@@ -437,7 +439,7 @@ extension XCTest {
     multiPage: Bool,
     command: String,
     expected: String,
-    file: StaticString = #file,
+    file: StaticString = #filePath,
     line: UInt = #line
   ) throws {
     #if os(Windows)

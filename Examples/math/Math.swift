@@ -64,8 +64,9 @@ extension Math {
     }
 
     struct Multiply: ParsableCommand {
-        static let configuration =
-            CommandConfiguration(abstract: "Print the product of the values.")
+        static let configuration = CommandConfiguration(
+            abstract: "Print the product of the values.",
+            aliases: ["mul"])
 
         @OptionGroup var options: Options
 
@@ -92,7 +93,8 @@ extension Math.Statistics {
     struct Average: ParsableCommand {
         static let configuration = CommandConfiguration(
             abstract: "Print the average of the values.",
-            version: "1.5.0-alpha")
+            version: "1.5.0-alpha",
+            aliases: ["avg"])
 
         enum Kind: String, ExpressibleByArgument, CaseIterable {
             case mean, median, mode

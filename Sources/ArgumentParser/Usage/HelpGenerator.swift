@@ -52,7 +52,8 @@ internal struct HelpGenerator {
       case subcommands
       case options
       case title(String)
-      
+      case groupedSubcommands(String)
+
       var description: String {
         switch self {
         case .positionalArguments:
@@ -63,6 +64,8 @@ internal struct HelpGenerator {
           return "Options"
         case .title(let name):
           return name
+        case .groupedSubcommands(let name):
+          return "\(name) Subcommands"
         }
       }
     }
@@ -217,31 +220,67 @@ internal struct HelpGenerator {
     }
     
     let configuration = commandStack.last!.configuration
-    let subcommandElements: [Section.Element] =
-      configuration.subcommands.compactMap { command in
-        guard command.configuration.shouldDisplay else { return nil }
-        var label = command._commandName
-        if command == configuration.defaultSubcommand {
-            label += " (default)"
-        }
-        return Section.Element(
-          label: label,
-          abstract: command.configuration.abstract)
+
+    // Create section for a grouping of subcommands.
+    func subcommandSection(
+      header: Section.Header, 
+      subcommands: [ParsableCommand.Type]
+    ) -> Section {
+      let subcommandElements: [Section.Element] =
+        subcommands.compactMap { command in
+          guard command.configuration.shouldDisplay else { return nil }
+          var label = command._commandName
+          for alias in command.configuration.aliases {
+              label += ", \(alias)"
+          }
+          if command == configuration.defaultSubcommand {
+              label += " (default)"
+          }
+          return Section.Element(
+            label: label,
+            abstract: command.configuration.abstract)
+      }
+
+      return Section(header: header, elements: subcommandElements)
     }
-    
+
+    // All of the subcommand sections.
+    var subcommands: [Section] = []
+
+    // Add section for the ungrouped subcommands, if there are any.
+    if !configuration.ungroupedSubcommands.isEmpty {
+      subcommands.append(
+        subcommandSection(
+          header: .subcommands,
+          subcommands: configuration.ungroupedSubcommands
+        )
+      )
+    }
+
+    // Add sections for all of the grouped subcommands.
+    subcommands.append(
+      contentsOf: configuration.groupedSubcommands
+        .compactMap { group in
+          return subcommandSection(
+            header: .groupedSubcommands(group.name),
+            subcommands: group.subcommands
+          )
+        }
+    )
+
     // Combine the compiled groups in this order:
     // - arguments
     // - named sections
     // - options/flags
-    // - subcommands
+    // - ungrouped subcommands
+    // - grouped subcommands
     return [
       Section(header: .positionalArguments, elements: positionalElements),
     ] + sectionTitles.map { name in
       Section(header: .title(name), elements: titledSections[name, default: []])
     } + [
       Section(header: .options, elements: optionElements),
-      Section(header: .subcommands, elements: subcommandElements),
-    ]
+    ] + subcommands
   }
   
   func usageMessage() -> String {
@@ -250,8 +289,12 @@ internal struct HelpGenerator {
   }
   
   var includesSubcommands: Bool {
-    guard let subcommandSection = sections.first(where: { $0.header == .subcommands })
-      else { return false }
+    guard let subcommandSection = sections.first(where: { 
+      switch $0.header {
+      case .groupedSubcommands, .subcommands: return true
+      case .options, .positionalArguments, .title(_): return false
+      }
+    }) else { return false }
     return !subcommandSection.elements.isEmpty
   }
   

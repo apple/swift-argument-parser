@@ -17,7 +17,7 @@ final class TreeTests: XCTestCase {
 
 // MARK: -
 
-let tree: Tree<Int> = {
+func generateTree() -> Tree<Int> {
   let tree = Tree(1)
   for x in 11...13 {
     let node = Tree(x)
@@ -28,10 +28,11 @@ let tree: Tree<Int> = {
     }
   }
   return tree
-}()
+}
 
 extension TreeTests {
   func testHierarchy() {
+    let tree = generateTree()
     XCTAssertEqual(tree.element, 1)
     XCTAssertEqual(tree.children.map { $0.element }, [11, 12, 13])
     XCTAssertEqual(
@@ -40,6 +41,7 @@ extension TreeTests {
   }
   
   func testSearch() {
+    let tree = generateTree()
     XCTAssertEqual(
       tree.path(toFirstWhere: { $0 == 1 }).map { $0.element },
       [1])
@@ -64,9 +66,30 @@ extension TreeTests {
   struct Sub: ParsableCommand {
     static let configuration = CommandConfiguration(subcommands: [Sub.self])
   }
+
+  struct RootWithNamedNestedSub: ParsableCommand {
+    static let configuration = CommandConfiguration(subcommands: [NestedSub.self])
+
+    struct NestedSub: ParsableCommand {
+      static let configuration = CommandConfiguration(commandName: "sub", aliases: ["sub"])
+    }
+  }
     
+  struct RootWithNestedSub: ParsableCommand {
+    static let configuration = CommandConfiguration(subcommands: [NestedSub.self])
+
+    struct NestedSub: ParsableCommand {
+      static let configuration = CommandConfiguration(aliases: ["nested-sub"])
+    }
+  }
+
   func testInitializationWithRecursiveSubcommand() {
     XCTAssertThrowsError(try Tree(root: A.asCommand))
     XCTAssertThrowsError(try Tree(root: Root.asCommand))
+  }
+
+  func testInitializationWithMatchingAliases() {
+    XCTAssertThrowsError(try Tree(root: RootWithNamedNestedSub.asCommand))
+    XCTAssertThrowsError(try Tree(root: RootWithNestedSub.asCommand))
   }
 }

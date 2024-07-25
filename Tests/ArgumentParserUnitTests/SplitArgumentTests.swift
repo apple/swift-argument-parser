@@ -19,7 +19,7 @@ extension ArgumentParser.SplitArguments.InputIndex: Swift.ExpressibleByIntegerLi
   }
 }
 
-private func AssertIndexEqual(_ sut: SplitArguments, at index: Int, inputIndex: Int, subIndex: SplitArguments.SubIndex, file: StaticString = #file, line: UInt = #line) {
+private func AssertIndexEqual(_ sut: SplitArguments, at index: Int, inputIndex: Int, subIndex: SplitArguments.SubIndex, file: StaticString = #filePath, line: UInt = #line) {
   guard index < sut.elements.endIndex else {
     XCTFail("Element index \(index) is out of range. sur only has \(sut.elements.count) elements.", file: (file), line: line)
     return
@@ -34,7 +34,7 @@ private func AssertIndexEqual(_ sut: SplitArguments, at index: Int, inputIndex: 
   }
 }
 
-private func AssertElementEqual(_ sut: SplitArguments, at index: Int, _ element: SplitArguments.Element.Value, file: StaticString = #file, line: UInt = #line) {
+private func AssertElementEqual(_ sut: SplitArguments, at index: Int, _ element: SplitArguments.Element.Value, file: StaticString = #filePath, line: UInt = #line) {
   guard index < sut.elements.endIndex else {
     XCTFail("Element index \(index) is out of range. sur only has \(sut.elements.count) elements.", file: (file), line: line)
     return

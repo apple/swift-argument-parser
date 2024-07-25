@@ -188,8 +188,8 @@ public struct ArgumentArrayParsingStrategy: Hashable {
     self.init(base: .allUnrecognized)
   }
   
-  /// Before parsing, capture all inputs that follow the `--` terminator in this
-  /// argument array.
+  /// Before parsing arguments, capture all inputs that follow the `--`
+  /// terminator in this argument array.
   ///
   /// For example, the `Example` command defined below has a `words` array that
   /// uses the `postTerminator` parsing strategy:
@@ -218,6 +218,14 @@ public struct ArgumentArrayParsingStrategy: Hashable {
   /// $ example Asa Extra -- one two --other
   /// Error: Unexpected argument 'Extra'
   /// ```
+  ///
+  /// Because options are parsed before arguments, an option that consumes or
+  /// suppresses the `--` terminator can prevent a `postTerminator` argument
+  /// array from capturing any input. In particular, the
+  /// ``SingleValueParsingStrategy/unconditional``,
+  /// ``ArrayParsingStrategy/unconditionalSingleValue``, and
+  /// ``ArrayParsingStrategy/remaining`` parsing strategies can all consume
+  /// the terminator as part of their values.
   ///
   /// - Note: This parsing strategy can be surprising for users, since it
   ///   changes the behavior of the `--` terminator. Prefer ``remaining``
@@ -414,6 +422,7 @@ extension Argument {
   ///   - transform: A closure that converts a string into this property's
   ///     element type or throws an error.
   @preconcurrency
+  @_disfavoredOverload
   public init(
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,

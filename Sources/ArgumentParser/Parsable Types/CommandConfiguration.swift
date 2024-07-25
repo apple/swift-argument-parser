@@ -47,14 +47,40 @@ public struct CommandConfiguration: Sendable {
   public var shouldDisplay: Bool
   
   /// An array of the types that define subcommands for this command.
-  public var subcommands: [ParsableCommand.Type]
-  
+  ///
+  /// This property "flattens" the grouping structure of the subcommands.
+  /// Use 'ungroupedSubcommands' to access 'groupedSubcommands' to retain the grouping structure.
+  public var subcommands: [ParsableCommand.Type] {
+    get {
+      return ungroupedSubcommands + groupedSubcommands.flatMap { $0.subcommands }
+    }
+
+    set {
+      groupedSubcommands = []
+      ungroupedSubcommands = newValue
+    }
+  }
+
+  /// An array of types that define subcommands for this command and are
+  /// not part of any command group.
+  public var ungroupedSubcommands: [ParsableCommand.Type]
+
+  /// The list of subcommands and subcommand groups.
+  public var groupedSubcommands: [CommandGroup]
+
   /// The default command type to run if no subcommand is given.
   public var defaultSubcommand: ParsableCommand.Type?
   
   /// Flag names to be used for help.
   public var helpNames: NameSpecification?
-  
+
+  /// An array of aliases for the command's name.
+  ///
+  /// All of the aliases MUST not match the actual command's name,
+  /// whether that be the derived name if `commandName` is not provided,
+  /// or `commandName` itself if provided.
+  public var aliases: [String]
+
   /// Creates the configuration for a command.
   ///
   /// - Parameters:
@@ -72,14 +98,19 @@ public struct CommandConfiguration: Sendable {
   ///     a `--version` flag.
   ///   - shouldDisplay: A Boolean value indicating whether the command
   ///     should be shown in the extended help display.
-  ///   - subcommands: An array of the types that define subcommands for the
-  ///     command.
+  ///   - ungroupedSubcommands: An array of the types that define subcommands
+  ///     for the command that are not part of any command group.
+  ///   - groupedSubcommands: An array of command groups, each of which defines
+  ///     subcommands that are part of that logical group.
   ///   - defaultSubcommand: The default command type to run if no subcommand
   ///     is given.
   ///   - helpNames: The flag names to use for requesting help, when combined
   ///     with a simulated Boolean property named `help`. If `helpNames` is
   ///     `nil`, the names are inherited from the parent command, if any, or
   ///     are `-h` and `--help`.
+  ///   - aliases: An array of aliases for the command's name. All of the aliases
+  ///     MUST not match the actual command name, whether that be the derived name
+  ///     if `commandName` is not provided, or `commandName` itself if provided.
   public init(
     commandName: String? = nil,
     abstract: String = "",
@@ -87,9 +118,11 @@ public struct CommandConfiguration: Sendable {
     discussion: String = "",
     version: String = "",
     shouldDisplay: Bool = true,
-    subcommands: [ParsableCommand.Type] = [],
+    subcommands ungroupedSubcommands: [ParsableCommand.Type] = [],
+    groupedSubcommands: [CommandGroup] = [],
     defaultSubcommand: ParsableCommand.Type? = nil,
-    helpNames: NameSpecification? = nil
+    helpNames: NameSpecification? = nil,
+    aliases: [String] = []
   ) {
     self.commandName = commandName
     self.abstract = abstract
@@ -97,9 +130,11 @@ public struct CommandConfiguration: Sendable {
     self.discussion = discussion
     self.version = version
     self.shouldDisplay = shouldDisplay
-    self.subcommands = subcommands
+    self.ungroupedSubcommands = ungroupedSubcommands
+    self.groupedSubcommands = groupedSubcommands
     self.defaultSubcommand = defaultSubcommand
     self.helpNames = helpNames
+    self.aliases = aliases
   }
 
   /// Creates the configuration for a command with a "super-command".
@@ -112,9 +147,11 @@ public struct CommandConfiguration: Sendable {
     discussion: String = "",
     version: String = "",
     shouldDisplay: Bool = true,
-    subcommands: [ParsableCommand.Type] = [],
+    subcommands ungroupedSubcommands: [ParsableCommand.Type] = [],
+    groupedSubcommands: [CommandGroup] = [],
     defaultSubcommand: ParsableCommand.Type? = nil,
-    helpNames: NameSpecification? = nil
+    helpNames: NameSpecification? = nil,
+    aliases: [String] = []
   ) {
     self.commandName = commandName
     self._superCommandName = _superCommandName
@@ -123,14 +160,41 @@ public struct CommandConfiguration: Sendable {
     self.discussion = discussion
     self.version = version
     self.shouldDisplay = shouldDisplay
-    self.subcommands = subcommands
+    self.ungroupedSubcommands = ungroupedSubcommands
+    self.groupedSubcommands = groupedSubcommands
     self.defaultSubcommand = defaultSubcommand
     self.helpNames = helpNames
+    self.aliases = aliases
   }
 }
 
 extension CommandConfiguration {
-  @available(*, deprecated, message: "Use the memberwise initializer with the usage parameter.")
+  @available(*, deprecated, message: "Use the memberwise initializer with the aliases parameter.")
+  public init(
+    commandName _commandName: String?,
+    abstract: String,
+    usage: String?,
+    discussion: String,
+    version: String,
+    shouldDisplay: Bool,
+    subcommands: [ParsableCommand.Type],
+    defaultSubcommand: ParsableCommand.Type?,
+    helpNames: NameSpecification?
+  ) {
+    self.init(
+      commandName: _commandName,
+      abstract: abstract,
+      usage: usage,
+      discussion: discussion,
+      version: version,
+      shouldDisplay: shouldDisplay,
+      subcommands: subcommands,
+      defaultSubcommand: defaultSubcommand,
+      helpNames: helpNames,
+      aliases: [])
+  }
+
+  @available(*, deprecated, message: "Use the memberwise initializer with the usage and aliases parameters.")
   public init(
     commandName _commandName: String?,
     abstract: String,
@@ -150,6 +214,7 @@ extension CommandConfiguration {
       shouldDisplay: shouldDisplay,
       subcommands: subcommands,
       defaultSubcommand: defaultSubcommand,
-      helpNames: helpNames)
+      helpNames: helpNames,
+      aliases: [])
   }
 }
