@@ -114,9 +114,9 @@ internal struct HelpGenerator {
     } else {
       var usage = UsageGenerator(toolName: toolName, definition: [currentArgSet])
         .synopsis
-      if !currentCommand.configuration.subcommands.isEmpty {
+			if !currentCommand.configuration.subcommands.isEmpty {
         if usage.last != " " { usage += " " }
-        usage += "<subcommand>"
+				usage += "<subcommand>"
       }
       self.usage = usage
     }
