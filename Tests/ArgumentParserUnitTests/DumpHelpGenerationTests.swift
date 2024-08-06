@@ -142,22 +142,6 @@ extension DumpHelpGenerationTests {
           "two",
           "three"
         ],
-        "discussion" : {
-          "values" : [
-            {
-              "description" : "one",
-              "value" : "one"
-            },
-            {
-              "description" : "two",
-              "value" : "two"
-            },
-            {
-              "description" : "three",
-              "value" : "three"
-            }
-          ]
-        },
         "isOptional" : false,
         "isRepeating" : false,
         "kind" : "option",
@@ -181,22 +165,6 @@ extension DumpHelpGenerationTests {
           "three"
         ],
         "defaultValue" : "two",
-        "discussion" : {
-          "values" : [
-            {
-              "description" : "one",
-              "value" : "one"
-            },
-            {
-              "description" : "two",
-              "value" : "two"
-            },
-            {
-              "description" : "three",
-              "value" : "three"
-            }
-          ]
-        },
         "isOptional" : true,
         "isRepeating" : false,
         "kind" : "option",
@@ -900,22 +868,6 @@ extension DumpHelpGenerationTests {
                   "mode"
                 ],
                 "defaultValue" : "mean",
-                "discussion" : {
-                  "values" : [
-                    {
-                      "description" : "mean",
-                      "value" : "mean"
-                    },
-                    {
-                      "description" : "median",
-                      "value" : "median"
-                    },
-                    {
-                      "description" : "mode",
-                      "value" : "mode"
-                    }
-                  ]
-                },
                 "isOptional" : true,
                 "isRepeating" : false,
                 "kind" : "option",
@@ -1496,22 +1448,6 @@ extension DumpHelpGenerationTests {
               "mode"
             ],
             "defaultValue" : "mean",
-            "discussion" : {
-              "values" : [
-                {
-                  "description" : "mean",
-                  "value" : "mean"
-                },
-                {
-                  "description" : "median",
-                  "value" : "median"
-                },
-                {
-                  "description" : "mode",
-                  "value" : "mode"
-                }
-              ]
-            },
             "isOptional" : true,
             "isRepeating" : false,
             "kind" : "option",
