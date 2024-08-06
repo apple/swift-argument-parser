@@ -277,7 +277,7 @@ extension Option where Value: ExpressibleByArgument {
           discussion: help?.discussion,
           valueName: help?.valueName,
           visibility: help?.visibility ?? .default,
-          options: Value.self as? (any EnumerableOptionValue.Type)
+          enumerableDescriptions: Value.self
         ),
         parsingStrategy: parsingStrategy.base,
         initial: wrappedValue,
@@ -337,7 +337,7 @@ extension Option where Value: ExpressibleByArgument {
           discussion: help?.discussion,
           valueName: help?.valueName,
           visibility: help?.visibility ?? .default,
-          options: Value.self as? (any EnumerableOptionValue.Type)
+          enumerableDescriptions: Value.self
         ),
         parsingStrategy: parsingStrategy.base,
         initial: nil,
@@ -478,7 +478,7 @@ extension Option {
           discussion: help?.discussion,
           valueName: help?.valueName,
           visibility: help?.visibility ?? .default,
-          options: T.self as? (any EnumerableOptionValue.Type)
+          enumerableDescriptions: T.self
         ),
         parsingStrategy: parsingStrategy.base,
         initial: nil,
@@ -504,7 +504,13 @@ extension Option {
         container: Optional<T>.self,
         key: key,
         kind: .name(key: key, specification: name),
-        help: help,
+        help: .init(
+          help?.abstract ?? "",
+          discussion: help?.discussion,
+          valueName: help?.valueName,
+          visibility: help?.visibility ?? .default,
+          enumerableDescriptions: T.self
+        ),
         parsingStrategy: parsingStrategy.base,
         initial: _wrappedValue,
         completion: completion)
@@ -545,7 +551,7 @@ extension Option {
           discussion: help?.discussion,
           valueName: help?.valueName,
           visibility: help?.visibility ?? .default,
-          options: T.self as? (any EnumerableOptionValue.Type)
+          enumerableDescriptions: T.self
         ),
         parsingStrategy: parsingStrategy.base,
         initial: nil,

@@ -101,7 +101,7 @@ fileprivate extension Discussion {
     case .enumerated(let preamble, let values):
       self = .enumerated(
         preamble: preamble,
-        values.allCases.map { .init(name: $0.name, description: $0.description) }
+        values.allValueStrings.map { .init(name: $0, description: values.allValueDescriptions[$0] ?? "") }
       )
     }
   }

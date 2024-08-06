@@ -118,7 +118,7 @@ public struct CommandInfoV0: Codable, Hashable {
   /// Extended description of the command's functionality.
   ///
   /// Can include specific abstracts about the argument's possible values (e.g.
-  /// for a custom `EnumerableOptionValue` type), or can describe
+  /// for a custom `CaseIterable` type), or can describe
   /// a static block of text that extends the description of the argument.
   public var discussion: Discussion?
 

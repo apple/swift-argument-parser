@@ -970,12 +970,12 @@ extension HelpGenerationTests {
 }
 
 extension HelpGenerationTests {
-  enum OptionValues: String, EnumerableOptionValue {
+  enum OptionValues: String, CaseIterable, ExpressibleByArgument {
     case blue
     case red
     case yellow
 
-    public var description: String {
+    public var defaultValueDescription: String {
       switch self {
       case .blue:
         return "The color of the sky."
@@ -1112,16 +1112,12 @@ OPTIONS:
 }
 
 extension HelpGenerationTests {
-  enum Empty: EnumerableOptionValue {
-    var description: String {
+  enum Empty: CaseIterable, ExpressibleByArgument {
+    var defaultValueDescription: String {
       return "none"
     }
 
-    var rawValue: String {
-      return "nil"
-    }
-
-    init?(rawValue: String) {
+    init?(argument: String) {
       return nil
     }
   }

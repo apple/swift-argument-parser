@@ -61,16 +61,12 @@ extension DumpHelpGenerationTests {
   }
 
   struct C: ParsableCommand {
-    enum Color: String, EnumerableOptionValue {
+    enum Color: String, CaseIterable, ExpressibleByArgument {
       case blue
       case red
       case yellow
 
-      var name: String {
-        self.rawValue
-      }
-
-      var description: String {
+      var defaultValueDescription: String {
         switch self {
         case .blue:
           "A blue color, like the sky!"
@@ -90,6 +86,9 @@ extension DumpHelpGenerationTests {
 
     @Option(help: "An optional color.")
     var opt: Color?
+
+    @Option(help: "An optional color with a default value.")
+    var optWithDefault: Color? = .yellow
 
     @Option(help: .init(discussion: "A preamble for the list of values in the discussion section."))
     var extra: Color
@@ -143,6 +142,22 @@ extension DumpHelpGenerationTests {
           "two",
           "three"
         ],
+        "discussion" : {
+          "values" : [
+            {
+              "description" : "one",
+              "value" : "one"
+            },
+            {
+              "description" : "two",
+              "value" : "two"
+            },
+            {
+              "description" : "three",
+              "value" : "three"
+            }
+          ]
+        },
         "isOptional" : false,
         "isRepeating" : false,
         "kind" : "option",
@@ -166,6 +181,22 @@ extension DumpHelpGenerationTests {
           "three"
         ],
         "defaultValue" : "two",
+        "discussion" : {
+          "values" : [
+            {
+              "description" : "one",
+              "value" : "one"
+            },
+            {
+              "description" : "two",
+              "value" : "two"
+            },
+            {
+              "description" : "three",
+              "value" : "three"
+            }
+          ]
+        },
         "isOptional" : true,
         "isRepeating" : false,
         "kind" : "option",
@@ -479,6 +510,46 @@ extension DumpHelpGenerationTests {
           },
           "shouldDisplay" : true,
           "valueName" : "opt"
+        },
+        {
+          "abstract" : "An optional color with a default value.",
+          "allValues" : [
+            "blue",
+            "red",
+            "yellow"
+          ],
+          "defaultValue" : "yellow",
+          "discussion" : {
+            "values" : [
+              {
+                "description" : "A blue color, like the sky!",
+                "value" : "blue"
+              },
+              {
+                "description" : "A red color, like a rose!",
+                "value" : "red"
+              },
+              {
+                "description" : "A yellow color, like the sun!",
+                "value" : "yellow"
+              }
+            ]
+          },
+          "isOptional" : true,
+          "isRepeating" : false,
+          "kind" : "option",
+          "names" : [
+            {
+              "kind" : "long",
+              "name" : "opt-with-default"
+            }
+          ],
+          "preferredName" : {
+            "kind" : "long",
+            "name" : "opt-with-default"
+          },
+          "shouldDisplay" : true,
+          "valueName" : "opt-with-default"
         },
         {
           "allValues" : [
@@ -829,6 +900,22 @@ extension DumpHelpGenerationTests {
                   "mode"
                 ],
                 "defaultValue" : "mean",
+                "discussion" : {
+                  "values" : [
+                    {
+                      "description" : "mean",
+                      "value" : "mean"
+                    },
+                    {
+                      "description" : "median",
+                      "value" : "median"
+                    },
+                    {
+                      "description" : "mode",
+                      "value" : "mode"
+                    }
+                  ]
+                },
                 "isOptional" : true,
                 "isRepeating" : false,
                 "kind" : "option",
@@ -1409,6 +1496,22 @@ extension DumpHelpGenerationTests {
               "mode"
             ],
             "defaultValue" : "mean",
+            "discussion" : {
+              "values" : [
+                {
+                  "description" : "mean",
+                  "value" : "mean"
+                },
+                {
+                  "description" : "median",
+                  "value" : "median"
+                },
+                {
+                  "description" : "mode",
+                  "value" : "mode"
+                }
+              ]
+            },
             "isOptional" : true,
             "isRepeating" : false,
             "kind" : "option",

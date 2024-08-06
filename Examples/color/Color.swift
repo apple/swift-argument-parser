@@ -28,10 +28,21 @@ struct Color: ParsableCommand {
   }
 }
 
-public enum ColorOptions: String, EnumerableOptionValue {
+public enum ColorOptions: String, CaseIterable, ExpressibleByArgument {
   case red
   case blue
   case yellow
+
+  public var defaultValueDescription: String {
+    switch self {
+    case .red:
+      return "A red color."
+    case .blue:
+      return "A blue color."
+    case .yellow:
+      return "A yellow color."
+    }
+  }
 
   public var description: String {
     switch self {

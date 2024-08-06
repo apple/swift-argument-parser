@@ -81,15 +81,22 @@
 /// will use the `.staticText` case and will print a block of discussion text.
 enum ArgumentDiscussion {
   case staticText(String)
-  case enumerated(preamble: String? = nil, any EnumerableOptionValue.Type)
+  case enumerated(preamble: String? = nil, any ExpressibleByArgument.Type)
 
-  public init?(_ text: String? = nil, _ options: (any EnumerableOptionValue.Type)? = nil) {
+  public init?(_ text: String? = nil, _ options: (any ExpressibleByArgument.Type)? = nil) {
     switch (text, options) {
     case (.some(let text), .some(let options)):
+      guard !options.allValueDescriptions.isEmpty else {
+        self = .staticText(text)
+        return
+      }
       self = .enumerated(preamble: text, options)
     case (.some(let text), .none):
       self = .staticText(text)
     case (.none, .some(let options)):
+      guard !options.allValueDescriptions.isEmpty else {
+        return nil
+      }
       self = .enumerated(options)
     default:
       return nil

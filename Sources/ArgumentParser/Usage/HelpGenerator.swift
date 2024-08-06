@@ -47,13 +47,14 @@ internal struct HelpGenerator {
           }
 
           // Padded label
-          for opt in options.allCases {
-            let paddedOptionLabel = String(repeating: " ", count: HelpGenerator.helpIndent * discussionIndentFactor) + opt.name
+          for opt in options.allValueStrings {
+            let description = options.allValueDescriptions[opt] ?? ""
+            let paddedOptionLabel = String(repeating: " ", count: HelpGenerator.helpIndent * discussionIndentFactor) + opt
             // Adds a hyphen (`-`) to the beginning of each value description,
             // without it affecting the proper indentation level.
             let hyphen = "- "
             let wrappedHelp = String(
-              (hyphen + opt.description)
+              (hyphen + description)
                 .wrapped(to: screenWidth, wrappingIndent: HelpGenerator.labelColumnWidth + 2)
             )
 

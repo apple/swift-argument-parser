@@ -40,8 +40,9 @@ public struct ArgumentHelp {
     }
   }
 
-  /// - Note: Experimental property to retain custom `@Option` type information about its possible values.
-  public var options: (any EnumerableOptionValue.Type)?
+  /// A property of meta type `any ExpressibleByArgument.Type` that serves to retain
+  /// information about any arguments that have enumerable values and their descriptions.
+  public var enumerableArgument: (any ExpressibleByArgument.Type)?
 
   /// Creates a new help instance.
   @available(*, deprecated, message: "Use init(_:discussion:valueName:visibility:) instead.")
@@ -63,13 +64,13 @@ public struct ArgumentHelp {
     discussion: String? = nil,
     valueName: String? = nil,
     visibility: ArgumentVisibility = .default,
-    options: (any EnumerableOptionValue.Type)? = nil)
+    enumerableDescriptions: (any ExpressibleByArgument.Type)? = nil)
   {
     self.abstract = abstract
     self.discussion = discussion
     self.valueName = valueName
     self.visibility = visibility
-    self.options = options
+    self.enumerableArgument = enumerableDescriptions
   }
 
   /// A `Help` instance that shows an argument only in the extended help display.
