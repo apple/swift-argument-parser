@@ -32,6 +32,7 @@ actor AsyncStatusCheck {
   }
 }
 
+@MainActor
 var statusCheck = AsyncStatusCheck()
 
 // MARK: AsyncParsableCommand.main() testing
