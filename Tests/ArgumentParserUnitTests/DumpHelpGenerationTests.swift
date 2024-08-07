@@ -54,7 +54,44 @@ extension DumpHelpGenerationTests {
     @OptionGroup(title: "Other")
     var options: Options
   }
-  
+
+  struct C: ParsableCommand {
+    enum Color: String, CaseIterable, ExpressibleByArgument {
+      case blue
+      case red
+      case yellow
+
+      var defaultValueDescription: String {
+        switch self {
+        case .blue:
+          "A blue color, like the sky!"
+        case .red:
+          "A red color, like a rose!"
+        case .yellow:
+          "A yellow color, like the sun!"
+        }
+      }
+    }
+
+    @Option(help: "A color to select.")
+    var color: Color
+
+    @Option(help: "Another color to select!")
+    var defaultColor: Color = .red
+
+    @Option(help: "An optional color.")
+    var opt: Color?
+
+    @Option(help: "An optional color with a default value.")
+    var optWithDefault: Color? = .yellow
+
+    @Option(help: .init(discussion: "A preamble for the list of values in the discussion section."))
+    var extra: Color
+
+    @Option(help: .init(discussion: "A discussion."))
+    var discussion: String
+  }
+
   public func testDumpA() throws {
     try AssertDump(for: A.self, equals: Self.aDumpText)
   }
@@ -62,7 +99,11 @@ extension DumpHelpGenerationTests {
   public func testDumpB() throws {
     try AssertDump(for: B.self, equals: Self.bDumpText)
   }
-  
+
+  public func testDumpC() throws {
+    try AssertDump(for: C.self, equals: Self.cDumpText)
+  }
+
   public func testDumpExampleCommands() throws {
     struct TestCase {
       let expected: String
@@ -310,6 +351,254 @@ extension DumpHelpGenerationTests {
   "serializationVersion" : 0
 }
 """
+
+  static let cDumpText: String = """
+  {
+    "command" : {
+      "arguments" : [
+        {
+          "abstract" : "A color to select.",
+          "allValues" : [
+            "blue",
+            "red",
+            "yellow"
+          ],
+          "discussion" : {
+            "values" : [
+              {
+                "description" : "A blue color, like the sky!",
+                "value" : "blue"
+              },
+              {
+                "description" : "A red color, like a rose!",
+                "value" : "red"
+              },
+              {
+                "description" : "A yellow color, like the sun!",
+                "value" : "yellow"
+              }
+            ]
+          },
+          "isOptional" : false,
+          "isRepeating" : false,
+          "kind" : "option",
+          "names" : [
+            {
+              "kind" : "long",
+              "name" : "color"
+            }
+          ],
+          "preferredName" : {
+            "kind" : "long",
+            "name" : "color"
+          },
+          "shouldDisplay" : true,
+          "valueName" : "color"
+        },
+        {
+          "abstract" : "Another color to select!",
+          "allValues" : [
+            "blue",
+            "red",
+            "yellow"
+          ],
+          "defaultValue" : "red",
+          "discussion" : {
+            "values" : [
+              {
+                "description" : "A blue color, like the sky!",
+                "value" : "blue"
+              },
+              {
+                "description" : "A red color, like a rose!",
+                "value" : "red"
+              },
+              {
+                "description" : "A yellow color, like the sun!",
+                "value" : "yellow"
+              }
+            ]
+          },
+          "isOptional" : true,
+          "isRepeating" : false,
+          "kind" : "option",
+          "names" : [
+            {
+              "kind" : "long",
+              "name" : "default-color"
+            }
+          ],
+          "preferredName" : {
+            "kind" : "long",
+            "name" : "default-color"
+          },
+          "shouldDisplay" : true,
+          "valueName" : "default-color"
+        },
+        {
+          "abstract" : "An optional color.",
+          "allValues" : [
+            "blue",
+            "red",
+            "yellow"
+          ],
+          "discussion" : {
+            "values" : [
+              {
+                "description" : "A blue color, like the sky!",
+                "value" : "blue"
+              },
+              {
+                "description" : "A red color, like a rose!",
+                "value" : "red"
+              },
+              {
+                "description" : "A yellow color, like the sun!",
+                "value" : "yellow"
+              }
+            ]
+          },
+          "isOptional" : true,
+          "isRepeating" : false,
+          "kind" : "option",
+          "names" : [
+            {
+              "kind" : "long",
+              "name" : "opt"
+            }
+          ],
+          "preferredName" : {
+            "kind" : "long",
+            "name" : "opt"
+          },
+          "shouldDisplay" : true,
+          "valueName" : "opt"
+        },
+        {
+          "abstract" : "An optional color with a default value.",
+          "allValues" : [
+            "blue",
+            "red",
+            "yellow"
+          ],
+          "defaultValue" : "yellow",
+          "discussion" : {
+            "values" : [
+              {
+                "description" : "A blue color, like the sky!",
+                "value" : "blue"
+              },
+              {
+                "description" : "A red color, like a rose!",
+                "value" : "red"
+              },
+              {
+                "description" : "A yellow color, like the sun!",
+                "value" : "yellow"
+              }
+            ]
+          },
+          "isOptional" : true,
+          "isRepeating" : false,
+          "kind" : "option",
+          "names" : [
+            {
+              "kind" : "long",
+              "name" : "opt-with-default"
+            }
+          ],
+          "preferredName" : {
+            "kind" : "long",
+            "name" : "opt-with-default"
+          },
+          "shouldDisplay" : true,
+          "valueName" : "opt-with-default"
+        },
+        {
+          "allValues" : [
+            "blue",
+            "red",
+            "yellow"
+          ],
+          "discussion" : {
+            "preamble" : "A preamble for the list of values in the discussion section.",
+            "values" : [
+              {
+                "description" : "A blue color, like the sky!",
+                "value" : "blue"
+              },
+              {
+                "description" : "A red color, like a rose!",
+                "value" : "red"
+              },
+              {
+                "description" : "A yellow color, like the sun!",
+                "value" : "yellow"
+              }
+            ]
+          },
+          "isOptional" : false,
+          "isRepeating" : false,
+          "kind" : "option",
+          "names" : [
+            {
+              "kind" : "long",
+              "name" : "extra"
+            }
+          ],
+          "preferredName" : {
+            "kind" : "long",
+            "name" : "extra"
+          },
+          "shouldDisplay" : true,
+          "valueName" : "extra"
+        },
+        {
+          "discussion" : "A discussion.",
+          "isOptional" : false,
+          "isRepeating" : false,
+          "kind" : "option",
+          "names" : [
+            {
+              "kind" : "long",
+              "name" : "discussion"
+            }
+          ],
+          "preferredName" : {
+            "kind" : "long",
+            "name" : "discussion"
+          },
+          "shouldDisplay" : true,
+          "valueName" : "discussion"
+        },
+        {
+          "abstract" : "Show help information.",
+          "isOptional" : true,
+          "isRepeating" : false,
+          "kind" : "flag",
+          "names" : [
+            {
+              "kind" : "short",
+              "name" : "h"
+            },
+            {
+              "kind" : "long",
+              "name" : "help"
+            }
+          ],
+          "preferredName" : {
+            "kind" : "long",
+            "name" : "help"
+          },
+          "shouldDisplay" : true,
+          "valueName" : "help"
+        }
+      ],
+      "commandName" : "c"
+    },
+    "serializationVersion" : 0
+  }
+  """
 
   static let mathDumpText: String = """
 {

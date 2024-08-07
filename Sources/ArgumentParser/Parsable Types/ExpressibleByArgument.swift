@@ -27,6 +27,17 @@ public protocol ExpressibleByArgument {
   /// an array with a value for each case.
   static var allValueStrings: [String] { get }
 
+  /// A dictionary containing the descriptions for each possible value of this type,
+  /// for display in the help screen.
+  ///
+  /// The default implementation of this property returns an empty dictionary. If
+  /// the conforming type is also `CaseIterable`, the default implementation
+  /// returns a dictionary with a description for each value as its key-value pair.
+  /// Note that the conforming type must implement the
+  /// `defaultValueDescription` for each value - if the description and the
+  /// value are the same string, it's assumed that a description is not implemented.
+  static var allValueDescriptions: [String: String] { get }
+
   /// The completion kind to use for options or arguments of this type that
   /// don't explicitly declare a completion kind.
   ///
@@ -40,6 +51,8 @@ extension ExpressibleByArgument {
   }
   
   public static var allValueStrings: [String] { [] }
+
+  public static var allValueDescriptions: [String: String] { [:] }
 
   public static var defaultCompletionKind: CompletionKind {
     .default
@@ -59,6 +72,16 @@ extension ExpressibleByArgument where Self: CaseIterable {
 extension ExpressibleByArgument where Self: CaseIterable, Self: RawRepresentable, RawValue: ExpressibleByArgument {
   public static var allValueStrings: [String] {
     self.allCases.map(\.rawValue.defaultValueDescription)
+  }
+
+  public static var allValueDescriptions: [String: String] {
+    self.allCases.reduce(into: [:]) { descriptions, value in
+      // Assure that the value and the description are not the same string,
+      // otherwise it's assumed that a description is not implemented.
+      if value.rawValue.defaultValueDescription != value.defaultValueDescription {
+        descriptions[value.rawValue.defaultValueDescription] = value.defaultValueDescription
+      }
+    }
   }
 }
 
