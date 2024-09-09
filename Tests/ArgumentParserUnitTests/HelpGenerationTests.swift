@@ -1139,6 +1139,87 @@ extension HelpGenerationTests {
 }
 
 extension HelpGenerationTests {
+  enum Cases: String, CaseIterable, ExpressibleByArgument {
+    case short
+    case longDesc
+    case longLabel = "long-label-that-is-too-long-for-description"
+    case longLabelAndDesc = "long-label-that-is-too-long-for-longer-description"
+
+    var defaultValueDescription: String {
+      switch self {
+      case .short:
+        return "short label option"
+      case .longDesc:
+        return "this is my very long label option, and it should wrap this text when the help is printed."
+      case .longLabel:
+        return "this is a discussion text."
+      case .longLabelAndDesc:
+        return "this discussion text should be wrapped, and the label is simply too long for this text to be on the same line."
+      }
+    }
+  }
+
+  struct LongLabelHelp: ParsableCommand {
+    @Option(help: "A collection of cases with varying lengths of labels/descriptions.")
+    var argument: Cases
+  }
+
+  func testLongOptionLabelAndDescriptionHelp() {
+    AssertHelp(.default, for: LongLabelHelp.self, equals: """
+        USAGE: long-label-help --argument <argument>
+        
+        OPTIONS:
+          --argument <argument>   A collection of cases with varying lengths of
+                                  labels/descriptions.
+                short             - short label option
+                longDesc          - this is my very long label option, and it should
+                                    wrap this text when the help is printed.
+                long-label-that-is-too-long-for-description
+                                  - this is a discussion text.
+                long-label-that-is-too-long-for-longer-description
+                                  - this discussion text should be wrapped, and the
+                                    label is simply too long for this text to be on the
+                                    same line.
+          -h, --help              Show help information.
+        
+        """)
+  }
+
+  struct LongLabelHelpWithOptionDescription: ParsableCommand {
+    @Option(help:
+        .init(
+          "A collection of cases with varying lengths of labels/descriptions.",
+          discussion: "This discussion should make the list of options wrap differently."
+        )
+    )
+    var argument: Cases
+  }
+
+  func testLongOptionLabelAndDescriptionHelpWithOptionDescription() {
+    AssertHelp(.default, for: LongLabelHelpWithOptionDescription.self, equals: """
+          USAGE: long-label-help-with-option-description --argument <argument>
+          
+          OPTIONS:
+            --argument <argument>   A collection of cases with varying lengths of
+                                    labels/descriptions.
+                  This discussion should make the list of options wrap differently.
+                  Values:
+                    short           - short label option
+                    longDesc        - this is my very long label option, and it should
+                                      wrap this text when the help is printed.
+                    long-label-that-is-too-long-for-description
+                                    - this is a discussion text.
+                    long-label-that-is-too-long-for-longer-description
+                                    - this discussion text should be wrapped, and the
+                                      label is simply too long for this text to be on the
+                                      same line.
+            -h, --help              Show help information.
+          
+          """)
+  }
+}
+
+extension HelpGenerationTests {
   private struct WideHelp: ParsableCommand {
     @Argument(help: "54 characters of help, so as to wrap when columns < 80")
     var argument: String?

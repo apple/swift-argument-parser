@@ -277,7 +277,7 @@ extension Option where Value: ExpressibleByArgument {
           discussion: help?.discussion,
           valueName: help?.valueName,
           visibility: help?.visibility ?? .default,
-          enumerableDescriptions: Value.self
+          argumentType: Value.self
         ),
         parsingStrategy: parsingStrategy.base,
         initial: wrappedValue,
@@ -337,7 +337,7 @@ extension Option where Value: ExpressibleByArgument {
           discussion: help?.discussion,
           valueName: help?.valueName,
           visibility: help?.visibility ?? .default,
-          enumerableDescriptions: Value.self
+          argumentType: Value.self
         ),
         parsingStrategy: parsingStrategy.base,
         initial: nil,
@@ -478,7 +478,7 @@ extension Option {
           discussion: help?.discussion,
           valueName: help?.valueName,
           visibility: help?.visibility ?? .default,
-          enumerableDescriptions: T.self
+          argumentType: T.self
         ),
         parsingStrategy: parsingStrategy.base,
         initial: nil,
@@ -509,7 +509,7 @@ extension Option {
           discussion: help?.discussion,
           valueName: help?.valueName,
           visibility: help?.visibility ?? .default,
-          enumerableDescriptions: T.self
+          argumentType: T.self
         ),
         parsingStrategy: parsingStrategy.base,
         initial: _wrappedValue,
@@ -551,7 +551,7 @@ extension Option {
           discussion: help?.discussion,
           valueName: help?.valueName,
           visibility: help?.visibility ?? .default,
-          enumerableDescriptions: T.self
+          argumentType: T.self
         ),
         parsingStrategy: parsingStrategy.base,
         initial: nil,

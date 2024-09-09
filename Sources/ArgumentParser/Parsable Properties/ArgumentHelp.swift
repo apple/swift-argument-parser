@@ -42,7 +42,7 @@ public struct ArgumentHelp {
 
   /// A property of meta type `any ExpressibleByArgument.Type` that serves to retain
   /// information about any arguments that have enumerable values and their descriptions.
-  public var enumerableArgument: (any ExpressibleByArgument.Type)?
+  public var argumentType: (any ExpressibleByArgument.Type)?
 
   /// Creates a new help instance.
   @available(*, deprecated, message: "Use init(_:discussion:valueName:visibility:) instead.")
@@ -64,13 +64,13 @@ public struct ArgumentHelp {
     discussion: String? = nil,
     valueName: String? = nil,
     visibility: ArgumentVisibility = .default,
-    enumerableDescriptions: (any ExpressibleByArgument.Type)? = nil)
+    argumentType: (any ExpressibleByArgument.Type)? = nil)
   {
     self.abstract = abstract
     self.discussion = discussion
     self.valueName = valueName
     self.visibility = visibility
-    self.enumerableArgument = enumerableDescriptions
+    self.argumentType = argumentType
   }
 
   /// A `Help` instance that shows an argument only in the extended help display.

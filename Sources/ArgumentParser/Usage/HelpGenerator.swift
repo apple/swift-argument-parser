@@ -58,14 +58,16 @@ internal struct HelpGenerator {
                 .wrapped(to: screenWidth, wrappingIndent: HelpGenerator.labelColumnWidth + 2)
             )
 
+            var whitespaceToDrop = hyphen.count
+
             let renderedHelp: String = {
               if paddedOptionLabel.count < HelpGenerator.labelColumnWidth {
                 // Render after the padded label.
-                let toDrop = paddedOptionLabel.count + hyphen.count
-                return String(paddedOptionLabel + wrappedHelp.dropFirst(toDrop))
+                whitespaceToDrop += paddedOptionLabel.count
+                return String(paddedOptionLabel + wrappedHelp.dropFirst(whitespaceToDrop))
               } else {
                 // Render in a new line.
-                return "\n" + wrappedHelp
+                return paddedOptionLabel + "\n" + wrappedHelp.dropFirst(whitespaceToDrop)
               }
             }()
             formattedHelp += renderedHelp + "\n"

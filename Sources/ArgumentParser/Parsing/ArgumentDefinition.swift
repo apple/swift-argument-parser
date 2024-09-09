@@ -70,7 +70,7 @@ struct ArgumentDefinition {
       self.allValueStrings = allValueStrings
       self.isComposite = isComposite
       self.abstract = help?.abstract ?? ""
-      self.discussion = .init(help?.discussion, help?.enumerableArgument)
+      self.discussion = .init(help?.discussion, help?.argumentType)
       self.valueName = help?.valueName ?? ""
       self.visibility = help?.visibility ?? .default
       self.parentTitle = ""
