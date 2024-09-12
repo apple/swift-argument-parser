@@ -17,18 +17,8 @@ struct MultiPageDescription: MDocComponent {
 
   var body: MDocComponent {
     Section(title: "description") {
-      if let discussion = command.discussion {
-        if case let .staticText(text) = discussion {
-          text
-        } else if case let .enumerated(preamble, values) = discussion {
-          if let preamble {
-            preamble
-          }
-          for value in values {
-            MDocMacro.ListItem(title: value.value)
-            value.description
-          }
-        }
+      if let discussion = command.discussion2 {
+        DiscussionText(discussion: discussion)
       }
 
       List {
@@ -39,24 +29,12 @@ struct MultiPageDescription: MDocComponent {
             abstract
           }
 
-          if argument.abstract != nil, argument.discussion != nil {
+          if argument.abstract != nil, argument.discussion2 != nil {
             MDocMacro.ParagraphBreak()
           }
 
-          if let discussion = argument.discussion {
-            if case let .staticText(text) = discussion {
-              text
-            } else if case let .enumerated(preamble, values) = discussion {
-              if let preamble {
-                preamble
-              }
-              List {
-                for value in values {
-                  MDocMacro.ListItem(title: value.value)
-                  value.description
-                }
-              }
-            }
+          if let discussion = argument.discussion2 {
+            DiscussionText(discussion: discussion)
           }
         }
       }

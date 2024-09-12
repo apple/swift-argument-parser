@@ -37,13 +37,11 @@ internal struct HelpGenerator {
           : discussionText.wrapped(to: screenWidth, wrappingIndent: HelpGenerator.helpIndent * 4) + "\n"
         } else if case let .enumerated(preamble, options) = discussion {
           var formattedHelp: String = ""
-          var discussionIndentFactor = 4
+          let discussionIndentFactor = 4
 
           // If there is a preamble, append this to the formatted text
           if let preamble {
             formattedHelp += preamble.wrapped(to: screenWidth, wrappingIndent: HelpGenerator.helpIndent * discussionIndentFactor) + "\n"
-            formattedHelp += "Values:\n".wrapped(to: screenWidth, wrappingIndent: HelpGenerator.helpIndent * discussionIndentFactor)
-            discussionIndentFactor += 1
           }
 
           // Padded label

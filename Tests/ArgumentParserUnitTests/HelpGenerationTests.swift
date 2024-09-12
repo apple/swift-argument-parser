@@ -1095,16 +1095,14 @@ OPTIONS:
       --a <a>
             A preamble. This will be appended to the top of the discussion block,
             before the list of option values.
-            Values:
-              blue            - The color of the sky.
-              red             - The color of a rose.
-              yellow          - The color of the sun.
+            blue              - The color of the sky.
+            red               - The color of a rose.
+            yellow            - The color of the sun.
       --b <b>                 An abstract.
             A discussion.
-            Values:
-              blue            - The color of the sky.
-              red             - The color of a rose.
-              yellow          - The color of the sun.
+            blue              - The color of the sky.
+            red               - The color of a rose.
+            yellow            - The color of the sun.
       -h, --help              Show help information.
 
     """)
@@ -1189,7 +1187,7 @@ extension HelpGenerationTests {
     @Option(help:
         .init(
           "A collection of cases with varying lengths of labels/descriptions.",
-          discussion: "This discussion should make the list of options wrap differently."
+          discussion: "This is a discussion text - don't mind me!"
         )
     )
     var argument: Cases
@@ -1202,14 +1200,13 @@ extension HelpGenerationTests {
           OPTIONS:
             --argument <argument>   A collection of cases with varying lengths of
                                     labels/descriptions.
-                  This discussion should make the list of options wrap differently.
-                  Values:
-                    short           - short label option
-                    longDesc        - this is my very long label option, and it should
+                  This is a discussion text - don't mind me!
+                  short             - short label option
+                  longDesc          - this is my very long label option, and it should
                                       wrap this text when the help is printed.
-                    long-label-that-is-too-long-for-description
+                  long-label-that-is-too-long-for-description
                                     - this is a discussion text.
-                    long-label-that-is-too-long-for-longer-description
+                  long-label-that-is-too-long-for-longer-description
                                     - this discussion text should be wrapped, and the
                                       label is simply too long for this text to be on the
                                       same line.
