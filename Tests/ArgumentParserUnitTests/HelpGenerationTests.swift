@@ -1107,6 +1107,38 @@ OPTIONS:
 
     """)
   }
+
+  enum OptionWithoutEnumerationHelpText: String, CaseIterable, ExpressibleByArgument {
+    case one = "1"
+    case two = "2"
+    case three = "3"
+  }
+
+  struct HelpTextComparison: ParsableCommand {
+    @Option(help: .init("An abstract.", discussion: "A discussion."))
+    var enumerable: OptionValues
+
+    @Option(help: "This is an option without explicit enumeration in the help text.")
+    var values: OptionWithoutEnumerationHelpText
+  }
+
+  func testOptionHelpTextWithAndWithoutEnumeratedDescriptions() {
+    AssertHelp(.default, for: HelpTextComparison.self, equals: """
+    USAGE: help-text-comparison --enumerable <enumerable> --values <values>
+
+    OPTIONS:
+      --enumerable <enumerable>
+                              An abstract.
+            A discussion.
+            blue              - The color of the sky.
+            red               - The color of a rose.
+            yellow            - The color of the sun.
+      --values <values>       This is an option without explicit enumeration in the
+                              help text. (values: 1, 2, 3)
+      -h, --help              Show help information.
+
+    """)
+  }
 }
 
 extension HelpGenerationTests {
