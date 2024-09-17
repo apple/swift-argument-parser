@@ -13,14 +13,30 @@ import ArgumentParser
 import ArgumentParserToolInfo
 import Foundation
 
+enum GenerateManualError: Error {
+  case failedToRunSubprocess(error: Error)
+  case unableToParseToolOutput(error: Error)
+  case unsupportedDumpHelpVersion(expected: Int, found: Int)
+  case failedToGenerateManualPages(error: Error)
+}
+
+extension GenerateManualError: CustomStringConvertible {
+  var description: String {
+    switch self {
+    case let .failedToRunSubprocess(error):
+      "Failed to run subprocess: \(error)"
+    case let .unableToParseToolOutput(error):
+      "Failed to parse tool output: \(error)"
+    case let .unsupportedDumpHelpVersion(expected, found):
+      "Unsupported dump help version, expected '\(expected)' but found: '\(found)'"
+    case let .failedToGenerateManualPages(error):
+      "Failed to generated manual pages: \(error)"
+    }
+  }
+}
+
 @main
 struct GenerateManual: ParsableCommand {
-  enum Error: Swift.Error {
-    case failedToRunSubprocess(error: Swift.Error)
-    case unableToParseToolOutput(error: Swift.Error)
-    case unsupportedDumpHelpVersion(expected: Int, found: Int)
-    case failedToGenerateManualPages(error: Swift.Error)
-  }
 
   static let configuration = CommandConfiguration(
     commandName: "generate-manual",
@@ -70,25 +86,25 @@ struct GenerateManual: ParsableCommand {
       let output = try executeCommand(executable: tool, arguments: ["--experimental-dump-help"])
       data = output.data(using: .utf8) ?? Data()
     } catch {
-      throw Error.failedToRunSubprocess(error: error)
+      throw GenerateManualError.failedToRunSubprocess(error: error)
     }
 
     do {
       let toolInfoThin = try JSONDecoder().decode(ToolInfoHeader.self, from: data)
       guard toolInfoThin.serializationVersion == 0 else {
-        throw Error.unsupportedDumpHelpVersion(
+        throw GenerateManualError.unsupportedDumpHelpVersion(
           expected: 0,
           found: toolInfoThin.serializationVersion)
       }
     } catch {
-      throw Error.unableToParseToolOutput(error: error)
+      throw GenerateManualError.unableToParseToolOutput(error: error)
     }
 
     let toolInfo: ToolInfoV0
     do {
       toolInfo = try JSONDecoder().decode(ToolInfoV0.self, from: data)
     } catch {
-      throw Error.unableToParseToolOutput(error: error)
+      throw GenerateManualError.unableToParseToolOutput(error: error)
     }
 
     do {
@@ -100,7 +116,7 @@ struct GenerateManual: ParsableCommand {
           savingTo: URL(fileURLWithPath: outputDirectory))
       }
     } catch {
-      throw Error.failedToGenerateManualPages(error: error)
+      throw GenerateManualError.failedToGenerateManualPages(error: error)
     }
   }
 
