@@ -11,10 +11,8 @@
 
 #if swift(>=5.11)
 internal import class Foundation.ProcessInfo
-#elseif swift(>=5.10)
-import class Foundation.ProcessInfo
 #else
-@_implementationOnly import class Foundation.ProcessInfo
+import class Foundation.ProcessInfo
 #endif
 
 struct CommandError: Error {

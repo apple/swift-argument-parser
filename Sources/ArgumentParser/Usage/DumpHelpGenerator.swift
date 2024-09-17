@@ -9,15 +9,12 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if swift(>=5.11)
+#if swift(>=6.0)
 internal import ArgumentParserToolInfo
 internal import class Foundation.JSONEncoder
-#elseif swift(>=5.10)
+#else
 import ArgumentParserToolInfo
 import class Foundation.JSONEncoder
-#else
-@_implementationOnly import ArgumentParserToolInfo
-@_implementationOnly import class Foundation.JSONEncoder
 #endif
 
 internal struct DumpHelpGenerator {
