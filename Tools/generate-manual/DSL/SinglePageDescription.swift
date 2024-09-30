@@ -38,18 +38,20 @@ struct SinglePageDescription: MDocComponent {
 
     List {
       for argument in command.arguments ?? [] {
-        MDocMacro.ListItem(title: argument.manualPageDescription)
+        if argument.shouldDisplay {
+          MDocMacro.ListItem(title: argument.manualPageDescription)
 
-        if let abstract = argument.abstract {
-          abstract
-        }
+          if let abstract = argument.abstract {
+            abstract
+          }
 
-        if argument.abstract != nil, argument.discussion2 != nil {
-          MDocMacro.ParagraphBreak()
-        }
+          if argument.abstract != nil, argument.discussion2 != nil {
+            MDocMacro.ParagraphBreak()
+          }
 
-        if let discussion = argument.discussion2 {
-          DiscussionText(discussion: discussion)
+          if let discussion = argument.discussion2 {
+            DiscussionText(discussion: discussion)
+          }
         }
       }
 
