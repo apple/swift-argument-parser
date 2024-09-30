@@ -15,8 +15,8 @@ public struct ArgumentHelp {
   public var abstract: String = ""
   
   /// An expanded description of the argument, in plain text form.
-  public var discussion: String = ""
-  
+  public var discussion: String?
+
   /// An alternative name to use for the argument's value when showing usage
   /// information.
   ///
@@ -39,12 +39,16 @@ public struct ArgumentHelp {
       visibility = newValue ? .default : .hidden
     }
   }
-  
+
+  /// A property of meta type `any ExpressibleByArgument.Type` that serves to retain
+  /// information about any arguments that have enumerable values and their descriptions.
+  public var argumentType: (any ExpressibleByArgument.Type)?
+
   /// Creates a new help instance.
   @available(*, deprecated, message: "Use init(_:discussion:valueName:visibility:) instead.")
   public init(
     _ abstract: String = "",
-    discussion: String = "",
+    discussion: String? = nil,
     valueName: String? = nil,
     shouldDisplay: Bool)
   {
@@ -57,14 +61,16 @@ public struct ArgumentHelp {
   /// Creates a new help instance.
   public init(
     _ abstract: String = "",
-    discussion: String = "",
+    discussion: String? = nil,
     valueName: String? = nil,
-    visibility: ArgumentVisibility = .default)
+    visibility: ArgumentVisibility = .default,
+    argumentType: (any ExpressibleByArgument.Type)? = nil)
   {
     self.abstract = abstract
     self.discussion = discussion
     self.valueName = valueName
     self.visibility = visibility
+    self.argumentType = argumentType
   }
 
   /// A `Help` instance that shows an argument only in the extended help display.

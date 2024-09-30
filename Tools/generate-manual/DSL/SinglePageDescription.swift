@@ -28,12 +28,12 @@ struct SinglePageDescription: MDocComponent {
       abstract
     }
 
-    if !root, command.abstract != nil, command.discussion != nil {
+    if !root, command.abstract != nil, command.discussion2 != nil {
       MDocMacro.ParagraphBreak()
     }
 
-    if let discussion = command.discussion {
-      discussion
+    if let discussion = command.discussion2 {
+      DiscussionText(discussion: discussion)
     }
 
     List {
@@ -45,12 +45,12 @@ struct SinglePageDescription: MDocComponent {
             abstract
           }
 
-          if argument.abstract != nil, argument.discussion != nil {
+          if argument.abstract != nil, argument.discussion2 != nil {
             MDocMacro.ParagraphBreak()
           }
 
-          if let discussion = argument.discussion {
-            discussion
+          if let discussion = argument.discussion2 {
+            DiscussionText(discussion: discussion)
           }
         }
       }

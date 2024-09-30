@@ -17,8 +17,8 @@ struct MultiPageDescription: MDocComponent {
 
   var body: MDocComponent {
     Section(title: "description") {
-      if let discussion = command.discussion {
-        discussion
+      if let discussion = command.discussion2 {
+        DiscussionText(discussion: discussion)
       }
 
       List {
@@ -30,12 +30,12 @@ struct MultiPageDescription: MDocComponent {
               abstract
             }
                   
-            if argument.abstract != nil, argument.discussion != nil {
+            if argument.abstract != nil, argument.discussion2 != nil {
               MDocMacro.ParagraphBreak()
             }
                   
-            if let discussion = argument.discussion {
-              discussion
+            if let discussion = argument.discussion2 {
+              DiscussionText(discussion: discussion)
             }
           }
         }

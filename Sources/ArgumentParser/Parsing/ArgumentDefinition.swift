@@ -51,7 +51,7 @@ struct ArgumentDefinition {
     var allValueStrings: [String]
     var isComposite: Bool
     var abstract: String
-    var discussion: String
+    var discussion: ArgumentDiscussion?
     var valueName: String
     var visibility: ArgumentVisibility
     var parentTitle: String
@@ -70,7 +70,7 @@ struct ArgumentDefinition {
       self.allValueStrings = allValueStrings
       self.isComposite = isComposite
       self.abstract = help?.abstract ?? ""
-      self.discussion = help?.discussion ?? ""
+      self.discussion = .init(help?.discussion, help?.argumentType)
       self.valueName = help?.valueName ?? ""
       self.visibility = help?.visibility ?? .default
       self.parentTitle = ""
@@ -376,6 +376,11 @@ extension Bare: ArgumentDefinitionContainerExpressibleByArgument
 where Contained: ExpressibleByArgument {
   static func defaultValueDescription(_ initial: T?) -> String? {
     guard let initial = initial else { return nil }
+
+    if let initial = initial as? (any CaseIterable & RawRepresentable) {
+      return String(describing: initial.rawValue)
+    }
+
     return initial.defaultValueDescription
   }
 }
@@ -400,6 +405,9 @@ extension Optional: ArgumentDefinitionContainerExpressibleByArgument
 where Contained: ExpressibleByArgument {
   static func defaultValueDescription(_ initial: Initial?) -> String? {
     guard let initial = initial else { return nil }
+    if let initial = initial as? (any CaseIterable & RawRepresentable) {
+      return String(describing: initial.rawValue)
+    }
     return initial.defaultValueDescription
   }
 }
