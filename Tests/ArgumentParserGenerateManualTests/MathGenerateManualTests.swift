@@ -94,10 +94,6 @@ final class MathGenerateManualTests: XCTestCase {
       .It Ar custom-arg
       .It Ar values...
       A group of floating-point values to operate on.
-      .It Fl -test-success-exit-code
-      .It Fl -test-failure-exit-code
-      .It Fl -test-validation-exit-code
-      .It Fl -test-custom-exit-code Ar test-custom-exit-code
       .It Fl -file Ar file
       .It Fl -directory Ar directory
       .It Fl -shell Ar shell
@@ -356,10 +352,6 @@ final class MathGenerateManualTests: XCTestCase {
       .Op Ar one-of-four
       .Op Ar custom-arg
       .Op Ar values...
-      .Op Fl -test-success-exit-code
-      .Op Fl -test-failure-exit-code
-      .Op Fl -test-validation-exit-code
-      .Op Fl -test-custom-exit-code Ar test-custom-exit-code
       .Op Fl -file Ar file
       .Op Fl -directory Ar directory
       .Op Fl -shell Ar shell
@@ -372,10 +364,6 @@ final class MathGenerateManualTests: XCTestCase {
       .It Ar custom-arg
       .It Ar values...
       A group of floating-point values to operate on.
-      .It Fl -test-success-exit-code
-      .It Fl -test-failure-exit-code
-      .It Fl -test-validation-exit-code
-      .It Fl -test-custom-exit-code Ar test-custom-exit-code
       .It Fl -file Ar file
       .It Fl -directory Ar directory
       .It Fl -shell Ar shell
