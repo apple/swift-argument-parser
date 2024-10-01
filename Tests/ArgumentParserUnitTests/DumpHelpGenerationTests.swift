@@ -596,7 +596,8 @@ extension DumpHelpGenerationTests {
           "valueName" : "help"
         }
       ],
-      "commandName" : "c"
+      "commandName" : "c",
+      "shouldDisplay" : true
     },
     "serializationVersion" : 0
   }
