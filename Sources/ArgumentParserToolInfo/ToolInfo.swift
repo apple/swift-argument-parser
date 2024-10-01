@@ -145,7 +145,7 @@ public struct CommandInfoV0: Codable, Hashable {
   public var discussion2: Discussion?
   
   /// Command should appear in help displays.
-  public var shouldDisplay: Bool
+  public var shouldDisplay: Bool = true
 
   /// Optional name of the subcommand invoked when the command is invoked with
   /// no arguments.
@@ -250,7 +250,7 @@ public struct ArgumentInfoV0: Codable, Hashable {
   public var shouldDisplay: Bool
   /// Custom name of argument's section.
   public var sectionTitle: String?
-  
+
   /// Argument can be omitted.
   public var isOptional: Bool
   /// Argument can be specified multiple times.
@@ -317,7 +317,7 @@ public struct ArgumentInfoV0: Codable, Hashable {
 
     self.shouldDisplay = shouldDisplay
     self.sectionTitle = sectionTitle
-    
+
     self.isOptional = isOptional
     self.isRepeating = isRepeating
 
