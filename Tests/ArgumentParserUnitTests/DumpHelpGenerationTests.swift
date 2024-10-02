@@ -90,6 +90,8 @@ extension DumpHelpGenerationTests {
 
     @Option(help: .init(discussion: "A discussion."))
     var discussion: String
+    
+    static var configuration = CommandConfiguration(shouldDisplay: false)
   }
 
   public func testDumpA() throws {
@@ -597,7 +599,7 @@ extension DumpHelpGenerationTests {
         }
       ],
       "commandName" : "c",
-      "shouldDisplay" : true
+      "shouldDisplay" : false
     },
     "serializationVersion" : 0
   }
