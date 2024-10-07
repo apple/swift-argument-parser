@@ -135,6 +135,7 @@ fileprivate extension CommandInfoV0 {
     self = CommandInfoV0(
       superCommands: superCommands,
       commandName: command._commandName,
+      shouldDisplay: command.configuration.shouldDisplay,
       abstract: command.configuration.abstract,
       discussion2: .init(command.configuration.discussion),
       defaultSubcommand: defaultSubcommand,

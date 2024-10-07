@@ -111,7 +111,7 @@ public struct CommandInfoV0: Codable, Hashable {
   /// Custom CodingKeys names.
   enum CodingKeys: String, CodingKey {
     case discussion2 = "discussion"
-    case superCommands, commandName, abstract, defaultSubcommand, subcommands, arguments
+    case superCommands, commandName, abstract, defaultSubcommand, subcommands, arguments, shouldDisplay
   }
 
   /// Super commands and tools.
@@ -143,6 +143,9 @@ public struct CommandInfoV0: Codable, Hashable {
   /// for a custom `CaseIterable` type), or can describe
   /// a static block of text that extends the description of the argument.
   public var discussion2: Discussion?
+  
+  /// Command should appear in help displays.
+  public var shouldDisplay: Bool = true
 
   /// Optional name of the subcommand invoked when the command is invoked with
   /// no arguments.
@@ -155,6 +158,7 @@ public struct CommandInfoV0: Codable, Hashable {
   public init(
     superCommands: [String],
     commandName: String,
+    shouldDisplay: Bool,
     abstract: String,
     discussion2: Discussion?,
     defaultSubcommand: String?,
@@ -164,6 +168,7 @@ public struct CommandInfoV0: Codable, Hashable {
     self.superCommands = superCommands.nonEmpty
 
     self.commandName = commandName
+    self.shouldDisplay = shouldDisplay
     self.abstract = abstract.nonEmpty
     self.discussion2 = discussion2
     self.defaultSubcommand = defaultSubcommand?.nonEmpty
@@ -186,6 +191,7 @@ public struct CommandInfoV0: Codable, Hashable {
     self.init(
       superCommands: superCommands,
       commandName: commandName,
+      shouldDisplay: true,
       abstract: abstract,
       discussion2: discussion,
       defaultSubcommand: defaultSubcommand,
@@ -244,7 +250,7 @@ public struct ArgumentInfoV0: Codable, Hashable {
   public var shouldDisplay: Bool
   /// Custom name of argument's section.
   public var sectionTitle: String?
-  
+
   /// Argument can be omitted.
   public var isOptional: Bool
   /// Argument can be specified multiple times.
@@ -311,7 +317,7 @@ public struct ArgumentInfoV0: Codable, Hashable {
 
     self.shouldDisplay = shouldDisplay
     self.sectionTitle = sectionTitle
-    
+
     self.isOptional = isOptional
     self.isRepeating = isRepeating
 

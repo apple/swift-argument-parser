@@ -90,6 +90,8 @@ extension DumpHelpGenerationTests {
 
     @Option(help: .init(discussion: "A discussion."))
     var discussion: String
+    
+    static var configuration = CommandConfiguration(shouldDisplay: false)
   }
 
   public func testDumpA() throws {
@@ -277,7 +279,8 @@ extension DumpHelpGenerationTests {
         "valueName" : "help"
       }
     ],
-    "commandName" : "a"
+    "commandName" : "a",
+    "shouldDisplay" : true
   },
   "serializationVersion" : 0
 }
@@ -346,7 +349,8 @@ extension DumpHelpGenerationTests {
         "valueName" : "help"
       }
     ],
-    "commandName" : "b"
+    "commandName" : "b",
+    "shouldDisplay" : true
   },
   "serializationVersion" : 0
 }
@@ -594,7 +598,8 @@ extension DumpHelpGenerationTests {
           "valueName" : "help"
         }
       ],
-      "commandName" : "c"
+      "commandName" : "c",
+      "shouldDisplay" : false
     },
     "serializationVersion" : 0
   }
@@ -647,6 +652,7 @@ extension DumpHelpGenerationTests {
       }
     ],
     "commandName" : "math",
+    "shouldDisplay" : true,
     "subcommands" : [
       {
         "abstract" : "Print the sum of the values.",
@@ -723,6 +729,7 @@ extension DumpHelpGenerationTests {
           }
         ],
         "commandName" : "add",
+        "shouldDisplay" : true,
         "superCommands" : [
           "math"
         ]
@@ -802,6 +809,7 @@ extension DumpHelpGenerationTests {
           }
         ],
         "commandName" : "multiply",
+        "shouldDisplay" : true,
         "superCommands" : [
           "math"
         ]
@@ -851,6 +859,7 @@ extension DumpHelpGenerationTests {
           }
         ],
         "commandName" : "stats",
+        "shouldDisplay" : true,
         "subcommands" : [
           {
             "abstract" : "Print the average of the values.",
@@ -929,6 +938,7 @@ extension DumpHelpGenerationTests {
               }
             ],
             "commandName" : "average",
+            "shouldDisplay" : true,
             "superCommands" : [
               "math",
               "stats"
@@ -987,6 +997,7 @@ extension DumpHelpGenerationTests {
               }
             ],
             "commandName" : "stdev",
+            "shouldDisplay" : true,
             "superCommands" : [
               "math",
               "stats"
@@ -1195,6 +1206,7 @@ extension DumpHelpGenerationTests {
               }
             ],
             "commandName" : "quantiles",
+            "shouldDisplay" : true,
             "superCommands" : [
               "math",
               "stats"
@@ -1289,6 +1301,7 @@ extension DumpHelpGenerationTests {
       }
     ],
     "commandName" : "add",
+    "shouldDisplay" : true,
     "superCommands" : [
       "math"
     ]
@@ -1375,6 +1388,7 @@ extension DumpHelpGenerationTests {
       }
     ],
     "commandName" : "multiply",
+    "shouldDisplay" : true,
     "superCommands" : [
       "math"
     ]
@@ -1431,6 +1445,7 @@ extension DumpHelpGenerationTests {
       }
     ],
     "commandName" : "stats",
+    "shouldDisplay" : true,
     "subcommands" : [
       {
         "abstract" : "Print the average of the values.",
@@ -1509,6 +1524,7 @@ extension DumpHelpGenerationTests {
           }
         ],
         "commandName" : "average",
+        "shouldDisplay" : true,
         "superCommands" : [
           "math",
           "stats"
@@ -1567,6 +1583,7 @@ extension DumpHelpGenerationTests {
           }
         ],
         "commandName" : "stdev",
+        "shouldDisplay" : true,
         "superCommands" : [
           "math",
           "stats"
@@ -1775,6 +1792,7 @@ extension DumpHelpGenerationTests {
           }
         ],
         "commandName" : "quantiles",
+        "shouldDisplay" : true,
         "superCommands" : [
           "math",
           "stats"
