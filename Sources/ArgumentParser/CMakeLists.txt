@@ -50,7 +50,7 @@ add_library(ArgumentParser
 set_target_properties(ArgumentParser PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_Swift_MODULE_DIRECTORY})
 target_compile_options(ArgumentParser PRIVATE
-  $<$<BOOL:${BUILD_TESTING}>:-enable-testing>)
+  $<$<BOOL:${BUILD_TESTING}>:-enable-testing> -enable-library-evolution)
 target_link_libraries(ArgumentParser PRIVATE
   $<$<NOT:$<PLATFORM_ID:Darwin>>:Foundation>
   ArgumentParserToolInfo)
