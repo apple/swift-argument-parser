@@ -11,11 +11,7 @@
 
 import ArgumentParser
 import ArgumentParserToolInfo
-#if canImport(FoundationEssentials)
-import FoundationEssentials
-#else
 import Foundation
-#endif
 
 struct DocumentDate: MDocComponent {
   private var month: String

@@ -9,11 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if canImport(FoundationEssentials)
-import FoundationEssentials
-#else
 import Foundation
-#endif
 
 enum SubprocessError: Swift.Error, LocalizedError, CustomStringConvertible {
   case missingExecutable(url: URL)
