@@ -83,7 +83,7 @@ extension DumpHelpGenerationTests {
     var opt: Color?
 
     @Option(help: "An optional color with a default value.")
-    var optWithDefault: Color? = .yellow
+    var optWithDefault: Color = .yellow
 
     @Option(help: .init(discussion: "A preamble for the list of values in the discussion section."))
     var extra: Color
