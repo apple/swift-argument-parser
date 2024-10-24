@@ -10,7 +10,11 @@
 //===----------------------------------------------------------------------===//
 
 import ArgumentParser
+#if canImport(FoundationEssentials)
+import FoundationEssentials
+#else
 import Foundation
+#endif
 
 @main
 @available(macOS 12, *)

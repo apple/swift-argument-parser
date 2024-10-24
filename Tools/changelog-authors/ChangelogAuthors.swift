@@ -12,7 +12,11 @@
 #if os(macOS)
 
 import ArgumentParser
+#if canImport(FoundationEssentials)
+import FoundationEssentials
+#else
 import Foundation
+#endif
 
 // MARK: Command
 

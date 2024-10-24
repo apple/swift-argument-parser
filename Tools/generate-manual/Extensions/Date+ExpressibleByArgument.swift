@@ -10,9 +10,13 @@
 //===----------------------------------------------------------------------===//
 
 import ArgumentParser
+#if canImport(FoundationEssentials)
+import FoundationEssentials
+#else
 import Foundation
+#endif
 
-extension Foundation.Date: ArgumentParser.ExpressibleByArgument {
+extension Date: ArgumentParser.ExpressibleByArgument {
   // parsed as `yyyy-mm-dd`
   public init?(argument: String) {
     // ensure the input argument is composed of exactly 3 components separated

@@ -16,7 +16,7 @@ import ArgumentParserTestHelpers
 final class HelpGenerationTests: XCTestCase {
 }
 
-extension Foundation.URL: ArgumentParser.ExpressibleByArgument {
+extension URL: ArgumentParser.ExpressibleByArgument {
   public init?(argument: String) {
     guard let url = URL(string: argument) else {
       return nil

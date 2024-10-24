@@ -11,7 +11,11 @@
 
 import ArgumentParser
 import ArgumentParserToolInfo
+#if canImport(FoundationEssentials)
+import FoundationEssentials
+#else
 import Foundation
+#endif
 
 struct Preamble: MDocComponent {
   var date: Date

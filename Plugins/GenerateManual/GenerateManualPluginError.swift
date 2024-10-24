@@ -8,8 +8,11 @@
 // See https://swift.org/LICENSE.txt for license information
 //
 //===----------------------------------------------------------------------===//
-
+#if canImport(FoundationEssentials)
+import FoundationEssentials
+#else
 import Foundation
+#endif
 import PackagePlugin
 
 enum GenerateManualPluginError: Error {
