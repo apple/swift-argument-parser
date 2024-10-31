@@ -34,8 +34,12 @@ struct ZshCompletionsGenerator {
     let type = commands.last!
     let functionName = commands.completionFunctionName()
     let isRootCommand = commands.count == 1
-    
-    var args = generateCompletionArguments(commands)    
+
+    let exportSAPShellForRootCommand = isRootCommand
+      ? "\n    export \(CompletionShell.environmentVariableName)=zsh"
+      : ""
+
+    var args = generateCompletionArguments(commands)
     var subcommands = type.configuration.subcommands
       .filter { $0.configuration.shouldDisplay }
     var subcommandHandler = ""
@@ -83,7 +87,7 @@ struct ZshCompletionsGenerator {
     }
     
     let functionText = """
-      \(functionName)() {
+      \(functionName)() {\(exportSAPShellForRootCommand)
           integer ret=1
           local -a args
           args+=(
@@ -208,4 +212,3 @@ extension ArgumentDefinition {
     }
   }
 }
-
