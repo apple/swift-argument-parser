@@ -241,6 +241,7 @@ private let bashCompletionScriptText = """
 #!/bin/bash
 
 _math() {
+    export SAP_SHELL=bash
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
     COMPREPLY=()
@@ -395,6 +396,7 @@ _math_commandname=$words[1]
 typeset -A opt_args
 
 _math() {
+    export SAP_SHELL=zsh
     integer ret=1
     local -a args
     args+=(
@@ -583,6 +585,7 @@ function _swift_math_preprocessor
 end
 
 function _swift_math_using_command
+    set -x SAP_SHELL fish
     set -l currentCommands (_swift_math_preprocessor (commandline -opc))
     set -l expectedCommands (string split \" \" $argv[1])
     set -l subcommands (string split \" \" $argv[2])
