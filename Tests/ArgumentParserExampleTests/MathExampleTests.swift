@@ -73,11 +73,33 @@ final class MathExampleTests: XCTestCase {
     try AssertExecuteCommand(command: "math help add --help", expected: helpText)
   }
   
+  func testMath_StatsHelp() throws {
+    let helpText = """
+        OVERVIEW: Calculate descriptive statistics.
+        
+        USAGE: math stats <subcommand>
+        
+        OPTIONS:
+          --version               Show the version.
+          -h, --help              Show help information.
+        
+        SUBCOMMANDS:
+          average, avg            Print the average of the values.
+          stdev                   Print the standard deviation of the values.
+          quantiles               Print the quantiles of the values (TBD).
+        
+          See 'math help stats <subcommand>' for detailed help.
+        """
+    try AssertExecuteCommand(command: "math stats -h", expected: helpText)
+    try AssertExecuteCommand(command: "math stats --help", expected: helpText)
+    try AssertExecuteCommand(command: "math help stats", expected: helpText)
+  }
+  
   func testMath_StatsMeanHelp() throws {
     let helpText = """
         OVERVIEW: Print the average of the values.
 
-        USAGE: math stats average [--kind <kind>] [<values> ...]
+        USAGE: math stats average [--kind <mean|median|mode>] [<values> ...]
 
         ARGUMENTS:
           <values>                A group of floating-point values to operate on.
@@ -128,7 +150,7 @@ final class MathExampleTests: XCTestCase {
       command: "math stats average --kind mode",
       expected: """
             Error: Please provide at least one value to calculate the mode.
-            Usage: math stats average [--kind <kind>] [<values> ...]
+            Usage: math stats average [--kind <mean|median|mode>] [<values> ...]
               See 'math stats average --help' for more information.
             """,
       exitCode: .validationFailure)
