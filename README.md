@@ -137,7 +137,7 @@ let package = Package(
 
 ### Supported Versions
 
-The most recent versions of swift-argument-parser support Swift 5.5 and newer. The minimum Swift version supported by swift-argument-parser releases are detailed below:
+The minimum Swift version supported by swift-argument-parser releases are detailed below:
 
 swift-argument-parser | Minimum Swift Version
 ----------------------|----------------------
