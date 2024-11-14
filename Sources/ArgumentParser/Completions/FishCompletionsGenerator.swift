@@ -11,15 +11,52 @@
 
 struct FishCompletionsGenerator {
   static func generateCompletionScript(_ type: ParsableCommand.Type) -> String {
-    let programName = type._commandName
-    let helperFunctions = [
-      preprocessorFunction(commandName: programName),
-      helperFunction(commandName: programName),
-    ]
-    let completions = generateCompletions([type])
+    let commandName = type._commandName
+    let functionName = helperFunctionName(commandName: commandName)
+    let preprocessorFunctionName =
+      preprocessorFunctionName(commandName: commandName)
+    return """
+      # A function which filters options which starts with "-" from $argv.
+      function \(preprocessorFunctionName)
+          set -l results
+          for i in (seq (count $argv))
+              switch (echo $argv[$i] | string sub -l 1)
+                  case '-'
+                  case '*'
+                      echo $argv[$i]
+              end
+          end
+      end
 
-    return helperFunctions.joined(separator: "\n\n") + "\n\n"
-      + completions.joined(separator: "\n")
+      function \(functionName)
+          set -gx \(CompletionShell.shellEnvironmentVariableName) fish
+          set -gx \(CompletionShell.shellVersionEnvironmentVariableName) "$FISH_VERSION"
+          set -l currentCommands (\(preprocessorFunctionName) (commandline -opc))
+          set -l expectedCommands (string split \"\(separator)\" $argv[1])
+          set -l subcommands (string split \"\(separator)\" $argv[2])
+          if [ (count $currentCommands) -ge (count $expectedCommands) ]
+              for i in (seq (count $expectedCommands))
+                  if [ $currentCommands[$i] != $expectedCommands[$i] ]
+                      return 1
+                  end
+              end
+              if [ (count $currentCommands) -eq (count $expectedCommands) ]
+                  return 0
+              end
+              if [ (count $subcommands) -gt 1 ]
+                  for i in (seq (count $subcommands))
+                      if [ $currentCommands[(math (count $expectedCommands) + 1)] = $subcommands[$i] ]
+                          return 1
+                      end
+                  end
+              end
+              return 0
+          end
+          return 1
+      end
+
+      \(generateCompletions([type]).joined(separator: "\n"))
+      """
   }
 }
 
@@ -145,64 +182,13 @@ extension String {
 }
 
 extension FishCompletionsGenerator {
-
-  private static var separator: String { " " }
-
   private static func preprocessorFunctionName(commandName: String) -> String {
     "_swift_\(commandName)_preprocessor"
-  }
-
-  private static func preprocessorFunction(commandName: String) -> String {
-    """
-    # A function which filters options which starts with "-" from $argv.
-    function \(preprocessorFunctionName(commandName: commandName))
-        set -l results
-        for i in (seq (count $argv))
-            switch (echo $argv[$i] | string sub -l 1)
-                case '-'
-                case '*'
-                    echo $argv[$i]
-            end
-        end
-    end
-    """
   }
 
   private static func helperFunctionName(commandName: String) -> String {
     "_swift_" + commandName + "_using_command"
   }
-
-  private static func helperFunction(commandName: String) -> String {
-    let functionName = helperFunctionName(commandName: commandName)
-    let preprocessorFunctionName =
-      preprocessorFunctionName(commandName: commandName)
-    return """
-      function \(functionName)
-          set -gx \(CompletionShell.shellEnvironmentVariableName) fish
-          set -gx \(CompletionShell.shellVersionEnvironmentVariableName) "$FISH_VERSION"
-          set -l currentCommands (\(preprocessorFunctionName) (commandline -opc))
-          set -l expectedCommands (string split \"\(separator)\" $argv[1])
-          set -l subcommands (string split \"\(separator)\" $argv[2])
-          if [ (count $currentCommands) -ge (count $expectedCommands) ]
-              for i in (seq (count $expectedCommands))
-                  if [ $currentCommands[$i] != $expectedCommands[$i] ]
-                      return 1
-                  end
-              end
-              if [ (count $currentCommands) -eq (count $expectedCommands) ]
-                  return 0
-              end
-              if [ (count $subcommands) -gt 1 ]
-                  for i in (seq (count $subcommands))
-                      if [ $currentCommands[(math (count $expectedCommands) + 1)] = $subcommands[$i] ]
-                          return 1
-                      end
-                  end
-              end
-              return 0
-          end
-          return 1
-      end
-      """
-  }
 }
+
+private var separator: String { " " }
