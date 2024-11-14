@@ -37,6 +37,14 @@ function _swift_math_using_command
     return 1
 end
 
+function _swift_math_complete_directories
+    set token (commandline -t)
+    string match -- '*/' $token
+    set subdirs $token*/
+    printf '%s\n' $subdirs
+end
+
+complete -c math -f
 complete -c math -n '_swift_math_using_command "math add"' -l hex-output -s x -d 'Use hexadecimal notation for the result.'
 complete -c math -n '_swift_math_using_command "math add"' -l version -d 'Show the version.'
 complete -c math -n '_swift_math_using_command "math add"' -s h -l help -d 'Show help information.'
@@ -49,11 +57,11 @@ complete -c math -n '_swift_math_using_command "math stats average"' -s h -l hel
 complete -c math -n '_swift_math_using_command "math stats stdev"' -l version -d 'Show the version.'
 complete -c math -n '_swift_math_using_command "math stats stdev"' -s h -l help -d 'Show help information.'
 complete -c math -n '_swift_math_using_command "math stats quantiles"' -rfka 'alphabet alligator branch braggart'
-complete -c math -n '_swift_math_using_command "math stats quantiles"' -rfa '(command math ---completion stats quantiles -- customArg (commandline -opc)[1..-1])'
-complete -c math -n '_swift_math_using_command "math stats quantiles"' -l file -rfa '(for i in *.{txt,md}; echo $i;end)'
-complete -c math -n '_swift_math_using_command "math stats quantiles"' -l directory -rfa '(__fish_complete_directories)'
-complete -c math -n '_swift_math_using_command "math stats quantiles"' -l shell -rfa '(head -100 /usr/share/dict/words | tail -50)'
-complete -c math -n '_swift_math_using_command "math stats quantiles"' -l custom -rfa '(command math ---completion stats quantiles -- --custom (commandline -opc)[1..-1])'
+complete -c math -n '_swift_math_using_command "math stats quantiles"' -rfka '(set command (commandline -op)[1];command $command ---completion stats quantiles -- customArg (commandline -op))'
+complete -c math -n '_swift_math_using_command "math stats quantiles"' -l file -rfa '(set exts \'txt\' \'md\';for p in (string match -e -- \'*/\' (commandline -t);or printf \n)*.{$exts};printf %s\n $p;end;__fish_complete_directories (commandline -t) \'\')'
+complete -c math -n '_swift_math_using_command "math stats quantiles"' -l directory -rfa '(_swift_math_complete_directories)'
+complete -c math -n '_swift_math_using_command "math stats quantiles"' -l shell -rfka '(head -100 /usr/share/dict/words | tail -50)'
+complete -c math -n '_swift_math_using_command "math stats quantiles"' -l custom -rfka '(set command (commandline -op)[1];command $command ---completion stats quantiles -- --custom (commandline -op))'
 complete -c math -n '_swift_math_using_command "math stats quantiles"' -l version -d 'Show the version.'
 complete -c math -n '_swift_math_using_command "math stats quantiles"' -s h -l help -d 'Show help information.'
 complete -c math -n '_swift_math_using_command "math stats" "average stdev quantiles"' -l version -d 'Show the version.'
