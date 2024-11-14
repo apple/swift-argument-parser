@@ -39,23 +39,23 @@ end
 
 complete -c base-test -n '_swift_base-test_using_command "base-test sub-command"' -s h -l help -d 'Show help information.'
 complete -c base-test -n '_swift_base-test_using_command "base-test escaped-command"' -l one -d 'Escaped chars: \'[]\\.'
-complete -c base-test -n '_swift_base-test_using_command "base-test escaped-command"' -r -f -a '(command base-test ---completion escaped-command -- two (commandline -opc)[1..-1])'
+complete -c base-test -n '_swift_base-test_using_command "base-test escaped-command"' -rfa '(command base-test ---completion escaped-command -- two (commandline -opc)[1..-1])'
 complete -c base-test -n '_swift_base-test_using_command "base-test escaped-command"' -s h -l help -d 'Show help information.'
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -l name -d 'The user\'s name.'
-complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -l kind -r -f -k -a 'one two custom-three'
-complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -l other-kind -r -f -k -a 'b1_fish b2_fish b3_fish'
-complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -l path1 -r -f -a '(for i in *.{}; echo $i;end)'
-complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -l path2 -r -f -a '(for i in *.{}; echo $i;end)'
-complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -l path3 -r -f -k -a 'c1_fish c2_fish c3_fish'
+complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -l kind -rfka 'one two custom-three'
+complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -l other-kind -rfka 'b1_fish b2_fish b3_fish'
+complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -l path1 -rfa '(for i in *.{}; echo $i;end)'
+complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -l path2 -rfa '(for i in *.{}; echo $i;end)'
+complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -l path3 -rfka 'c1_fish c2_fish c3_fish'
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -l one
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -l two
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -l three
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -l kind-counter
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -l rep1
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -s r -l rep2
-complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -r -f -a '(command base-test ---completion  -- argument (commandline -opc)[1..-1])'
-complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -r -f -a '(command base-test ---completion  -- nested.nestedArgument (commandline -opc)[1..-1])'
+complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -rfa '(command base-test ---completion  -- argument (commandline -opc)[1..-1])'
+complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -rfa '(command base-test ---completion  -- nested.nestedArgument (commandline -opc)[1..-1])'
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -s h -l help -d 'Show help information.'
-complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -f -a 'sub-command' -d ''
-complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -f -a 'escaped-command' -d ''
-complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -f -a 'help' -d 'Show subcommand help information.'
+complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -fa 'sub-command' -d ''
+complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -fa 'escaped-command' -d ''
+complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -fa 'help' -d 'Show subcommand help information.'
