@@ -37,15 +37,23 @@ function _swift_base-test_using_command
     return 1
 end
 
+function _swift_base-test_complete_directories
+    set token (commandline -t)
+    string match -- '*/' $token
+    set subdirs $token*/
+    printf '%s\n' $subdirs
+end
+
+complete -c base-test -f
 complete -c base-test -n '_swift_base-test_using_command "base-test sub-command"' -s h -l help -d 'Show help information.'
 complete -c base-test -n '_swift_base-test_using_command "base-test escaped-command"' -l one -d 'Escaped chars: \'[]\\.'
-complete -c base-test -n '_swift_base-test_using_command "base-test escaped-command"' -rfa '(command base-test ---completion escaped-command -- two (commandline -opc)[1..-1])'
+complete -c base-test -n '_swift_base-test_using_command "base-test escaped-command"' -rfka '(set command (commandline -op)[1];command $command ---completion escaped-command -- two (commandline -op))'
 complete -c base-test -n '_swift_base-test_using_command "base-test escaped-command"' -s h -l help -d 'Show help information.'
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -l name -d 'The user\'s name.'
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -l kind -rfka 'one two custom-three'
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -l other-kind -rfka 'b1_fish b2_fish b3_fish'
-complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -l path1 -rfa '(for i in *.{}; echo $i;end)'
-complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -l path2 -rfa '(for i in *.{}; echo $i;end)'
+complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -l path1 -rF
+complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -l path2 -rF
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -l path3 -rfka 'c1_fish c2_fish c3_fish'
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -l one
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -l two
@@ -53,8 +61,8 @@ complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-comman
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -l kind-counter
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -l rep1
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -s r -l rep2
-complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -rfa '(command base-test ---completion  -- argument (commandline -opc)[1..-1])'
-complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -rfa '(command base-test ---completion  -- nested.nestedArgument (commandline -opc)[1..-1])'
+complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -rfka '(set command (commandline -op)[1];command $command ---completion  -- argument (commandline -op))'
+complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -rfka '(set command (commandline -op)[1];command $command ---completion  -- nested.nestedArgument (commandline -op))'
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -s h -l help -d 'Show help information.'
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -fa 'sub-command' -d ''
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -fa 'escaped-command' -d ''
