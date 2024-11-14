@@ -11,48 +11,61 @@
 
 extension [ParsableCommand.Type] {
   var fishCompletionScript: String {
-    """
-    # A function which filters options which starts with "-" from $argv.
-    function \(commandsAndPositionalsFunctionName)
-        set -l results
-        for i in (seq (count $argv))
-            switch (echo $argv[$i] | string sub -l 1)
-                case '-'
-                case '*'
-                    echo $argv[$i]
-            end
-        end
-    end
+    // swift-format-ignore: NeverForceUnwrap
+    // Preconditions:
+    // - first must be non-empty for a fish completion script to be of use.
+    // - first is guaranteed non-empty in the one place where this computed var is used.
+    let commandName = first!._commandName
+    return """
+      # A function which filters options which starts with "-" from $argv.
+      function \(commandsAndPositionalsFunctionName)
+          set -l results
+          for i in (seq (count $argv))
+              switch (echo $argv[$i] | string sub -l 1)
+                  case '-'
+                  case '*'
+                      echo $argv[$i]
+              end
+          end
+      end
 
-    function \(usingCommandFunctionName)
-        set -gx \(CompletionShell.shellEnvironmentVariableName) fish
-        set -gx \(CompletionShell.shellVersionEnvironmentVariableName) "$FISH_VERSION"
-        set -l commands_and_positionals (\(commandsAndPositionalsFunctionName) (commandline -opc))
-        set -l expected_commands (string split -- '\(separator)' $argv[1])
-        set -l subcommands (string split -- '\(separator)' $argv[2])
-        if [ (count $commands_and_positionals) -ge (count $expected_commands) ]
-            for i in (seq (count $expected_commands))
-                if [ $commands_and_positionals[$i] != $expected_commands[$i] ]
-                    return 1
-                end
-            end
-            if [ (count $commands_and_positionals) -eq (count $expected_commands) ]
-                return 0
-            end
-            if [ (count $subcommands) -gt 1 ]
-                for i in (seq (count $subcommands))
-                    if [ $commands_and_positionals[(math (count $expected_commands) + 1)] = $subcommands[$i] ]
-                        return 1
-                    end
-                end
-            end
-            return 0
-        end
-        return 1
-    end
+      function \(usingCommandFunctionName)
+          set -gx \(CompletionShell.shellEnvironmentVariableName) fish
+          set -gx \(CompletionShell.shellVersionEnvironmentVariableName) "$FISH_VERSION"
+          set -l commands_and_positionals (\(commandsAndPositionalsFunctionName) (commandline -opc))
+          set -l expected_commands (string split -- '\(separator)' $argv[1])
+          set -l subcommands (string split -- '\(separator)' $argv[2])
+          if [ (count $commands_and_positionals) -ge (count $expected_commands) ]
+              for i in (seq (count $expected_commands))
+                  if [ $commands_and_positionals[$i] != $expected_commands[$i] ]
+                      return 1
+                  end
+              end
+              if [ (count $commands_and_positionals) -eq (count $expected_commands) ]
+                  return 0
+              end
+              if [ (count $subcommands) -gt 1 ]
+                  for i in (seq (count $subcommands))
+                      if [ $commands_and_positionals[(math (count $expected_commands) + 1)] = $subcommands[$i] ]
+                          return 1
+                      end
+                  end
+              end
+              return 0
+          end
+          return 1
+      end
 
-    \(completions.joined(separator: "\n"))
-    """
+      function \(completeDirectoriesFunctionName)
+          set token (commandline -t)
+          string match -- '*/' $token
+          set subdirs $token*/
+          printf '%s\\n' $subdirs
+      end
+
+      complete -c \(commandName) -f
+      \(completions.joined(separator: "\n"))
+      """
   }
 
   private var completions: [String] {
@@ -127,17 +140,40 @@ extension [ParsableCommand.Type] {
     case .list(let list):
       results += ["-rfka '\(list.joined(separator: separator))'"]
     case .file(let extensions):
-      let pattern = "*.{\(extensions.joined(separator: ","))}"
-      results += ["-rfa '(for i in \(pattern); echo $i;end)'"]
+      switch extensions.count {
+      case 0:
+        results += ["-rF"]
+      case 1:
+        results += [
+          """
+          -rfa '(\
+          for p in (string match -e -- \\'*/\\' (commandline -t);or printf \\n)*.\\'\(extensions.map { $0.fishEscapeForSingleQuotedString(iterationCount: 2) }.joined())\\';printf %s\\n $p;end;\
+          __fish_complete_directories (commandline -t) \\'\\'\
+          )'
+          """
+        ]
+      default:
+        results += [
+          """
+          -rfa '(\
+          set exts \(extensions.map { "\\'\($0.fishEscapeForSingleQuotedString(iterationCount: 2))\\'" }.joined(separator: separator));\
+          for p in (string match -e -- \\'*/\\' (commandline -t);or printf \\n)*.{$exts};printf %s\\n $p;end;\
+          __fish_complete_directories (commandline -t) \\'\\'\
+          )'
+          """
+        ]
+      }
     case .directory:
-      results += ["-rfa '(__fish_complete_directories)'"]
+      results += ["-rfa '(\(completeDirectoriesFunctionName))'"]
     case .shellCommand(let shellCommand):
-      results += ["-rfa '(\(shellCommand))'"]
+      results += ["-rfka '(\(shellCommand))'"]
     case .custom:
-      // swift-format-ignore: NeverForceUnwrap
-      // Precondition: first is guaranteed to be non-empty
       results += [
-        "-rfa '(command \(first!._commandName) \(arg.customCompletionCall(self)) (commandline -opc)[1..-1])'"
+        """
+        -rfka '(\
+        set command (commandline -op)[1];command $command \(arg.customCompletionCall(self)) (commandline -op)\
+        )'
+        """
       ]
     }
 
@@ -154,6 +190,12 @@ extension [ParsableCommand.Type] {
     // swift-format-ignore: NeverForceUnwrap
     // Precondition: first is guaranteed to be non-empty
     "_swift_\(first!._commandName)_using_command"
+  }
+
+  private var completeDirectoriesFunctionName: String {
+    // swift-format-ignore: NeverForceUnwrap
+    // Precondition: first is guaranteed to be non-empty
+    "_swift_\(first!._commandName)_complete_directories"
   }
 }
 
