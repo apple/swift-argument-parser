@@ -94,7 +94,7 @@ extension FishCompletionsGenerator {
       let escapedAbstract =
         subcommand.configuration.abstract.fishEscapeForSingleQuotedString()
       let suggestion =
-        "-f -a '\(subcommand._commandName)' -d '\(escapedAbstract)'"
+        "-fa '\(subcommand._commandName)' -d '\(escapedAbstract)'"
       return complete(suggestion: suggestion)
     }
 
@@ -137,18 +137,18 @@ extension ArgumentDefinition {
     case .default:
       break
     case .list(let list):
-      results += ["-r -f -k -a '\(list.joined(separator: " "))'"]
+      results += ["-rfka '\(list.joined(separator: " "))'"]
     case .file(let extensions):
       let pattern = "*.{\(extensions.joined(separator: ","))}"
-      results += ["-r -f -a '(for i in \(pattern); echo $i;end)'"]
+      results += ["-rfa '(for i in \(pattern); echo $i;end)'"]
     case .directory:
-      results += ["-r -f -a '(__fish_complete_directories)'"]
+      results += ["-rfa '(__fish_complete_directories)'"]
     case .shellCommand(let shellCommand):
-      results += ["-r -f -a '(\(shellCommand))'"]
+      results += ["-rfa '(\(shellCommand))'"]
     case .custom:
       guard let commandName = commands.first?._commandName else { return nil }
       results += [
-        "-r -f -a '(command \(commandName) \(customCompletionCall(commands)) (commandline -opc)[1..-1])'"
+        "-rfa '(command \(commandName) \(customCompletionCall(commands)) (commandline -opc)[1..-1])'"
       ]
     }
 
