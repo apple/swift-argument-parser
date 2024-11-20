@@ -61,6 +61,32 @@ function(get_swift_host_os result_var_name)
   endif()
 endfunction()
 
+# Returns the module triple in a variable. This is cached for future use.
+#
+# Usage:
+#   get_swift_module_triple(result_var_name)
+#
+# Sets ${result_var_name} with the module triple derived from the Swift compiler.
+# This is cached in the Swift_MODULE_TRIPLE variable.
+function(get_swift_module_triple result_var_name)
+  if(DEFINED Swift_MODULE_TRIPLE)
+    set(${result_var_name} ${Swift_MODULE_TRIPLE} PARENT_SCOPE)
+    return()
+  endif()
+
+  set(module_triple_command "${CMAKE_Swift_COMPILER}" -print-target-info)
+  if(CMAKE_Swift_COMPILER_TARGET)
+    list(APPEND module_triple_command -target ${CMAKE_Swift_COMPILER_TARGET})
+  endif()
+  execute_process(COMMAND ${module_triple_command}
+    OUTPUT_VARIABLE target_info_json)
+
+  string(JSON module_triple GET "${target_info_json}" "target" "moduleTriple")
+  set(Swift_MODULE_TRIPLE "${module_triple}" CACHE STRING "swift module triple used for installed swiftmodule and swiftinterface files")
+  mark_as_advanced(Swift_MODULE_TRIPLE)
+  set(${result_var_name} ${module_triple} PARENT_SCOPE)
+endfunction()
+
 function(_install_target module)
   get_swift_host_os(swift_os)
   get_target_property(type ${module} TYPE)
@@ -76,7 +102,7 @@ function(_install_target module)
     return()
   endif()
 
-  get_swift_host_arch(swift_arch)
+  get_swift_module_triple(swift_triple)
   get_target_property(module_name ${module} Swift_MODULE_NAME)
   if(NOT module_name)
     set(module_name ${module})
@@ -84,8 +110,8 @@ function(_install_target module)
 
   install(FILES $<TARGET_PROPERTY:${module},Swift_MODULE_DIRECTORY>/${module_name}.swiftdoc
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/${swift}/${swift_os}/${module_name}.swiftmodule
-    RENAME ${swift_arch}.swiftdoc)
+    RENAME ${swift_triple}.swiftdoc)
   install(FILES $<TARGET_PROPERTY:${module},Swift_MODULE_DIRECTORY>/${module_name}.swiftmodule
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/${swift}/${swift_os}/${module_name}.swiftmodule
-    RENAME ${swift_arch}.swiftmodule)
+    RENAME ${swift_triple}.swiftmodule)
 endfunction()
