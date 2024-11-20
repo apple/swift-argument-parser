@@ -15,6 +15,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_Swift_MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/swift)
 
 include(CTest)
+include(GNUInstallDirs)
 include(SwiftSupport)
 
 find_package(dispatch CONFIG)

@@ -71,10 +71,7 @@ function(_install_target module)
     set(swift swift)
   endif()
 
-  install(TARGETS ${module}
-    ARCHIVE DESTINATION lib/${swift}/${swift_os}
-    LIBRARY DESTINATION lib/${swift}/${swift_os}
-    RUNTIME DESTINATION bin)
+  install(TARGETS ${module})
   if(type STREQUAL EXECUTABLE)
     return()
   endif()
@@ -85,17 +82,10 @@ function(_install_target module)
     set(module_name ${module})
   endif()
 
-  if(CMAKE_SYSTEM_NAME STREQUAL Darwin)
-    install(FILES $<TARGET_PROPERTY:${module},Swift_MODULE_DIRECTORY>/${module_name}.swiftdoc
-      DESTINATION lib/${swift}/${swift_os}/${module_name}.swiftmodule
-      RENAME ${swift_arch}.swiftdoc)
-    install(FILES $<TARGET_PROPERTY:${module},Swift_MODULE_DIRECTORY>/${module_name}.swiftmodule
-      DESTINATION lib/${swift}/${swift_os}/${module_name}.swiftmodule
-      RENAME ${swift_arch}.swiftmodule)
-  else()
-    install(FILES
-      $<TARGET_PROPERTY:${module},Swift_MODULE_DIRECTORY>/${module_name}.swiftdoc
-      $<TARGET_PROPERTY:${module},Swift_MODULE_DIRECTORY>/${module_name}.swiftmodule
-      DESTINATION lib/${swift}/${swift_os}/${swift_arch})
-  endif()
+  install(FILES $<TARGET_PROPERTY:${module},Swift_MODULE_DIRECTORY>/${module_name}.swiftdoc
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/${swift}/${swift_os}/${module_name}.swiftmodule
+    RENAME ${swift_arch}.swiftdoc)
+  install(FILES $<TARGET_PROPERTY:${module},Swift_MODULE_DIRECTORY>/${module_name}.swiftmodule
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/${swift}/${swift_os}/${module_name}.swiftmodule
+    RENAME ${swift_arch}.swiftmodule)
 endfunction()
