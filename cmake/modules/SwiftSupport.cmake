@@ -61,31 +61,29 @@ function(get_swift_host_os result_var_name)
   endif()
 endfunction()
 
-# Returns the module triple in a variable. This is cached for future use.
-#
-# Usage:
-#   get_swift_module_triple(result_var_name)
-#
-# Sets ${result_var_name} with the module triple derived from the Swift compiler.
-# This is cached in the Swift_MODULE_TRIPLE variable.
-function(get_swift_module_triple result_var_name)
-  if(DEFINED Swift_MODULE_TRIPLE)
-    set(${result_var_name} ${Swift_MODULE_TRIPLE} PARENT_SCOPE)
-    return()
-  endif()
+# Attempt to get the module triple from the Swift compiler.
+set(module_triple_command "${CMAKE_Swift_COMPILER}" -print-target-info)
+if(CMAKE_Swift_COMPILER_TARGET)
+  list(APPEND module_triple_command -target ${CMAKE_Swift_COMPILER_TARGET})
+endif()
+execute_process(COMMAND ${module_triple_command}
+  OUTPUT_VARIABLE target_info_json)
+string(JSON module_triple GET "${target_info_json}" "target" "moduleTriple")
 
-  set(module_triple_command "${CMAKE_Swift_COMPILER}" -print-target-info)
-  if(CMAKE_Swift_COMPILER_TARGET)
-    list(APPEND module_triple_command -target ${CMAKE_Swift_COMPILER_TARGET})
-  endif()
-  execute_process(COMMAND ${module_triple_command}
-    OUTPUT_VARIABLE target_info_json)
+# If we failed to get the module triple, fall back to the host arch.
+if(NOT module_triple)
+  get_swift_host_arch(host_arch)
+  set(module_triple ${host_arch})
+  message(WARNING 
+    "Failed to get the module triple from the Swift compiler. "
+    "Falling back to host arch: ${host_arch}. "
+    "Compiler output: "
+    "${target_info_json}")
+endif()
 
-  string(JSON module_triple GET "${target_info_json}" "target" "moduleTriple")
-  set(Swift_MODULE_TRIPLE "${module_triple}" CACHE STRING "swift module triple used for installed swiftmodule and swiftinterface files")
-  mark_as_advanced(Swift_MODULE_TRIPLE)
-  set(${result_var_name} ${module_triple} PARENT_SCOPE)
-endfunction()
+# Cache the module triple for future use.
+set(Swift_MODULE_TRIPLE "${module_triple}" CACHE STRING "Swift module triple used for installed swiftmodule and swiftinterface files")
+mark_as_advanced(Swift_MODULE_TRIPLE)
 
 function(_install_target module)
   get_swift_host_os(swift_os)
@@ -102,7 +100,6 @@ function(_install_target module)
     return()
   endif()
 
-  get_swift_module_triple(swift_triple)
   get_target_property(module_name ${module} Swift_MODULE_NAME)
   if(NOT module_name)
     set(module_name ${module})
@@ -110,8 +107,8 @@ function(_install_target module)
 
   install(FILES $<TARGET_PROPERTY:${module},Swift_MODULE_DIRECTORY>/${module_name}.swiftdoc
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/${swift}/${swift_os}/${module_name}.swiftmodule
-    RENAME ${swift_triple}.swiftdoc)
+    RENAME ${Swift_MODULE_TRIPLE}.swiftdoc)
   install(FILES $<TARGET_PROPERTY:${module},Swift_MODULE_DIRECTORY>/${module_name}.swiftmodule
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/${swift}/${swift_os}/${module_name}.swiftmodule
-    RENAME ${swift_triple}.swiftmodule)
+    RENAME ${Swift_MODULE_TRIPLE}.swiftmodule)
 endfunction()
