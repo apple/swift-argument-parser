@@ -61,29 +61,27 @@ function(get_swift_host_os result_var_name)
   endif()
 endfunction()
 
-# Attempt to get the module triple from the Swift compiler.
-set(module_triple_command "${CMAKE_Swift_COMPILER}" -print-target-info)
-if(CMAKE_Swift_COMPILER_TARGET)
-  list(APPEND module_triple_command -target ${CMAKE_Swift_COMPILER_TARGET})
-endif()
-execute_process(COMMAND ${module_triple_command}
-  OUTPUT_VARIABLE target_info_json)
-string(JSON module_triple GET "${target_info_json}" "target" "moduleTriple")
+if(NOT Swift_MODULE_TRIPLE)
+  # Attempt to get the module triple from the Swift compiler.
+  set(module_triple_command "${CMAKE_Swift_COMPILER}" -print-target-info)
+  if(CMAKE_Swift_COMPILER_TARGET)
+    list(APPEND module_triple_command -target ${CMAKE_Swift_COMPILER_TARGET})
+  endif()
+  execute_process(COMMAND ${module_triple_command}
+    OUTPUT_VARIABLE target_info_json)
+  string(JSON module_triple GET "${target_info_json}" "target" "moduleTriple")
 
-# If we failed to get the module triple, fall back to the host arch.
-if(NOT module_triple)
-  get_swift_host_arch(host_arch)
-  set(module_triple ${host_arch})
-  message(WARNING 
-    "Failed to get the module triple from the Swift compiler. "
-    "Falling back to host arch: ${host_arch}. "
-    "Compiler output: "
-    "${target_info_json}")
-endif()
+  # Exit now if we failed to infer the triple.
+  if(NOT module_triple)
+    message(FATAL_ERROR
+      "Failed to get module triple from Swift compiler. "
+      "Compiler output: ${target_info_json}")
+  endif()
 
-# Cache the module triple for future use.
-set(Swift_MODULE_TRIPLE "${module_triple}" CACHE STRING "Swift module triple used for installed swiftmodule and swiftinterface files")
-mark_as_advanced(Swift_MODULE_TRIPLE)
+  # Cache the module triple for future use.
+  set(Swift_MODULE_TRIPLE "${module_triple}" CACHE STRING "swift module triple used for installed swiftmodule and swiftinterface files")
+  mark_as_advanced(Swift_MODULE_TRIPLE)
+endif()
 
 function(_install_target module)
   get_swift_host_os(swift_os)
