@@ -9,6 +9,14 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if swift(>=5.11)
+internal import class Foundation.ProcessInfo
+#elseif swift(>=5.10)
+import class Foundation.ProcessInfo
+#else
+@_implementationOnly import class Foundation.ProcessInfo
+#endif
+
 struct CommandError: Error {
   var commandStack: [ParsableCommand.Type]
   var parserError: ParserError
@@ -356,6 +364,9 @@ extension CommandParser {
     // Parsing and retrieval successful! We don't want to continue with any
     // other parsing here, so after printing the result of the completion
     // function, exit with a success code.
+    if let completionShellName = ProcessInfo.processInfo.environment[CompletionShell.environmentVariableName] {
+      CompletionShell.requesting = CompletionShell(rawValue: completionShellName)
+    }
     let output = completionFunction(completionValues).joined(separator: "\n")
     throw ParserError.completionScriptCustomResponse(output)
   }
