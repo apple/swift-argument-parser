@@ -9,9 +9,14 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if swift(>=5.11)
+#if swift(>=6.0)
+#if canImport(FoundationEssentials)
+internal import protocol FoundationEssentials.LocalizedError
+internal import class FoundationEssentials.NSError
+#else
 internal import protocol Foundation.LocalizedError
 internal import class Foundation.NSError
+#endif
 #elseif swift(>=5.10)
 import protocol Foundation.LocalizedError
 import class Foundation.NSError
