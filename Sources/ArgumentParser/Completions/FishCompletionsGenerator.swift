@@ -32,8 +32,8 @@ struct FishCompletionsGenerator {
           set -gx \(CompletionShell.shellEnvironmentVariableName) fish
           set -gx \(CompletionShell.shellVersionEnvironmentVariableName) "$FISH_VERSION"
           set -l currentCommands (\(preprocessorFunctionName) (commandline -opc))
-          set -l expectedCommands (string split '\(separator)' $argv[1])
-          set -l subcommands (string split '\(separator)' $argv[2])
+          set -l expectedCommands (string split -- '\(separator)' $argv[1])
+          set -l subcommands (string split -- '\(separator)' $argv[2])
           if [ (count $currentCommands) -ge (count $expectedCommands) ]
               for i in (seq (count $expectedCommands))
                   if [ $currentCommands[$i] != $expectedCommands[$i] ]
