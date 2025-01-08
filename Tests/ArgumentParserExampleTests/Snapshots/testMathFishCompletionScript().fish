@@ -14,8 +14,8 @@ function _swift_math_using_command
     set -gx SAP_SHELL fish
     set -gx SAP_SHELL_VERSION "$FISH_VERSION"
     set -l currentCommands (_swift_math_preprocessor (commandline -opc))
-    set -l expectedCommands (string split ' ' $argv[1])
-    set -l subcommands (string split ' ' $argv[2])
+    set -l expectedCommands (string split -- ' ' $argv[1])
+    set -l subcommands (string split -- ' ' $argv[2])
     if [ (count $currentCommands) -ge (count $expectedCommands) ]
         for i in (seq (count $expectedCommands))
             if [ $currentCommands[$i] != $expectedCommands[$i] ]
