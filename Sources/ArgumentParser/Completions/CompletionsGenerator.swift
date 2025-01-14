@@ -42,8 +42,11 @@ public struct CompletionShell: RawRepresentable, Hashable, CaseIterable {
     [.zsh, .bash, .fish]
   }
 
-  /// An instance representing the shell for which completions are being
-  /// requested.
+  /// While generating a shell completion script or while a Swift custom completion
+  /// function is executing to offer completions for a word from a command line
+  /// (e.g., when `customCompletion` from `@Option(completion: .custom(customCompletion))`
+  /// executes), an instance representing the shell for which completions will
+  /// be or are being requested, respectively. Otherwise `nil`.
   public internal(set) static var requesting: CompletionShell?
 
   /// The name of the environment variable whose value is the name of the shell
