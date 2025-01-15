@@ -216,6 +216,8 @@ typeset -A opt_args
 
 _base-test() {
     export SAP_SHELL=zsh
+    SAP_SHELL_VERSION="$(builtin emulate zsh -c 'printf %s "${ZSH_VERSION}"')"
+    export SAP_SHELL_VERSION
     integer ret=1
     local -a args
     args+=(
@@ -298,6 +300,8 @@ let bashRequestingBaseCompletions = """
 
 _base_test() {
     export SAP_SHELL=bash
+    SAP_SHELL_VERSION="$(IFS='.'; printf %s "${BASH_VERSINFO[*]}")"
+    export SAP_SHELL_VERSION
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
     COMPREPLY=()
@@ -391,6 +395,8 @@ typeset -A opt_args
 
 _escaped-command() {
     export SAP_SHELL=zsh
+    SAP_SHELL_VERSION="$(builtin emulate zsh -c 'printf %s "${ZSH_VERSION}"')"
+    export SAP_SHELL_VERSION
     integer ret=1
     local -a args
     args+=(
@@ -427,6 +433,7 @@ end
 
 function _swift_base-test_using_command
     set -gx SAP_SHELL fish
+    set -gx SAP_SHELL_VERSION "$FISH_VERSION"
     set -l currentCommands (_swift_base-test_preprocessor (commandline -opc))
     set -l expectedCommands (string split " " $argv[1])
     set -l subcommands (string split " " $argv[2])
@@ -529,6 +536,8 @@ typeset -A opt_args
 
 _parent() {
     export SAP_SHELL=zsh
+    SAP_SHELL_VERSION="$(builtin emulate zsh -c 'printf %s "${ZSH_VERSION}"')"
+    export SAP_SHELL_VERSION
     integer ret=1
     local -a args
     args+=(
@@ -553,6 +562,8 @@ let bashRequestingHiddenCompletion = """
 
 _parent() {
     export SAP_SHELL=bash
+    SAP_SHELL_VERSION="$(IFS='.'; printf %s "${BASH_VERSINFO[*]}")"
+    export SAP_SHELL_VERSION
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
     COMPREPLY=()
@@ -583,6 +594,7 @@ end
 
 function _swift_parent_using_command
     set -gx SAP_SHELL fish
+    set -gx SAP_SHELL_VERSION "$FISH_VERSION"
     set -l currentCommands (_swift_parent_preprocessor (commandline -opc))
     set -l expectedCommands (string split " " $argv[1])
     set -l subcommands (string split " " $argv[2])
