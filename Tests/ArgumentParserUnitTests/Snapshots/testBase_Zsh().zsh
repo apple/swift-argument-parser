@@ -1,15 +1,18 @@
 #compdef base-test
-local context state state_descr line
-_base_test_commandname="${words[1]}"
-typeset -A opt_args
 
 _base-test() {
-    export SAP_SHELL=zsh
+    local -xr SAP_SHELL=zsh
+    local -x SAP_SHELL_VERSION
     SAP_SHELL_VERSION="$(builtin emulate zsh -c 'printf %s "${ZSH_VERSION}"')"
-    export SAP_SHELL_VERSION
-    integer ret=1
-    local -a args
-    args+=(
+    local -r SAP_SHELL_VERSION
+
+    local context state state_descr line
+    local -A opt_args
+
+    local -r _base_test_commandname="${words[1]}"
+
+    local -i ret=1
+    local -ar args=(
         '--name[The user'"'"'s name.]:name:'
         '--kind:kind:(one two custom-three)'
         '--other-kind:other-kind:(b1_zsh b2_zsh b3_zsh)'
@@ -31,8 +34,7 @@ _base-test() {
     _arguments -w -s -S "${args[@]}" && ret=0
     case "${state}" in
     command)
-        local subcommands
-        subcommands=(
+        local -ar subcommands=(
             'sub-command:'
             'escaped-command:'
             'help:Show subcommand help information.'
@@ -58,9 +60,8 @@ _base-test() {
 }
 
 _base-test_sub-command() {
-    integer ret=1
-    local -a args
-    args+=(
+    local -i ret=1
+    local -ar args=(
         '(-h --help)'{-h,--help}'[Show help information.]'
     )
     _arguments -w -s -S "${args[@]}" && ret=0
@@ -69,9 +70,8 @@ _base-test_sub-command() {
 }
 
 _base-test_escaped-command() {
-    integer ret=1
-    local -a args
-    args+=(
+    local -i ret=1
+    local -ar args=(
         '--one[Escaped chars: '"'"'\[\]\\.]:one:'
         ':two:{_custom_completion "${_base_test_commandname}" ---completion escaped-command -- two "${words[@]}"}'
         '(-h --help)'{-h,--help}'[Show help information.]'
@@ -82,9 +82,8 @@ _base-test_escaped-command() {
 }
 
 _base-test_help() {
-    integer ret=1
-    local -a args
-    args+=(
+    local -i ret=1
+    local -ar args=(
         ':subcommands:'
     )
     _arguments -w -s -S "${args[@]}" && ret=0

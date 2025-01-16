@@ -1,15 +1,18 @@
 #compdef math
-local context state state_descr line
-_math_commandname="${words[1]}"
-typeset -A opt_args
 
 _math() {
-    export SAP_SHELL=zsh
+    local -xr SAP_SHELL=zsh
+    local -x SAP_SHELL_VERSION
     SAP_SHELL_VERSION="$(builtin emulate zsh -c 'printf %s "${ZSH_VERSION}"')"
-    export SAP_SHELL_VERSION
-    integer ret=1
-    local -a args
-    args+=(
+    local -r SAP_SHELL_VERSION
+
+    local context state state_descr line
+    local -A opt_args
+
+    local -r _math_commandname="${words[1]}"
+
+    local -i ret=1
+    local -ar args=(
         '--version[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
         '(-): :->command'
@@ -18,8 +21,7 @@ _math() {
     _arguments -w -s -S "${args[@]}" && ret=0
     case "${state}" in
     command)
-        local subcommands
-        subcommands=(
+        local -ar subcommands=(
             'add:Print the sum of the values.'
             'multiply:Print the product of the values.'
             'stats:Calculate descriptive statistics.'
@@ -49,9 +51,8 @@ _math() {
 }
 
 _math_add() {
-    integer ret=1
-    local -a args
-    args+=(
+    local -i ret=1
+    local -ar args=(
         '(--hex-output -x)'{--hex-output,-x}'[Use hexadecimal notation for the result.]'
         ':values:'
         '--version[Show the version.]'
@@ -63,9 +64,8 @@ _math_add() {
 }
 
 _math_multiply() {
-    integer ret=1
-    local -a args
-    args+=(
+    local -i ret=1
+    local -ar args=(
         '(--hex-output -x)'{--hex-output,-x}'[Use hexadecimal notation for the result.]'
         ':values:'
         '--version[Show the version.]'
@@ -77,9 +77,8 @@ _math_multiply() {
 }
 
 _math_stats() {
-    integer ret=1
-    local -a args
-    args+=(
+    local -i ret=1
+    local -ar args=(
         '--version[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
         '(-): :->command'
@@ -88,8 +87,7 @@ _math_stats() {
     _arguments -w -s -S "${args[@]}" && ret=0
     case "${state}" in
     command)
-        local subcommands
-        subcommands=(
+        local -ar subcommands=(
             'average:Print the average of the values.'
             'stdev:Print the standard deviation of the values.'
             'quantiles:Print the quantiles of the values (TBD).'
@@ -115,9 +113,8 @@ _math_stats() {
 }
 
 _math_stats_average() {
-    integer ret=1
-    local -a args
-    args+=(
+    local -i ret=1
+    local -ar args=(
         '--kind[The kind of average to provide.]:kind:(mean median mode)'
         ':values:'
         '--version[Show the version.]'
@@ -129,9 +126,8 @@ _math_stats_average() {
 }
 
 _math_stats_stdev() {
-    integer ret=1
-    local -a args
-    args+=(
+    local -i ret=1
+    local -ar args=(
         ':values:'
         '--version[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
@@ -142,9 +138,8 @@ _math_stats_stdev() {
 }
 
 _math_stats_quantiles() {
-    integer ret=1
-    local -a args
-    args+=(
+    local -i ret=1
+    local -ar args=(
         ':one-of-four:(alphabet alligator branch braggart)'
         ':custom-arg:{_custom_completion "${_math_commandname}" ---completion stats quantiles -- customArg "${words[@]}"}'
         ':values:'
@@ -161,9 +156,8 @@ _math_stats_quantiles() {
 }
 
 _math_help() {
-    integer ret=1
-    local -a args
-    args+=(
+    local -i ret=1
+    local -ar args=(
         ':subcommands:'
         '--version[Show the version.]'
     )

@@ -16,9 +16,6 @@ struct ZshCompletionsGenerator {
 
     return """
       #compdef \(type._commandName)
-      local context state state_descr line
-      _\(type._commandName.zshEscapingCommandName())_commandname="${words[1]}"
-      typeset -A opt_args
 
       \(generateCompletionFunction([type]))\
       _custom_completion() {
@@ -65,8 +62,7 @@ struct ZshCompletionsGenerator {
       subcommandHandler = """
             case "${state}" in
             command)
-                local subcommands
-                subcommands=(
+                local -ar subcommands=(
         \(subcommandModes.joined(separator: "\n"))
                 )
                 _describe "subcommand" subcommands
@@ -82,15 +78,25 @@ struct ZshCompletionsGenerator {
     }
 
     let functionText = """
-      \(functionName)() {\(isRootCommand ? """
+      \(functionName)() {
+      \(isRootCommand
+        ? """
+              local -xr \(CompletionShell.shellEnvironmentVariableName)=zsh
+              local -x \(CompletionShell.shellVersionEnvironmentVariableName)
+              \(CompletionShell.shellVersionEnvironmentVariableName)="$(builtin emulate zsh -c 'printf %s "${ZSH_VERSION}"')"
+              local -r \(CompletionShell.shellVersionEnvironmentVariableName)
 
-          export \(CompletionShell.shellEnvironmentVariableName)=zsh
-          \(CompletionShell.shellVersionEnvironmentVariableName)="$(builtin emulate zsh -c 'printf %s "${ZSH_VERSION}"')"
-          export \(CompletionShell.shellVersionEnvironmentVariableName)
-      """ : "")
-          integer ret=1
-          local -a args
-          args+=(
+              local context state state_descr line
+              local -A opt_args
+
+              local -r _\(type._commandName.zshEscapingCommandName())_commandname="${words[1]}"
+
+
+          """
+        : ""
+      )\
+          local -i ret=1
+          local -ar args=(
       \(args.joined(separator: "\n").indentingEachLine(by: 8))
           )
           _arguments -w -s -S "${args[@]}" && ret=0
