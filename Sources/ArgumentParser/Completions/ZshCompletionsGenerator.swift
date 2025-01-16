@@ -175,7 +175,8 @@ extension ArgumentDefinition {
     return "'\(line)\(inputs)'"
   }
 
-  /// - returns: `true` if I'm an option and can be tab-completed multiple times in one command line. For example, `ssh` allows the `-L` option to be given multiple times, to establish multiple port forwardings.
+  /// - returns: `true` if `self` is an option and can be tab-completed multiple times in one command line.
+  ///   For example, `ssh` allows the `-L` option to be given multiple times, to establish multiple port forwardings.
   private var isRepeatableOption: Bool {
     guard
       case .named(_) = kind,
