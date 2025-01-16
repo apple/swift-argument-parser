@@ -1,6 +1,6 @@
 #compdef base-test
 local context state state_descr line
-_base_test_commandname=$words[1]
+_base_test_commandname="${words[1]}"
 typeset -A opt_args
 
 _base-test() {
@@ -22,14 +22,14 @@ _base-test() {
         '*--kind-counter'
         '*--rep1:rep1:'
         '*'{-r,--rep2}':rep2:'
-        ':argument:{_custom_completion $_base_test_commandname ---completion  -- argument $words}'
-        ':nested-argument:{_custom_completion $_base_test_commandname ---completion  -- nested.nestedArgument $words}'
+        ':argument:{_custom_completion "${_base_test_commandname}" ---completion  -- argument "${words[@]}"}'
+        ':nested-argument:{_custom_completion "${_base_test_commandname}" ---completion  -- nested.nestedArgument "${words[@]}"}'
         '(-h --help)'{-h,--help}'[Show help information.]'
         '(-): :->command'
         '(-)*:: :->arg'
     )
-    _arguments -w -s -S $args[@] && ret=0
-    case $state in
+    _arguments -w -s -S "${args[@]}" && ret=0
+    case "${state}" in
     command)
         local subcommands
         subcommands=(
@@ -40,7 +40,7 @@ _base-test() {
         _describe "subcommand" subcommands
         ;;
     arg)
-        case ${words[1]} in
+        case "${words[1]}" in
         sub-command)
             _base-test_sub-command
             ;;
@@ -54,7 +54,7 @@ _base-test() {
         ;;
     esac
 
-    return ret
+    return "${ret}"
 }
 
 _base-test_sub-command() {
@@ -63,9 +63,9 @@ _base-test_sub-command() {
     args+=(
         '(-h --help)'{-h,--help}'[Show help information.]'
     )
-    _arguments -w -s -S $args[@] && ret=0
+    _arguments -w -s -S "${args[@]}" && ret=0
 
-    return ret
+    return "${ret}"
 }
 
 _base-test_escaped-command() {
@@ -73,12 +73,12 @@ _base-test_escaped-command() {
     local -a args
     args+=(
         '--one[Escaped chars: '"'"'\[\]\\.]:one:'
-        ':two:{_custom_completion $_base_test_commandname ---completion escaped-command -- two $words}'
+        ':two:{_custom_completion "${_base_test_commandname}" ---completion escaped-command -- two "${words[@]}"}'
         '(-h --help)'{-h,--help}'[Show help information.]'
     )
-    _arguments -w -s -S $args[@] && ret=0
+    _arguments -w -s -S "${args[@]}" && ret=0
 
-    return ret
+    return "${ret}"
 }
 
 _base-test_help() {
@@ -87,9 +87,9 @@ _base-test_help() {
     args+=(
         ':subcommands:'
     )
-    _arguments -w -s -S $args[@] && ret=0
+    _arguments -w -s -S "${args[@]}" && ret=0
 
-    return ret
+    return "${ret}"
 }
 
 
