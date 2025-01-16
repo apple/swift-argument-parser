@@ -210,7 +210,7 @@ extension ArgumentDefinition {
 
     case .shellCommand(let command):
       return
-        "{local -a list; list=(${(f)\"$(\(command))\"}); _describe '''' list}"
+        "{local -a list;list=(${(f)\"$(\(command))\"});_describe \"\" list}"
 
     case .custom:
       guard let type = commands.first else { return "" }
