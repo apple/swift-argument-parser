@@ -426,7 +426,7 @@ function _swift_base-test_preprocessor
 end
 
 function _swift_base-test_using_command
-    set -x SAP_SHELL fish
+    set -gx SAP_SHELL fish
     set -l currentCommands (_swift_base-test_preprocessor (commandline -opc))
     set -l expectedCommands (string split " " $argv[1])
     set -l subcommands (string split " " $argv[2])
@@ -582,7 +582,7 @@ function _swift_parent_preprocessor
 end
 
 function _swift_parent_using_command
-    set -x SAP_SHELL fish
+    set -gx SAP_SHELL fish
     set -l currentCommands (_swift_parent_preprocessor (commandline -opc))
     set -l expectedCommands (string split " " $argv[1])
     set -l subcommands (string split " " $argv[2])

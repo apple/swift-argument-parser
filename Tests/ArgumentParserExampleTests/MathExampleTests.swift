@@ -585,7 +585,7 @@ function _swift_math_preprocessor
 end
 
 function _swift_math_using_command
-    set -x SAP_SHELL fish
+    set -gx SAP_SHELL fish
     set -l currentCommands (_swift_math_preprocessor (commandline -opc))
     set -l expectedCommands (string split \" \" $argv[1])
     set -l subcommands (string split \" \" $argv[2])
