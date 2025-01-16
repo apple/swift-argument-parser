@@ -20,7 +20,7 @@ struct ZshCompletionsGenerator {
       _\(type._commandName.zshEscapingCommandName())_commandname="${words[1]}"
       typeset -A opt_args
 
-      \(generateCompletionFunction([type]))
+      \(generateCompletionFunction([type]))\
       _custom_completion() {
           local completions=("${(@f)$($*)}")
           _describe '' completions

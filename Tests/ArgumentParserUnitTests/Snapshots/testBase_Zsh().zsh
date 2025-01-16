@@ -92,7 +92,6 @@ _base-test_help() {
     return "${ret}"
 }
 
-
 _custom_completion() {
     local completions=("${(@f)$($*)}")
     _describe '' completions
