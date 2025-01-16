@@ -51,21 +51,19 @@ struct ZshCompletionsGenerator {
 
       let subcommandModes = subcommands.map {
         """
-        '\($0._commandName):\($0.configuration.abstract.zshEscaped())'
+                    '\($0._commandName):\($0.configuration.abstract.zshEscaped())'
         """
-        .indentingEachLine(by: 12)
       }
       let subcommandArgs = subcommands.map {
         """
-        (\($0._commandName))
-            \(functionName)_\($0._commandName)
-            ;;
+                (\($0._commandName))
+                    \(functionName)_\($0._commandName)
+                    ;;
         """
-        .indentingEachLine(by: 12)
       }
 
       subcommandHandler = """
-        case $state in
+            case $state in
             (command)
                 local subcommands
                 subcommands=(
@@ -78,10 +76,9 @@ struct ZshCompletionsGenerator {
         \(subcommandArgs.joined(separator: "\n"))
                 esac
                 ;;
-        esac
+            esac
 
         """
-        .indentingEachLine(by: 4)
     }
 
     let functionText = """
