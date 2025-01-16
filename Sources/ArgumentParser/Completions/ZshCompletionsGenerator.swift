@@ -17,7 +17,7 @@ struct ZshCompletionsGenerator {
     return """
       #compdef \(type._commandName)
       local context state state_descr line
-      _\(type._commandName.zshEscapingCommandName())_commandname=$words[1]
+      _\(type._commandName.zshEscapingCommandName())_commandname="${words[1]}"
       typeset -A opt_args
 
       \(generateCompletionFunction([type]))
@@ -63,7 +63,7 @@ struct ZshCompletionsGenerator {
       }
 
       subcommandHandler = """
-            case $state in
+            case "${state}" in
             command)
                 local subcommands
                 subcommands=(
@@ -72,7 +72,7 @@ struct ZshCompletionsGenerator {
                 _describe "subcommand" subcommands
                 ;;
             arg)
-                case ${words[1]} in
+                case "${words[1]}" in
         \(subcommandArgs.joined(separator: "\n"))
                 esac
                 ;;
@@ -93,9 +93,9 @@ struct ZshCompletionsGenerator {
           args+=(
       \(args.joined(separator: "\n").indentingEachLine(by: 8))
           )
-          _arguments -w -s -S $args[@] && ret=0
+          _arguments -w -s -S "${args[@]}" && ret=0
       \(subcommandHandler)
-          return ret
+          return "${ret}"
       }
 
 
@@ -216,7 +216,7 @@ extension ArgumentDefinition {
       // Generate a call back into the command to retrieve a completions list
       let commandName = type._commandName.zshEscapingCommandName()
       return
-        "{_custom_completion $_\(commandName)_commandname \(customCompletionCall(commands)) $words}"
+        "{_custom_completion \"${_\(commandName)_commandname}\" \(customCompletionCall(commands)) \"${words[@]}\"}"
     }
   }
 }

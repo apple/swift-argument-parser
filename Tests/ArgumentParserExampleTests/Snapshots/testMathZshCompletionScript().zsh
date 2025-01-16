@@ -1,6 +1,6 @@
 #compdef math
 local context state state_descr line
-_math_commandname=$words[1]
+_math_commandname="${words[1]}"
 typeset -A opt_args
 
 _math() {
@@ -15,8 +15,8 @@ _math() {
         '(-): :->command'
         '(-)*:: :->arg'
     )
-    _arguments -w -s -S $args[@] && ret=0
-    case $state in
+    _arguments -w -s -S "${args[@]}" && ret=0
+    case "${state}" in
     command)
         local subcommands
         subcommands=(
@@ -28,7 +28,7 @@ _math() {
         _describe "subcommand" subcommands
         ;;
     arg)
-        case ${words[1]} in
+        case "${words[1]}" in
         add)
             _math_add
             ;;
@@ -45,7 +45,7 @@ _math() {
         ;;
     esac
 
-    return ret
+    return "${ret}"
 }
 
 _math_add() {
@@ -57,9 +57,9 @@ _math_add() {
         '--version[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
     )
-    _arguments -w -s -S $args[@] && ret=0
+    _arguments -w -s -S "${args[@]}" && ret=0
 
-    return ret
+    return "${ret}"
 }
 
 _math_multiply() {
@@ -71,9 +71,9 @@ _math_multiply() {
         '--version[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
     )
-    _arguments -w -s -S $args[@] && ret=0
+    _arguments -w -s -S "${args[@]}" && ret=0
 
-    return ret
+    return "${ret}"
 }
 
 _math_stats() {
@@ -85,8 +85,8 @@ _math_stats() {
         '(-): :->command'
         '(-)*:: :->arg'
     )
-    _arguments -w -s -S $args[@] && ret=0
-    case $state in
+    _arguments -w -s -S "${args[@]}" && ret=0
+    case "${state}" in
     command)
         local subcommands
         subcommands=(
@@ -97,7 +97,7 @@ _math_stats() {
         _describe "subcommand" subcommands
         ;;
     arg)
-        case ${words[1]} in
+        case "${words[1]}" in
         average)
             _math_stats_average
             ;;
@@ -111,7 +111,7 @@ _math_stats() {
         ;;
     esac
 
-    return ret
+    return "${ret}"
 }
 
 _math_stats_average() {
@@ -123,9 +123,9 @@ _math_stats_average() {
         '--version[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
     )
-    _arguments -w -s -S $args[@] && ret=0
+    _arguments -w -s -S "${args[@]}" && ret=0
 
-    return ret
+    return "${ret}"
 }
 
 _math_stats_stdev() {
@@ -136,9 +136,9 @@ _math_stats_stdev() {
         '--version[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
     )
-    _arguments -w -s -S $args[@] && ret=0
+    _arguments -w -s -S "${args[@]}" && ret=0
 
-    return ret
+    return "${ret}"
 }
 
 _math_stats_quantiles() {
@@ -146,18 +146,18 @@ _math_stats_quantiles() {
     local -a args
     args+=(
         ':one-of-four:(alphabet alligator branch braggart)'
-        ':custom-arg:{_custom_completion $_math_commandname ---completion stats quantiles -- customArg $words}'
+        ':custom-arg:{_custom_completion "${_math_commandname}" ---completion stats quantiles -- customArg "${words[@]}"}'
         ':values:'
         '--file:file:_files -g '"'"'*.txt *.md'"'"''
         '--directory:directory:_files -/'
         '--shell:shell:{local -a list; list=(${(f)"$(head -100 /usr/share/dict/words | tail -50)"}); _describe '''' list}'
-        '--custom:custom:{_custom_completion $_math_commandname ---completion stats quantiles -- --custom $words}'
+        '--custom:custom:{_custom_completion "${_math_commandname}" ---completion stats quantiles -- --custom "${words[@]}"}'
         '--version[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
     )
-    _arguments -w -s -S $args[@] && ret=0
+    _arguments -w -s -S "${args[@]}" && ret=0
 
-    return ret
+    return "${ret}"
 }
 
 _math_help() {
@@ -167,9 +167,9 @@ _math_help() {
         ':subcommands:'
         '--version[Show the version.]'
     )
-    _arguments -w -s -S $args[@] && ret=0
+    _arguments -w -s -S "${args[@]}" && ret=0
 
-    return ret
+    return "${ret}"
 }
 
 
