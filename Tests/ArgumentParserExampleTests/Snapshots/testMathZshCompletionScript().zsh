@@ -17,32 +17,32 @@ _math() {
     )
     _arguments -w -s -S $args[@] && ret=0
     case $state in
-        (command)
-            local subcommands
-            subcommands=(
-                'add:Print the sum of the values.'
-                'multiply:Print the product of the values.'
-                'stats:Calculate descriptive statistics.'
-                'help:Show subcommand help information.'
-            )
-            _describe "subcommand" subcommands
+    (command)
+        local subcommands
+        subcommands=(
+            'add:Print the sum of the values.'
+            'multiply:Print the product of the values.'
+            'stats:Calculate descriptive statistics.'
+            'help:Show subcommand help information.'
+        )
+        _describe "subcommand" subcommands
+        ;;
+    (arg)
+        case ${words[1]} in
+        (add)
+            _math_add
             ;;
-        (arg)
-            case ${words[1]} in
-                (add)
-                    _math_add
-                    ;;
-                (multiply)
-                    _math_multiply
-                    ;;
-                (stats)
-                    _math_stats
-                    ;;
-                (help)
-                    _math_help
-                    ;;
-            esac
+        (multiply)
+            _math_multiply
             ;;
+        (stats)
+            _math_stats
+            ;;
+        (help)
+            _math_help
+            ;;
+        esac
+        ;;
     esac
 
     return ret
@@ -87,28 +87,28 @@ _math_stats() {
     )
     _arguments -w -s -S $args[@] && ret=0
     case $state in
-        (command)
-            local subcommands
-            subcommands=(
-                'average:Print the average of the values.'
-                'stdev:Print the standard deviation of the values.'
-                'quantiles:Print the quantiles of the values (TBD).'
-            )
-            _describe "subcommand" subcommands
+    (command)
+        local subcommands
+        subcommands=(
+            'average:Print the average of the values.'
+            'stdev:Print the standard deviation of the values.'
+            'quantiles:Print the quantiles of the values (TBD).'
+        )
+        _describe "subcommand" subcommands
+        ;;
+    (arg)
+        case ${words[1]} in
+        (average)
+            _math_stats_average
             ;;
-        (arg)
-            case ${words[1]} in
-                (average)
-                    _math_stats_average
-                    ;;
-                (stdev)
-                    _math_stats_stdev
-                    ;;
-                (quantiles)
-                    _math_stats_quantiles
-                    ;;
-            esac
+        (stdev)
+            _math_stats_stdev
             ;;
+        (quantiles)
+            _math_stats_quantiles
+            ;;
+        esac
+        ;;
     esac
 
     return ret
