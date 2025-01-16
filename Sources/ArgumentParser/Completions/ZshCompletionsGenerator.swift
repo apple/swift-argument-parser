@@ -56,7 +56,7 @@ struct ZshCompletionsGenerator {
       }
       let subcommandArgs = subcommands.map {
         """
-                (\($0._commandName))
+                \($0._commandName))
                     \(functionName)_\($0._commandName)
                     ;;
         """
@@ -64,14 +64,14 @@ struct ZshCompletionsGenerator {
 
       subcommandHandler = """
             case $state in
-            (command)
+            command)
                 local subcommands
                 subcommands=(
         \(subcommandModes.joined(separator: "\n"))
                 )
                 _describe "subcommand" subcommands
                 ;;
-            (arg)
+            arg)
                 case ${words[1]} in
         \(subcommandArgs.joined(separator: "\n"))
                 esac

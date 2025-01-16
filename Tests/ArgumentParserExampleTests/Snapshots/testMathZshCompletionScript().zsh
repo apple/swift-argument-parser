@@ -17,7 +17,7 @@ _math() {
     )
     _arguments -w -s -S $args[@] && ret=0
     case $state in
-    (command)
+    command)
         local subcommands
         subcommands=(
             'add:Print the sum of the values.'
@@ -27,18 +27,18 @@ _math() {
         )
         _describe "subcommand" subcommands
         ;;
-    (arg)
+    arg)
         case ${words[1]} in
-        (add)
+        add)
             _math_add
             ;;
-        (multiply)
+        multiply)
             _math_multiply
             ;;
-        (stats)
+        stats)
             _math_stats
             ;;
-        (help)
+        help)
             _math_help
             ;;
         esac
@@ -87,7 +87,7 @@ _math_stats() {
     )
     _arguments -w -s -S $args[@] && ret=0
     case $state in
-    (command)
+    command)
         local subcommands
         subcommands=(
             'average:Print the average of the values.'
@@ -96,15 +96,15 @@ _math_stats() {
         )
         _describe "subcommand" subcommands
         ;;
-    (arg)
+    arg)
         case ${words[1]} in
-        (average)
+        average)
             _math_stats_average
             ;;
-        (stdev)
+        stdev)
             _math_stats_stdev
             ;;
-        (quantiles)
+        quantiles)
             _math_stats_quantiles
             ;;
         esac

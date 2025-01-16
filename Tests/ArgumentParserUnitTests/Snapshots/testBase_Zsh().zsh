@@ -30,7 +30,7 @@ _base-test() {
     )
     _arguments -w -s -S $args[@] && ret=0
     case $state in
-    (command)
+    command)
         local subcommands
         subcommands=(
             'sub-command:'
@@ -39,15 +39,15 @@ _base-test() {
         )
         _describe "subcommand" subcommands
         ;;
-    (arg)
+    arg)
         case ${words[1]} in
-        (sub-command)
+        sub-command)
             _base-test_sub-command
             ;;
-        (escaped-command)
+        escaped-command)
             _base-test_escaped-command
             ;;
-        (help)
+        help)
             _base-test_help
             ;;
         esac
