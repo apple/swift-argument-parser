@@ -13,6 +13,12 @@ import ArgumentParser
 import ArgumentParserTestHelpers
 import XCTest
 
+#if swift(>=6.0)
+@testable internal import struct ArgumentParser.CompletionShell
+#else
+@testable import struct ArgumentParser.CompletionShell
+#endif
+
 final class MathExampleTests: XCTestCase {
   override func setUp() {
     #if !os(Windows) && !os(WASI)
@@ -219,28 +225,54 @@ extension MathExampleTests {
     try assertSnapshot(actual: script, extension: "fish")
   }
 
-  func testMath_CustomCompletion() throws {
+  func testMath_BashCustomCompletion() throws {
+    try testMath_CustomCompletion(forShell: .bash)
+  }
+
+  func testMath_FishCustomCompletion() throws {
+    try testMath_CustomCompletion(forShell: .fish)
+  }
+
+  func testMath_ZshCustomCompletion() throws {
+    try testMath_CustomCompletion(forShell: .zsh)
+  }
+
+  private func testMath_CustomCompletion(
+    forShell shell: CompletionShell
+  ) throws {
     try AssertExecuteCommand(
       command: "math ---completion stats quantiles -- --custom",
-      expected: """
-        hello
-        helicopter
-        heliotrope
-        """)
+      expected: shell.format(completions: [
+        "hello",
+        "helicopter",
+        "heliotrope",
+      ]),
+      environment: [
+        CompletionShell.shellEnvironmentVariableName: shell.rawValue
+      ]
+    )
 
     try AssertExecuteCommand(
       command: "math ---completion stats quantiles -- --custom h",
-      expected: """
-        hello
-        helicopter
-        heliotrope
-        """)
+      expected: shell.format(completions: [
+        "hello",
+        "helicopter",
+        "heliotrope",
+      ]),
+      environment: [
+        CompletionShell.shellEnvironmentVariableName: shell.rawValue
+      ]
+    )
 
     try AssertExecuteCommand(
       command: "math ---completion stats quantiles -- --custom a",
-      expected: """
-        aardvark
-        aaaaalbert
-        """)
+      expected: shell.format(completions: [
+        "aardvark",
+        "aaaaalbert",
+      ]),
+      environment: [
+        CompletionShell.shellEnvironmentVariableName: shell.rawValue
+      ]
+    )
   }
 }

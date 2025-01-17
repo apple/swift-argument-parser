@@ -436,8 +436,11 @@ extension CommandParser {
     // Parsing and retrieval successful! We don't want to continue with any
     // other parsing here, so after printing the result of the completion
     // function, exit with a success code.
-    let output = completionFunction(completionValues).joined(separator: "\n")
-    throw ParserError.completionScriptCustomResponse(output)
+    let completions = completionFunction(completionValues)
+    throw ParserError.completionScriptCustomResponse(
+      CompletionShell.requesting?.format(completions: completions)
+        ?? completions.joined(separator: "\n")
+    )
   }
 }
 
