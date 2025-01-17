@@ -98,6 +98,14 @@ public struct CompletionShell: RawRepresentable, Hashable, CaseIterable {
   ///
   /// The environment variable is set in generated completion scripts.
   static let shellVersionEnvironmentVariableName = "SAP_SHELL_VERSION"
+
+  public func format(completions: [String]) -> String {
+    var completions = completions
+    if self == .zsh {
+      completions.append("END_MARKER")
+    }
+    return completions.joined(separator: "\n")
+  }
 }
 
 struct CompletionsGenerator {

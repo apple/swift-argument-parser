@@ -315,14 +315,17 @@ extension XCTest {
     expected: String? = nil,
     exitCode: ExitCode = .success,
     file: StaticString = #filePath,
-    line: UInt = #line
+    line: UInt = #line,
+    environment: [String: String] = [:]
   ) throws -> String {
     try AssertExecuteCommand(
       command: command.split(separator: " ").map(String.init),
       expected: expected,
       exitCode: exitCode,
       file: file,
-      line: line)
+      line: line,
+      environment: environment
+    )
   }
 
   // swift-format-ignore: AlwaysUseLowerCamelCase
@@ -332,7 +335,8 @@ extension XCTest {
     expected: String? = nil,
     exitCode: ExitCode = .success,
     file: StaticString = #filePath,
-    line: UInt = #line
+    line: UInt = #line,
+    environment: [String: String] = [:]
   ) throws -> String {
     #if os(Windows)
     throw XCTSkip("Unsupported on this platform")
@@ -357,6 +361,15 @@ extension XCTest {
     process.standardOutput = output
     let error = Pipe()
     process.standardError = error
+
+    if !environment.isEmpty {
+      if let existingEnvironment = process.environment {
+        process.environment =
+          existingEnvironment.merging(environment) { (_, new) in new }
+      } else {
+        process.environment = environment
+      }
+    }
 
     guard (try? process.run()) != nil else {
       XCTFail("Couldn't run command process.", file: file, line: line)
