@@ -8,30 +8,30 @@ _base_test() {
     prev="${COMP_WORDS[COMP_CWORD-1]}"
     COMPREPLY=()
     opts="--name --kind --other-kind --path1 --path2 --path3 --one --two --three --kind-counter --rep1 -r --rep2 -h --help sub-command escaped-command help"
-    opts="$opts $("${COMP_WORDS[0]}" ---completion  -- argument "${COMP_WORDS[@]}")"
-    opts="$opts $("${COMP_WORDS[0]}" ---completion  -- nested.nestedArgument "${COMP_WORDS[@]}")"
-    if [[ $COMP_CWORD == "1" ]]; then
-        COMPREPLY=($(compgen -W "$opts" -- "$cur"))
+    opts="${opts} $("${COMP_WORDS[0]}" ---completion  -- argument "${COMP_WORDS[@]}")"
+    opts="${opts} $("${COMP_WORDS[0]}" ---completion  -- nested.nestedArgument "${COMP_WORDS[@]}")"
+    if [[ "${COMP_CWORD}" == "1" ]]; then
+        COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
         return
     fi
-    case $prev in
+    case "${prev}" in
     --name)
 
         return
         ;;
     --kind)
-        COMPREPLY=($(compgen -W "one two custom-three" -- "$cur"))
+        COMPREPLY=($(compgen -W "one two custom-three" -- "${cur}"))
         return
         ;;
     --other-kind)
-        COMPREPLY=($(compgen -W "b1_bash b2_bash b3_bash" -- "$cur"))
+        COMPREPLY=($(compgen -W "b1_bash b2_bash b3_bash" -- "${cur}"))
         return
         ;;
     --path1)
         if declare -F _filedir >/dev/null; then
             _filedir
         else
-            COMPREPLY=($(compgen -f -- "$cur"))
+            COMPREPLY=($(compgen -f -- "${cur}"))
         fi
         return
         ;;
@@ -39,12 +39,12 @@ _base_test() {
         if declare -F _filedir >/dev/null; then
             _filedir
         else
-            COMPREPLY=($(compgen -f -- "$cur"))
+            COMPREPLY=($(compgen -f -- "${cur}"))
         fi
         return
         ;;
     --path3)
-        COMPREPLY=($(compgen -W "c1_bash c2_bash c3_bash" -- "$cur"))
+        COMPREPLY=($(compgen -W "c1_bash c2_bash c3_bash" -- "${cur}"))
         return
         ;;
     --rep1)
@@ -56,7 +56,7 @@ _base_test() {
         return
         ;;
     esac
-    case ${COMP_WORDS[1]} in
+    case "${COMP_WORDS[1]}" in
     sub-command)
         _base_test_sub-command 2
         return
@@ -70,38 +70,38 @@ _base_test() {
         return
         ;;
     esac
-    COMPREPLY=($(compgen -W "$opts" -- "$cur"))
+    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
 }
 _base_test_sub_command() {
     opts="-h --help"
-    if [[ $COMP_CWORD == "$1" ]]; then
-        COMPREPLY=($(compgen -W "$opts" -- "$cur"))
+    if [[ "${COMP_CWORD}" == "${1}" ]]; then
+        COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
         return
     fi
-    COMPREPLY=($(compgen -W "$opts" -- "$cur"))
+    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
 }
 _base_test_escaped_command() {
     opts="--one -h --help"
-    opts="$opts $("${COMP_WORDS[0]}" ---completion escaped-command -- two "${COMP_WORDS[@]}")"
-    if [[ $COMP_CWORD == "$1" ]]; then
-        COMPREPLY=($(compgen -W "$opts" -- "$cur"))
+    opts="${opts} $("${COMP_WORDS[0]}" ---completion escaped-command -- two "${COMP_WORDS[@]}")"
+    if [[ "${COMP_CWORD}" == "${1}" ]]; then
+        COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
         return
     fi
-    case $prev in
+    case "${prev}" in
     --one)
 
         return
         ;;
     esac
-    COMPREPLY=($(compgen -W "$opts" -- "$cur"))
+    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
 }
 _base_test_help() {
     opts=""
-    if [[ $COMP_CWORD == "$1" ]]; then
-        COMPREPLY=($(compgen -W "$opts" -- "$cur"))
+    if [[ "${COMP_CWORD}" == "${1}" ]]; then
+        COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
         return
     fi
-    COMPREPLY=($(compgen -W "$opts" -- "$cur"))
+    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
 }
 
 

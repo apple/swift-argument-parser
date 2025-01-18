@@ -8,11 +8,11 @@ _math() {
     prev="${COMP_WORDS[COMP_CWORD-1]}"
     COMPREPLY=()
     opts="--version -h --help add multiply stats help"
-    if [[ $COMP_CWORD == "1" ]]; then
-        COMPREPLY=($(compgen -W "$opts" -- "$cur"))
+    if [[ "${COMP_CWORD}" == "1" ]]; then
+        COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
         return
     fi
-    case ${COMP_WORDS[1]} in
+    case "${COMP_WORDS[1]}" in
     add)
         _math_add 2
         return
@@ -30,77 +30,77 @@ _math() {
         return
         ;;
     esac
-    COMPREPLY=($(compgen -W "$opts" -- "$cur"))
+    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
 }
 _math_add() {
     opts="--hex-output -x --version -h --help"
-    if [[ $COMP_CWORD == "$1" ]]; then
-        COMPREPLY=($(compgen -W "$opts" -- "$cur"))
+    if [[ "${COMP_CWORD}" == "${1}" ]]; then
+        COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
         return
     fi
-    COMPREPLY=($(compgen -W "$opts" -- "$cur"))
+    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
 }
 _math_multiply() {
     opts="--hex-output -x --version -h --help"
-    if [[ $COMP_CWORD == "$1" ]]; then
-        COMPREPLY=($(compgen -W "$opts" -- "$cur"))
+    if [[ "${COMP_CWORD}" == "${1}" ]]; then
+        COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
         return
     fi
-    COMPREPLY=($(compgen -W "$opts" -- "$cur"))
+    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
 }
 _math_stats() {
     opts="--version -h --help average stdev quantiles"
-    if [[ $COMP_CWORD == "$1" ]]; then
-        COMPREPLY=($(compgen -W "$opts" -- "$cur"))
+    if [[ "${COMP_CWORD}" == "${1}" ]]; then
+        COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
         return
     fi
-    case ${COMP_WORDS[$1]} in
+    case "${COMP_WORDS[${1}]}" in
     average)
-        _math_stats_average $(($1+1))
+        _math_stats_average $((${1}+1))
         return
         ;;
     stdev)
-        _math_stats_stdev $(($1+1))
+        _math_stats_stdev $((${1}+1))
         return
         ;;
     quantiles)
-        _math_stats_quantiles $(($1+1))
+        _math_stats_quantiles $((${1}+1))
         return
         ;;
     esac
-    COMPREPLY=($(compgen -W "$opts" -- "$cur"))
+    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
 }
 _math_stats_average() {
     opts="--kind --version -h --help"
-    if [[ $COMP_CWORD == "$1" ]]; then
-        COMPREPLY=($(compgen -W "$opts" -- "$cur"))
+    if [[ "${COMP_CWORD}" == "${1}" ]]; then
+        COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
         return
     fi
-    case $prev in
+    case "${prev}" in
     --kind)
-        COMPREPLY=($(compgen -W "mean median mode" -- "$cur"))
+        COMPREPLY=($(compgen -W "mean median mode" -- "${cur}"))
         return
         ;;
     esac
-    COMPREPLY=($(compgen -W "$opts" -- "$cur"))
+    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
 }
 _math_stats_stdev() {
     opts="--version -h --help"
-    if [[ $COMP_CWORD == "$1" ]]; then
-        COMPREPLY=($(compgen -W "$opts" -- "$cur"))
+    if [[ "${COMP_CWORD}" == "${1}" ]]; then
+        COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
         return
     fi
-    COMPREPLY=($(compgen -W "$opts" -- "$cur"))
+    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
 }
 _math_stats_quantiles() {
     opts="--file --directory --shell --custom --version -h --help"
-    opts="$opts alphabet alligator branch braggart"
-    opts="$opts $("${COMP_WORDS[0]}" ---completion stats quantiles -- customArg "${COMP_WORDS[@]}")"
-    if [[ $COMP_CWORD == "$1" ]]; then
-        COMPREPLY=($(compgen -W "$opts" -- "$cur"))
+    opts="${opts} alphabet alligator branch braggart"
+    opts="${opts} $("${COMP_WORDS[0]}" ---completion stats quantiles -- customArg "${COMP_WORDS[@]}")"
+    if [[ "${COMP_CWORD}" == "${1}" ]]; then
+        COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
         return
     fi
-    case $prev in
+    case "${prev}" in
     --file)
         if declare -F _filedir >/dev/null; then
             _filedir 'txt'
@@ -110,11 +110,11 @@ _math_stats_quantiles() {
             _filedir -d
         else
             COMPREPLY=(
-                $(compgen -f -X '!*.txt' -- "$cur")
-                $(compgen -f -X '!*.md' -- "$cur")
-                $(compgen -f -X '!*.TXT' -- "$cur")
-                $(compgen -f -X '!*.MD' -- "$cur")
-                $(compgen -d -- "$cur")
+                $(compgen -f -X '!*.txt' -- "${cur}")
+                $(compgen -f -X '!*.md' -- "${cur}")
+                $(compgen -f -X '!*.TXT' -- "${cur}")
+                $(compgen -f -X '!*.MD' -- "${cur}")
+                $(compgen -d -- "${cur}")
             )
         fi
         return
@@ -123,7 +123,7 @@ _math_stats_quantiles() {
         if declare -F _filedir >/dev/null; then
             _filedir -d
         else
-            COMPREPLY=($(compgen -d -- "$cur"))
+            COMPREPLY=($(compgen -d -- "${cur}"))
         fi
         return
         ;;
@@ -132,19 +132,19 @@ _math_stats_quantiles() {
         return
         ;;
     --custom)
-        COMPREPLY=($(compgen -W "$("${COMP_WORDS[0]}" ---completion stats quantiles -- --custom "${COMP_WORDS[@]}")" -- "$cur"))
+        COMPREPLY=($(compgen -W "$("${COMP_WORDS[0]}" ---completion stats quantiles -- --custom "${COMP_WORDS[@]}")" -- "${cur}"))
         return
         ;;
     esac
-    COMPREPLY=($(compgen -W "$opts" -- "$cur"))
+    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
 }
 _math_help() {
     opts="--version"
-    if [[ $COMP_CWORD == "$1" ]]; then
-        COMPREPLY=($(compgen -W "$opts" -- "$cur"))
+    if [[ "${COMP_CWORD}" == "${1}" ]]; then
+        COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
         return
     fi
-    COMPREPLY=($(compgen -W "$opts" -- "$cur"))
+    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
 }
 
 

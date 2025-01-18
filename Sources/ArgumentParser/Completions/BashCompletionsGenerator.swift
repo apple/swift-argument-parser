@@ -35,8 +35,8 @@ struct BashCompletionsGenerator {
 
     // The root command gets a different treatment for the parsing index.
     let isRootCommand = commands.count == 1
-    let dollarOne = isRootCommand ? "1" : "$1"
-    let subcommandArgument = isRootCommand ? "2" : "$(($1+1))"
+    let dollarOne = isRootCommand ? "1" : "${1}"
+    let subcommandArgument = isRootCommand ? "2" : "$((${1}+1))"
 
     // Include 'help' in the list of subcommands for the root command.
     var subcommands = type.configuration.subcommands
@@ -77,12 +77,12 @@ struct BashCompletionsGenerator {
     // Return immediately if the completion matching hasn't moved further.
     result += "    opts=\"\(completionWords.joined(separator: " "))\"\n"
     for line in additionalCompletions {
-      result += "    opts=\"$opts \(line)\"\n"
+      result += "    opts=\"${opts} \(line)\"\n"
     }
 
     result += """
-          if [[ $COMP_CWORD == "\(dollarOne)" ]]; then
-              COMPREPLY=($(compgen -W "$opts" -- "$cur"))
+          if [[ "${COMP_CWORD}" == "\(dollarOne)" ]]; then
+              COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
               return
           fi
 
@@ -93,7 +93,7 @@ struct BashCompletionsGenerator {
     let optionHandlers = generateOptionHandlers(commands)
     if !optionHandlers.isEmpty {
       result += """
-            case $prev in
+            case "${prev}" in
         \(optionHandlers)
             esac
 
@@ -104,7 +104,7 @@ struct BashCompletionsGenerator {
     if !subcommands.isEmpty {
       // Subcommands have their own case statement that delegates out to
       // the subcommand completion functions.
-      result += "    case ${COMP_WORDS[\(dollarOne)]} in\n"
+      result += "    case \"${COMP_WORDS[\(dollarOne)]}\" in\n"
       for subcommand in subcommands {
         result += """
               \(subcommand._commandName))
@@ -119,7 +119,7 @@ struct BashCompletionsGenerator {
 
     // Finish off the function.
     result += """
-          COMPREPLY=($(compgen -W "$opts" -- "$cur"))
+          COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
       }
 
       """
@@ -212,7 +212,7 @@ extension ArgumentDefinition {
         if declare -F _filedir >/dev/null; then
             _filedir
         else
-            COMPREPLY=($(compgen -f -- "$cur"))
+            COMPREPLY=($(compgen -f -- "${cur}"))
         fi
         """
 
@@ -228,8 +228,8 @@ extension ArgumentDefinition {
             _filedir -d
         else
             COMPREPLY=(
-                \(safeExts.map { "$(compgen -f -X '!*.\($0)' -- \"$cur\")" }.joined(separator: "\n        "))
-                $(compgen -d -- "$cur")
+                \(safeExts.map { "$(compgen -f -X '!*.\($0)' -- \"${cur}\")" }.joined(separator: "\n        "))
+                $(compgen -d -- "${cur}")
             )
         fi
         """
@@ -239,13 +239,13 @@ extension ArgumentDefinition {
         if declare -F _filedir >/dev/null; then
             _filedir -d
         else
-            COMPREPLY=($(compgen -d -- "$cur"))
+            COMPREPLY=($(compgen -d -- "${cur}"))
         fi
         """
 
     case .list(let list):
       return
-        #"COMPREPLY=($(compgen -W "\#(list.joined(separator: " "))" -- "$cur"))"#
+        #"COMPREPLY=($(compgen -W "\#(list.joined(separator: " "))" -- "${cur}"))"#
 
     case .shellCommand(let command):
       return "COMPREPLY=($(\(command)))"
@@ -253,7 +253,7 @@ extension ArgumentDefinition {
     case .custom:
       // Generate a call back into the command to retrieve a completions list
       return
-        #"COMPREPLY=($(compgen -W "$("${COMP_WORDS[0]}" \#(customCompletionCall(commands)) "${COMP_WORDS[@]}")" -- "$cur"))"#
+        #"COMPREPLY=($(compgen -W "$("${COMP_WORDS[0]}" \#(customCompletionCall(commands)) "${COMP_WORDS[@]}")" -- "${cur}"))"#
     }
   }
 }
