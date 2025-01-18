@@ -63,14 +63,14 @@ struct BashCompletionsGenerator {
     // that other command functions don't need.
     if isRootCommand {
       result += """
-        export \(CompletionShell.shellEnvironmentVariableName)=bash
-        \(CompletionShell.shellVersionEnvironmentVariableName)="$(IFS='.'; printf %s "${BASH_VERSINFO[*]}")"
-        export \(CompletionShell.shellVersionEnvironmentVariableName)
-        cur="${COMP_WORDS[COMP_CWORD]}"
-        prev="${COMP_WORDS[COMP_CWORD-1]}"
-        COMPREPLY=()
+            export \(CompletionShell.shellEnvironmentVariableName)=bash
+            \(CompletionShell.shellVersionEnvironmentVariableName)="$(IFS='.'; printf %s "${BASH_VERSINFO[*]}")"
+            export \(CompletionShell.shellVersionEnvironmentVariableName)
+            cur="${COMP_WORDS[COMP_CWORD]}"
+            prev="${COMP_WORDS[COMP_CWORD-1]}"
+            COMPREPLY=()
 
-        """.indentingEachLine(by: 4)
+        """
     }
 
     // Start by declaring a local var for the top-level completions.
@@ -93,10 +93,11 @@ struct BashCompletionsGenerator {
     let optionHandlers = generateOptionHandlers(commands)
     if !optionHandlers.isEmpty {
       result += """
-        case $prev in
-        \(optionHandlers.indentingEachLine(by: 4))
-        esac
-        """.indentingEachLine(by: 4) + "\n"
+            case $prev in
+        \(optionHandlers)
+            esac
+
+        """
     }
 
     // Build out completions for the subcommands.
@@ -106,13 +107,12 @@ struct BashCompletionsGenerator {
       result += "    case ${COMP_WORDS[\(dollarOne)]} in\n"
       for subcommand in subcommands {
         result += """
-          (\(subcommand._commandName))
-              \(functionName)_\(subcommand._commandName) \(subcommandArgument)
-              return
-              ;;
+              (\(subcommand._commandName))
+                  \(functionName)_\(subcommand._commandName) \(subcommandArgument)
+                  return
+                  ;;
 
           """
-          .indentingEachLine(by: 8)
       }
       result += "    esac\n"
     }
@@ -179,10 +179,10 @@ struct BashCompletionsGenerator {
         if arg.isNullary { return nil }
 
         return """
-          \(arg.bashCompletionWords().joined(separator: "|")))
-          \(arg.bashValueCompletion(commands).indentingEachLine(by: 4))
-              return
-          ;;
+              \(arg.bashCompletionWords().joined(separator: "|")))
+          \(arg.bashValueCompletion(commands).indentingEachLine(by: 8))
+                  return
+                  ;;
           """
       }
       .joined(separator: "\n")
@@ -210,9 +210,9 @@ extension ArgumentDefinition {
     case .file(let extensions) where extensions.isEmpty:
       return """
         if declare -F _filedir >/dev/null; then
-          _filedir
+            _filedir
         else
-          COMPREPLY=($(compgen -f -- "$cur"))
+            COMPREPLY=($(compgen -f -- "$cur"))
         fi
         """
 
@@ -224,22 +224,22 @@ extension ArgumentDefinition {
 
       return """
         if declare -F _filedir >/dev/null; then
-          \(safeExts.map { "_filedir '\($0)'" }.joined(separator:"\n  "))
-          _filedir -d
+            \(safeExts.map { "_filedir '\($0)'" }.joined(separator:"\n    "))
+            _filedir -d
         else
-          COMPREPLY=(
-            \(safeExts.map { "$(compgen -f -X '!*.\($0)' -- \"$cur\")" }.joined(separator: "\n    "))
-            $(compgen -d -- "$cur")
-          )
+            COMPREPLY=(
+                \(safeExts.map { "$(compgen -f -X '!*.\($0)' -- \"$cur\")" }.joined(separator: "\n        "))
+                $(compgen -d -- "$cur")
+            )
         fi
         """
 
     case .directory:
       return """
         if declare -F _filedir >/dev/null; then
-          _filedir -d
+            _filedir -d
         else
-          COMPREPLY=($(compgen -d -- "$cur"))
+            COMPREPLY=($(compgen -d -- "$cur"))
         fi
         """
 

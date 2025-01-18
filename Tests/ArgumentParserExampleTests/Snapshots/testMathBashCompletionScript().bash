@@ -13,22 +13,22 @@ _math() {
         return
     fi
     case ${COMP_WORDS[1]} in
-        (add)
-            _math_add 2
-            return
-            ;;
-        (multiply)
-            _math_multiply 2
-            return
-            ;;
-        (stats)
-            _math_stats 2
-            return
-            ;;
-        (help)
-            _math_help 2
-            return
-            ;;
+    (add)
+        _math_add 2
+        return
+        ;;
+    (multiply)
+        _math_multiply 2
+        return
+        ;;
+    (stats)
+        _math_stats 2
+        return
+        ;;
+    (help)
+        _math_help 2
+        return
+        ;;
     esac
     COMPREPLY=($(compgen -W "$opts" -- "$cur"))
 }
@@ -55,18 +55,18 @@ _math_stats() {
         return
     fi
     case ${COMP_WORDS[$1]} in
-        (average)
-            _math_stats_average $(($1+1))
-            return
-            ;;
-        (stdev)
-            _math_stats_stdev $(($1+1))
-            return
-            ;;
-        (quantiles)
-            _math_stats_quantiles $(($1+1))
-            return
-            ;;
+    (average)
+        _math_stats_average $(($1+1))
+        return
+        ;;
+    (stdev)
+        _math_stats_stdev $(($1+1))
+        return
+        ;;
+    (quantiles)
+        _math_stats_quantiles $(($1+1))
+        return
+        ;;
     esac
     COMPREPLY=($(compgen -W "$opts" -- "$cur"))
 }
@@ -77,9 +77,9 @@ _math_stats_average() {
         return
     fi
     case $prev in
-        --kind)
-            COMPREPLY=($(compgen -W "mean median mode" -- "$cur"))
-            return
+    --kind)
+        COMPREPLY=($(compgen -W "mean median mode" -- "$cur"))
+        return
         ;;
     esac
     COMPREPLY=($(compgen -W "$opts" -- "$cur"))
@@ -101,39 +101,39 @@ _math_stats_quantiles() {
         return
     fi
     case $prev in
-        --file)
-            if declare -F _filedir >/dev/null; then
-              _filedir 'txt'
-              _filedir 'md'
-              _filedir 'TXT'
-              _filedir 'MD'
-              _filedir -d
-            else
-              COMPREPLY=(
+    --file)
+        if declare -F _filedir >/dev/null; then
+            _filedir 'txt'
+            _filedir 'md'
+            _filedir 'TXT'
+            _filedir 'MD'
+            _filedir -d
+        else
+            COMPREPLY=(
                 $(compgen -f -X '!*.txt' -- "$cur")
                 $(compgen -f -X '!*.md' -- "$cur")
                 $(compgen -f -X '!*.TXT' -- "$cur")
                 $(compgen -f -X '!*.MD' -- "$cur")
                 $(compgen -d -- "$cur")
-              )
-            fi
-            return
+            )
+        fi
+        return
         ;;
-        --directory)
-            if declare -F _filedir >/dev/null; then
-              _filedir -d
-            else
-              COMPREPLY=($(compgen -d -- "$cur"))
-            fi
-            return
+    --directory)
+        if declare -F _filedir >/dev/null; then
+            _filedir -d
+        else
+            COMPREPLY=($(compgen -d -- "$cur"))
+        fi
+        return
         ;;
-        --shell)
-            COMPREPLY=($(head -100 /usr/share/dict/words | tail -50))
-            return
+    --shell)
+        COMPREPLY=($(head -100 /usr/share/dict/words | tail -50))
+        return
         ;;
-        --custom)
-            COMPREPLY=($(compgen -W "$("${COMP_WORDS[0]}" ---completion stats quantiles -- --custom "${COMP_WORDS[@]}")" -- "$cur"))
-            return
+    --custom)
+        COMPREPLY=($(compgen -W "$("${COMP_WORDS[0]}" ---completion stats quantiles -- --custom "${COMP_WORDS[@]}")" -- "$cur"))
+        return
         ;;
     esac
     COMPREPLY=($(compgen -W "$opts" -- "$cur"))

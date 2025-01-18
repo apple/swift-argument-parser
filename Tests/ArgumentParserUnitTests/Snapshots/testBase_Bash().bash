@@ -15,60 +15,60 @@ _base_test() {
         return
     fi
     case $prev in
-        --name)
+    --name)
 
-            return
+        return
         ;;
-        --kind)
-            COMPREPLY=($(compgen -W "one two custom-three" -- "$cur"))
-            return
+    --kind)
+        COMPREPLY=($(compgen -W "one two custom-three" -- "$cur"))
+        return
         ;;
-        --other-kind)
-            COMPREPLY=($(compgen -W "b1_bash b2_bash b3_bash" -- "$cur"))
-            return
+    --other-kind)
+        COMPREPLY=($(compgen -W "b1_bash b2_bash b3_bash" -- "$cur"))
+        return
         ;;
-        --path1)
-            if declare -F _filedir >/dev/null; then
-              _filedir
-            else
-              COMPREPLY=($(compgen -f -- "$cur"))
-            fi
-            return
+    --path1)
+        if declare -F _filedir >/dev/null; then
+            _filedir
+        else
+            COMPREPLY=($(compgen -f -- "$cur"))
+        fi
+        return
         ;;
-        --path2)
-            if declare -F _filedir >/dev/null; then
-              _filedir
-            else
-              COMPREPLY=($(compgen -f -- "$cur"))
-            fi
-            return
+    --path2)
+        if declare -F _filedir >/dev/null; then
+            _filedir
+        else
+            COMPREPLY=($(compgen -f -- "$cur"))
+        fi
+        return
         ;;
-        --path3)
-            COMPREPLY=($(compgen -W "c1_bash c2_bash c3_bash" -- "$cur"))
-            return
+    --path3)
+        COMPREPLY=($(compgen -W "c1_bash c2_bash c3_bash" -- "$cur"))
+        return
         ;;
-        --rep1)
+    --rep1)
 
-            return
+        return
         ;;
-        -r|--rep2)
+    -r|--rep2)
 
-            return
+        return
         ;;
     esac
     case ${COMP_WORDS[1]} in
-        (sub-command)
-            _base_test_sub-command 2
-            return
-            ;;
-        (escaped-command)
-            _base_test_escaped-command 2
-            return
-            ;;
-        (help)
-            _base_test_help 2
-            return
-            ;;
+    (sub-command)
+        _base_test_sub-command 2
+        return
+        ;;
+    (escaped-command)
+        _base_test_escaped-command 2
+        return
+        ;;
+    (help)
+        _base_test_help 2
+        return
+        ;;
     esac
     COMPREPLY=($(compgen -W "$opts" -- "$cur"))
 }
@@ -88,9 +88,9 @@ _base_test_escaped_command() {
         return
     fi
     case $prev in
-        --one)
+    --one)
 
-            return
+        return
         ;;
     esac
     COMPREPLY=($(compgen -W "$opts" -- "$cur"))
