@@ -193,7 +193,7 @@ extension ArgumentDefinition {
   /// Returns the different completion names for this argument.
   fileprivate func bashCompletionWords() -> [String] {
     help.visibility.base == .default
-      ? names.map { $0.synopsisString }
+      ? names.map(\.synopsisString)
       : []
   }
 
