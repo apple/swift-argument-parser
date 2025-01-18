@@ -13,15 +13,13 @@ struct BashCompletionsGenerator {
   /// Generates a Bash completion script for the given command.
   static func generateCompletionScript(_ type: ParsableCommand.Type) -> String {
     // TODO: Add a check to see if the command is installed where we expect?
-    let initialFunctionName = [type].completionFunctionName()
-      .makeSafeFunctionName
-    return """
-      #!/bin/bash
+    """
+    #!/bin/bash
 
-      \(generateCompletionFunction([type]))
+    \(generateCompletionFunction([type]))
 
-      complete -F \(initialFunctionName) \(type._commandName)
-      """
+    complete -F \([type].completionFunctionName().shellEscapeForVariableName()) \(type._commandName)
+    """
   }
 
   /// Generates a Bash completion function for the last command in the given list.
@@ -31,7 +29,8 @@ struct BashCompletionsGenerator {
     guard let type = commands.last else {
       fatalError()
     }
-    let functionName = commands.completionFunctionName().makeSafeFunctionName
+    let functionName =
+      commands.completionFunctionName().shellEscapeForVariableName()
 
     // The root command gets a different treatment for the parsing index.
     let isRootCommand = commands.count == 1
@@ -49,8 +48,7 @@ struct BashCompletionsGenerator {
     // command — these are the dash-prefixed names of options and flags as well
     // as all the subcommand names.
     let completionWords =
-      generateArgumentWords(commands)
-      + subcommands.map { $0._commandName }
+      generateArgumentWords(commands) + subcommands.map { $0._commandName }
 
     // Generate additional top-level completions — these are completion lists
     // or custom function-based word lists from positional arguments.
@@ -200,9 +198,9 @@ extension ArgumentDefinition {
   /// Returns the bash completions that can follow this argument's `--name`.
   ///
   /// Uses bash-completion for file and directory values if available.
-  fileprivate func bashValueCompletion(_ commands: [ParsableCommand.Type])
-    -> String
-  {
+  fileprivate func bashValueCompletion(
+    _ commands: [ParsableCommand.Type]
+  ) -> String {
     switch completion.kind {
     case .default:
       return ""
@@ -218,9 +216,7 @@ extension ArgumentDefinition {
         """
 
     case .file(let extensions):
-      var safeExts = extensions.map {
-        String($0.flatMap { $0 == "'" ? ["\\", "'"] : [$0] })
-      }
+      var safeExts = extensions.map { $0.shellEscapeForSingleQuotedString() }
       safeExts.append(contentsOf: safeExts.map { $0.uppercased() })
 
       return """
@@ -265,11 +261,5 @@ extension ArgumentDefinition {
 
         """
     }
-  }
-}
-
-extension String {
-  var makeSafeFunctionName: String {
-    self.replacingOccurrences(of: "-", with: "_")
   }
 }
