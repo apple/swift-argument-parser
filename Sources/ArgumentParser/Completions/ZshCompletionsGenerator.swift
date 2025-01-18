@@ -217,7 +217,7 @@ extension ArgumentDefinition {
 
     case .shellCommand(let command):
       return
-        "{local -a list;list=(${(f)\"$(\(command))\"});_describe \"\" list}"
+        "{local -a list;list=(${(f)\"$(\(command.zshEscapingSingleQuotes()))\"});_describe \"\" list}"
 
     case .custom:
       // Generate a call back into the command to retrieve a completions list
