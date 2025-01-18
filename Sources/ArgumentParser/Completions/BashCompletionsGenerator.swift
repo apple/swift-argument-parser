@@ -25,7 +25,7 @@ struct BashCompletionsGenerator {
   }
 
   /// Generates a Bash completion function for the last command in the given list.
-  fileprivate static func generateCompletionFunction(
+  private static func generateCompletionFunction(
     _ commands: [ParsableCommand.Type]
   ) -> String {
     guard let type = commands.last else {
@@ -131,7 +131,7 @@ struct BashCompletionsGenerator {
   }
 
   /// Returns the option and flag names that can be top-level completions.
-  fileprivate static func generateArgumentWords(
+  private static func generateArgumentWords(
     _ commands: [ParsableCommand.Type]
   ) -> [String] {
     commands
@@ -142,7 +142,7 @@ struct BashCompletionsGenerator {
   /// Returns additional top-level completions from positional arguments.
   ///
   /// These consist of completions that are defined as `.list` or `.custom`.
-  fileprivate static func generateArgumentCompletions(
+  private static func generateArgumentCompletions(
     _ commands: [ParsableCommand.Type]
   ) -> [String] {
     guard let type = commands.last else { return [] }
@@ -166,7 +166,7 @@ struct BashCompletionsGenerator {
   }
 
   /// Returns the case-matching statements for supplying completions after an option or flag.
-  fileprivate static func generateOptionHandlers(
+  private static func generateOptionHandlers(
     _ commands: [ParsableCommand.Type]
   ) -> String {
     guard let type = commands.last else { return "" }
