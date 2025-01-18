@@ -107,7 +107,7 @@ struct BashCompletionsGenerator {
       result += "    case ${COMP_WORDS[\(dollarOne)]} in\n"
       for subcommand in subcommands {
         result += """
-              (\(subcommand._commandName))
+              \(subcommand._commandName))
                   \(functionName)_\(subcommand._commandName) \(subcommandArgument)
                   return
                   ;;

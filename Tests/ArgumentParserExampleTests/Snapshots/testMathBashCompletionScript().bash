@@ -13,19 +13,19 @@ _math() {
         return
     fi
     case ${COMP_WORDS[1]} in
-    (add)
+    add)
         _math_add 2
         return
         ;;
-    (multiply)
+    multiply)
         _math_multiply 2
         return
         ;;
-    (stats)
+    stats)
         _math_stats 2
         return
         ;;
-    (help)
+    help)
         _math_help 2
         return
         ;;
@@ -55,15 +55,15 @@ _math_stats() {
         return
     fi
     case ${COMP_WORDS[$1]} in
-    (average)
+    average)
         _math_stats_average $(($1+1))
         return
         ;;
-    (stdev)
+    stdev)
         _math_stats_stdev $(($1+1))
         return
         ;;
-    (quantiles)
+    quantiles)
         _math_stats_quantiles $(($1+1))
         return
         ;;

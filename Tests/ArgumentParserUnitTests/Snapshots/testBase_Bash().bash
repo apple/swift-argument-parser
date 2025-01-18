@@ -57,15 +57,15 @@ _base_test() {
         ;;
     esac
     case ${COMP_WORDS[1]} in
-    (sub-command)
+    sub-command)
         _base_test_sub-command 2
         return
         ;;
-    (escaped-command)
+    escaped-command)
         _base_test_escaped-command 2
         return
         ;;
-    (help)
+    help)
         _base_test_help 2
         return
         ;;
