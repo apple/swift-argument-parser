@@ -128,16 +128,17 @@ struct ZshCompletionsGenerator {
 
 extension String {
   fileprivate func zshEscapingSingleQuotes() -> String {
-    self.replacingOccurrences(of: "'", with: #"'"'"'"#)
+    replacingOccurrences(of: "'", with: "'\\''")
   }
 
   fileprivate func zshEscapingMetacharacters() -> String {
-    self.replacingOccurrences(
-      of: #"[\\\[\]]"#, with: #"\\$0"#, options: .regularExpression)
+    replacingOccurrences(
+      of: #"[\\\[\]]"#, with: #"\\$0"#, options: .regularExpression
+    )
   }
 
   fileprivate func zshEscaped() -> String {
-    self.zshEscapingSingleQuotes().zshEscapingMetacharacters()
+    zshEscapingMetacharacters().zshEscapingSingleQuotes()
   }
 }
 
