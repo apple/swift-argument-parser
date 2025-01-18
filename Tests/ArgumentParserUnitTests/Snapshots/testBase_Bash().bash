@@ -115,7 +115,18 @@ __base_test_offer_flags_options() {
     fi
 }
 
+__base_test_add_completions() {
+    local completion
+    while IFS='' read -r completion; do
+        COMPREPLY+=("${completion}")
+    done < <(IFS=$'\n' compgen "${@}" -- "${cur}")
+}
+
 _base_test() {
+    trap "$(shopt -p);$(shopt -po)" RETURN
+    shopt -s extglob
+    set +o posix
+
     local -xr SAP_SHELL=bash
     local -x SAP_SHELL_VERSION
     SAP_SHELL_VERSION="$(IFS='.';printf %s "${BASH_VERSINFO[*]}")"
@@ -146,19 +157,11 @@ _base_test() {
         return
         ;;
     --path1)
-        if declare -F _filedir >/dev/null; then
-            _filedir
-        else
-            COMPREPLY=($(compgen -f -- "${cur}"))
-        fi
+        __base_test_add_completions -f
         return
         ;;
     --path2)
-        if declare -F _filedir >/dev/null; then
-            _filedir
-        else
-            COMPREPLY=($(compgen -f -- "${cur}"))
-        fi
+        __base_test_add_completions -f
         return
         ;;
     --path3)
@@ -233,4 +236,4 @@ _base_test_help() {
     :
 }
 
-complete -F _base_test base-test
+complete -o filenames -F _base_test base-test

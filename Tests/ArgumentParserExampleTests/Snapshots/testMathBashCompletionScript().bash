@@ -115,7 +115,18 @@ __math_offer_flags_options() {
     fi
 }
 
+__math_add_completions() {
+    local completion
+    while IFS='' read -r completion; do
+        COMPREPLY+=("${completion}")
+    done < <(IFS=$'\n' compgen "${@}" -- "${cur}")
+}
+
 _math() {
+    trap "$(shopt -p);$(shopt -po)" RETURN
+    shopt -s extglob
+    set +o posix
+
     local -xr SAP_SHELL=bash
     local -x SAP_SHELL_VERSION
     SAP_SHELL_VERSION="$(IFS='.';printf %s "${BASH_VERSINFO[*]}")"
@@ -210,29 +221,11 @@ _math_stats_quantiles() {
     # TODO: only if ${prev} matches -* & is not an option value
     case "${prev}" in
     --file)
-        if declare -F _filedir >/dev/null; then
-            _filedir 'txt'
-            _filedir 'md'
-            _filedir 'TXT'
-            _filedir 'MD'
-            _filedir -d
-        else
-            COMPREPLY=(
-                $(compgen -f -X '!*.txt' -- "${cur}")
-                $(compgen -f -X '!*.md' -- "${cur}")
-                $(compgen -f -X '!*.TXT' -- "${cur}")
-                $(compgen -f -X '!*.MD' -- "${cur}")
-                $(compgen -d -- "${cur}")
-            )
-        fi
+        __math_add_completions -o plusdirs -fX '!*.@(txt|TXT|md|MD)'
         return
         ;;
     --directory)
-        if declare -F _filedir >/dev/null; then
-            _filedir -d
-        else
-            COMPREPLY=($(compgen -d -- "${cur}"))
-        fi
+        __math_add_completions -d
         return
         ;;
     --shell)
@@ -264,4 +257,4 @@ _math_help() {
     __math_offer_flags_options 1
 }
 
-complete -F _math math
+complete -o filenames -F _math math

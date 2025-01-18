@@ -136,8 +136,15 @@ extension [ParsableCommand.Type] {
           fi
       }
 
+      \(addCompletionsFunctionName)() {
+          local completion
+          while IFS='' read -r completion; do
+              COMPREPLY+=("${completion}")
+          done < <(IFS=$'\\n' compgen "${@}" -- "${cur}")
+      }
+
       \(completionFunctions)\
-      complete -F \(completionFunctionName().shellEscapeForVariableName()) \(commandName)
+      complete -o filenames -F \(completionFunctionName().shellEscapeForVariableName()) \(commandName)
       """
   }
 
@@ -161,6 +168,10 @@ extension [ParsableCommand.Type] {
       subcommands.addHelpSubcommandIfMissing()
 
       result += """
+            trap "$(shopt -p);$(shopt -po)" RETURN
+            shopt -s extglob
+            set +o posix
+
             local -xr \(CompletionShell.shellEnvironmentVariableName)=bash
             local -x \(CompletionShell.shellVersionEnvironmentVariableName)
             \(CompletionShell.shellVersionEnvironmentVariableName)="$(IFS='.';printf %s "${BASH_VERSINFO[*]}")"
@@ -312,8 +323,6 @@ extension [ParsableCommand.Type] {
   }
 
   /// Returns the bash completions that can follow the given argument's `--name`.
-  ///
-  /// Uses bash-completion for file and directory values if available.
   private func bashValueCompletion(_ arg: ArgumentDefinition) -> String {
     switch arg.completion.kind {
     case .default:
@@ -321,38 +330,22 @@ extension [ParsableCommand.Type] {
 
     case .file(let extensions) where extensions.isEmpty:
       return """
-        if declare -F _filedir >/dev/null; then
-            _filedir
-        else
-            COMPREPLY=($(compgen -f -- "${cur}"))
-        fi
+        \(addCompletionsFunctionName) -f
 
         """
 
     case .file(let extensions):
-      var safeExts = extensions.map { $0.shellEscapeForSingleQuotedString() }
-      safeExts.append(contentsOf: safeExts.map { $0.uppercased() })
-
+      let exts = extensions.map { $0.shellEscapeForSingleQuotedString() }
+        .flatMap { [$0, $0.uppercased()] }
+        .joined(separator: "|")
       return """
-        if declare -F _filedir >/dev/null; then
-            \(safeExts.map { "_filedir '\($0)'" }.joined(separator:"\n    "))
-            _filedir -d
-        else
-            COMPREPLY=(
-                \(safeExts.map { "$(compgen -f -X '!*.\($0)' -- \"${cur}\")" }.joined(separator: "\n        "))
-                $(compgen -d -- "${cur}")
-            )
-        fi
+        \(addCompletionsFunctionName) -o plusdirs -fX '!*.@(\(exts))'
 
         """
 
     case .directory:
       return """
-        if declare -F _filedir >/dev/null; then
-            _filedir -d
-        else
-            COMPREPLY=($(compgen -d -- "${cur}"))
-        fi
+        \(addCompletionsFunctionName) -d
 
         """
 
@@ -379,6 +372,10 @@ extension [ParsableCommand.Type] {
 
   private var offerFlagsOptionsFunctionName: String {
     "_\(prefix(1).completionFunctionName().shellEscapeForVariableName())_offer_flags_options"
+  }
+
+  private var addCompletionsFunctionName: String {
+    "_\(prefix(1).completionFunctionName().shellEscapeForVariableName())_add_completions"
   }
 }
 
