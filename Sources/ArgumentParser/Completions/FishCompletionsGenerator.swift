@@ -138,7 +138,8 @@ extension String {
   ) -> Self {
     iterationCount == 0
       ? self
-      : replacingOccurrences(of: "'", with: "\\'")
+      : replacingOccurrences(of: "\\", with: "\\\\")
+        .replacingOccurrences(of: "'", with: "\\'")
         .fishEscapeForSingleQuotedString(iterationCount: iterationCount - 1)
   }
 }

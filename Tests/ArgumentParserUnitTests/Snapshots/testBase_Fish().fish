@@ -38,7 +38,7 @@ function _swift_base-test_using_command
 end
 
 complete -c base-test -n '_swift_base-test_using_command "base-test sub-command"' -s h -l help -d 'Show help information.'
-complete -c base-test -n '_swift_base-test_using_command "base-test escaped-command"' -l one -d 'Escaped chars: \'[]\.'
+complete -c base-test -n '_swift_base-test_using_command "base-test escaped-command"' -l one -d 'Escaped chars: \'[]\\.'
 complete -c base-test -n '_swift_base-test_using_command "base-test escaped-command"' -r -f -a '(command base-test ---completion escaped-command -- two (commandline -opc)[1..-1])'
 complete -c base-test -n '_swift_base-test_using_command "base-test escaped-command"' -s h -l help -d 'Show help information.'
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command escaped-command help"' -l name -d 'The user\'s name.'
