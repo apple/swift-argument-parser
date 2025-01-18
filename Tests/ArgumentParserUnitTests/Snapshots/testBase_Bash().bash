@@ -16,7 +16,6 @@ _base_test() {
     fi
     case "${prev}" in
     --name)
-
         return
         ;;
     --kind)
@@ -48,11 +47,9 @@ _base_test() {
         return
         ;;
     --rep1)
-
         return
         ;;
     -r|--rep2)
-
         return
         ;;
     esac
@@ -89,7 +86,6 @@ _base_test_escaped_command() {
     fi
     case "${prev}" in
     --one)
-
         return
         ;;
     esac

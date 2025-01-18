@@ -180,7 +180,7 @@ struct BashCompletionsGenerator {
 
         return """
               \(arg.bashCompletionWords().joined(separator: "|")))
-          \(arg.bashValueCompletion(commands).indentingEachLine(by: 8))
+          \(arg.bashValueCompletion(commands).indentingEachLine(by: 8))\
                   return
                   ;;
           """
@@ -214,6 +214,7 @@ extension ArgumentDefinition {
         else
             COMPREPLY=($(compgen -f -- "${cur}"))
         fi
+
         """
 
     case .file(let extensions):
@@ -232,6 +233,7 @@ extension ArgumentDefinition {
                 $(compgen -d -- "${cur}")
             )
         fi
+
         """
 
     case .directory:
@@ -241,19 +243,27 @@ extension ArgumentDefinition {
         else
             COMPREPLY=($(compgen -d -- "${cur}"))
         fi
+
         """
 
     case .list(let list):
-      return
-        #"COMPREPLY=($(compgen -W "\#(list.joined(separator: " "))" -- "${cur}"))"#
+      return """
+        COMPREPLY=($(compgen -W "\(list.joined(separator: " "))" -- "${cur}"))
+
+        """
 
     case .shellCommand(let command):
-      return "COMPREPLY=($(\(command)))"
+      return """
+        COMPREPLY=($(\(command)))
+
+        """
 
     case .custom:
       // Generate a call back into the command to retrieve a completions list
-      return
-        #"COMPREPLY=($(compgen -W "$("${COMP_WORDS[0]}" \#(customCompletionCall(commands)) "${COMP_WORDS[@]}")" -- "${cur}"))"#
+      return """
+        COMPREPLY=($(compgen -W "$("${COMP_WORDS[0]}" \(customCompletionCall(commands)) "${COMP_WORDS[@]}")" -- "${cur}"))
+
+        """
     }
   }
 }
