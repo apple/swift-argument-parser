@@ -144,7 +144,7 @@ _math_stats_quantiles() {
         ':one-of-four:(alphabet alligator branch braggart)'
         ':custom-arg:{_custom_completion "${command_name}" ---completion stats quantiles -- customArg "${command_line[@]}"}'
         ':values:'
-        '--file:file:_files -g '"'"'*.txt *.md'"'"''
+        '--file:file:_files -g '\''*.txt *.md'\'''
         '--directory:directory:_files -/'
         '--shell:shell:{local -a list;list=(${(f)"$(head -100 /usr/share/dict/words | tail -50)"});_describe "" list}'
         '--custom:custom:{_custom_completion "${command_name}" ---completion stats quantiles -- --custom "${command_line[@]}"}'

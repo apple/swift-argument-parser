@@ -14,7 +14,7 @@ _base-test() {
 
     local -i ret=1
     local -ar args=(
-        '--name[The user'"'"'s name.]:name:'
+        '--name[The user'\''s name.]:name:'
         '--kind:kind:(one two custom-three)'
         '--other-kind:other-kind:(b1_zsh b2_zsh b3_zsh)'
         '--path1:path1:_files'
@@ -73,7 +73,7 @@ _base-test_sub-command() {
 _base-test_escaped-command() {
     local -i ret=1
     local -ar args=(
-        '--one[Escaped chars: '"'"'\[\]\\.]:one:'
+        '--one[Escaped chars: '\''\[\]\\.]:one:'
         ':two:{_custom_completion "${command_name}" ---completion escaped-command -- two "${command_line[@]}"}'
         '(-h --help)'{-h,--help}'[Show help information.]'
     )
