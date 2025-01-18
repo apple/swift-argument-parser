@@ -33,9 +33,9 @@ struct ZshCompletionsGenerator {
       """
   }
 
-  static func generateCompletionFunction(_ commands: [ParsableCommand.Type])
-    -> String
-  {
+  private static func generateCompletionFunction(
+    _ commands: [ParsableCommand.Type]
+  ) -> String {
     guard let type = commands.last else { return "" }
     let functionName = commands.completionFunctionName()
     let isRootCommand = commands.count == 1
@@ -118,9 +118,9 @@ struct ZshCompletionsGenerator {
       .joined()
   }
 
-  static func generateCompletionArguments(_ commands: [ParsableCommand.Type])
-    -> [String]
-  {
+  private static func generateCompletionArguments(
+    _ commands: [ParsableCommand.Type]
+  ) -> [String] {
     commands
       .argumentsForHelp(visibility: .default)
       .compactMap { $0.zshCompletionString(commands) }
@@ -144,12 +144,14 @@ extension String {
 }
 
 extension ArgumentDefinition {
-  var zshCompletionAbstract: String {
+  private var zshCompletionAbstract: String {
     guard !help.abstract.isEmpty else { return "" }
     return "[\(help.abstract.zshEscaped())]"
   }
 
-  func zshCompletionString(_ commands: [ParsableCommand.Type]) -> String? {
+  fileprivate func zshCompletionString(
+    _ commands: [ParsableCommand.Type]
+  ) -> String? {
     guard help.visibility.base == .default else { return nil }
 
     let inputs: String
@@ -198,7 +200,7 @@ extension ArgumentDefinition {
   }
 
   /// Returns the zsh "action" for an argument completion string.
-  func zshActionString(_ commands: [ParsableCommand.Type]) -> String {
+  private func zshActionString(_ commands: [ParsableCommand.Type]) -> String {
     switch completion.kind {
     case .default:
       return ""
