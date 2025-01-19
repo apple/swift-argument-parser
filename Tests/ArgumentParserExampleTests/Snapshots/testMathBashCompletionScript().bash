@@ -1,5 +1,120 @@
 #!/bin/bash
 
+# positional arguments:
+#
+# - 1: the current (sub)command's count of positional arguments
+#
+# required variables:
+#
+# - flags: the flags that the current (sub)command can accept
+# - options: the options that the current (sub)command can accept
+# - positional_number: value ignored
+# - unparsed_words: unparsed words from the current command line
+#
+# modified variables:
+#
+# - flags: remove flags for this (sub)command that are already on the command line
+# - options: remove options for this (sub)command that are already on the command line
+# - positional_number: set to the current positional number
+# - unparsed_words: remove all flags, options, and option values for this (sub)command
+__math_offer_flags_options() {
+    local -ir positional_count="${1}"
+    positional_number=0
+
+    local was_flag_option_terminator_seen=false
+    local is_parsing_option_value=false
+
+    local -ar unparsed_word_indices=("${!unparsed_words[@]}")
+    local -i word_index
+    for word_index in "${unparsed_word_indices[@]}"; do
+        if "${is_parsing_option_value}"; then
+            # This word is an option value:
+            # Reset marker for next word iff not currently the last word
+            [[ "${word_index}" -ne "${unparsed_word_indices[${#unparsed_word_indices[@]} - 1]}" ]] && is_parsing_option_value=false
+            unset "unparsed_words[${word_index}]"
+            # Do not process this word as a flag or an option
+            continue
+        fi
+
+        local word="${unparsed_words["${word_index}"]}"
+        if ! "${was_flag_option_terminator_seen}"; then
+            case "${word}" in
+            --)
+                unset "unparsed_words[${word_index}]"
+                # by itself -- is a flag/option terminator, but if it is the last word, it is the start of a completion
+                if [[ "${word_index}" -ne "${unparsed_word_indices[${#unparsed_word_indices[@]} - 1]}" ]]; then
+                    was_flag_option_terminator_seen=true
+                fi
+                continue
+                ;;
+            -*)
+                # ${word} is a flag or an option
+                # If ${word} is an option, mark that the next word to be parsed is an option value
+                # TODO: handle joined-value options (-o=file.ext), stacked flags (-aBc), legacy long (-long), combos
+                # TODO: if multi-valued options can exist, support them
+                local option
+                for option in "${options[@]}"; do
+                    [[ "${word}" = "${option}" ]] && is_parsing_option_value=true && break
+                done
+
+                # Remove ${word} from ${flags} or ${options} so it isn't offered again
+                # TODO: handle repeatable flags & options
+                # TODO: remove equivalent options (-h/--help) & exclusive options (--yes/--no)
+                local not_found=true
+                local -i index
+                for index in "${!flags[@]}"; do
+                    if [[ "${flags[${index}]}" = "${word}" ]]; then
+                        unset "flags[${index}]"
+                        flags=("${flags[@]}")
+                        not_found=false
+                        break
+                    fi
+                done
+                if "${not_found}"; then
+                    for index in "${!options[@]}"; do
+                        if [[ "${options[${index}]}" = "${word}" ]]; then
+                            unset "options[${index}]"
+                            options=("${options[@]}")
+                            break
+                        fi
+                    done
+                fi
+                unset "unparsed_words[${word_index}]"
+                continue
+                ;;
+            esac
+        fi
+
+        # ${word} is neither a flag, nor an option, nor an option value
+        # TODO: can SAP be configured to require options before positionals?
+        if [[ "${positional_number}" -lt "${positional_count}" ]]; then
+            # ${word} is a positional
+            ((positional_number++))
+            unset "unparsed_words[${word_index}]"
+        else
+            if [[ -z "${word}" ]]; then
+                # Could be completing a flag, option, or subcommand
+                positional_number=-1
+            else
+                # ${word} is a subcommand or invalid, so stop processing this (sub)command
+                positional_number=-2
+            fi
+            break
+        fi
+    done
+
+    unparsed_words=("${unparsed_words[@]}")
+
+    # TODO: offer flags & options after all positionals iff they're allowed after positionals
+    if\
+        ! "${was_flag_option_terminator_seen}"\
+        && ! "${is_parsing_option_value}"\
+        && [[ ("${cur}" = -* && "${positional_number}" -ge 0) || "${positional_number}" -eq -1 ]]
+    then
+        COMPREPLY+=($(compgen -W "${flags[*]} ${options[*]}" -- "${cur}"))
+    fi
+}
+
 _math() {
     local -xr SAP_SHELL=bash
     local -x SAP_SHELL_VERSION
@@ -9,99 +124,90 @@ _math() {
     local -r cur="${2}"
     local -r prev="${3}"
 
-    opts="--version -h --help add multiply stats help"
-    if [[ "${COMP_CWORD}" == "1" ]]; then
-        COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-        return
-    fi
-    case "${COMP_WORDS[1]}" in
-    add)
-        _math_add 2
-        return
+    local -i positional_number
+    local -a unparsed_words=("${COMP_WORDS[@]:1:${COMP_CWORD}}")
+
+    local -a flags=(--version -h --help)
+    local -a options=()
+    __math_offer_flags_options 0
+
+    # Offer subcommand / subcommand argument completions
+    local -r subcommand="${unparsed_words[0]}"
+    unset 'unparsed_words[0]'
+    unparsed_words=("${unparsed_words[@]}")
+    case "${subcommand}" in
+    add|multiply|stats|help)
+        # Offer subcommand argument completions
+        "_math_${subcommand}"
         ;;
-    multiply)
-        _math_multiply 2
-        return
-        ;;
-    stats)
-        _math_stats 2
-        return
-        ;;
-    help)
-        _math_help 2
-        return
+    *)
+        # Offer subcommand completions
+        COMPREPLY+=($(compgen -W 'add multiply stats help' -- "${cur}"))
         ;;
     esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
 }
+
 _math_add() {
-    opts="--hex-output -x --version -h --help"
-    if [[ "${COMP_CWORD}" == "${1}" ]]; then
-        COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-        return
-    fi
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
+    flags=(--hex-output -x --version -h --help)
+    options=()
+    __math_offer_flags_options 1
 }
+
 _math_multiply() {
-    opts="--hex-output -x --version -h --help"
-    if [[ "${COMP_CWORD}" == "${1}" ]]; then
-        COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-        return
-    fi
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
+    flags=(--hex-output -x --version -h --help)
+    options=()
+    __math_offer_flags_options 1
 }
+
 _math_stats() {
-    opts="--version -h --help average stdev quantiles"
-    if [[ "${COMP_CWORD}" == "${1}" ]]; then
-        COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-        return
-    fi
-    case "${COMP_WORDS[${1}]}" in
-    average)
-        _math_stats_average $((${1}+1))
-        return
+    flags=(--version -h --help)
+    options=()
+    __math_offer_flags_options 0
+
+    # Offer subcommand / subcommand argument completions
+    local -r subcommand="${unparsed_words[0]}"
+    unset 'unparsed_words[0]'
+    unparsed_words=("${unparsed_words[@]}")
+    case "${subcommand}" in
+    average|stdev|quantiles)
+        # Offer subcommand argument completions
+        "_math_stats_${subcommand}"
         ;;
-    stdev)
-        _math_stats_stdev $((${1}+1))
-        return
-        ;;
-    quantiles)
-        _math_stats_quantiles $((${1}+1))
-        return
+    *)
+        # Offer subcommand completions
+        COMPREPLY+=($(compgen -W 'average stdev quantiles' -- "${cur}"))
         ;;
     esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
 }
+
 _math_stats_average() {
-    opts="--kind --version -h --help"
-    if [[ "${COMP_CWORD}" == "${1}" ]]; then
-        COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-        return
-    fi
+    flags=(--version -h --help)
+    options=(--kind)
+    __math_offer_flags_options 1
+
+    # Offer option value completions
+    # TODO: only if ${prev} matches -* & is not an option value
     case "${prev}" in
     --kind)
-        COMPREPLY=($(compgen -W "mean median mode" -- "${cur}"))
+        COMPREPLY+=($(compgen -W "mean median mode" -- "${cur}"))
         return
         ;;
     esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
 }
+
 _math_stats_stdev() {
-    opts="--version -h --help"
-    if [[ "${COMP_CWORD}" == "${1}" ]]; then
-        COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-        return
-    fi
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
+    flags=(--version -h --help)
+    options=()
+    __math_offer_flags_options 1
 }
+
 _math_stats_quantiles() {
-    opts="--file --directory --shell --custom --version -h --help"
-    opts="${opts} alphabet alligator branch braggart"
-    opts="${opts} $("${COMP_WORDS[0]}" ---completion stats quantiles -- customArg "${COMP_WORDS[@]}")"
-    if [[ "${COMP_CWORD}" == "${1}" ]]; then
-        COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-        return
-    fi
+    flags=(--version -h --help)
+    options=(--file --directory --shell --custom)
+    __math_offer_flags_options 3
+
+    # Offer option value completions
+    # TODO: only if ${prev} matches -* & is not an option value
     case "${prev}" in
     --file)
         if declare -F _filedir >/dev/null; then
@@ -130,24 +236,32 @@ _math_stats_quantiles() {
         return
         ;;
     --shell)
-        COMPREPLY=($(head -100 /usr/share/dict/words | tail -50))
+        COMPREPLY+=($(head -100 /usr/share/dict/words | tail -50))
         return
         ;;
     --custom)
-        COMPREPLY=($(compgen -W "$("${COMP_WORDS[0]}" ---completion stats quantiles -- --custom "${COMP_WORDS[@]}")" -- "${cur}"))
+        COMPREPLY+=($(compgen -W "$("${COMP_WORDS[0]}" ---completion stats quantiles -- --custom "${COMP_WORDS[@]}")" -- "${cur}"))
         return
         ;;
     esac
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
-}
-_math_help() {
-    opts="--version"
-    if [[ "${COMP_CWORD}" == "${1}" ]]; then
-        COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
+
+    # Offer positional completions
+    case "${positional_number}" in
+    1)
+        COMPREPLY+=($(compgen -W "alphabet alligator branch braggart" -- "${cur}"))
         return
-    fi
-    COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
+        ;;
+    2)
+        COMPREPLY+=($(compgen -W "$("${COMP_WORDS[0]}" ---completion stats quantiles -- customArg "${COMP_WORDS[@]}")" -- "${cur}"))
+        return
+        ;;
+    esac
 }
 
+_math_help() {
+    flags=(--version)
+    options=()
+    __math_offer_flags_options 1
+}
 
 complete -F _math math
