@@ -221,7 +221,7 @@ _math_stats_quantiles() {
     # TODO: only if ${prev} matches -* & is not an option value
     case "${prev}" in
     --file)
-        __math_add_completions -o plusdirs -fX '!*.@(txt|TXT|md|MD)'
+        __math_add_completions -o plusdirs -fX '!*.@(txt|md)'
         return
         ;;
     --directory)

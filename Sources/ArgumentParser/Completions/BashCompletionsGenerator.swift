@@ -335,9 +335,9 @@ extension [ParsableCommand.Type] {
         """
 
     case .file(let extensions):
-      let exts = extensions.map { $0.shellEscapeForSingleQuotedString() }
-        .flatMap { [$0, $0.uppercased()] }
-        .joined(separator: "|")
+      let exts =
+        extensions
+        .map { $0.shellEscapeForSingleQuotedString() }.joined(separator: "|")
       return """
         \(addCompletionsFunctionName) -o plusdirs -fX '!*.@(\(exts))'
 
