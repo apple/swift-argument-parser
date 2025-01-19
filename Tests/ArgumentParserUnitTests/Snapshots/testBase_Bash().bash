@@ -149,11 +149,11 @@ _base_test() {
         return
         ;;
     --kind)
-        COMPREPLY+=($(compgen -W 'one two custom-three' -- "${cur}"))
+        __base_test_add_completions -W 'one'$'\n''two'$'\n''custom-three'
         return
         ;;
     --other-kind)
-        COMPREPLY+=($(compgen -W 'b1_bash b2_bash b3_bash' -- "${cur}"))
+        __base_test_add_completions -W 'b1_bash'$'\n''b2_bash'$'\n''b3_bash'
         return
         ;;
     --path1)
@@ -165,7 +165,7 @@ _base_test() {
         return
         ;;
     --path3)
-        COMPREPLY+=($(compgen -W 'c1_bash c2_bash c3_bash' -- "${cur}"))
+        __base_test_add_completions -W 'c1_bash'$'\n''c2_bash'$'\n''c3_bash'
         return
         ;;
     --rep1)
