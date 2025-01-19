@@ -179,11 +179,11 @@ _base_test() {
     # Offer positional completions
     case "${positional_number}" in
     1)
-        COMPREPLY+=($(compgen -W "$("${COMP_WORDS[0]}" ---completion  -- argument "${COMP_WORDS[@]}")" -- "${cur}"))
+        __base_test_add_completions -W "$("${COMP_WORDS[0]}" ---completion  -- argument "${COMP_WORDS[@]}")"
         return
         ;;
     2)
-        COMPREPLY+=($(compgen -W "$("${COMP_WORDS[0]}" ---completion  -- nested.nestedArgument "${COMP_WORDS[@]}")" -- "${cur}"))
+        __base_test_add_completions -W "$("${COMP_WORDS[0]}" ---completion  -- nested.nestedArgument "${COMP_WORDS[@]}")"
         return
         ;;
     esac
@@ -226,7 +226,7 @@ _base_test_escaped_command() {
     # Offer positional completions
     case "${positional_number}" in
     1)
-        COMPREPLY+=($(compgen -W "$("${COMP_WORDS[0]}" ---completion escaped-command -- two "${COMP_WORDS[@]}")" -- "${cur}"))
+        __base_test_add_completions -W "$("${COMP_WORDS[0]}" ---completion escaped-command -- two "${COMP_WORDS[@]}")"
         return
         ;;
     esac

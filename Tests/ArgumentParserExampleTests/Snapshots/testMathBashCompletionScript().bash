@@ -233,7 +233,7 @@ _math_stats_quantiles() {
         return
         ;;
     --custom)
-        COMPREPLY+=($(compgen -W "$("${COMP_WORDS[0]}" ---completion stats quantiles -- --custom "${COMP_WORDS[@]}")" -- "${cur}"))
+        __math_add_completions -W "$("${COMP_WORDS[0]}" ---completion stats quantiles -- --custom "${COMP_WORDS[@]}")"
         return
         ;;
     esac
@@ -245,7 +245,7 @@ _math_stats_quantiles() {
         return
         ;;
     2)
-        COMPREPLY+=($(compgen -W "$("${COMP_WORDS[0]}" ---completion stats quantiles -- customArg "${COMP_WORDS[@]}")" -- "${cur}"))
+        __math_add_completions -W "$("${COMP_WORDS[0]}" ---completion stats quantiles -- customArg "${COMP_WORDS[@]}")"
         return
         ;;
     esac

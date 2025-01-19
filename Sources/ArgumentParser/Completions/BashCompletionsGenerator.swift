@@ -365,7 +365,8 @@ extension [ParsableCommand.Type] {
     case .custom:
       // Generate a call back into the command to retrieve a completions list
       return """
-        COMPREPLY+=($(compgen -W "$("${COMP_WORDS[0]}" \(arg.customCompletionCall(self)) "${COMP_WORDS[@]}")" -- "${cur}"))
+        \(addCompletionsFunctionName) -W\
+         "$("${COMP_WORDS[0]}" \(arg.customCompletionCall(self)) "${COMP_WORDS[@]}")"
 
         """
     }
