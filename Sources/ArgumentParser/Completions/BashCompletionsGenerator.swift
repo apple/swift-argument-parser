@@ -351,7 +351,9 @@ extension [ParsableCommand.Type] {
 
     case .list(let list):
       return """
-        COMPREPLY+=($(compgen -W "\(list.joined(separator: " "))" -- "${cur}"))
+        COMPREPLY+=($(compgen -W '\(
+          list.map { $0.shellEscapeForSingleQuotedString() }.joined(separator: " ")
+        )' -- "${cur}"))
 
         """
 

@@ -200,7 +200,7 @@ _math_stats_average() {
     # TODO: only if ${prev} matches -* & is not an option value
     case "${prev}" in
     --kind)
-        COMPREPLY+=($(compgen -W "mean median mode" -- "${cur}"))
+        COMPREPLY+=($(compgen -W 'mean median mode' -- "${cur}"))
         return
         ;;
     esac
@@ -241,7 +241,7 @@ _math_stats_quantiles() {
     # Offer positional completions
     case "${positional_number}" in
     1)
-        COMPREPLY+=($(compgen -W "alphabet alligator branch braggart" -- "${cur}"))
+        COMPREPLY+=($(compgen -W 'alphabet alligator branch braggart' -- "${cur}"))
         return
         ;;
     2)
