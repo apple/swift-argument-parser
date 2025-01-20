@@ -26,9 +26,9 @@ struct FishCompletionsGenerator {
 // MARK: - Private functions
 
 extension FishCompletionsGenerator {
-  private static func generateCompletions(_ commands: [ParsableCommand.Type])
-    -> [String]
-  {
+  private static func generateCompletions(
+    _ commands: [ParsableCommand.Type]
+  ) -> [String] {
     guard let type = commands.last else { return [] }
     let isRootCommand = commands.count == 1
     let programName = commands[0]._commandName
@@ -54,7 +54,8 @@ extension FishCompletionsGenerator {
     }
 
     let subcommandCompletions: [String] = subcommands.map { subcommand in
-      let escapedAbstract = subcommand.configuration.abstract.fishEscape()
+      let escapedAbstract =
+        subcommand.configuration.abstract.fishEscapeForSingleQuotedString()
       let suggestion =
         "-f -a '\(subcommand._commandName)' -d '\(escapedAbstract)'"
       return complete(suggestion: suggestion)
@@ -71,15 +72,15 @@ extension FishCompletionsGenerator {
       generateCompletions(commands + [subcommand])
     }
 
-    return completionsFromSubcommands + argumentCompletions
-      + subcommandCompletions
+    return
+      completionsFromSubcommands + argumentCompletions + subcommandCompletions
   }
 }
 
 extension ArgumentDefinition {
-  fileprivate func argumentSegments(_ commands: [ParsableCommand.Type])
-    -> [String]?
-  {
+  fileprivate func argumentSegments(
+    _ commands: [ParsableCommand.Type]
+  ) -> [String]? {
     guard help.visibility.base == .default
     else { return nil }
 
@@ -90,7 +91,7 @@ extension ArgumentDefinition {
     }
 
     if !help.abstract.isEmpty {
-      results += ["-d '\(help.abstract.fishEscape())'"]
+      results += ["-d '\(help.abstract.fishEscapeForSingleQuotedString())'"]
     }
 
     switch completion.kind {
@@ -132,8 +133,13 @@ extension Name {
 }
 
 extension String {
-  fileprivate func fishEscape() -> String {
-    replacingOccurrences(of: "'", with: #"\'"#)
+  fileprivate func fishEscapeForSingleQuotedString(
+    iterationCount: UInt64 = 1
+  ) -> Self {
+    iterationCount == 0
+      ? self
+      : replacingOccurrences(of: "'", with: "\\'")
+        .fishEscapeForSingleQuotedString(iterationCount: iterationCount - 1)
   }
 }
 
@@ -167,8 +173,8 @@ extension FishCompletionsGenerator {
 
   private static func helperFunction(commandName: String) -> String {
     let functionName = helperFunctionName(commandName: commandName)
-    let preprocessorFunctionName = preprocessorFunctionName(
-      commandName: commandName)
+    let preprocessorFunctionName =
+      preprocessorFunctionName(commandName: commandName)
     return """
       function \(functionName)
           set -gx \(CompletionShell.shellEnvironmentVariableName) fish
