@@ -239,7 +239,7 @@ _math_stats_quantiles() {
         return
         ;;
     --shell)
-        COMPREPLY+=($(eval 'head -100 /usr/share/dict/words | tail -50'))
+        __math_add_completions -W "$(eval 'head -100 /usr/share/dict/words | tail -50')"
         return
         ;;
     --custom)
