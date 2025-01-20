@@ -368,7 +368,7 @@ extension [ParsableCommand.Type] {
 
     case .shellCommand(let command):
       return """
-        COMPREPLY+=($(\(command)))
+        COMPREPLY+=($(eval '\(command.shellEscapeForSingleQuotedString())'))
 
         """
 
