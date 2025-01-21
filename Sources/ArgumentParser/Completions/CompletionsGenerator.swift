@@ -172,6 +172,15 @@ extension ParsableCommand {
   }
 }
 
+extension [ParsableCommand.Type] {
+  // Include default 'help' subcommand in nonempty subcommand list iff no help subcommand already exists.
+  mutating func addHelpSubcommandIffMissing() {
+    if !isEmpty && allSatisfy({ $0._commandName != "help" }) {
+      append(HelpCommand.self)
+    }
+  }
+}
+
 extension Sequence where Element == ParsableCommand.Type {
   func completionFunctionName() -> String {
     "_"
