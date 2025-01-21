@@ -32,17 +32,8 @@ _math() {
         ;;
     arg)
         case "${words[1]}" in
-        add)
-            _math_add
-            ;;
-        multiply)
-            _math_multiply
-            ;;
-        stats)
-            _math_stats
-            ;;
-        help)
-            _math_help
+        add|multiply|stats|help)
+            "_math_${words[1]}"
             ;;
         esac
         ;;
@@ -97,14 +88,8 @@ _math_stats() {
         ;;
     arg)
         case "${words[1]}" in
-        average)
-            _math_stats_average
-            ;;
-        stdev)
-            _math_stats_stdev
-            ;;
-        quantiles)
-            _math_stats_quantiles
+        average|stdev|quantiles)
+            "_math_stats_${words[1]}"
             ;;
         esac
         ;;

@@ -44,14 +44,8 @@ _base-test() {
         ;;
     arg)
         case "${words[1]}" in
-        sub-command)
-            _base-test_sub-command
-            ;;
-        escaped-command)
-            _base-test_escaped-command
-            ;;
-        help)
-            _base-test_help
+        sub-command|escaped-command|help)
+            "_base-test_${words[1]}"
             ;;
         esac
         ;;
