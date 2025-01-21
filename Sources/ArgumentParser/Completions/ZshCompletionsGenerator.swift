@@ -209,14 +209,14 @@ extension ArgumentDefinition {
       let pattern =
         extensions.isEmpty
         ? ""
-        : " -g '\(extensions.map { "*." + $0 }.joined(separator: " "))'"
+        : " -g '\(extensions.map { "*.\($0)" }.joined(separator: " "))'"
       return "_files\(pattern.zshEscaped())"
 
     case .directory:
       return "_files -/"
 
     case .list(let list):
-      return "(" + list.joined(separator: " ") + ")"
+      return "(\(list.joined(separator: " ")))"
 
     case .shellCommand(let command):
       return
