@@ -18,14 +18,17 @@ struct ZshCompletionsGenerator {
       #compdef \(type._commandName)
 
       \(generateCompletionFunction([type]))\
+      __completion() {
+          local -ar non_empty_completions=("${@:#(|:*)}")
+          local -ar empty_completions=("${(M)@:#(|:*)}")
+          _describe '' non_empty_completions -- empty_completions -P $'\\'\\''
+      }
+
       _custom_completion() {
           local -a completions
           completions=("${(@f)"$("${@}")"}")
           if [[ "${#completions[@]}" -gt 1 ]]; then
-              completions=("${completions[@]:0:-1}")
-              local -ar non_empty_completions=("${completions[@]:#(|:*)}")
-              local -ar empty_completions=("${(M)completions[@]:#(|:*)}")
-              _describe '' non_empty_completions -- empty_completions -P $'\\'\\''
+              __completion "${completions[@]:0:-1}"
           fi
       }
 
