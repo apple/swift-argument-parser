@@ -55,30 +55,25 @@ struct ZshCompletionsGenerator {
         subcommands.append(HelpCommand.self)
       }
 
-      let subcommandModes = subcommands.map {
-        """
-                    '\($0._commandName):\($0.configuration.abstract.zshEscaped())'
-        """
-      }
-      let subcommandArgs = subcommands.map {
-        """
-                \($0._commandName))
-                    \(functionName)_\($0._commandName)
-                    ;;
-        """
-      }
-
       subcommandHandler = """
             case "${state}" in
             command)
                 local -ar subcommands=(
-        \(subcommandModes.joined(separator: "\n"))
+        \(
+          subcommands.map { """
+                        '\($0._commandName):\($0.configuration.abstract.zshEscapingMetacharacters())'
+            """
+          }
+          .joined(separator: "\n")
+        )
                 )
                 _describe "subcommand" subcommands
                 ;;
             arg)
                 case "${words[1]}" in
-        \(subcommandArgs.joined(separator: "\n"))
+                \(subcommands.map { $0._commandName }.joined(separator: "|")))
+                    "\(functionName)_${words[1]}"
+                    ;;
                 esac
                 ;;
             esac
