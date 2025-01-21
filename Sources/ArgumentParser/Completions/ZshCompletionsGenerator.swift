@@ -52,7 +52,7 @@ struct ZshCompletionsGenerator {
       args.append("'(-)*:: :->arg'")
 
       if isRootCommand {
-        subcommands.append(HelpCommand.self)
+        subcommands.addHelpSubcommandIffMissing()
       }
 
       subcommandHandler = """
