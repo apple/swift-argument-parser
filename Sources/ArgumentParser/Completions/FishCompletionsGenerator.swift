@@ -147,7 +147,8 @@ extension FishCompletionsGenerator {
     let preprocessorFunctionName = preprocessorFunctionName(commandName: commandName)
     return """
     function \(functionName)
-        set -gx \(CompletionShell.environmentVariableName) fish
+        set -gx \(CompletionShell.shellEnvironmentVariableName) fish
+        set -gx \(CompletionShell.shellVersionEnvironmentVariableName) "$FISH_VERSION"
         set -l currentCommands (\(preprocessorFunctionName) (commandline -opc))
         set -l expectedCommands (string split \"\(separator)\" $argv[1])
         set -l subcommands (string split \"\(separator)\" $argv[2])

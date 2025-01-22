@@ -63,13 +63,19 @@ In this example, when a user requests completions for the `--target` option, the
 
 ### Configuring Completion Candidates per Shell
 
-The shells supported for parameter completion all have different completion candidate formats,
-as well as their own different syntaxes and built-in commands.
+The shells supported for word completion all have different completion candidate formats, as
+well as their own different syntaxes and built-in commands.
 
 The `CompletionShell.requesting` singleton (of type `CompletionShell?`) can be read to determine
 which shell is requesting completion candidates when evaluating functions that either provide
 arguments to a `CompletionKind` creation function, or that are themselves arguments to a
-`CompletionKind` creation function. e.g.:
+`CompletionKind` creation function.
+
+The `CompletionShell.requestingVersion` singleton (of type `String?`) can be read to determine
+the version of the shell that is requesting completion candidates when evaluating functions that
+are themselves arguments to a `CompletionKind` creation function.
+
+e.g.:
 
 ```swift
 struct Tool {
@@ -96,10 +102,15 @@ func generateCommandPerShell() -> String {
 }
 
 /// Runs during completion while user is typing command line to use your tool
+/// Note that the `Version` struct is not included in Swift Argument Parser
 func generateCompletionCandidatesPerShell(_ arguments: [String]) -> [String] {
     switch CompletionShell.requesting {
     case CompletionShell.bash:
-        return ["A:in:bash:syntax", "B:in:bash:syntax", "C:in:bash:syntax"]
+        if Version(CompletionShell.requestingVersion).major >= 4 {
+            return ["A:in:bash4+:syntax", "B:in:bash4+:syntax", "C:in:bash4+:syntax"]
+        } else {
+            return ["A:in:bash:syntax", "B:in:bash:syntax", "C:in:bash:syntax"]
+        }
     case CompletionShell.fish:
         return ["A:in:fish:syntax", "B:in:bash:syntax", "C:in:bash:syntax"]
     case CompletionShell.zsh:
