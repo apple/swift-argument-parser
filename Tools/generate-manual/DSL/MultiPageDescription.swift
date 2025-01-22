@@ -17,24 +17,26 @@ struct MultiPageDescription: MDocComponent {
 
   var body: MDocComponent {
     Section(title: "description") {
-      if let discussion = command.discussion {
-        discussion
+      if let discussion = command.discussion2 {
+        DiscussionText(discussion: discussion)
       }
 
       List {
         for argument in command.arguments ?? [] {
-          MDocMacro.ListItem(title: argument.manualPageDescription)
-
-          if let abstract = argument.abstract {
-            abstract
-          }
-
-          if argument.abstract != nil, argument.discussion != nil {
-            MDocMacro.ParagraphBreak()
-          }
-
-          if let discussion = argument.discussion {
-            discussion
+          if argument.shouldDisplay {
+            MDocMacro.ListItem(title: argument.manualPageDescription)
+                  
+            if let abstract = argument.abstract {
+              abstract
+            }
+                  
+            if argument.abstract != nil, argument.discussion2 != nil {
+              MDocMacro.ParagraphBreak()
+            }
+                  
+            if let discussion = argument.discussion2 {
+              DiscussionText(discussion: discussion)
+            }
           }
         }
       }

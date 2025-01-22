@@ -5,6 +5,7 @@ add_library(ArgumentParser
   Completions/ZshCompletionsGenerator.swift
 
   "Parsable Properties/Argument.swift"
+  "Parsable Properties/ArgumentDiscussion.swift"
   "Parsable Properties/ArgumentHelp.swift"
   "Parsable Properties/ArgumentVisibility.swift"
   "Parsable Properties/CompletionKind.swift"
@@ -15,6 +16,7 @@ add_library(ArgumentParser
   "Parsable Properties/OptionGroup.swift"
 
   "Parsable Types/AsyncParsableCommand.swift"
+  "Parsable Types/CommandGroup.swift"
   "Parsable Types/CommandConfiguration.swift"
   "Parsable Types/EnumerableFlag.swift"
   "Parsable Types/ExpressibleByArgument.swift"

@@ -23,10 +23,10 @@ public struct CommandConfiguration: Sendable {
   /// with a common dash-prefix, like `git`'s and `swift`'s constellation of
   /// independent commands.
   public var _superCommandName: String?
-  
+
   /// A one-line description of this command.
   public var abstract: String
-  
+
   /// A customized usage string to be shown in the help display and error
   /// messages.
   ///
@@ -37,21 +37,44 @@ public struct CommandConfiguration: Sendable {
 
   /// A longer description of this command, to be shown in the extended help
   /// display.
+  ///
+  /// Can include specific abstracts about the argument's possible values (e.g.
+  /// for a custom `EnumerableOptionValue` type), or can describe
+  /// a static block of text that extends the description of the argument.
   public var discussion: String
-  
+
   /// Version information for this command.
   public var version: String
 
   /// A Boolean value indicating whether this command should be shown in
   /// the extended help display.
   public var shouldDisplay: Bool
-  
+
   /// An array of the types that define subcommands for this command.
-  public var subcommands: [ParsableCommand.Type]
-  
+  ///
+  /// This property "flattens" the grouping structure of the subcommands.
+  /// Use 'ungroupedSubcommands' to access 'groupedSubcommands' to retain the grouping structure.
+  public var subcommands: [ParsableCommand.Type] {
+    get {
+      return ungroupedSubcommands + groupedSubcommands.flatMap { $0.subcommands }
+    }
+
+    set {
+      groupedSubcommands = []
+      ungroupedSubcommands = newValue
+    }
+  }
+
+  /// An array of types that define subcommands for this command and are
+  /// not part of any command group.
+  public var ungroupedSubcommands: [ParsableCommand.Type]
+
+  /// The list of subcommands and subcommand groups.
+  public var groupedSubcommands: [CommandGroup]
+
   /// The default command type to run if no subcommand is given.
   public var defaultSubcommand: ParsableCommand.Type?
-  
+
   /// Flag names to be used for help.
   public var helpNames: NameSpecification?
 
@@ -79,8 +102,10 @@ public struct CommandConfiguration: Sendable {
   ///     a `--version` flag.
   ///   - shouldDisplay: A Boolean value indicating whether the command
   ///     should be shown in the extended help display.
-  ///   - subcommands: An array of the types that define subcommands for the
-  ///     command.
+  ///   - ungroupedSubcommands: An array of the types that define subcommands
+  ///     for the command that are not part of any command group.
+  ///   - groupedSubcommands: An array of command groups, each of which defines
+  ///     subcommands that are part of that logical group.
   ///   - defaultSubcommand: The default command type to run if no subcommand
   ///     is given.
   ///   - helpNames: The flag names to use for requesting help, when combined
@@ -97,7 +122,8 @@ public struct CommandConfiguration: Sendable {
     discussion: String = "",
     version: String = "",
     shouldDisplay: Bool = true,
-    subcommands: [ParsableCommand.Type] = [],
+    subcommands ungroupedSubcommands: [ParsableCommand.Type] = [],
+    groupedSubcommands: [CommandGroup] = [],
     defaultSubcommand: ParsableCommand.Type? = nil,
     helpNames: NameSpecification? = nil,
     aliases: [String] = []
@@ -108,7 +134,8 @@ public struct CommandConfiguration: Sendable {
     self.discussion = discussion
     self.version = version
     self.shouldDisplay = shouldDisplay
-    self.subcommands = subcommands
+    self.ungroupedSubcommands = ungroupedSubcommands
+    self.groupedSubcommands = groupedSubcommands
     self.defaultSubcommand = defaultSubcommand
     self.helpNames = helpNames
     self.aliases = aliases
@@ -124,7 +151,8 @@ public struct CommandConfiguration: Sendable {
     discussion: String = "",
     version: String = "",
     shouldDisplay: Bool = true,
-    subcommands: [ParsableCommand.Type] = [],
+    subcommands ungroupedSubcommands: [ParsableCommand.Type] = [],
+    groupedSubcommands: [CommandGroup] = [],
     defaultSubcommand: ParsableCommand.Type? = nil,
     helpNames: NameSpecification? = nil,
     aliases: [String] = []
@@ -136,7 +164,8 @@ public struct CommandConfiguration: Sendable {
     self.discussion = discussion
     self.version = version
     self.shouldDisplay = shouldDisplay
-    self.subcommands = subcommands
+    self.ungroupedSubcommands = ungroupedSubcommands
+    self.groupedSubcommands = groupedSubcommands
     self.defaultSubcommand = defaultSubcommand
     self.helpNames = helpNames
     self.aliases = aliases

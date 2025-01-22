@@ -29,13 +29,21 @@ struct CountLines: AsyncParsableCommand {
 
 ### Usage in Swift 5.5
 
-In Swift 5.5, you need to declare a separate, standalone type as your asynchronous `@main` entry point. Instead of designating your root command as `@main`, as described above, use the code snippet below, replacing the placeholder with the name of your own root command. Otherwise, follow the steps above to use `async`/`await` code within your commands' `run()` methods.
+Swift 5.5 is supported by the obsolete versions 1.1.x & 1.2.x versions of Swift Argument Parser.
+
+In Swift 5.5, an asynchronous `@main` entry point must be declared as a separate standalone type.
+
+Your root command cannot be designated as `@main`, unlike as described above.
+
+Instead, use the code snippet below, replacing the `<#RootCommand#>` placeholder with the name of your own root command.
 
 ```swift
 @main struct AsyncMain: AsyncMainProtocol {
     typealias Command = <#RootCommand#>
 }
 ```
+
+Continue to follow the other steps above to use `async`/`await` code within your commands' `run()` methods.
 
 ## Topics
 
@@ -47,4 +55,3 @@ In Swift 5.5, you need to declare a separate, standalone type as your asynchrono
 
 - ``main()``
 - ``AsyncMainProtocol``
-

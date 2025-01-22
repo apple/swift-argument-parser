@@ -42,12 +42,12 @@ extension NameSpecificationTests {
   }
 }
 
-fileprivate func Assert(nameSpecification: NameSpecification, key: String, parent: InputKey? = nil, makeNames expected: [Name], file: StaticString = #file, line: UInt = #line) {
+fileprivate func Assert(nameSpecification: NameSpecification, key: String, parent: InputKey? = nil, makeNames expected: [Name], file: StaticString = #filePath, line: UInt = #line) {
   let names = nameSpecification.makeNames(InputKey(name: key, parent: parent))
   Assert(names: names, expected: expected, file: file, line: line)
 }
 
-fileprivate func Assert<N>(names: [N], expected: [N], file: StaticString = #file, line: UInt = #line) where N: Equatable {
+fileprivate func Assert<N>(names: [N], expected: [N], file: StaticString = #filePath, line: UInt = #line) where N: Equatable {
   names.forEach {
     XCTAssert(expected.contains($0), "Unexpected name '\($0)'.", file: (file), line: line)
   }

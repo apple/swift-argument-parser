@@ -16,10 +16,12 @@ struct ArgumentSynopsis: MDocComponent {
   var argument: ArgumentInfoV0
 
   var body: MDocComponent {
-    if argument.isOptional {
-      MDocMacro.OptionalCommandLineComponent(arguments: [synopsis])
-    } else {
-      synopsis
+    if argument.shouldDisplay {
+      if argument.isOptional {
+        MDocMacro.OptionalCommandLineComponent(arguments: [synopsis])
+      } else {
+         synopsis
+      }
     }
   }
 

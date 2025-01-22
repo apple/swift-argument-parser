@@ -57,6 +57,7 @@ struct BashCompletionsGenerator {
     // that other command functions don't need.
     if isRootCommand {
       result += """
+        export \(CompletionShell.environmentVariableName)=bash
         cur="${COMP_WORDS[COMP_CWORD]}"
         prev="${COMP_WORDS[COMP_CWORD-1]}"
         COMPREPLY=()
@@ -144,14 +145,8 @@ struct BashCompletionsGenerator {
         case .shellCommand(let command):
           return "$(\(command))"
         case .custom:
-          // Generate a call back into the command to retrieve a completions list
-          let subcommandNames = commands.dropFirst().map { $0._commandName }.joined(separator: " ")
-          // TODO: Make this work for @Arguments
-          let argumentName = arg.names.preferredName?.synopsisString
-                ?? arg.help.keys.first?.name ?? "---"
-          
           return """
-            $("${COMP_WORDS[0]}" ---completion \(subcommandNames) -- \(argumentName) "${COMP_WORDS[@]}")
+            $("${COMP_WORDS[0]}" \(arg.customCompletionCall(commands)) "${COMP_WORDS[@]}")
             """
         }
       }

@@ -83,7 +83,7 @@ struct ZshCompletionsGenerator {
     }
     
     let functionText = """
-      \(functionName)() {
+      \(functionName)() {\(isRootCommand ? "\n    export \(CompletionShell.environmentVariableName)=zsh" : "")
           integer ret=1
           local -a args
           args+=(
