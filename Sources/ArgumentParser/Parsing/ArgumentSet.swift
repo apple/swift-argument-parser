@@ -374,6 +374,68 @@ struct LenientParser {
     }
   }
   
+  mutating func parseTuplaryValue(
+    _ argument: ArgumentDefinition,
+    _ parsed: ParsedArgument,
+    _ valueCount: Int,
+    _ originElement: InputOrigin.Element,
+    _ update: ArgumentDefinition.Update.Tuplary,
+    _ result: inout ParsedValues,
+    _ usedOrigins: inout InputOrigin
+  ) throws {
+    var origins = InputOrigin(elements: [originElement])
+    var values: [String] = []
+    
+    // Use an attached value if it exists...
+    if let value = parsed.value {
+      values.append(value)
+      origins.insert(originElement)
+    } else if argument.allowsJoinedValue,
+        let (origin2, value) = inputArguments.extractJoinedElement(at: originElement) {
+      // Found a joined argument
+      origins.insert(origin2)
+      values.append(String(value))
+    }
+    
+    // ...and then consume the arguments until hitting an option
+    switch argument.parsingStrategy {
+    case .default:
+      while let (origin2, value) = inputArguments.popNextElementIfValue(),
+              values.count < valueCount
+      {
+        origins.insert(origin2)
+        values.append(value)
+      }
+    case .scanningForValue:
+      while let (origin2, value) = inputArguments.popNextValue(after: originElement),
+              values.count < valueCount
+      {
+        origins.insert(origin2)
+        values.append(value)
+      }
+
+    case .unconditional:
+      while let (origin2, value) = inputArguments.popNextElementAsValue(after: originElement),
+              values.count < valueCount
+      {
+        origins.insert(origin2)
+        values.append(value)
+      }
+
+    case .upToNextOption, .allRemainingInput, .postTerminator, .allUnrecognized:
+      fatalError()
+    }
+    
+    
+    guard valueCount == values.count else {
+      throw ParserError.insufficientValuesForOption(
+        origins, parsed.name, expected: valueCount, given: values.count)
+    }
+    
+    try update(origins, parsed.name, values, &result)
+    usedOrigins.formUnion(origins)
+  }
+
   mutating func parsePositionalValues(
     from unusedInput: SplitArguments,
     into result: inout ParsedValues
@@ -539,6 +601,8 @@ struct LenientParser {
           usedOrigins.insert(origin)
         case let .unary(update):
           try parseValue(argument, parsed, origin, update, &result, &usedOrigins)
+        case let .tuplary(count, update):
+          try parseTuplaryValue(argument, parsed, count, origin, update, &result, &usedOrigins)
         }
       case .terminator:
         // Ignore the terminator, it might get picked up as a positional value later.

@@ -15,12 +15,16 @@ struct ArgumentDefinition {
   enum Update {
     typealias Nullary = (InputOrigin, Name?, inout ParsedValues) throws -> Void
     typealias Unary = (InputOrigin, Name?, String, inout ParsedValues) throws -> Void
-    
+    typealias Tuplary = (InputOrigin, Name?, [String], inout ParsedValues) throws -> Void
+
     /// An argument that gets its value solely from its presence.
     case nullary(Nullary)
     
     /// An argument that takes a string as its value.
     case unary(Unary)
+    
+    /// An argument that takes two or more strings to create its value.
+    case tuplary(Int, Tuplary)
   }
   
   typealias Initial = (InputOrigin, inout ParsedValues) throws -> Void
@@ -43,6 +47,7 @@ struct ArgumentDefinition {
 
       static let isOptional = Options(rawValue: 1 << 0)
       static let isRepeating = Options(rawValue: 1 << 1)
+      static let isComposite = Options(rawValue: 1 << 2)
     }
 
     var options: Options
@@ -113,14 +118,33 @@ struct ArgumentDefinition {
     }
   }
   
+  var preferredValueName: String {
+    names.preferredName?.valueString
+      ?? help.keys.first?.name.convertedToSnakeCase(separator: "-")
+      ?? "value"
+  }
+  
   var valueName: String {
     help.valueName.mapEmpty {
-      names.preferredName?.valueString
-        ?? help.keys.first?.name.convertedToSnakeCase(separator: "-")
-        ?? "value"
+      preferredValueName
     }
   }
 
+  var formattedValueName: String {
+    let defaultName = valueName
+
+    switch update {
+    case .tuplary(let count, _):
+      let parts = defaultName.split(separator: " ").prefix(count)
+      let missingCount = count - parts.count
+      let missingParts: [Substring] = zip((parts.count + 1)..., repeatElement(preferredValueName[...], count: missingCount))
+        .map { "\($1)-\($0)" }
+      return (parts + missingParts).map { "<\($0)>" }.joined(separator: " ")
+    default:
+      return "<\(defaultName)>"
+    }
+  }
+  
   init(
     kind: Kind,
     help: Help,
@@ -149,13 +173,13 @@ extension ArgumentDefinition: CustomDebugStringConvertible {
       return names
         .map { $0.synopsisString }
         .joined(separator: ",")
-    case (.named(let names), .unary):
+    case (.named(let names), .unary), (.named(let names), .tuplary):
       return names
         .map { $0.synopsisString }
         .joined(separator: ",")
-        + " <\(valueName)>"
+        + " \(formattedValueName)"
     case (.positional, _):
-      return "<\(valueName)>"
+      return formattedValueName
     case (.default, _):
       return ""
     }
@@ -333,6 +357,33 @@ extension ArgumentDefinition {
         }
         values.set(initial, forKey: key, inputOrigin: inputOrigin)
       })
+  }
+  
+  static func tupleOption(
+    key: InputKey,
+    name: NameSpecification,
+    parsingStrategy: SingleValueParsingStrategy,
+    help: ArgumentHelp?,
+    completion: CompletionKind?,
+    valueCount: Int,
+    update: @escaping Update.Tuplary,
+    initial: @escaping Initial = { _, _ in }
+  ) -> Self {
+    var def = ArgumentDefinition(
+      kind: .name(key: key, specification: name),
+      help: .init(
+        allValueStrings: [],
+        options: [],
+        help: help,
+        defaultValue: nil,
+        key: key,
+        isComposite: false),
+      completion: completion ?? .default,
+      parsingStrategy: parsingStrategy.base,
+      update: .tuplary(valueCount, update),
+      initial: initial)
+    def.help.options.insert(.isComposite)
+    return def
   }
 }
 
