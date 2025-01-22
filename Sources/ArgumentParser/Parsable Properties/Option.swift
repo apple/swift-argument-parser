@@ -862,18 +862,19 @@ extension Option {
   }
 }
 
-// MARK: - Option tuples
+// MARK: - @Option tuples
 
 extension Option {
-  public init<
+  private init<
     First: ExpressibleByArgument,
     Second: ExpressibleByArgument,
     each Rest: ExpressibleByArgument
   >(
-    name: NameSpecification = .long,
-    parsing parsingStrategy: SingleValueParsingStrategy = .next,
-    help: ArgumentHelp? = nil,
-    completion: CompletionKind? = nil
+    wrappedValue: Value?,
+    name: NameSpecification,
+    parsing parsingStrategy: SingleValueParsingStrategy,
+    help: ArgumentHelp?,
+    completion: CompletionKind?
   ) where Value == (First, Second, repeat each Rest) {
     self.init(_parsedValue: .init { key in
       let arg = ArgumentDefinition.tupleOption(
@@ -891,11 +892,80 @@ extension Option {
             throw ParserError.unableToParseValue(
               origin, name, values[error.index], forKey: key, originalError: nil)
           }
+        },
+        initial: { origin, parsedValues in
+          parsedValues.set(wrappedValue, forKey: key, inputOrigin: origin)
         })
       return ArgumentSet(arg)
     })
   }
+  
+  /// Creates a labeled option with multiple values.
+  ///
+  /// Use this `@Option` property wrapper when you have a value that requires
+  /// more than one input for a key. For example, you could use this property
+  /// wrapper to capture the three dimensions for a package:
+  ///
+  ///     struct Package: ParsableArguments {
+  ///         @Option
+  ///         var dimensions: (Double, Double, Double)
+  ///     }
+  ///
+  /// A user would then specify the three dimensions after the `--dimensions`
+  /// key:
+  ///
+  ///     $ package --dimensions 5 4 12
+  ///
+  /// - Parameters:
+  ///   - name: A specification for what names are allowed for this option.
+  ///   - parsingStrategy: The behavior to use when parsing the elements for
+  ///     this option.
+  ///   - help: Information about how to use this option.
+  ///   - completion: The type of command-line completion provided for this
+  ///     option.
+  public init<
+    First: ExpressibleByArgument,
+    Second: ExpressibleByArgument,
+    each Rest: ExpressibleByArgument
+  >(
+    name: NameSpecification = .long,
+    parsing parsingStrategy: SingleValueParsingStrategy = .next,
+    help: ArgumentHelp? = nil,
+    completion: CompletionKind? = nil
+  ) where Value == (First, Second, repeat each Rest) {
+    self.init(
+      wrappedValue: nil,
+      name: name,
+      parsing: parsingStrategy,
+      help: help,
+      completion: completion
+    )
+  }
+  
+#if false
+  public init<
+    First: ExpressibleByArgument,
+    Second: ExpressibleByArgument,
+    each Rest: ExpressibleByArgument
+  >(
+    wrappedValue: (First, Second, repeat each Rest),
+    name: NameSpecification = .long,
+    parsing parsingStrategy: SingleValueParsingStrategy = .next,
+    help: ArgumentHelp? = nil,
+    completion: CompletionKind? = nil
+  ) where Value == (First, Second, repeat each Rest) {
+    self.init(
+      wrappedValue: wrappedValue,
+      name: name,
+      parsing: parsingStrategy,
+      help: help,
+      completion: completion
+    )
+  }
+#endif
 }
+
+// MARK: Variadic tuple support
 
 fileprivate struct InitFailure: Error {
   var index: Int

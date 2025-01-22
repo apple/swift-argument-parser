@@ -366,7 +366,8 @@ extension ArgumentDefinition {
     help: ArgumentHelp?,
     completion: CompletionKind?,
     valueCount: Int,
-    update: @escaping Update.Tuplary
+    update: @escaping Update.Tuplary,
+    initial: @escaping Initial = { _, _ in }
   ) -> Self {
     var def = ArgumentDefinition(
       kind: .name(key: key, specification: name),
@@ -379,7 +380,8 @@ extension ArgumentDefinition {
         isComposite: false),
       completion: completion ?? .default,
       parsingStrategy: parsingStrategy.base,
-      update: .tuplary(valueCount, update))
+      update: .tuplary(valueCount, update),
+      initial: initial)
     def.help.options.insert(.isComposite)
     return def
   }
