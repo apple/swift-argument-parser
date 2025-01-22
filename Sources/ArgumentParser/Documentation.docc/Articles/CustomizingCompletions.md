@@ -60,3 +60,52 @@ struct SwiftRun {
 ```
 
 In this example, when a user requests completions for the `--target` option, the completion script runs the `SwiftRun` command-line tool with a special syntax, calling the `listExecutables` function with an array of the arguments given so far.
+
+### Configuring Completion Candidates per Shell
+
+The shells supported for parameter completion all have different completion candidate formats,
+as well as their own different syntaxes and built-in commands.
+
+The `CompletionShell.requesting` singleton (of type `CompletionShell?`) can be read to determine
+which shell is requesting completion candidates when evaluating functions that either provide
+arguments to a `CompletionKind` creation function, or that are themselves arguments to a
+`CompletionKind` creation function. e.g.:
+
+```swift
+struct Tool {
+    @Option(completion: .shellCommand(generateCommandPerShell()))
+    var x: String?
+
+    @Option(completion: .custom(generateCompletionCandidatesPerShell))
+    var y: String?
+}
+
+/// Runs when a completion script is generated; results hardcoded into script.
+func generateCommandPerShell() -> String {
+    switch CompletionShell.requesting {
+    case CompletionShell.bash:
+        return "bash-specific script"
+    case CompletionShell.fish:
+        return "fish-specific script"
+    case CompletionShell.zsh:
+        return "zsh-specific script"
+    default:
+        // return a universal no-op for unknown shells
+        return ":"
+    }
+}
+
+/// Runs during completion while user is typing command line to use your tool
+func generateCompletionCandidatesPerShell(_ arguments: [String]) -> [String] {
+    switch CompletionShell.requesting {
+    case CompletionShell.bash:
+        return ["A:in:bash:syntax", "B:in:bash:syntax", "C:in:bash:syntax"]
+    case CompletionShell.fish:
+        return ["A:in:fish:syntax", "B:in:bash:syntax", "C:in:bash:syntax"]
+    case CompletionShell.zsh:
+        return ["A:in:zsh:syntax",  "B:in:zsh:syntax",  "C:in:zsh:syntax"]
+    default:
+        return []
+    }
+}
+```
