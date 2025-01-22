@@ -241,6 +241,9 @@ private let bashCompletionScriptText = """
 #!/bin/bash
 
 _math() {
+    export SAP_SHELL=bash
+    SAP_SHELL_VERSION="$(IFS='.'; printf %s "${BASH_VERSINFO[*]}")"
+    export SAP_SHELL_VERSION
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
     COMPREPLY=()
@@ -395,6 +398,9 @@ _math_commandname=$words[1]
 typeset -A opt_args
 
 _math() {
+    export SAP_SHELL=zsh
+    SAP_SHELL_VERSION="$(builtin emulate zsh -c 'printf %s "${ZSH_VERSION}"')"
+    export SAP_SHELL_VERSION
     integer ret=1
     local -a args
     args+=(
@@ -583,6 +589,8 @@ function _swift_math_preprocessor
 end
 
 function _swift_math_using_command
+    set -gx SAP_SHELL fish
+    set -gx SAP_SHELL_VERSION "$FISH_VERSION"
     set -l currentCommands (_swift_math_preprocessor (commandline -opc))
     set -l expectedCommands (string split \" \" $argv[1])
     set -l subcommands (string split \" \" $argv[2])

@@ -13,10 +13,23 @@ import XCTest
 import ArgumentParserTestHelpers
 @testable import ArgumentParser
 
-final class CompletionScriptTests: XCTestCase {
+private func candidates(prefix: String) -> [String] {
+  switch CompletionShell.requesting {
+  case CompletionShell.bash:
+    return ["\(prefix)1_bash", "\(prefix)2_bash", "\(prefix)3_bash"]
+  case CompletionShell.fish:
+    return ["\(prefix)1_fish", "\(prefix)2_fish", "\(prefix)3_fish"]
+  case CompletionShell.zsh:
+    return ["\(prefix)1_zsh", "\(prefix)2_zsh", "\(prefix)3_zsh"]
+  default:
+    return []
+  }
 }
 
-extension CompletionScriptTests {
+final class RequestingCompletionScriptTests: XCTestCase {
+}
+
+extension RequestingCompletionScriptTests {
   struct Path: ExpressibleByArgument {
     var path: String
     
@@ -32,9 +45,9 @@ extension CompletionScriptTests {
   enum Kind: String, ExpressibleByArgument, EnumerableFlag {
     case one, two, three = "custom-three"
   }
-  
+
   struct NestedArguments: ParsableArguments {
-    @Argument(completion: .custom { _ in ["t", "u", "v"] })
+    @Argument(completion: .custom { _ in candidates(prefix: "a") })
     var nestedArgument: String
   }
   
@@ -46,11 +59,11 @@ extension CompletionScriptTests {
 
     @Option(help: "The user's name.") var name: String
     @Option() var kind: Kind
-    @Option(completion: .list(["1", "2", "3"])) var otherKind: Kind
+    @Option(completion: .list(candidates(prefix: "b"))) var otherKind: Kind
     
     @Option() var path1: Path
     @Option() var path2: Path?
-    @Option(completion: .list(["a", "b", "c"])) var path3: Path
+    @Option(completion: .list(candidates(prefix: "c"))) var path3: Path
     
     @Flag(help: .hidden) var verbose = false
     @Flag var allowedKinds: [Kind] = []
@@ -59,7 +72,7 @@ extension CompletionScriptTests {
     @Option() var rep1: [String]
     @Option(name: [.short, .long]) var rep2: [String]
     
-    @Argument(completion: .custom { _ in ["q", "r", "s"] }) var argument: String
+    @Argument(completion: .custom { _ in candidates(prefix: "d") }) var argument: String
     @OptionGroup var nested: NestedArguments
     
     struct SubCommand: ParsableCommand {
@@ -72,105 +85,130 @@ extension CompletionScriptTests {
   func testBase_Zsh() throws {
     let script1 = try CompletionsGenerator(command: Base.self, shell: .zsh)
           .generateCompletionScript()
-    XCTAssertEqual(zshBaseCompletions, script1)
+    XCTAssertEqual(zshRequestingBaseCompletions, script1)
     
     let script2 = try CompletionsGenerator(command: Base.self, shellName: "zsh")
           .generateCompletionScript()
-    XCTAssertEqual(zshBaseCompletions, script2)
+    XCTAssertEqual(zshRequestingBaseCompletions, script2)
     
     let script3 = Base.completionScript(for: .zsh)
-    XCTAssertEqual(zshBaseCompletions, script3)
+    XCTAssertEqual(zshRequestingBaseCompletions, script3)
   }
 
   func testBase_Bash() throws {
     let script1 = try CompletionsGenerator(command: Base.self, shell: .bash)
           .generateCompletionScript()
-    XCTAssertEqual(bashBaseCompletions, script1)
+    XCTAssertEqual(bashRequestingBaseCompletions, script1)
     
     let script2 = try CompletionsGenerator(command: Base.self, shellName: "bash")
           .generateCompletionScript()
-    XCTAssertEqual(bashBaseCompletions, script2)
+    XCTAssertEqual(bashRequestingBaseCompletions, script2)
     
     let script3 = Base.completionScript(for: .bash)
-    XCTAssertEqual(bashBaseCompletions, script3)
+    XCTAssertEqual(bashRequestingBaseCompletions, script3)
   }
 
   func testBase_Fish() throws {
     let script1 = try CompletionsGenerator(command: Base.self, shell: .fish)
           .generateCompletionScript()
-    XCTAssertEqual(fishBaseCompletions, script1)
+    XCTAssertEqual(fishRequestingBaseCompletions, script1)
     
     let script2 = try CompletionsGenerator(command: Base.self, shellName: "fish")
           .generateCompletionScript()
-    XCTAssertEqual(fishBaseCompletions, script2)
+    XCTAssertEqual(fishRequestingBaseCompletions, script2)
     
     let script3 = Base.completionScript(for: .fish)
-    XCTAssertEqual(fishBaseCompletions, script3)
+    XCTAssertEqual(fishRequestingBaseCompletions, script3)
   }
 }
 
-extension CompletionScriptTests {
+extension RequestingCompletionScriptTests {
   struct Custom: ParsableCommand {
-    @Option(name: .shortAndLong, completion: .custom { _ in ["a", "b", "c"] })
+    @Option(name: .shortAndLong, completion: .custom { _ in candidates(prefix: "e") })
     var one: String
 
-    @Argument(completion: .custom { _ in ["d", "e", "f"] })
+    @Argument(completion: .custom { _ in candidates(prefix: "f") })
     var two: String
 
-    @Option(name: .customShort("z"), completion: .custom { _ in ["x", "y", "z"] })
+    @Option(name: .customShort("z"), completion: .custom { _ in candidates(prefix: "g") })
     var three: String
     
     @OptionGroup var nested: NestedArguments
     
     struct NestedArguments: ParsableArguments {
-      @Argument(completion: .custom { _ in ["g", "h", "i"] })
+      @Argument(completion: .custom { _ in candidates(prefix: "h") })
       var four: String
     }
   }
   
   func verifyCustomOutput(
     _ arg: String,
-    expectedOutput: String,
-    file: StaticString = #filePath, line: UInt = #line
+    forShell shell: String,
+    expectedOutputPrefix prefix: String,
+    file: StaticString = #filePath,
+    line: UInt = #line
   ) throws {
     do {
+      setenv("SAP_SHELL", shell, 1)
+      defer {
+        unsetenv("SAP_SHELL")
+      }
       _ = try Custom.parse(["---completion", "--", arg])
       XCTFail("Didn't error as expected", file: (file), line: line)
     } catch let error as CommandError {
       guard case .completionScriptCustomResponse(let output) = error.parserError else {
         throw error
       }
-      XCTAssertEqual(expectedOutput, output, file: (file), line: line)
+      XCTAssertEqual(
+        prefix.isEmpty
+        ? ""
+        : "\(prefix)1_\(shell)\n\(prefix)2_\(shell)\n\(prefix)3_\(shell)",
+        output,
+        file: (file),
+        line: line
+      )
     }
   }
   
-  func testCustomCompletions() throws {
-    try verifyCustomOutput("-o", expectedOutput: "a\nb\nc")
-    try verifyCustomOutput("--one", expectedOutput: "a\nb\nc")
-    try verifyCustomOutput("two", expectedOutput: "d\ne\nf")
-    try verifyCustomOutput("-z", expectedOutput: "x\ny\nz")
-    try verifyCustomOutput("nested.four", expectedOutput: "g\nh\ni")
+  func testCustomCompletions(forShell shell: String) throws {
+    try verifyCustomOutput("-o", forShell: shell, expectedOutputPrefix: "e")
+    try verifyCustomOutput("--one", forShell: shell, expectedOutputPrefix: "e")
+    try verifyCustomOutput("two", forShell: shell, expectedOutputPrefix: "f")
+    try verifyCustomOutput("-z", forShell: shell, expectedOutputPrefix: "g")
+    try verifyCustomOutput("nested.four", forShell: shell, expectedOutputPrefix: "h")
     
-    XCTAssertThrowsError(try verifyCustomOutput("--bad", expectedOutput: ""))
-    XCTAssertThrowsError(try verifyCustomOutput("four", expectedOutput: ""))
+    XCTAssertThrowsError(try verifyCustomOutput("--bad", forShell: shell, expectedOutputPrefix: ""))
+    XCTAssertThrowsError(try verifyCustomOutput("four", forShell: shell, expectedOutputPrefix: ""))
+  }
+
+  func testBashCustomCompletions() throws {
+    try testCustomCompletions(forShell: "bash")
+  }
+
+  func testFishCustomCompletions() throws {
+    try testCustomCompletions(forShell: "fish")
+  }
+
+  func testZshCustomCompletions() throws {
+    try testCustomCompletions(forShell: "zsh")
   }
 }
 
-extension CompletionScriptTests {
+extension RequestingCompletionScriptTests {
   struct EscapedCommand: ParsableCommand {
     @Option(help: #"Escaped chars: '[]\."#)
     var one: String
     
-    @Argument(completion: .custom { _ in ["d", "e", "f"] })
+    @Argument(completion: .custom { _ in candidates(prefix: "i") })
     var two: String
   }
 
   func testEscaped_Zsh() throws {
-    XCTAssertEqual(zshEscapedCompletion, EscapedCommand.completionScript(for: .zsh))
+    XCTAssertEqual(zshRequestingEscapedCompletion, EscapedCommand.completionScript(for: .zsh))
   }
 }
 
-private let zshBaseCompletions = """
+let zshRequestingBaseCompletions = """
 #compdef base-test
 local context state state_descr line
 _base_test_commandname=$words[1]
@@ -185,10 +223,10 @@ _base-test() {
     args+=(
         '--name[The user'"'"'s name.]:name:'
         '--kind:kind:(one two custom-three)'
-        '--other-kind:other-kind:(1 2 3)'
+        '--other-kind:other-kind:(b1_zsh b2_zsh b3_zsh)'
         '--path1:path1:_files'
         '--path2:path2:_files'
-        '--path3:path3:(a b c)'
+        '--path3:path3:(c1_zsh c2_zsh c3_zsh)'
         '--one'
         '--two'
         '--three'
@@ -257,7 +295,7 @@ _custom_completion() {
 _base-test
 """
 
-private let bashBaseCompletions = """
+let bashRequestingBaseCompletions = """
 #!/bin/bash
 
 _base_test() {
@@ -284,7 +322,7 @@ _base_test() {
             return
         ;;
         --other-kind)
-            COMPREPLY=( $(compgen -W "1 2 3" -- "$cur") )
+            COMPREPLY=( $(compgen -W "b1_bash b2_bash b3_bash" -- "$cur") )
             return
         ;;
         --path1)
@@ -304,7 +342,7 @@ _base_test() {
             return
         ;;
         --path3)
-            COMPREPLY=( $(compgen -W "a b c" -- "$cur") )
+            COMPREPLY=( $(compgen -W "c1_bash c2_bash c3_bash" -- "$cur") )
             return
         ;;
         --rep1)
@@ -349,7 +387,7 @@ _base_test_help() {
 complete -F _base_test base-test
 """
 
-private let zshEscapedCompletion = """
+let zshRequestingEscapedCompletion = """
 #compdef escaped-command
 local context state state_descr line
 _escaped_command_commandname=$words[1]
@@ -380,7 +418,7 @@ _custom_completion() {
 _escaped-command
 """
 
-private let fishBaseCompletions = """
+let fishRequestingBaseCompletions = """
 # A function which filters options which starts with "-" from $argv.
 function _swift_base-test_preprocessor
     set -l results
@@ -423,10 +461,10 @@ end
 complete -c base-test -n '_swift_base-test_using_command "base-test sub-command"' -s h -l help -d 'Show help information.'
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command help"' -l name -d 'The user\\'s name.'
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command help"' -l kind -r -f -k -a 'one two custom-three'
-complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command help"' -l other-kind -r -f -k -a '1 2 3'
+complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command help"' -l other-kind -r -f -k -a 'b1_fish b2_fish b3_fish'
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command help"' -l path1 -r -f -a '(for i in *.{}; echo $i;end)'
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command help"' -l path2 -r -f -a '(for i in *.{}; echo $i;end)'
-complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command help"' -l path3 -r -f -k -a 'a b c'
+complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command help"' -l path3 -r -f -k -a 'c1_fish c2_fish c3_fish'
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command help"' -l one
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command help"' -l two
 complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-command help"' -l three
@@ -441,56 +479,56 @@ complete -c base-test -n '_swift_base-test_using_command "base-test" "sub-comman
 """
 
 // MARK: - Test Hidden Subcommand
-struct Parent: ParsableCommand {
-    static let configuration = CommandConfiguration(subcommands: [HiddenChild.self])
+struct RequestingParent: ParsableCommand {
+    static let configuration = CommandConfiguration(subcommands: [RequestingHiddenChild.self])
 }
 
-struct HiddenChild: ParsableCommand {
+struct RequestingHiddenChild: ParsableCommand {
     static let configuration = CommandConfiguration(shouldDisplay: false)
 }
 
-extension CompletionScriptTests {
+extension RequestingCompletionScriptTests {
   func testHiddenSubcommand_Zsh() throws {
     let script1 = try CompletionsGenerator(command: Parent.self, shell: .zsh)
           .generateCompletionScript()
-    XCTAssertEqual(zshHiddenCompletion, script1)
+    XCTAssertEqual(zshRequestingHiddenCompletion, script1)
 
     let script2 = try CompletionsGenerator(command: Parent.self, shellName: "zsh")
           .generateCompletionScript()
-    XCTAssertEqual(zshHiddenCompletion, script2)
+    XCTAssertEqual(zshRequestingHiddenCompletion, script2)
 
     let script3 = Parent.completionScript(for: .zsh)
-    XCTAssertEqual(zshHiddenCompletion, script3)
+    XCTAssertEqual(zshRequestingHiddenCompletion, script3)
   }
 
   func testHiddenSubcommand_Bash() throws {
     let script1 = try CompletionsGenerator(command: Parent.self, shell: .bash)
           .generateCompletionScript()
-    XCTAssertEqual(bashHiddenCompletion, script1)
+    XCTAssertEqual(bashRequestingHiddenCompletion, script1)
 
     let script2 = try CompletionsGenerator(command: Parent.self, shellName: "bash")
           .generateCompletionScript()
-    XCTAssertEqual(bashHiddenCompletion, script2)
+    XCTAssertEqual(bashRequestingHiddenCompletion, script2)
 
     let script3 = Parent.completionScript(for: .bash)
-    XCTAssertEqual(bashHiddenCompletion, script3)
+    XCTAssertEqual(bashRequestingHiddenCompletion, script3)
   }
 
   func testHiddenSubcommand_Fish() throws {
     let script1 = try CompletionsGenerator(command: Parent.self, shell: .fish)
           .generateCompletionScript()
-    XCTAssertEqual(fishHiddenCompletion, script1)
+    XCTAssertEqual(fishRequestingHiddenCompletion, script1)
 
     let script2 = try CompletionsGenerator(command: Parent.self, shellName: "fish")
           .generateCompletionScript()
-    XCTAssertEqual(fishHiddenCompletion, script2)
+    XCTAssertEqual(fishRequestingHiddenCompletion, script2)
 
     let script3 = Parent.completionScript(for: .fish)
-    XCTAssertEqual(fishHiddenCompletion, script3)
+    XCTAssertEqual(fishRequestingHiddenCompletion, script3)
   }
 }
 
-let zshHiddenCompletion = """
+let zshRequestingHiddenCompletion = """
 #compdef parent
 local context state state_descr line
 _parent_commandname=$words[1]
@@ -519,7 +557,7 @@ _custom_completion() {
 _parent
 """
 
-let bashHiddenCompletion = """
+let bashRequestingHiddenCompletion = """
 #!/bin/bash
 
 _parent() {
@@ -541,7 +579,7 @@ _parent() {
 complete -F _parent parent
 """
 
-let fishHiddenCompletion = """
+let fishRequestingHiddenCompletion = """
 # A function which filters options which starts with "-" from $argv.
 function _swift_parent_preprocessor
     set -l results
