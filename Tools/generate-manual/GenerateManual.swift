@@ -24,13 +24,13 @@ extension GenerateManualError: CustomStringConvertible {
   var description: String {
     switch self {
     case let .failedToRunSubprocess(error):
-      "Failed to run subprocess: \(error)"
+      return "Failed to run subprocess: \(error)"
     case let .unableToParseToolOutput(error):
-      "Failed to parse tool output: \(error)"
+      return "Failed to parse tool output: \(error)"
     case let .unsupportedDumpHelpVersion(expected, found):
-      "Unsupported dump help version, expected '\(expected)' but found: '\(found)'"
+      return "Unsupported dump help version, expected '\(expected)' but found: '\(found)'"
     case let .failedToGenerateManualPages(error):
-      "Failed to generated manual pages: \(error)"
+      return "Failed to generated manual pages: \(error)"
     }
   }
 }

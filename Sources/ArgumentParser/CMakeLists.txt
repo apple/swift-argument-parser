@@ -5,6 +5,7 @@ add_library(ArgumentParser
   Completions/ZshCompletionsGenerator.swift
 
   "Parsable Properties/Argument.swift"
+  "Parsable Properties/ArgumentDiscussion.swift"
   "Parsable Properties/ArgumentHelp.swift"
   "Parsable Properties/ArgumentVisibility.swift"
   "Parsable Properties/CompletionKind.swift"

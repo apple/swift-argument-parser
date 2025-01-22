@@ -186,14 +186,15 @@ public struct CommandInfoV0: Codable, Hashable {
     subcommands: [CommandInfoV0],
     arguments: [ArgumentInfoV0]
   ) {
-    let discussion: Discussion? = if let discussion { .init(discussion) } else { nil }
+    let discussion2: Discussion?
+    if let discussion { discussion2 = .init(discussion) } else { discussion2 = nil }
 
     self.init(
       superCommands: superCommands,
       commandName: commandName,
       shouldDisplay: true,
       abstract: abstract,
-      discussion2: discussion,
+      discussion2: discussion2,
       defaultSubcommand: defaultSubcommand,
       subcommands: subcommands,
       arguments: arguments
@@ -349,7 +350,8 @@ public struct ArgumentInfoV0: Codable, Hashable {
     abstract: String?,
     discussion: String?
   ) {
-    let discussion: Discussion? = if let discussion { .init(discussion) } else { nil }
+    let discussion2: Discussion?
+    if let discussion { discussion2 = .init(discussion) } else { discussion2 = nil }
 
     self.init(
       kind: kind,
@@ -363,8 +365,7 @@ public struct ArgumentInfoV0: Codable, Hashable {
       defaultValue: defaultValue,
       allValues: allValues,
       abstract: abstract,
-      discussion2: discussion
+      discussion2: discussion2
     )
   }
 }
-

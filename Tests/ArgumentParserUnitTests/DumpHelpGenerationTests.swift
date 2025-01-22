@@ -64,11 +64,11 @@ extension DumpHelpGenerationTests {
       var defaultValueDescription: String {
         switch self {
         case .blue:
-          "A blue color, like the sky!"
+          return "A blue color, like the sky!"
         case .red:
-          "A red color, like a rose!"
+          return "A red color, like a rose!"
         case .yellow:
-          "A yellow color, like the sun!"
+          return "A yellow color, like the sun!"
         }
       }
     }
