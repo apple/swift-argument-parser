@@ -14,7 +14,7 @@ import Foundation
 enum SubprocessError: Swift.Error, LocalizedError, CustomStringConvertible {
   case missingExecutable(url: URL)
   case failedToLaunch(error: Swift.Error)
-  case nonZeroExitCode(code: Int)
+  case nonZeroExitCode(code: Int, stderr: String?)
 
   var description: String {
     switch self {
@@ -22,8 +22,16 @@ enum SubprocessError: Swift.Error, LocalizedError, CustomStringConvertible {
       return "No executable at '\(url.standardizedFileURL.path)'."
     case .failedToLaunch(let error):
       return "Couldn't run command process. \(error.localizedDescription)"
-    case .nonZeroExitCode(let code):
-      return "Process returned non-zero exit code '\(code)'."
+    case .nonZeroExitCode(let code, let stderr):
+      var description = "Process returned non-zero exit code '\(code)'."
+      if let stderr = stderr {
+        description.append(
+          """
+           Standard error:
+          \(stderr)
+          """)
+      }
+      return description
     }
   }
 
@@ -48,7 +56,8 @@ func executeCommand(
 
   let output = Pipe()
   process.standardOutput = output
-  process.standardError = FileHandle.nullDevice
+  let error = Pipe()
+  process.standardError = error
 
   if #available(macOS 10.13, *) {
     do {
@@ -60,10 +69,15 @@ func executeCommand(
     process.launch()
   }
   let outputData = output.fileHandleForReading.readDataToEndOfFile()
+  let errorData = error.fileHandleForReading.readDataToEndOfFile()
   process.waitUntilExit()
 
   guard process.terminationStatus == 0 else {
-    throw SubprocessError.nonZeroExitCode(code: Int(process.terminationStatus))
+    let errorActual = String(data: errorData, encoding: .utf8)?
+      .trimmingCharacters(in: .whitespacesAndNewlines)
+    throw SubprocessError.nonZeroExitCode(
+      code: Int(process.terminationStatus),
+      stderr: errorActual)
   }
 
   let outputActual = String(data: outputData, encoding: .utf8)?

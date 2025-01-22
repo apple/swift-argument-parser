@@ -78,7 +78,7 @@ fileprivate extension ArgumentSet {
         argument.help.valueName = group.map(\.valueName).first { !$0.isEmpty } ?? ""
         argument.help.defaultValue = group.compactMap(\.help.defaultValue).first
         argument.help.abstract = group.map(\.help.abstract).first { !$0.isEmpty } ?? ""
-        argument.help.discussion = group.map(\.help.discussion).first { !$0.isEmpty } ?? ""
+        argument.help.discussion = group.compactMap(\.help.discussion).first
       }
       arguments.append(argument)
     }
@@ -89,6 +89,21 @@ fileprivate extension ArgumentSet {
 fileprivate extension ToolInfoV0 {
   init(commandStack: [ParsableCommand.Type]) {
     self.init(command: CommandInfoV0(commandStack: commandStack))
+  }
+}
+
+fileprivate extension Discussion {
+  init?(_ discussion: ArgumentDiscussion?) {
+    guard let discussion else { return nil }
+    switch discussion {
+    case .staticText(let s):
+      self = .staticText(s)
+    case .enumerated(let preamble, let values):
+      self = .enumerated(
+        preamble: preamble,
+        values.allValueStrings.map { .init(name: $0, description: values.allValueDescriptions[$0] ?? "") }
+      )
+    }
   }
 }
 
@@ -120,8 +135,9 @@ fileprivate extension CommandInfoV0 {
     self = CommandInfoV0(
       superCommands: superCommands,
       commandName: command._commandName,
+      shouldDisplay: command.configuration.shouldDisplay,
       abstract: command.configuration.abstract,
-      discussion: command.configuration.discussion,
+      discussion2: .init(command.configuration.discussion),
       defaultSubcommand: defaultSubcommand,
       subcommands: subcommands,
       arguments: arguments)
@@ -143,7 +159,8 @@ fileprivate extension ArgumentInfoV0 {
       defaultValue: argument.help.defaultValue,
       allValues: argument.help.allValueStrings,
       abstract: argument.help.abstract,
-      discussion: argument.help.discussion)
+      discussion2: .init(argument.help.discussion)
+    )
   }
 }
 

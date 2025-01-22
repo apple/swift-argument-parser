@@ -168,7 +168,7 @@ struct Simple: ParsableArguments {
   @Option() var min: Int?
   @Argument() var max: Int
 
-  static var helpText = """
+  static let helpText = """
         USAGE: simple [--verbose] [--min <min>] <max>
 
         ARGUMENTS:

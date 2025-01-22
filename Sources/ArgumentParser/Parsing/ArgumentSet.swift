@@ -191,10 +191,9 @@ extension ArgumentSet {
   }
   
   func firstPositional(
-    named name: String
+    withKey key: InputKey
   ) -> ArgumentDefinition? {
-    let key = InputKey(name: name, parent: nil)
-    return first(where: { $0.help.keys.contains(key) })
+    first(where: { $0.help.keys.contains(key) })
   }
 }
 

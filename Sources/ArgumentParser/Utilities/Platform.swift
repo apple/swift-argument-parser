@@ -13,22 +13,21 @@ extension CommandLine {
   /// Accesses the command line arguments in a concurrency-safe way.
   ///
   /// Workaround for https://github.com/apple/swift/issues/66213
-  static let _staticArguments: [String] =
-    UnsafeBufferPointer(start: unsafeArgv, count: Int(argc))
-      .compactMap { String(validatingUTF8: $0!)
-  }
+  static let _staticArguments: [String] = Self.arguments
 }
 
 #if canImport(Glibc)
-import Glibc
+@preconcurrency import Glibc
 #elseif canImport(Musl)
-import Musl
+@preconcurrency import Musl
 #elseif canImport(Darwin)
 import Darwin
 #elseif canImport(CRT)
-import CRT
+@preconcurrency import CRT
 #elseif canImport(WASILibc)
-import WASILibc
+@preconcurrency import WASILibc
+#elseif canImport(Android)
+@preconcurrency import Android
 #endif
 
 enum Platform {}
@@ -98,6 +97,8 @@ extension Platform {
     ucrt._exit(code)
 #elseif canImport(WASILibc)
     WASILibc.exit(code)
+#elseif canImport(Android)
+    Android.exit(code)
 #endif
   }
 }
@@ -120,7 +121,7 @@ extension Platform {
 
 // MARK: Terminal size
 
-#if canImport(Glibc)
+#if canImport(Glibc) || canImport(Android)
 func ioctl(_ a: Int32, _ b: Int32, _ p: UnsafeMutableRawPointer) -> Int32 {
   ioctl(CInt(a), UInt(b), p)
 }

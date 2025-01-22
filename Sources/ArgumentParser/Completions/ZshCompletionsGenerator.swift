@@ -83,7 +83,12 @@ struct ZshCompletionsGenerator {
     }
     
     let functionText = """
-      \(functionName)() {
+      \(functionName)() {\(isRootCommand ? """
+
+          export \(CompletionShell.shellEnvironmentVariableName)=zsh
+          \(CompletionShell.shellVersionEnvironmentVariableName)="$(builtin emulate zsh -c 'printf %s "${ZSH_VERSION}"')"
+          export \(CompletionShell.shellVersionEnvironmentVariableName)
+      """ : "")
           integer ret=1
           local -a args
           args+=(

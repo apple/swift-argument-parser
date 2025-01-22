@@ -241,6 +241,9 @@ private let bashCompletionScriptText = """
 #!/bin/bash
 
 _math() {
+    export SAP_SHELL=bash
+    SAP_SHELL_VERSION="$(IFS='.'; printf %s "${BASH_VERSINFO[*]}")"
+    export SAP_SHELL_VERSION
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
     COMPREPLY=()
@@ -395,6 +398,9 @@ _math_commandname=$words[1]
 typeset -A opt_args
 
 _math() {
+    export SAP_SHELL=zsh
+    SAP_SHELL_VERSION="$(builtin emulate zsh -c 'printf %s "${ZSH_VERSION}"')"
+    export SAP_SHELL_VERSION
     integer ret=1
     local -a args
     args+=(
@@ -583,6 +589,8 @@ function _swift_math_preprocessor
 end
 
 function _swift_math_using_command
+    set -gx SAP_SHELL fish
+    set -gx SAP_SHELL_VERSION "$FISH_VERSION"
     set -l currentCommands (_swift_math_preprocessor (commandline -opc))
     set -l expectedCommands (string split \" \" $argv[1])
     set -l subcommands (string split \" \" $argv[2])
@@ -608,23 +616,30 @@ function _swift_math_using_command
 end
 
 complete -c math -n \'_swift_math_using_command \"math add\"\' -l hex-output -s x -d \'Use hexadecimal notation for the result.\'
+complete -c math -n \'_swift_math_using_command \"math add\"\' -l version -d \'Show the version.\'
 complete -c math -n \'_swift_math_using_command \"math add\"\' -s h -l help -d \'Show help information.\'
 complete -c math -n \'_swift_math_using_command \"math multiply\"\' -l hex-output -s x -d \'Use hexadecimal notation for the result.\'
+complete -c math -n \'_swift_math_using_command \"math multiply\"\' -l version -d \'Show the version.\'
 complete -c math -n \'_swift_math_using_command \"math multiply\"\' -s h -l help -d \'Show help information.\'
 complete -c math -n \'_swift_math_using_command \"math stats average\"\' -l kind -d \'The kind of average to provide.\' -r -f -k -a \'mean median mode\'
 complete -c math -n \'_swift_math_using_command \"math stats average\"\' -l version -d \'Show the version.\'
 complete -c math -n \'_swift_math_using_command \"math stats average\"\' -s h -l help -d \'Show help information.\'
+complete -c math -n \'_swift_math_using_command \"math stats stdev\"\' -l version -d \'Show the version.\'
 complete -c math -n \'_swift_math_using_command \"math stats stdev\"\' -s h -l help -d \'Show help information.\'
+complete -c math -n \'_swift_math_using_command \"math stats quantiles\"\' -r -f -k -a \'alphabet alligator branch braggart\'
+complete -c math -n \'_swift_math_using_command \"math stats quantiles\"\' -r -f -a \'(command math ---completion stats quantiles -- customArg (commandline -opc)[1..-1])\'
 complete -c math -n \'_swift_math_using_command \"math stats quantiles\"\' -l file -r -f -a \'(for i in *.{txt,md}; echo $i;end)\'
 complete -c math -n \'_swift_math_using_command \"math stats quantiles\"\' -l directory -r -f -a \'(__fish_complete_directories)\'
 complete -c math -n \'_swift_math_using_command \"math stats quantiles\"\' -l shell -r -f -a \'(head -100 /usr/share/dict/words | tail -50)\'
 complete -c math -n \'_swift_math_using_command \"math stats quantiles\"\' -l custom -r -f -a \'(command math ---completion stats quantiles -- --custom (commandline -opc)[1..-1])\'
+complete -c math -n \'_swift_math_using_command \"math stats quantiles\"\' -l version -d \'Show the version.\'
 complete -c math -n \'_swift_math_using_command \"math stats quantiles\"\' -s h -l help -d \'Show help information.\'
-complete -c math -n \'_swift_math_using_command \"math stats\" \"average stdev quantiles help\"\' -s h -l help -d \'Show help information.\'
-complete -c math -n \'_swift_math_using_command \"math stats\" \"average stdev quantiles help\"\' -f -a \'average\' -d \'Print the average of the values.\'
-complete -c math -n \'_swift_math_using_command \"math stats\" \"average stdev quantiles help\"\' -f -a \'stdev\' -d \'Print the standard deviation of the values.\'
-complete -c math -n \'_swift_math_using_command \"math stats\" \"average stdev quantiles help\"\' -f -a \'quantiles\' -d \'Print the quantiles of the values (TBD).\'
-complete -c math -n \'_swift_math_using_command \"math stats\" \"average stdev quantiles help\"\' -f -a \'help\' -d \'Show subcommand help information.\'
+complete -c math -n \'_swift_math_using_command \"math stats\" \"average stdev quantiles\"\' -l version -d \'Show the version.\'
+complete -c math -n \'_swift_math_using_command \"math stats\" \"average stdev quantiles\"\' -s h -l help -d \'Show help information.\'
+complete -c math -n \'_swift_math_using_command \"math stats\" \"average stdev quantiles\"\' -f -a \'average\' -d \'Print the average of the values.\'
+complete -c math -n \'_swift_math_using_command \"math stats\" \"average stdev quantiles\"\' -f -a \'stdev\' -d \'Print the standard deviation of the values.\'
+complete -c math -n \'_swift_math_using_command \"math stats\" \"average stdev quantiles\"\' -f -a \'quantiles\' -d \'Print the quantiles of the values (TBD).\'
+complete -c math -n \'_swift_math_using_command \"math help\"\' -l version -d \'Show the version.\'
 complete -c math -n \'_swift_math_using_command \"math\" \"add multiply stats help\"\' -l version -d \'Show the version.\'
 complete -c math -n \'_swift_math_using_command \"math\" \"add multiply stats help\"\' -s h -l help -d \'Show help information.\'
 complete -c math -n \'_swift_math_using_command \"math\" \"add multiply stats help\"\' -f -a \'add\' -d \'Print the sum of the values.\'

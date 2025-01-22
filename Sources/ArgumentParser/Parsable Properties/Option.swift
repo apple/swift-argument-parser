@@ -272,7 +272,13 @@ extension Option where Value: ExpressibleByArgument {
         container: Bare<Value>.self,
         key: key,
         kind: .name(key: key, specification: name),
-        help: help,
+        help: .init(
+          help?.abstract ?? "",
+          discussion: help?.discussion,
+          valueName: help?.valueName,
+          visibility: help?.visibility ?? .default,
+          argumentType: Value.self
+        ),
         parsingStrategy: parsingStrategy.base,
         initial: wrappedValue,
         completion: completion)
@@ -326,7 +332,13 @@ extension Option where Value: ExpressibleByArgument {
         container: Bare<Value>.self,
         key: key,
         kind: .name(key: key, specification: name),
-        help: help,
+        help: .init(
+          help?.abstract ?? "",
+          discussion: help?.discussion,
+          valueName: help?.valueName,
+          visibility: help?.visibility ?? .default,
+          argumentType: Value.self
+        ),
         parsingStrategy: parsingStrategy.base,
         initial: nil,
         completion: completion)
@@ -429,6 +441,7 @@ extension Option {
   }
 }
 
+
 // MARK: - @Option Optional<T: ExpressibleByArgument> Initializers
 extension Option {
   /// Creates an optional property that reads its value from a labeled option,
@@ -460,7 +473,13 @@ extension Option {
         container: Optional<T>.self,
         key: key,
         kind: .name(key: key, specification: name),
-        help: help,
+        help: .init(
+          help?.abstract ?? "",
+          discussion: help?.discussion,
+          valueName: help?.valueName,
+          visibility: help?.visibility ?? .default,
+          argumentType: T.self
+        ),
         parsingStrategy: parsingStrategy.base,
         initial: nil,
         completion: completion)
@@ -485,7 +504,13 @@ extension Option {
         container: Optional<T>.self,
         key: key,
         kind: .name(key: key, specification: name),
-        help: help,
+        help: .init(
+          help?.abstract ?? "",
+          discussion: help?.discussion,
+          valueName: help?.valueName,
+          visibility: help?.visibility ?? .default,
+          argumentType: T.self
+        ),
         parsingStrategy: parsingStrategy.base,
         initial: _wrappedValue,
         completion: completion)
@@ -521,7 +546,13 @@ extension Option {
         container: Optional<T>.self,
         key: key,
         kind: .name(key: key, specification: name),
-        help: help,
+        help: .init(
+          help?.abstract ?? "",
+          discussion: help?.discussion,
+          valueName: help?.valueName,
+          visibility: help?.visibility ?? .default,
+          argumentType: T.self
+        ),
         parsingStrategy: parsingStrategy.base,
         initial: nil,
         completion: completion)

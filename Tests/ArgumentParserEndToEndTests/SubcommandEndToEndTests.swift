@@ -110,8 +110,6 @@ extension SubcommandEndToEndTests {
   }
 }
 
-fileprivate var mathDidRun = false
-
 fileprivate struct Math: ParsableCommand {
   enum Operation: String, ExpressibleByArgument {
     case add
@@ -127,20 +125,22 @@ fileprivate struct Math: ParsableCommand {
   @Argument(help: "The first operand")
   var operands: [Int] = []
 
+  var didRun = false
+
   mutating func run() {
     XCTAssertEqual(operation, .multiply)
     XCTAssertTrue(verbose)
     XCTAssertEqual(operands, [5, 11])
-    mathDidRun = true
+    didRun = true
   }
 }
 
 extension SubcommandEndToEndTests {
   func testParsing_SingleCommand() throws {
-    var mathCommand = try Math.parseAsRoot(["--operation", "multiply", "-v", "5", "11"])
-    XCTAssertFalse(mathDidRun)
-    try mathCommand.run()
-    XCTAssertTrue(mathDidRun)
+    var mathCommand = try Math.parseAsRoot(["--operation", "multiply", "-v", "5", "11"]) as! Math
+    XCTAssertFalse(mathCommand.didRun)
+    mathCommand.run()
+    XCTAssertTrue(mathCommand.didRun)
   }
 }
 

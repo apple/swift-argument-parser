@@ -283,10 +283,10 @@ extension HelpGenerationTests {
   struct H: ParsableCommand {
     struct CommandWithVeryLongName: ParsableCommand {}
     struct ShortCommand: ParsableCommand {
-      static var configuration: CommandConfiguration = CommandConfiguration(abstract: "Test short command name.")
+      static let configuration: CommandConfiguration = CommandConfiguration(abstract: "Test short command name.")
     }
     struct AnotherCommandWithVeryLongName: ParsableCommand {
-      static var configuration: CommandConfiguration = CommandConfiguration(abstract: "Test long command name.")
+      static let configuration: CommandConfiguration = CommandConfiguration(abstract: "Test long command name.")
     }
     struct AnotherCommand: ParsableCommand {
       @Option()
@@ -474,7 +474,7 @@ extension HelpGenerationTests {
   }
     
   struct Foo: ParsableCommand {
-    public static var configuration = CommandConfiguration(
+    public static let configuration = CommandConfiguration(
       commandName: "foo",
       abstract: "Perform some foo",
       subcommands: [
@@ -512,6 +512,76 @@ extension HelpGenerationTests {
                               Bar Strength
       -h, -help, --help       Show help information.
     
+    """)
+  }
+
+  struct WithSubgroups: ParsableCommand {
+    static let configuration = CommandConfiguration(
+      commandName: "subgroupings",
+      subcommands: [ M.self ],
+      groupedSubcommands: [
+        CommandGroup(
+          name: "Broken",
+          subcommands: [ Foo.self, Bar.self ]
+        ),
+        CommandGroup(name: "Complicated", subcommands: [ N.self ])
+      ]
+    )
+  }
+
+  func testHelpSubcommandGroups() throws {
+    AssertHelp(.default, for: WithSubgroups.self, equals: """
+    USAGE: subgroupings <subcommand>
+
+    OPTIONS:
+      -h, --help              Show help information.
+
+    SUBCOMMANDS:
+      m
+
+    BROKEN SUBCOMMANDS:
+      foo                     Perform some foo
+      bar                     Perform bar operations
+
+    COMPLICATED SUBCOMMANDS:
+      n
+
+      See 'subgroupings help <subcommand>' for detailed help.
+    """)
+  }
+
+  struct OnlySubgroups: ParsableCommand {
+    static let configuration = CommandConfiguration(
+      commandName: "subgroupings",
+      groupedSubcommands: [
+        CommandGroup(
+          name: "Broken",
+          subcommands: [ Foo.self, Bar.self ]
+        ),
+        CommandGroup(
+          name: "Complicated",
+          subcommands: [ M.self, N.self ]
+        )
+      ]
+    )
+  }
+
+  func testHelpOnlySubcommandGroups() throws {
+    AssertHelp(.default, for: OnlySubgroups.self, equals: """
+    USAGE: subgroupings <subcommand>
+
+    OPTIONS:
+      -h, --help              Show help information.
+
+    BROKEN SUBCOMMANDS:
+      foo                     Perform some foo
+      bar                     Perform bar operations
+
+    COMPLICATED SUBCOMMANDS:
+      m
+      n
+
+      See 'subgroupings help <subcommand>' for detailed help.
     """)
   }
 }
@@ -611,7 +681,7 @@ extension HelpGenerationTests {
   struct AllValues: ParsableCommand {
     enum Manual: Int, ExpressibleByArgument {
       case foo
-      static var allValueStrings = ["bar"]
+      static let allValueStrings = ["bar"]
     }
 
     enum UnspecializedSynthesized: Int, CaseIterable, ExpressibleByArgument {
@@ -896,6 +966,285 @@ extension HelpGenerationTests {
       actual: CustomUsageHidden.usageString(),
       expected: """
       """)
+  }
+}
+
+extension HelpGenerationTests {
+  enum OptionValues: String, CaseIterable, ExpressibleByArgument {
+    case blue
+    case red
+    case yellow
+
+    public var defaultValueDescription: String {
+      switch self {
+      case .blue:
+        return "The color of the sky."
+      case .red:
+        return "The color of a rose."
+      case .yellow:
+        return "The color of the sun."
+      }
+    }
+  }
+
+  struct CustomOption: ParsableCommand {
+    @Option(help: "An option with enumerable values.") var opt: OptionValues
+  }
+
+  func testEnumerableOptionValuesWithoutDefault() {
+    AssertHelp(.default, for: CustomOption.self, equals: """
+USAGE: custom-option --opt <opt>
+
+OPTIONS:
+  --opt <opt>             An option with enumerable values.
+        blue              - The color of the sky.
+        red               - The color of a rose.
+        yellow            - The color of the sun.
+  -h, --help              Show help information.
+
+""")
+  }
+
+  struct CustomOptionWithDefault: ParsableCommand {
+    @Option(help: "An option with enumerable values and a custom default.") var opt: OptionValues = .red
+  }
+
+  func testEnumerableOptionValuesWithDefault() {
+    AssertHelp(.default, for: CustomOptionWithDefault.self, equals: """
+USAGE: custom-option-with-default [--opt <opt>]
+
+OPTIONS:
+  --opt <opt>             An option with enumerable values and a custom
+                          default. (default: red)
+        blue              - The color of the sky.
+        red               - The color of a rose.
+        yellow            - The color of the sun.
+  -h, --help              Show help information.
+
+""")
+  }
+
+  struct Optional: ParsableCommand {
+    @Option(help: "Optional option type.") var optional: OptionValues?
+  }
+
+  func testOptionalEnumerableOptionValue() {
+    AssertHelp(.default, for: Optional.self, equals: """
+    USAGE: optional [--optional <optional>]
+
+    OPTIONS:
+      --optional <optional>   Optional option type.
+            blue              - The color of the sky.
+            red               - The color of a rose.
+            yellow            - The color of the sun.
+      -h, --help              Show help information.
+
+    """)
+  }
+
+
+  struct NoAbstract: ParsableCommand {
+    @Option var a: OptionValues
+    @Option var b: OptionValues = .red
+  }
+
+  func testEnumerableOptionValue_NoAbstract() {
+    AssertHelp(.default, for: NoAbstract.self, equals: """
+    USAGE: no-abstract --a <a> [--b <b>]
+
+    OPTIONS:
+      --a <a>
+            blue              - The color of the sky.
+            red               - The color of a rose.
+            yellow            - The color of the sun.
+      --b <b>                 (default: red)
+            blue              - The color of the sky.
+            red               - The color of a rose.
+            yellow            - The color of the sun.
+      -h, --help              Show help information.
+
+    """)
+  }
+
+  struct Preamble: ParsableCommand {
+    @Option(help: 
+        .init(
+          discussion:
+            """
+    A preamble. This will be appended to the top \
+    of the discussion block, before the list of option values.
+    """
+        )
+    )
+    var a: OptionValues
+
+    @Option(help:
+        .init(
+          "An abstract.",
+          discussion: "A discussion."
+        )
+    )
+    var b: OptionValues?
+  }
+
+  func testEnumerableValuesWithPreamble() {
+    AssertHelp(.default, for: Preamble.self, equals: """
+    USAGE: preamble --a <a> [--b <b>]
+
+    OPTIONS:
+      --a <a>
+            A preamble. This will be appended to the top of the discussion block,
+            before the list of option values.
+            blue              - The color of the sky.
+            red               - The color of a rose.
+            yellow            - The color of the sun.
+      --b <b>                 An abstract.
+            A discussion.
+            blue              - The color of the sky.
+            red               - The color of a rose.
+            yellow            - The color of the sun.
+      -h, --help              Show help information.
+
+    """)
+  }
+
+  enum OptionWithoutEnumerationHelpText: String, CaseIterable, ExpressibleByArgument {
+    case one = "1"
+    case two = "2"
+    case three = "3"
+  }
+
+  struct HelpTextComparison: ParsableCommand {
+    @Option(help: .init("An abstract.", discussion: "A discussion."))
+    var enumerable: OptionValues
+
+    @Option(help: "This is an option without explicit enumeration in the help text.")
+    var values: OptionWithoutEnumerationHelpText
+  }
+
+  func testOptionHelpTextWithAndWithoutEnumeratedDescriptions() {
+    AssertHelp(.default, for: HelpTextComparison.self, equals: """
+    USAGE: help-text-comparison --enumerable <enumerable> --values <values>
+
+    OPTIONS:
+      --enumerable <enumerable>
+                              An abstract.
+            A discussion.
+            blue              - The color of the sky.
+            red               - The color of a rose.
+            yellow            - The color of the sun.
+      --values <values>       This is an option without explicit enumeration in the
+                              help text. (values: 1, 2, 3)
+      -h, --help              Show help information.
+
+    """)
+  }
+}
+
+extension HelpGenerationTests {
+  enum Empty: CaseIterable, ExpressibleByArgument {
+    var defaultValueDescription: String {
+      return "none"
+    }
+
+    init?(argument: String) {
+      return nil
+    }
+  }
+
+  struct EmptyCommand: ParsableCommand {
+    @Option(help: "An option with no values.") var empty: Empty
+  }
+
+  func testEmptyOptionValues() {
+    AssertHelp(.default, for: EmptyCommand.self, equals: """
+    USAGE: empty-command --empty <empty>
+
+    OPTIONS:
+      --empty <empty>         An option with no values.
+      -h, --help              Show help information.
+
+    """)
+  }
+}
+
+extension HelpGenerationTests {
+  enum Cases: String, CaseIterable, ExpressibleByArgument {
+    case short
+    case longDesc
+    case longLabel = "long-label-that-is-too-long-for-description"
+    case longLabelAndDesc = "long-label-that-is-too-long-for-longer-description"
+
+    var defaultValueDescription: String {
+      switch self {
+      case .short:
+        return "short label option"
+      case .longDesc:
+        return "this is my very long label option, and it should wrap this text when the help is printed."
+      case .longLabel:
+        return "this is a discussion text."
+      case .longLabelAndDesc:
+        return "this discussion text should be wrapped, and the label is simply too long for this text to be on the same line."
+      }
+    }
+  }
+
+  struct LongLabelHelp: ParsableCommand {
+    @Option(help: "A collection of cases with varying lengths of labels/descriptions.")
+    var argument: Cases
+  }
+
+  func testLongOptionLabelAndDescriptionHelp() {
+    AssertHelp(.default, for: LongLabelHelp.self, equals: """
+        USAGE: long-label-help --argument <argument>
+        
+        OPTIONS:
+          --argument <argument>   A collection of cases with varying lengths of
+                                  labels/descriptions.
+                short             - short label option
+                longDesc          - this is my very long label option, and it should
+                                    wrap this text when the help is printed.
+                long-label-that-is-too-long-for-description
+                                  - this is a discussion text.
+                long-label-that-is-too-long-for-longer-description
+                                  - this discussion text should be wrapped, and the
+                                    label is simply too long for this text to be on the
+                                    same line.
+          -h, --help              Show help information.
+        
+        """)
+  }
+
+  struct LongLabelHelpWithOptionDescription: ParsableCommand {
+    @Option(help:
+        .init(
+          "A collection of cases with varying lengths of labels/descriptions.",
+          discussion: "This is a discussion text - don't mind me!"
+        )
+    )
+    var argument: Cases
+  }
+
+  func testLongOptionLabelAndDescriptionHelpWithOptionDescription() {
+    AssertHelp(.default, for: LongLabelHelpWithOptionDescription.self, equals: """
+          USAGE: long-label-help-with-option-description --argument <argument>
+          
+          OPTIONS:
+            --argument <argument>   A collection of cases with varying lengths of
+                                    labels/descriptions.
+                  This is a discussion text - don't mind me!
+                  short             - short label option
+                  longDesc          - this is my very long label option, and it should
+                                      wrap this text when the help is printed.
+                  long-label-that-is-too-long-for-description
+                                    - this is a discussion text.
+                  long-label-that-is-too-long-for-longer-description
+                                    - this discussion text should be wrapped, and the
+                                      label is simply too long for this text to be on the
+                                      same line.
+            -h, --help              Show help information.
+          
+          """)
   }
 }
 

@@ -17,7 +17,7 @@
 /// ```swift
 /// struct GlobalOptions: ParsableArguments {
 ///     @Flag(name: .shortAndLong)
-///     var verbose: Bool
+///     var verbose: Bool = false
 ///
 ///     @Argument var values: [Int]
 /// }

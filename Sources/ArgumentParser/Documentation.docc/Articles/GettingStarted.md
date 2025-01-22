@@ -15,7 +15,7 @@ and then include `"ArgumentParser"` as a dependency for our executable target.
 Our "Package.swift" file ends up looking like this:
 
 ```swift
-// swift-tools-version:5.5
+// swift-tools-version:5.7
 import PackageDescription
 
 let package = Package(
