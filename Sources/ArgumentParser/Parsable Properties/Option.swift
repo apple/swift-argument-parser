@@ -942,7 +942,7 @@ extension Option {
     )
   }
   
-#if false
+#if true
   public init<
     First: ExpressibleByArgument,
     Second: ExpressibleByArgument,
