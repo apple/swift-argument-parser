@@ -942,7 +942,6 @@ extension Option {
     )
   }
   
-#if true
   public init<
     First: ExpressibleByArgument,
     Second: ExpressibleByArgument,
@@ -955,14 +954,16 @@ extension Option {
     completion: CompletionKind? = nil
   ) where Value == (First, Second, repeat each Rest) {
     self.init(
-      wrappedValue: wrappedValue,
+      // This version is okay:
+      wrappedValue: .some(wrappedValue),
+      // This version crashes:
+      // wrappedValue: wrappedValue,
       name: name,
       parsing: parsingStrategy,
       help: help,
       completion: completion
     )
   }
-#endif
 }
 
 // MARK: Variadic tuple support
