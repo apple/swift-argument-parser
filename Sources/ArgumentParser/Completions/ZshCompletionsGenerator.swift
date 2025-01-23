@@ -88,6 +88,10 @@ struct ZshCompletionsGenerator {
       \(functionName)() {
       \(isRootCommand
         ? """
+              emulate -RL zsh -G
+              setopt extendedglob
+              unsetopt aliases banghist
+
               local -xr \(CompletionShell.shellEnvironmentVariableName)=zsh
               local -x \(CompletionShell.shellVersionEnvironmentVariableName)
               \(CompletionShell.shellVersionEnvironmentVariableName)="$(builtin emulate zsh -c 'printf %s "${ZSH_VERSION}"')"
