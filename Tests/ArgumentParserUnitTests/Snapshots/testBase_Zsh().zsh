@@ -1,6 +1,10 @@
 #compdef base-test
 
 _base-test() {
+    emulate -RL zsh -G
+    setopt extendedglob
+    unsetopt aliases banghist
+
     local -xr SAP_SHELL=zsh
     local -x SAP_SHELL_VERSION
     SAP_SHELL_VERSION="$(builtin emulate zsh -c 'printf %s "${ZSH_VERSION}"')"
