@@ -9,20 +9,16 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if swift(>=6.0)
+#if compiler(>=6.0)
 #if canImport(FoundationEssentials)
 internal import protocol FoundationEssentials.LocalizedError
-internal import class FoundationEssentials.NSError
 #else
 internal import protocol Foundation.LocalizedError
-internal import class Foundation.NSError
 #endif
-#elseif swift(>=5.10)
+#elseif compiler(>=5.10)
 import protocol Foundation.LocalizedError
-import class Foundation.NSError
 #else
 @_implementationOnly import protocol Foundation.LocalizedError
-@_implementationOnly import class Foundation.NSError
 #endif
 
 enum MessageInfo {
@@ -124,11 +120,7 @@ enum MessageInfo {
       case let error as LocalizedError where error.errorDescription != nil:
         self = .other(message: error.errorDescription!, exitCode: .failure)
       default:
-        if Swift.type(of: error) is NSError.Type {
-          self = .other(message: error.localizedDescription, exitCode: .failure)
-        } else {
-          self = .other(message: String(describing: error), exitCode: .failure)
-        }
+        self = .other(message: String(describing: error), exitCode: .failure)
       }
     } else if let parserError = parserError {
       let usage: String = {

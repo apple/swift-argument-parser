@@ -9,13 +9,13 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if swift(>=6.0)
+#if compiler(>=6.0)
 #if canImport(FoundationEssentials)
 internal import protocol FoundationEssentials.LocalizedError
 #else
 internal import protocol Foundation.LocalizedError
 #endif
-#elseif swift(>=5.10)
+#elseif compiler(>=5.10)
 import protocol Foundation.LocalizedError
 #else
 @_implementationOnly import protocol Foundation.LocalizedError
