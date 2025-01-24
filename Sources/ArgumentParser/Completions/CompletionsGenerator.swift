@@ -189,3 +189,12 @@ extension Sequence where Element == ParsableCommand.Type {
       .joined(separator: "_")
   }
 }
+
+extension String {
+  func shellEscapeForSingleQuotedString(iterationCount: UInt64 = 1) -> Self {
+    iterationCount == 0
+      ? self
+      : replacingOccurrences(of: "'", with: "'\\''")
+        .shellEscapeForSingleQuotedString(iterationCount: iterationCount - 1)
+  }
+}
