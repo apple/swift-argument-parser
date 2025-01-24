@@ -64,7 +64,7 @@ struct ZshCompletionsGenerator {
                 local -ar subcommands=(
         \(
           subcommands.map { """
-                        '\($0._commandName):\($0.configuration.abstract.zshEscapingMetacharacters())'
+                        '\($0._commandName):\($0.configuration.abstract.zshEscapeForSingleQuotedExplanation())'
             """
           }
           .joined(separator: "\n")
@@ -131,25 +131,17 @@ struct ZshCompletionsGenerator {
 }
 
 extension String {
-  fileprivate func zshEscapingSingleQuotes() -> String {
-    replacingOccurrences(of: "'", with: "'\\''")
-  }
-
-  fileprivate func zshEscapingMetacharacters() -> String {
+  fileprivate func zshEscapeForSingleQuotedExplanation() -> String {
     replacingOccurrences(
       of: #"[\\\[\]]"#, with: #"\\$0"#, options: .regularExpression
-    )
-  }
-
-  fileprivate func zshEscaped() -> String {
-    zshEscapingMetacharacters().zshEscapingSingleQuotes()
+    ).shellEscapeForSingleQuotedString()
   }
 }
 
 extension ArgumentDefinition {
   private var zshCompletionAbstract: String {
     guard !help.abstract.isEmpty else { return "" }
-    return "[\(help.abstract.zshEscaped())]"
+    return "[\(help.abstract.zshEscapeForSingleQuotedExplanation())]"
   }
 
   fileprivate func zshCompletionString(
@@ -209,11 +201,10 @@ extension ArgumentDefinition {
       return ""
 
     case .file(let extensions):
-      let pattern =
+      return
         extensions.isEmpty
-        ? ""
-        : " -g '\(extensions.map { "*.\($0)" }.joined(separator: " "))'"
-      return "_files\(pattern.zshEscaped())"
+        ? "_files"
+        : "_files -g '\\''\(extensions.map { "*.\($0.zshEscapeForSingleQuotedExplanation())" }.joined(separator: " "))'\\''"
 
     case .directory:
       return "_files -/"
@@ -223,7 +214,7 @@ extension ArgumentDefinition {
 
     case .shellCommand(let command):
       return
-        "{local -a list;list=(${(f)\"$(\(command.zshEscapingSingleQuotes()))\"});_describe \"\" list}"
+        "{local -a list;list=(${(f)\"$(\(command.shellEscapeForSingleQuotedString()))\"});_describe \"\" list}"
 
     case .custom:
       // Generate a call back into the command to retrieve a completions list
