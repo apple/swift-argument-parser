@@ -1,9 +1,10 @@
 #!/bin/bash
 
 _base_test() {
-    export SAP_SHELL=bash
-    SAP_SHELL_VERSION="$(IFS='.'; printf %s "${BASH_VERSINFO[*]}")"
-    export SAP_SHELL_VERSION
+    local -xr SAP_SHELL=bash
+    local -x SAP_SHELL_VERSION
+    SAP_SHELL_VERSION="$(IFS='.';printf %s "${BASH_VERSINFO[*]}")"
+    local -r SAP_SHELL_VERSION
 
     local -r cur="${2}"
     local -r prev="${3}"

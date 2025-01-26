@@ -61,9 +61,10 @@ struct BashCompletionsGenerator {
     // that other command functions don't need.
     if isRootCommand {
       result += """
-            export \(CompletionShell.shellEnvironmentVariableName)=bash
-            \(CompletionShell.shellVersionEnvironmentVariableName)="$(IFS='.'; printf %s "${BASH_VERSINFO[*]}")"
-            export \(CompletionShell.shellVersionEnvironmentVariableName)
+            local -xr \(CompletionShell.shellEnvironmentVariableName)=bash
+            local -x \(CompletionShell.shellVersionEnvironmentVariableName)
+            \(CompletionShell.shellVersionEnvironmentVariableName)="$(IFS='.';printf %s "${BASH_VERSINFO[*]}")"
+            local -r \(CompletionShell.shellVersionEnvironmentVariableName)
 
             local -r cur="${2}"
             local -r prev="${3}"
