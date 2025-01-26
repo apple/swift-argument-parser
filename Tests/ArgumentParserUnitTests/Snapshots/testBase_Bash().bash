@@ -4,9 +4,10 @@ _base_test() {
     export SAP_SHELL=bash
     SAP_SHELL_VERSION="$(IFS='.'; printf %s "${BASH_VERSINFO[*]}")"
     export SAP_SHELL_VERSION
-    cur="${COMP_WORDS[COMP_CWORD]}"
-    prev="${COMP_WORDS[COMP_CWORD-1]}"
-    COMPREPLY=()
+
+    local -r cur="${2}"
+    local -r prev="${3}"
+
     opts="--name --kind --other-kind --path1 --path2 --path3 --one --two --three --kind-counter --rep1 -r --rep2 -h --help sub-command escaped-command help"
     opts="${opts} $("${COMP_WORDS[0]}" ---completion  -- argument "${COMP_WORDS[@]}")"
     opts="${opts} $("${COMP_WORDS[0]}" ---completion  -- nested.nestedArgument "${COMP_WORDS[@]}")"

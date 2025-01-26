@@ -4,9 +4,10 @@ _math() {
     export SAP_SHELL=bash
     SAP_SHELL_VERSION="$(IFS='.'; printf %s "${BASH_VERSINFO[*]}")"
     export SAP_SHELL_VERSION
-    cur="${COMP_WORDS[COMP_CWORD]}"
-    prev="${COMP_WORDS[COMP_CWORD-1]}"
-    COMPREPLY=()
+
+    local -r cur="${2}"
+    local -r prev="${3}"
+
     opts="--version -h --help add multiply stats help"
     if [[ "${COMP_CWORD}" == "1" ]]; then
         COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))

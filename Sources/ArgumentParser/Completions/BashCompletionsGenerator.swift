@@ -64,9 +64,10 @@ struct BashCompletionsGenerator {
             export \(CompletionShell.shellEnvironmentVariableName)=bash
             \(CompletionShell.shellVersionEnvironmentVariableName)="$(IFS='.'; printf %s "${BASH_VERSINFO[*]}")"
             export \(CompletionShell.shellVersionEnvironmentVariableName)
-            cur="${COMP_WORDS[COMP_CWORD]}"
-            prev="${COMP_WORDS[COMP_CWORD-1]}"
-            COMPREPLY=()
+
+            local -r cur="${2}"
+            local -r prev="${3}"
+
 
         """
     }
