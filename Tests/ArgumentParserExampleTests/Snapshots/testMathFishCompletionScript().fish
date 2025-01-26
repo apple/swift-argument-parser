@@ -37,15 +37,23 @@ function _swift_math_commands_and_positionals_helper -S -a argparse_options -a o
     end
 end
 
+function _swift_math_tokens
+    if test (string split -m 1 -f 1 . $FISH_VERSION) -gt 3
+        commandline --tokens-raw $argv
+    else
+        commandline -o $argv
+    end
+end
+
 function _swift_math_using_command -a expected_commands
     set COMMANDS
-    set POSITIONALS (commandline -opc)
+    set POSITIONALS (_swift_math_tokens -pc)
     _swift_math_commands_and_positionals
     test "$COMMANDS" = $expected_commands
 end
 
 function _swift_math_positional_index
-    set POSITIONALS (commandline -opc)
+    set POSITIONALS (_swift_math_tokens -pc)
     _swift_math_commands_and_positionals
     math (count $POSITIONALS) + 1
 end
@@ -61,9 +69,9 @@ function _swift_math_custom_completion
     set -x SAP_SHELL fish
     set -x SAP_SHELL_VERSION $FISH_VERSION
 
-    set tokens (commandline -op)
-    if test -z (commandline -ot)
-        set index (count (commandline -opc))
+    set tokens (_swift_math_tokens -p)
+    if test -z (_swift_math_tokens -t)
+        set index (count (_swift_math_tokens -pc))
         set tokens $tokens[..$index] \'\' $tokens[$(math $index + 1)..]
     end
     command $tokens[1] $argv $tokens

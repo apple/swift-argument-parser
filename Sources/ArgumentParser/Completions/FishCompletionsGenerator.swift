@@ -39,15 +39,23 @@ extension [ParsableCommand.Type] {
           end
       end
 
+      function \(tokensFunctionName)
+          if test (string split -m 1 -f 1 . $FISH_VERSION) -gt 3
+              commandline --tokens-raw $argv
+          else
+              commandline -o $argv
+          end
+      end
+
       function \(usingCommandFunctionName) -a expected_commands
           set COMMANDS
-          set POSITIONALS (commandline -opc)
+          set POSITIONALS (\(tokensFunctionName) -pc)
           \(commandsAndPositionalsFunctionName)
           test "$COMMANDS" = $expected_commands
       end
 
       function \(positionalIndexFunctionName)
-          set POSITIONALS (commandline -opc)
+          set POSITIONALS (\(tokensFunctionName) -pc)
           \(commandsAndPositionalsFunctionName)
           math (count $POSITIONALS) + 1
       end
@@ -63,9 +71,9 @@ extension [ParsableCommand.Type] {
           set -x \(CompletionShell.shellEnvironmentVariableName) fish
           set -x \(CompletionShell.shellVersionEnvironmentVariableName) $FISH_VERSION
 
-          set tokens (commandline -op)
-          if test -z (commandline -ot)
-              set index (count (commandline -opc))
+          set tokens (\(tokensFunctionName) -p)
+          if test -z (\(tokensFunctionName) -t)
+              set index (count (\(tokensFunctionName) -pc))
               set tokens $tokens[..$index] \\'\\' $tokens[$(math $index + 1)..]
           end
           command $tokens[1] $argv $tokens
@@ -232,6 +240,12 @@ extension [ParsableCommand.Type] {
     // swift-format-ignore: NeverForceUnwrap
     // Precondition: first is guaranteed to be non-empty
     "_swift_\(first!._commandName)_commands_and_positionals"
+  }
+
+  private var tokensFunctionName: String {
+    // swift-format-ignore: NeverForceUnwrap
+    // Precondition: first is guaranteed to be non-empty
+    "_swift_\(first!._commandName)_tokens"
   }
 
   private var usingCommandFunctionName: String {
