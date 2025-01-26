@@ -122,6 +122,16 @@ __base_test_add_completions() {
     done < <(IFS=$'\n' compgen "${@}" -- "${cur}")
 }
 
+__base_test_custom_complete() {
+    if [[ -n "${cur}" || -z ${COMP_WORDS[${COMP_CWORD}]} || "${COMP_LINE:${COMP_POINT}:1}" != ' ' ]]; then
+        local -ar words=("${COMP_WORDS[@]}")
+    else
+        local -ar words=("${COMP_WORDS[@]::${COMP_CWORD}}" '' "${COMP_WORDS[@]:${COMP_CWORD}}")
+    fi
+
+    "${COMP_WORDS[0]}" "${@}" "${words[@]}"
+}
+
 _base_test() {
     trap "$(shopt -p);$(shopt -po)" RETURN
     shopt -s extglob
@@ -179,11 +189,11 @@ _base_test() {
     # Offer positional completions
     case "${positional_number}" in
     1)
-        __base_test_add_completions -W "$("${COMP_WORDS[0]}" ---completion  -- argument "${COMP_WORDS[@]}")"
+        __base_test_add_completions -W "$(__base_test_custom_complete ---completion  -- argument)"
         return
         ;;
     2)
-        __base_test_add_completions -W "$("${COMP_WORDS[0]}" ---completion  -- nested.nestedArgument "${COMP_WORDS[@]}")"
+        __base_test_add_completions -W "$(__base_test_custom_complete ---completion  -- nested.nestedArgument)"
         return
         ;;
     esac
@@ -226,7 +236,7 @@ _base_test_escaped_command() {
     # Offer positional completions
     case "${positional_number}" in
     1)
-        __base_test_add_completions -W "$("${COMP_WORDS[0]}" ---completion escaped-command -- two "${COMP_WORDS[@]}")"
+        __base_test_add_completions -W "$(__base_test_custom_complete ---completion escaped-command -- two)"
         return
         ;;
     esac

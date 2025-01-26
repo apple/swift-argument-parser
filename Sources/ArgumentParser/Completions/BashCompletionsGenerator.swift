@@ -143,6 +143,16 @@ extension [ParsableCommand.Type] {
           done < <(IFS=$'\\n' compgen "${@}" -- "${cur}")
       }
 
+      \(customCompleteFunctionName)() {
+          if [[ -n "${cur}" || -z ${COMP_WORDS[${COMP_CWORD}]} || "${COMP_LINE:${COMP_POINT}:1}" != ' ' ]]; then
+              local -ar words=("${COMP_WORDS[@]}")
+          else
+              local -ar words=("${COMP_WORDS[@]::${COMP_CWORD}}" '' "${COMP_WORDS[@]:${COMP_CWORD}}")
+          fi
+
+          "${COMP_WORDS[0]}" "${@}" "${words[@]}"
+      }
+
       \(completionFunctions)\
       complete -o filenames -F \(completionFunctionName().shellEscapeForVariableName()) \(commandName)
       """
@@ -366,7 +376,7 @@ extension [ParsableCommand.Type] {
       // Generate a call back into the command to retrieve a completions list
       return """
         \(addCompletionsFunctionName) -W\
-         "$("${COMP_WORDS[0]}" \(arg.customCompletionCall(self)) "${COMP_WORDS[@]}")"
+         "$(\(customCompleteFunctionName) \(arg.customCompletionCall(self)))"
 
         """
     }
@@ -378,6 +388,10 @@ extension [ParsableCommand.Type] {
 
   private var addCompletionsFunctionName: String {
     "_\(prefix(1).completionFunctionName().shellEscapeForVariableName())_add_completions"
+  }
+
+  private var customCompleteFunctionName: String {
+    "_\(prefix(1).completionFunctionName().shellEscapeForVariableName())_custom_complete"
   }
 }
 

@@ -122,6 +122,16 @@ __math_add_completions() {
     done < <(IFS=$'\n' compgen "${@}" -- "${cur}")
 }
 
+__math_custom_complete() {
+    if [[ -n "${cur}" || -z ${COMP_WORDS[${COMP_CWORD}]} || "${COMP_LINE:${COMP_POINT}:1}" != ' ' ]]; then
+        local -ar words=("${COMP_WORDS[@]}")
+    else
+        local -ar words=("${COMP_WORDS[@]::${COMP_CWORD}}" '' "${COMP_WORDS[@]:${COMP_CWORD}}")
+    fi
+
+    "${COMP_WORDS[0]}" "${@}" "${words[@]}"
+}
+
 _math() {
     trap "$(shopt -p);$(shopt -po)" RETURN
     shopt -s extglob
@@ -233,7 +243,7 @@ _math_stats_quantiles() {
         return
         ;;
     --custom)
-        __math_add_completions -W "$("${COMP_WORDS[0]}" ---completion stats quantiles -- --custom "${COMP_WORDS[@]}")"
+        __math_add_completions -W "$(__math_custom_complete ---completion stats quantiles -- --custom)"
         return
         ;;
     esac
@@ -245,7 +255,7 @@ _math_stats_quantiles() {
         return
         ;;
     2)
-        __math_add_completions -W "$("${COMP_WORDS[0]}" ---completion stats quantiles -- customArg "${COMP_WORDS[@]}")"
+        __math_add_completions -W "$(__math_custom_complete ---completion stats quantiles -- customArg)"
         return
         ;;
     esac
