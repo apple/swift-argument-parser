@@ -9,7 +9,8 @@ _math() {
     local context state state_descr line
     local -A opt_args
 
-    local -r _math_commandname="${words[1]}"
+    local -r command_name="${words[1]}"
+    local -ar command_line=("${words[@]}")
 
     local -i ret=1
     local -ar args=(
@@ -141,12 +142,12 @@ _math_stats_quantiles() {
     local -i ret=1
     local -ar args=(
         ':one-of-four:(alphabet alligator branch braggart)'
-        ':custom-arg:{_custom_completion "${_math_commandname}" ---completion stats quantiles -- customArg "${words[@]}"}'
+        ':custom-arg:{_custom_completion "${command_name}" ---completion stats quantiles -- customArg "${command_line[@]}"}'
         ':values:'
         '--file:file:_files -g '"'"'*.txt *.md'"'"''
         '--directory:directory:_files -/'
         '--shell:shell:{local -a list;list=(${(f)"$(head -100 /usr/share/dict/words | tail -50)"});_describe "" list}'
-        '--custom:custom:{_custom_completion "${_math_commandname}" ---completion stats quantiles -- --custom "${words[@]}"}'
+        '--custom:custom:{_custom_completion "${command_name}" ---completion stats quantiles -- --custom "${command_line[@]}"}'
         '--version[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
     )

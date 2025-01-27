@@ -9,7 +9,8 @@ _base-test() {
     local context state state_descr line
     local -A opt_args
 
-    local -r _base_test_commandname="${words[1]}"
+    local -r command_name="${words[1]}"
+    local -ar command_line=("${words[@]}")
 
     local -i ret=1
     local -ar args=(
@@ -25,8 +26,8 @@ _base-test() {
         '*--kind-counter'
         '*--rep1:rep1:'
         '*'{-r,--rep2}':rep2:'
-        ':argument:{_custom_completion "${_base_test_commandname}" ---completion  -- argument "${words[@]}"}'
-        ':nested-argument:{_custom_completion "${_base_test_commandname}" ---completion  -- nested.nestedArgument "${words[@]}"}'
+        ':argument:{_custom_completion "${command_name}" ---completion  -- argument "${command_line[@]}"}'
+        ':nested-argument:{_custom_completion "${command_name}" ---completion  -- nested.nestedArgument "${command_line[@]}"}'
         '(-h --help)'{-h,--help}'[Show help information.]'
         '(-): :->command'
         '(-)*:: :->arg'
@@ -73,7 +74,7 @@ _base-test_escaped-command() {
     local -i ret=1
     local -ar args=(
         '--one[Escaped chars: '"'"'\[\]\\.]:one:'
-        ':two:{_custom_completion "${_base_test_commandname}" ---completion escaped-command -- two "${words[@]}"}'
+        ':two:{_custom_completion "${command_name}" ---completion escaped-command -- two "${command_line[@]}"}'
         '(-h --help)'{-h,--help}'[Show help information.]'
     )
     _arguments -w -s -S "${args[@]}" && ret=0
