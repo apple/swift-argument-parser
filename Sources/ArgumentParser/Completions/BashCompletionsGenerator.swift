@@ -158,9 +158,7 @@ extension [ParsableCommand.Type] {
     // Include initial setup iff the root command.
     let declareTopLevelArray: String
     if count == 1 {
-      if !subcommands.isEmpty {
-        subcommands.append(HelpCommand.self)
-      }
+      subcommands.addHelpSubcommandIfMissing()
 
       result += """
             local -xr \(CompletionShell.shellEnvironmentVariableName)=bash
