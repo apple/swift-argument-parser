@@ -182,11 +182,11 @@ _base_test() {
     # Offer positional completions
     case "${positional_number}" in
     1)
-        __base_test_add_completions -W "$(__base_test_custom_complete ---completion  -- argument)"
+        __base_test_add_completions -W "$(__base_test_custom_complete ---completion -- argument)"
         return
         ;;
     2)
-        __base_test_add_completions -W "$(__base_test_custom_complete ---completion  -- nested.nestedArgument)"
+        __base_test_add_completions -W "$(__base_test_custom_complete ---completion -- nested.nestedArgument)"
         return
         ;;
     esac

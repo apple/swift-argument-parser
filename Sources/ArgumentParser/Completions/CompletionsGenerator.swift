@@ -149,12 +149,13 @@ extension ArgumentDefinition {
   /// Returns a string with the arguments for the callback to generate custom completions for
   /// this argument.
   func customCompletionCall(_ commands: [ParsableCommand.Type]) -> String {
-    let subcommandNames = commands.dropFirst().map { $0._commandName }.joined(
-      separator: " ")
+    let subcommandNames =
+      commands.dropFirst().map { "\($0._commandName) " }.joined()
     let argumentName =
       names.preferredName?.synopsisString
-      ?? self.help.keys.first?.fullPathString ?? "---"
-    return "---completion \(subcommandNames) -- \(argumentName)"
+      ?? self.help.keys.first?.fullPathString
+      ?? "---"
+    return "---completion \(subcommandNames)-- \(argumentName)"
   }
 }
 
