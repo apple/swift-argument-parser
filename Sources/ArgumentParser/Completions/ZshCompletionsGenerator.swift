@@ -89,7 +89,8 @@ struct ZshCompletionsGenerator {
               local context state state_descr line
               local -A opt_args
 
-              local -r _\(type._commandName.zshEscapingCommandName())_commandname="${words[1]}"
+              local -r command_name="${words[1]}"
+              local -ar command_line=("${words[@]}")
 
 
           """
@@ -134,10 +135,6 @@ extension String {
 
   fileprivate func zshEscaped() -> String {
     self.zshEscapingSingleQuotes().zshEscapingMetacharacters()
-  }
-
-  fileprivate func zshEscapingCommandName() -> String {
-    self.replacingOccurrences(of: "-", with: "_")
   }
 }
 
@@ -219,11 +216,9 @@ extension ArgumentDefinition {
         "{local -a list;list=(${(f)\"$(\(command))\"});_describe \"\" list}"
 
     case .custom:
-      guard let type = commands.first else { return "" }
       // Generate a call back into the command to retrieve a completions list
-      let commandName = type._commandName.zshEscapingCommandName()
       return
-        "{_custom_completion \"${_\(commandName)_commandname}\" \(customCompletionCall(commands)) \"${words[@]}\"}"
+        "{_custom_completion \"${command_name}\" \(customCompletionCall(commands)) \"${command_line[@]}\"}"
     }
   }
 }
