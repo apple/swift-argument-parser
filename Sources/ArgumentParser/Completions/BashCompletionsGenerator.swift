@@ -122,7 +122,7 @@ extension [ParsableCommand.Type] {
 
         return """
               \(arg.bashCompletionWords.joined(separator: "|")))
-          \(arg.bashValueCompletion(self).indentingEachLine(by: 8))\
+          \(bashValueCompletion(arg).indentingEachLine(by: 8))\
                   return
                   ;;
           """
@@ -164,23 +164,12 @@ extension [ParsableCommand.Type] {
     return
       result + subcommands.map { (self + [$0]).completionFunctions }.joined()
   }
-}
 
-extension ArgumentDefinition {
-  /// Returns the different completion names for this argument.
-  fileprivate var bashCompletionWords: [String] {
-    help.visibility.base == .default
-      ? names.map(\.synopsisString)
-      : []
-  }
-
-  /// Returns the bash completions that can follow this argument's `--name`.
+  /// Returns the bash completions that can follow the given argument's `--name`.
   ///
   /// Uses bash-completion for file and directory values if available.
-  fileprivate func bashValueCompletion(
-    _ commands: [ParsableCommand.Type]
-  ) -> String {
-    switch completion.kind {
+  private func bashValueCompletion(_ arg: ArgumentDefinition) -> String {
+    switch arg.completion.kind {
     case .default:
       return ""
 
@@ -236,9 +225,18 @@ extension ArgumentDefinition {
     case .custom:
       // Generate a call back into the command to retrieve a completions list
       return """
-        COMPREPLY=($(compgen -W "$("${COMP_WORDS[0]}" \(customCompletionCall(commands)) "${COMP_WORDS[@]}")" -- "${cur}"))
+        COMPREPLY=($(compgen -W "$("${COMP_WORDS[0]}" \(arg.customCompletionCall(self)) "${COMP_WORDS[@]}")" -- "${cur}"))
 
         """
     }
+  }
+}
+
+extension ArgumentDefinition {
+  /// Returns the different completion names for this argument.
+  fileprivate var bashCompletionWords: [String] {
+    help.visibility.base == .default
+      ? names.map(\.synopsisString)
+      : []
   }
 }
