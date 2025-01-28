@@ -142,7 +142,7 @@ struct CompletionsGenerator {
     case .zsh:
       return [command].zshCompletionScript
     case .bash:
-      return BashCompletionsGenerator.generateCompletionScript(command)
+      return [command].bashCompletionScript
     case .fish:
       return FishCompletionsGenerator.generateCompletionScript(command)
     default:

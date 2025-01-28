@@ -9,31 +9,34 @@
 //
 //===----------------------------------------------------------------------===//
 
-struct BashCompletionsGenerator {
+extension [ParsableCommand.Type] {
   /// Generates a Bash completion script for the given command.
-  static func generateCompletionScript(_ type: ParsableCommand.Type) -> String {
+  var bashCompletionScript: String {
     // TODO: Add a check to see if the command is installed where we expect?
-    """
-    #!/bin/bash
+    // swift-format-ignore: NeverForceUnwrap
+    // Preconditions:
+    // - first must be non-empty for a bash completion script to be of use.
+    // - first is guaranteed non-empty in the one place where this computed var is used.
+    let commandName = first!._commandName
+    return """
+      #!/bin/bash
 
-    \(generateCompletionFunction([type]))
+      \(completionFunctions)
 
-    complete -F \([type].completionFunctionName().shellEscapeForVariableName()) \(type._commandName)
-    """
+      complete -F \(completionFunctionName().shellEscapeForVariableName()) \(commandName)
+      """
   }
 
   /// Generates a Bash completion function for the last command in the given list.
-  private static func generateCompletionFunction(
-    _ commands: [ParsableCommand.Type]
-  ) -> String {
-    guard let type = commands.last else {
+  private var completionFunctions: String {
+    guard let type = last else {
       fatalError()
     }
     let functionName =
-      commands.completionFunctionName().shellEscapeForVariableName()
+      completionFunctionName().shellEscapeForVariableName()
 
     // The root command gets a different treatment for the parsing index.
-    let isRootCommand = commands.count == 1
+    let isRootCommand = count == 1
     let dollarOne = isRootCommand ? "1" : "${1}"
     let subcommandArgument = isRootCommand ? "2" : "$((${1}+1))"
 
@@ -48,11 +51,29 @@ struct BashCompletionsGenerator {
     // command — these are the dash-prefixed names of options and flags as well
     // as all the subcommand names.
     let completionWords =
-      generateArgumentWords(commands) + subcommands.map { $0._commandName }
+      argumentsForHelp(visibility: .default).flatMap { $0.bashCompletionWords }
+      + subcommands.map { $0._commandName }
 
     // Generate additional top-level completions — these are completion lists
     // or custom function-based word lists from positional arguments.
-    let additionalCompletions = generateArgumentCompletions(commands)
+    let additionalCompletions =
+      ArgumentSet(type, visibility: .default, parent: nil)
+      .compactMap { arg -> String? in
+        guard arg.isPositional else { return nil }
+
+        switch arg.completion.kind {
+        case .default, .file, .directory:
+          return nil
+        case .list(let list):
+          return list.joined(separator: " ")
+        case .shellCommand(let command):
+          return "$(\(command))"
+        case .custom:
+          return """
+            $("${COMP_WORDS[0]}" \(arg.customCompletionCall(self)) "${COMP_WORDS[@]}")
+            """
+        }
+      }
 
     // Start building the resulting function code.
     var result = "\(functionName)() {\n"
@@ -90,7 +111,23 @@ struct BashCompletionsGenerator {
 
     // Generate the case pattern-matching statements for option values.
     // If there aren't any, skip the case block altogether.
-    let optionHandlers = generateOptionHandlers(commands)
+    let optionHandlers =
+      ArgumentSet(type, visibility: .default, parent: nil)
+      .compactMap { arg -> String? in
+        let words = arg.bashCompletionWords
+        if words.isEmpty { return nil }
+
+        // Flags don't take a value, so we don't provide follow-on completions.
+        if arg.isNullary { return nil }
+
+        return """
+              \(arg.bashCompletionWords.joined(separator: "|")))
+          \(arg.bashValueCompletion(self).indentingEachLine(by: 8))\
+                  return
+                  ;;
+          """
+      }
+      .joined(separator: "\n")
     if !optionHandlers.isEmpty {
       result += """
             case "${prev}" in
@@ -124,74 +161,14 @@ struct BashCompletionsGenerator {
 
       """
 
-    return result
-      + subcommands
-      .map { generateCompletionFunction(commands + [$0]) }
-      .joined()
-  }
-
-  /// Returns the option and flag names that can be top-level completions.
-  private static func generateArgumentWords(
-    _ commands: [ParsableCommand.Type]
-  ) -> [String] {
-    commands
-      .argumentsForHelp(visibility: .default)
-      .flatMap { $0.bashCompletionWords() }
-  }
-
-  /// Returns additional top-level completions from positional arguments.
-  ///
-  /// These consist of completions that are defined as `.list` or `.custom`.
-  private static func generateArgumentCompletions(
-    _ commands: [ParsableCommand.Type]
-  ) -> [String] {
-    guard let type = commands.last else { return [] }
-    return ArgumentSet(type, visibility: .default, parent: nil)
-      .compactMap { arg -> String? in
-        guard arg.isPositional else { return nil }
-
-        switch arg.completion.kind {
-        case .default, .file, .directory:
-          return nil
-        case .list(let list):
-          return list.joined(separator: " ")
-        case .shellCommand(let command):
-          return "$(\(command))"
-        case .custom:
-          return """
-            $("${COMP_WORDS[0]}" \(arg.customCompletionCall(commands)) "${COMP_WORDS[@]}")
-            """
-        }
-      }
-  }
-
-  /// Returns the case-matching statements for supplying completions after an option or flag.
-  private static func generateOptionHandlers(
-    _ commands: [ParsableCommand.Type]
-  ) -> String {
-    guard let type = commands.last else { return "" }
-    return ArgumentSet(type, visibility: .default, parent: nil)
-      .compactMap { arg -> String? in
-        let words = arg.bashCompletionWords()
-        if words.isEmpty { return nil }
-
-        // Flags don't take a value, so we don't provide follow-on completions.
-        if arg.isNullary { return nil }
-
-        return """
-              \(arg.bashCompletionWords().joined(separator: "|")))
-          \(arg.bashValueCompletion(commands).indentingEachLine(by: 8))\
-                  return
-                  ;;
-          """
-      }
-      .joined(separator: "\n")
+    return
+      result + subcommands.map { (self + [$0]).completionFunctions }.joined()
   }
 }
 
 extension ArgumentDefinition {
   /// Returns the different completion names for this argument.
-  fileprivate func bashCompletionWords() -> [String] {
+  fileprivate var bashCompletionWords: [String] {
     help.visibility.base == .default
       ? names.map(\.synopsisString)
       : []
