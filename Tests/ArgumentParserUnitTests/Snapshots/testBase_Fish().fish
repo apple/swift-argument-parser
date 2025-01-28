@@ -1,5 +1,5 @@
 # A function which filters options which starts with "-" from $argv.
-function _swift_base-test_preprocessor
+function _swift_base-test_commands_and_positionals
     set -l results
     for i in (seq (count $argv))
         switch (echo $argv[$i] | string sub -l 1)
@@ -13,7 +13,7 @@ end
 function _swift_base-test_using_command
     set -gx SAP_SHELL fish
     set -gx SAP_SHELL_VERSION "$FISH_VERSION"
-    set -l commands_and_positionals (_swift_base-test_preprocessor (commandline -opc))
+    set -l commands_and_positionals (_swift_base-test_commands_and_positionals (commandline -opc))
     set -l expected_commands (string split -- ' ' $argv[1])
     set -l subcommands (string split -- ' ' $argv[2])
     if [ (count $commands_and_positionals) -ge (count $expected_commands) ]
