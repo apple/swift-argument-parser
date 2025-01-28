@@ -93,7 +93,7 @@ extension [ParsableCommand.Type] {
 
     let argumentCompletions =
       argumentsForHelp(visibility: .default)
-      .compactMap { $0.argumentSegments(self) }
+      .compactMap { argumentSegments($0) }
       .map { $0.joined(separator: separator) }
       .map { complete(suggestion: $0) }
 
@@ -105,38 +105,22 @@ extension [ParsableCommand.Type] {
       completionsFromSubcommands + argumentCompletions + subcommandCompletions
   }
 
-  private var commandsAndPositionalsFunctionName: String {
-    // swift-format-ignore: NeverForceUnwrap
-    // Precondition: first is guaranteed to be non-empty
-    "_swift_\(first!._commandName)_commands_and_positionals"
-  }
-
-  private var usingCommandFunctionName: String {
-    // swift-format-ignore: NeverForceUnwrap
-    // Precondition: first is guaranteed to be non-empty
-    "_swift_\(first!._commandName)_using_command"
-  }
-}
-
-extension ArgumentDefinition {
-  fileprivate func argumentSegments(
-    _ commands: [ParsableCommand.Type]
-  ) -> [String]? {
-    guard help.visibility.base == .default
+  private func argumentSegments(_ arg: ArgumentDefinition) -> [String]? {
+    guard arg.help.visibility.base == .default
     else { return nil }
 
     var results: [String] = []
 
-    if !names.isEmpty {
-      results += names.map { $0.asFishSuggestion }
+    if !arg.names.isEmpty {
+      results += arg.names.map { $0.asFishSuggestion }
     }
 
-    if !help.abstract.isEmpty {
-      results += ["-d '\(help.abstract.fishEscapeForSingleQuotedString())'"]
+    if !arg.help.abstract.isEmpty {
+      results += ["-d '\(arg.help.abstract.fishEscapeForSingleQuotedString())'"]
     }
 
-    switch completion.kind {
-    case .default where names.isEmpty:
+    switch arg.completion.kind {
+    case .default where arg.names.isEmpty:
       return nil
     case .default:
       break
@@ -153,11 +137,23 @@ extension ArgumentDefinition {
       // swift-format-ignore: NeverForceUnwrap
       // Precondition: first is guaranteed to be non-empty
       results += [
-        "-rfa '(command \(commands.first!._commandName) \(customCompletionCall(commands)) (commandline -opc)[1..-1])'"
+        "-rfa '(command \(first!._commandName) \(arg.customCompletionCall(self)) (commandline -opc)[1..-1])'"
       ]
     }
 
     return results
+  }
+
+  private var commandsAndPositionalsFunctionName: String {
+    // swift-format-ignore: NeverForceUnwrap
+    // Precondition: first is guaranteed to be non-empty
+    "_swift_\(first!._commandName)_commands_and_positionals"
+  }
+
+  private var usingCommandFunctionName: String {
+    // swift-format-ignore: NeverForceUnwrap
+    // Precondition: first is guaranteed to be non-empty
+    "_swift_\(first!._commandName)_using_command"
   }
 }
 
