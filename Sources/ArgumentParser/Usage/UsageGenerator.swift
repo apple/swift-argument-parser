@@ -9,12 +9,10 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if swift(>=5.11)
+#if swift(>=6.0)
 internal import protocol Foundation.LocalizedError
-#elseif swift(>=5.10)
-import protocol Foundation.LocalizedError
 #else
-@_implementationOnly import protocol Foundation.LocalizedError
+import protocol Foundation.LocalizedError
 #endif
 
 struct UsageGenerator {
