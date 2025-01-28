@@ -102,7 +102,7 @@ extension FishCompletionsGenerator {
       commands
       .argumentsForHelp(visibility: .default)
       .compactMap { $0.argumentSegments(commands) }
-      .map { $0.joined(separator: " ") }
+      .map { $0.joined(separator: separator) }
       .map { complete(suggestion: $0) }
 
     let completionsFromSubcommands = subcommands.flatMap { subcommand in
@@ -137,7 +137,7 @@ extension ArgumentDefinition {
     case .default:
       break
     case .list(let list):
-      results += ["-rfka '\(list.joined(separator: " "))'"]
+      results += ["-rfka '\(list.joined(separator: separator))'"]
     case .file(let extensions):
       let pattern = "*.{\(extensions.joined(separator: ","))}"
       results += ["-rfa '(for i in \(pattern); echo $i;end)'"]
