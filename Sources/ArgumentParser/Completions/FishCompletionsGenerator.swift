@@ -9,77 +9,70 @@
 //
 //===----------------------------------------------------------------------===//
 
-struct FishCompletionsGenerator {
-  static func generateCompletionScript(_ type: ParsableCommand.Type) -> String {
-    let commandName = type._commandName
-    let commandsAndPositionalsFunctionName =
-      commandsAndPositionalsFunctionName(commandName: commandName)
-    return """
-      # A function which filters options which starts with "-" from $argv.
-      function \(commandsAndPositionalsFunctionName)
-          set -l results
-          for i in (seq (count $argv))
-              switch (echo $argv[$i] | string sub -l 1)
-                  case '-'
-                  case '*'
-                      echo $argv[$i]
-              end
-          end
-      end
+extension [ParsableCommand.Type] {
+  var fishCompletionScript: String {
+    """
+    # A function which filters options which starts with "-" from $argv.
+    function \(commandsAndPositionalsFunctionName)
+        set -l results
+        for i in (seq (count $argv))
+            switch (echo $argv[$i] | string sub -l 1)
+                case '-'
+                case '*'
+                    echo $argv[$i]
+            end
+        end
+    end
 
-      function \(usingCommandFunctionName(commandName: commandName))
-          set -gx \(CompletionShell.shellEnvironmentVariableName) fish
-          set -gx \(CompletionShell.shellVersionEnvironmentVariableName) "$FISH_VERSION"
-          set -l commands_and_positionals (\(commandsAndPositionalsFunctionName) (commandline -opc))
-          set -l expected_commands (string split -- '\(separator)' $argv[1])
-          set -l subcommands (string split -- '\(separator)' $argv[2])
-          if [ (count $commands_and_positionals) -ge (count $expected_commands) ]
-              for i in (seq (count $expected_commands))
-                  if [ $commands_and_positionals[$i] != $expected_commands[$i] ]
-                      return 1
-                  end
-              end
-              if [ (count $commands_and_positionals) -eq (count $expected_commands) ]
-                  return 0
-              end
-              if [ (count $subcommands) -gt 1 ]
-                  for i in (seq (count $subcommands))
-                      if [ $commands_and_positionals[(math (count $expected_commands) + 1)] = $subcommands[$i] ]
-                          return 1
-                      end
-                  end
-              end
-              return 0
-          end
-          return 1
-      end
+    function \(usingCommandFunctionName)
+        set -gx \(CompletionShell.shellEnvironmentVariableName) fish
+        set -gx \(CompletionShell.shellVersionEnvironmentVariableName) "$FISH_VERSION"
+        set -l commands_and_positionals (\(commandsAndPositionalsFunctionName) (commandline -opc))
+        set -l expected_commands (string split -- '\(separator)' $argv[1])
+        set -l subcommands (string split -- '\(separator)' $argv[2])
+        if [ (count $commands_and_positionals) -ge (count $expected_commands) ]
+            for i in (seq (count $expected_commands))
+                if [ $commands_and_positionals[$i] != $expected_commands[$i] ]
+                    return 1
+                end
+            end
+            if [ (count $commands_and_positionals) -eq (count $expected_commands) ]
+                return 0
+            end
+            if [ (count $subcommands) -gt 1 ]
+                for i in (seq (count $subcommands))
+                    if [ $commands_and_positionals[(math (count $expected_commands) + 1)] = $subcommands[$i] ]
+                        return 1
+                    end
+                end
+            end
+            return 0
+        end
+        return 1
+    end
 
-      \(generateCompletions([type]).joined(separator: "\n"))
-      """
+    \(completions.joined(separator: "\n"))
+    """
   }
-}
 
-// MARK: - Private functions
-
-extension FishCompletionsGenerator {
-  private static func generateCompletions(
-    _ commands: [ParsableCommand.Type]
-  ) -> [String] {
-    guard let type = commands.last else {
+  private var completions: [String] {
+    guard let type = last else {
       fatalError()
     }
-    let programName = commands[0]._commandName
     var subcommands = type.configuration.subcommands
       .filter { $0.configuration.shouldDisplay }
 
-    if commands.count == 1 {
+    if count == 1 {
       subcommands.addHelpSubcommandIfMissing()
     }
 
+    // swift-format-ignore: NeverForceUnwrap
+    // Precondition: first is guaranteed to be non-empty
+    let commandName = first!._commandName
     var prefix = """
-      complete -c \(programName)\
-       -n '\(usingCommandFunctionName(commandName: programName))\
-       "\(commands.map { $0._commandName }.joined(separator: separator))"
+      complete -c \(commandName)\
+       -n '\(usingCommandFunctionName)\
+       "\(map { $0._commandName }.joined(separator: separator))"
       """
     if !subcommands.isEmpty {
       prefix +=
@@ -99,18 +92,29 @@ extension FishCompletionsGenerator {
     }
 
     let argumentCompletions =
-      commands
-      .argumentsForHelp(visibility: .default)
-      .compactMap { $0.argumentSegments(commands) }
+      argumentsForHelp(visibility: .default)
+      .compactMap { $0.argumentSegments(self) }
       .map { $0.joined(separator: separator) }
       .map { complete(suggestion: $0) }
 
     let completionsFromSubcommands = subcommands.flatMap { subcommand in
-      generateCompletions(commands + [subcommand])
+      (self + [subcommand]).completions
     }
 
     return
       completionsFromSubcommands + argumentCompletions + subcommandCompletions
+  }
+
+  private var commandsAndPositionalsFunctionName: String {
+    // swift-format-ignore: NeverForceUnwrap
+    // Precondition: first is guaranteed to be non-empty
+    "_swift_\(first!._commandName)_commands_and_positionals"
+  }
+
+  private var usingCommandFunctionName: String {
+    // swift-format-ignore: NeverForceUnwrap
+    // Precondition: first is guaranteed to be non-empty
+    "_swift_\(first!._commandName)_using_command"
   }
 }
 
@@ -146,9 +150,10 @@ extension ArgumentDefinition {
     case .shellCommand(let shellCommand):
       results += ["-rfa '(\(shellCommand))'"]
     case .custom:
-      guard let commandName = commands.first?._commandName else { return nil }
+      // swift-format-ignore: NeverForceUnwrap
+      // Precondition: first is guaranteed to be non-empty
       results += [
-        "-rfa '(command \(commandName) \(customCompletionCall(commands)) (commandline -opc)[1..-1])'"
+        "-rfa '(command \(commands.first!._commandName) \(customCompletionCall(commands)) (commandline -opc)[1..-1])'"
       ]
     }
 
@@ -178,18 +183,6 @@ extension String {
       : replacingOccurrences(of: "\\", with: "\\\\")
         .replacingOccurrences(of: "'", with: "\\'")
         .fishEscapeForSingleQuotedString(iterationCount: iterationCount - 1)
-  }
-}
-
-extension FishCompletionsGenerator {
-  private static func commandsAndPositionalsFunctionName(
-    commandName: String
-  ) -> String {
-    "_swift_\(commandName)_commands_and_positionals"
-  }
-
-  private static func usingCommandFunctionName(commandName: String) -> String {
-    "_swift_" + commandName + "_using_command"
   }
 }
 
