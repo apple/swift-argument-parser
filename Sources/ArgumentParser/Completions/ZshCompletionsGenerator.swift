@@ -9,13 +9,13 @@
 //
 //===----------------------------------------------------------------------===//
 
-struct ZshCompletionsGenerator {
+extension [ParsableCommand.Type] {
   /// Generates a Zsh completion script for the given command.
-  static func generateCompletionScript(_ type: ParsableCommand.Type) -> String {
+  var zshCompletionScript: String {
     """
-    #compdef \(type._commandName)
+    #compdef \(first?._commandName ?? "")
 
-    \(generateCompletionFunction([type]))\
+    \(completionFunctions)\
     __completion() {
         local -ar non_empty_completions=("${@:#(|:*)}")
         local -ar empty_completions=("${(M)@:#(|:*)}")
@@ -30,19 +30,17 @@ struct ZshCompletionsGenerator {
         fi
     }
 
-    \([type].completionFunctionName())
+    \(completionFunctionName())
     """
   }
 
-  private static func generateCompletionFunction(
-    _ commands: [ParsableCommand.Type]
-  ) -> String {
-    guard let type = commands.last else { return "" }
-    let functionName = commands.completionFunctionName()
-    let isRootCommand = commands.count == 1
+  private var completionFunctions: String {
+    guard let type = last else { return "" }
+    let functionName = completionFunctionName()
+    let isRootCommand = count == 1
 
-    var args = commands.argumentsForHelp(visibility: .default)
-      .compactMap { $0.zshCompletionString(commands) }
+    var args = argumentsForHelp(visibility: .default)
+      .compactMap { $0.zshCompletionString(self) }
     var subcommands = type.configuration.subcommands
       .filter { $0.configuration.shouldDisplay }
 
@@ -115,7 +113,7 @@ struct ZshCompletionsGenerator {
           return "${ret}"
       }
 
-      \(subcommands.map { generateCompletionFunction(commands + [$0]) }.joined())
+      \(subcommands.map { (self + [$0]).completionFunctions }.joined())
       """
   }
 }
