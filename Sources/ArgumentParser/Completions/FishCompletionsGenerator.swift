@@ -72,8 +72,8 @@ extension FishCompletionsGenerator {
     var subcommands = type.configuration.subcommands
       .filter { $0.configuration.shouldDisplay }
 
-    if !subcommands.isEmpty && isRootCommand {
-      subcommands.append(HelpCommand.self)
+    if isRootCommand {
+      subcommands.addHelpSubcommandIfMissing()
     }
 
     let helperFunctionName = helperFunctionName(commandName: programName)
