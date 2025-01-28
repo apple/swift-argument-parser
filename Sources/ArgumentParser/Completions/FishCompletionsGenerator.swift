@@ -12,8 +12,6 @@
 struct FishCompletionsGenerator {
   static func generateCompletionScript(_ type: ParsableCommand.Type) -> String {
     let commandName = type._commandName
-    let usingCommandFunctionName =
-      usingCommandFunctionName(commandName: commandName)
     let commandsAndPositionalsFunctionName =
       commandsAndPositionalsFunctionName(commandName: commandName)
     return """
@@ -29,7 +27,7 @@ struct FishCompletionsGenerator {
           end
       end
 
-      function \(usingCommandFunctionName)
+      function \(usingCommandFunctionName(commandName: commandName))
           set -gx \(CompletionShell.shellEnvironmentVariableName) fish
           set -gx \(CompletionShell.shellVersionEnvironmentVariableName) "$FISH_VERSION"
           set -l commands_and_positionals (\(commandsAndPositionalsFunctionName) (commandline -opc))
@@ -67,21 +65,22 @@ extension FishCompletionsGenerator {
   private static func generateCompletions(
     _ commands: [ParsableCommand.Type]
   ) -> [String] {
-    guard let type = commands.last else { return [] }
-    let isRootCommand = commands.count == 1
+    guard let type = commands.last else {
+      fatalError()
+    }
     let programName = commands[0]._commandName
     var subcommands = type.configuration.subcommands
       .filter { $0.configuration.shouldDisplay }
 
-    if isRootCommand {
+    if commands.count == 1 {
       subcommands.addHelpSubcommandIfMissing()
     }
 
-    let usingCommandFunctionName =
-      usingCommandFunctionName(commandName: programName)
-
-    var prefix =
-      "complete -c \(programName) -n '\(usingCommandFunctionName) \"\(commands.map { $0._commandName }.joined(separator: separator))\""
+    var prefix = """
+      complete -c \(programName)\
+       -n '\(usingCommandFunctionName(commandName: programName))\
+       "\(commands.map { $0._commandName }.joined(separator: separator))"
+      """
     if !subcommands.isEmpty {
       prefix +=
         " \"\(subcommands.map { $0._commandName }.joined(separator: separator))\""
@@ -93,11 +92,10 @@ extension FishCompletionsGenerator {
     }
 
     let subcommandCompletions: [String] = subcommands.map { subcommand in
-      let escapedAbstract =
-        subcommand.configuration.abstract.fishEscapeForSingleQuotedString()
-      let suggestion =
-        "-fa '\(subcommand._commandName)' -d '\(escapedAbstract)'"
-      return complete(suggestion: suggestion)
+      complete(
+        suggestion:
+          "-fa '\(subcommand._commandName)' -d '\(subcommand.configuration.abstract.fishEscapeForSingleQuotedString())'"
+      )
     }
 
     let argumentCompletions =
