@@ -12,28 +12,26 @@
 struct ZshCompletionsGenerator {
   /// Generates a Zsh completion script for the given command.
   static func generateCompletionScript(_ type: ParsableCommand.Type) -> String {
-    let initialFunctionName = [type].completionFunctionName()
+    """
+    #compdef \(type._commandName)
 
-    return """
-      #compdef \(type._commandName)
+    \(generateCompletionFunction([type]))\
+    __completion() {
+        local -ar non_empty_completions=("${@:#(|:*)}")
+        local -ar empty_completions=("${(M)@:#(|:*)}")
+        _describe '' non_empty_completions -- empty_completions -P $'\\'\\''
+    }
 
-      \(generateCompletionFunction([type]))\
-      __completion() {
-          local -ar non_empty_completions=("${@:#(|:*)}")
-          local -ar empty_completions=("${(M)@:#(|:*)}")
-          _describe '' non_empty_completions -- empty_completions -P $'\\'\\''
-      }
+    _custom_completion() {
+        local -a completions
+        completions=("${(@f)"$("${@}")"}")
+        if [[ "${#completions[@]}" -gt 1 ]]; then
+            __completion "${completions[@]:0:-1}"
+        fi
+    }
 
-      _custom_completion() {
-          local -a completions
-          completions=("${(@f)"$("${@}")"}")
-          if [[ "${#completions[@]}" -gt 1 ]]; then
-              __completion "${completions[@]:0:-1}"
-          fi
-      }
-
-      \(initialFunctionName)
-      """
+    \([type].completionFunctionName())
+    """
   }
 
   private static func generateCompletionFunction(
@@ -43,7 +41,8 @@ struct ZshCompletionsGenerator {
     let functionName = commands.completionFunctionName()
     let isRootCommand = commands.count == 1
 
-    var args = generateCompletionArguments(commands)
+    var args = commands.argumentsForHelp(visibility: .default)
+      .compactMap { $0.zshCompletionString(commands) }
     var subcommands = type.configuration.subcommands
       .filter { $0.configuration.shouldDisplay }
 
@@ -84,7 +83,7 @@ struct ZshCompletionsGenerator {
         """
     }
 
-    let functionText = """
+    return """
       \(functionName)() {
       \(isRootCommand
         ? """
@@ -116,21 +115,8 @@ struct ZshCompletionsGenerator {
           return "${ret}"
       }
 
-
+      \(subcommands.map { generateCompletionFunction(commands + [$0]) }.joined())
       """
-
-    return functionText
-      + subcommands
-      .map { generateCompletionFunction(commands + [$0]) }
-      .joined()
-  }
-
-  private static func generateCompletionArguments(
-    _ commands: [ParsableCommand.Type]
-  ) -> [String] {
-    commands
-      .argumentsForHelp(visibility: .default)
-      .compactMap { $0.zshCompletionString(commands) }
   }
 }
 
@@ -166,16 +152,12 @@ extension ArgumentDefinition {
     case 0:
       line = ""
     case 1:
-      let star = isRepeatableOption ? "*" : ""
-      line = """
-        \(star)\(names[0].synopsisString)\(zshCompletionAbstract)
-        """
+      line =
+        "\(isRepeatableOption ? "*" : "")\(names[0].synopsisString)\(zshCompletionAbstract)"
     default:
       let synopses = names.map { $0.synopsisString }
-      let suppression =
-        isRepeatableOption ? "*" : "(\(synopses.joined(separator: " ")))"
       line = """
-        \(suppression)'\
+        \(isRepeatableOption ? "*" : "(\(synopses.joined(separator: " ")))")'\
         {\(synopses.joined(separator: ","))}\
         '\(zshCompletionAbstract)
         """
