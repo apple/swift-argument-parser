@@ -137,7 +137,7 @@ struct CompletionsGenerator {
     CompletionShell._requesting.withLock { $0 = shell }
     switch shell {
     case .zsh:
-      return ZshCompletionsGenerator.generateCompletionScript(command)
+      return [command].zshCompletionScript
     case .bash:
       return BashCompletionsGenerator.generateCompletionScript(command)
     case .fish:
