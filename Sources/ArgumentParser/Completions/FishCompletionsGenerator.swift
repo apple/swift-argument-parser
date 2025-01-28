@@ -12,12 +12,13 @@
 struct FishCompletionsGenerator {
   static func generateCompletionScript(_ type: ParsableCommand.Type) -> String {
     let commandName = type._commandName
-    let functionName = helperFunctionName(commandName: commandName)
-    let preprocessorFunctionName =
-      preprocessorFunctionName(commandName: commandName)
+    let usingCommandFunctionName =
+      usingCommandFunctionName(commandName: commandName)
+    let commandsAndPositionalsFunctionName =
+      commandsAndPositionalsFunctionName(commandName: commandName)
     return """
       # A function which filters options which starts with "-" from $argv.
-      function \(preprocessorFunctionName)
+      function \(commandsAndPositionalsFunctionName)
           set -l results
           for i in (seq (count $argv))
               switch (echo $argv[$i] | string sub -l 1)
@@ -28,10 +29,10 @@ struct FishCompletionsGenerator {
           end
       end
 
-      function \(functionName)
+      function \(usingCommandFunctionName)
           set -gx \(CompletionShell.shellEnvironmentVariableName) fish
           set -gx \(CompletionShell.shellVersionEnvironmentVariableName) "$FISH_VERSION"
-          set -l commands_and_positionals (\(preprocessorFunctionName) (commandline -opc))
+          set -l commands_and_positionals (\(commandsAndPositionalsFunctionName) (commandline -opc))
           set -l expected_commands (string split -- '\(separator)' $argv[1])
           set -l subcommands (string split -- '\(separator)' $argv[2])
           if [ (count $commands_and_positionals) -ge (count $expected_commands) ]
@@ -76,10 +77,11 @@ extension FishCompletionsGenerator {
       subcommands.addHelpSubcommandIfMissing()
     }
 
-    let helperFunctionName = helperFunctionName(commandName: programName)
+    let usingCommandFunctionName =
+      usingCommandFunctionName(commandName: programName)
 
     var prefix =
-      "complete -c \(programName) -n '\(helperFunctionName) \"\(commands.map { $0._commandName }.joined(separator: separator))\""
+      "complete -c \(programName) -n '\(usingCommandFunctionName) \"\(commands.map { $0._commandName }.joined(separator: separator))\""
     if !subcommands.isEmpty {
       prefix +=
         " \"\(subcommands.map { $0._commandName }.joined(separator: separator))\""
@@ -182,11 +184,13 @@ extension String {
 }
 
 extension FishCompletionsGenerator {
-  private static func preprocessorFunctionName(commandName: String) -> String {
-    "_swift_\(commandName)_preprocessor"
+  private static func commandsAndPositionalsFunctionName(
+    commandName: String
+  ) -> String {
+    "_swift_\(commandName)_commands_and_positionals"
   }
 
-  private static func helperFunctionName(commandName: String) -> String {
+  private static func usingCommandFunctionName(commandName: String) -> String {
     "_swift_" + commandName + "_using_command"
   }
 }
