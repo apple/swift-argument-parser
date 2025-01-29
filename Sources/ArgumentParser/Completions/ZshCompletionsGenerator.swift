@@ -40,7 +40,7 @@ extension [ParsableCommand.Type] {
     let isRootCommand = count == 1
 
     var args = argumentsForHelp(visibility: .default)
-      .compactMap { $0.zshCompletionString(self) }
+      .compactMap { zshCompletionString($0) }
     var subcommands = type.configuration.subcommands
       .filter { $0.configuration.shouldDisplay }
 
@@ -116,71 +116,41 @@ extension [ParsableCommand.Type] {
       \(subcommands.map { (self + [$0]).completionFunctions }.joined())
       """
   }
-}
 
-extension String {
-  fileprivate func zshEscapeForSingleQuotedExplanation() -> String {
-    replacingOccurrences(
-      of: #"[\\\[\]]"#, with: #"\\$0"#, options: .regularExpression
-    ).shellEscapeForSingleQuotedString()
-  }
-}
-
-extension ArgumentDefinition {
-  private var zshCompletionAbstract: String {
-    guard !help.abstract.isEmpty else { return "" }
-    return "[\(help.abstract.zshEscapeForSingleQuotedExplanation())]"
-  }
-
-  fileprivate func zshCompletionString(
-    _ commands: [ParsableCommand.Type]
-  ) -> String? {
-    guard help.visibility.base == .default else { return nil }
+  private func zshCompletionString(_ arg: ArgumentDefinition) -> String? {
+    guard arg.help.visibility.base == .default else { return nil }
 
     let inputs: String
-    switch update {
+    switch arg.update {
     case .unary:
-      inputs = ":\(valueName):\(zshActionString(commands))"
+      inputs = ":\(arg.valueName):\(zshActionString(arg))"
     case .nullary:
       inputs = ""
     }
 
     let line: String
-    switch names.count {
+    switch arg.names.count {
     case 0:
       line = ""
     case 1:
-      line =
-        "\(isRepeatableOption ? "*" : "")\(names[0].synopsisString)\(zshCompletionAbstract)"
-    default:
-      let synopses = names.map { $0.synopsisString }
       line = """
-        \(isRepeatableOption ? "*" : "(\(synopses.joined(separator: " ")))")'\
+        \(arg.isRepeatableOption ? "*" : "")\(arg.names[0].synopsisString)\(arg.zshCompletionAbstract)
+        """
+    default:
+      let synopses = arg.names.map { $0.synopsisString }
+      line = """
+        \(arg.isRepeatableOption ? "*" : "(\(synopses.joined(separator: " ")))")'\
         {\(synopses.joined(separator: ","))}\
-        '\(zshCompletionAbstract)
+        '\(arg.zshCompletionAbstract)
         """
     }
 
     return "'\(line)\(inputs)'"
   }
 
-  /// - returns: `true` if `self` is an option and can be tab-completed multiple times in one command line.
-  ///   For example, `ssh` allows the `-L` option to be given multiple times, to establish multiple port forwardings.
-  private var isRepeatableOption: Bool {
-    guard
-      case .named(_) = kind,
-      help.options.contains(.isRepeating)
-    else { return false }
-
-    switch parsingStrategy {
-    case .default, .unconditional: return true
-    default: return false
-    }
-  }
-
   /// Returns the zsh "action" for an argument completion string.
-  private func zshActionString(_ commands: [ParsableCommand.Type]) -> String {
-    switch completion.kind {
+  private func zshActionString(_ arg: ArgumentDefinition) -> String {
+    switch arg.completion.kind {
     case .default:
       return ""
 
@@ -203,7 +173,39 @@ extension ArgumentDefinition {
     case .custom:
       // Generate a call back into the command to retrieve a completions list
       return
-        "{_custom_completion \"${command_name}\" \(customCompletionCall(commands)) \"${command_line[@]}\"}"
+        "{_custom_completion \"${command_name}\" \(arg.customCompletionCall(self)) \"${command_line[@]}\"}"
     }
+  }
+}
+
+extension String {
+  fileprivate func zshEscapeForSingleQuotedExplanation() -> String {
+    replacingOccurrences(
+      of: #"[\\\[\]]"#,
+      with: #"\\$0"#,
+      options: .regularExpression
+    )
+    .shellEscapeForSingleQuotedString()
+  }
+}
+
+extension ArgumentDefinition {
+  /// - returns: `true` if `self` is an option and can be tab-completed multiple times in one command line.
+  ///   For example, `ssh` allows the `-L` option to be given multiple times, to establish multiple port forwardings.
+  fileprivate var isRepeatableOption: Bool {
+    guard
+      case .named(_) = kind,
+      help.options.contains(.isRepeating)
+    else { return false }
+
+    switch parsingStrategy {
+    case .default, .unconditional: return true
+    default: return false
+    }
+  }
+
+  fileprivate var zshCompletionAbstract: String {
+    guard !help.abstract.isEmpty else { return "" }
+    return "[\(help.abstract.zshEscapeForSingleQuotedExplanation())]"
   }
 }
