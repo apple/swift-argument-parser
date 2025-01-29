@@ -1,16 +1,16 @@
 #compdef math
 
-__completion() {
+__math_complete() {
     local -ar non_empty_completions=("${@:#(|:*)}")
     local -ar empty_completions=("${(M)@:#(|:*)}")
     _describe '' non_empty_completions -- empty_completions -P $'\'\''
 }
 
-_custom_completion() {
+__math_custom_complete() {
     local -a completions
     completions=("${(@f)"$("${@}")"}")
     if [[ "${#completions[@]}" -gt 1 ]]; then
-        __completion "${completions[@]:0:-1}"
+        __math_complete "${completions[@]:0:-1}"
     fi
 }
 
@@ -119,7 +119,7 @@ _math_stats() {
 _math_stats_average() {
     local -i ret=1
     local -ar args=(
-        '--kind[The kind of average to provide.]:kind:(mean median mode)'
+        '--kind[The kind of average to provide.]:kind:{__math_complete mean median mode}'
         ':values:'
         '--version[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
@@ -144,13 +144,13 @@ _math_stats_stdev() {
 _math_stats_quantiles() {
     local -i ret=1
     local -ar args=(
-        ':one-of-four:(alphabet alligator branch braggart)'
-        ':custom-arg:{_custom_completion "${command_name}" ---completion stats quantiles -- customArg "${command_line[@]}"}'
+        ':one-of-four:{__math_complete alphabet alligator branch braggart}'
+        ':custom-arg:{__math_custom_complete "${command_name}" ---completion stats quantiles -- customArg "${command_line[@]}"}'
         ':values:'
         '--file:file:_files -g '\''*.txt *.md'\'''
         '--directory:directory:_files -/'
         '--shell:shell:{local -a list;list=(${(f)"$(head -100 /usr/share/dict/words | tail -50)"});_describe "" list}'
-        '--custom:custom:{_custom_completion "${command_name}" ---completion stats quantiles -- --custom "${command_line[@]}"}'
+        '--custom:custom:{__math_custom_complete "${command_name}" ---completion stats quantiles -- --custom "${command_line[@]}"}'
         '--version[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
     )

@@ -15,17 +15,17 @@ extension [ParsableCommand.Type] {
     """
     #compdef \(first?._commandName ?? "")
 
-    __completion() {
+    \(completeFunctionName)() {
         local -ar non_empty_completions=("${@:#(|:*)}")
         local -ar empty_completions=("${(M)@:#(|:*)}")
         _describe '' non_empty_completions -- empty_completions -P $'\\'\\''
     }
 
-    _custom_completion() {
+    \(customCompleteFunctionName)() {
         local -a completions
         completions=("${(@f)"$("${@}")"}")
         if [[ "${#completions[@]}" -gt 1 ]]; then
-            __completion "${completions[@]:0:-1}"
+            \(completeFunctionName) "${completions[@]:0:-1}"
         fi
     }
 
@@ -164,7 +164,7 @@ extension [ParsableCommand.Type] {
       return "_files -/"
 
     case .list(let list):
-      return "(\(list.joined(separator: " ")))"
+      return "{\(completeFunctionName) \(list.joined(separator: " "))}"
 
     case .shellCommand(let command):
       return
@@ -173,8 +173,16 @@ extension [ParsableCommand.Type] {
     case .custom:
       // Generate a call back into the command to retrieve a completions list
       return
-        "{_custom_completion \"${command_name}\" \(arg.customCompletionCall(self)) \"${command_line[@]}\"}"
+        "{\(customCompleteFunctionName) \"${command_name}\" \(arg.customCompletionCall(self)) \"${command_line[@]}\"}"
     }
+  }
+
+  private var completeFunctionName: String {
+    "__\(first?._commandName ?? "")_complete"
+  }
+
+  private var customCompleteFunctionName: String {
+    "__\(first?._commandName ?? "")_custom_complete"
   }
 }
 

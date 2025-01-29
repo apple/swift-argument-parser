@@ -1,16 +1,16 @@
 #compdef base-test
 
-__completion() {
+__base-test_complete() {
     local -ar non_empty_completions=("${@:#(|:*)}")
     local -ar empty_completions=("${(M)@:#(|:*)}")
     _describe '' non_empty_completions -- empty_completions -P $'\'\''
 }
 
-_custom_completion() {
+__base-test_custom_complete() {
     local -a completions
     completions=("${(@f)"$("${@}")"}")
     if [[ "${#completions[@]}" -gt 1 ]]; then
-        __completion "${completions[@]:0:-1}"
+        __base-test_complete "${completions[@]:0:-1}"
     fi
 }
 
@@ -33,19 +33,19 @@ _base-test() {
     local -i ret=1
     local -ar args=(
         '--name[The user'\''s name.]:name:'
-        '--kind:kind:(one two custom-three)'
-        '--other-kind:other-kind:(b1_zsh b2_zsh b3_zsh)'
+        '--kind:kind:{__base-test_complete one two custom-three}'
+        '--other-kind:other-kind:{__base-test_complete b1_zsh b2_zsh b3_zsh}'
         '--path1:path1:_files'
         '--path2:path2:_files'
-        '--path3:path3:(c1_zsh c2_zsh c3_zsh)'
+        '--path3:path3:{__base-test_complete c1_zsh c2_zsh c3_zsh}'
         '--one'
         '--two'
         '--three'
         '*--kind-counter'
         '*--rep1:rep1:'
         '*'{-r,--rep2}':rep2:'
-        ':argument:{_custom_completion "${command_name}" ---completion  -- argument "${command_line[@]}"}'
-        ':nested-argument:{_custom_completion "${command_name}" ---completion  -- nested.nestedArgument "${command_line[@]}"}'
+        ':argument:{__base-test_custom_complete "${command_name}" ---completion  -- argument "${command_line[@]}"}'
+        ':nested-argument:{__base-test_custom_complete "${command_name}" ---completion  -- nested.nestedArgument "${command_line[@]}"}'
         '(-h --help)'{-h,--help}'[Show help information.]'
         '(-): :->command'
         '(-)*:: :->arg'
@@ -86,7 +86,7 @@ _base-test_escaped-command() {
     local -i ret=1
     local -ar args=(
         '--one[Escaped chars: '\''\[\]\\.]:one:'
-        ':two:{_custom_completion "${command_name}" ---completion escaped-command -- two "${command_line[@]}"}'
+        ':two:{__base-test_custom_complete "${command_name}" ---completion escaped-command -- two "${command_line[@]}"}'
         '(-h --help)'{-h,--help}'[Show help information.]'
     )
     _arguments -w -s -S "${args[@]}" && ret=0
