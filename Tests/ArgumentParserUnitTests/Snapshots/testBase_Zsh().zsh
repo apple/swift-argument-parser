@@ -1,5 +1,19 @@
 #compdef base-test
 
+__completion() {
+    local -ar non_empty_completions=("${@:#(|:*)}")
+    local -ar empty_completions=("${(M)@:#(|:*)}")
+    _describe '' non_empty_completions -- empty_completions -P $'\'\''
+}
+
+_custom_completion() {
+    local -a completions
+    completions=("${(@f)"$("${@}")"}")
+    if [[ "${#completions[@]}" -gt 1 ]]; then
+        __completion "${completions[@]:0:-1}"
+    fi
+}
+
 _base-test() {
     emulate -RL zsh -G
     setopt extendedglob
@@ -88,20 +102,6 @@ _base-test_help() {
     _arguments -w -s -S "${args[@]}" && ret=0
 
     return "${ret}"
-}
-
-__completion() {
-    local -ar non_empty_completions=("${@:#(|:*)}")
-    local -ar empty_completions=("${(M)@:#(|:*)}")
-    _describe '' non_empty_completions -- empty_completions -P $'\'\''
-}
-
-_custom_completion() {
-    local -a completions
-    completions=("${(@f)"$("${@}")"}")
-    if [[ "${#completions[@]}" -gt 1 ]]; then
-        __completion "${completions[@]:0:-1}"
-    fi
 }
 
 _base-test
