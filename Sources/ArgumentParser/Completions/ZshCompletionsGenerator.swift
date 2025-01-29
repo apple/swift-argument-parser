@@ -15,7 +15,6 @@ extension [ParsableCommand.Type] {
     """
     #compdef \(first?._commandName ?? "")
 
-    \(completionFunctions)\
     __completion() {
         local -ar non_empty_completions=("${@:#(|:*)}")
         local -ar empty_completions=("${(M)@:#(|:*)}")
@@ -30,6 +29,7 @@ extension [ParsableCommand.Type] {
         fi
     }
 
+    \(completionFunctions)\
     \(completionFunctionName())
     """
   }
