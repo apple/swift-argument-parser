@@ -15,6 +15,10 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_Swift_MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/swift)
 
 include(CTest)
+
+# Due to a bug in CMake, we need to enable the C language before we can use
+# GNUInstallDirs.
+enable_language(C)
 include(GNUInstallDirs)
 include(SwiftSupport)
 
