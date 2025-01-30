@@ -39,8 +39,11 @@ extension [ParsableCommand.Type] {
     let functionName = completionFunctionName()
     let isRootCommand = count == 1
 
-    var argumentSpecs = argumentsForHelp(visibility: .default)
-      .compactMap { zshCompletionString($0) }
+    let argumentSpecsAndSetupScripts = argumentsForHelp(visibility: .default)
+      .compactMap { argumentSpecAndSetupScript($0) }
+    var argumentSpecs = argumentSpecsAndSetupScripts.map(\.argumentSpec)
+    let setupScripts = argumentSpecsAndSetupScripts.compactMap(\.setupScript)
+
     var subcommands = type.configuration.subcommands
       .filter { $0.configuration.shouldDisplay }
 
@@ -105,6 +108,7 @@ extension [ParsableCommand.Type] {
         : ""
       )\
           local -i ret=1
+      \(setupScripts.map { "\($0)\n" }.joined().indentingEachLine(by: 4))\
           local -ar arg_specs=(
       \(argumentSpecs.joined(separator: "\n").indentingEachLine(by: 8))
           )
@@ -117,7 +121,9 @@ extension [ParsableCommand.Type] {
       """
   }
 
-  private func zshCompletionString(_ arg: ArgumentDefinition) -> String? {
+  private func argumentSpecAndSetupScript(
+    _ arg: ArgumentDefinition
+  ) -> (argumentSpec: String, setupScript: String?)? {
     guard arg.help.visibility.base == .default else { return nil }
 
     let line: String
@@ -139,38 +145,47 @@ extension [ParsableCommand.Type] {
 
     switch arg.update {
     case .unary:
-      return "'\(line):\(arg.valueName):\(zshActionString(arg))'"
+      let (argumentAction, setupScript) = argumentActionAndSetupScript(arg)
+      return ("'\(line):\(arg.valueName):\(argumentAction)'", setupScript)
     case .nullary:
-      return "'\(line)'"
+      return ("'\(line)'", nil)
     }
   }
 
   /// Returns the zsh "action" for an argument completion string.
-  private func zshActionString(_ arg: ArgumentDefinition) -> String {
+  private func argumentActionAndSetupScript(
+    _ arg: ArgumentDefinition
+  ) -> (argumentAction: String, setupScript: String?) {
     switch arg.completion.kind {
     case .default:
-      return ""
+      return ("", nil)
 
     case .file(let extensions):
       return
         extensions.isEmpty
-        ? "_files"
-        : "_files -g '\\''\(extensions.map { "*.\($0.zshEscapeForSingleQuotedExplanation())" }.joined(separator: " "))'\\''"
+        ? ("_files", nil)
+        : (
+          "_files -g '\\''\(extensions.map { "*.\($0.zshEscapeForSingleQuotedExplanation())" }.joined(separator: " "))'\\''",
+          nil
+        )
 
     case .directory:
-      return "_files -/"
+      return ("_files -/", nil)
 
     case .list(let list):
-      return "{\(completeFunctionName) \(list.joined(separator: " "))}"
+      return ("{\(completeFunctionName) \(list.joined(separator: " "))}", nil)
 
     case .shellCommand(let command):
-      return
-        "{local -a list;list=(${(f)\"$(\(command.shellEscapeForSingleQuotedString()))\"});_describe \"\" list}"
+      return (
+        "{local -a list;list=(${(f)\"$(\(command.shellEscapeForSingleQuotedString()))\"});_describe \"\" list}",
+        nil
+      )
 
     case .custom:
-      // Generate a call back into the command to retrieve a completions list
-      return
-        "{\(customCompleteFunctionName) \"${command_name}\" \(arg.customCompletionCall(self)) \"${command_line[@]}\"}"
+      return (
+        "{\(customCompleteFunctionName) \"${command_name}\" \(arg.customCompletionCall(self)) \"${command_line[@]}\"}",
+        nil
+      )
     }
   }
 
