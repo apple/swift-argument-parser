@@ -31,13 +31,13 @@ _math() {
     local -ar command_line=("${words[@]}")
 
     local -i ret=1
-    local -ar args=(
+    local -ar arg_specs=(
         '--version[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
         '(-): :->command'
         '(-)*:: :->arg'
     )
-    _arguments -w -s -S : "${args[@]}" && ret=0
+    _arguments -w -s -S : "${arg_specs[@]}" && ret=0
     case "${state}" in
     command)
         local -ar subcommands=(
@@ -62,39 +62,39 @@ _math() {
 
 _math_add() {
     local -i ret=1
-    local -ar args=(
+    local -ar arg_specs=(
         '(--hex-output -x)'{--hex-output,-x}'[Use hexadecimal notation for the result.]'
         ':values:'
         '--version[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
     )
-    _arguments -w -s -S : "${args[@]}" && ret=0
+    _arguments -w -s -S : "${arg_specs[@]}" && ret=0
 
     return "${ret}"
 }
 
 _math_multiply() {
     local -i ret=1
-    local -ar args=(
+    local -ar arg_specs=(
         '(--hex-output -x)'{--hex-output,-x}'[Use hexadecimal notation for the result.]'
         ':values:'
         '--version[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
     )
-    _arguments -w -s -S : "${args[@]}" && ret=0
+    _arguments -w -s -S : "${arg_specs[@]}" && ret=0
 
     return "${ret}"
 }
 
 _math_stats() {
     local -i ret=1
-    local -ar args=(
+    local -ar arg_specs=(
         '--version[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
         '(-): :->command'
         '(-)*:: :->arg'
     )
-    _arguments -w -s -S : "${args[@]}" && ret=0
+    _arguments -w -s -S : "${arg_specs[@]}" && ret=0
     case "${state}" in
     command)
         local -ar subcommands=(
@@ -118,32 +118,32 @@ _math_stats() {
 
 _math_stats_average() {
     local -i ret=1
-    local -ar args=(
+    local -ar arg_specs=(
         '--kind[The kind of average to provide.]:kind:{__math_complete mean median mode}'
         ':values:'
         '--version[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
     )
-    _arguments -w -s -S : "${args[@]}" && ret=0
+    _arguments -w -s -S : "${arg_specs[@]}" && ret=0
 
     return "${ret}"
 }
 
 _math_stats_stdev() {
     local -i ret=1
-    local -ar args=(
+    local -ar arg_specs=(
         ':values:'
         '--version[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
     )
-    _arguments -w -s -S : "${args[@]}" && ret=0
+    _arguments -w -s -S : "${arg_specs[@]}" && ret=0
 
     return "${ret}"
 }
 
 _math_stats_quantiles() {
     local -i ret=1
-    local -ar args=(
+    local -ar arg_specs=(
         ':one-of-four:{__math_complete alphabet alligator branch braggart}'
         ':custom-arg:{__math_custom_complete "${command_name}" ---completion stats quantiles -- customArg "${command_line[@]}"}'
         ':values:'
@@ -154,18 +154,18 @@ _math_stats_quantiles() {
         '--version[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
     )
-    _arguments -w -s -S : "${args[@]}" && ret=0
+    _arguments -w -s -S : "${arg_specs[@]}" && ret=0
 
     return "${ret}"
 }
 
 _math_help() {
     local -i ret=1
-    local -ar args=(
+    local -ar arg_specs=(
         ':subcommands:'
         '--version[Show the version.]'
     )
-    _arguments -w -s -S : "${args[@]}" && ret=0
+    _arguments -w -s -S : "${arg_specs[@]}" && ret=0
 
     return "${ret}"
 }
