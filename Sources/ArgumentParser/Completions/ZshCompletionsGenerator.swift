@@ -173,7 +173,11 @@ extension [ParsableCommand.Type] {
       return ("_files -/", nil)
 
     case .list(let list):
-      return ("{\(completeFunctionName) \(list.joined(separator: " "))}", nil)
+      let variableName = variableName(arg)
+      return (
+        "{\(completeFunctionName) \"${\(variableName)[@]}\"}",
+        "local -ar \(variableName)=(\(list.map { "'\($0.shellEscapeForSingleQuotedString())'" }.joined(separator: " ")))"
+      )
 
     case .shellCommand(let command):
       return (
@@ -187,6 +191,15 @@ extension [ParsableCommand.Type] {
         nil
       )
     }
+  }
+
+  private func variableName(_ arg: ArgumentDefinition) -> String {
+    guard let argName = arg.names.preferredName else {
+      return
+        "\(shellVariableNamePrefix)_\(arg.valueName.shellEscapeForVariableName())"
+    }
+    return
+      "\(argName.case == .long ? "__" : "_")\(shellVariableNamePrefix)_\(argName.valueString.shellEscapeForVariableName())"
   }
 
   private var completeFunctionName: String {
