@@ -39,7 +39,7 @@ extension [ParsableCommand.Type] {
     let functionName = completionFunctionName()
     let isRootCommand = count == 1
 
-    var args = argumentsForHelp(visibility: .default)
+    var argumentSpecs = argumentsForHelp(visibility: .default)
       .compactMap { zshCompletionString($0) }
     var subcommands = type.configuration.subcommands
       .filter { $0.configuration.shouldDisplay }
@@ -48,8 +48,8 @@ extension [ParsableCommand.Type] {
     if subcommands.isEmpty {
       subcommandHandler = ""
     } else {
-      args.append("'(-): :->command'")
-      args.append("'(-)*:: :->arg'")
+      argumentSpecs.append("'(-): :->command'")
+      argumentSpecs.append("'(-)*:: :->arg'")
 
       if isRootCommand {
         subcommands.addHelpSubcommandIffMissing()
@@ -105,10 +105,10 @@ extension [ParsableCommand.Type] {
         : ""
       )\
           local -i ret=1
-          local -ar args=(
-      \(args.joined(separator: "\n").indentingEachLine(by: 8))
+          local -ar arg_specs=(
+      \(argumentSpecs.joined(separator: "\n").indentingEachLine(by: 8))
           )
-          _arguments -w -s -S : "${args[@]}" && ret=0
+          _arguments -w -s -S : "${arg_specs[@]}" && ret=0
       \(subcommandHandler)
           return "${ret}"
       }

@@ -31,7 +31,7 @@ _base-test() {
     local -ar command_line=("${words[@]}")
 
     local -i ret=1
-    local -ar args=(
+    local -ar arg_specs=(
         '--name[The user'\''s name.]:name:'
         '--kind:kind:{__base-test_complete one two custom-three}'
         '--other-kind:other-kind:{__base-test_complete b1_zsh b2_zsh b3_zsh}'
@@ -50,7 +50,7 @@ _base-test() {
         '(-): :->command'
         '(-)*:: :->arg'
     )
-    _arguments -w -s -S : "${args[@]}" && ret=0
+    _arguments -w -s -S : "${arg_specs[@]}" && ret=0
     case "${state}" in
     command)
         local -ar subcommands=(
@@ -74,32 +74,32 @@ _base-test() {
 
 _base-test_sub-command() {
     local -i ret=1
-    local -ar args=(
+    local -ar arg_specs=(
         '(-h --help)'{-h,--help}'[Show help information.]'
     )
-    _arguments -w -s -S : "${args[@]}" && ret=0
+    _arguments -w -s -S : "${arg_specs[@]}" && ret=0
 
     return "${ret}"
 }
 
 _base-test_escaped-command() {
     local -i ret=1
-    local -ar args=(
+    local -ar arg_specs=(
         '--one[Escaped chars: '\''\[\]\\.]:one:'
         ':two:{__base-test_custom_complete "${command_name}" ---completion escaped-command -- two "${command_line[@]}"}'
         '(-h --help)'{-h,--help}'[Show help information.]'
     )
-    _arguments -w -s -S : "${args[@]}" && ret=0
+    _arguments -w -s -S : "${arg_specs[@]}" && ret=0
 
     return "${ret}"
 }
 
 _base-test_help() {
     local -i ret=1
-    local -ar args=(
+    local -ar arg_specs=(
         ':subcommands:'
     )
-    _arguments -w -s -S : "${args[@]}" && ret=0
+    _arguments -w -s -S : "${arg_specs[@]}" && ret=0
 
     return "${ret}"
 }
