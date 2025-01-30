@@ -31,13 +31,16 @@ _base-test() {
     local -ar command_line=("${words[@]}")
 
     local -i ret=1
+    local -ar __base_test_kind=('one' 'two' 'custom-three')
+    local -ar __base_test_other_kind=('b1_zsh' 'b2_zsh' 'b3_zsh')
+    local -ar __base_test_path3=('c1_zsh' 'c2_zsh' 'c3_zsh')
     local -ar arg_specs=(
         '--name[The user'\''s name.]:name:'
-        '--kind:kind:{__base-test_complete one two custom-three}'
-        '--other-kind:other-kind:{__base-test_complete b1_zsh b2_zsh b3_zsh}'
+        '--kind:kind:{__base-test_complete "${__base_test_kind[@]}"}'
+        '--other-kind:other-kind:{__base-test_complete "${__base_test_other_kind[@]}"}'
         '--path1:path1:_files'
         '--path2:path2:_files'
-        '--path3:path3:{__base-test_complete c1_zsh c2_zsh c3_zsh}'
+        '--path3:path3:{__base-test_complete "${__base_test_path3[@]}"}'
         '--one'
         '--two'
         '--three'

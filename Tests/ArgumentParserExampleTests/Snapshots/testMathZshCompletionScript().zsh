@@ -118,8 +118,9 @@ _math_stats() {
 
 _math_stats_average() {
     local -i ret=1
+    local -ar __math_stats_average_kind=('mean' 'median' 'mode')
     local -ar arg_specs=(
-        '--kind[The kind of average to provide.]:kind:{__math_complete mean median mode}'
+        '--kind[The kind of average to provide.]:kind:{__math_complete "${__math_stats_average_kind[@]}"}'
         ':values:'
         '--version[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
@@ -143,8 +144,9 @@ _math_stats_stdev() {
 
 _math_stats_quantiles() {
     local -i ret=1
+    local -ar math_stats_quantiles_one_of_four=('alphabet' 'alligator' 'branch' 'braggart')
     local -ar arg_specs=(
-        ':one-of-four:{__math_complete alphabet alligator branch braggart}'
+        ':one-of-four:{__math_complete "${math_stats_quantiles_one_of_four[@]}"}'
         ':custom-arg:{__math_custom_complete "${command_name}" ---completion stats quantiles -- customArg "${command_line[@]}"}'
         ':values:'
         '--file:file:_files -g '\''*.txt *.md'\'''

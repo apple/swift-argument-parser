@@ -188,6 +188,12 @@ extension Sequence where Element == ParsableCommand.Type {
       .uniquingAdjacentElements()
       .joined(separator: "_")
   }
+
+  var shellVariableNamePrefix: String {
+    flatMap { $0.compositeCommandName }
+      .joined(separator: "_")
+      .shellEscapeForVariableName()
+  }
 }
 
 extension String {
@@ -196,5 +202,9 @@ extension String {
       ? self
       : replacingOccurrences(of: "'", with: "'\\''")
         .shellEscapeForSingleQuotedString(iterationCount: iterationCount - 1)
+  }
+
+  func shellEscapeForVariableName() -> Self {
+    replacingOccurrences(of: "-", with: "_")
   }
 }
