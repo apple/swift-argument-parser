@@ -120,14 +120,6 @@ extension [ParsableCommand.Type] {
   private func zshCompletionString(_ arg: ArgumentDefinition) -> String? {
     guard arg.help.visibility.base == .default else { return nil }
 
-    let inputs: String
-    switch arg.update {
-    case .unary:
-      inputs = ":\(arg.valueName):\(zshActionString(arg))"
-    case .nullary:
-      inputs = ""
-    }
-
     let line: String
     switch arg.names.count {
     case 0:
@@ -145,7 +137,12 @@ extension [ParsableCommand.Type] {
         """
     }
 
-    return "'\(line)\(inputs)'"
+    switch arg.update {
+    case .unary:
+      return "'\(line):\(arg.valueName):\(zshActionString(arg))'"
+    case .nullary:
+      return "'\(line)'"
+    }
   }
 
   /// Returns the zsh "action" for an argument completion string.
