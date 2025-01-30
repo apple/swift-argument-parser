@@ -108,7 +108,7 @@ extension [ParsableCommand.Type] {
           local -ar args=(
       \(args.joined(separator: "\n").indentingEachLine(by: 8))
           )
-          _arguments -w -s -S "${args[@]}" && ret=0
+          _arguments -w -s -S : "${args[@]}" && ret=0
       \(subcommandHandler)
           return "${ret}"
       }
