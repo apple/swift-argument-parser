@@ -37,7 +37,7 @@ _math() {
         '(-): :->command'
         '(-)*:: :->arg'
     )
-    _arguments -w -s -S "${args[@]}" && ret=0
+    _arguments -w -s -S : "${args[@]}" && ret=0
     case "${state}" in
     command)
         local -ar subcommands=(
@@ -68,7 +68,7 @@ _math_add() {
         '--version[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
     )
-    _arguments -w -s -S "${args[@]}" && ret=0
+    _arguments -w -s -S : "${args[@]}" && ret=0
 
     return "${ret}"
 }
@@ -81,7 +81,7 @@ _math_multiply() {
         '--version[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
     )
-    _arguments -w -s -S "${args[@]}" && ret=0
+    _arguments -w -s -S : "${args[@]}" && ret=0
 
     return "${ret}"
 }
@@ -94,7 +94,7 @@ _math_stats() {
         '(-): :->command'
         '(-)*:: :->arg'
     )
-    _arguments -w -s -S "${args[@]}" && ret=0
+    _arguments -w -s -S : "${args[@]}" && ret=0
     case "${state}" in
     command)
         local -ar subcommands=(
@@ -124,7 +124,7 @@ _math_stats_average() {
         '--version[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
     )
-    _arguments -w -s -S "${args[@]}" && ret=0
+    _arguments -w -s -S : "${args[@]}" && ret=0
 
     return "${ret}"
 }
@@ -136,7 +136,7 @@ _math_stats_stdev() {
         '--version[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
     )
-    _arguments -w -s -S "${args[@]}" && ret=0
+    _arguments -w -s -S : "${args[@]}" && ret=0
 
     return "${ret}"
 }
@@ -154,7 +154,7 @@ _math_stats_quantiles() {
         '--version[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
     )
-    _arguments -w -s -S "${args[@]}" && ret=0
+    _arguments -w -s -S : "${args[@]}" && ret=0
 
     return "${ret}"
 }
@@ -165,7 +165,7 @@ _math_help() {
         ':subcommands:'
         '--version[Show the version.]'
     )
-    _arguments -w -s -S "${args[@]}" && ret=0
+    _arguments -w -s -S : "${args[@]}" && ret=0
 
     return "${ret}"
 }

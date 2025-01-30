@@ -50,7 +50,7 @@ _base-test() {
         '(-): :->command'
         '(-)*:: :->arg'
     )
-    _arguments -w -s -S "${args[@]}" && ret=0
+    _arguments -w -s -S : "${args[@]}" && ret=0
     case "${state}" in
     command)
         local -ar subcommands=(
@@ -77,7 +77,7 @@ _base-test_sub-command() {
     local -ar args=(
         '(-h --help)'{-h,--help}'[Show help information.]'
     )
-    _arguments -w -s -S "${args[@]}" && ret=0
+    _arguments -w -s -S : "${args[@]}" && ret=0
 
     return "${ret}"
 }
@@ -89,7 +89,7 @@ _base-test_escaped-command() {
         ':two:{__base-test_custom_complete "${command_name}" ---completion escaped-command -- two "${command_line[@]}"}'
         '(-h --help)'{-h,--help}'[Show help information.]'
     )
-    _arguments -w -s -S "${args[@]}" && ret=0
+    _arguments -w -s -S : "${args[@]}" && ret=0
 
     return "${ret}"
 }
@@ -99,7 +99,7 @@ _base-test_help() {
     local -ar args=(
         ':subcommands:'
     )
-    _arguments -w -s -S "${args[@]}" && ret=0
+    _arguments -w -s -S : "${args[@]}" && ret=0
 
     return "${ret}"
 }
