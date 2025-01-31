@@ -125,7 +125,7 @@ __math_add_completions() {
 _math() {
     trap "$(shopt -p);$(shopt -po)" RETURN
     shopt -s extglob
-    set +o posix
+    set +o history +o posix
 
     local -xr SAP_SHELL=bash
     local -x SAP_SHELL_VERSION

@@ -170,7 +170,7 @@ extension [ParsableCommand.Type] {
       result += """
             trap "$(shopt -p);$(shopt -po)" RETURN
             shopt -s extglob
-            set +o posix
+            set +o history +o posix
 
             local -xr \(CompletionShell.shellEnvironmentVariableName)=bash
             local -x \(CompletionShell.shellVersionEnvironmentVariableName)
