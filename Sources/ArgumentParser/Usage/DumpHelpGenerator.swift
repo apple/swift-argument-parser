@@ -9,10 +9,15 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if swift(>=5.11)
+#if compiler(>=6.0)
+#if canImport(FoundationEssentials)
+internal import ArgumentParserToolInfo
+internal import class FoundationEssentials.JSONEncoder
+#else
 internal import ArgumentParserToolInfo
 internal import class Foundation.JSONEncoder
-#elseif swift(>=5.10)
+#endif
+#elseif compiler(>=5.10)
 import ArgumentParserToolInfo
 import class Foundation.JSONEncoder
 #else
