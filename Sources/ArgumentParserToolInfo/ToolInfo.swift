@@ -145,7 +145,7 @@ public struct CommandInfoV0: Codable, Hashable {
   public var discussion2: Discussion?
   
   /// Command should appear in help displays.
-  public var shouldDisplay: Bool = true
+  public var shouldDisplay: Bool
 
   /// Optional name of the subcommand invoked when the command is invoked with
   /// no arguments.
@@ -199,6 +199,18 @@ public struct CommandInfoV0: Codable, Hashable {
       subcommands: subcommands,
       arguments: arguments
     )
+  }
+
+  public init(from decoder: any Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    self.superCommands = try container.decodeIfPresent([String].self, forKey: .superCommands)
+    self.commandName = try container.decode(String.self, forKey: .commandName)
+    self.abstract = try container.decodeIfPresent(String.self, forKey: .abstract)
+    self.discussion2 = try container.decodeIfPresent(Discussion.self, forKey: .discussion2)
+    self.shouldDisplay = try container.decodeIfPresent(Bool.self, forKey: .shouldDisplay) ?? true
+    self.defaultSubcommand = try container.decodeIfPresent(String.self, forKey: .defaultSubcommand)
+    self.subcommands = try container.decodeIfPresent([CommandInfoV0].self, forKey: .subcommands)
+    self.arguments = try container.decodeIfPresent([ArgumentInfoV0].self, forKey: .arguments)
   }
 }
 
