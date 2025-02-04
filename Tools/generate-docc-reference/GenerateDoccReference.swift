@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2021 Apple Inc. and the Swift project authors
+// Copyright (c) 2025 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -13,14 +13,14 @@ import ArgumentParser
 import ArgumentParserToolInfo
 import Foundation
 
-enum GenerateManualError: Error {
+enum GenerateDoccReferenceError: Error {
   case failedToRunSubprocess(error: Error)
   case unableToParseToolOutput(error: Error)
   case unsupportedDumpHelpVersion(expected: Int, found: Int)
-  case failedToGenerateManualPages(error: Error)
+  case failedToGenerateDoccReference(error: Error)
 }
 
-extension GenerateManualError: CustomStringConvertible {
+extension GenerateDoccReferenceError: CustomStringConvertible {
   var description: String {
     switch self {
     case let .failedToRunSubprocess(error):
@@ -29,44 +29,27 @@ extension GenerateManualError: CustomStringConvertible {
       return "Failed to parse tool output: \(error)"
     case let .unsupportedDumpHelpVersion(expected, found):
       return "Unsupported dump help version, expected '\(expected)' but found: '\(found)'"
-    case let .failedToGenerateManualPages(error):
-      return "Failed to generated manual pages: \(error)"
+    case let .failedToGenerateDoccReference(error):
+      return "Failed to generated docc reference: \(error)"
     }
   }
 }
 
 @main
-struct GenerateManual: ParsableCommand {
+struct GenerateDoccReference: ParsableCommand {
   static let configuration = CommandConfiguration(
-    commandName: "generate-manual",
-    abstract: "Generate a manual for the provided tool.")
+    commandName: "generate-docc-reference",
+    abstract: "Generate a docc reference for the provided tool.")
 
-  @Argument(help: "Tool to generate manual for.")
+  @Argument(help: "Tool to generate docc reference for.")
   var tool: String
 
-  @Flag(help: "Generate a separate manual for each subcommand.")
-  var multiPage = false
-
-  @Option(name: .long, help: "Override the creation date of the manual. Format: 'yyyy-mm-dd'.")
-  var date: Date = Date()
-
-  @Option(name: .long, help: "Section of the manual.")
-  var section: Int = 1
-
-  @Option(name: .long, help: "Names and/or emails of the tool's authors. Format: 'name<email>'.")
-  var authors: [AuthorArgument] = []
-
-  @Option(name: .shortAndLong, help: "Directory to save generated manual. Use '-' for stdout.")
+  @Option(name: .shortAndLong, help: "Directory to save generated docc reference. Use '-' for stdout.")
   var outputDirectory: String
 
   func validate() throws {
-    // Only man pages 1 through 9 are valid.
-    guard (1...9).contains(section) else {
-      throw ValidationError("Invalid manual section passed to --section")
-    }
-
     if outputDirectory != "-" {
-      // outputDirectory must already exist, `GenerateManual` will not create it.
+      // outputDirectory must already exist, `GenerateDoccReference` will not create it.
       var objcBool: ObjCBool = true
       guard FileManager.default.fileExists(atPath: outputDirectory, isDirectory: &objcBool) else {
         throw ValidationError("Output directory \(outputDirectory) does not exist")
@@ -82,64 +65,52 @@ struct GenerateManual: ParsableCommand {
     let data: Data
     do {
       let tool = URL(fileURLWithPath: tool)
-      let output = try executeCommand(executable: tool, arguments: ["--experimental-dump-help"])
+      let output = try executeCommand(
+        executable: tool, arguments: ["--experimental-dump-help"])
       data = output.data(using: .utf8) ?? Data()
     } catch {
-      throw GenerateManualError.failedToRunSubprocess(error: error)
+      throw GenerateDoccReferenceError.failedToRunSubprocess(error: error)
     }
 
     do {
       let toolInfoThin = try JSONDecoder().decode(ToolInfoHeader.self, from: data)
       guard toolInfoThin.serializationVersion == 0 else {
-        throw GenerateManualError.unsupportedDumpHelpVersion(
+        throw GenerateDoccReferenceError.unsupportedDumpHelpVersion(
           expected: 0,
           found: toolInfoThin.serializationVersion)
       }
     } catch {
-      throw GenerateManualError.unableToParseToolOutput(error: error)
+      throw GenerateDoccReferenceError.unableToParseToolOutput(error: error)
     }
 
     let toolInfo: ToolInfoV0
     do {
       toolInfo = try JSONDecoder().decode(ToolInfoV0.self, from: data)
     } catch {
-      throw GenerateManualError.unableToParseToolOutput(error: error)
+      throw GenerateDoccReferenceError.unableToParseToolOutput(error: error)
     }
 
     do {
-      if outputDirectory == "-" {
-        try generatePages(from: toolInfo.command, savingTo: nil)
+      if self.outputDirectory == "-" {
+        try self.generatePages(from: toolInfo.command, savingTo: nil)
       } else {
-        try generatePages(
+        try self.generatePages(
           from: toolInfo.command,
-          savingTo: URL(fileURLWithPath: outputDirectory))
-      }
+          savingTo: URL(fileURLWithPath: outputDirectory))}
     } catch {
-      throw GenerateManualError.failedToGenerateManualPages(error: error)
+      throw GenerateDoccReferenceError.failedToGenerateDoccReference(error: error)
     }
   }
 
   func generatePages(from command: CommandInfoV0, savingTo directory: URL?) throws {
-    let document = Document(
-      multiPage: multiPage,
-      date: date,
-      section: section,
-      authors: authors,
-      command: command)
-    let page = document.ast.map { $0.serialized() }.joined(separator: "\n")
+    let page = command.toMarkdown([])
 
     if let directory = directory {
-      let fileName = command.manualPageFileName(section: section)
+      let fileName = command.doccReferenceFileName
       let outputPath = directory.appendingPathComponent(fileName)
       try page.write(to: outputPath, atomically: false, encoding: .utf8)
     } else {
       print(page)
-    }
-
-    if multiPage {
-      for subcommand in command.subcommands ?? [] {
-        try generatePages(from: subcommand, savingTo: directory)
-      }
     }
   }
 }

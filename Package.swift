@@ -19,6 +19,9 @@ var package = Package(
             name: "ArgumentParser",
             targets: ["ArgumentParser"]),
         .plugin(
+            name: "GenerateDoccReference",
+            targets: ["GenerateDoccReference"]),
+        .plugin(
             name: "GenerateManual",
             targets: ["GenerateManual"]),
     ],
@@ -35,7 +38,6 @@ var package = Package(
             exclude: ["CMakeLists.txt"]),
         .target(
             name: "ArgumentParserToolInfo",
-            dependencies: [ ],
             exclude: ["CMakeLists.txt"]),
 
         // Plugins
@@ -80,6 +82,9 @@ var package = Package(
             name: "ArgumentParserExampleTests",
             dependencies: ["ArgumentParserTestHelpers"],
             resources: [.copy("CountLinesTest.txt")]),
+        .testTarget(
+            name: "ArgumentParserGenerateDoccReferenceTests",
+            dependencies: ["ArgumentParserTestHelpers"]),
         .testTarget(
             name: "ArgumentParserGenerateManualTests",
             dependencies: ["ArgumentParserTestHelpers"]),

@@ -19,6 +19,9 @@ var package = Package(
             name: "ArgumentParser",
             targets: ["ArgumentParser"]),
         .plugin(
+            name: "GenerateDoccReference",
+            targets: ["GenerateDoccReference"]),
+        .plugin(
             name: "GenerateManual",
             targets: ["GenerateManual"]),
     ],
@@ -29,19 +32,26 @@ var package = Package(
             name: "ArgumentParser",
             dependencies: ["ArgumentParserToolInfo"],
             exclude: ["CMakeLists.txt"],
-            swiftSettings: [
-              .enableExperimentalFeature("StrictConcurrency"),
-            ]),
+            swiftSettings: [.enableExperimentalFeature("StrictConcurrency")]),
         .target(
             name: "ArgumentParserTestHelpers",
             dependencies: ["ArgumentParser", "ArgumentParserToolInfo"],
             exclude: ["CMakeLists.txt"]),
         .target(
             name: "ArgumentParserToolInfo",
-            dependencies: [ ],
             exclude: ["CMakeLists.txt"]),
 
         // Plugins
+        .plugin(
+            name: "GenerateDoccReference",
+            capability: .command(
+                intent: .custom(
+                    verb: "generate-docc-reference",
+                    description: "Generate a documentation reference  for a specified target."),
+                permissions: [
+                    .writeToPackageDirectory(reason: "This command generates documentation."),
+                ]),
+            dependencies: ["generate-docc-reference"]),
         .plugin(
             name: "GenerateManual",
             capability: .command(
@@ -70,10 +80,14 @@ var package = Package(
 
         // Tools
         .executableTarget(
+            name: "generate-docc-reference",
+            dependencies: ["ArgumentParser", "ArgumentParserToolInfo"],
+            path: "Tools/generate-docc-reference"),
+        .executableTarget(
             name: "generate-manual",
             dependencies: ["ArgumentParser", "ArgumentParserToolInfo"],
             path: "Tools/generate-manual"),
-    
+
         // Tests
         .testTarget(
             name: "ArgumentParserEndToEndTests",
@@ -83,6 +97,9 @@ var package = Package(
             name: "ArgumentParserExampleTests",
             dependencies: ["ArgumentParserTestHelpers"],
             resources: [.copy("CountLinesTest.txt")]),
+        .testTarget(
+            name: "ArgumentParserGenerateDoccReferenceTests",
+            dependencies: ["ArgumentParserTestHelpers"]),
         .testTarget(
             name: "ArgumentParserGenerateManualTests",
             dependencies: ["ArgumentParserTestHelpers"]),
