@@ -70,6 +70,7 @@ final class MathGenerateManualTests: XCTestCase {
       .Bl -tag -width 6n
       .It Fl -kind Ar kind
       The kind of average to provide.
+      .Pp
       .It Ar values...
       A group of floating-point values to operate on.
       .It Fl -version
@@ -286,6 +287,7 @@ final class MathGenerateManualTests: XCTestCase {
       .Bl -tag -width 6n
       .It Fl -kind Ar kind
       The kind of average to provide.
+      .Pp
       .It Ar values...
       A group of floating-point values to operate on.
       .It Fl -version

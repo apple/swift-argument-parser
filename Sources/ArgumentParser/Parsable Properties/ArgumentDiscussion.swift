@@ -12,12 +12,13 @@
 
 /// A structure that contains an extended description of the argument.
 ///
-/// For `EnumerableOptionValue` types, the `.enumerated` case encapsulates the necessary information
-/// to list each of the possible values and their descriptions. Optionally, users can add a discussion preamble that
-/// will be appended to the beginning of the value list section.
+/// For `EnumerableOptionValue` types, the `.enumerated` case encapsulates the
+/// necessary information to list each of the possible values and their
+/// descriptions. Optionally, users can add a discussion preamble that will be
+/// appended to the beginning of the value list section.
 ///
-/// For example, the following `EnumerableOptionValue` type defined in a command could contain an
-/// additional discussion block defined in its `ArgumentHelp`:
+/// For example, the following `EnumerableOptionValue` type defined in a command
+/// could contain an additional discussion block defined in its `ArgumentHelp`:
 ///
 /// ```swift
 /// enum Color: String, EnumerableOptionValue {
@@ -77,8 +78,9 @@
 ///    -h, --help           Show help information
 /// ```
 ///
-/// In any case where the argument type is not `EnumerableOptionValue`, the default implementation
-/// will use the `.staticText` case and will print a block of discussion text.
+/// In any case where the argument type is not `EnumerableOptionValue`, the
+/// default implementation will use the `.staticText` case and will print a
+/// block of discussion text.
 enum ArgumentDiscussion {
   case staticText(String)
   case enumerated(preamble: String? = nil, any ExpressibleByArgument.Type)
