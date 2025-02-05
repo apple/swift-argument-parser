@@ -191,9 +191,17 @@ extension ArgumentSet {
   }
   
   func firstPositional(
-    withKey key: InputKey
+    withKey key: InputKey,
   ) -> ArgumentDefinition? {
-    first(where: { $0.help.keys.contains(key) })
+    return first(where: { $0.help.keys.contains(key) })
+  }
+
+  func positional(
+    at index: Int
+  ) -> ArgumentDefinition? {
+    let arguments = self.content.filter { $0.isPositional }
+    guard arguments.count > index else { return nil }
+    return arguments[index]
   }
 }
 

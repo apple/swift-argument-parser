@@ -95,7 +95,7 @@ _math_stats_stdev() {
 _math_stats_quantiles() {
     opts="--file --directory --shell --custom --version -h --help"
     opts="$opts alphabet alligator branch braggart"
-    opts="$opts $("${COMP_WORDS[0]}" ---completion stats quantiles -- customArg "${COMP_WORDS[@]}")"
+    opts="$opts $("${COMP_WORDS[0]}" ---completion stats quantiles -- positional@1 "${COMP_WORDS[@]}")"
     if [[ $COMP_CWORD == "$1" ]]; then
         COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
         return
@@ -139,7 +139,7 @@ _math_stats_quantiles() {
     COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
 }
 _math_help() {
-    opts="--version"
+    opts=""
     if [[ $COMP_CWORD == "$1" ]]; then
         COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
         return

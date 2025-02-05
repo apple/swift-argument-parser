@@ -8,17 +8,13 @@ _base_test() {
     prev="${COMP_WORDS[COMP_CWORD-1]}"
     COMPREPLY=()
     opts="--name --kind --other-kind --path1 --path2 --path3 --one --two --three --kind-counter --rep1 -r --rep2 -h --help sub-command escaped-command help"
-    opts="$opts $("${COMP_WORDS[0]}" ---completion  -- argument "${COMP_WORDS[@]}")"
-    opts="$opts $("${COMP_WORDS[0]}" ---completion  -- nested.nestedArgument "${COMP_WORDS[@]}")"
+    opts="$opts $("${COMP_WORDS[0]}" ---completion  -- positional@0 "${COMP_WORDS[@]}")"
+    opts="$opts $("${COMP_WORDS[0]}" ---completion  -- positional@1 "${COMP_WORDS[@]}")"
     if [[ $COMP_CWORD == "1" ]]; then
         COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
         return
     fi
     case $prev in
-        --name)
-
-            return
-        ;;
         --kind)
             COMPREPLY=( $(compgen -W "one two custom-three" -- "$cur") )
             return
@@ -45,14 +41,6 @@ _base_test() {
         ;;
         --path3)
             COMPREPLY=( $(compgen -W "c1_bash c2_bash c3_bash" -- "$cur") )
-            return
-        ;;
-        --rep1)
-
-            return
-        ;;
-        -r|--rep2)
-
             return
         ;;
     esac
@@ -82,17 +70,11 @@ _base_test_sub_command() {
 }
 _base_test_escaped_command() {
     opts="--one -h --help"
-    opts="$opts $("${COMP_WORDS[0]}" ---completion escaped-command -- two "${COMP_WORDS[@]}")"
+    opts="$opts $("${COMP_WORDS[0]}" ---completion escaped-command -- positional@0 "${COMP_WORDS[@]}")"
     if [[ $COMP_CWORD == "$1" ]]; then
         COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
         return
     fi
-    case $prev in
-        --one)
-
-            return
-        ;;
-    esac
     COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
 }
 _base_test_help() {

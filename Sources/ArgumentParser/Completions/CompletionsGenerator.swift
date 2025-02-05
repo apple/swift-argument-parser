@@ -9,6 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+import ArgumentParserToolInfo
+
 /// A shell for which the parser can generate a completion script.
 public struct CompletionShell: RawRepresentable, Hashable, CaseIterable {
   public var rawValue: String
@@ -137,5 +139,43 @@ extension Sequence where Element == ParsableCommand.Type {
     "_" + self.flatMap { $0.compositeCommandName }
       .uniquingAdjacentElements()
       .joined(separator: "_")
+  }
+}
+
+extension String {
+  var makeSafeFunctionName: String {
+    self.replacingOccurrences(of: "-", with: "_")
+  }
+}
+
+extension ArgumentInfoV0 {
+  /// Returns a string with the arguments for the callback to generate custom
+  /// completions for this argument.
+  func commonCustomCompletionCall(command: CommandInfoV0) -> String {
+    let commandContext = (command.superCommands ?? []) + [command.commandName]
+    let subcommandNames = commandContext.dropFirst().joined(separator: " ")
+
+    let argumentName: String
+    switch self.kind {
+    case .positional:
+      let index = (command.arguments ?? [])
+        .filter { $0.kind == .positional }
+        .firstIndex(of: self)!
+      argumentName = "positional@\(index)"
+    default:
+      argumentName = self.preferredName!.commonCompletionSynopsisString()
+    }
+    return "---completion \(subcommandNames) -- \(argumentName)"
+  }
+}
+
+extension ArgumentInfoV0.NameInfoV0 {
+  func commonCompletionSynopsisString() -> String {
+    switch self.kind {
+    case .long:
+      return "--\(self.name)"
+    case .short, .longWithSingleDash:
+      return "-\(self.name)"
+    }
   }
 }
