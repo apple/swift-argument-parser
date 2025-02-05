@@ -33,23 +33,24 @@ final class ColorGenerateManualTests: XCTestCase {
       Your favorite color.
       .Pp
       .Bl -tag -width 6n
-      .It red
+      .It Ar red
       A red color.
-      .It blue
+      .It Ar blue
       A blue color.
-      .It yellow
+      .It Ar yellow
       A yellow color.
       .El
       .It Fl -second Ar second
       Your second favorite color.
       .Pp
       This is optional.
+      .Pp
       .Bl -tag -width 6n
-      .It red
+      .It Ar red
       A red color.
-      .It blue
+      .It Ar blue
       A blue color.
-      .It yellow
+      .It Ar yellow
       A yellow color.
       .El
       .It Fl h , -help
@@ -90,23 +91,24 @@ final class ColorGenerateManualTests: XCTestCase {
       Your favorite color.
       .Pp
       .Bl -tag -width 6n
-      .It red
+      .It Ar red
       A red color.
-      .It blue
+      .It Ar blue
       A blue color.
-      .It yellow
+      .It Ar yellow
       A yellow color.
       .El
       .It Fl -second Ar second
       Your second favorite color.
       .Pp
       This is optional.
+      .Pp
       .Bl -tag -width 6n
-      .It red
+      .It Ar red
       A red color.
-      .It blue
+      .It Ar blue
       A blue color.
-      .It yellow
+      .It Ar yellow
       A yellow color.
       .El
       .It Fl h , -help

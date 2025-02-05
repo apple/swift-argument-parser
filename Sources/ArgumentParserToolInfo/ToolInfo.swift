@@ -39,113 +39,20 @@ public struct ToolInfoV0: Codable, Hashable {
   }
 }
 
-/// A structure containing an extended description for a command.
-public enum Discussion: Codable, Hashable {
-  case staticText(String)
-  case enumerated(preamble: String? = nil, [OptionValue])
-
-  public struct OptionValue: Codable, Hashable {
-    public var value: String
-    public var description: String
-
-    public init(name: String, description: String) {
-      self.value = name
-      self.description = description
-    }
-  }
-
-  public init?(_ text: String) {
-    guard !text.isEmpty else { return nil }
-    self = .staticText(text)
-  }
-
-  public init?(_ preamble: String? = nil, _ values: [OptionValue]) {
-    guard !values.isEmpty else { return nil }
-    self = .enumerated(values)
-  }
-
-  enum CodingKeys: String, CodingKey {
-    case preamble
-    case enumerated = "values"
-    case staticText = "discussion"
-  }
-
-  public func encode(to encoder: any Encoder) throws {
-    switch self {
-    case .staticText(let s):
-      var container = encoder.singleValueContainer()
-      try container.encode(s)
-    case .enumerated(let preamble, let values):
-      var container = encoder.container(keyedBy: CodingKeys.self)
-      try container.encodeIfPresent(preamble, forKey: .preamble)
-      try container.encode(values, forKey: .enumerated)
-    }
-  }
-
-  public init(from decoder: any Decoder) throws {
-    if let container = try? decoder.container(keyedBy: CodingKeys.self),
-       container.contains(.enumerated),
-       let values = try container.decodeIfPresent([OptionValue].self, forKey: .enumerated) {
-      let preamble = try? container.decodeIfPresent(String.self, forKey: .preamble)
-      self = .enumerated(preamble: preamble, values)
-      return
-    } else if let container = try? decoder.singleValueContainer() {
-      let value = try container.decode(String.self)
-      self = .staticText(value)
-      return
-    }
-
-    throw DecodingError.typeMismatch(
-      Discussion.self,
-      DecodingError.Context(
-        codingPath: decoder.codingPath,
-        debugDescription: "Unexpected associated type for Discussion."
-      )
-    )
-  }
-}
-
 /// All information about a particular command, including arguments and
 /// subcommands.
 public struct CommandInfoV0: Codable, Hashable {
-  /// Custom CodingKeys names.
-  enum CodingKeys: String, CodingKey {
-    case discussion2 = "discussion"
-    case superCommands, commandName, abstract, defaultSubcommand, subcommands, arguments, shouldDisplay
-  }
-
   /// Super commands and tools.
   public var superCommands: [String]?
+  /// Command should appear in help displays.
+  public var shouldDisplay: Bool = true
 
   /// Name used to invoke the command.
   public var commandName: String
   /// Short description of the command's functionality.
   public var abstract: String?
-
   /// Extended description of the command's functionality.
-  @available(*, deprecated, renamed: "discussion2")
-  public var discussion: String? {
-    get {
-      if case let .staticText(discussion) = discussion2 {
-        return discussion
-      }
-      return nil
-    }
-    set {
-      if let newValue {
-        discussion2 = .staticText(newValue)
-      }
-    }
-  }
-  /// Extended description of the command's functionality.
-  ///
-  /// Can include specific abstracts about the argument's possible values (e.g.
-  /// for a custom `CaseIterable` type), or can describe
-  /// a static block of text that extends the description of the argument.
-  public var discussion2: Discussion?
-  
-  /// Command should appear in help displays.
-  public var shouldDisplay: Bool
+  public var discussion: String?
 
   /// Optional name of the subcommand invoked when the command is invoked with
   /// no arguments.
@@ -157,48 +64,24 @@ public struct CommandInfoV0: Codable, Hashable {
 
   public init(
     superCommands: [String],
-    commandName: String,
     shouldDisplay: Bool,
+    commandName: String,
     abstract: String,
-    discussion2: Discussion?,
+    discussion: String,
     defaultSubcommand: String?,
     subcommands: [CommandInfoV0],
     arguments: [ArgumentInfoV0]
   ) {
     self.superCommands = superCommands.nonEmpty
+    self.shouldDisplay = shouldDisplay
 
     self.commandName = commandName
-    self.shouldDisplay = shouldDisplay
     self.abstract = abstract.nonEmpty
-    self.discussion2 = discussion2
+    self.discussion = discussion.nonEmpty
+
     self.defaultSubcommand = defaultSubcommand?.nonEmpty
     self.subcommands = subcommands.nonEmpty
     self.arguments = arguments.nonEmpty
-  }
-
-  @available(*, deprecated, renamed: "init(superCommands:commandName:abstract:discussion2:defaultSubcommand:subcommands:arguments:)")
-  public init(
-    superCommands: [String],
-    commandName: String,
-    abstract: String,
-    discussion: String?,
-    defaultSubcommand: String?,
-    subcommands: [CommandInfoV0],
-    arguments: [ArgumentInfoV0]
-  ) {
-    let discussion2: Discussion?
-    if let discussion { discussion2 = .init(discussion) } else { discussion2 = nil }
-
-    self.init(
-      superCommands: superCommands,
-      commandName: commandName,
-      shouldDisplay: true,
-      abstract: abstract,
-      discussion2: discussion2,
-      defaultSubcommand: defaultSubcommand,
-      subcommands: subcommands,
-      arguments: arguments
-    )
   }
 
   public init(from decoder: any Decoder) throws {
@@ -206,7 +89,7 @@ public struct CommandInfoV0: Codable, Hashable {
     self.superCommands = try container.decodeIfPresent([String].self, forKey: .superCommands)
     self.commandName = try container.decode(String.self, forKey: .commandName)
     self.abstract = try container.decodeIfPresent(String.self, forKey: .abstract)
-    self.discussion2 = try container.decodeIfPresent(Discussion.self, forKey: .discussion2)
+    self.discussion = try container.decodeIfPresent(String.self, forKey: .discussion)
     self.shouldDisplay = try container.decodeIfPresent(Bool.self, forKey: .shouldDisplay) ?? true
     self.defaultSubcommand = try container.decodeIfPresent(String.self, forKey: .defaultSubcommand)
     self.subcommands = try container.decodeIfPresent([CommandInfoV0].self, forKey: .subcommands)
@@ -217,12 +100,6 @@ public struct CommandInfoV0: Codable, Hashable {
 /// All information about a particular argument, including display names and
 /// options.
 public struct ArgumentInfoV0: Codable, Hashable {
-  /// Custom CodingKeys names.
-  enum CodingKeys: String, CodingKey {
-    case discussion2 = "discussion"
-    case kind, shouldDisplay, sectionTitle, isOptional, isRepeating, names, preferredName, valueName, defaultValue, allValues, abstract
-  }
-
   /// Information about an argument's name.
   public struct NameInfoV0: Codable, Hashable {
     /// Kind of prefix of an argument's name.
@@ -280,6 +157,8 @@ public struct ArgumentInfoV0: Codable, Hashable {
   public var defaultValue: String?
   // NOTE: this property will not be renamed to 'allValueStrings' to avoid
   // breaking compatibility with the current serialized format.
+  //
+  // This property is effectively deprecated.
   /// List of all valid values.
   public var allValues: [String]?
   /// List of all valid values.
@@ -287,30 +166,13 @@ public struct ArgumentInfoV0: Codable, Hashable {
     get { self.allValues }
     set { self.allValues = newValue }
   }
+  /// Mapping of valid values to descriptions of the value.
+  public var allValueDescriptions: [String: String]?
 
   /// Short description of the argument's functionality.
   public var abstract: String?
   /// Extended description of the argument's functionality.
-  @available(*, deprecated, renamed: "discussion2")
-  public var discussion: String? {
-    get {
-      if case let .staticText(discussion) = discussion2 {
-        return discussion
-      }
-      return nil
-    }
-    set {
-      if let newValue {
-        discussion2 = .staticText(newValue)
-      }
-    }
-  }
-  /// Extended description of the argument's functionality.
-  ///
-  /// Can include specific abstracts about the argument's possible values
-  /// (e.g. for a custom `EnumerableOptionValue` type), or can
-  /// describe a static text extending the description of the argument.
-  public var discussion2: Discussion?
+  public var discussion: String?
 
   public init(
     kind: KindV0,
@@ -322,9 +184,10 @@ public struct ArgumentInfoV0: Codable, Hashable {
     preferredName: NameInfoV0?,
     valueName: String?,
     defaultValue: String?,
-    allValues: [String]?,
+    allValueStrings: [String]?,
+    allValueDescriptions: [String: String]?,
     abstract: String?,
-    discussion2: Discussion?
+    discussion: String?
   ) {
     self.kind = kind
 
@@ -339,45 +202,10 @@ public struct ArgumentInfoV0: Codable, Hashable {
 
     self.valueName = valueName?.nonEmpty
     self.defaultValue = defaultValue?.nonEmpty
-    self.allValueStrings = allValues?.nonEmpty
+    self.allValueStrings = allValueStrings?.nonEmpty
+    self.allValueDescriptions = allValueDescriptions?.nonEmpty
 
     self.abstract = abstract?.nonEmpty
-    self.discussion2 = discussion2
-  }
-
-  @available(*, deprecated, renamed:
-                "init(kind:shouldDisplay:sectionTitle:isOptional:isRepeating:names:preferredName:valueName:defaultValue:allValues:abstract:discussion:)"
-  )
-  public init(
-    kind: KindV0,
-    shouldDisplay: Bool,
-    sectionTitle: String?,
-    isOptional: Bool,
-    isRepeating: Bool,
-    names: [NameInfoV0]?,
-    preferredName: NameInfoV0?,
-    valueName: String?,
-    defaultValue: String?,
-    allValues: [String]?,
-    abstract: String?,
-    discussion: String?
-  ) {
-    let discussion2: Discussion?
-    if let discussion { discussion2 = .init(discussion) } else { discussion2 = nil }
-
-    self.init(
-      kind: kind,
-      shouldDisplay: shouldDisplay,
-      sectionTitle: sectionTitle,
-      isOptional: isOptional,
-      isRepeating: isRepeating,
-      names: names,
-      preferredName: preferredName,
-      valueName: valueName,
-      defaultValue: defaultValue,
-      allValues: allValues,
-      abstract: abstract,
-      discussion2: discussion2
-    )
+    self.discussion = discussion?.nonEmpty
   }
 }

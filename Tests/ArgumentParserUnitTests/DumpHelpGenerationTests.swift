@@ -82,9 +82,6 @@ extension DumpHelpGenerationTests {
     @Option(help: "An optional color.")
     var opt: Color?
 
-    @Option(help: "An optional color with a default value.")
-    var optWithDefault: Color? = .yellow
-
     @Option(help: .init(discussion: "A preamble for the list of values in the discussion section."))
     var extra: Color
 
@@ -362,27 +359,16 @@ extension DumpHelpGenerationTests {
       "arguments" : [
         {
           "abstract" : "A color to select.",
+          "allValueDescriptions" : {
+            "blue" : "A blue color, like the sky!",
+            "red" : "A red color, like a rose!",
+            "yellow" : "A yellow color, like the sun!"
+          },
           "allValues" : [
             "blue",
             "red",
             "yellow"
           ],
-          "discussion" : {
-            "values" : [
-              {
-                "description" : "A blue color, like the sky!",
-                "value" : "blue"
-              },
-              {
-                "description" : "A red color, like a rose!",
-                "value" : "red"
-              },
-              {
-                "description" : "A yellow color, like the sun!",
-                "value" : "yellow"
-              }
-            ]
-          },
           "isOptional" : false,
           "isRepeating" : false,
           "kind" : "option",
@@ -401,28 +387,17 @@ extension DumpHelpGenerationTests {
         },
         {
           "abstract" : "Another color to select!",
+          "allValueDescriptions" : {
+            "blue" : "A blue color, like the sky!",
+            "red" : "A red color, like a rose!",
+            "yellow" : "A yellow color, like the sun!"
+          },
           "allValues" : [
             "blue",
             "red",
             "yellow"
           ],
           "defaultValue" : "red",
-          "discussion" : {
-            "values" : [
-              {
-                "description" : "A blue color, like the sky!",
-                "value" : "blue"
-              },
-              {
-                "description" : "A red color, like a rose!",
-                "value" : "red"
-              },
-              {
-                "description" : "A yellow color, like the sun!",
-                "value" : "yellow"
-              }
-            ]
-          },
           "isOptional" : true,
           "isRepeating" : false,
           "kind" : "option",
@@ -441,27 +416,16 @@ extension DumpHelpGenerationTests {
         },
         {
           "abstract" : "An optional color.",
+          "allValueDescriptions" : {
+            "blue" : "A blue color, like the sky!",
+            "red" : "A red color, like a rose!",
+            "yellow" : "A yellow color, like the sun!"
+          },
           "allValues" : [
             "blue",
             "red",
             "yellow"
           ],
-          "discussion" : {
-            "values" : [
-              {
-                "description" : "A blue color, like the sky!",
-                "value" : "blue"
-              },
-              {
-                "description" : "A red color, like a rose!",
-                "value" : "red"
-              },
-              {
-                "description" : "A yellow color, like the sun!",
-                "value" : "yellow"
-              }
-            ]
-          },
           "isOptional" : true,
           "isRepeating" : false,
           "kind" : "option",
@@ -479,68 +443,17 @@ extension DumpHelpGenerationTests {
           "valueName" : "opt"
         },
         {
-          "abstract" : "An optional color with a default value.",
+          "allValueDescriptions" : {
+            "blue" : "A blue color, like the sky!",
+            "red" : "A red color, like a rose!",
+            "yellow" : "A yellow color, like the sun!"
+          },
           "allValues" : [
             "blue",
             "red",
             "yellow"
           ],
-          "defaultValue" : "yellow",
-          "discussion" : {
-            "values" : [
-              {
-                "description" : "A blue color, like the sky!",
-                "value" : "blue"
-              },
-              {
-                "description" : "A red color, like a rose!",
-                "value" : "red"
-              },
-              {
-                "description" : "A yellow color, like the sun!",
-                "value" : "yellow"
-              }
-            ]
-          },
-          "isOptional" : true,
-          "isRepeating" : false,
-          "kind" : "option",
-          "names" : [
-            {
-              "kind" : "long",
-              "name" : "opt-with-default"
-            }
-          ],
-          "preferredName" : {
-            "kind" : "long",
-            "name" : "opt-with-default"
-          },
-          "shouldDisplay" : true,
-          "valueName" : "opt-with-default"
-        },
-        {
-          "allValues" : [
-            "blue",
-            "red",
-            "yellow"
-          ],
-          "discussion" : {
-            "preamble" : "A preamble for the list of values in the discussion section.",
-            "values" : [
-              {
-                "description" : "A blue color, like the sky!",
-                "value" : "blue"
-              },
-              {
-                "description" : "A red color, like a rose!",
-                "value" : "red"
-              },
-              {
-                "description" : "A yellow color, like the sun!",
-                "value" : "yellow"
-              }
-            ]
-          },
+          "discussion" : "A preamble for the list of values in the discussion section.",
           "isOptional" : false,
           "isRepeating" : false,
           "kind" : "option",

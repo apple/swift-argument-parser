@@ -92,21 +92,6 @@ fileprivate extension ToolInfoV0 {
   }
 }
 
-fileprivate extension Discussion {
-  init?(_ discussion: ArgumentDiscussion?) {
-    guard let discussion else { return nil }
-    switch discussion {
-    case .staticText(let s):
-      self = .staticText(s)
-    case .enumerated(let preamble, let values):
-      self = .enumerated(
-        preamble: preamble,
-        values.allValueStrings.map { .init(name: $0, description: values.allValueDescriptions[$0] ?? "") }
-      )
-    }
-  }
-}
-
 fileprivate extension CommandInfoV0 {
   init(commandStack: [ParsableCommand.Type]) {
     guard let command = commandStack.last else {
@@ -134,10 +119,10 @@ fileprivate extension CommandInfoV0 {
 
     self = CommandInfoV0(
       superCommands: superCommands,
-      commandName: command._commandName,
       shouldDisplay: command.configuration.shouldDisplay,
+      commandName: command._commandName,
       abstract: command.configuration.abstract,
-      discussion2: .init(command.configuration.discussion),
+      discussion: command.configuration.discussion,
       defaultSubcommand: defaultSubcommand,
       subcommands: subcommands,
       arguments: arguments)
@@ -147,6 +132,21 @@ fileprivate extension CommandInfoV0 {
 fileprivate extension ArgumentInfoV0 {
   init?(argument: ArgumentDefinition) {
     guard let kind = ArgumentInfoV0.KindV0(argument: argument) else { return nil }
+
+    let discussion: String?
+    let allValueDescriptions: [String: String]?
+    switch argument.help.discussion {
+    case .none:
+      discussion = nil
+      allValueDescriptions = nil
+    case .staticText(let _discussion):
+      discussion = _discussion
+      allValueDescriptions = nil
+    case .enumerated(let _discussion, let options):
+      discussion = _discussion
+      allValueDescriptions = options.allValueDescriptions
+    }
+
     self.init(
       kind: kind,
       shouldDisplay: argument.help.visibility.base == .default,
@@ -157,10 +157,10 @@ fileprivate extension ArgumentInfoV0 {
       preferredName: argument.names.preferredName.map(ArgumentInfoV0.NameInfoV0.init),
       valueName: argument.valueName,
       defaultValue: argument.help.defaultValue,
-      allValues: argument.help.allValueStrings,
+      allValueStrings: argument.help.allValueStrings,
+      allValueDescriptions: allValueDescriptions,
       abstract: argument.help.abstract,
-      discussion2: .init(argument.help.discussion)
-    )
+      discussion: discussion)
   }
 }
 

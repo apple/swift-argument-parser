@@ -28,12 +28,17 @@ struct SinglePageDescription: MDocComponent {
       abstract
     }
 
-    if !root, command.abstract != nil, command.discussion2 != nil {
+    if !root, command.abstract != nil, command.discussion != nil {
       MDocMacro.ParagraphBreak()
     }
 
-    if let discussion = command.discussion2 {
-      DiscussionText(discussion: discussion)
+    let discussion = DiscussionText(
+      discussion: command.discussion,
+      allValueStrings: nil,
+      allValueDescriptions: nil)
+
+    if let discussion = discussion {
+      discussion
     }
 
     List {
@@ -41,16 +46,21 @@ struct SinglePageDescription: MDocComponent {
         if argument.shouldDisplay {
           MDocMacro.ListItem(title: argument.manualPageDescription)
 
+          let discussion = DiscussionText(
+            discussion: argument.discussion,
+            allValueStrings: argument.allValueStrings,
+            allValueDescriptions: argument.allValueDescriptions)
+
           if let abstract = argument.abstract {
             abstract
           }
 
-          if argument.abstract != nil, argument.discussion2 != nil {
+          if argument.abstract != nil, discussion != nil {
             MDocMacro.ParagraphBreak()
           }
 
-          if let discussion = argument.discussion2 {
-            DiscussionText(discussion: discussion)
+          if let discussion = discussion {
+            discussion
           }
         }
       }
