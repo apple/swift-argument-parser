@@ -1,0 +1,615 @@
+{
+  "command" : {
+    "abstract" : "A utility for performing maths.",
+    "arguments" : [
+      {
+        "abstract" : "Show the version.",
+        "isOptional" : true,
+        "isRepeating" : false,
+        "kind" : "flag",
+        "names" : [
+          {
+            "kind" : "long",
+            "name" : "version"
+          }
+        ],
+        "preferredName" : {
+          "kind" : "long",
+          "name" : "version"
+        },
+        "shouldDisplay" : true,
+        "valueName" : "version"
+      },
+      {
+        "abstract" : "Show help information.",
+        "isOptional" : true,
+        "isRepeating" : false,
+        "kind" : "flag",
+        "names" : [
+          {
+            "kind" : "short",
+            "name" : "h"
+          },
+          {
+            "kind" : "long",
+            "name" : "help"
+          }
+        ],
+        "preferredName" : {
+          "kind" : "long",
+          "name" : "help"
+        },
+        "shouldDisplay" : true,
+        "valueName" : "help"
+      }
+    ],
+    "commandName" : "math",
+    "shouldDisplay" : true,
+    "subcommands" : [
+      {
+        "abstract" : "Print the sum of the values.",
+        "arguments" : [
+          {
+            "abstract" : "Use hexadecimal notation for the result.",
+            "isOptional" : true,
+            "isRepeating" : false,
+            "kind" : "flag",
+            "names" : [
+              {
+                "kind" : "long",
+                "name" : "hex-output"
+              },
+              {
+                "kind" : "short",
+                "name" : "x"
+              }
+            ],
+            "preferredName" : {
+              "kind" : "long",
+              "name" : "hex-output"
+            },
+            "shouldDisplay" : true,
+            "valueName" : "hex-output"
+          },
+          {
+            "abstract" : "A group of integers to operate on.",
+            "isOptional" : true,
+            "isRepeating" : true,
+            "kind" : "positional",
+            "shouldDisplay" : true,
+            "valueName" : "values"
+          },
+          {
+            "abstract" : "Show the version.",
+            "isOptional" : true,
+            "isRepeating" : false,
+            "kind" : "flag",
+            "names" : [
+              {
+                "kind" : "long",
+                "name" : "version"
+              }
+            ],
+            "preferredName" : {
+              "kind" : "long",
+              "name" : "version"
+            },
+            "shouldDisplay" : true,
+            "valueName" : "version"
+          },
+          {
+            "abstract" : "Show help information.",
+            "isOptional" : true,
+            "isRepeating" : false,
+            "kind" : "flag",
+            "names" : [
+              {
+                "kind" : "short",
+                "name" : "h"
+              },
+              {
+                "kind" : "long",
+                "name" : "help"
+              }
+            ],
+            "preferredName" : {
+              "kind" : "long",
+              "name" : "help"
+            },
+            "shouldDisplay" : true,
+            "valueName" : "help"
+          }
+        ],
+        "commandName" : "add",
+        "shouldDisplay" : true,
+        "superCommands" : [
+          "math"
+        ]
+      },
+      {
+        "abstract" : "Print the product of the values.",
+        "arguments" : [
+          {
+            "abstract" : "Use hexadecimal notation for the result.",
+            "isOptional" : true,
+            "isRepeating" : false,
+            "kind" : "flag",
+            "names" : [
+              {
+                "kind" : "long",
+                "name" : "hex-output"
+              },
+              {
+                "kind" : "short",
+                "name" : "x"
+              }
+            ],
+            "preferredName" : {
+              "kind" : "long",
+              "name" : "hex-output"
+            },
+            "shouldDisplay" : true,
+            "valueName" : "hex-output"
+          },
+          {
+            "abstract" : "A group of integers to operate on.",
+            "isOptional" : true,
+            "isRepeating" : true,
+            "kind" : "positional",
+            "shouldDisplay" : true,
+            "valueName" : "values"
+          },
+          {
+            "abstract" : "Show the version.",
+            "isOptional" : true,
+            "isRepeating" : false,
+            "kind" : "flag",
+            "names" : [
+              {
+                "kind" : "long",
+                "name" : "version"
+              }
+            ],
+            "preferredName" : {
+              "kind" : "long",
+              "name" : "version"
+            },
+            "shouldDisplay" : true,
+            "valueName" : "version"
+          },
+          {
+            "abstract" : "Show help information.",
+            "isOptional" : true,
+            "isRepeating" : false,
+            "kind" : "flag",
+            "names" : [
+              {
+                "kind" : "short",
+                "name" : "h"
+              },
+              {
+                "kind" : "long",
+                "name" : "help"
+              }
+            ],
+            "preferredName" : {
+              "kind" : "long",
+              "name" : "help"
+            },
+            "shouldDisplay" : true,
+            "valueName" : "help"
+          }
+        ],
+        "commandName" : "multiply",
+        "shouldDisplay" : true,
+        "superCommands" : [
+          "math"
+        ]
+      },
+      {
+        "abstract" : "Calculate descriptive statistics.",
+        "arguments" : [
+          {
+            "abstract" : "Show the version.",
+            "isOptional" : true,
+            "isRepeating" : false,
+            "kind" : "flag",
+            "names" : [
+              {
+                "kind" : "long",
+                "name" : "version"
+              }
+            ],
+            "preferredName" : {
+              "kind" : "long",
+              "name" : "version"
+            },
+            "shouldDisplay" : true,
+            "valueName" : "version"
+          },
+          {
+            "abstract" : "Show help information.",
+            "isOptional" : true,
+            "isRepeating" : false,
+            "kind" : "flag",
+            "names" : [
+              {
+                "kind" : "short",
+                "name" : "h"
+              },
+              {
+                "kind" : "long",
+                "name" : "help"
+              }
+            ],
+            "preferredName" : {
+              "kind" : "long",
+              "name" : "help"
+            },
+            "shouldDisplay" : true,
+            "valueName" : "help"
+          }
+        ],
+        "commandName" : "stats",
+        "shouldDisplay" : true,
+        "subcommands" : [
+          {
+            "abstract" : "Print the average of the values.",
+            "arguments" : [
+              {
+                "abstract" : "The kind of average to provide.",
+                "allValues" : [
+                  "mean",
+                  "median",
+                  "mode"
+                ],
+                "defaultValue" : "mean",
+                "isOptional" : true,
+                "isRepeating" : false,
+                "kind" : "option",
+                "names" : [
+                  {
+                    "kind" : "long",
+                    "name" : "kind"
+                  }
+                ],
+                "preferredName" : {
+                  "kind" : "long",
+                  "name" : "kind"
+                },
+                "shouldDisplay" : true,
+                "valueName" : "kind"
+              },
+              {
+                "abstract" : "A group of floating-point values to operate on.",
+                "isOptional" : true,
+                "isRepeating" : true,
+                "kind" : "positional",
+                "shouldDisplay" : true,
+                "valueName" : "values"
+              },
+              {
+                "abstract" : "Show the version.",
+                "isOptional" : true,
+                "isRepeating" : false,
+                "kind" : "flag",
+                "names" : [
+                  {
+                    "kind" : "long",
+                    "name" : "version"
+                  }
+                ],
+                "preferredName" : {
+                  "kind" : "long",
+                  "name" : "version"
+                },
+                "shouldDisplay" : true,
+                "valueName" : "version"
+              },
+              {
+                "abstract" : "Show help information.",
+                "isOptional" : true,
+                "isRepeating" : false,
+                "kind" : "flag",
+                "names" : [
+                  {
+                    "kind" : "short",
+                    "name" : "h"
+                  },
+                  {
+                    "kind" : "long",
+                    "name" : "help"
+                  }
+                ],
+                "preferredName" : {
+                  "kind" : "long",
+                  "name" : "help"
+                },
+                "shouldDisplay" : true,
+                "valueName" : "help"
+              }
+            ],
+            "commandName" : "average",
+            "shouldDisplay" : true,
+            "superCommands" : [
+              "math",
+              "stats"
+            ]
+          },
+          {
+            "abstract" : "Print the standard deviation of the values.",
+            "arguments" : [
+              {
+                "abstract" : "A group of floating-point values to operate on.",
+                "isOptional" : true,
+                "isRepeating" : true,
+                "kind" : "positional",
+                "shouldDisplay" : true,
+                "valueName" : "values"
+              },
+              {
+                "abstract" : "Show the version.",
+                "isOptional" : true,
+                "isRepeating" : false,
+                "kind" : "flag",
+                "names" : [
+                  {
+                    "kind" : "long",
+                    "name" : "version"
+                  }
+                ],
+                "preferredName" : {
+                  "kind" : "long",
+                  "name" : "version"
+                },
+                "shouldDisplay" : true,
+                "valueName" : "version"
+              },
+              {
+                "abstract" : "Show help information.",
+                "isOptional" : true,
+                "isRepeating" : false,
+                "kind" : "flag",
+                "names" : [
+                  {
+                    "kind" : "short",
+                    "name" : "h"
+                  },
+                  {
+                    "kind" : "long",
+                    "name" : "help"
+                  }
+                ],
+                "preferredName" : {
+                  "kind" : "long",
+                  "name" : "help"
+                },
+                "shouldDisplay" : true,
+                "valueName" : "help"
+              }
+            ],
+            "commandName" : "stdev",
+            "shouldDisplay" : true,
+            "superCommands" : [
+              "math",
+              "stats"
+            ]
+          },
+          {
+            "abstract" : "Print the quantiles of the values (TBD).",
+            "arguments" : [
+              {
+                "isOptional" : true,
+                "isRepeating" : false,
+                "kind" : "positional",
+                "shouldDisplay" : true,
+                "valueName" : "one-of-four"
+              },
+              {
+                "isOptional" : true,
+                "isRepeating" : false,
+                "kind" : "positional",
+                "shouldDisplay" : true,
+                "valueName" : "custom-arg"
+              },
+              {
+                "abstract" : "A group of floating-point values to operate on.",
+                "isOptional" : true,
+                "isRepeating" : true,
+                "kind" : "positional",
+                "shouldDisplay" : true,
+                "valueName" : "values"
+              },
+              {
+                "isOptional" : true,
+                "isRepeating" : false,
+                "kind" : "flag",
+                "names" : [
+                  {
+                    "kind" : "long",
+                    "name" : "test-success-exit-code"
+                  }
+                ],
+                "preferredName" : {
+                  "kind" : "long",
+                  "name" : "test-success-exit-code"
+                },
+                "shouldDisplay" : false,
+                "valueName" : "test-success-exit-code"
+              },
+              {
+                "isOptional" : true,
+                "isRepeating" : false,
+                "kind" : "flag",
+                "names" : [
+                  {
+                    "kind" : "long",
+                    "name" : "test-failure-exit-code"
+                  }
+                ],
+                "preferredName" : {
+                  "kind" : "long",
+                  "name" : "test-failure-exit-code"
+                },
+                "shouldDisplay" : false,
+                "valueName" : "test-failure-exit-code"
+              },
+              {
+                "isOptional" : true,
+                "isRepeating" : false,
+                "kind" : "flag",
+                "names" : [
+                  {
+                    "kind" : "long",
+                    "name" : "test-validation-exit-code"
+                  }
+                ],
+                "preferredName" : {
+                  "kind" : "long",
+                  "name" : "test-validation-exit-code"
+                },
+                "shouldDisplay" : false,
+                "valueName" : "test-validation-exit-code"
+              },
+              {
+                "isOptional" : true,
+                "isRepeating" : false,
+                "kind" : "option",
+                "names" : [
+                  {
+                    "kind" : "long",
+                    "name" : "test-custom-exit-code"
+                  }
+                ],
+                "preferredName" : {
+                  "kind" : "long",
+                  "name" : "test-custom-exit-code"
+                },
+                "shouldDisplay" : false,
+                "valueName" : "test-custom-exit-code"
+              },
+              {
+                "isOptional" : true,
+                "isRepeating" : false,
+                "kind" : "option",
+                "names" : [
+                  {
+                    "kind" : "long",
+                    "name" : "file"
+                  }
+                ],
+                "preferredName" : {
+                  "kind" : "long",
+                  "name" : "file"
+                },
+                "shouldDisplay" : true,
+                "valueName" : "file"
+              },
+              {
+                "isOptional" : true,
+                "isRepeating" : false,
+                "kind" : "option",
+                "names" : [
+                  {
+                    "kind" : "long",
+                    "name" : "directory"
+                  }
+                ],
+                "preferredName" : {
+                  "kind" : "long",
+                  "name" : "directory"
+                },
+                "shouldDisplay" : true,
+                "valueName" : "directory"
+              },
+              {
+                "isOptional" : true,
+                "isRepeating" : false,
+                "kind" : "option",
+                "names" : [
+                  {
+                    "kind" : "long",
+                    "name" : "shell"
+                  }
+                ],
+                "preferredName" : {
+                  "kind" : "long",
+                  "name" : "shell"
+                },
+                "shouldDisplay" : true,
+                "valueName" : "shell"
+              },
+              {
+                "isOptional" : true,
+                "isRepeating" : false,
+                "kind" : "option",
+                "names" : [
+                  {
+                    "kind" : "long",
+                    "name" : "custom"
+                  }
+                ],
+                "preferredName" : {
+                  "kind" : "long",
+                  "name" : "custom"
+                },
+                "shouldDisplay" : true,
+                "valueName" : "custom"
+              },
+              {
+                "abstract" : "Show the version.",
+                "isOptional" : true,
+                "isRepeating" : false,
+                "kind" : "flag",
+                "names" : [
+                  {
+                    "kind" : "long",
+                    "name" : "version"
+                  }
+                ],
+                "preferredName" : {
+                  "kind" : "long",
+                  "name" : "version"
+                },
+                "shouldDisplay" : true,
+                "valueName" : "version"
+              },
+              {
+                "abstract" : "Show help information.",
+                "isOptional" : true,
+                "isRepeating" : false,
+                "kind" : "flag",
+                "names" : [
+                  {
+                    "kind" : "short",
+                    "name" : "h"
+                  },
+                  {
+                    "kind" : "long",
+                    "name" : "help"
+                  }
+                ],
+                "preferredName" : {
+                  "kind" : "long",
+                  "name" : "help"
+                },
+                "shouldDisplay" : true,
+                "valueName" : "help"
+              }
+            ],
+            "commandName" : "quantiles",
+            "shouldDisplay" : true,
+            "superCommands" : [
+              "math",
+              "stats"
+            ]
+          }
+        ],
+        "superCommands" : [
+          "math"
+        ]
+      }
+    ]
+  },
+  "serializationVersion" : 0
+}
