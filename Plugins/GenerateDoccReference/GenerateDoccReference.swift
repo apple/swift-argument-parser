@@ -2,23 +2,24 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2021 Apple Inc. and the Swift project authors
+// Copyright (c) 2025 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
 //
 //===----------------------------------------------------------------------===//
 
+import Foundation
 import PackagePlugin
 
 @main
-struct GenerateManualPlugin: CommandPlugin {
+struct GenerateDoccReferencePlugin: CommandPlugin {
   func performCommand(
     context: PluginContext,
     arguments: [String]
   ) async throws {
     // Locate generation tool.
-    let generationTool = "generate-manual"
+    let generationTool = "generate-docc-reference"
     let generationToolFile = try context.tool(named: generationTool).path
 
     // Create an extractor to extract plugin-only arguments from the `arguments`
@@ -28,13 +29,14 @@ struct GenerateManualPlugin: CommandPlugin {
     // Run generation tool once if help is requested.
     if extractor.helpRequest() {
       try generationToolFile.exec(arguments: ["--help"])
-      print("""
+      print(
+        """
         ADDITIONAL OPTIONS:
           --configuration <configuration>
-                                  Tool build configuration used to generate the
-                                  manual. (default: release)
+                      Tool build configuration used to generate the
+                      reference document. (default: release)
 
-        NOTE: The "GenerateManual" plugin handles passing the "<tool>" and
+        NOTE: The "GenerateDoccReference" plugin handles passing the "<tool>" and
         "--output-directory <output-directory>" arguments. Manually supplying
         these arguments will result in a runtime failure.
         """)
@@ -42,7 +44,7 @@ struct GenerateManualPlugin: CommandPlugin {
     }
 
     // Extract configuration argument before making it to the
-    // "generate-manual" tool.
+    // "generate-docc-reference" tool.
     let configuration = try extractor.configuration()
 
     // Build all products first.
@@ -52,11 +54,11 @@ struct GenerateManualPlugin: CommandPlugin {
       parameters: .init(configuration: configuration))
 
     guard buildResult.succeeded else {
-      throw GenerateManualPluginError.buildFailed(buildResult.logText)
+      throw GenerateDoccReferencePluginError.buildFailed(buildResult.logText)
     }
     print("Built package in \(configuration) mode")
 
-    // Run generate-manual on all executable artifacts.
+    // Run generate-docc-reference on all executable artifacts.
     for builtArtifact in buildResult.builtArtifacts {
       // Skip non-executable targets
       guard builtArtifact.kind == .executable else { continue }
@@ -68,14 +70,17 @@ struct GenerateManualPlugin: CommandPlugin {
       // Skip products without a dependency on ArgumentParser.
       guard product.hasDependency(named: "ArgumentParser") else { continue }
 
+      // Skip products with multiple underlying targets.
+      guard product.targets.count == 1 else { continue }
+      let target = product.targets[0]
+
       // Get the artifacts name.
       let executableName = builtArtifact.path.lastComponent
-      print("Generating manual for \(executableName)...")
+      print("Generating docc reference for \(executableName)...")
 
       // Create output directory.
-      let outputDirectory = context
-        .pluginWorkDirectory
-        .appending(executableName)
+      let outputDirectory = target.directory
+        .appending("\(target.name).docc")
       try outputDirectory.createOutputDirectory()
 
       // Create generation tool arguments.
@@ -89,7 +94,7 @@ struct GenerateManualPlugin: CommandPlugin {
 
       // Spawn generation tool.
       try generationToolFile.exec(arguments: generationToolArguments)
-      print("Generated manual in '\(outputDirectory)'")
+      print("Generated docc reference in '\(outputDirectory)'")
     }
   }
 }

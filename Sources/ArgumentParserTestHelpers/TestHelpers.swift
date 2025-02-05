@@ -466,4 +466,27 @@ extension XCTest {
       file: file,
       line: line)
   }
+
+  public func AssertGenerateDoccReference(
+    command: String,
+    expected: String,
+    file: StaticString = #filePath,
+    line: UInt = #line
+  ) throws {
+    #if os(Windows)
+    throw XCTSkip("Unsupported on this platform")
+    #endif
+
+    let commandURL = debugURL.appendingPathComponent(command)
+    let command = [
+      "generate-docc-reference", commandURL.path,
+      "--output-directory", "-",
+    ]
+    try AssertExecuteCommand(
+      command: command,
+      expected: expected,
+      exitCode: .success,
+      file: file,
+      line: line)
+  }
 }
