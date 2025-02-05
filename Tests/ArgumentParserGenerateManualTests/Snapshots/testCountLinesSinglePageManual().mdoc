@@ -6,6 +6,7 @@
 .Nm count-lines
 .Sh SYNOPSIS
 .Nm
+.Ar subcommand
 .Op Ar input-file
 .Op Fl -prefix Ar prefix
 .Op Fl -verbose
@@ -20,6 +21,11 @@ Only count lines with this prefix.
 Include extra information in the output.
 .It Fl h , -help
 Show help information.
+.It Em help
+Show subcommand help information.
+.Bl -tag -width 6n
+.It Ar subcommands...
+.El
 .El
 .Sh AUTHORS
 The

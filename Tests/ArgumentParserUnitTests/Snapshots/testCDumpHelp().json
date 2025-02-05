@@ -13,6 +13,15 @@
           "red",
           "yellow"
         ],
+        "completionKind" : {
+          "list" : {
+            "values" : [
+              "blue",
+              "red",
+              "yellow"
+            ]
+          }
+        },
         "isOptional" : false,
         "isRepeating" : false,
         "kind" : "option",
@@ -41,6 +50,15 @@
           "red",
           "yellow"
         ],
+        "completionKind" : {
+          "list" : {
+            "values" : [
+              "blue",
+              "red",
+              "yellow"
+            ]
+          }
+        },
         "defaultValue" : "red",
         "isOptional" : true,
         "isRepeating" : false,
@@ -70,6 +88,15 @@
           "red",
           "yellow"
         ],
+        "completionKind" : {
+          "list" : {
+            "values" : [
+              "blue",
+              "red",
+              "yellow"
+            ]
+          }
+        },
         "isOptional" : true,
         "isRepeating" : false,
         "kind" : "option",
@@ -97,6 +124,15 @@
           "red",
           "yellow"
         ],
+        "completionKind" : {
+          "list" : {
+            "values" : [
+              "blue",
+              "red",
+              "yellow"
+            ]
+          }
+        },
         "discussion" : "A preamble for the list of values in the discussion section.",
         "isOptional" : false,
         "isRepeating" : false,
@@ -156,7 +192,51 @@
       }
     ],
     "commandName" : "c",
-    "shouldDisplay" : false
+    "shouldDisplay" : false,
+    "subcommands" : [
+      {
+        "abstract" : "Show subcommand help information.",
+        "arguments" : [
+          {
+            "isOptional" : true,
+            "isRepeating" : true,
+            "kind" : "positional",
+            "shouldDisplay" : true,
+            "valueName" : "subcommands"
+          },
+          {
+            "isOptional" : true,
+            "isRepeating" : false,
+            "kind" : "flag",
+            "names" : [
+              {
+                "kind" : "short",
+                "name" : "h"
+              },
+              {
+                "kind" : "long",
+                "name" : "help"
+              },
+              {
+                "kind" : "longWithSingleDash",
+                "name" : "help"
+              }
+            ],
+            "preferredName" : {
+              "kind" : "long",
+              "name" : "help"
+            },
+            "shouldDisplay" : false,
+            "valueName" : "help"
+          }
+        ],
+        "commandName" : "help",
+        "shouldDisplay" : true,
+        "superCommands" : [
+          "c"
+        ]
+      }
+    ]
   },
   "serializationVersion" : 0
 }

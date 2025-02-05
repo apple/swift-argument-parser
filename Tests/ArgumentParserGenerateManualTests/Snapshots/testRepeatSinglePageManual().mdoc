@@ -6,6 +6,7 @@
 .Nm repeat
 .Sh SYNOPSIS
 .Nm
+.Ar subcommand
 .Op Fl -count Ar count
 .Op Fl -include-counter
 .Ar phrase
@@ -20,6 +21,11 @@ Include a counter with each repetition.
 The phrase to repeat.
 .It Fl h , -help
 Show help information.
+.It Em help
+Show subcommand help information.
+.Bl -tag -width 6n
+.It Ar subcommands...
+.El
 .El
 .Sh AUTHORS
 The

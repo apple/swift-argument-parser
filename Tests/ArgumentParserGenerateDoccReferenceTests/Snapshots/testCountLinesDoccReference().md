@@ -24,3 +24,14 @@ count-lines [<input-file>] [--prefix=<prefix>] [--verbose] [--help]
 **--help:**
 
 *Show help information.*
+
+
+## count-lines.help
+
+Show subcommand help information.
+
+```
+count-lines help [<subcommands>...] 
+```
+
+**subcommands:**

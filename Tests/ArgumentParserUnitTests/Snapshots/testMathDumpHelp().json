@@ -263,6 +263,15 @@
                   "median",
                   "mode"
                 ],
+                "completionKind" : {
+                  "list" : {
+                    "values" : [
+                      "mean",
+                      "median",
+                      "mode"
+                    ]
+                  }
+                },
                 "defaultValue" : "mean",
                 "isOptional" : true,
                 "isRepeating" : false,
@@ -399,6 +408,16 @@
             "abstract" : "Print the quantiles of the values (TBD).",
             "arguments" : [
               {
+                "completionKind" : {
+                  "list" : {
+                    "values" : [
+                      "alphabet",
+                      "alligator",
+                      "branch",
+                      "braggart"
+                    ]
+                  }
+                },
                 "isOptional" : true,
                 "isRepeating" : false,
                 "kind" : "positional",
@@ -406,6 +425,11 @@
                 "valueName" : "one-of-four"
               },
               {
+                "completionKind" : {
+                  "custom" : {
+
+                  }
+                },
                 "isOptional" : true,
                 "isRepeating" : false,
                 "kind" : "positional",
@@ -489,6 +513,14 @@
                 "valueName" : "test-custom-exit-code"
               },
               {
+                "completionKind" : {
+                  "file" : {
+                    "extensions" : [
+                      "txt",
+                      "md"
+                    ]
+                  }
+                },
                 "isOptional" : true,
                 "isRepeating" : false,
                 "kind" : "option",
@@ -506,6 +538,11 @@
                 "valueName" : "file"
               },
               {
+                "completionKind" : {
+                  "directory" : {
+
+                  }
+                },
                 "isOptional" : true,
                 "isRepeating" : false,
                 "kind" : "option",
@@ -523,6 +560,11 @@
                 "valueName" : "directory"
               },
               {
+                "completionKind" : {
+                  "shellCommand" : {
+                    "command" : "head -100 \/usr\/share\/dict\/words | tail -50"
+                  }
+                },
                 "isOptional" : true,
                 "isRepeating" : false,
                 "kind" : "option",
@@ -540,6 +582,11 @@
                 "valueName" : "shell"
               },
               {
+                "completionKind" : {
+                  "custom" : {
+
+                  }
+                },
                 "isOptional" : true,
                 "isRepeating" : false,
                 "kind" : "option",
@@ -605,6 +652,48 @@
             ]
           }
         ],
+        "superCommands" : [
+          "math"
+        ]
+      },
+      {
+        "abstract" : "Show subcommand help information.",
+        "arguments" : [
+          {
+            "isOptional" : true,
+            "isRepeating" : true,
+            "kind" : "positional",
+            "shouldDisplay" : true,
+            "valueName" : "subcommands"
+          },
+          {
+            "isOptional" : true,
+            "isRepeating" : false,
+            "kind" : "flag",
+            "names" : [
+              {
+                "kind" : "short",
+                "name" : "h"
+              },
+              {
+                "kind" : "long",
+                "name" : "help"
+              },
+              {
+                "kind" : "longWithSingleDash",
+                "name" : "help"
+              }
+            ],
+            "preferredName" : {
+              "kind" : "long",
+              "name" : "help"
+            },
+            "shouldDisplay" : false,
+            "valueName" : "help"
+          }
+        ],
+        "commandName" : "help",
+        "shouldDisplay" : true,
         "superCommands" : [
           "math"
         ]

@@ -190,3 +190,18 @@ math stats quantiles [<one-of-four>] [<custom-arg>] [<values>...]     [--file=<f
 **--help:**
 
 *Show help information.*
+
+
+
+
+
+
+## math.help
+
+Show subcommand help information.
+
+```
+math help [<subcommands>...] 
+```
+
+**subcommands:**

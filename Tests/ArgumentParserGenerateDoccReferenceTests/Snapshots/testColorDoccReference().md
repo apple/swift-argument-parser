@@ -21,3 +21,14 @@ This is optional.
 **--help:**
 
 *Show help information.*
+
+
+## color.help
+
+Show subcommand help information.
+
+```
+color help [<subcommands>...] 
+```
+
+**subcommands:**

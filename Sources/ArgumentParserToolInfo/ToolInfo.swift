@@ -133,6 +133,19 @@ public struct ArgumentInfoV0: Codable, Hashable {
     case flag
   }
 
+  public enum CompletionKindV0: Codable, Hashable {
+    /// Use the specified list of completion strings.
+    case list(values: [String])
+    /// Complete file names with the specified extensions.
+    case file(extensions: [String])
+    /// Complete directory names that match the specified pattern.
+    case directory
+    /// Call the given shell command to generate completions.
+    case shellCommand(command: String)
+    /// Generate completions using the given closure.
+    case custom
+  }
+
   /// Kind of argument the ArgumentInfo describes.
   public var kind: KindV0
 
@@ -169,6 +182,11 @@ public struct ArgumentInfoV0: Codable, Hashable {
   /// Mapping of valid values to descriptions of the value.
   public var allValueDescriptions: [String: String]?
 
+  /// The type of completion to use for an argument or option.
+  ///
+  /// `nil` if the tool use use the default completion kind.
+  public var completionKind: CompletionKindV0?
+
   /// Short description of the argument's functionality.
   public var abstract: String?
   /// Extended description of the argument's functionality.
@@ -186,6 +204,7 @@ public struct ArgumentInfoV0: Codable, Hashable {
     defaultValue: String?,
     allValueStrings: [String]?,
     allValueDescriptions: [String: String]?,
+    completionKind: CompletionKindV0?,
     abstract: String?,
     discussion: String?
   ) {
@@ -204,6 +223,8 @@ public struct ArgumentInfoV0: Codable, Hashable {
     self.defaultValue = defaultValue?.nonEmpty
     self.allValueStrings = allValueStrings?.nonEmpty
     self.allValueDescriptions = allValueDescriptions?.nonEmpty
+
+    self.completionKind = completionKind
 
     self.abstract = abstract?.nonEmpty
     self.discussion = discussion?.nonEmpty
