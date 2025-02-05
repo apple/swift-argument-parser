@@ -42,6 +42,16 @@ var package = Package(
 
         // Plugins
         .plugin(
+            name: "GenerateDoccReference",
+            capability: .command(
+                intent: .custom(
+                    verb: "generate-docc-reference",
+                    description: "Generate a documentation reference for a specified target."),
+                permissions: [
+                    .writeToPackageDirectory(reason: "This command generates documentation."),
+                ]),
+            dependencies: ["generate-docc-reference"]),
+        .plugin(
             name: "GenerateManual",
             capability: .command(
                 intent: .custom(
@@ -69,10 +79,14 @@ var package = Package(
 
         // Tools
         .executableTarget(
+            name: "generate-docc-reference",
+            dependencies: ["ArgumentParser", "ArgumentParserToolInfo"],
+            path: "Tools/generate-docc-reference"),
+        .executableTarget(
             name: "generate-manual",
             dependencies: ["ArgumentParser", "ArgumentParserToolInfo"],
             path: "Tools/generate-manual"),
-    
+
         // Tests
         .testTarget(
             name: "ArgumentParserEndToEndTests",
