@@ -47,7 +47,7 @@ var package = Package(
             capability: .command(
                 intent: .custom(
                     verb: "generate-docc-reference",
-                    description: "Generate a documentation reference  for a specified target."),
+                    description: "Generate a documentation reference for a specified target."),
                 permissions: [
                     .writeToPackageDirectory(reason: "This command generates documentation."),
                 ]),
