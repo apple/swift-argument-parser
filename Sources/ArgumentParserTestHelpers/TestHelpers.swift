@@ -269,33 +269,6 @@ public func AssertHelp<T: ParsableCommand, U: ParsableCommand>(
   AssertEqualStrings(actual: helpString, expected: expected, file: file, line: line)
 }
 
-public func AssertDump<T: ParsableArguments>(
-  for _: T.Type, equals expected: String,
-  file: StaticString = #filePath, line: UInt = #line
-) throws {
-  do {
-    _ = try T.parse(["--experimental-dump-help"])
-    XCTFail(file: file, line: line)
-  } catch {
-    let dumpString = T.fullMessage(for: error)
-    try AssertJSONEqualFromString(actual: dumpString, expected: expected, for: ToolInfoV0.self, file: file, line: line)
-  }
-
-  try AssertJSONEqualFromString(actual: T._dumpHelp(), expected: expected, for: ToolInfoV0.self, file: file, line: line)
-}
-
-public func AssertJSONEqualFromString<T: Codable & Equatable>(actual: String, expected: String, for type: T.Type, file: StaticString = #filePath, line: UInt = #line) throws {
-  if #available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *) {
-    AssertEqualStrings(actual: actual, expected: expected, file: file, line: line)
-  }
-
-  let actualJSONData = try XCTUnwrap(actual.data(using: .utf8), file: file, line: line)
-  let actualDumpJSON = try XCTUnwrap(JSONDecoder().decode(type, from: actualJSONData), file: file, line: line)
-
-  let expectedJSONData = try XCTUnwrap(expected.data(using: .utf8), file: file, line: line)
-  let expectedDumpJSON = try XCTUnwrap(JSONDecoder().decode(type, from: expectedJSONData), file: file, line: line)
-  XCTAssertEqual(actualDumpJSON, expectedDumpJSON)
-}
 
 extension XCTest {
   public var debugURL: URL {
@@ -304,13 +277,15 @@ extension XCTest {
       ? bundleURL.deletingLastPathComponent()
       : bundleURL
   }
-  
+
+  @discardableResult
   public func AssertExecuteCommand(
     command: String,
     expected: String? = nil,
     exitCode: ExitCode = .success,
-    file: StaticString = #filePath, line: UInt = #line) throws
-  {
+    file: StaticString = #filePath,
+    line: UInt = #line
+  ) throws -> String {
     try AssertExecuteCommand(
       command: command.split(separator: " ").map(String.init),
       expected: expected,
@@ -319,12 +294,14 @@ extension XCTest {
       line: line)
   }
 
+  @discardableResult
   public func AssertExecuteCommand(
     command: [String],
     expected: String? = nil,
     exitCode: ExitCode = .success,
-    file: StaticString = #filePath, line: UInt = #line) throws
-  {
+    file: StaticString = #filePath,
+    line: UInt = #line
+  ) throws -> String {
     #if os(Windows)
     throw XCTSkip("Unsupported on this platform")
     #endif
@@ -335,7 +312,7 @@ extension XCTest {
     guard (try? commandURL.checkResourceIsReachable()) ?? false else {
       XCTFail("No executable at '\(commandURL.standardizedFileURL.path)'.",
               file: file, line: line)
-      return
+      return ""
     }
     
     #if !canImport(Darwin) || os(macOS)
@@ -355,7 +332,7 @@ extension XCTest {
     if #available(macOS 10.13, *) {
       guard (try? process.run()) != nil else {
         XCTFail("Couldn't run command process.", file: file, line: line)
-        return
+        return ""
       }
     } else {
       process.launch()
@@ -380,65 +357,14 @@ extension XCTest {
     #else
     throw XCTSkip("Not supported on this platform")
     #endif
-  }
-
-  public func AssertJSONOutputEqual(
-    command: String,
-    expected: String,
-    file: StaticString = #filePath,
-    line: UInt = #line
-  ) throws {
-    #if os(Windows)
-    throw XCTSkip("Unsupported on this platform")
-    #endif
-
-    let splitCommand = command.split(separator: " ")
-    let arguments = splitCommand.dropFirst().map(String.init)
-
-    let commandName = String(splitCommand.first!)
-    let commandURL = debugURL.appendingPathComponent(commandName)
-    guard (try? commandURL.checkResourceIsReachable()) ?? false else {
-      XCTFail("No executable at '\(commandURL.standardizedFileURL.path)'.",
-              file: file, line: line)
-      return
-    }
-
-    #if !canImport(Darwin) || os(macOS)
-    let process = Process()
-    if #available(macOS 10.13, *) {
-      process.executableURL = commandURL
-    } else {
-      process.launchPath = commandURL.path
-    }
-    process.arguments = arguments
-
-    let output = Pipe()
-    process.standardOutput = output
-    let error = Pipe()
-    process.standardError = error
-
-    if #available(macOS 10.13, *) {
-      guard (try? process.run()) != nil else {
-        XCTFail("Couldn't run command process.", file: file, line: line)
-        return
-      }
-    } else {
-      process.launch()
-    }
-    process.waitUntilExit()
-
-    let outputString = try XCTUnwrap(String(data: output.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8))
-    XCTAssertTrue(error.fileHandleForReading.readDataToEndOfFile().isEmpty, "Error occurred with `--experimental-dump-help`")
-    try AssertJSONEqualFromString(actual: outputString, expected: expected, for: ToolInfoV0.self, file: file, line: line)
-    #else
-    throw XCTSkip("Not supported on this platform")
-    #endif
+    return outputActual
   }
 
   public func AssertGenerateManual(
     multiPage: Bool,
     command: String,
-    expected: String,
+    expected: URL,
+    record: Bool = false,
     file: StaticString = #filePath,
     line: UInt = #line
   ) throws {
@@ -459,17 +385,29 @@ extension XCTest {
     if multiPage {
       command.append("--multi-page")
     }
-    try AssertExecuteCommand(
+    let actual = try AssertExecuteCommand(
       command: command,
-      expected: expected,
-      exitCode: .success,
       file: file,
       line: line)
+
+    if record || !FileManager.default.fileExists(atPath: expected.path) {
+      let recordedValue = actual + "\n"
+      try recordedValue.write(to: expected, atomically: true, encoding: .utf8)
+      XCTFail("Recorded new baseline", file: file, line: line)
+    } else {
+      let expected = try String(contentsOf: expected, encoding: .utf8)
+      AssertEqualStrings(
+        actual: actual,
+        expected: expected.trimmingCharacters(in: .whitespacesAndNewlines),
+        file: file,
+        line: line)
+    }
   }
 
   public func AssertGenerateDoccReference(
     command: String,
-    expected: String,
+    expected: URL,
+    record: Bool = false,
     file: StaticString = #filePath,
     line: UInt = #line
   ) throws {
@@ -482,11 +420,99 @@ extension XCTest {
       "generate-docc-reference", commandURL.path,
       "--output-directory", "-",
     ]
-    try AssertExecuteCommand(
+    let actual = try AssertExecuteCommand(
       command: command,
-      expected: expected,
-      exitCode: .success,
       file: file,
       line: line)
+    if record || !FileManager.default.fileExists(atPath: expected.path) {
+      let recordedValue = actual + "\n"
+      try recordedValue.write(to: expected, atomically: true, encoding: .utf8)
+      XCTFail("Recorded new baseline", file: file, line: line)
+    } else {
+      let expected = try String(contentsOf: expected, encoding: .utf8)
+      AssertEqualStrings(
+        actual: actual,
+        expected: expected.trimmingCharacters(in: .whitespacesAndNewlines),
+        file: file,
+        line: line)
+    }
+  }
+
+  public func AssertDump<T: ParsableArguments>(
+    type: T.Type,
+    expected: URL,
+    record: Bool = false,
+    file: StaticString = #filePath,
+    line: UInt = #line
+  ) throws {
+    let cliOutput: String
+    do {
+      _ = try T.parse(["--experimental-dump-help"])
+      XCTFail(file: file, line: line)
+      return
+    } catch {
+      cliOutput = T.fullMessage(for: error)
+    }
+
+    let apiOutput = T._dumpHelp()
+    AssertEqualStrings(actual: cliOutput, expected: apiOutput)
+
+    if record || !FileManager.default.fileExists(atPath: expected.path) {
+      let recordedValue = apiOutput + "\n"
+      try recordedValue.write(to: expected, atomically: true, encoding: .utf8)
+      XCTFail("Recorded new baseline", file: file, line: line)
+    } else {
+      let expected = try String(contentsOf: expected, encoding: .utf8)
+      try AssertJSONEqualFromString(
+        actual: apiOutput,
+        expected: expected,
+        for: ToolInfoV0.self,
+        file: file,
+        line: line)
+    }
+  }
+
+  public func AssertDump(
+    command: String,
+    expected: URL,
+    record: Bool = false,
+    file: StaticString = #filePath,
+    line: UInt = #line
+  ) throws {
+    let actual = try AssertExecuteCommand(
+      command: command + " --experimental-dump-help",
+      expected: nil,
+      file: file,
+      line: line)
+    if record || !FileManager.default.fileExists(atPath: expected.path) {
+      let recordedValue = actual + "\n"
+      try recordedValue.write(to: expected, atomically: true, encoding: .utf8)
+      XCTFail("Recorded new baseline", file: file, line: line)
+    } else {
+      let expected = try String(contentsOf: expected, encoding: .utf8)
+      try AssertJSONEqualFromString(
+        actual: actual,
+        expected: expected,
+        for: ToolInfoV0.self,
+        file: file,
+        line: line)
+    }
+  }
+
+  public func AssertJSONEqualFromString<T: Codable & Equatable>(actual: String, expected: String, for type: T.Type, file: StaticString = #filePath, line: UInt = #line) throws {
+    if #available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *) {
+      AssertEqualStrings(
+        actual: actual.trimmingCharacters(in: .whitespacesAndNewlines),
+        expected: expected.trimmingCharacters(in: .whitespacesAndNewlines),
+        file: file,
+        line: line)
+    }
+
+    let actualJSONData = try XCTUnwrap(actual.data(using: .utf8), file: file, line: line)
+    let actualDumpJSON = try XCTUnwrap(JSONDecoder().decode(type, from: actualJSONData), file: file, line: line)
+
+    let expectedJSONData = try XCTUnwrap(expected.data(using: .utf8), file: file, line: line)
+    let expectedDumpJSON = try XCTUnwrap(JSONDecoder().decode(type, from: expectedJSONData), file: file, line: line)
+    XCTAssertEqual(actualDumpJSON, expectedDumpJSON)
   }
 }
