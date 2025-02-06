@@ -7,6 +7,15 @@
           "two",
           "three"
         ],
+        "completionKind" : {
+          "list" : {
+            "values" : [
+              "one",
+              "two",
+              "three"
+            ]
+          }
+        },
         "isOptional" : false,
         "isRepeating" : false,
         "kind" : "option",
@@ -29,6 +38,15 @@
           "two",
           "three"
         ],
+        "completionKind" : {
+          "list" : {
+            "values" : [
+              "one",
+              "two",
+              "three"
+            ]
+          }
+        },
         "defaultValue" : "two",
         "isOptional" : true,
         "isRepeating" : false,
@@ -148,7 +166,51 @@
       }
     ],
     "commandName" : "a",
-    "shouldDisplay" : true
+    "shouldDisplay" : true,
+    "subcommands" : [
+      {
+        "abstract" : "Show subcommand help information.",
+        "arguments" : [
+          {
+            "isOptional" : true,
+            "isRepeating" : true,
+            "kind" : "positional",
+            "shouldDisplay" : true,
+            "valueName" : "subcommands"
+          },
+          {
+            "isOptional" : true,
+            "isRepeating" : false,
+            "kind" : "flag",
+            "names" : [
+              {
+                "kind" : "short",
+                "name" : "h"
+              },
+              {
+                "kind" : "long",
+                "name" : "help"
+              },
+              {
+                "kind" : "longWithSingleDash",
+                "name" : "help"
+              }
+            ],
+            "preferredName" : {
+              "kind" : "long",
+              "name" : "help"
+            },
+            "shouldDisplay" : false,
+            "valueName" : "help"
+          }
+        ],
+        "commandName" : "help",
+        "shouldDisplay" : true,
+        "superCommands" : [
+          "a"
+        ]
+      }
+    ]
   },
   "serializationVersion" : 0
 }

@@ -24,3 +24,14 @@ repeat [--count=<count>] [--include-counter] <phrase> [--help]
 **--help:**
 
 *Show help information.*
+
+
+## repeat.help
+
+Show subcommand help information.
+
+```
+repeat help [<subcommands>...] 
+```
+
+**subcommands:**

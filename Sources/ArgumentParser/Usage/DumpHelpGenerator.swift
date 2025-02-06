@@ -89,6 +89,11 @@ fileprivate extension ArgumentSet {
 fileprivate extension ToolInfoV0 {
   init(commandStack: [ParsableCommand.Type]) {
     self.init(command: CommandInfoV0(commandStack: commandStack))
+    // FIXME: This is a hack to inject the help command into the tool info
+    // instead we should try to lift this into the parseable command tree
+    var helpCommandInfo = CommandInfoV0(commandStack: [HelpCommand.self])
+    helpCommandInfo.superCommands = (self.command.superCommands ?? []) + [self.command.commandName]
+    self.command.subcommands = (self.command.subcommands ?? []) + [helpCommandInfo]
   }
 }
 
@@ -159,6 +164,7 @@ fileprivate extension ArgumentInfoV0 {
       defaultValue: argument.help.defaultValue,
       allValueStrings: argument.help.allValueStrings,
       allValueDescriptions: allValueDescriptions,
+      completionKind: ArgumentInfoV0.CompletionKindV0(completion: argument.completion),
       abstract: argument.help.abstract,
       discussion: discussion)
   }
@@ -191,6 +197,25 @@ fileprivate extension ArgumentInfoV0.NameInfoV0 {
       self.init(kind: .short, name: String(n))
     case let .longWithSingleDash(n):
       self.init(kind: .longWithSingleDash, name: n)
+    }
+  }
+}
+
+fileprivate extension ArgumentInfoV0.CompletionKindV0 {
+  init?(completion: CompletionKind) {
+    switch completion.kind {
+    case .`default`:
+      return nil
+    case .list(let values):
+      self = .list(values: values)
+    case .file(let extensions):
+      self = .file(extensions: extensions)
+    case .directory:
+      self = .directory
+    case .shellCommand(let command):
+      self = .shellCommand(command: command)
+    case .custom(_):
+      self = .custom
     }
   }
 }
