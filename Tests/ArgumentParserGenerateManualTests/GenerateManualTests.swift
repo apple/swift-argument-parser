@@ -14,55 +14,47 @@ import XCTest
 import ArgumentParserTestHelpers
 
 final class GenerateManualTests: XCTestCase {
-  let snapshotsDirectory = URL(fileURLWithPath: #filePath)
-    .deletingLastPathComponent()
-    .appendingPathComponent("Snapshots")
-
-  func url(_ test: StaticString = #function) -> URL {
-    return self.snapshotsDirectory.appendingPathComponent("\(test).mdoc")
-  }
-
 #if os(macOS)
   func testCountLinesSinglePageManual() throws {
     guard #available(macOS 12, *) else { return }
-    try AssertGenerateManual(multiPage: false, command: "count-lines", expected: self.url())
+    try assertGenerateManual(multiPage: false, command: "count-lines")
   }
 
   func testCountLinesMultiPageManual() throws {
     guard #available(macOS 12, *) else { return }
-    try AssertGenerateManual(multiPage: true, command: "count-lines", expected: self.url())
+    try assertGenerateManual(multiPage: true, command: "count-lines")
   }
 #endif
 
   func testColorSinglePageManual() throws {
-    try AssertGenerateManual(multiPage: false, command: "color", expected: self.url())
+    try assertGenerateManual(multiPage: false, command: "color")
   }
 
   func testColorMultiPageManual() throws {
-    try AssertGenerateManual(multiPage: true, command: "color", expected: self.url())
+    try assertGenerateManual(multiPage: true, command: "color")
   }
 
   func testMathSinglePageManual() throws {
-    try AssertGenerateManual(multiPage: false, command: "math", expected: self.url())
+    try assertGenerateManual(multiPage: false, command: "math")
   }
 
   func testMathMultiPageManual() throws {
-    try AssertGenerateManual(multiPage: true, command: "math", expected: self.url())
+    try assertGenerateManual(multiPage: true, command: "math")
   }
 
   func testRepeatSinglePageManual() throws {
-    try AssertGenerateManual(multiPage: false, command: "repeat", expected: self.url())
+    try assertGenerateManual(multiPage: false, command: "repeat")
   }
 
   func testRepeatMultiPageManual() throws {
-    try AssertGenerateManual(multiPage: true, command: "repeat", expected: self.url())
+    try assertGenerateManual(multiPage: true, command: "repeat")
   }
 
   func testRollSinglePageManual() throws {
-    try AssertGenerateManual(multiPage: false, command: "roll", expected: self.url())
+    try assertGenerateManual(multiPage: false, command: "roll")
   }
 
   func testRollMultiPageManual() throws {
-    try AssertGenerateManual(multiPage: true, command: "roll", expected: self.url())
+    try assertGenerateManual(multiPage: true, command: "roll")
   }
 }

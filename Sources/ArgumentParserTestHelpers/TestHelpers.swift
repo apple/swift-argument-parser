@@ -360,11 +360,68 @@ extension XCTest {
     return outputActual
   }
 
-  public func AssertGenerateManual(
+  public func AssertJSONEqualFromString<T: Codable & Equatable>(actual: String, expected: String, for type: T.Type, file: StaticString = #filePath, line: UInt = #line) throws {
+    if #available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *) {
+      AssertEqualStrings(
+        actual: actual.trimmingCharacters(in: .whitespacesAndNewlines),
+        expected: expected.trimmingCharacters(in: .whitespacesAndNewlines),
+        file: file,
+        line: line)
+    }
+
+    let actualJSONData = try XCTUnwrap(actual.data(using: .utf8), file: file, line: line)
+    let actualDumpJSON = try XCTUnwrap(JSONDecoder().decode(type, from: actualJSONData), file: file, line: line)
+
+    let expectedJSONData = try XCTUnwrap(expected.data(using: .utf8), file: file, line: line)
+    let expectedDumpJSON = try XCTUnwrap(JSONDecoder().decode(type, from: expectedJSONData), file: file, line: line)
+    XCTAssertEqual(actualDumpJSON, expectedDumpJSON)
+  }
+}
+
+
+// MARK: - Snapshot testing
+extension XCTest {
+  @discardableResult
+  public func assertSnapshot(
+    actual: String,
+    extension: String,
+    record: Bool = false,
+    test: StaticString = #function,
+    file: StaticString = #filePath,
+    line: UInt = #line
+  ) throws -> String {
+    let snapshotDirectoryURL = URL(fileURLWithPath: "\(file)")
+      .deletingLastPathComponent()
+      .appendingPathComponent("Snapshots")
+    let snapshotFileURL = snapshotDirectoryURL
+      .appendingPathComponent("\(test).\(`extension`)")
+
+    if record || !FileManager.default.fileExists(atPath: snapshotFileURL.path) {
+      let recordedValue = actual + "\n"
+      try FileManager.default.createDirectory(
+        at: snapshotDirectoryURL,
+        withIntermediateDirectories: true,
+        attributes: nil)
+      try recordedValue.write(to: snapshotFileURL, atomically: true, encoding: .utf8)
+      XCTFail("Recorded new baseline", file: file, line: line)
+      struct EarlyExit: Error {}
+      throw EarlyExit()
+    } else {
+      let expected = try String(contentsOf: snapshotFileURL, encoding: .utf8)
+      AssertEqualStrings(
+        actual: actual,
+        expected: expected.trimmingCharacters(in: .newlines),
+        file: file,
+        line: line)
+      return expected
+    }
+  }
+
+  public func assertGenerateManual(
     multiPage: Bool,
     command: String,
-    expected: URL,
     record: Bool = false,
+    test: StaticString = #function,
     file: StaticString = #filePath,
     line: UInt = #line
   ) throws {
@@ -390,24 +447,19 @@ extension XCTest {
       file: file,
       line: line)
 
-    if record || !FileManager.default.fileExists(atPath: expected.path) {
-      let recordedValue = actual + "\n"
-      try recordedValue.write(to: expected, atomically: true, encoding: .utf8)
-      XCTFail("Recorded new baseline", file: file, line: line)
-    } else {
-      let expected = try String(contentsOf: expected, encoding: .utf8)
-      AssertEqualStrings(
-        actual: actual,
-        expected: expected.trimmingCharacters(in: .whitespacesAndNewlines),
-        file: file,
-        line: line)
-    }
+    try self.assertSnapshot(
+      actual: actual,
+      extension: "mdoc",
+      record: record,
+      test: test,
+      file: file,
+      line: line)
   }
 
-  public func AssertGenerateDoccReference(
+  public func assertGenerateDoccReference(
     command: String,
-    expected: URL,
     record: Bool = false,
+    test: StaticString = #function,
     file: StaticString = #filePath,
     line: UInt = #line
   ) throws {
@@ -424,58 +476,55 @@ extension XCTest {
       command: command,
       file: file,
       line: line)
-    if record || !FileManager.default.fileExists(atPath: expected.path) {
-      let recordedValue = actual + "\n"
-      try recordedValue.write(to: expected, atomically: true, encoding: .utf8)
-      XCTFail("Recorded new baseline", file: file, line: line)
-    } else {
-      let expected = try String(contentsOf: expected, encoding: .utf8)
-      AssertEqualStrings(
-        actual: actual,
-        expected: expected.trimmingCharacters(in: .whitespacesAndNewlines),
-        file: file,
-        line: line)
-    }
+
+    try self.assertSnapshot(
+      actual: actual,
+      extension: "md",
+      record: record,
+      test: test,
+      file: file,
+      line: line)
   }
 
-  public func AssertDump<T: ParsableArguments>(
+  public func assertDumpHelp<T: ParsableArguments>(
     type: T.Type,
-    expected: URL,
     record: Bool = false,
+    test: StaticString = #function,
     file: StaticString = #filePath,
     line: UInt = #line
   ) throws {
-    let cliOutput: String
+    let actual: String
     do {
       _ = try T.parse(["--experimental-dump-help"])
       XCTFail(file: file, line: line)
       return
     } catch {
-      cliOutput = T.fullMessage(for: error)
+      actual = T.fullMessage(for: error)
     }
 
     let apiOutput = T._dumpHelp()
-    AssertEqualStrings(actual: cliOutput, expected: apiOutput)
+    AssertEqualStrings(actual: actual, expected: apiOutput)
 
-    if record || !FileManager.default.fileExists(atPath: expected.path) {
-      let recordedValue = apiOutput + "\n"
-      try recordedValue.write(to: expected, atomically: true, encoding: .utf8)
-      XCTFail("Recorded new baseline", file: file, line: line)
-    } else {
-      let expected = try String(contentsOf: expected, encoding: .utf8)
-      try AssertJSONEqualFromString(
-        actual: apiOutput,
-        expected: expected,
-        for: ToolInfoV0.self,
-        file: file,
-        line: line)
-    }
+    let expected = try self.assertSnapshot(
+      actual: actual,
+      extension: "json",
+      record: record,
+      test: test,
+      file: file,
+      line: line)
+
+    try AssertJSONEqualFromString(
+      actual: actual,
+      expected: expected,
+      for: ToolInfoV0.self,
+      file: file,
+      line: line)
   }
 
-  public func AssertDump(
+  public func assertDumpHelp(
     command: String,
-    expected: URL,
     record: Bool = false,
+    test: StaticString = #function,
     file: StaticString = #filePath,
     line: UInt = #line
   ) throws {
@@ -484,35 +533,12 @@ extension XCTest {
       expected: nil,
       file: file,
       line: line)
-    if record || !FileManager.default.fileExists(atPath: expected.path) {
-      let recordedValue = actual + "\n"
-      try recordedValue.write(to: expected, atomically: true, encoding: .utf8)
-      XCTFail("Recorded new baseline", file: file, line: line)
-    } else {
-      let expected = try String(contentsOf: expected, encoding: .utf8)
-      try AssertJSONEqualFromString(
-        actual: actual,
-        expected: expected,
-        for: ToolInfoV0.self,
-        file: file,
-        line: line)
-    }
-  }
-
-  public func AssertJSONEqualFromString<T: Codable & Equatable>(actual: String, expected: String, for type: T.Type, file: StaticString = #filePath, line: UInt = #line) throws {
-    if #available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *) {
-      AssertEqualStrings(
-        actual: actual.trimmingCharacters(in: .whitespacesAndNewlines),
-        expected: expected.trimmingCharacters(in: .whitespacesAndNewlines),
-        file: file,
-        line: line)
-    }
-
-    let actualJSONData = try XCTUnwrap(actual.data(using: .utf8), file: file, line: line)
-    let actualDumpJSON = try XCTUnwrap(JSONDecoder().decode(type, from: actualJSONData), file: file, line: line)
-
-    let expectedJSONData = try XCTUnwrap(expected.data(using: .utf8), file: file, line: line)
-    let expectedDumpJSON = try XCTUnwrap(JSONDecoder().decode(type, from: expectedJSONData), file: file, line: line)
-    XCTAssertEqual(actualDumpJSON, expectedDumpJSON)
+    try self.assertSnapshot(
+      actual: actual,
+      extension: "json",
+      record: record,
+      test: test,
+      file: file,
+      line: line)
   }
 }

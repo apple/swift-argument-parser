@@ -14,34 +14,26 @@ import XCTest
 import ArgumentParserTestHelpers
 
 final class GenerateDoccReferenceTests: XCTestCase {
-  let snapshotsDirectory = URL(fileURLWithPath: #filePath)
-    .deletingLastPathComponent()
-    .appendingPathComponent("Snapshots")
-
-  func url(_ test: StaticString = #function) -> URL {
-    return self.snapshotsDirectory.appendingPathComponent("\(test).md")
-  }
-
 #if os(macOS)
   func testCountLinesDoccReference() throws {
     guard #available(macOS 12, *) else { return }
-    try AssertGenerateDoccReference(command: "count-lines", expected: self.url())
+    try assertGenerateDoccReference(command: "count-lines")
   }
 #endif
 
   func testColorDoccReference() throws {
-    try AssertGenerateDoccReference(command: "color", expected: self.url())
+    try assertGenerateDoccReference(command: "color")
   }
 
   func testMathDoccReference() throws {
-    try AssertGenerateDoccReference(command: "math", expected: self.url())
+    try assertGenerateDoccReference(command: "math")
   }
 
   func testRepeatDoccReference() throws {
-    try AssertGenerateDoccReference(command: "repeat", expected: self.url())
+    try assertGenerateDoccReference(command: "repeat")
   }
 
   func testRollDoccReference() throws {
-    try AssertGenerateDoccReference(command: "roll", expected: self.url())
+    try assertGenerateDoccReference(command: "roll")
   }
 }
