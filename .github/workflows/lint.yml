@@ -1,0 +1,33 @@
+name: Lint
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  validate_format_config:
+    name: Validate Format Config
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Install apt dependencies
+        run: sudo apt-get -qq update && sudo apt-get -qq -y install curl
+
+      - name: Compare against swift-mmio swift-format config
+        run: |
+          curl -sL https://raw.githubusercontent.com/apple/swift-mmio/refs/heads/main/.swift-format -o .swift-format-mmio
+          diff .swift-format .swift-format-mmio
+
+  soundness:
+    name: Soundness
+    uses: swiftlang/github-workflows/.github/workflows/soundness.yml@main
+    with:
+      docs_check_enabled: false  # bug: https://github.com/apple/swift-argument-parser/issues/704
+      format_check_enabled: false  # bug: https://github.com/apple/swift-argument-parser/issues/702
+      license_header_check_enabled: false  # feature: https://github.com/swiftlang/github-workflows/issues/78
+      license_header_check_project_name: "Swift Argument Parser"  # bug: https://github.com/swiftlang/github-workflows/issues/76
+      shell_check_enabled: false  # bug: https://github.com/apple/swift-argument-parser/issues/703
