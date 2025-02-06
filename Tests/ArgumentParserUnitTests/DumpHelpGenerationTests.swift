@@ -13,40 +13,32 @@ import ArgumentParserTestHelpers
 @testable import ArgumentParser
 
 final class DumpHelpGenerationTests: XCTestCase {
-  let snapshotsDirectory = URL(fileURLWithPath: #filePath)
-    .deletingLastPathComponent()
-    .appendingPathComponent("Snapshots")
-
-  func url(_ test: StaticString = #function) -> URL {
-    return self.snapshotsDirectory.appendingPathComponent("\(test).json")
-  }
-
   public func testADumpHelp() throws {
-    try AssertDump(type: A.self, expected: self.url())
+    try assertDumpHelp(type: A.self)
   }
 
   public func testBDumpHelp() throws {
-    try AssertDump(type: B.self, expected: self.url())
+    try assertDumpHelp(type: B.self)
   }
 
   public func testCDumpHelp() throws {
-    try AssertDump(type: C.self, expected: self.url())
+    try assertDumpHelp(type: C.self)
   }
 
   func testMathDumpHelp() throws {
-    try AssertDump(command: "math", expected: self.url())
+    try assertDumpHelp(command: "math")
   }
 
   func testMathAddDumpHelp() throws {
-    try AssertDump(command: "math add", expected: self.url())
+    try assertDumpHelp(command: "math add")
   }
 
   func testMathMultiplyDumpHelp() throws {
-    try AssertDump(command: "math multiply", expected: self.url())
+    try assertDumpHelp(command: "math multiply")
   }
 
   func testMathStatsDumpHelp() throws {
-    try AssertDump(command: "math stats", expected: self.url())
+    try assertDumpHelp(command: "math stats")
   }
 }
 
