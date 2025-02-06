@@ -389,14 +389,17 @@ extension XCTest {
     test: StaticString = #function,
     file: StaticString = #filePath,
     line: UInt = #line
-  ) throws -> String {
+  ) throws -> String? {
     let snapshotDirectoryURL = URL(fileURLWithPath: "\(file)")
       .deletingLastPathComponent()
       .appendingPathComponent("Snapshots")
     let snapshotFileURL = snapshotDirectoryURL
       .appendingPathComponent("\(test).\(`extension`)")
 
-    if record || !FileManager.default.fileExists(atPath: snapshotFileURL.path) {
+    let snapshotExists = FileManager.default.fileExists(atPath: snapshotFileURL.path)
+    let recordEnvironment = ProcessInfo.processInfo.environment["RECORD_SNAPSHOTS"] != nil
+
+    if record || recordEnvironment || !snapshotExists {
       let recordedValue = actual + "\n"
       try FileManager.default.createDirectory(
         at: snapshotDirectoryURL,
@@ -404,8 +407,7 @@ extension XCTest {
         attributes: nil)
       try recordedValue.write(to: snapshotFileURL, atomically: true, encoding: .utf8)
       XCTFail("Recorded new baseline", file: file, line: line)
-      struct EarlyExit: Error {}
-      throw EarlyExit()
+      return nil
     } else {
       let expected = try String(contentsOf: snapshotFileURL, encoding: .utf8)
       AssertEqualStrings(
@@ -512,6 +514,8 @@ extension XCTest {
       test: test,
       file: file,
       line: line)
+
+    guard let expected else { return }
 
     try AssertJSONEqualFromString(
       actual: actual,
