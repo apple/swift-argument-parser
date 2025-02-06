@@ -360,12 +360,14 @@ extension CommandParser {
     case .terminator:
       throw ParserError.invalidState
     }
-    
-    if let completionShellName = ProcessInfo.processInfo.environment[CompletionShell.shellEnvironmentVariableName] {
-      CompletionShell.requesting = CompletionShell(rawValue: completionShellName)
+
+    let environment = ProcessInfo.processInfo.environment
+    if let completionShellName = environment[CompletionShell.shellEnvironmentVariableName] {
+      let shell = CompletionShell(rawValue: completionShellName)
+      CompletionShell._requesting.withLock { $0 = shell }
     }
 
-    CompletionShell.requestingVersion = ProcessInfo.processInfo.environment[CompletionShell.shellVersionEnvironmentVariableName]
+    CompletionShell._requestingVersion.withLock { $0 = environment[CompletionShell.shellVersionEnvironmentVariableName] }
 
     // Parsing and retrieval successful! We don't want to continue with any
     // other parsing here, so after printing the result of the completion

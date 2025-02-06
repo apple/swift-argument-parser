@@ -42,19 +42,27 @@ public struct CompletionShell: RawRepresentable, Hashable, CaseIterable {
     [.zsh, .bash, .fish]
   }
 
+  static let _requesting = Mutex<CompletionShell?>(nil)
+
   /// While generating a shell completion script or while a Swift custom completion
   /// function is executing to offer completions for a word from a command line (e.g.,
   /// while `customCompletion` from `@Option(completion: .custom(customCompletion))`
   /// executes), an instance representing the shell for which completions will
   /// be or are being requested, respectively. Otherwise `nil`.
-  public internal(set) static var requesting: CompletionShell?
+  public static var requesting: CompletionShell? {
+    Self._requesting.withLock { $0 }
+  }
+
+  static let _requestingVersion = Mutex<String?>(nil)
 
   /// While a Swift custom completion function is executing to offer completions
   /// for a word from a command line (e.g., while `customCompletion` from
   /// `@Option(completion: .custom(customCompletion))` executes), a `String`
   /// representing the version of the shell for which completions are being
   /// requested. Otherwise `nil`.
-  public internal(set) static var requestingVersion: String?
+  public static var requestingVersion: String? {
+    Self._requestingVersion.withLock { $0 }
+  }
 
   /// The name of the environment variable whose value is the name of the shell
   /// for which completions are being requested from a custom completion
@@ -97,7 +105,7 @@ struct CompletionsGenerator {
   
   /// Generates a shell completion script for this generator's shell and command.
   func generateCompletionScript() -> String {
-    CompletionShell.requesting = shell
+    CompletionShell._requesting.withLock { $0 = shell }
     switch shell {
     case .zsh:
       return ZshCompletionsGenerator.generateCompletionScript(command)
