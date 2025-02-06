@@ -12,10 +12,10 @@ _base-test() {
     args+=(
         '--name[The user'"'"'s name.]:name:'
         '--kind:kind:(one two custom-three)'
-        '--other-kind:other-kind:(1 2 3)'
+        '--other-kind:other-kind:(b1_zsh b2_zsh b3_zsh)'
         '--path1:path1:_files'
         '--path2:path2:_files'
-        '--path3:path3:(a b c)'
+        '--path3:path3:(c1_zsh c2_zsh c3_zsh)'
         '--one'
         '--two'
         '--three'
@@ -34,6 +34,7 @@ _base-test() {
             local subcommands
             subcommands=(
                 'sub-command:'
+                'escaped-command:'
                 'help:Show subcommand help information.'
             )
             _describe "subcommand" subcommands
@@ -42,6 +43,9 @@ _base-test() {
             case ${words[1]} in
                 (sub-command)
                     _base-test_sub-command
+                    ;;
+                (escaped-command)
+                    _base-test_escaped-command
                     ;;
                 (help)
                     _base-test_help
@@ -57,6 +61,19 @@ _base-test_sub-command() {
     integer ret=1
     local -a args
     args+=(
+        '(-h --help)'{-h,--help}'[Show help information.]'
+    )
+    _arguments -w -s -S $args[@] && ret=0
+
+    return ret
+}
+
+_base-test_escaped-command() {
+    integer ret=1
+    local -a args
+    args+=(
+        '--one[Escaped chars: '"'"'\[\]\\.]:one:'
+        ':two:{_custom_completion $_base_test_commandname ---completion escaped-command -- two $words}'
         '(-h --help)'{-h,--help}'[Show help information.]'
     )
     _arguments -w -s -S $args[@] && ret=0

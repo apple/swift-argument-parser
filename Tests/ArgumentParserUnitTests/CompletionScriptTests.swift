@@ -13,8 +13,20 @@ import XCTest
 import ArgumentParserTestHelpers
 @testable import ArgumentParser
 
-final class CompletionScriptTests: XCTestCase {
+fileprivate func candidates(prefix: String) -> [String] {
+  switch CompletionShell.requesting {
+  case CompletionShell.bash:
+    return ["\(prefix)1_bash", "\(prefix)2_bash", "\(prefix)3_bash"]
+  case CompletionShell.fish:
+    return ["\(prefix)1_fish", "\(prefix)2_fish", "\(prefix)3_fish"]
+  case CompletionShell.zsh:
+    return ["\(prefix)1_zsh", "\(prefix)2_zsh", "\(prefix)3_zsh"]
+  default:
+    return []
+  }
 }
+
+final class CompletionScriptTests: XCTestCase {}
 
 extension CompletionScriptTests {
   struct Path: ExpressibleByArgument {
@@ -34,24 +46,23 @@ extension CompletionScriptTests {
   }
   
   struct NestedArguments: ParsableArguments {
-    @Argument(completion: .custom { _ in ["t", "u", "v"] })
+    @Argument(completion: .custom { _ in candidates(prefix: "a") })
     var nestedArgument: String
   }
   
   struct Base: ParsableCommand {
     static let configuration = CommandConfiguration(
       commandName: "base-test",
-      subcommands: [SubCommand.self]
-    )
+      subcommands: [SubCommand.self, HiddenChild.self, EscapedCommand.self])
 
     @Option(help: "The user's name.") var name: String
     @Option() var kind: Kind
-    @Option(completion: .list(["1", "2", "3"])) var otherKind: Kind
-    
+    @Option(completion: .list(candidates(prefix: "b"))) var otherKind: Kind
+
     @Option() var path1: Path
     @Option() var path2: Path?
-    @Option(completion: .list(["a", "b", "c"])) var path3: Path
-    
+    @Option(completion: .list(candidates(prefix: "c"))) var path3: Path
+
     @Flag(help: .hidden) var verbose = false
     @Flag var allowedKinds: [Kind] = []
     @Flag var kindCounter: Int
@@ -59,13 +70,23 @@ extension CompletionScriptTests {
     @Option() var rep1: [String]
     @Option(name: [.short, .long]) var rep2: [String]
     
-    @Argument(completion: .custom { _ in ["q", "r", "s"] }) var argument: String
+    @Argument(completion: .custom { _ in candidates(prefix: "d") }) var argument: String
     @OptionGroup var nested: NestedArguments
     
     struct SubCommand: ParsableCommand {
-      static let configuration = CommandConfiguration(
-        commandName: "sub-command"
-      )
+      static let configuration = CommandConfiguration(commandName: "sub-command")
+    }
+
+    struct HiddenChild: ParsableCommand {
+      static let configuration = CommandConfiguration(shouldDisplay: false)
+    }
+
+    struct EscapedCommand: ParsableCommand {
+      @Option(help: #"Escaped chars: '[]\."#)
+      var one: String
+
+      @Argument(completion: .custom { _ in candidates(prefix: "i") })
+      var two: String
     }
   }
 
@@ -111,112 +132,75 @@ extension CompletionScriptTests {
 
 extension CompletionScriptTests {
   struct Custom: ParsableCommand {
-    @Option(name: .shortAndLong, completion: .custom { _ in ["a", "b", "c"] })
+    @Option(name: .shortAndLong, completion: .custom { _ in candidates(prefix: "e") })
     var one: String
 
-    @Argument(completion: .custom { _ in ["d", "e", "f"] })
+    @Argument(completion: .custom { _ in candidates(prefix: "f") })
     var two: String
 
-    @Option(name: .customShort("z"), completion: .custom { _ in ["x", "y", "z"] })
+    @Option(name: .customShort("z"), completion: .custom { _ in candidates(prefix: "g") })
     var three: String
     
     @OptionGroup var nested: NestedArguments
     
     struct NestedArguments: ParsableArguments {
-      @Argument(completion: .custom { _ in ["g", "h", "i"] })
+      @Argument(completion: .custom { _ in candidates(prefix: "h") })
       var four: String
     }
   }
-  
-  func verifyCustomOutput(
+
+  func assertCustomCompletion(
     _ arg: String,
-    expectedOutput: String,
-    file: StaticString = #filePath, line: UInt = #line
+    shell: String,
+    prefix: String = "",
+    file: StaticString = #filePath,
+    line: UInt = #line
   ) throws {
     do {
+      setenv("SAP_SHELL", shell, 1)
+      defer { unsetenv("SAP_SHELL") }
       _ = try Custom.parse(["---completion", "--", arg])
-      XCTFail("Didn't error as expected", file: (file), line: line)
+      XCTFail("Didn't error as expected", file: file, line: line)
     } catch let error as CommandError {
       guard case .completionScriptCustomResponse(let output) = error.parserError else {
         throw error
       }
-      XCTAssertEqual(expectedOutput, output, file: (file), line: line)
+      AssertEqualStrings(
+        actual: output,
+        expected: """
+          \(prefix)1_\(shell)
+          \(prefix)2_\(shell)
+          \(prefix)3_\(shell)
+          """,
+        file: file,
+        line: line)
     }
   }
-  
-  func testCustomCompletions() throws {
-    try verifyCustomOutput("-o", expectedOutput: "a\nb\nc")
-    try verifyCustomOutput("--one", expectedOutput: "a\nb\nc")
-    try verifyCustomOutput("two", expectedOutput: "d\ne\nf")
-    try verifyCustomOutput("-z", expectedOutput: "x\ny\nz")
-    try verifyCustomOutput("nested.four", expectedOutput: "g\nh\ni")
-    
-    XCTAssertThrowsError(try verifyCustomOutput("--bad", expectedOutput: ""))
-    XCTAssertThrowsError(try verifyCustomOutput("four", expectedOutput: ""))
-  }
-}
 
-extension CompletionScriptTests {
-  struct EscapedCommand: ParsableCommand {
-    @Option(help: #"Escaped chars: '[]\."#)
-    var one: String
-    
-    @Argument(completion: .custom { _ in ["d", "e", "f"] })
-    var two: String
+  func assertCustomCompletions(
+    shell: String,
+    file: StaticString = #filePath,
+    line: UInt = #line
+  ) throws {
+    try assertCustomCompletion("-o", shell: shell, prefix: "e", file: file, line: line)
+    try assertCustomCompletion("--one", shell: shell, prefix: "e", file: file, line: line)
+    try assertCustomCompletion("two", shell: shell, prefix: "f", file: file, line: line)
+    try assertCustomCompletion("-z", shell: shell, prefix: "g", file: file, line: line)
+    try assertCustomCompletion("nested.four", shell: shell, prefix: "h", file: file, line: line)
+
+    XCTAssertThrowsError(try assertCustomCompletion("--bad", shell: shell, file: file, line: line))
+    XCTAssertThrowsError(try assertCustomCompletion("four", shell: shell, file: file, line: line))
   }
 
-  func testEscaped_Zsh() throws {
-    let script1 = EscapedCommand.completionScript(for: .zsh)
-    try assertSnapshot(actual: script1, extension: "zsh")
-  }
-}
-
-// MARK: - Test Hidden Subcommand
-struct Parent: ParsableCommand {
-    static let configuration = CommandConfiguration(subcommands: [HiddenChild.self])
-}
-
-struct HiddenChild: ParsableCommand {
-    static let configuration = CommandConfiguration(shouldDisplay: false)
-}
-
-extension CompletionScriptTests {
-  func testHiddenSubcommand_Zsh() throws {
-    let script1 = try CompletionsGenerator(command: Parent.self, shell: .zsh)
-          .generateCompletionScript()
-    try assertSnapshot(actual: script1, extension: "zsh")
-
-    let script2 = try CompletionsGenerator(command: Parent.self, shellName: "zsh")
-          .generateCompletionScript()
-    try assertSnapshot(actual: script2, extension: "zsh")
-
-    let script3 = Parent.completionScript(for: .zsh)
-    try assertSnapshot(actual: script3, extension: "zsh")
+  func testBashCustomCompletions() throws {
+    try assertCustomCompletions(shell: "bash")
   }
 
-  func testHiddenSubcommand_Bash() throws {
-    let script1 = try CompletionsGenerator(command: Parent.self, shell: .bash)
-          .generateCompletionScript()
-    try assertSnapshot(actual: script1, extension: "bash")
-
-    let script2 = try CompletionsGenerator(command: Parent.self, shellName: "bash")
-          .generateCompletionScript()
-    try assertSnapshot(actual: script2, extension: "bash")
-
-    let script3 = Parent.completionScript(for: .bash)
-    try assertSnapshot(actual: script3, extension: "bash")
+  func testFishCustomCompletions() throws {
+    try assertCustomCompletions(shell: "fish")
   }
 
-  func testHiddenSubcommand_Fish() throws {
-    let script1 = try CompletionsGenerator(command: Parent.self, shell: .fish)
-          .generateCompletionScript()
-    try assertSnapshot(actual: script1, extension: "fish")
-
-    let script2 = try CompletionsGenerator(command: Parent.self, shellName: "fish")
-          .generateCompletionScript()
-    try assertSnapshot(actual: script2, extension: "fish")
-
-    let script3 = Parent.completionScript(for: .fish)
-    try assertSnapshot(actual: script3, extension: "fish")
+  func testZshCustomCompletions() throws {
+    try assertCustomCompletions(shell: "zsh")
   }
 }
