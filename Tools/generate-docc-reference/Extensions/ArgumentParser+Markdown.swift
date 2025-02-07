@@ -108,15 +108,15 @@ extension ArgumentInfoV0 {
 
     // TODO: default values, short, etc.
 
-    var inner =
-      switch self.kind {
-      case .positional:
-        "<\(names.joined(separator: "|"))>"
-      case .option:
-        "--\(names.joined(separator: "|"))=<\(self.valueName ?? "")>"
-      case .flag:
-        "--\(names.joined(separator: "|"))"
-      }
+    var inner: String
+    switch self.kind {
+    case .positional:
+      inner = "<\(names.joined(separator: "|"))>"
+    case .option:
+      inner = "--\(names.joined(separator: "|"))=<\(self.valueName ?? "")>"
+    case .flag:
+      inner = "--\(names.joined(separator: "|"))"
+    }
 
     if self.isRepeating {
       inner += "..."

@@ -48,9 +48,9 @@ class Mutex<T>: @unchecked Sendable {
   /// - Throws: Re-throws any error thrown by `body`.
   ///
   /// - Returns: The return value, if any, of the `body` closure parameter.
-  func withLock<U, E>(
-    _ body: (inout T) throws(E) -> U
-  ) throws(E) -> U where E: Error {
+  func withLock<U>(
+    _ body: (inout T) throws -> U
+  ) rethrows -> U {
     self.lock.lock()
     defer { self.lock.unlock() }
     return try body(&self.value)
