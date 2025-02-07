@@ -1,0 +1,16 @@
+name: Pull request
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+jobs:
+  soundness:
+    name: Soundness
+    uses: swiftlang/github-workflows/.github/workflows/soundness.yml@main
+    with:
+      docs_check_enabled: false  # bug: https://github.com/apple/swift-argument-parser/issues/704
+      format_check_enabled: false  # bug: https://github.com/apple/swift-argument-parser/issues/702
+      license_header_check_enabled: false  # feature: https://github.com/swiftlang/github-workflows/issues/78
+      license_header_check_project_name: "Swift Argument Parser"  # bug: https://github.com/swiftlang/github-workflows/issues/76
+      shell_check_enabled: false  # bug: https://github.com/apple/swift-argument-parser/issues/703
