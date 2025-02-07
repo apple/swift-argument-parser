@@ -19,10 +19,10 @@ struct InputKey: Hashable {
 
   /// The path through the field's parents, if any.
   var path: [String]
-  
+
   /// The full path of the field.
   var fullPath: [String] { path + [name] }
-  
+
   /// Constructs a new input key, cleaning the name, with the specified parent.
   ///
   /// - Parameter name: The name of the key.
@@ -30,12 +30,13 @@ struct InputKey: Hashable {
   init(name: String, parent: InputKey?) {
     // Property wrappers have underscore-prefixed names, so we remove the
     // leading `_`, if present.
-    self.name = name.first == "_"
+    self.name =
+      name.first == "_"
       ? String(name.dropFirst(1))
       : name
     self.path = parent?.fullPath ?? []
   }
-  
+
   /// Constructs a new input key from the given coding key and parent path.
   ///
   /// - Parameter codingKey: The base ``CodingKey``. Leading underscores in
@@ -51,22 +52,23 @@ struct InputKey: Hashable {
 
 extension InputKey: CustomStringConvertible {
   var description: String {
-      fullPathString
+    fullPathString
   }
 }
 
 extension InputKey {
   private static var separator: Character { "." }
-  
+
   var fullPathString: String {
     fullPath.joined(separator: .init(Self.separator))
   }
-  
+
   init?(fullPathString: String) {
-    let fullPath = fullPathString.split(separator: Self.separator).map(String.init)
-    
+    let fullPath = fullPathString.split(separator: Self.separator).map(
+      String.init)
+
     guard let name = fullPath.last else { return nil }
-    
+
     self.name = name
     self.path = fullPath.dropLast()
   }

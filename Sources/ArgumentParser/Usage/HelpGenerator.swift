@@ -27,33 +27,46 @@ internal struct HelpGenerator {
       func rendered(screenWidth: Int) -> String {
         let paddedLabel = self.paddedLabel
         let wrappedAbstract = self.abstract
-          .wrapped(to: screenWidth, wrappingIndent: HelpGenerator.labelColumnWidth)
+          .wrapped(
+            to: screenWidth, wrappingIndent: HelpGenerator.labelColumnWidth)
 
         var wrappedDiscussion = ""
 
         if case let .staticText(discussionText) = discussion {
-          wrappedDiscussion = discussionText.isEmpty
-          ? ""
-          : discussionText.wrapped(to: screenWidth, wrappingIndent: HelpGenerator.helpIndent * 4) + "\n"
+          wrappedDiscussion =
+            discussionText.isEmpty
+            ? ""
+            : discussionText.wrapped(
+              to: screenWidth, wrappingIndent: HelpGenerator.helpIndent * 4)
+              + "\n"
         } else if case let .enumerated(preamble, options) = discussion {
           var formattedHelp: String = ""
           let discussionIndentFactor = 4
 
           // If there is a preamble, append this to the formatted text
           if let preamble {
-            formattedHelp += preamble.wrapped(to: screenWidth, wrappingIndent: HelpGenerator.helpIndent * discussionIndentFactor) + "\n"
+            formattedHelp +=
+              preamble.wrapped(
+                to: screenWidth,
+                wrappingIndent: HelpGenerator.helpIndent
+                  * discussionIndentFactor) + "\n"
           }
 
           // Padded label
           for opt in options.allValueStrings {
             let description = options.allValueDescriptions[opt] ?? ""
-            let paddedOptionLabel = String(repeating: " ", count: HelpGenerator.helpIndent * discussionIndentFactor) + opt
+            let paddedOptionLabel =
+              String(
+                repeating: " ",
+                count: HelpGenerator.helpIndent * discussionIndentFactor) + opt
             // Adds a hyphen (`-`) to the beginning of each value description,
             // without it affecting the proper indentation level.
             let hyphen = "- "
             let wrappedHelp = String(
               (hyphen + description)
-                .wrapped(to: screenWidth, wrappingIndent: HelpGenerator.labelColumnWidth + 2)
+                .wrapped(
+                  to: screenWidth,
+                  wrappingIndent: HelpGenerator.labelColumnWidth + 2)
             )
 
             var whitespaceToDrop = hyphen.count
@@ -62,10 +75,12 @@ internal struct HelpGenerator {
               if paddedOptionLabel.count < HelpGenerator.labelColumnWidth {
                 // Render after the padded label.
                 whitespaceToDrop += paddedOptionLabel.count
-                return String(paddedOptionLabel + wrappedHelp.dropFirst(whitespaceToDrop))
+                return String(
+                  paddedOptionLabel + wrappedHelp.dropFirst(whitespaceToDrop))
               } else {
                 // Render in a new line.
-                return paddedOptionLabel + "\n" + wrappedHelp.dropFirst(whitespaceToDrop)
+                return paddedOptionLabel + "\n"
+                  + wrappedHelp.dropFirst(whitespaceToDrop)
               }
             }()
             formattedHelp += renderedHelp + "\n"
@@ -85,11 +100,11 @@ internal struct HelpGenerator {
           }
         }()
         return paddedLabel
-        + renderedAbstract + "\n"
-        + wrappedDiscussion
+          + renderedAbstract + "\n"
+          + wrappedDiscussion
       }
     }
-    
+
     enum Header: CustomStringConvertible, Equatable {
       case positionalArguments
       case subcommands
@@ -112,36 +127,39 @@ internal struct HelpGenerator {
         }
       }
     }
-    
+
     var header: Header
     var elements: [Element]
     var isSubcommands: Bool = false
-    
+
     func rendered(screenWidth: Int) -> String {
       guard !elements.isEmpty else { return "" }
-      
-      let renderedElements = elements.map { $0.rendered(screenWidth: screenWidth) }.joined()
+
+      let renderedElements = elements.map {
+        $0.rendered(screenWidth: screenWidth)
+      }.joined()
       return "\(String(describing: header).uppercased()):\n"
         + renderedElements
     }
   }
-  
+
   struct DiscussionSection {
     var title: String = ""
     var content: String
   }
-  
+
   var commandStack: [ParsableCommand.Type]
   var abstract: String
   var usage: String
   var sections: [Section]
-  
+
   init(commandStack: [ParsableCommand.Type], visibility: ArgumentVisibility) {
     guard let currentCommand = commandStack.last else {
       fatalError()
     }
-    
-    let currentArgSet = ArgumentSet(currentCommand, visibility: visibility, parent: nil)
+
+    let currentArgSet = ArgumentSet(
+      currentCommand, visibility: visibility, parent: nil)
     self.commandStack = commandStack
 
     // Build the tool name and subcommand name from the command configuration
@@ -153,8 +171,10 @@ internal struct HelpGenerator {
     if let usage = currentCommand.configuration.usage {
       self.usage = usage
     } else {
-      var usage = UsageGenerator(toolName: toolName, definition: [currentArgSet])
-        .synopsis
+      var usage = UsageGenerator(
+        toolName: toolName, definition: [currentArgSet]
+      )
+      .synopsis
       if !currentCommand.configuration.subcommands.isEmpty {
         if usage.last != " " { usage += " " }
         usage += "<subcommand>"
@@ -170,14 +190,17 @@ internal struct HelpGenerator {
       self.abstract += "\n\(currentCommand.configuration.discussion)"
     }
 
-    self.sections = HelpGenerator.generateSections(commandStack: commandStack, visibility: visibility)
+    self.sections = HelpGenerator.generateSections(
+      commandStack: commandStack, visibility: visibility)
   }
 
   init(_ type: ParsableArguments.Type, visibility: ArgumentVisibility) {
     self.init(commandStack: [type.asCommand], visibility: visibility)
   }
 
-  private static func generateSections(commandStack: [ParsableCommand.Type], visibility: ArgumentVisibility) -> [Section] {
+  private static func generateSections(
+    commandStack: [ParsableCommand.Type], visibility: ArgumentVisibility
+  ) -> [Section] {
     guard !commandStack.isEmpty else { return [] }
 
     var positionalElements: [Section.Element] = []
@@ -196,9 +219,10 @@ internal struct HelpGenerator {
       let synopsis: String
       let abstract: String
 
-      let allValueStrings = (arg.help.discussion?.isEnumerated ?? false)
-      ? []
-      : arg.help.allValueStrings.filter { !$0.isEmpty }
+      let allValueStrings =
+        (arg.help.discussion?.isEnumerated ?? false)
+        ? []
+        : arg.help.allValueStrings.filter { !$0.isEmpty }
       let defaultValue = arg.help.defaultValue ?? ""
 
       let allAndDefaultValues: String
@@ -206,17 +230,21 @@ internal struct HelpGenerator {
       case (false, false):
         allAndDefaultValues = ""
       case (true, false):
-        allAndDefaultValues = "(values: \(allValueStrings.joined(separator: ", ")))"
+        allAndDefaultValues =
+          "(values: \(allValueStrings.joined(separator: ", ")))"
       case (false, true):
         allAndDefaultValues = "(default: \(defaultValue))"
       case (true, true):
-        allAndDefaultValues = "(values: \(allValueStrings.joined(separator: ", ")); default: \(defaultValue))"
+        allAndDefaultValues =
+          "(values: \(allValueStrings.joined(separator: ", ")); default: \(defaultValue))"
       }
 
       if arg.help.isComposite {
         // If this argument is composite, we have a group of arguments to
         // output together.
-        let groupEnd = args.firstIndex(where: { $0.help.keys != arg.help.keys }) ?? args.endIndex
+        let groupEnd =
+          args.firstIndex(where: { $0.help.keys != arg.help.keys })
+          ?? args.endIndex
         let groupedArgs = [arg] + args[..<groupEnd]
         args = args[groupEnd...]
 
@@ -224,7 +252,8 @@ internal struct HelpGenerator {
           .lazy
           .map { $0.synopsisForHelp }
           .joined(separator: "/")
-        abstract = groupedArgs
+        abstract =
+          groupedArgs
           .lazy
           .map { $0.help.abstract }
           .first { !$0.isEmpty } ?? ""
@@ -260,7 +289,7 @@ internal struct HelpGenerator {
 
     // Create section for a grouping of subcommands.
     func subcommandSection(
-      header: Section.Header, 
+      header: Section.Header,
       subcommands: [ParsableCommand.Type]
     ) -> Section {
       let subcommandElements: [Section.Element] =
@@ -268,15 +297,15 @@ internal struct HelpGenerator {
           guard command.configuration.shouldDisplay else { return nil }
           var label = command._commandName
           for alias in command.configuration.aliases {
-              label += ", \(alias)"
+            label += ", \(alias)"
           }
           if command == configuration.defaultSubcommand {
-              label += " (default)"
+            label += " (default)"
           }
           return Section.Element(
             label: label,
             abstract: command.configuration.abstract)
-      }
+        }
 
       return Section(header: header, elements: subcommandElements)
     }
@@ -298,7 +327,7 @@ internal struct HelpGenerator {
     subcommands.append(
       contentsOf: configuration.groupedSubcommands
         .compactMap { group in
-          return subcommandSection(
+          subcommandSection(
             header: .groupedSubcommands(group.name),
             subcommands: group.subcommands
           )
@@ -312,39 +341,45 @@ internal struct HelpGenerator {
     // - ungrouped subcommands
     // - grouped subcommands
     return [
-      Section(header: .positionalArguments, elements: positionalElements),
-    ] + sectionTitles.map { name in
-      Section(header: .title(name), elements: titledSections[name, default: []])
-    } + [
-      Section(header: .options, elements: optionElements),
-    ] + subcommands
+      Section(header: .positionalArguments, elements: positionalElements)
+    ]
+      + sectionTitles.map { name in
+        Section(
+          header: .title(name), elements: titledSections[name, default: []])
+      } + [
+        Section(header: .options, elements: optionElements)
+      ] + subcommands
   }
-  
+
   func usageMessage() -> String {
     guard !usage.isEmpty else { return "" }
     return "Usage: \(usage.hangingIndentingEachLine(by: 7))"
   }
-  
+
   var includesSubcommands: Bool {
-    guard let subcommandSection = sections.first(where: { 
-      switch $0.header {
-      case .groupedSubcommands, .subcommands: return true
-      case .options, .positionalArguments, .title(_): return false
-      }
-    }) else { return false }
+    guard
+      let subcommandSection = sections.first(where: {
+        switch $0.header {
+        case .groupedSubcommands, .subcommands: return true
+        case .options, .positionalArguments, .title(_): return false
+        }
+      })
+    else { return false }
     return !subcommandSection.elements.isEmpty
   }
 
   func rendered(screenWidth: Int? = nil) -> String {
     let screenWidth = screenWidth ?? HelpGenerator.systemScreenWidth
-    let renderedSections = sections
+    let renderedSections =
+      sections
       .map { $0.rendered(screenWidth: screenWidth) }
       .filter { !$0.isEmpty }
       .joined(separator: "\n")
-    let renderedAbstract = abstract.isEmpty
+    let renderedAbstract =
+      abstract.isEmpty
       ? ""
       : "OVERVIEW: \(abstract)".wrapped(to: screenWidth) + "\n\n"
-    
+
     var helpSubcommandMessage = ""
     if includesSubcommands {
       var names = commandStack.map { $0._commandName }
@@ -359,23 +394,26 @@ internal struct HelpGenerator {
         """
     }
 
-    let renderedUsage = usage.isEmpty
-    ? ""
-    : "USAGE: \(usage.hangingIndentingEachLine(by: 7))\n\n"
+    let renderedUsage =
+      usage.isEmpty
+      ? ""
+      : "USAGE: \(usage.hangingIndentingEachLine(by: 7))\n\n"
 
     return """
-    \(renderedAbstract)\
-    \(renderedUsage)\
-    \(renderedSections)\(helpSubcommandMessage)
-    """
+      \(renderedAbstract)\
+      \(renderedUsage)\
+      \(renderedSections)\(helpSubcommandMessage)
+      """
   }
 }
 
-fileprivate extension CommandConfiguration {
-  static var defaultHelpNames: NameSpecification { [.short, .long] }
+extension CommandConfiguration {
+  fileprivate static var defaultHelpNames: NameSpecification {
+    [.short, .long]
+  }
 }
 
-fileprivate extension NameSpecification {
+extension NameSpecification {
   /// Generates a list of `Name`s for the help command at any visibility level.
   ///
   /// If the `default` visibility is used, the help names are returned
@@ -383,7 +421,7 @@ fileprivate extension NameSpecification {
   /// removed and the long names (both single and double dash) are appended with
   /// the name of the visibility level. After the optional name modification
   /// step, the name are returned in descending order.
-  func generateHelpNames(visibility: ArgumentVisibility) -> [Name] {
+  fileprivate func generateHelpNames(visibility: ArgumentVisibility) -> [Name] {
     self
       .makeNames(InputKey(name: "help", parent: nil))
       .compactMap { name in
@@ -402,14 +440,17 @@ fileprivate extension NameSpecification {
   }
 }
 
-internal extension BidirectionalCollection where Element == ParsableCommand.Type {
+extension BidirectionalCollection where Element == ParsableCommand.Type {
   /// Returns a list of help names at the request visibility level for the top
   /// most ParsableCommand in the command stack with custom helpNames. If the
   /// command stack contains no custom help names the default help names.
   func getHelpNames(visibility: ArgumentVisibility) -> [Name] {
     self.last(where: { $0.configuration.helpNames != nil })
-      .map { $0.configuration.helpNames!.generateHelpNames(visibility: visibility) }
-    ?? CommandConfiguration.defaultHelpNames.generateHelpNames(visibility: visibility)
+      .map {
+        $0.configuration.helpNames!.generateHelpNames(visibility: visibility)
+      }
+      ?? CommandConfiguration.defaultHelpNames.generateHelpNames(
+        visibility: visibility)
   }
 
   func getPrimaryHelpName() -> Name? {
@@ -451,7 +492,7 @@ internal extension BidirectionalCollection where Element == ParsableCommand.Type
   }
 
   func dumpHelpArgumentDefinition() -> ArgumentDefinition {
-    return ArgumentDefinition(
+    ArgumentDefinition(
       kind: .named([.long("experimental-dump-help")]),
       help: .init(
         allValueStrings: [],
@@ -468,7 +509,10 @@ internal extension BidirectionalCollection where Element == ParsableCommand.Type
   /// Returns the ArgumentSet for the last command in this stack, including
   /// help and version flags, when appropriate.
   func argumentsForHelp(visibility: ArgumentVisibility) -> ArgumentSet {
-    guard var arguments = self.last.map({ ArgumentSet($0, visibility: visibility, parent: nil) })
+    guard
+      var arguments = self.last.map({
+        ArgumentSet($0, visibility: visibility, parent: nil)
+      })
     else { return ArgumentSet() }
     self.versionArgumentDefinition().map { arguments.append($0) }
     self.helpArgumentDefinition().map { arguments.append($0) }

@@ -9,14 +9,14 @@
 //
 //===----------------------------------------------------------------------===//
 
-import XCTest
-import ArgumentParserTestHelpers
 import ArgumentParser
+import ArgumentParserTestHelpers
+import XCTest
 
 final class OptionGroupEndToEndTests: XCTestCase {
 }
 
-fileprivate struct Inner: TestableParsableArguments {
+private struct Inner: TestableParsableArguments {
   @Flag(name: [.short, .long])
   var extraVerbiage: Bool = false
   @Option
@@ -24,7 +24,8 @@ fileprivate struct Inner: TestableParsableArguments {
   @Argument()
   var name: String
 
-  let didValidateExpectation = XCTestExpectation(singleExpectation: "inner validated")
+  let didValidateExpectation = XCTestExpectation(
+    singleExpectation: "inner validated")
 
   private enum CodingKeys: CodingKey {
     case extraVerbiage
@@ -33,7 +34,7 @@ fileprivate struct Inner: TestableParsableArguments {
   }
 }
 
-fileprivate struct Outer: TestableParsableArguments {
+private struct Outer: TestableParsableArguments {
   @Flag
   var verbose: Bool = false
   @Argument()
@@ -43,7 +44,8 @@ fileprivate struct Outer: TestableParsableArguments {
   @Argument()
   var after: String
 
-  let didValidateExpectation = XCTestExpectation(singleExpectation: "outer validated")
+  let didValidateExpectation = XCTestExpectation(
+    singleExpectation: "outer validated")
 
   private enum CodingKeys: CodingKey {
     case verbose
@@ -53,13 +55,14 @@ fileprivate struct Outer: TestableParsableArguments {
   }
 }
 
-fileprivate struct Command: TestableParsableCommand {
+private struct Command: TestableParsableCommand {
   static let configuration = CommandConfiguration(commandName: "testCommand")
 
   @OptionGroup()
   var outer: Outer
 
-  let didValidateExpectation = XCTestExpectation(singleExpectation: "Command validated")
+  let didValidateExpectation = XCTestExpectation(
+    singleExpectation: "Command validated")
   let didRunExpectation = XCTestExpectation(singleExpectation: "Command ran")
 
   private enum CodingKeys: CodingKey {
@@ -79,7 +82,13 @@ extension OptionGroupEndToEndTests {
       XCTAssertEqual(options.inner.name, "name")
     }
 
-    AssertParse(Outer.self, ["prefix", "--extra-verbiage", "name", "postfix", "--verbose", "--size", "5"]) { options in
+    AssertParse(
+      Outer.self,
+      [
+        "prefix", "--extra-verbiage", "name", "postfix", "--verbose", "--size",
+        "5",
+      ]
+    ) { options in
       XCTAssertEqual(options.verbose, true)
       XCTAssertEqual(options.before, "prefix")
       XCTAssertEqual(options.after, "postfix")
@@ -95,8 +104,14 @@ extension OptionGroupEndToEndTests {
     // - command.outer.inner
     // - command.outer
     // - command
-    AssertParseCommand(Command.self, Command.self, ["prefix", "name", "postfix"]) { command in
-      wait(for: [command.didValidateExpectation, command.outer.didValidateExpectation, command.outer.inner.didValidateExpectation], timeout: 0.1)
+    AssertParseCommand(
+      Command.self, Command.self, ["prefix", "name", "postfix"]
+    ) { command in
+      wait(
+        for: [
+          command.didValidateExpectation, command.outer.didValidateExpectation,
+          command.outer.inner.didValidateExpectation,
+        ], timeout: 0.1)
     }
   }
 
@@ -104,26 +119,28 @@ extension OptionGroupEndToEndTests {
     XCTAssertThrowsError(try Outer.parse([]))
     XCTAssertThrowsError(try Outer.parse(["prefix"]))
     XCTAssertThrowsError(try Outer.parse(["prefix", "name"]))
-    XCTAssertThrowsError(try Outer.parse(["prefix", "name", "postfix", "extra"]))
-    XCTAssertThrowsError(try Outer.parse(["prefix", "name", "postfix", "--size", "a"]))
+    XCTAssertThrowsError(
+      try Outer.parse(["prefix", "name", "postfix", "extra"]))
+    XCTAssertThrowsError(
+      try Outer.parse(["prefix", "name", "postfix", "--size", "a"]))
   }
 }
 
-fileprivate struct DuplicatedFlagGroupCustom: ParsableArguments {
+private struct DuplicatedFlagGroupCustom: ParsableArguments {
   @Flag(name: .customLong("duplicated-option"))
   var duplicated: Bool = false
 }
 
-fileprivate struct DuplicatedFlagGroupCustomCommand: ParsableCommand {
+private struct DuplicatedFlagGroupCustomCommand: ParsableCommand {
   @Flag var duplicated: Bool = false
   @OptionGroup var option: DuplicatedFlagGroupCustom
 }
 
-fileprivate struct DuplicatedFlagGroupLong: ParsableArguments {
+private struct DuplicatedFlagGroupLong: ParsableArguments {
   @Flag var duplicated: Bool = false
 }
 
-fileprivate struct DuplicatedFlagGroupLongCommand: ParsableCommand {
+private struct DuplicatedFlagGroupLongCommand: ParsableCommand {
   @Flag(name: .customLong("duplicated-option"))
   var duplicated: Bool = false
   @OptionGroup var option: DuplicatedFlagGroupLong
@@ -140,38 +157,47 @@ extension OptionGroupEndToEndTests {
       XCTAssertFalse(command.option.duplicated)
     }
   }
-  
+
   func testUniqueNamesForDuplicatedFlag_RootOnly() throws {
-    AssertParse(DuplicatedFlagGroupCustomCommand.self, ["--duplicated"]) { command in
+    AssertParse(DuplicatedFlagGroupCustomCommand.self, ["--duplicated"]) {
+      command in
       XCTAssertTrue(command.duplicated)
       XCTAssertFalse(command.option.duplicated)
     }
-    AssertParse(DuplicatedFlagGroupLongCommand.self, ["--duplicated"]) { command in
+    AssertParse(DuplicatedFlagGroupLongCommand.self, ["--duplicated"]) {
+      command in
       XCTAssertFalse(command.duplicated)
       XCTAssertTrue(command.option.duplicated)
     }
   }
-  
+
   func testUniqueNamesForDuplicatedFlag_OptionOnly() throws {
-    AssertParse(DuplicatedFlagGroupCustomCommand.self, ["--duplicated-option"]) { command in
+    AssertParse(DuplicatedFlagGroupCustomCommand.self, ["--duplicated-option"])
+    { command in
       XCTAssertFalse(command.duplicated)
       XCTAssertTrue(command.option.duplicated)
     }
-    AssertParse(DuplicatedFlagGroupLongCommand.self, ["--duplicated-option"]) { command in
+    AssertParse(DuplicatedFlagGroupLongCommand.self, ["--duplicated-option"]) {
+      command in
       XCTAssertTrue(command.duplicated)
       XCTAssertFalse(command.option.duplicated)
     }
   }
-  
+
   func testUniqueNamesForDuplicatedFlag_RootAndOption() throws {
-    AssertParse(DuplicatedFlagGroupCustomCommand.self, ["--duplicated", "--duplicated-option"]) { command in
+    AssertParse(
+      DuplicatedFlagGroupCustomCommand.self,
+      ["--duplicated", "--duplicated-option"]
+    ) { command in
       XCTAssertTrue(command.duplicated)
       XCTAssertTrue(command.option.duplicated)
     }
-    AssertParse(DuplicatedFlagGroupLongCommand.self, ["--duplicated", "--duplicated-option"]) { command in
+    AssertParse(
+      DuplicatedFlagGroupLongCommand.self,
+      ["--duplicated", "--duplicated-option"]
+    ) { command in
       XCTAssertTrue(command.duplicated)
       XCTAssertTrue(command.option.duplicated)
     }
   }
 }
-

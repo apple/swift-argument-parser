@@ -11,11 +11,25 @@
 
 @resultBuilder
 struct MDocBuilder {
-  static func buildBlock(_ components: MDocComponent...) -> MDocComponent { Container(children: components) }
-  static func buildArray(_ components: [MDocComponent]) -> MDocComponent { Container(children: components) }
-  static func buildOptional(_ component: MDocComponent?) -> MDocComponent { component ?? Empty() }
-  static func buildEither(first component: MDocComponent) -> MDocComponent { component }
-  static func buildEither(second component: MDocComponent) -> MDocComponent { component }
-  static func buildExpression(_ expression: MDocComponent) -> MDocComponent { expression }
-  static func buildExpression(_ expression: MDocASTNode) -> MDocComponent { MDocASTNodeWrapper(node: expression) }
+  static func buildBlock(_ components: MDocComponent...) -> MDocComponent {
+    Container(children: components)
+  }
+  static func buildArray(_ components: [MDocComponent]) -> MDocComponent {
+    Container(children: components)
+  }
+  static func buildOptional(_ component: MDocComponent?) -> MDocComponent {
+    component ?? Empty()
+  }
+  static func buildEither(first component: MDocComponent) -> MDocComponent {
+    component
+  }
+  static func buildEither(second component: MDocComponent) -> MDocComponent {
+    component
+  }
+  static func buildExpression(_ expression: MDocComponent) -> MDocComponent {
+    expression
+  }
+  static func buildExpression(_ expression: MDocASTNode) -> MDocComponent {
+    MDocASTNodeWrapper(node: expression)
+  }
 }

@@ -16,7 +16,7 @@ enum Parsed<Value> {
   /// an implementation detail.
   case value(Value)
   case definition((InputKey) -> ArgumentSet)
-  
+
   internal init(_ makeSet: @escaping (InputKey) -> ArgumentSet) {
     self = .definition(makeSet)
   }
@@ -45,8 +45,7 @@ internal protocol ParsedWrapper: Decodable, ArgumentSetProvider {
 /// conform to this protocol can initialize their values directly from a
 /// `Decoder`.
 internal protocol DecodableParsedWrapper: ParsedWrapper
-  where Value: Decodable
-{
+where Value: Decodable {
   init(_parsedValue: Parsed<Value>)
 }
 
@@ -58,14 +57,15 @@ extension ParsedWrapper {
     guard let value = d.parsedElement?.value as? Value else {
       throw ParserError.noValue(forKey: d.parsedElement?.key ?? d.key)
     }
-    
+
     self.init(_parsedValue: .value(value))
   }
-  
+
   func argumentSet(for key: InputKey) -> ArgumentSet {
     switch _parsedValue {
     case .value:
-      fatalError("Trying to get the argument set from a resolved/parsed property.")
+      fatalError(
+        "Trying to get the argument set from a resolved/parsed property.")
     case .definition(let a):
       return a(key)
     }
@@ -75,18 +75,19 @@ extension ParsedWrapper {
 extension ParsedWrapper where Value: Decodable {
   init(_decoder: Decoder) throws {
     var value: Value
-    
+
     do {
       value = try Value.init(from: _decoder)
     } catch {
       if let d = _decoder as? SingleValueDecoder,
-        let v = d.parsedElement?.value as? Value {
+        let v = d.parsedElement?.value as? Value
+      {
         value = v
       } else {
         throw error
       }
     }
-    
+
     self.init(_parsedValue: .value(value))
   }
 }

@@ -20,7 +20,7 @@ struct ArgumentSynopsis: MDocComponent {
       if argument.isOptional {
         MDocMacro.OptionalCommandLineComponent(arguments: [synopsis])
       } else {
-         synopsis
+        synopsis
       }
     }
   }

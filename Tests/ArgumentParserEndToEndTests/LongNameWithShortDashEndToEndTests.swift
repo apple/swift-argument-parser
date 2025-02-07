@@ -9,16 +9,16 @@
 //
 //===----------------------------------------------------------------------===//
 
-import XCTest
-import ArgumentParserTestHelpers
 import ArgumentParser
+import ArgumentParserTestHelpers
+import XCTest
 
 final class LongNameWithSingleDashEndToEndTests: XCTestCase {
 }
 
 // MARK: -
 
-fileprivate struct Bar: ParsableArguments {
+private struct Bar: ParsableArguments {
   @Flag(name: .customLong("file", withSingleDash: true))
   var file: Bool = false
 
@@ -110,17 +110,20 @@ extension LongNameWithSingleDashEndToEndTests {
 
 extension LongNameWithSingleDashEndToEndTests {
   private struct Issue327: ParsableCommand {
-    @Option(name: .customLong("argWithAnH", withSingleDash: true),
-            parsing: .upToNextOption)
+    @Option(
+      name: .customLong("argWithAnH", withSingleDash: true),
+      parsing: .upToNextOption)
     var args: [String]
   }
 
   func testIssue327() {
-    AssertParse(Issue327.self, ["-argWithAnH", "03ade86c0", "8f2058e3ade86c84ec5b"]) { issue327 in
+    AssertParse(
+      Issue327.self, ["-argWithAnH", "03ade86c0", "8f2058e3ade86c84ec5b"]
+    ) { issue327 in
       XCTAssertEqual(issue327.args, ["03ade86c0", "8f2058e3ade86c84ec5b"])
     }
   }
-  
+
   private struct JoinedItem: ParsableCommand {
     @Option(name: .customLong("argWithAnH", withSingleDash: true))
     var arg: String

@@ -18,7 +18,7 @@ public protocol ExpressibleByArgument {
   /// The description of this instance to show as a default value in a
   /// command-line tool's help screen.
   var defaultValueDescription: String { get }
-  
+
   /// An array of all possible strings that can convert to a value of this
   /// type, for display in the help screen.
   ///
@@ -49,7 +49,7 @@ extension ExpressibleByArgument {
   public var defaultValueDescription: String {
     "\(self)"
   }
-  
+
   public static var allValueStrings: [String] { [] }
 
   public static var allValueDescriptions: [String: String] { [:] }
@@ -69,7 +69,10 @@ extension ExpressibleByArgument where Self: CaseIterable {
   }
 }
 
-extension ExpressibleByArgument where Self: CaseIterable, Self: RawRepresentable, RawValue: ExpressibleByArgument {
+extension ExpressibleByArgument
+where
+  Self: CaseIterable, Self: RawRepresentable, RawValue: ExpressibleByArgument
+{
   public static var allValueStrings: [String] {
     self.allCases.map(\.rawValue.defaultValueDescription)
   }
@@ -78,14 +81,17 @@ extension ExpressibleByArgument where Self: CaseIterable, Self: RawRepresentable
     self.allCases.reduce(into: [:]) { descriptions, value in
       // Assure that the value and the description are not the same string,
       // otherwise it's assumed that a description is not implemented.
-      if value.rawValue.defaultValueDescription != value.defaultValueDescription {
-        descriptions[value.rawValue.defaultValueDescription] = value.defaultValueDescription
+      if value.rawValue.defaultValueDescription != value.defaultValueDescription
+      {
+        descriptions[value.rawValue.defaultValueDescription] =
+          value.defaultValueDescription
       }
     }
   }
 }
 
-extension ExpressibleByArgument where Self: RawRepresentable, RawValue: ExpressibleByArgument {
+extension ExpressibleByArgument
+where Self: RawRepresentable, RawValue: ExpressibleByArgument {
   public var defaultValueDescription: String {
     rawValue.defaultValueDescription
   }
@@ -97,7 +103,8 @@ extension String: ExpressibleByArgument {
   }
 }
 
-extension RawRepresentable where Self: ExpressibleByArgument, RawValue: ExpressibleByArgument {
+extension RawRepresentable
+where Self: ExpressibleByArgument, RawValue: ExpressibleByArgument {
   public init?(argument: String) {
     if let value = RawValue(argument: argument) {
       self.init(rawValue: value)

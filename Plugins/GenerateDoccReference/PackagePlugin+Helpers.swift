@@ -14,7 +14,7 @@ import PackagePlugin
 
 extension ArgumentExtractor {
   mutating func helpRequest() -> Bool {
-      self.extractFlag(named: "help") > 0
+    self.extractFlag(named: "help") > 0
   }
 
   mutating func configuration() throws -> PackageManager.BuildConfiguration {
@@ -26,7 +26,8 @@ extension ArgumentExtractor {
       case "release":
         return .release
       default:
-        throw GenerateDoccReferencePluginError
+        throw
+          GenerateDoccReferencePluginError
           .unknownBuildConfiguration(configurationString)
       }
     case .none:

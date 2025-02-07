@@ -42,8 +42,9 @@ struct DiscussionText: MDocComponent {
     if let allValueStrings, let allValueDescriptions {
       List {
         for value in allValueStrings {
-//          MDocMacro.ListItem(title: MDocMacro.CommandArgument(arguments: [value]))
-          MDocMacro.ListItem(title: MDocMacro.CommandArgument(arguments: [value]))
+          //          MDocMacro.ListItem(title: MDocMacro.CommandArgument(arguments: [value]))
+          MDocMacro.ListItem(
+            title: MDocMacro.CommandArgument(arguments: [value]))
           if let description = allValueDescriptions[value] {
             description
           }

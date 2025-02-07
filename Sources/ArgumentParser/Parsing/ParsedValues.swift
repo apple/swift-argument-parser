@@ -20,24 +20,25 @@ struct ParsedValues {
     var inputOrigin: InputOrigin
     fileprivate var shouldClearArrayIfParsed = true
   }
-  
+
   /// These are the parsed key-value pairs.
   var elements: [InputKey: Element] = [:]
-  
+
   /// This is the *original* array of arguments that this was parsed from.
   ///
   /// This is used for error output generation.
   var originalInput: [String]
-  
+
   /// Any arguments that are captured into an `.allUnrecognized` argument.
   var capturedUnrecognizedArguments = SplitArguments(originalInput: [])
 }
 
 extension ParsedValues {
-  mutating func set(_ new: Any?, forKey key: InputKey, inputOrigin: InputOrigin) {
+  mutating func set(_ new: Any?, forKey key: InputKey, inputOrigin: InputOrigin)
+  {
     set(Element(key: key, value: new, inputOrigin: inputOrigin))
   }
-  
+
   mutating func set(_ element: Element) {
     if let e = elements[element.key] {
       // Merge the source values. We need to keep track
@@ -50,23 +51,33 @@ extension ParsedValues {
       elements[element.key] = element
     }
   }
-  
+
   func element(forKey key: InputKey) -> Element? {
     elements[key]
   }
-  
-  mutating func update<A>(forKey key: InputKey, inputOrigin: InputOrigin, initial: A, closure: (inout A) -> Void) {
-    var e = element(forKey: key) ?? Element(key: key, value: initial, inputOrigin: InputOrigin())
-    var v = (e.value as? A ) ?? initial
+
+  mutating func update<A>(
+    forKey key: InputKey, inputOrigin: InputOrigin, initial: A,
+    closure: (inout A) -> Void
+  ) {
+    var e =
+      element(forKey: key)
+      ?? Element(key: key, value: initial, inputOrigin: InputOrigin())
+    var v = (e.value as? A) ?? initial
     closure(&v)
     e.value = v
     e.inputOrigin.formUnion(inputOrigin)
     set(e)
   }
-  
-  mutating func update<A>(forKey key: InputKey, inputOrigin: InputOrigin, initial: [A], closure: (inout [A]) -> Void) {
-    var e = element(forKey: key) ?? Element(key: key, value: initial, inputOrigin: InputOrigin())
-    var v = (e.value as? [A] ) ?? initial
+
+  mutating func update<A>(
+    forKey key: InputKey, inputOrigin: InputOrigin, initial: [A],
+    closure: (inout [A]) -> Void
+  ) {
+    var e =
+      element(forKey: key)
+      ?? Element(key: key, value: initial, inputOrigin: InputOrigin())
+    var v = (e.value as? [A]) ?? initial
     // The first time a value is parsed from command line, empty array of any default values.
     if e.shouldClearArrayIfParsed {
       v.removeAll()

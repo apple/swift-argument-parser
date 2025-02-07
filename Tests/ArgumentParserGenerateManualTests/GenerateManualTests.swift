@@ -10,11 +10,11 @@
 //
 //===----------------------------------------------------------------------===//
 
-import XCTest
 import ArgumentParserTestHelpers
+import XCTest
 
 final class GenerateManualTests: XCTestCase {
-#if os(macOS)
+  #if os(macOS)
   func testCountLinesSinglePageManual() throws {
     guard #available(macOS 12, *) else { return }
     try assertGenerateManual(multiPage: false, command: "count-lines")
@@ -24,7 +24,7 @@ final class GenerateManualTests: XCTestCase {
     guard #available(macOS 12, *) else { return }
     try assertGenerateManual(multiPage: true, command: "count-lines")
   }
-#endif
+  #endif
 
   func testColorSinglePageManual() throws {
     try assertGenerateManual(multiPage: false, command: "color")

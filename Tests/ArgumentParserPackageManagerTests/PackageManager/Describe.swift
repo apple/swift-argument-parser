@@ -16,10 +16,10 @@ extension Package {
   struct Describe: ParsableCommand {
     @OptionGroup()
     var options: Options
-    
+
     @Option(help: "Output format")
     var type: OutputType
-    
+
     enum OutputType: String, ExpressibleByArgument, Decodable {
       case json
       case text

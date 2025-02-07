@@ -38,14 +38,14 @@ extension Platform {
   /// The name of the user's preferred shell, if detectable from the
   /// environment.
   static var shellName: String? {
-#if os(Windows)
+    #if os(Windows)
     return nil
-#else
+    #else
     // FIXME: This retrieves the user's preferred shell, not necessarily the one currently in use.
     guard let shellVar = getenv("SHELL") else { return nil }
     let shellParts = String(cString: shellVar).split(separator: "/")
     return shellParts.last.map(String.init)
-#endif
+    #endif
   }
 }
 
@@ -64,21 +64,21 @@ extension Platform {
   static var exitCodeSuccess: Int32 {
     EXIT_SUCCESS
   }
-  
+
   /// The code for exit with a general failure.
   static var exitCodeFailure: Int32 {
     EXIT_FAILURE
   }
-  
+
   /// The code for exit with a validation failure.
   static var exitCodeValidationFailure: Int32 {
-#if os(Windows)
+    #if os(Windows)
     return ERROR_BAD_ARGUMENTS
-#elseif os(WASI)
+    #elseif os(WASI)
     return EXIT_FAILURE
-#else
+    #else
     return EX_USAGE
-#endif
+    #endif
   }
 }
 
@@ -87,19 +87,19 @@ extension Platform {
 extension Platform {
   /// Complete execution with the given exit code.
   static func exit(_ code: Int32) -> Never {
-#if canImport(Glibc)
+    #if canImport(Glibc)
     Glibc.exit(code)
-#elseif canImport(Musl)
+    #elseif canImport(Musl)
     Musl.exit(code)
-#elseif canImport(Darwin)
+    #elseif canImport(Darwin)
     Darwin.exit(code)
-#elseif canImport(CRT)
+    #elseif canImport(CRT)
     ucrt._exit(code)
-#elseif canImport(WASILibc)
+    #elseif canImport(WASILibc)
     WASILibc.exit(code)
-#elseif canImport(Android)
+    #elseif canImport(Android)
     Android.exit(code)
-#endif
+    #endif
   }
 }
 
@@ -132,7 +132,7 @@ extension Platform {
   private static var defaultTerminalSize: (width: Int, height: Int) {
     (width: 80, height: 25)
   }
-  
+
   /// The terminal size specified by the COLUMNS and LINES overrides
   /// (if present).
   ///
@@ -161,78 +161,94 @@ extension Platform {
   ///
   /// [linenv]: https://man7.org/linux/man-pages/man7/environ.7.html:~:text=COLUMNS
   /// [bsdenv]: https://man.freebsd.org/cgi/man.cgi?environ(7)#:~:text=COLUMNS
-  private static func userSpecifiedTerminalSize() -> (width: Int?, height: Int?) {
-    var width: Int? = nil, height: Int? = nil
+  private static func userSpecifiedTerminalSize() -> (width: Int?, height: Int?)
+  {
+    var width: Int? = nil
+    var height: Int? = nil
 
-#if !os(Windows) && !os(WASI)
-    if let colsCStr = getenv("COLUMNS"), let colsVal = Int(String(cString: colsCStr)) {
+    #if !os(Windows) && !os(WASI)
+    if let colsCStr = getenv("COLUMNS"),
+      let colsVal = Int(String(cString: colsCStr))
+    {
       width = colsVal
     }
-    if let linesCStr = getenv("LINES"), let linesVal = Int(String(cString: linesCStr)) {
+    if let linesCStr = getenv("LINES"),
+      let linesVal = Int(String(cString: linesCStr))
+    {
       height = linesVal
     }
-#endif
+    #endif
 
     return (width: width, height: height)
   }
-  
+
   /// The current terminal size as reported by the windowing system,
   /// if available.
   ///
   /// Returns (nil, nil) if no reported size is available.
   private static func reportedTerminalSize() -> (width: Int?, height: Int?) {
-#if os(WASI)
+    #if os(WASI)
     // WASI doesn't yet support terminal size
     return (width: nil, height: nil)
-#elseif os(Windows)
+    #elseif os(Windows)
     var csbi = CONSOLE_SCREEN_BUFFER_INFO()
-    guard GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi) else {
+    guard GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi)
+    else {
       return (width: nil, height: nil)
     }
-    return (width: Int(csbi.srWindow.Right - csbi.srWindow.Left) + 1,
-            height: Int(csbi.srWindow.Bottom - csbi.srWindow.Top) + 1)
-#else
+    return (
+      width: Int(csbi.srWindow.Right - csbi.srWindow.Left) + 1,
+      height: Int(csbi.srWindow.Bottom - csbi.srWindow.Top) + 1
+    )
+    #else
     var w = winsize()
 
-#if os(OpenBSD)
+    #if os(OpenBSD)
     // TIOCGWINSZ is a complex macro, so we need the flattened value.
-    let tiocgwinsz = Int32(0x40087468)
+    let tiocgwinsz = Int32(0x4008_7468)
     let err = ioctl(STDOUT_FILENO, tiocgwinsz, &w)
-#elseif canImport(Musl)
+    #elseif canImport(Musl)
     let err = ioctl(STDOUT_FILENO, UInt(TIOCGWINSZ), &w)
-#else
+    #else
     let err = ioctl(STDOUT_FILENO, TIOCGWINSZ, &w)
-#endif
+    #endif
     guard err == 0 else { return (width: nil, height: nil) }
 
-    let width = Int(w.ws_col), height = Int(w.ws_row)
-    
-    return (width: width > 0 ? width : nil,
-            height: height > 0 ? height : nil)
-#endif
+    let width = Int(w.ws_col)
+    let height = Int(w.ws_row)
+
+    return (
+      width: width > 0 ? width : nil,
+      height: height > 0 ? height : nil
+    )
+    #endif
   }
-  
+
   /// Returns the current terminal size, or the default if the size is unavailable.
   static func terminalSize() -> (width: Int, height: Int) {
     let specifiedSize = self.userSpecifiedTerminalSize()
-    
+
     // Avoid needlessly calling ioctl() if a complete override is in effect
-    if let specifiedWidth = specifiedSize.width, let specifiedHeight = specifiedSize.height {
-        return (width: specifiedWidth, height: specifiedHeight)
+    if let specifiedWidth = specifiedSize.width,
+      let specifiedHeight = specifiedSize.height
+    {
+      return (width: specifiedWidth, height: specifiedHeight)
     }
-    
+
     // Get the size self-reported by the terminal, if available
     let reportedSize = self.reportedTerminalSize()
-    
+
     // As it isn't required that both width and height always be specified
     // together, either by the user or the terminal itself, they are
     // handled separately.
     return (
-      width: specifiedSize.width ?? reportedSize.width ?? defaultTerminalSize.width,
-      height: specifiedSize.height ?? reportedSize.height ?? defaultTerminalSize.height
+      width: specifiedSize.width ?? reportedSize.width
+        ?? defaultTerminalSize.width,
+      height: specifiedSize.height ?? reportedSize.height
+        ?? defaultTerminalSize.height
     )
   }
-  
+
   /// The current terminal size, or the default if the width is unavailable.
   static var terminalWidth: Int {
     self.terminalSize().width

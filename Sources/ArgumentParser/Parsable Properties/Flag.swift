@@ -75,7 +75,7 @@ public struct Flag<Value>: Decodable, ParsedWrapper {
   internal init(_parsedValue: Parsed<Value>) {
     self._parsedValue = _parsedValue
   }
-  
+
   public init(from _decoder: Decoder) throws {
     try self.init(_decoder: _decoder)
   }
@@ -90,7 +90,11 @@ public struct Flag<Value>: Decodable, ParsedWrapper {
   /// @Flag() var flag: Bool  // Syntax without this initializer
   /// @Flag var flag: Bool    // Syntax with this initializer
   /// ```
-  @available(*, unavailable, message: "A default value must be provided unless the value type is supported by Flag.")
+  @available(
+    *, unavailable,
+    message:
+      "A default value must be provided unless the value type is supported by Flag."
+  )
   public init() {
     fatalError("unavailable")
   }
@@ -132,9 +136,9 @@ public struct FlagInversion: Hashable {
     case prefixedNo
     case prefixedEnableDisable
   }
-  
+
   internal var base: Representation
-  
+
   /// Adds a matching flag with a `no-` prefix to represent `false`.
   ///
   /// For example, the `shouldRender` property in this declaration is set to
@@ -146,7 +150,7 @@ public struct FlagInversion: Hashable {
   public static var prefixedNo: FlagInversion {
     self.init(base: .prefixedNo)
   }
-  
+
   /// Uses matching flags with `enable-` and `disable-` prefixes.
   ///
   /// For example, the `extraOutput` property in this declaration is set to
@@ -160,7 +164,7 @@ public struct FlagInversion: Hashable {
   }
 }
 
-extension FlagInversion: Sendable { }
+extension FlagInversion: Sendable {}
 
 /// The options for treating enumeration-based flags as exclusive.
 public struct FlagExclusivity: Hashable {
@@ -169,28 +173,28 @@ public struct FlagExclusivity: Hashable {
     case chooseFirst
     case chooseLast
   }
-  
+
   internal var base: Representation
-  
+
   /// Only one of the enumeration cases may be provided.
   public static var exclusive: FlagExclusivity {
     self.init(base: .exclusive)
   }
-  
+
   /// The first enumeration case that is provided is used.
   public static var chooseFirst: FlagExclusivity {
     self.init(base: .chooseFirst)
   }
-  
+
   /// The last enumeration case that is provided is used.
   public static var chooseLast: FlagExclusivity {
     self.init(base: .chooseLast)
   }
 }
 
-extension FlagExclusivity: Sendable { }
+extension FlagExclusivity: Sendable {}
 
-extension Flag where Value == Optional<Bool> {
+extension Flag where Value == Bool? {
   /// Creates a Boolean property that reads its value from the presence of
   /// one or more inverted flags.
   ///
@@ -216,18 +220,19 @@ extension Flag where Value == Optional<Bool> {
     exclusivity: FlagExclusivity = .chooseLast,
     help: ArgumentHelp? = nil
   ) {
-    self.init(_parsedValue: .init { key in
-      .flag(
-        key: key,
-        name: name,
-        default: nil,
-        required: false,
-        inversion: inversion,
-        exclusivity: exclusivity,
-        help: help)
-    })
+    self.init(
+      _parsedValue: .init { key in
+        .flag(
+          key: key,
+          name: name,
+          default: nil,
+          required: false,
+          inversion: inversion,
+          exclusivity: exclusivity,
+          help: help)
+      })
   }
-  
+
   /// This initializer allows a user to provide a `nil` default value for
   /// `@Flag`-marked `Optional<Bool>` property without allowing a non-`nil`
   /// default value.
@@ -256,9 +261,10 @@ extension Flag where Value == Bool {
     initial: Bool?,
     help: ArgumentHelp? = nil
   ) {
-    self.init(_parsedValue: .init { key in
-      .flag(key: key, name: name, default: initial, help: help)
-    })
+    self.init(
+      _parsedValue: .init { key in
+        .flag(key: key, name: name, default: initial, help: help)
+      })
   }
 
   /// Creates a Boolean property with default value provided by standard Swift default value syntax that reads its value from the presence of a flag.
@@ -289,15 +295,16 @@ extension Flag where Value == Bool {
     exclusivity: FlagExclusivity,
     help: ArgumentHelp?
   ) {
-    self.init(_parsedValue: .init { key in
-      .flag(
-        key: key,
-        name: name,
-        default: initial,
-        required: initial == nil,
-        inversion: inversion,
-        exclusivity: exclusivity,
-        help: help)
+    self.init(
+      _parsedValue: .init { key in
+        .flag(
+          key: key,
+          name: name,
+          default: initial,
+          required: initial == nil,
+          inversion: inversion,
+          exclusivity: exclusivity,
+          help: help)
       })
   }
 
@@ -377,9 +384,10 @@ extension Flag where Value == Int {
     name: NameSpecification = .long,
     help: ArgumentHelp? = nil
   ) {
-    self.init(_parsedValue: .init { key in
-      .counter(key: key, name: name, help: help)
-    })
+    self.init(
+      _parsedValue: .init { key in
+        .counter(key: key, name: name, help: help)
+      })
   }
 }
 
@@ -394,54 +402,59 @@ extension Flag where Value: EnumerableFlag {
     exclusivity: FlagExclusivity,
     help: ArgumentHelp?
   ) {
-    self.init(_parsedValue: .init { key in
-      // Create a string representation of the default value. Since this is a
-      // flag, the default value to show to the user is the `--value-name`
-      // flag that a user would provide on the command line, not a Swift value.
-      let defaultValueFlag = initial.flatMap { value -> String? in
-        let defaultKey = InputKey(name: String(describing: value), parent: key)
-        let defaultNames = Value.name(for: value).makeNames(defaultKey)
-        return defaultNames.first?.synopsisString
-      }
+    self.init(
+      _parsedValue: .init { key in
+        // Create a string representation of the default value. Since this is a
+        // flag, the default value to show to the user is the `--value-name`
+        // flag that a user would provide on the command line, not a Swift value.
+        let defaultValueFlag = initial.flatMap { value -> String? in
+          let defaultKey = InputKey(
+            name: String(describing: value), parent: key)
+          let defaultNames = Value.name(for: value).makeNames(defaultKey)
+          return defaultNames.first?.synopsisString
+        }
 
-      let caseHelps = Value.allCases.map { Value.help(for: $0) }
-      let hasCustomCaseHelp = caseHelps.contains(where: { $0 != nil })
-      
-      let args = Value.allCases.enumerated().map { (i, value) -> ArgumentDefinition in
-        let caseKey = InputKey(name: String(describing: value), parent: key)
-        let name = Value.name(for: value)
-        
-        let helpForCase = caseHelps[i] ?? help
-        var defaultValueString: String? = nil
-        if hasCustomCaseHelp {
-          if value == initial {
+        let caseHelps = Value.allCases.map { Value.help(for: $0) }
+        let hasCustomCaseHelp = caseHelps.contains(where: { $0 != nil })
+
+        let args = Value.allCases.enumerated().map {
+          (i, value) -> ArgumentDefinition in
+          let caseKey = InputKey(name: String(describing: value), parent: key)
+          let name = Value.name(for: value)
+
+          let helpForCase = caseHelps[i] ?? help
+          var defaultValueString: String? = nil
+          if hasCustomCaseHelp {
+            if value == initial {
+              defaultValueString = defaultValueFlag
+            }
+          } else {
             defaultValueString = defaultValueFlag
           }
-        } else {
-          defaultValueString = defaultValueFlag
+
+          let help = ArgumentDefinition.Help(
+            allValueStrings: [],
+            options: initial != nil ? .isOptional : [],
+            help: helpForCase,
+            defaultValue: defaultValueString,
+            key: key,
+            isComposite: !hasCustomCaseHelp)
+
+          return ArgumentDefinition.flag(
+            name: name,
+            key: key,
+            caseKey: caseKey,
+            help: help,
+            parsingStrategy: .default,
+            initialValue: initial,
+            update: .nullary({ (origin, name, values) in
+              try ArgumentSet.updateFlag(
+                key: key, value: value, origin: origin, values: &values,
+                exclusivity: exclusivity)
+            })
+          )
         }
-        
-        let help = ArgumentDefinition.Help(
-          allValueStrings: [],
-          options: initial != nil ? .isOptional : [],
-          help: helpForCase,
-          defaultValue: defaultValueString,
-          key: key,
-          isComposite: !hasCustomCaseHelp)
-        
-        return ArgumentDefinition.flag(
-          name: name,
-          key: key,
-          caseKey: caseKey,
-          help: help,
-          parsingStrategy: .default,
-          initialValue: initial,
-          update: .nullary({ (origin, name, values) in
-            try ArgumentSet.updateFlag(key: key, value: value, origin: origin, values: &values, exclusivity: exclusivity)
-          })
-        )
-      }
-      return ArgumentSet(args)
+        return ArgumentSet(args)
       })
   }
 
@@ -513,29 +526,37 @@ extension Flag {
     exclusivity: FlagExclusivity = .exclusive,
     help: ArgumentHelp? = nil
   ) where Value == Element?, Element: EnumerableFlag {
-    self.init(_parsedValue: .init { parentKey in
-      let caseHelps = Element.allCases.map { Element.help(for: $0) }
-      let hasCustomCaseHelp = caseHelps.contains(where: { $0 != nil })
+    self.init(
+      _parsedValue: .init { parentKey in
+        let caseHelps = Element.allCases.map { Element.help(for: $0) }
+        let hasCustomCaseHelp = caseHelps.contains(where: { $0 != nil })
 
-      let args = Element.allCases.enumerated().map { (i, value) -> ArgumentDefinition in
-        let caseKey = InputKey(name: String(describing: value), parent: parentKey)
-        let name = Element.name(for: value)
-        let helpForCase = hasCustomCaseHelp ? (caseHelps[i] ?? help) : help
+        let args = Element.allCases.enumerated().map {
+          (i, value) -> ArgumentDefinition in
+          let caseKey = InputKey(
+            name: String(describing: value), parent: parentKey)
+          let name = Element.name(for: value)
+          let helpForCase = hasCustomCaseHelp ? (caseHelps[i] ?? help) : help
 
-        let help = ArgumentDefinition.Help(
-          allValueStrings: [],
-          options: [.isOptional],
-          help: helpForCase,
-          defaultValue: nil,
-          key: parentKey,
-          isComposite: !hasCustomCaseHelp)
+          let help = ArgumentDefinition.Help(
+            allValueStrings: [],
+            options: [.isOptional],
+            help: helpForCase,
+            defaultValue: nil,
+            key: parentKey,
+            isComposite: !hasCustomCaseHelp)
 
-        return ArgumentDefinition.flag(name: name, key: parentKey, caseKey: caseKey, help: help, parsingStrategy: .default, initialValue: nil as Element?, update: .nullary({ (origin, name, values) in
-          try ArgumentSet.updateFlag(key: parentKey, value: value, origin: origin, values: &values, exclusivity: exclusivity)
-        }))
+          return ArgumentDefinition.flag(
+            name: name, key: parentKey, caseKey: caseKey, help: help,
+            parsingStrategy: .default, initialValue: nil as Element?,
+            update: .nullary({ (origin, name, values) in
+              try ArgumentSet.updateFlag(
+                key: parentKey, value: value, origin: origin, values: &values,
+                exclusivity: exclusivity)
+            }))
 
-      }
-      return ArgumentSet(args)
+        }
+        return ArgumentSet(args)
       })
   }
 
@@ -545,31 +566,39 @@ extension Flag {
   private init<Element>(
     initial: [Element]?,
     help: ArgumentHelp? = nil
-  ) where Value == Array<Element>, Element: EnumerableFlag {
-    self.init(_parsedValue: .init { parentKey in
-      let caseHelps = Element.allCases.map { Element.help(for: $0) }
-      let hasCustomCaseHelp = caseHelps.contains(where: { $0 != nil })
+  ) where Value == [Element], Element: EnumerableFlag {
+    self.init(
+      _parsedValue: .init { parentKey in
+        let caseHelps = Element.allCases.map { Element.help(for: $0) }
+        let hasCustomCaseHelp = caseHelps.contains(where: { $0 != nil })
 
-      let args = Element.allCases.enumerated().map { (i, value) -> ArgumentDefinition in
-        let caseKey = InputKey(name: String(describing: value), parent: parentKey)
-        let name = Element.name(for: value)
-        let helpForCase = hasCustomCaseHelp ? (caseHelps[i] ?? help) : help
-        let help = ArgumentDefinition.Help(
-          allValueStrings: [],
-          options: [.isOptional],
-          help: helpForCase,
-          defaultValue: nil,
-          key: parentKey,
-          isComposite: !hasCustomCaseHelp)
+        let args = Element.allCases.enumerated().map {
+          (i, value) -> ArgumentDefinition in
+          let caseKey = InputKey(
+            name: String(describing: value), parent: parentKey)
+          let name = Element.name(for: value)
+          let helpForCase = hasCustomCaseHelp ? (caseHelps[i] ?? help) : help
+          let help = ArgumentDefinition.Help(
+            allValueStrings: [],
+            options: [.isOptional],
+            help: helpForCase,
+            defaultValue: nil,
+            key: parentKey,
+            isComposite: !hasCustomCaseHelp)
 
-        return ArgumentDefinition.flag(name: name, key: parentKey, caseKey: caseKey, help: help, parsingStrategy: .default, initialValue: initial, update: .nullary({ (origin, name, values) in
-          values.update(forKey: parentKey, inputOrigin: origin, initial: [Element](), closure: {
-            $0.append(value)
-          })
-        }))
-      }
-      return ArgumentSet(args)
-    })
+          return ArgumentDefinition.flag(
+            name: name, key: parentKey, caseKey: caseKey, help: help,
+            parsingStrategy: .default, initialValue: initial,
+            update: .nullary({ (origin, name, values) in
+              values.update(
+                forKey: parentKey, inputOrigin: origin, initial: [Element](),
+                closure: {
+                  $0.append(value)
+                })
+            }))
+        }
+        return ArgumentSet(args)
+      })
   }
 
   /// Creates an array property that gets its values from the presence of
@@ -585,7 +614,7 @@ extension Flag {
   public init<Element>(
     wrappedValue: [Element],
     help: ArgumentHelp? = nil
-  ) where Value == Array<Element>, Element: EnumerableFlag {
+  ) where Value == [Element], Element: EnumerableFlag {
     self.init(
       initial: wrappedValue,
       help: help
@@ -604,7 +633,7 @@ extension Flag {
   ///   - help: Information about how to use this flag.
   public init<Element>(
     help: ArgumentHelp? = nil
-  ) where Value == Array<Element>, Element: EnumerableFlag {
+  ) where Value == [Element], Element: EnumerableFlag {
     self.init(
       initial: nil,
       help: help
@@ -613,12 +642,18 @@ extension Flag {
 }
 
 extension ArgumentDefinition {
-  static func flag<V>(name: NameSpecification, key: InputKey, caseKey: InputKey, help: Help, parsingStrategy: ArgumentDefinition.ParsingStrategy, initialValue: V?, update: Update) -> ArgumentDefinition {
-    return ArgumentDefinition(kind: .name(key: caseKey, specification: name), help: help, completion: .default, parsingStrategy: parsingStrategy, update: update, initial: { origin, values in
-      if let initial = initialValue {
-        values.set(initial, forKey: key, inputOrigin: origin)
-      }
-    })
+  static func flag<V>(
+    name: NameSpecification, key: InputKey, caseKey: InputKey, help: Help,
+    parsingStrategy: ArgumentDefinition.ParsingStrategy, initialValue: V?,
+    update: Update
+  ) -> ArgumentDefinition {
+    ArgumentDefinition(
+      kind: .name(key: caseKey, specification: name), help: help,
+      completion: .default, parsingStrategy: parsingStrategy, update: update,
+      initial: { origin, values in
+        if let initial = initialValue {
+          values.set(initial, forKey: key, inputOrigin: origin)
+        }
+      })
   }
 }
-

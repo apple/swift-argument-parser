@@ -56,7 +56,7 @@ public struct CommandConfiguration: Sendable {
   /// Use 'ungroupedSubcommands' to access 'groupedSubcommands' to retain the grouping structure.
   public var subcommands: [ParsableCommand.Type] {
     get {
-      return ungroupedSubcommands + groupedSubcommands.flatMap { $0.subcommands }
+      ungroupedSubcommands + groupedSubcommands.flatMap { $0.subcommands }
     }
 
     set {
@@ -173,7 +173,10 @@ public struct CommandConfiguration: Sendable {
 }
 
 extension CommandConfiguration {
-  @available(*, deprecated, message: "Use the memberwise initializer with the aliases parameter.")
+  @available(
+    *, deprecated,
+    message: "Use the memberwise initializer with the aliases parameter."
+  )
   public init(
     commandName _commandName: String?,
     abstract: String,
@@ -198,7 +201,11 @@ extension CommandConfiguration {
       aliases: [])
   }
 
-  @available(*, deprecated, message: "Use the memberwise initializer with the usage and aliases parameters.")
+  @available(
+    *, deprecated,
+    message:
+      "Use the memberwise initializer with the usage and aliases parameters."
+  )
   public init(
     commandName _commandName: String?,
     abstract: String,

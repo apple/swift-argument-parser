@@ -9,8 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-import XCTest
 import ArgumentParser
+import XCTest
 
 final class AsyncCommandEndToEndTests: XCTestCase {
 }
@@ -18,14 +18,14 @@ final class AsyncCommandEndToEndTests: XCTestCase {
 actor AsyncStatusCheck {
   struct Status: OptionSet {
     var rawValue: UInt8
-    
+
     static var root: Self { .init(rawValue: 1 << 0) }
-    static var sub: Self  { .init(rawValue: 1 << 1) }
+    static var sub: Self { .init(rawValue: 1 << 1) }
   }
-  
+
   @MainActor
   var status: Status = []
-  
+
   @MainActor
   func update(_ status: Status) {
     self.status.insert(status)
@@ -41,11 +41,11 @@ struct AsyncCommand: AsyncParsableCommand {
   static var configuration: CommandConfiguration {
     .init(subcommands: [SubCommand.self])
   }
-  
+
   func run() async throws {
     await statusCheck.update(.root)
   }
-  
+
   struct SubCommand: AsyncParsableCommand {
     func run() async throws {
       await statusCheck.update(.sub)
@@ -60,7 +60,7 @@ extension AsyncCommandEndToEndTests {
     await AsyncCommand.main([])
     XCTAssertTrue(statusCheck.status.contains(.root))
   }
-  
+
   @MainActor
   func testAsyncMain_sub() async throws {
     XCTAssertFalse(statusCheck.status.contains(.sub))

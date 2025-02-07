@@ -9,14 +9,14 @@
 //
 //===----------------------------------------------------------------------===//
 
-import XCTest
-import ArgumentParserTestHelpers
 import ArgumentParser
+import ArgumentParserTestHelpers
+import XCTest
 
 final class ValidationEndToEndTests: XCTestCase {
 }
 
-fileprivate enum UserValidationError: LocalizedError {
+private enum UserValidationError: LocalizedError {
   case userValidationError
 
   var errorDescription: String? {
@@ -27,7 +27,7 @@ fileprivate enum UserValidationError: LocalizedError {
   }
 }
 
-fileprivate struct Foo: ParsableArguments {
+private struct Foo: ParsableArguments {
   static let usageString: String = """
     Usage: foo [--count <count>] [<names> ...] [--version] [--throw]
       See 'foo --help' for more information.
@@ -77,7 +77,8 @@ fileprivate struct Foo: ParsableArguments {
     }
 
     if let count = count, names.count != count {
-      throw ValidationError("Number of names (\(names.count)) doesn't match count (\(count)).")
+      throw ValidationError(
+        "Number of names (\(names.count)) doesn't match count (\(count)).")
     }
 
     if throwCustomError {
@@ -118,36 +119,45 @@ extension ValidationEndToEndTests {
 
   func testValidation_Fails() throws {
     AssertErrorMessage(Foo.self, [], "Must specify at least one name.")
-    AssertFullErrorMessage(Foo.self, [], """
-            Error: Must specify at least one name.
+    AssertFullErrorMessage(
+      Foo.self, [],
+      """
+      Error: Must specify at least one name.
 
-            \(Foo.helpString)
+      \(Foo.helpString)
 
-            """)
+      """)
 
-    AssertErrorMessage(Foo.self, ["--count", "3", "Joe"], """
-            Number of names (1) doesn't match count (3).
-            """)
-    AssertFullErrorMessage(Foo.self, ["--count", "3", "Joe"], """
-            Error: Number of names (1) doesn't match count (3).
-            \(Foo.usageString)
-            """)
+    AssertErrorMessage(
+      Foo.self, ["--count", "3", "Joe"],
+      """
+      Number of names (1) doesn't match count (3).
+      """)
+    AssertFullErrorMessage(
+      Foo.self, ["--count", "3", "Joe"],
+      """
+      Error: Number of names (1) doesn't match count (3).
+      \(Foo.usageString)
+      """)
   }
 
   func testCustomErrorValidation() {
     // verify that error description is printed if available via LocalizedError
-    AssertErrorMessage(Foo.self, ["--throw", "Joe"], UserValidationError.userValidationError.errorDescription!)
+    AssertErrorMessage(
+      Foo.self, ["--throw", "Joe"],
+      UserValidationError.userValidationError.errorDescription!)
   }
 
   func testEmptyErrorValidation() {
     AssertErrorMessage(Foo.self, ["--show-usage-only", "Joe"], "")
-    AssertFullErrorMessage(Foo.self, ["--show-usage-only", "Joe"], Foo.usageString)
+    AssertFullErrorMessage(
+      Foo.self, ["--show-usage-only", "Joe"], Foo.usageString)
     AssertFullErrorMessage(Foo.self, ["--fail-validation-silently", "Joe"], "")
     AssertFullErrorMessage(Foo.self, ["--fail-silently", "Joe"], "")
   }
 }
 
-fileprivate struct FooCommand: ParsableCommand {
+private struct FooCommand: ParsableCommand {
   @Flag(help: .hidden)
   var foo = false
   @Flag(help: .hidden)

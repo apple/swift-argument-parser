@@ -9,9 +9,9 @@
 //
 //===----------------------------------------------------------------------===//
 
+import ArgumentParserToolInfo
 import Foundation
 import XCTest
-import ArgumentParserToolInfo
 
 extension DecodingError: Swift.CustomStringConvertible {
   public var description: String {

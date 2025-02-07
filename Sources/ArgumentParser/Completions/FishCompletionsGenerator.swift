@@ -3,18 +3,21 @@ struct FishCompletionsGenerator {
     let programName = type._commandName
     let helperFunctions = [
       preprocessorFunction(commandName: programName),
-      helperFunction(commandName: programName)
+      helperFunction(commandName: programName),
     ]
     let completions = generateCompletions([type])
 
-    return helperFunctions.joined(separator: "\n\n") + "\n\n" + completions.joined(separator: "\n")
+    return helperFunctions.joined(separator: "\n\n") + "\n\n"
+      + completions.joined(separator: "\n")
   }
 }
 
 // MARK: - Private functions
 
 extension FishCompletionsGenerator {
-  private static func generateCompletions(_ commands: [ParsableCommand.Type]) -> [String] {
+  private static func generateCompletions(_ commands: [ParsableCommand.Type])
+    -> [String]
+  {
     let type = commands.last!
     let isRootCommand = commands.count == 1
     let programName = commands[0]._commandName
@@ -27,9 +30,11 @@ extension FishCompletionsGenerator {
 
     let helperFunctionName = helperFunctionName(commandName: programName)
 
-    var prefix = "complete -c \(programName) -n '\(helperFunctionName) \"\(commands.map { $0._commandName }.joined(separator: separator))\""
+    var prefix =
+      "complete -c \(programName) -n '\(helperFunctionName) \"\(commands.map { $0._commandName }.joined(separator: separator))\""
     if !subcommands.isEmpty {
-      prefix += " \"\(subcommands.map { $0._commandName }.joined(separator: separator))\""
+      prefix +=
+        " \"\(subcommands.map { $0._commandName }.joined(separator: separator))\""
     }
     prefix += "'"
 
@@ -39,11 +44,13 @@ extension FishCompletionsGenerator {
 
     let subcommandCompletions: [String] = subcommands.map { subcommand in
       let escapedAbstract = subcommand.configuration.abstract.fishEscape()
-      let suggestion = "-f -a '\(subcommand._commandName)' -d '\(escapedAbstract)'"
+      let suggestion =
+        "-f -a '\(subcommand._commandName)' -d '\(escapedAbstract)'"
       return complete(suggestion: suggestion)
     }
 
-    let argumentCompletions = commands
+    let argumentCompletions =
+      commands
       .argumentsForHelp(visibility: .default)
       .compactMap { $0.argumentSegments(commands) }
       .map { $0.joined(separator: " ") }
@@ -53,25 +60,28 @@ extension FishCompletionsGenerator {
       generateCompletions(commands + [subcommand])
     }
 
-    return completionsFromSubcommands + argumentCompletions + subcommandCompletions
+    return completionsFromSubcommands + argumentCompletions
+      + subcommandCompletions
   }
 }
 
 extension ArgumentDefinition {
-  fileprivate func argumentSegments(_ commands: [ParsableCommand.Type]) -> [String]? {
+  fileprivate func argumentSegments(_ commands: [ParsableCommand.Type])
+    -> [String]?
+  {
     guard help.visibility.base == .default
     else { return nil }
-    
+
     var results: [String] = []
-    
+
     if !names.isEmpty {
-      results += names.map{ $0.asFishSuggestion }
+      results += names.map { $0.asFishSuggestion }
     }
-    
+
     if !help.abstract.isEmpty {
       results += ["-d '\(help.abstract.fishEscape())'"]
     }
-    
+
     switch completion.kind {
     case .default where names.isEmpty:
       return nil
@@ -88,9 +98,11 @@ extension ArgumentDefinition {
       results += ["-r -f -a '(\(shellCommand))'"]
     case .custom:
       let commandName = commands.first!._commandName
-      results += ["-r -f -a '(command \(commandName) \(customCompletionCall(commands)) (commandline -opc)[1..-1])'"]
+      results += [
+        "-r -f -a '(command \(commandName) \(customCompletionCall(commands)) (commandline -opc)[1..-1])'"
+      ]
     }
-    
+
     return results
   }
 }
@@ -144,34 +156,35 @@ extension FishCompletionsGenerator {
 
   private static func helperFunction(commandName: String) -> String {
     let functionName = helperFunctionName(commandName: commandName)
-    let preprocessorFunctionName = preprocessorFunctionName(commandName: commandName)
+    let preprocessorFunctionName = preprocessorFunctionName(
+      commandName: commandName)
     return """
-    function \(functionName)
-        set -gx \(CompletionShell.shellEnvironmentVariableName) fish
-        set -gx \(CompletionShell.shellVersionEnvironmentVariableName) "$FISH_VERSION"
-        set -l currentCommands (\(preprocessorFunctionName) (commandline -opc))
-        set -l expectedCommands (string split \"\(separator)\" $argv[1])
-        set -l subcommands (string split \"\(separator)\" $argv[2])
-        if [ (count $currentCommands) -ge (count $expectedCommands) ]
-            for i in (seq (count $expectedCommands))
-                if [ $currentCommands[$i] != $expectedCommands[$i] ]
-                    return 1
-                end
-            end
-            if [ (count $currentCommands) -eq (count $expectedCommands) ]
-                return 0
-            end
-            if [ (count $subcommands) -gt 1 ]
-                for i in (seq (count $subcommands))
-                    if [ $currentCommands[(math (count $expectedCommands) + 1)] = $subcommands[$i] ]
-                        return 1
-                    end
-                end
-            end
-            return 0
-        end
-        return 1
-    end
-    """
+      function \(functionName)
+          set -gx \(CompletionShell.shellEnvironmentVariableName) fish
+          set -gx \(CompletionShell.shellVersionEnvironmentVariableName) "$FISH_VERSION"
+          set -l currentCommands (\(preprocessorFunctionName) (commandline -opc))
+          set -l expectedCommands (string split \"\(separator)\" $argv[1])
+          set -l subcommands (string split \"\(separator)\" $argv[2])
+          if [ (count $currentCommands) -ge (count $expectedCommands) ]
+              for i in (seq (count $expectedCommands))
+                  if [ $currentCommands[$i] != $expectedCommands[$i] ]
+                      return 1
+                  end
+              end
+              if [ (count $currentCommands) -eq (count $expectedCommands) ]
+                  return 0
+              end
+              if [ (count $subcommands) -gt 1 ]
+                  for i in (seq (count $subcommands))
+                      if [ $currentCommands[(math (count $expectedCommands) + 1)] = $subcommands[$i] ]
+                          return 1
+                      end
+                  end
+              end
+              return 0
+          end
+          return 1
+      end
+      """
   }
 }

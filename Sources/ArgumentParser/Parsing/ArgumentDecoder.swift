@@ -34,25 +34,27 @@ final class ArgumentDecoder: Decoder {
     self.previouslyDecoded = previouslyDecoded
     self.usedOrigins = InputOrigin()
   }
-  
+
   let values: ParsedValues
   var usedOrigins: InputOrigin
   var nextCommandIndex = 0
   var previouslyDecoded: [DecodedArguments] = []
-  
+
   var codingPath: [CodingKey] = []
-  
-  var userInfo: [CodingUserInfoKey : Any] = [:]
-  
-  func container<K>(keyedBy type: K.Type) throws -> KeyedDecodingContainer<K> where K: CodingKey {
-    let container = ParsedArgumentsContainer(for: self, keyType: K.self, codingPath: codingPath)
+
+  var userInfo: [CodingUserInfoKey: Any] = [:]
+
+  func container<K>(keyedBy type: K.Type) throws -> KeyedDecodingContainer<K>
+  where K: CodingKey {
+    let container = ParsedArgumentsContainer(
+      for: self, keyType: K.self, codingPath: codingPath)
     return KeyedDecodingContainer(container)
   }
-  
+
   func unkeyedContainer() throws -> UnkeyedDecodingContainer {
     throw Error.topLevelHasNoUnkeyedContainer
   }
-  
+
   func singleValueContainer() throws -> SingleValueDecodingContainer {
     throw Error.topLevelHasNoSingleValueContainer
   }
@@ -75,51 +77,67 @@ extension ArgumentDecoder {
   }
 }
 
-final class ParsedArgumentsContainer<K>: KeyedDecodingContainerProtocol where K : CodingKey {
+final class ParsedArgumentsContainer<K>: KeyedDecodingContainerProtocol
+where K: CodingKey {
   var codingPath: [CodingKey]
-  
+
   let decoder: ArgumentDecoder
-  
+
   init(for decoder: ArgumentDecoder, keyType: K.Type, codingPath: [CodingKey]) {
     self.codingPath = codingPath
     self.decoder = decoder
   }
-  
+
   var allKeys: [K] {
     fatalError()
   }
-  
+
   fileprivate func element(forKey key: K) -> ParsedValues.Element? {
     let k = InputKey(codingKey: key, path: codingPath)
     return decoder.element(forKey: k)
   }
-  
+
   func contains(_ key: K) -> Bool {
-    return element(forKey: key) != nil
+    element(forKey: key) != nil
   }
-  
+
   func decodeNil(forKey key: K) throws -> Bool {
-    return element(forKey: key)?.value == nil
+    element(forKey: key)?.value == nil
   }
-  
-  func decode<T>(_ type: T.Type, forKey key: K) throws -> T where T : Decodable {
+
+  func decode<T>(_ type: T.Type, forKey key: K) throws -> T where T: Decodable {
     let parsedElement = element(forKey: key)
-    if parsedElement?.inputOrigin.isDefaultValue ?? false, let rawValue = parsedElement?.value {
+    if parsedElement?.inputOrigin.isDefaultValue ?? false,
+      let rawValue = parsedElement?.value
+    {
       guard let value = rawValue as? T else {
-        throw InternalParseError.wrongType(valueRepresentation: "\(rawValue)", forKey: parsedElement!.key)
+        throw InternalParseError.wrongType(
+          valueRepresentation: "\(rawValue)", forKey: parsedElement!.key)
       }
       return value
     }
-    let subDecoder = SingleValueDecoder(userInfo: decoder.userInfo, underlying: decoder, codingPath: codingPath + [key], key: InputKey(codingKey: key, path: codingPath), parsedElement: element(forKey: key))
+    let subDecoder = SingleValueDecoder(
+      userInfo: decoder.userInfo, underlying: decoder,
+      codingPath: codingPath + [key],
+      key: InputKey(codingKey: key, path: codingPath),
+      parsedElement: element(forKey: key))
     return try type.init(from: subDecoder)
   }
-  
-  func decodeIfPresent<T>(_ type: T.Type, forKey key: KeyedDecodingContainer<K>.Key) throws -> T? where T : Decodable {
+
+  func decodeIfPresent<T>(
+    _ type: T.Type, forKey key: KeyedDecodingContainer<K>.Key
+  ) throws -> T? where T: Decodable {
     let parsedElement = element(forKey: key)
-    if let parsedElement = parsedElement, parsedElement.inputOrigin.isDefaultValue {
+    if let parsedElement = parsedElement,
+      parsedElement.inputOrigin.isDefaultValue
+    {
       return parsedElement.value as? T
     }
-    let subDecoder = SingleValueDecoder(userInfo: decoder.userInfo, underlying: decoder, codingPath: codingPath + [key], key: InputKey(codingKey: key, path: codingPath), parsedElement: parsedElement)
+    let subDecoder = SingleValueDecoder(
+      userInfo: decoder.userInfo, underlying: decoder,
+      codingPath: codingPath + [key],
+      key: InputKey(codingKey: key, path: codingPath),
+      parsedElement: parsedElement)
     do {
       return try type.init(from: subDecoder)
     } catch let error as ParserError {
@@ -130,120 +148,138 @@ final class ParsedArgumentsContainer<K>: KeyedDecodingContainerProtocol where K 
       }
     }
   }
-  
-  func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type, forKey key: K) throws -> KeyedDecodingContainer<NestedKey> where NestedKey : CodingKey {
+
+  func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type, forKey key: K)
+    throws -> KeyedDecodingContainer<NestedKey> where NestedKey: CodingKey
+  {
     fatalError()
   }
-  
-  func nestedUnkeyedContainer(forKey key: K) throws -> UnkeyedDecodingContainer {
+
+  func nestedUnkeyedContainer(forKey key: K) throws -> UnkeyedDecodingContainer
+  {
     fatalError()
   }
-  
+
   func superDecoder() throws -> Decoder {
     fatalError()
   }
-  
+
   func superDecoder(forKey key: K) throws -> Decoder {
     fatalError()
   }
 }
 
 struct SingleValueDecoder: Decoder {
-  var userInfo: [CodingUserInfoKey : Any]
+  var userInfo: [CodingUserInfoKey: Any]
   var underlying: ArgumentDecoder
   var codingPath: [CodingKey]
   var key: InputKey
   var parsedElement: ParsedValues.Element?
-  
-  func container<K>(keyedBy type: K.Type) throws -> KeyedDecodingContainer<K> where K: CodingKey {
-    return KeyedDecodingContainer(ParsedArgumentsContainer(for: underlying, keyType: type, codingPath: codingPath))
+
+  func container<K>(keyedBy type: K.Type) throws -> KeyedDecodingContainer<K>
+  where K: CodingKey {
+    KeyedDecodingContainer(
+      ParsedArgumentsContainer(
+        for: underlying, keyType: type, codingPath: codingPath))
   }
-  
+
   func unkeyedContainer() throws -> UnkeyedDecodingContainer {
     guard let e = parsedElement else {
       var errorPath = codingPath
       let last = errorPath.popLast()!
-      throw ParserError.noValue(forKey: InputKey(codingKey: last, path: errorPath))
+      throw ParserError.noValue(
+        forKey: InputKey(codingKey: last, path: errorPath))
     }
     guard let a = e.value as? [Any] else {
       throw ParserError.invalidState
     }
-    return UnkeyedContainer(codingPath: codingPath, parsedElement: e, array: ArrayWrapper(a))
+    return UnkeyedContainer(
+      codingPath: codingPath, parsedElement: e, array: ArrayWrapper(a))
   }
-  
+
   func singleValueContainer() throws -> SingleValueDecodingContainer {
-    return SingleValueContainer(underlying: self, codingPath: codingPath, parsedElement: parsedElement)
+    SingleValueContainer(
+      underlying: self, codingPath: codingPath, parsedElement: parsedElement)
   }
-  
+
   func previousValue<T>(_ type: T.Type) throws -> T {
-    guard let previous = underlying.previouslyDecoded.first(where: { type == $0.type })
-      else { throw ParserError.invalidState }
+    guard
+      let previous = underlying.previouslyDecoded.first(where: {
+        type == $0.type
+      })
+    else { throw ParserError.invalidState }
     return previous.value as! T
   }
 
   func saveValue<T: ParsableArguments>(_ value: T, type: T.Type = T.self) {
-    underlying.previouslyDecoded.append(DecodedArguments(type: type, value: value))
+    underlying.previouslyDecoded.append(
+      DecodedArguments(type: type, value: value))
   }
-  
+
   struct SingleValueContainer: SingleValueDecodingContainer {
     var underlying: SingleValueDecoder
     var codingPath: [CodingKey]
     var parsedElement: ParsedValues.Element?
-    
+
     func decodeNil() -> Bool {
-      return parsedElement == nil
+      parsedElement == nil
     }
-    
-    func decode<T>(_ type: T.Type) throws -> T where T : Decodable {
+
+    func decode<T>(_ type: T.Type) throws -> T where T: Decodable {
       guard let e = parsedElement else {
         var errorPath = codingPath
         let last = errorPath.popLast()!
-        throw ParserError.noValue(forKey: InputKey(codingKey: last, path: errorPath))
+        throw ParserError.noValue(
+          forKey: InputKey(codingKey: last, path: errorPath))
       }
       guard let s = e.value as? T else {
-        throw InternalParseError.wrongType(valueRepresentation: "nil", forKey: e.key)
+        throw InternalParseError.wrongType(
+          valueRepresentation: "nil", forKey: e.key)
       }
       return s
     }
   }
-  
+
   struct UnkeyedContainer: UnkeyedDecodingContainer {
     var codingPath: [CodingKey]
     var parsedElement: ParsedValues.Element
     var array: ArrayWrapperProtocol
-    
+
     var count: Int? {
-      return array.count
+      array.count
     }
-    
+
     var isAtEnd: Bool {
-      return array.isAtEnd
+      array.isAtEnd
     }
-    
+
     var currentIndex: Int {
-      return array.currentIndex
+      array.currentIndex
     }
-    
+
     mutating func decodeNil() throws -> Bool {
-      return false
+      false
     }
-    
-    mutating func decode<T>(_ type: T.Type) throws -> T where T : Decodable {
+
+    mutating func decode<T>(_ type: T.Type) throws -> T where T: Decodable {
       guard let next = array.getNext() else { fatalError() }
       guard let t = next as? T else {
-        throw InternalParseError.wrongType(valueRepresentation: "\(next)", forKey: parsedElement.key)
+        throw InternalParseError.wrongType(
+          valueRepresentation: "\(next)", forKey: parsedElement.key)
       }
       return t
     }
-    
-    mutating func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type) throws -> KeyedDecodingContainer<NestedKey> where NestedKey : CodingKey {
+
+    mutating func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type)
+      throws -> KeyedDecodingContainer<NestedKey> where NestedKey: CodingKey
+    {
       fatalError()
     }
-    
+
     mutating func nestedUnkeyedContainer() throws -> UnkeyedDecodingContainer {
       fatalError()
     }
-    
+
     mutating func superDecoder() throws -> Decoder {
       fatalError()
     }
@@ -266,15 +302,15 @@ struct ArrayWrapper<A>: ArrayWrapperProtocol {
     self.base = a
     self.currentIndex = a.startIndex
   }
-  
+
   var count: Int? {
-    return base.count
+    base.count
   }
-  
+
   var isAtEnd: Bool {
-    return base.endIndex <= currentIndex
+    base.endIndex <= currentIndex
   }
-  
+
   mutating func getNext() -> Any? {
     guard currentIndex < base.endIndex else { return nil }
     let next = base[currentIndex]

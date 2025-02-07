@@ -9,21 +9,21 @@
 //
 //===----------------------------------------------------------------------===//
 
-import XCTest
-import ArgumentParserTestHelpers
 import ArgumentParser
+import ArgumentParserTestHelpers
+import XCTest
 
 final class EnumEndToEndTests: XCTestCase {
 }
 
 // MARK: -
 
-fileprivate struct Bar: ParsableArguments {
+private struct Bar: ParsableArguments {
   enum Index: String, Equatable, ExpressibleByArgument {
     case hello
     case goodbye
   }
-  
+
   @Option()
   var index: Index
 }
@@ -37,13 +37,13 @@ extension EnumEndToEndTests {
       XCTAssertEqual(bar.index, Bar.Index.goodbye)
     }
   }
-  
+
   func testParsing_SingleOptionMultipleTimes() throws {
     AssertParse(Bar.self, ["--index", "hello", "--index", "goodbye"]) { bar in
       XCTAssertEqual(bar.index, Bar.Index.goodbye)
     }
   }
-  
+
   func testParsing_SingleOption_Fails() throws {
     XCTAssertThrowsError(try Bar.parse([]))
     XCTAssertThrowsError(try Bar.parse(["--index"]))
@@ -54,12 +54,12 @@ extension EnumEndToEndTests {
 
 // MARK: -
 
-fileprivate struct Baz: ParsableArguments {
+private struct Baz: ParsableArguments {
   enum Mode: String, CaseIterable, ExpressibleByArgument {
     case generateBashScript = "generate-bash-script"
     case generateZshScript
   }
-  
+
   @Option(name: .customLong("mode")) var modeOption: Mode?
   @Argument() var modeArg: Mode?
 }
@@ -75,7 +75,7 @@ extension EnumEndToEndTests {
       XCTAssertNil(baz.modeArg)
     }
   }
-  
+
   func test_ParsingRawValue_Argument() throws {
     AssertParse(Baz.self, ["generate-bash-script"]) { baz in
       XCTAssertEqual(baz.modeArg, .generateBashScript)
@@ -86,7 +86,7 @@ extension EnumEndToEndTests {
       XCTAssertNil(baz.modeOption)
     }
   }
-  
+
   func test_ParsingRawValue_Fails() throws {
     XCTAssertThrowsError(try Baz.parse(["generateBashScript"]))
     XCTAssertThrowsError(try Baz.parse(["--mode generateBashScript"]))

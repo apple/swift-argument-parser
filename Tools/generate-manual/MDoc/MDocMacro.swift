@@ -75,8 +75,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-fileprivate extension Array {
-  mutating func append(optional newElement: Element?) {
+extension Array {
+  fileprivate mutating func append(optional newElement: Element?) {
     if let newElement = newElement {
       append(newElement)
     }
@@ -117,7 +117,8 @@ extension MDocMacroProtocol {
       context.macroLine = true
 
       result += " "
-      result += arguments
+      result +=
+        arguments
         .map { $0._serialized(context: context) }
         .joined(separator: " ")
     }
@@ -364,7 +365,7 @@ public enum MDocMacro {
     }
   }
 
-  /// Reference another manual page.  
+  /// Reference another manual page.
   ///
   /// __Example Usage__:
   ///   ```swift
@@ -433,7 +434,7 @@ public enum MDocMacro {
     /// Enumeration of styles supported by the ``BeginList`` macro.
     public enum ListStyle: String {
       /// A bulleted list.
-      /// 
+      ///
       /// Item titles should not be provided, instead item bodies are displayed
       /// indented from a preceding bullet point using the specified width.
       case bullet
@@ -494,14 +495,17 @@ public enum MDocMacro {
     ///   - width: Number of characters to indent item bodies from titles.
     ///   - offset: Number of characters to indent both the item titles and bodies.
     ///   - compact: Disable vertical spacing between list items.
-    public init(style: ListStyle, width: Int? = nil, offset: Int? = nil, compact: Bool = false) {
+    public init(
+      style: ListStyle, width: Int? = nil, offset: Int? = nil,
+      compact: Bool = false
+    ) {
       self.arguments = ["-\(style)"]
       switch style {
       case .bullet, .dash, .`enum`, .hang, .hyphen, .tag:
         if let width = width {
           self.arguments.append(contentsOf: ["-width", "\(width)n"])
         }
-      case /*.column, */.diag, .inset, .item, .ohang:
+      case /*.column, */ .diag, .inset, .item, .ohang:
         assert(width == nil, "`width` should be nil for style: \(style)")
       }
       if let offset = offset {
@@ -762,7 +766,7 @@ public enum MDocMacro {
   }
 
   /// An interactive command.
-  /// 
+  ///
   /// ``InteractiveCommand`` is similar to ``CommandModifier`` but should be used
   /// to describe commands instead of arguments. For example,
   /// ``InteractiveCommand`` can be used to describe the commands to editors
@@ -868,7 +872,7 @@ public enum MDocMacro {
   // MARK: - Various semantic markup
 
   /// An author's name.
-  /// 
+  ///
   /// ``Author`` can be used to designate any author. Specifying an author of
   /// the manual page itself should only occur in the "AUTHORS" section.
   ///
@@ -945,35 +949,35 @@ public enum MDocMacro {
     }
   }
 
-// TODO: KernelConfiguration
-//  /// Kernel configuration declaration (>0 arguments).
-//  public struct KernelConfiguration: MDocMacroProtocol {
-//    public static let kind = "Cd"
-//    public var arguments: [MDocASTNode]
-//    public init() {
-//      self.arguments = []
-//    }
-//  }
+  // TODO: KernelConfiguration
+  //  /// Kernel configuration declaration (>0 arguments).
+  //  public struct KernelConfiguration: MDocMacroProtocol {
+  //    public static let kind = "Cd"
+  //    public var arguments: [MDocASTNode]
+  //    public init() {
+  //      self.arguments = []
+  //    }
+  //  }
 
-// TODO: MemoryAddress
-//  /// Memory address (>0 arguments).
-//  public struct MemoryAddress: MDocMacroProtocol {
-//    public static let kind = "Ad"
-//    public var arguments: [MDocASTNode]
-//    public init() {
-//      self.arguments = []
-//    }
-//  }
+  // TODO: MemoryAddress
+  //  /// Memory address (>0 arguments).
+  //  public struct MemoryAddress: MDocMacroProtocol {
+  //    public static let kind = "Ad"
+  //    public var arguments: [MDocASTNode]
+  //    public init() {
+  //      self.arguments = []
+  //    }
+  //  }
 
-// TODO: MathematicalSymbol
-//  /// Mathematical symbol (>0 arguments).
-//  public struct MathematicalSymbol: MDocMacroProtocol {
-//    public static let kind = "Ms"
-//    public var arguments: [MDocASTNode]
-//    public init() {
-//      self.arguments = []
-//    }
-//  }
+  // TODO: MathematicalSymbol
+  //  /// Mathematical symbol (>0 arguments).
+  //  public struct MathematicalSymbol: MDocMacroProtocol {
+  //    public static let kind = "Ms"
+  //    public var arguments: [MDocASTNode]
+  //    public init() {
+  //      self.arguments = []
+  //    }
+  //  }
 
   // MARK: - Physical markup
 
@@ -1328,27 +1332,27 @@ public enum MDocMacro {
     }
   }
 
-// TODO: ReturnStandard
-//  /// Insert a standard sentence regarding a function call's return value of 0 on success and -1 on error, with the errno libc global variable set on error.
-//  ///
-//  /// If function is not specified, the document's name set by ``DocumentName`` is used. Multiple function arguments are treated as separate functions.
-//  public struct ReturnStandard: MDocMacroProtocol {
-//    public static let kind = "Rv"
-//    public var arguments: [MDocASTNode]
-//    public init() {
-//      self.arguments = []
-//    }
-//  }
+  // TODO: ReturnStandard
+  //  /// Insert a standard sentence regarding a function call's return value of 0 on success and -1 on error, with the errno libc global variable set on error.
+  //  ///
+  //  /// If function is not specified, the document's name set by ``DocumentName`` is used. Multiple function arguments are treated as separate functions.
+  //  public struct ReturnStandard: MDocMacroProtocol {
+  //    public static let kind = "Rv"
+  //    public var arguments: [MDocASTNode]
+  //    public init() {
+  //      self.arguments = []
+  //    }
+  //  }
 
-// TODO: StandardsReference
-//  /// Reference to a standards document (one argument).
-//  public struct StandardsReference: MDocMacroProtocol {
-//    public static let kind = "St"
-//    public var arguments: [MDocASTNode]
-//    public init() {
-//      self.arguments = []
-//    }
-//  }
+  // TODO: StandardsReference
+  //  /// Reference to a standards document (one argument).
+  //  public struct StandardsReference: MDocMacroProtocol {
+  //    public static let kind = "St"
+  //    public var arguments: [MDocASTNode]
+  //    public init() {
+  //      self.arguments = []
+  //    }
+  //  }
 
   /// Display a formatted version of AT&T UNIX.
   ///

@@ -9,8 +9,9 @@
 //
 //===----------------------------------------------------------------------===//
 
-import XCTest
 import ArgumentParserTestHelpers
+import XCTest
+
 @testable import ArgumentParser
 
 final class DefaultSubcommandEndToEndTests: XCTestCase {
@@ -59,7 +60,8 @@ extension DefaultSubcommandEndToEndTests {
     AssertParseCommand(Main.self, Foo.self, ["foo"]) { _ in }
     AssertParseCommand(Main.self, Bar.self, ["bar"]) { _ in }
 
-    AssertParseCommand(Main.self, Default.self, ["default", "--mode", "bar"]) { def in
+    AssertParseCommand(Main.self, Default.self, ["default", "--mode", "bar"]) {
+      def in
       XCTAssertEqual(.bar, def.mode)
     }
   }
@@ -76,54 +78,59 @@ extension DefaultSubcommandEndToEndTests {
       subcommands: [Plugin.self, NonDefault.self, Other.self],
       defaultSubcommand: Plugin.self
     )
-    
+
     @OptionGroup
     var options: CommonOptions
   }
-  
+
   fileprivate struct CommonOptions: ParsableArguments {
-    @Flag(name: [.customLong("verbose"), .customShort("v")],
-          help: "Enable verbose aoutput.")
+    @Flag(
+      name: [.customLong("verbose"), .customShort("v")],
+      help: "Enable verbose aoutput.")
     var verbose = false
   }
-  
+
   fileprivate struct Plugin: ParsableCommand {
     @OptionGroup var options: CommonOptions
     @Argument var pluginName: String
-    
+
     @Argument(parsing: .captureForPassthrough)
     var pluginArguments: [String] = []
   }
-  
+
   fileprivate struct NonDefault: ParsableCommand {
     @OptionGroup var options: CommonOptions
     @Argument var pluginName: String
-    
+
     @Argument(parsing: .captureForPassthrough)
     var pluginArguments: [String] = []
   }
-  
+
   fileprivate struct Other: ParsableCommand {
     @OptionGroup var options: CommonOptions
   }
-  
+
   func testRemainingDefaultImplicit() throws {
     AssertParseCommand(MyCommand.self, Plugin.self, ["my-plugin"]) { plugin in
       XCTAssertEqual(plugin.pluginName, "my-plugin")
       XCTAssertEqual(plugin.pluginArguments, [])
       XCTAssertEqual(plugin.options.verbose, false)
     }
-    AssertParseCommand(MyCommand.self, Plugin.self, ["my-plugin", "--verbose"]) { plugin in
+    AssertParseCommand(MyCommand.self, Plugin.self, ["my-plugin", "--verbose"])
+    { plugin in
       XCTAssertEqual(plugin.pluginName, "my-plugin")
       XCTAssertEqual(plugin.pluginArguments, ["--verbose"])
       XCTAssertEqual(plugin.options.verbose, false)
     }
-    AssertParseCommand(MyCommand.self, Plugin.self, ["--verbose", "my-plugin", "--verbose"]) { plugin in
+    AssertParseCommand(
+      MyCommand.self, Plugin.self, ["--verbose", "my-plugin", "--verbose"]
+    ) { plugin in
       XCTAssertEqual(plugin.pluginName, "my-plugin")
       XCTAssertEqual(plugin.pluginArguments, ["--verbose"])
       XCTAssertEqual(plugin.options.verbose, true)
     }
-    AssertParseCommand(MyCommand.self, Plugin.self, ["my-plugin", "--help"]) { plugin in
+    AssertParseCommand(MyCommand.self, Plugin.self, ["my-plugin", "--help"]) {
+      plugin in
       XCTAssertEqual(plugin.pluginName, "my-plugin")
       XCTAssertEqual(plugin.pluginArguments, ["--help"])
       XCTAssertEqual(plugin.options.verbose, false)
@@ -131,22 +138,31 @@ extension DefaultSubcommandEndToEndTests {
   }
 
   func testRemainingDefaultExplicit() throws {
-    AssertParseCommand(MyCommand.self, Plugin.self, ["plugin", "my-plugin"]) { plugin in
+    AssertParseCommand(MyCommand.self, Plugin.self, ["plugin", "my-plugin"]) {
+      plugin in
       XCTAssertEqual(plugin.pluginName, "my-plugin")
       XCTAssertEqual(plugin.pluginArguments, [])
       XCTAssertEqual(plugin.options.verbose, false)
     }
-    AssertParseCommand(MyCommand.self, Plugin.self, ["plugin", "my-plugin", "--verbose"]) { plugin in
+    AssertParseCommand(
+      MyCommand.self, Plugin.self, ["plugin", "my-plugin", "--verbose"]
+    ) { plugin in
       XCTAssertEqual(plugin.pluginName, "my-plugin")
       XCTAssertEqual(plugin.pluginArguments, ["--verbose"])
       XCTAssertEqual(plugin.options.verbose, false)
     }
-    AssertParseCommand(MyCommand.self, Plugin.self, ["--verbose", "plugin", "my-plugin", "--verbose"]) { plugin in
+    AssertParseCommand(
+      MyCommand.self, Plugin.self,
+      ["--verbose", "plugin", "my-plugin", "--verbose"]
+    ) { plugin in
       XCTAssertEqual(plugin.pluginName, "my-plugin")
       XCTAssertEqual(plugin.pluginArguments, ["--verbose"])
       XCTAssertEqual(plugin.options.verbose, true)
     }
-    AssertParseCommand(MyCommand.self, Plugin.self, ["--verbose", "plugin", "my-plugin", "--help"]) { plugin in
+    AssertParseCommand(
+      MyCommand.self, Plugin.self,
+      ["--verbose", "plugin", "my-plugin", "--help"]
+    ) { plugin in
       XCTAssertEqual(plugin.pluginName, "my-plugin")
       XCTAssertEqual(plugin.pluginArguments, ["--help"])
       XCTAssertEqual(plugin.options.verbose, true)
@@ -154,22 +170,33 @@ extension DefaultSubcommandEndToEndTests {
   }
 
   func testRemainingNonDefault() throws {
-    AssertParseCommand(MyCommand.self, NonDefault.self, ["non-default", "my-plugin"]) { nondef in
+    AssertParseCommand(
+      MyCommand.self, NonDefault.self, ["non-default", "my-plugin"]
+    ) { nondef in
       XCTAssertEqual(nondef.pluginName, "my-plugin")
       XCTAssertEqual(nondef.pluginArguments, [])
       XCTAssertEqual(nondef.options.verbose, false)
     }
-    AssertParseCommand(MyCommand.self, NonDefault.self, ["non-default", "my-plugin", "--verbose"]) { nondef in
+    AssertParseCommand(
+      MyCommand.self, NonDefault.self,
+      ["non-default", "my-plugin", "--verbose"]
+    ) { nondef in
       XCTAssertEqual(nondef.pluginName, "my-plugin")
       XCTAssertEqual(nondef.pluginArguments, ["--verbose"])
       XCTAssertEqual(nondef.options.verbose, false)
     }
-    AssertParseCommand(MyCommand.self, NonDefault.self, ["--verbose", "non-default", "my-plugin", "--verbose"]) { nondef in
+    AssertParseCommand(
+      MyCommand.self, NonDefault.self,
+      ["--verbose", "non-default", "my-plugin", "--verbose"]
+    ) { nondef in
       XCTAssertEqual(nondef.pluginName, "my-plugin")
       XCTAssertEqual(nondef.pluginArguments, ["--verbose"])
       XCTAssertEqual(nondef.options.verbose, true)
     }
-    AssertParseCommand(MyCommand.self, NonDefault.self, ["--verbose", "non-default", "my-plugin", "--help"]) { nondef in
+    AssertParseCommand(
+      MyCommand.self, NonDefault.self,
+      ["--verbose", "non-default", "my-plugin", "--help"]
+    ) { nondef in
       XCTAssertEqual(nondef.pluginName, "my-plugin")
       XCTAssertEqual(nondef.pluginArguments, ["--help"])
       XCTAssertEqual(nondef.options.verbose, true)
@@ -180,15 +207,17 @@ extension DefaultSubcommandEndToEndTests {
     AssertParseCommand(MyCommand.self, Other.self, ["other"]) { other in
       XCTAssertEqual(other.options.verbose, false)
     }
-    AssertParseCommand(MyCommand.self, Other.self, ["other", "--verbose"]) { other in
+    AssertParseCommand(MyCommand.self, Other.self, ["other", "--verbose"]) {
+      other in
       XCTAssertEqual(other.options.verbose, true)
     }
   }
-  
+
   func testRemainingDefaultFailure() {
     XCTAssertThrowsError(try MyCommand.parseAsRoot([]))
     XCTAssertThrowsError(try MyCommand.parseAsRoot(["--verbose"]))
-    XCTAssertThrowsError(try MyCommand.parseAsRoot(["plugin", "--verbose", "my-plugin"]))
+    XCTAssertThrowsError(
+      try MyCommand.parseAsRoot(["plugin", "--verbose", "my-plugin"]))
   }
 }
 
@@ -200,7 +229,7 @@ extension DefaultSubcommandEndToEndTests {
       helpNames: [.short, .long, .customLong("help", withSingleDash: true)]
     )
   }
-  
+
   struct PassthroughDefault: ParsableCommand {
     @Argument(parsing: .captureForPassthrough)
     var remaining: [String] = []
@@ -209,10 +238,13 @@ extension DefaultSubcommandEndToEndTests {
   // Test fix for https://github.com/apple/swift-package-manager/issues/7218
   func testHelpWithPassthroughDefault() throws {
     AssertParseCommand(
-      RootWithPassthroughDefault.self, HelpCommand.self, ["-h"]) { _ in }
+      RootWithPassthroughDefault.self, HelpCommand.self, ["-h"]
+    ) { _ in }
     AssertParseCommand(
-      RootWithPassthroughDefault.self, HelpCommand.self, ["-help"]) { _ in }
+      RootWithPassthroughDefault.self, HelpCommand.self, ["-help"]
+    ) { _ in }
     AssertParseCommand(
-      RootWithPassthroughDefault.self, HelpCommand.self, ["--help"]) { _ in }
+      RootWithPassthroughDefault.self, HelpCommand.self, ["--help"]
+    ) { _ in }
   }
 }

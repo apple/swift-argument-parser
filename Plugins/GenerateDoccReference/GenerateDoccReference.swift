@@ -87,7 +87,7 @@ struct GenerateDoccReferencePlugin: CommandPlugin {
       var generationToolArguments = [
         builtArtifact.path.string,
         "--output-directory",
-        outputDirectory.string
+        outputDirectory.string,
       ]
       generationToolArguments.append(
         contentsOf: extractor.remainingArguments)

@@ -13,17 +13,17 @@ final class Tree<Element> {
   var element: Element
   weak var parent: Tree?
   var children: [Tree]
-  
+
   var isRoot: Bool { parent == nil }
   var isLeaf: Bool { children.isEmpty }
   var hasChildren: Bool { !isLeaf }
-  
+
   init(_ element: Element) {
     self.element = element
     self.parent = nil
     self.children = []
   }
-  
+
   func addChild(_ tree: Tree) {
     children.append(tree)
     tree.parent = self
@@ -34,7 +34,7 @@ extension Tree: Hashable {
   static func == (lhs: Tree<Element>, rhs: Tree<Element>) -> Bool {
     lhs === rhs
   }
-  
+
   func hash(into hasher: inout Hasher) {
     hasher.combine(ObjectIdentifier(self))
   }
@@ -47,11 +47,11 @@ extension Tree {
     var visited: Set<Tree> = []
     var toVisit: [Tree] = [self]
     var currentIndex = 0
-    
+
     // For each node, the neighbor that is most efficiently used to reach
     // that node.
     var cameFrom: [Tree: Tree] = [:]
-    
+
     while let current = toVisit[currentIndex...].first {
       currentIndex += 1
       if predicate(current.element) {
@@ -59,17 +59,17 @@ extension Tree {
         return sequence(first: current, next: { cameFrom[$0] }).reversed()
       }
       visited.insert(current)
-      
+
       for child in current.children where !visited.contains(child) {
         if !toVisit.contains(child) {
           toVisit.append(child)
         }
-        
+
         // Coming from `current` is the best path to `neighbor`.
         cameFrom[child] = current
       }
     }
-    
+
     // Didn't find a path!
     return []
   }
@@ -79,17 +79,18 @@ extension Tree where Element == ParsableCommand.Type {
   func path(to element: Element) -> [Element] {
     path(toFirstWhere: { $0 == element }).map { $0.element }
   }
-  
+
   func firstChild(equalTo element: Element) -> Tree? {
     children.first(where: { $0.element == element })
   }
-  
+
   func firstChild(withName name: String) -> Tree? {
-      children.first(where: {
-          $0.element._commandName == name || $0.element.configuration.aliases.contains(name)
-      })
+    children.first(where: {
+      $0.element._commandName == name
+        || $0.element.configuration.aliases.contains(name)
+    })
   }
-  
+
   convenience init(root command: ParsableCommand.Type) throws {
     self.init(command)
     for subcommand in command.configuration.subcommands {
@@ -103,7 +104,7 @@ extension Tree where Element == ParsableCommand.Type {
       try addChild(Tree(root: subcommand))
     }
   }
-    
+
   enum InitializationError: Error {
     case recursiveSubcommand(ParsableCommand.Type)
     case aliasMatchingCommand(ParsableCommand.Type)

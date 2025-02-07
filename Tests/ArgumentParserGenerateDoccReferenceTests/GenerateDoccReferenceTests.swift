@@ -10,16 +10,16 @@
 //
 //===----------------------------------------------------------------------===//
 
-import XCTest
 import ArgumentParserTestHelpers
+import XCTest
 
 final class GenerateDoccReferenceTests: XCTestCase {
-#if os(macOS)
+  #if os(macOS)
   func testCountLinesDoccReference() throws {
     guard #available(macOS 12, *) else { return }
     try assertGenerateDoccReference(command: "count-lines")
   }
-#endif
+  #endif
 
   func testColorDoccReference() throws {
     try assertGenerateDoccReference(command: "color")

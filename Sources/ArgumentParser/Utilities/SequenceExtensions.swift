@@ -25,8 +25,8 @@ extension Sequence where Element: Hashable {
   func uniquingAdjacentElements() -> [Element] {
     var iterator = makeIterator()
     guard let first = iterator.next()
-      else { return [] }
-    
+    else { return [] }
+
     var result = [first]
     while let element = iterator.next() {
       if result.last != element {

@@ -17,7 +17,8 @@ struct Color: ParsableCommand {
   @Option(help: "Your favorite color.")
   var fav: ColorOptions
 
-  @Option(help: .init("Your second favorite color.", discussion: "This is optional."))
+  @Option(
+    help: .init("Your second favorite color.", discussion: "This is optional."))
   var second: ColorOptions?
 
   func run() {

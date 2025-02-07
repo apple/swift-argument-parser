@@ -12,7 +12,7 @@
 /// A shell for which the parser can generate a completion script.
 public struct CompletionShell: RawRepresentable, Hashable, CaseIterable {
   public var rawValue: String
-  
+
   /// Creates a new instance from the given string.
   public init?(rawValue: String) {
     switch rawValue {
@@ -22,7 +22,7 @@ public struct CompletionShell: RawRepresentable, Hashable, CaseIterable {
       return nil
     }
   }
-  
+
   /// An instance representing `zsh`.
   public static var zsh: CompletionShell { CompletionShell(rawValue: "zsh")! }
 
@@ -36,7 +36,7 @@ public struct CompletionShell: RawRepresentable, Hashable, CaseIterable {
   public static func autodetected() -> CompletionShell? {
     Platform.shellName.flatMap(CompletionShell.init(rawValue:))
   }
-  
+
   /// An array of all supported shells for completion scripts.
   public static var allCases: [CompletionShell] {
     [.zsh, .bash, .fish]
@@ -82,7 +82,7 @@ public struct CompletionShell: RawRepresentable, Hashable, CaseIterable {
 struct CompletionsGenerator {
   var shell: CompletionShell
   var command: ParsableCommand.Type
-  
+
   init(command: ParsableCommand.Type, shell: CompletionShell?) throws {
     guard let _shell = shell ?? .autodetected() else {
       throw ParserError.unsupportedShell()
@@ -102,7 +102,7 @@ struct CompletionsGenerator {
       try self.init(command: command, shell: nil)
     }
   }
-  
+
   /// Generates a shell completion script for this generator's shell and command.
   func generateCompletionScript() -> String {
     CompletionShell._requesting.withLock { $0 = shell }
@@ -123,9 +123,11 @@ extension ArgumentDefinition {
   /// Returns a string with the arguments for the callback to generate custom completions for
   /// this argument.
   func customCompletionCall(_ commands: [ParsableCommand.Type]) -> String {
-    let subcommandNames = commands.dropFirst().map { $0._commandName }.joined(separator: " ")
-    let argumentName = names.preferredName?.synopsisString
-          ?? self.help.keys.first?.fullPathString ?? "---"
+    let subcommandNames = commands.dropFirst().map { $0._commandName }.joined(
+      separator: " ")
+    let argumentName =
+      names.preferredName?.synopsisString
+      ?? self.help.keys.first?.fullPathString ?? "---"
     return "---completion \(subcommandNames) -- \(argumentName)"
   }
 }
@@ -133,7 +135,8 @@ extension ArgumentDefinition {
 extension ParsableCommand {
   fileprivate static var compositeCommandName: [String] {
     if let superCommandName = configuration._superCommandName {
-      return [superCommandName] + _commandName.split(separator: " ").map(String.init)
+      return [superCommandName]
+        + _commandName.split(separator: " ").map(String.init)
     } else {
       return _commandName.split(separator: " ").map(String.init)
     }
@@ -142,7 +145,8 @@ extension ParsableCommand {
 
 extension Sequence where Element == ParsableCommand.Type {
   func completionFunctionName() -> String {
-    "_" + self.flatMap { $0.compositeCommandName }
+    "_"
+      + self.flatMap { $0.compositeCommandName }
       .uniquingAdjacentElements()
       .joined(separator: "_")
   }

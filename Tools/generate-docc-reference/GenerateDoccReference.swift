@@ -28,7 +28,8 @@ extension GenerateDoccReferenceError: CustomStringConvertible {
     case let .unableToParseToolOutput(error):
       return "Failed to parse tool output: \(error)"
     case let .unsupportedDumpHelpVersion(expected, found):
-      return "Unsupported dump help version, expected '\(expected)' but found: '\(found)'"
+      return
+        "Unsupported dump help version, expected '\(expected)' but found: '\(found)'"
     case let .failedToGenerateDoccReference(error):
       return "Failed to generated docc reference: \(error)"
     }
@@ -44,19 +45,26 @@ struct GenerateDoccReference: ParsableCommand {
   @Argument(help: "Tool to generate docc reference for.")
   var tool: String
 
-  @Option(name: .shortAndLong, help: "Directory to save generated docc reference. Use '-' for stdout.")
+  @Option(
+    name: .shortAndLong,
+    help: "Directory to save generated docc reference. Use '-' for stdout.")
   var outputDirectory: String
 
   func validate() throws {
     if outputDirectory != "-" {
       // outputDirectory must already exist, `GenerateDoccReference` will not create it.
       var objcBool: ObjCBool = true
-      guard FileManager.default.fileExists(atPath: outputDirectory, isDirectory: &objcBool) else {
-        throw ValidationError("Output directory \(outputDirectory) does not exist")
+      guard
+        FileManager.default.fileExists(
+          atPath: outputDirectory, isDirectory: &objcBool)
+      else {
+        throw ValidationError(
+          "Output directory \(outputDirectory) does not exist")
       }
 
       guard objcBool.boolValue else {
-        throw ValidationError("Output directory \(outputDirectory) is not a directory")
+        throw ValidationError(
+          "Output directory \(outputDirectory) is not a directory")
       }
     }
   }
@@ -73,7 +81,8 @@ struct GenerateDoccReference: ParsableCommand {
     }
 
     do {
-      let toolInfoThin = try JSONDecoder().decode(ToolInfoHeader.self, from: data)
+      let toolInfoThin = try JSONDecoder().decode(
+        ToolInfoHeader.self, from: data)
       guard toolInfoThin.serializationVersion == 0 else {
         throw GenerateDoccReferenceError.unsupportedDumpHelpVersion(
           expected: 0,
@@ -96,13 +105,17 @@ struct GenerateDoccReference: ParsableCommand {
       } else {
         try self.generatePages(
           from: toolInfo.command,
-          savingTo: URL(fileURLWithPath: outputDirectory))}
+          savingTo: URL(fileURLWithPath: outputDirectory))
+      }
     } catch {
-      throw GenerateDoccReferenceError.failedToGenerateDoccReference(error: error)
+      throw GenerateDoccReferenceError.failedToGenerateDoccReference(
+        error: error)
     }
   }
 
-  func generatePages(from command: CommandInfoV0, savingTo directory: URL?) throws {
+  func generatePages(from command: CommandInfoV0, savingTo directory: URL?)
+    throws
+  {
     let page = command.toMarkdown([])
 
     if let directory = directory {

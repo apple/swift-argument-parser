@@ -50,7 +50,7 @@ public struct Argument<Value>:
   internal init(_parsedValue: Parsed<Value>) {
     self._parsedValue = _parsedValue
   }
-  
+
   public init(from _decoder: Decoder) throws {
     try self.init(_decoder: _decoder)
   }
@@ -64,11 +64,15 @@ public struct Argument<Value>:
   /// @Argument() var foo: String // Syntax without this initializer
   /// @Argument var foo: String   // Syntax with this initializer
   /// ```
-  @available(*, unavailable, message: "A default value must be provided unless the value type conforms to ExpressibleByArgument.")
+  @available(
+    *, unavailable,
+    message:
+      "A default value must be provided unless the value type conforms to ExpressibleByArgument."
+  )
   public init() {
     fatalError("unavailable")
   }
-  
+
   /// The value presented by this property wrapper.
   public var wrappedValue: Value {
     get {
@@ -96,14 +100,14 @@ extension Argument: CustomStringConvertible {
   }
 }
 
-extension Argument: Sendable where Value: Sendable { }
-extension Argument: DecodableParsedWrapper where Value: Decodable { }
+extension Argument: Sendable where Value: Sendable {}
+extension Argument: DecodableParsedWrapper where Value: Decodable {}
 
 /// The strategy to use when parsing multiple values from positional arguments
 /// into an array.
 public struct ArgumentArrayParsingStrategy: Hashable {
   internal var base: ArgumentDefinition.ParsingStrategy
-  
+
   /// Parse only unprefixed values from the command-line input, ignoring
   /// any inputs that have a dash prefix. This is the default strategy.
   ///
@@ -150,7 +154,7 @@ public struct ArgumentArrayParsingStrategy: Hashable {
   public static var remaining: ArgumentArrayParsingStrategy {
     self.init(base: .default)
   }
-  
+
   /// After parsing, capture all unrecognized inputs in this argument array.
   ///
   /// You can use the `allUnrecognized` parsing strategy to suppress
@@ -187,7 +191,7 @@ public struct ArgumentArrayParsingStrategy: Hashable {
   public static var allUnrecognized: ArgumentArrayParsingStrategy {
     self.init(base: .allUnrecognized)
   }
-  
+
   /// Before parsing arguments, capture all inputs that follow the `--`
   /// terminator in this argument array.
   ///
@@ -233,7 +237,7 @@ public struct ArgumentArrayParsingStrategy: Hashable {
   public static var postTerminator: ArgumentArrayParsingStrategy {
     self.init(base: .postTerminator)
   }
-  
+
   /// Parse all remaining inputs after parsing any known options or flags,
   /// including dash-prefixed inputs and the `--` terminator.
   ///
@@ -293,14 +297,14 @@ public struct ArgumentArrayParsingStrategy: Hashable {
   public static var captureForPassthrough: ArgumentArrayParsingStrategy {
     self.init(base: .allRemainingInput)
   }
-  
+
   @available(*, deprecated, renamed: "captureForPassthrough")
   public static var unconditionalRemaining: ArgumentArrayParsingStrategy {
     .captureForPassthrough
   }
 }
 
-extension ArgumentArrayParsingStrategy: Sendable { }
+extension ArgumentArrayParsingStrategy: Sendable {}
 
 // MARK: - @Argument T: ExpressibleByArgument Initializers
 extension Argument where Value: ExpressibleByArgument {
@@ -323,18 +327,19 @@ extension Argument where Value: ExpressibleByArgument {
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil
   ) {
-    self.init(_parsedValue: .init { key in
-      let arg = ArgumentDefinition(
-        container: Bare<Value>.self,
-        key: key,
-        kind: .positional,
-        help: help,
-        parsingStrategy: .default,
-        initial: wrappedValue,
-        completion: completion)
+    self.init(
+      _parsedValue: .init { key in
+        let arg = ArgumentDefinition(
+          container: Bare<Value>.self,
+          key: key,
+          kind: .positional,
+          help: help,
+          parsingStrategy: .default,
+          initial: wrappedValue,
+          completion: completion)
 
-      return ArgumentSet(arg)
-    })
+        return ArgumentSet(arg)
+      })
   }
 
   /// Creates a property with no default value.
@@ -352,18 +357,19 @@ extension Argument where Value: ExpressibleByArgument {
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil
   ) {
-    self.init(_parsedValue: .init { key in
-      let arg = ArgumentDefinition(
-        container: Bare<Value>.self,
-        key: key,
-        kind: .positional,
-        help: help,
-        parsingStrategy: .default,
-        initial: nil,
-        completion: completion)
+    self.init(
+      _parsedValue: .init { key in
+        let arg = ArgumentDefinition(
+          container: Bare<Value>.self,
+          key: key,
+          kind: .positional,
+          help: help,
+          parsingStrategy: .default,
+          initial: nil,
+          completion: completion)
 
-      return ArgumentSet(arg)
-    })
+        return ArgumentSet(arg)
+      })
   }
 }
 
@@ -393,19 +399,20 @@ extension Argument {
     completion: CompletionKind? = nil,
     transform: @Sendable @escaping (String) throws -> Value
   ) {
-    self.init(_parsedValue: .init { key in
-      let arg = ArgumentDefinition(
-        container: Bare<Value>.self,
-        key: key,
-        kind: .positional,
-        help: help,
-        parsingStrategy: .default,
-        transform: transform,
-        initial: wrappedValue,
-        completion: completion)
+    self.init(
+      _parsedValue: .init { key in
+        let arg = ArgumentDefinition(
+          container: Bare<Value>.self,
+          key: key,
+          kind: .positional,
+          help: help,
+          parsingStrategy: .default,
+          transform: transform,
+          initial: wrappedValue,
+          completion: completion)
 
-      return ArgumentSet(arg)
-    })
+        return ArgumentSet(arg)
+      })
   }
 
   /// Creates a property with no default value, parsing with the given closure.
@@ -428,19 +435,20 @@ extension Argument {
     completion: CompletionKind? = nil,
     transform: @Sendable @escaping (String) throws -> Value
   ) {
-    self.init(_parsedValue: .init { key in
-      let arg = ArgumentDefinition(
-        container: Bare<Value>.self,
-        key: key,
-        kind: .positional,
-        help: help,
-        parsingStrategy: .default,
-        transform: transform,
-        initial: nil,
-        completion: completion)
+    self.init(
+      _parsedValue: .init { key in
+        let arg = ArgumentDefinition(
+          container: Bare<Value>.self,
+          key: key,
+          kind: .positional,
+          help: help,
+          parsingStrategy: .default,
+          transform: transform,
+          initial: nil,
+          completion: completion)
 
-      return ArgumentSet(arg)
-    })
+        return ArgumentSet(arg)
+      })
   }
 }
 
@@ -457,42 +465,47 @@ extension Argument {
     wrappedValue _value: _OptionalNilComparisonType,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil
-  ) where T: ExpressibleByArgument, Value == Optional<T> {
-    self.init(_parsedValue: .init { key in
-      let arg = ArgumentDefinition(
-        container: Optional<T>.self,
-        key: key,
-        kind: .positional,
-        help: help,
-        parsingStrategy: .default,
-        initial: nil,
-        completion: completion)
+  ) where T: ExpressibleByArgument, Value == T? {
+    self.init(
+      _parsedValue: .init { key in
+        let arg = ArgumentDefinition(
+          container: Optional<T>.self,
+          key: key,
+          kind: .positional,
+          help: help,
+          parsingStrategy: .default,
+          initial: nil,
+          completion: completion)
 
-      return ArgumentSet(arg)
-    })
+        return ArgumentSet(arg)
+      })
   }
 
-  @available(*, deprecated, message: """
-    Optional @Arguments with default values should be declared as non-Optional.
-    """)
+  @available(
+    *, deprecated,
+    message: """
+      Optional @Arguments with default values should be declared as non-Optional.
+      """
+  )
   @_disfavoredOverload
   public init<T>(
-    wrappedValue _wrappedValue: Optional<T>,
+    wrappedValue _wrappedValue: T?,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil
-  ) where T: ExpressibleByArgument, Value == Optional<T> {
-    self.init(_parsedValue: .init { key in
-      let arg = ArgumentDefinition(
-        container: Optional<T>.self,
-        key: key,
-        kind: .positional,
-        help: help,
-        parsingStrategy: .default,
-        initial: _wrappedValue,
-        completion: completion)
+  ) where T: ExpressibleByArgument, Value == T? {
+    self.init(
+      _parsedValue: .init { key in
+        let arg = ArgumentDefinition(
+          container: Optional<T>.self,
+          key: key,
+          kind: .positional,
+          help: help,
+          parsingStrategy: .default,
+          initial: _wrappedValue,
+          completion: completion)
 
-      return ArgumentSet(arg)
-    })
+        return ArgumentSet(arg)
+      })
   }
 
   /// Creates an optional property that reads its value from an argument.
@@ -506,19 +519,20 @@ extension Argument {
   public init<T>(
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil
-  ) where T: ExpressibleByArgument, Value == Optional<T> {
-    self.init(_parsedValue: .init { key in
-      let arg = ArgumentDefinition(
-        container: Optional<T>.self,
-        key: key,
-        kind: .positional,
-        help: help,
-        parsingStrategy: .default,
-        initial: nil,
-        completion: completion)
+  ) where T: ExpressibleByArgument, Value == T? {
+    self.init(
+      _parsedValue: .init { key in
+        let arg = ArgumentDefinition(
+          container: Optional<T>.self,
+          key: key,
+          kind: .positional,
+          help: help,
+          parsingStrategy: .default,
+          initial: nil,
+          completion: completion)
 
-      return ArgumentSet(arg)
-    })
+        return ArgumentSet(arg)
+      })
   }
 }
 
@@ -539,46 +553,51 @@ extension Argument {
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
     transform: @Sendable @escaping (String) throws -> T
-  ) where Value == Optional<T> {
-    self.init(_parsedValue: .init { key in
-      let arg = ArgumentDefinition(
-        container: Optional<T>.self,
-        key: key,
-        kind: .positional,
-        help: help,
-        parsingStrategy: .default,
-        transform: transform,
-        initial: nil,
-        completion: completion)
+  ) where Value == T? {
+    self.init(
+      _parsedValue: .init { key in
+        let arg = ArgumentDefinition(
+          container: Optional<T>.self,
+          key: key,
+          kind: .positional,
+          help: help,
+          parsingStrategy: .default,
+          transform: transform,
+          initial: nil,
+          completion: completion)
 
-      return ArgumentSet(arg)
-    })
+        return ArgumentSet(arg)
+      })
   }
 
-  @available(*, deprecated, message: """
-    Optional @Arguments with default values should be declared as non-Optional.
-    """)
+  @available(
+    *, deprecated,
+    message: """
+      Optional @Arguments with default values should be declared as non-Optional.
+      """
+  )
   @_disfavoredOverload
   @preconcurrency
   public init<T>(
-    wrappedValue _wrappedValue: Optional<T>,
+    wrappedValue _wrappedValue: T?,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
     transform: @Sendable @escaping (String) throws -> T
-  ) where Value == Optional<T> {
-    self.init(_parsedValue: .init { key in
-      let arg = ArgumentDefinition(
-        container: Optional<T>.self,
-        key: key,
-        kind: .positional,
-        help: help,
-        parsingStrategy: .default,
-        transform: transform,
-        initial: _wrappedValue,
-        completion: completion)
+  ) where Value == T? {
+    self.init(
+      _parsedValue: .init { key in
+        let arg = ArgumentDefinition(
+          container: Optional<T>.self,
+          key: key,
+          kind: .positional,
+          help: help,
+          parsingStrategy: .default,
+          transform: transform,
+          initial: _wrappedValue,
+          completion: completion)
 
-      return ArgumentSet(arg)
-    })
+        return ArgumentSet(arg)
+      })
   }
 
   /// Creates an optional property that reads its value from an argument.
@@ -596,20 +615,21 @@ extension Argument {
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
     transform: @Sendable @escaping (String) throws -> T
-  ) where Value == Optional<T> {
-    self.init(_parsedValue: .init { key in
-      let arg = ArgumentDefinition(
-        container: Optional<T>.self,
-        key: key,
-        kind: .positional,
-        help: help,
-        parsingStrategy: .default,
-        transform: transform,
-        initial: nil,
-        completion: completion)
+  ) where Value == T? {
+    self.init(
+      _parsedValue: .init { key in
+        let arg = ArgumentDefinition(
+          container: Optional<T>.self,
+          key: key,
+          kind: .positional,
+          help: help,
+          parsingStrategy: .default,
+          transform: transform,
+          initial: nil,
+          completion: completion)
 
-      return ArgumentSet(arg)
-    })
+        return ArgumentSet(arg)
+      })
   }
 }
 
@@ -624,23 +644,24 @@ extension Argument {
   ///   - help: Information about how to use this argument.
   ///   - completion: Kind of completion provided to the user for this option.
   public init<T>(
-    wrappedValue: Array<T>,
+    wrappedValue: [T],
     parsing parsingStrategy: ArgumentArrayParsingStrategy = .remaining,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil
-  ) where T: ExpressibleByArgument, Value == Array<T> {
-    self.init(_parsedValue: .init { key in
-      let arg = ArgumentDefinition(
-        container: Array<T>.self,
-        key: key,
-        kind: .positional,
-        help: help,
-        parsingStrategy: parsingStrategy.base,
-        initial: wrappedValue,
-        completion: completion)
+  ) where T: ExpressibleByArgument, Value == [T] {
+    self.init(
+      _parsedValue: .init { key in
+        let arg = ArgumentDefinition(
+          container: Array<T>.self,
+          key: key,
+          kind: .positional,
+          help: help,
+          parsingStrategy: parsingStrategy.base,
+          initial: wrappedValue,
+          completion: completion)
 
-      return ArgumentSet(arg)
-    })
+        return ArgumentSet(arg)
+      })
   }
 
   /// Creates a property with no default value that reads an array from zero or
@@ -662,19 +683,20 @@ extension Argument {
     parsing parsingStrategy: ArgumentArrayParsingStrategy = .remaining,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil
-  ) where T: ExpressibleByArgument, Value == Array<T> {
-    self.init(_parsedValue: .init { key in
-      let arg = ArgumentDefinition(
-        container: Array<T>.self,
-        key: key,
-        kind: .positional,
-        help: help,
-        parsingStrategy: parsingStrategy.base,
-        initial: nil,
-        completion: completion)
+  ) where T: ExpressibleByArgument, Value == [T] {
+    self.init(
+      _parsedValue: .init { key in
+        let arg = ArgumentDefinition(
+          container: Array<T>.self,
+          key: key,
+          kind: .positional,
+          help: help,
+          parsingStrategy: parsingStrategy.base,
+          initial: nil,
+          completion: completion)
 
-      return ArgumentSet(arg)
-    })
+        return ArgumentSet(arg)
+      })
   }
 }
 
@@ -693,25 +715,26 @@ extension Argument {
   ///     element type or throws an error.
   @preconcurrency
   public init<T>(
-    wrappedValue: Array<T>,
+    wrappedValue: [T],
     parsing parsingStrategy: ArgumentArrayParsingStrategy = .remaining,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
     transform: @Sendable @escaping (String) throws -> T
-  ) where Value == Array<T> {
-    self.init(_parsedValue: .init { key in
-      let arg = ArgumentDefinition(
-        container: Array<T>.self,
-        key: key,
-        kind: .positional,
-        help: help,
-        parsingStrategy: parsingStrategy.base,
-        transform: transform,
-        initial: wrappedValue,
-        completion: completion)
+  ) where Value == [T] {
+    self.init(
+      _parsedValue: .init { key in
+        let arg = ArgumentDefinition(
+          container: Array<T>.self,
+          key: key,
+          kind: .positional,
+          help: help,
+          parsingStrategy: parsingStrategy.base,
+          transform: transform,
+          initial: wrappedValue,
+          completion: completion)
 
-      return ArgumentSet(arg)
-    })
+        return ArgumentSet(arg)
+      })
   }
 
   /// Creates a property with no default value that reads an array from zero or
@@ -737,19 +760,20 @@ extension Argument {
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
     transform: @Sendable @escaping (String) throws -> T
-  ) where Value == Array<T> {
-    self.init(_parsedValue: .init { key in
-      let arg = ArgumentDefinition(
-        container: Array<T>.self,
-        key: key,
-        kind: .positional,
-        help: help,
-        parsingStrategy: parsingStrategy.base,
-        transform: transform,
-        initial: nil,
-        completion: completion)
+  ) where Value == [T] {
+    self.init(
+      _parsedValue: .init { key in
+        let arg = ArgumentDefinition(
+          container: Array<T>.self,
+          key: key,
+          kind: .positional,
+          help: help,
+          parsingStrategy: parsingStrategy.base,
+          transform: transform,
+          initial: nil,
+          completion: completion)
 
-      return ArgumentSet(arg)
-    })
+        return ArgumentSet(arg)
+      })
   }
 }

@@ -9,8 +9,9 @@
 //
 //===----------------------------------------------------------------------===//
 
-import XCTest
 import ArgumentParserTestHelpers
+import XCTest
+
 @testable import ArgumentParser
 
 // This set of tests assert the help output matches the expected value for all
@@ -19,7 +20,7 @@ import ArgumentParserTestHelpers
 extension HelpGenerationTests {
   enum AtArgumentTransform {
     // Not ExpressibleByArgument
-    struct A { }
+    struct A {}
 
     struct BareNoDefault: ParsableCommand {
       @Argument(help: "example", transform: { _ in A() })
@@ -67,15 +68,15 @@ extension HelpGenerationTests {
       .default,
       for: AtArgumentTransform.BareNoDefault.self,
       equals: """
-      USAGE: bare-no-default <arg0>
+        USAGE: bare-no-default <arg0>
 
-      ARGUMENTS:
-        <arg0>                  example
+        ARGUMENTS:
+          <arg0>                  example
 
-      OPTIONS:
-        -h, --help              Show help information.
+        OPTIONS:
+          -h, --help              Show help information.
 
-      """)
+        """)
   }
 
   func testAtArgumentTransform_BareDefault() {
@@ -83,15 +84,15 @@ extension HelpGenerationTests {
       .default,
       for: AtArgumentTransform.BareDefault.self,
       equals: """
-      USAGE: bare-default [<arg0>]
+        USAGE: bare-default [<arg0>]
 
-      ARGUMENTS:
-        <arg0>                  example
+        ARGUMENTS:
+          <arg0>                  example
 
-      OPTIONS:
-        -h, --help              Show help information.
+        OPTIONS:
+          -h, --help              Show help information.
 
-      """)
+        """)
   }
 
   func testAtArgumentTransform_OptionalNoDefault() {
@@ -99,15 +100,15 @@ extension HelpGenerationTests {
       .default,
       for: AtArgumentTransform.OptionalNoDefault.self,
       equals: """
-      USAGE: optional-no-default [<arg0>]
+        USAGE: optional-no-default [<arg0>]
 
-      ARGUMENTS:
-        <arg0>                  example
+        ARGUMENTS:
+          <arg0>                  example
 
-      OPTIONS:
-        -h, --help              Show help information.
+        OPTIONS:
+          -h, --help              Show help information.
 
-      """)
+        """)
   }
 
   func testAtArgumentTransform_OptionalDefaultNil() {
@@ -115,15 +116,15 @@ extension HelpGenerationTests {
       .default,
       for: AtArgumentTransform.OptionalDefaultNil.self,
       equals: """
-      USAGE: optional-default-nil [<arg0>]
+        USAGE: optional-default-nil [<arg0>]
 
-      ARGUMENTS:
-        <arg0>                  example
+        ARGUMENTS:
+          <arg0>                  example
 
-      OPTIONS:
-        -h, --help              Show help information.
+        OPTIONS:
+          -h, --help              Show help information.
 
-      """)
+        """)
   }
 
   func testAtArgumentTransform_OptionalDefault() {
@@ -131,15 +132,15 @@ extension HelpGenerationTests {
       .default,
       for: AtArgumentTransform.OptionalDefault.self,
       equals: """
-      USAGE: optional-default [<arg0>]
+        USAGE: optional-default [<arg0>]
 
-      ARGUMENTS:
-        <arg0>                  example
+        ARGUMENTS:
+          <arg0>                  example
 
-      OPTIONS:
-        -h, --help              Show help information.
+        OPTIONS:
+          -h, --help              Show help information.
 
-      """)
+        """)
   }
 
   func testAtArgumentTransform_ArrayNoDefault() {
@@ -147,15 +148,15 @@ extension HelpGenerationTests {
       .default,
       for: AtArgumentTransform.ArrayNoDefault.self,
       equals: """
-      USAGE: array-no-default <arg0> ...
+        USAGE: array-no-default <arg0> ...
 
-      ARGUMENTS:
-        <arg0>                  example
+        ARGUMENTS:
+          <arg0>                  example
 
-      OPTIONS:
-        -h, --help              Show help information.
+        OPTIONS:
+          -h, --help              Show help information.
 
-      """)
+        """)
   }
 
   func testAtArgumentTransform_ArrayDefaultEmpty() {
@@ -163,15 +164,15 @@ extension HelpGenerationTests {
       .default,
       for: AtArgumentTransform.ArrayDefaultEmpty.self,
       equals: """
-      USAGE: array-default-empty [<arg0> ...]
+        USAGE: array-default-empty [<arg0> ...]
 
-      ARGUMENTS:
-        <arg0>                  example
+        ARGUMENTS:
+          <arg0>                  example
 
-      OPTIONS:
-        -h, --help              Show help information.
+        OPTIONS:
+          -h, --help              Show help information.
 
-      """)
+        """)
   }
 
   func testAtArgumentTransform_ArrayDefault() {
@@ -179,15 +180,15 @@ extension HelpGenerationTests {
       .default,
       for: AtArgumentTransform.ArrayDefault.self,
       equals: """
-      USAGE: array-default [<arg0> ...]
+        USAGE: array-default [<arg0> ...]
 
-      ARGUMENTS:
-        <arg0>                  example
+        ARGUMENTS:
+          <arg0>                  example
 
-      OPTIONS:
-        -h, --help              Show help information.
+        OPTIONS:
+          -h, --help              Show help information.
 
-      """)
+        """)
   }
 }
 
@@ -197,7 +198,7 @@ extension HelpGenerationTests {
     struct A: ExpressibleByArgument {
       static var allValueStrings: [String] { ["A()"] }
       var defaultValueDescription: String { "A()" }
-      init() { }
+      init() {}
       init?(argument: String) { self.init() }
     }
 
@@ -248,15 +249,15 @@ extension HelpGenerationTests {
       .default,
       for: AtArgumentEBA.BareNoDefault.self,
       equals: """
-      USAGE: bare-no-default <arg0>
+        USAGE: bare-no-default <arg0>
 
-      ARGUMENTS:
-        <arg0>                  example (values: A())
+        ARGUMENTS:
+          <arg0>                  example (values: A())
 
-      OPTIONS:
-        -h, --help              Show help information.
+        OPTIONS:
+          -h, --help              Show help information.
 
-      """)
+        """)
   }
 
   func testAtArgumentEBA_BareDefault() {
@@ -264,15 +265,15 @@ extension HelpGenerationTests {
       .default,
       for: AtArgumentEBA.BareDefault.self,
       equals: """
-      USAGE: bare-default [<arg0>]
+        USAGE: bare-default [<arg0>]
 
-      ARGUMENTS:
-        <arg0>                  example (values: A(); default: A())
+        ARGUMENTS:
+          <arg0>                  example (values: A(); default: A())
 
-      OPTIONS:
-        -h, --help              Show help information.
+        OPTIONS:
+          -h, --help              Show help information.
 
-      """)
+        """)
   }
 
   func testAtArgumentEBA_OptionalNoDefault() {
@@ -280,15 +281,15 @@ extension HelpGenerationTests {
       .default,
       for: AtArgumentEBA.OptionalNoDefault.self,
       equals: """
-      USAGE: optional-no-default [<arg0>]
+        USAGE: optional-no-default [<arg0>]
 
-      ARGUMENTS:
-        <arg0>                  example (values: A())
+        ARGUMENTS:
+          <arg0>                  example (values: A())
 
-      OPTIONS:
-        -h, --help              Show help information.
+        OPTIONS:
+          -h, --help              Show help information.
 
-      """)
+        """)
   }
 
   func testAtArgumentEBA_OptionalDefaultNil() {
@@ -296,15 +297,15 @@ extension HelpGenerationTests {
       .default,
       for: AtArgumentEBA.OptionalDefaultNil.self,
       equals: """
-      USAGE: optional-default-nil [<arg0>]
+        USAGE: optional-default-nil [<arg0>]
 
-      ARGUMENTS:
-        <arg0>                  example (values: A())
+        ARGUMENTS:
+          <arg0>                  example (values: A())
 
-      OPTIONS:
-        -h, --help              Show help information.
+        OPTIONS:
+          -h, --help              Show help information.
 
-      """)
+        """)
   }
 
   func testAtArgumentEBA_ArrayNoDefault() {
@@ -312,15 +313,15 @@ extension HelpGenerationTests {
       .default,
       for: AtArgumentEBA.ArrayNoDefault.self,
       equals: """
-      USAGE: array-no-default <arg0> ...
+        USAGE: array-no-default <arg0> ...
 
-      ARGUMENTS:
-        <arg0>                  example (values: A())
+        ARGUMENTS:
+          <arg0>                  example (values: A())
 
-      OPTIONS:
-        -h, --help              Show help information.
+        OPTIONS:
+          -h, --help              Show help information.
 
-      """)
+        """)
   }
 
   func testAtArgumentEBA_ArrayDefaultEmpty() {
@@ -328,15 +329,15 @@ extension HelpGenerationTests {
       .default,
       for: AtArgumentEBA.ArrayDefaultEmpty.self,
       equals: """
-      USAGE: array-default-empty [<arg0> ...]
+        USAGE: array-default-empty [<arg0> ...]
 
-      ARGUMENTS:
-        <arg0>                  example (values: A())
+        ARGUMENTS:
+          <arg0>                  example (values: A())
 
-      OPTIONS:
-        -h, --help              Show help information.
+        OPTIONS:
+          -h, --help              Show help information.
 
-      """)
+        """)
   }
 
   func testAtArgumentEBA_ArrayDefault() {
@@ -344,15 +345,15 @@ extension HelpGenerationTests {
       .default,
       for: AtArgumentEBA.ArrayDefault.self,
       equals: """
-      USAGE: array-default [<arg0> ...]
+        USAGE: array-default [<arg0> ...]
 
-      ARGUMENTS:
-        <arg0>                  example (values: A(); default: A())
+        ARGUMENTS:
+          <arg0>                  example (values: A(); default: A())
 
-      OPTIONS:
-        -h, --help              Show help information.
+        OPTIONS:
+          -h, --help              Show help information.
 
-      """)
+        """)
   }
 }
 
@@ -362,7 +363,7 @@ extension HelpGenerationTests {
     struct A: ExpressibleByArgument {
       static var allValueStrings: [String] { ["A()"] }
       var defaultValueDescription: String { "A()" }
-      init() { }
+      init() {}
       init?(argument: String) { self.init() }
     }
 
@@ -412,15 +413,15 @@ extension HelpGenerationTests {
       .default,
       for: AtArgumentEBATransform.BareNoDefault.self,
       equals: """
-      USAGE: bare-no-default <arg0>
+        USAGE: bare-no-default <arg0>
 
-      ARGUMENTS:
-        <arg0>                  example
+        ARGUMENTS:
+          <arg0>                  example
 
-      OPTIONS:
-        -h, --help              Show help information.
+        OPTIONS:
+          -h, --help              Show help information.
 
-      """)
+        """)
   }
 
   func testAtArgumentEBATransform_BareDefault() {
@@ -428,15 +429,15 @@ extension HelpGenerationTests {
       .default,
       for: AtArgumentEBATransform.BareDefault.self,
       equals: """
-      USAGE: bare-default [<arg0>]
+        USAGE: bare-default [<arg0>]
 
-      ARGUMENTS:
-        <arg0>                  example
+        ARGUMENTS:
+          <arg0>                  example
 
-      OPTIONS:
-        -h, --help              Show help information.
+        OPTIONS:
+          -h, --help              Show help information.
 
-      """)
+        """)
   }
 
   func testAtArgumentEBATransform_OptionalNoDefault() {
@@ -444,15 +445,15 @@ extension HelpGenerationTests {
       .default,
       for: AtArgumentEBATransform.OptionalNoDefault.self,
       equals: """
-      USAGE: optional-no-default [<arg0>]
+        USAGE: optional-no-default [<arg0>]
 
-      ARGUMENTS:
-        <arg0>                  example
+        ARGUMENTS:
+          <arg0>                  example
 
-      OPTIONS:
-        -h, --help              Show help information.
+        OPTIONS:
+          -h, --help              Show help information.
 
-      """)
+        """)
   }
 
   func testAtArgumentEBATransform_OptionalDefaultNil() {
@@ -460,15 +461,15 @@ extension HelpGenerationTests {
       .default,
       for: AtArgumentEBATransform.OptionalDefaultNil.self,
       equals: """
-      USAGE: optional-default-nil [<arg0>]
+        USAGE: optional-default-nil [<arg0>]
 
-      ARGUMENTS:
-        <arg0>                  example
+        ARGUMENTS:
+          <arg0>                  example
 
-      OPTIONS:
-        -h, --help              Show help information.
+        OPTIONS:
+          -h, --help              Show help information.
 
-      """)
+        """)
   }
 
   func testAtArgumentEBATransform_OptionalDefault() {
@@ -476,15 +477,15 @@ extension HelpGenerationTests {
       .default,
       for: AtArgumentEBATransform.OptionalDefault.self,
       equals: """
-      USAGE: optional-default [<arg0>]
+        USAGE: optional-default [<arg0>]
 
-      ARGUMENTS:
-        <arg0>                  example
+        ARGUMENTS:
+          <arg0>                  example
 
-      OPTIONS:
-        -h, --help              Show help information.
+        OPTIONS:
+          -h, --help              Show help information.
 
-      """)
+        """)
   }
 
   func testAtArgumentEBATransform_ArrayNoDefault() {
@@ -492,15 +493,15 @@ extension HelpGenerationTests {
       .default,
       for: AtArgumentEBATransform.ArrayNoDefault.self,
       equals: """
-      USAGE: array-no-default <arg0> ...
+        USAGE: array-no-default <arg0> ...
 
-      ARGUMENTS:
-        <arg0>                  example
+        ARGUMENTS:
+          <arg0>                  example
 
-      OPTIONS:
-        -h, --help              Show help information.
+        OPTIONS:
+          -h, --help              Show help information.
 
-      """)
+        """)
   }
 
   func testAtArgumentEBATransform_ArrayDefaultEmpty() {
@@ -508,15 +509,15 @@ extension HelpGenerationTests {
       .default,
       for: AtArgumentEBATransform.ArrayDefaultEmpty.self,
       equals: """
-      USAGE: array-default-empty [<arg0> ...]
+        USAGE: array-default-empty [<arg0> ...]
 
-      ARGUMENTS:
-        <arg0>                  example
+        ARGUMENTS:
+          <arg0>                  example
 
-      OPTIONS:
-        -h, --help              Show help information.
+        OPTIONS:
+          -h, --help              Show help information.
 
-      """)
+        """)
   }
 
   func testAtArgumentEBATransform_ArrayDefault() {
@@ -524,14 +525,14 @@ extension HelpGenerationTests {
       .default,
       for: AtArgumentEBATransform.ArrayDefault.self,
       equals: """
-      USAGE: array-default [<arg0> ...]
+        USAGE: array-default [<arg0> ...]
 
-      ARGUMENTS:
-        <arg0>                  example
+        ARGUMENTS:
+          <arg0>                  example
 
-      OPTIONS:
-        -h, --help              Show help information.
+        OPTIONS:
+          -h, --help              Show help information.
 
-      """)
+        """)
   }
 }

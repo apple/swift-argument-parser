@@ -10,6 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 import XCTest
+
 @testable import ArgumentParser
 
 final class MirrorTests: XCTestCase {}
@@ -50,7 +51,7 @@ extension MirrorTests {
         }
       }
     }
-    
+
     performTest(foo: "foo", baz: "baz")
     performTest(foo: "foo", baz: nil)
     performTest(foo: nil, baz: "baz")

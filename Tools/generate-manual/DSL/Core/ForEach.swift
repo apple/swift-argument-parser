@@ -13,7 +13,10 @@ struct ForEach<C>: MDocComponent where C: Collection {
   var items: C
   var builder: (C.Element, C.Index) -> MDocComponent
 
-  init(_ items: C, @MDocBuilder builder: @escaping (C.Element, C.Index) -> MDocComponent) {
+  init(
+    _ items: C,
+    @MDocBuilder builder: @escaping (C.Element, C.Index) -> MDocComponent
+  ) {
     self.items = items
     self.builder = builder
   }

@@ -80,7 +80,8 @@ func executeCommand(
       stderr: errorActual)
   }
 
-  let outputActual = String(data: outputData, encoding: .utf8)?
+  let outputActual =
+    String(data: outputData, encoding: .utf8)?
     .trimmingCharacters(in: .whitespacesAndNewlines)
     ?? ""
 

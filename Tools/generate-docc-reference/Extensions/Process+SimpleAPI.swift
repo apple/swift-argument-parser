@@ -12,64 +12,64 @@
 import Foundation
 
 enum SubprocessError: Swift.Error, LocalizedError, CustomStringConvertible {
-    case missingExecutable(url: URL)
-    case failedToLaunch(error: Swift.Error)
-    case nonZeroExitCode(code: Int)
+  case missingExecutable(url: URL)
+  case failedToLaunch(error: Swift.Error)
+  case nonZeroExitCode(code: Int)
 
-    var description: String {
-        switch self {
-        case let .missingExecutable(url):
-            return "No executable at '\(url.standardizedFileURL.path)'."
-        case let .failedToLaunch(error):
-            return "Couldn't run command process. \(error.localizedDescription)"
-        case let .nonZeroExitCode(code):
-            return "Process returned non-zero exit code '\(code)'."
-        }
+  var description: String {
+    switch self {
+    case let .missingExecutable(url):
+      return "No executable at '\(url.standardizedFileURL.path)'."
+    case let .failedToLaunch(error):
+      return "Couldn't run command process. \(error.localizedDescription)"
+    case let .nonZeroExitCode(code):
+      return "Process returned non-zero exit code '\(code)'."
     }
+  }
 
-    var errorDescription: String? { self.description }
+  var errorDescription: String? { self.description }
 }
 
 func executeCommand(
-    executable: URL,
-    arguments: [String]
+  executable: URL,
+  arguments: [String]
 ) throws -> String {
-    guard (try? executable.checkResourceIsReachable()) ?? false else {
-        throw SubprocessError.missingExecutable(url: executable)
+  guard (try? executable.checkResourceIsReachable()) ?? false else {
+    throw SubprocessError.missingExecutable(url: executable)
+  }
+
+  let process = Process()
+  if #available(macOS 10.13, *) {
+    process.executableURL = executable
+  } else {
+    process.launchPath = executable.path
+  }
+  process.arguments = arguments
+
+  let output = Pipe()
+  process.standardOutput = output
+  process.standardError = FileHandle.nullDevice
+
+  if #available(macOS 10.13, *) {
+    do {
+      try process.run()
+    } catch {
+      throw SubprocessError.failedToLaunch(error: error)
     }
+  } else {
+    process.launch()
+  }
+  let outputData = output.fileHandleForReading.readDataToEndOfFile()
+  process.waitUntilExit()
 
-    let process = Process()
-    if #available(macOS 10.13, *) {
-        process.executableURL = executable
-    } else {
-        process.launchPath = executable.path
-    }
-    process.arguments = arguments
+  guard process.terminationStatus == 0 else {
+    throw SubprocessError.nonZeroExitCode(code: Int(process.terminationStatus))
+  }
 
-    let output = Pipe()
-    process.standardOutput = output
-    process.standardError = FileHandle.nullDevice
+  let outputActual =
+    String(data: outputData, encoding: .utf8)?
+    .trimmingCharacters(in: .whitespacesAndNewlines)
+    ?? ""
 
-    if #available(macOS 10.13, *) {
-        do {
-            try process.run()
-        } catch {
-            throw SubprocessError.failedToLaunch(error: error)
-        }
-    } else {
-        process.launch()
-    }
-    let outputData = output.fileHandleForReading.readDataToEndOfFile()
-    process.waitUntilExit()
-
-    guard process.terminationStatus == 0 else {
-        throw SubprocessError.nonZeroExitCode(code: Int(process.terminationStatus))
-    }
-
-    let outputActual =
-        String(data: outputData, encoding: .utf8)?
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-            ?? ""
-
-    return outputActual
+  return outputActual
 }

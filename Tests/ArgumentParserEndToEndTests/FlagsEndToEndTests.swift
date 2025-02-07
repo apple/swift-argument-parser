@@ -9,16 +9,16 @@
 //
 //===----------------------------------------------------------------------===//
 
-import XCTest
-import ArgumentParserTestHelpers
 import ArgumentParser
+import ArgumentParserTestHelpers
+import XCTest
 
 final class FlagsEndToEndTests: XCTestCase {
 }
 
 // MARK: -
 
-fileprivate struct Bar: ParsableArguments {
+private struct Bar: ParsableArguments {
   @Flag
   var verbose: Bool = false
 
@@ -68,13 +68,16 @@ extension FlagsEndToEndTests {
     AssertParse(Bar.self, ["--extattr", "--no-extattr"]) { options in
       XCTAssertEqual(options.extattr, false)
     }
-    AssertParse(Bar.self, ["--extattr", "--no-extattr", "--no-extattr"]) { options in
+    AssertParse(Bar.self, ["--extattr", "--no-extattr", "--no-extattr"]) {
+      options in
       XCTAssertEqual(options.extattr, false)
     }
-    AssertParse(Bar.self, ["--no-extattr", "--no-extattr", "--extattr"]) { options in
+    AssertParse(Bar.self, ["--no-extattr", "--no-extattr", "--extattr"]) {
+      options in
       XCTAssertEqual(options.extattr, true)
     }
-    AssertParse(Bar.self, ["--extattr", "--no-extattr", "--extattr"]) { options in
+    AssertParse(Bar.self, ["--extattr", "--no-extattr", "--extattr"]) {
+      options in
       XCTAssertEqual(options.extattr, true)
     }
     AssertParse(Bar.self, ["--enable-logging"]) { options in
@@ -83,13 +86,14 @@ extension FlagsEndToEndTests {
     AssertParse(Bar.self, ["--no-extattr2", "--no-extattr2"]) { options in
       XCTAssertEqual(options.extattr2, false)
     }
-    AssertParse(Bar.self, ["--disable-logging", "--enable-logging"]) { options in
+    AssertParse(Bar.self, ["--disable-logging", "--enable-logging"]) {
+      options in
       XCTAssertEqual(options.logging, false)
     }
   }
 }
 
-fileprivate struct Foo: ParsableArguments {
+private struct Foo: ParsableArguments {
   @Flag(inversion: .prefixedEnableDisable)
   var index: Bool = false
   @Flag(inversion: .prefixedEnableDisable)
@@ -111,7 +115,13 @@ extension FlagsEndToEndTests {
   }
 
   func testParsingEnableDisable_disableAll() throws {
-    AssertParse(Foo.self, ["--disable-index", "--disable-sandbox", "--disable-required-element", "--disable-optional"]) { options in
+    AssertParse(
+      Foo.self,
+      [
+        "--disable-index", "--disable-sandbox", "--disable-required-element",
+        "--disable-optional",
+      ]
+    ) { options in
       XCTAssertEqual(options.index, false)
       XCTAssertEqual(options.sandbox, false)
       XCTAssertEqual(options.requiredElement, false)
@@ -120,7 +130,13 @@ extension FlagsEndToEndTests {
   }
 
   func testParsingEnableDisable_enableAll() throws {
-    AssertParse(Foo.self, ["--enable-index", "--enable-sandbox", "--enable-required-element", "--enable-optional"]) { options in
+    AssertParse(
+      Foo.self,
+      [
+        "--enable-index", "--enable-sandbox", "--enable-required-element",
+        "--enable-optional",
+      ]
+    ) { options in
       XCTAssertEqual(options.index, true)
       XCTAssertEqual(options.sandbox, true)
       XCTAssertEqual(options.requiredElement, true)
@@ -179,7 +195,7 @@ enum Shape: String, EnumerableFlag {
   case oblong
 }
 
-fileprivate struct Baz: ParsableArguments {
+private struct Baz: ParsableArguments {
   @Flag()
   var color: Color
 
@@ -258,22 +274,24 @@ extension FlagsEndToEndTests {
   }
 
   func testParsingCaseIterable_Help() throws {
-    AssertHelp(.default, for: Baz.self, equals: """
-            USAGE: baz --pink --purple --silver [--small] [--medium] [--large] [--extra-large] [--humongous] [--round] [--square] [--oblong]
+    AssertHelp(
+      .default, for: Baz.self,
+      equals: """
+        USAGE: baz --pink --purple --silver [--small] [--medium] [--large] [--extra-large] [--humongous] [--round] [--square] [--oblong]
 
-            OPTIONS:
-              --pink/--purple/--silver
-              -s, --small             A smallish size. (default: --small)
-              -m, --medium            Not too big, not too small.
-              -l, --large             The size to use.
-              --extra-large           The size to use.
-              --humongous, --huge     Roughly the size of a barge.
-              --round/--square/--oblong
-              -h, --help              Show help information.
-            
-            """)
+        OPTIONS:
+          --pink/--purple/--silver
+          -s, --small             A smallish size. (default: --small)
+          -m, --medium            Not too big, not too small.
+          -l, --large             The size to use.
+          --extra-large           The size to use.
+          --humongous, --huge     Roughly the size of a barge.
+          --round/--square/--oblong
+          -h, --help              Show help information.
+
+        """)
   }
-  
+
   func testParsingCaseIterable_Fails() throws {
     // Missing color
     XCTAssertThrowsError(try Baz.parse([]))
@@ -287,7 +305,7 @@ extension FlagsEndToEndTests {
   }
 }
 
-fileprivate struct Qux: ParsableArguments {
+private struct Qux: ParsableArguments {
   @Flag()
   var color: [Color] = []
 
@@ -309,11 +327,13 @@ extension FlagsEndToEndTests {
       XCTAssertEqual(options.color, [.pink, .purple])
       XCTAssertEqual(options.size, [.small])
     }
-    AssertParse(Qux.self, ["--pink", "--small", "--purple", "--medium"]) { options in
+    AssertParse(Qux.self, ["--pink", "--small", "--purple", "--medium"]) {
+      options in
       XCTAssertEqual(options.color, [.pink, .purple])
       XCTAssertEqual(options.size, [.small, .medium])
     }
-    AssertParse(Qux.self, ["--pink", "--pink", "--purple", "--pink"]) { options in
+    AssertParse(Qux.self, ["--pink", "--pink", "--purple", "--pink"]) {
+      options in
       XCTAssertEqual(options.color, [.pink, .pink, .purple, .pink])
       XCTAssertEqual(options.size, [.small, .medium])
     }
@@ -324,7 +344,7 @@ extension FlagsEndToEndTests {
   }
 }
 
-fileprivate struct RepeatOK: ParsableArguments {
+private struct RepeatOK: ParsableArguments {
   @Flag(exclusivity: .chooseFirst)
   var color: Color
 
@@ -347,7 +367,8 @@ extension FlagsEndToEndTests {
       XCTAssertEqual(options.shape, .oblong)
     }
 
-    AssertParse(RepeatOK.self, ["--large", "--pink", "--round", "-l"]) { options in
+    AssertParse(RepeatOK.self, ["--large", "--pink", "--round", "-l"]) {
+      options in
       XCTAssertEqual(options.size, .large)
     }
   }
