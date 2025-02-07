@@ -13,7 +13,7 @@ import Foundation
 import XCTest
 import ArgumentParserToolInfo
 
-extension DecodingError: @retroactive CustomStringConvertible {
+extension DecodingError: Swift.CustomStringConvertible {
   public var description: String {
     func pathDescription(_ path: [any CodingKey]) -> String {
       var description = ""
