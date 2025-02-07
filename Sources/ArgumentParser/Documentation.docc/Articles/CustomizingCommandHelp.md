@@ -59,7 +59,7 @@ hello!
 ...
 ```
 
-## Modifying the Help Flag Names
+### Modifying the Help Flag Names
 
 Users can see the help screen for a command by passing either the `-h` or the `--help` flag, by default. If you need to use one of those flags for another purpose, you can provide alternative names when configuring a root command.
 
@@ -123,11 +123,11 @@ OPTIONS:
   -?, --help              Show help information.
 ```
 
-## Hiding Commands
+### Hiding Commands
 
 You may not want to show every one of your command as part of your command-line interface. To render a command invisible (but still usable), pass `shouldDisplay: false` to the ``CommandConfiguration`` initializer.
 
-## Generating Help Text Programmatically
+### Generating Help Text Programmatically
 
 The help screen is automatically shown to users when they call your command with the help flag. You can generate the same text from within your program by calling the `helpMessage()` method.
 

@@ -82,8 +82,8 @@ public struct CleanExit: Error, CustomStringConvertible {
   ///
   /// - Parameter command: The command type to offer help for, if different
   ///   from the root command.
-  public static func helpRequest(_ type: ParsableCommand.Type? = nil) -> CleanExit {
-    self.init(base: .helpRequest(type))
+  public static func helpRequest(_ command: ParsableCommand.Type? = nil) -> CleanExit {
+    self.init(base: .helpRequest(command))
   }
   
   /// Treat this error as a clean exit with the given message.

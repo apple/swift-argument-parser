@@ -706,8 +706,6 @@ extension Option {
   ///   - help: Information about how to use this option.
   ///   - completion: The type of command-line completion provided for this
   ///     option.
-  ///   - transform: A closure that converts a string into this property's
-  ///     element type, or else throws an error.
   public init<T>(
     wrappedValue: Array<T>,
     name: NameSpecification = .long,

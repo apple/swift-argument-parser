@@ -116,6 +116,9 @@ extension ParsableCommand {
   /// Returns the usage text for the given subcommand of this command.
   ///
   /// - Parameters:
+  ///   - subcommand: The subcommand to generate the help screen for.
+  ///     `subcommand` must be declared in the subcommand tree of this
+  ///     command.
   ///   - includeHidden: Include hidden help information in the generated
   ///     message.
   /// - Returns: The usage text for this type.

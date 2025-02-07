@@ -6,7 +6,7 @@ Learn to set up and customize a simple command-line tool.
 
 This guide walks through building an example command. You'll learn about the different tools that `ArgumentParser` provides for defining a command's options, customizing the interface, and providing help text for your user.
 
-## Adding ArgumentParser as a Dependency
+### Adding ArgumentParser as a Dependency
 
 Let's write a tool called `count` that reads an input file, counts the words, and writes the result to an output file.
 
@@ -31,7 +31,7 @@ let package = Package(
 )
 ```
 
-## Building Our First Command
+### Building Our First Command
 
 Once we've built the `count` tool, we'll be able to run it like this:
 
@@ -69,7 +69,7 @@ Finally, the `Count` command is designated as the program's entry point by apply
 
 > Note: The Swift compiler uses either the type marked with `@main` or a `main.swift` file as the entry point for an executable program. You can use either one, but not both — rename your `main.swift` file to the name of the command when you add `@main`. In this case, rename the file to `Count.swift`.   
 
-## Working with Named Options
+### Working with Named Options
 
 Our `count` tool may have a usability problem — it's not immediately clear whether a user should provide the input file first, or the output file. Instead of using positional arguments for our two inputs, let's specify that they should be labeled options:
 
@@ -106,7 +106,7 @@ This interface has a trade-off for the users of our `count` tool: With `@Argumen
 Counting words in 'readme.md' and writing the result into 'readme.counts'.
 ```
 
-## Adding a Flag
+### Adding a Flag
 
 Next, we want to add a `--verbose` flag to our tool, and only print the message if the user specifies that option:
 
@@ -142,7 +142,7 @@ struct Count: ParsableCommand {
 The `@Flag` property wrapper denotes a command-line input that looks like `--name`, deriving its name from the name of your property. Flags are most frequently used for Boolean values, like the `verbose` property here.
 
 
-## Using Custom Names
+### Using Custom Names
 
 We can customize the names of our options and add an alternative to the `verbose` flag so that users can specify `-v` instead of `--verbose`. The new interface will look like this:
 
@@ -175,7 +175,7 @@ struct Count: ParsableCommand {
 
 The default name specification is `.long`, which uses a property's name with a two-dash prefix. `.short` uses only the first letter of a property's name with a single-dash prefix, and allows combining groups of short options. You can specify custom short and long names with the `.customShort(_:)` and `.customLong(_:)` methods, respectively, or use the combined `.shortAndLong` property to specify the common case of both the short and long derived names.
 
-## Providing Help
+### Providing Help
 
 `ArgumentParser` automatically generates help for any command when a user provides the `-h` or `--help` flags:
 
@@ -222,7 +222,7 @@ OPTIONS:
 
 ```
 
-## The Complete Utility
+### The Complete Utility
 
 As promised, here's the complete `count` command, for your experimentation:
 
@@ -289,7 +289,7 @@ struct RuntimeError: Error, CustomStringConvertible {
 ```
 
 
-## Next Steps … Swift concurrency
+### Next Steps … Swift concurrency
 
 `ArgumentParser` supports Swift concurrency, notably `async` renditions of `run`. If you use `async` rendition of `run`, conform to `AsyncParsableCommand` instead of `ParsableCommand`.
 
