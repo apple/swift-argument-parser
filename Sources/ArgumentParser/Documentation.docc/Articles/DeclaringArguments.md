@@ -89,7 +89,7 @@ Your lucky numbers are:
 1 2 3
 ```
 
-## Customizing option and flag names
+### Customizing option and flag names
 
 By default, options and flags derive the name that you use on the command line from the name of the property, such as `--count` and `--index`. Camel-case names are converted to lowercase with hyphen-separated words, like `--strip-whitespace`.
 
@@ -132,7 +132,7 @@ struct Example: ParsableCommand {
 **Note:** You can also pass `withSingleDash: true` to `.customLong` to create a single-dash flag or option, such as `-verbose`. Use this name specification only when necessary, such as when migrating a legacy command-line interface. Using long names with a single-dash prefix can lead to ambiguity with combined short names: it may not be obvious whether `-file` is a single option or the combination of the four short options `-f`, `-i`, `-l`, and `-e`.
 
 
-## Parsing custom types
+### Parsing custom types
 
 Arguments and options can be parsed from any type that conforms to the ``ExpressibleByArgument`` protocol. Standard library integer and floating-point types, strings, and Booleans all conform to `ExpressibleByArgument`.
 
@@ -201,7 +201,7 @@ struct Example: ParsableCommand {
 
 Throw an error from the `transform` function to indicate that the user provided an invalid value for that type. See <doc:Validation> for more about customizing `transform` function errors.
 
-## Using flag inversions, enumerations, and counts
+### Using flag inversions, enumerations, and counts
 
 Flags are most frequently used for `Bool` properties. You can generate a `true`/`false` pair of flags by specifying a flag inversion:
 
@@ -288,7 +288,7 @@ Verbosity level: 4
 ```
 
 
-## Specifying default values
+### Specifying default values
 
 You can specify default values for almost all supported argument, option, and flag types using normal property initialization syntax:
 
@@ -327,7 +327,7 @@ If a default is not specified, the user must provide a value for that argument/o
 You must also always specify a default of `false` for a non-optional `Bool` flag, as in the example above. This makes the behavior consistent with both normal Swift properties (which either must be explicitly initialized or optional to initialize a `struct`/`class` containing them) and the other property types.
 
 
-## Specifying a parsing strategy
+### Specifying a parsing strategy
 
 When parsing a list of command-line inputs, `ArgumentParser` distinguishes between dash-prefixed keys and un-prefixed values. When looking for the value for a key, only an un-prefixed value will be selected by default.
 
@@ -358,7 +358,7 @@ Usage: example [--verbose] --name <name> [<file>]
 
 Parsing options as arrays is similar — only adjacent key-value pairs are recognized by default.
 
-### Alternative single-value parsing strategies
+#### Alternative single-value parsing strategies
 
 You can change this behavior by providing a different parsing strategy in the `@Option` initializer. **Be careful when selecting any of the alternative parsing strategies** — they may lead your command-line tool to have unexpected behavior for users!
 
@@ -376,7 +376,7 @@ The `.scanningForValue` strategy, on the other hand, looks ahead in the list of 
 Verbose: true, name: Tomás, file: none
 ```
 
-### Alternative array parsing strategies
+#### Alternative array parsing strategies
 
 The default strategy for parsing options as arrays is to read each value from a key-value pair. For example, this command expects zero or more input file names:
 
@@ -427,7 +427,7 @@ Verbose: true, files: ["file1.swift", "file2.swift"]
 Verbose: false, files: ["file1.swift", "file2.swift", "--verbose"]
 ```
 
-### Alternative positional argument parsing strategies
+#### Alternative positional argument parsing strategies
 
 The default strategy for parsing arrays of positional arguments is to ignore  all dash-prefixed command-line inputs. For example, this command accepts a `--verbose` flag and a list of file names as positional arguments:
 
@@ -469,7 +469,7 @@ Verbose: true, files: ["file1.swift", "file2.swift", "--other"]
 Verbose: false, files: ["--", "--verbose", "file1.swift", "file2.swift", "--other"]
 ```
 
-### Ignoring unknown arguments
+#### Ignoring unknown arguments
 
 Different versions of a CLI tool may have full or partial sets of supported flags and options.
 

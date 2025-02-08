@@ -618,7 +618,7 @@ extension Argument {
   /// Creates a property that reads an array from zero or more arguments.
   ///
   /// - Parameters:
-  ///   - initial: A default value to use for this property.
+  ///   - wrappedValue: A default value to use for this property.
   ///   - parsingStrategy: The behavior to use when parsing multiple values from
   ///     the command-line arguments.
   ///   - help: Information about how to use this argument.

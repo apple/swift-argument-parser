@@ -8,7 +8,7 @@ Command-line programs built using `ArgumentParser` may include some built-in exp
 
 If you have any feedback on experimental features, please [open a GitHub issue][issue].
 
-## List of Experimental Features
+### List of Experimental Features
 
 | Name | Description | related PRs | Version |
 | ------------- | ------------- | ------------- | ------------- |
