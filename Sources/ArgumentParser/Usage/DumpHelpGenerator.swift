@@ -86,7 +86,7 @@ fileprivate extension ArgumentSet {
   }
 }
 
-fileprivate extension ToolInfoV0 {
+extension ToolInfoV0 {
   init(commandStack: [ParsableCommand.Type]) {
     self.init(command: CommandInfoV0(commandStack: commandStack))
     // FIXME: This is a hack to inject the help command into the tool info

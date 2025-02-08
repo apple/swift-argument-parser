@@ -338,25 +338,40 @@ extension CommandParser {
 
     // Generate the argument set and parse the argument to find in the set
     let argset = ArgumentSet(current.element, visibility: .private, parent: nil)
-    let parsedArgument = try! parseIndividualArg(argToMatch, at: 0).first!
-    
+    guard let parsedArgument = try parseIndividualArg(argToMatch, at: 0).first
+    else { throw ParserError.invalidState }
+
     // Look up the specified argument and retrieve its custom completion function
     let completionFunction: ([String]) -> [String]
-    
+
     switch parsedArgument.value {
     case .option(let parsed):
       guard let matchedArgument = argset.first(matching: parsed),
         case .custom(let f) = matchedArgument.completion.kind
-        else { throw ParserError.invalidState }
+      else { throw ParserError.invalidState }
       completionFunction = f
 
-    case .value(let str):
-      guard let key = InputKey(fullPathString: str),
-        let matchedArgument = argset.firstPositional(withKey: key),
-        case .custom(let f) = matchedArgument.completion.kind
+    case .value(let value):
+      // Legacy completion script generators use internal key paths to identify
+      // positional args, e.g. optionGroupA.optionGroupB.property. Newer
+      // generators based on ToolInfo use the `positional@<index>` syntax which
+      // avoids leaking implementation details of the tool.
+      let toolInfoPrefix = "positional@"
+      if value.hasPrefix(toolInfoPrefix) {
+        guard
+          let index = Int(value.dropFirst(toolInfoPrefix.count)),
+          let matchedArgument = argset.positional(at: index),
+          case .custom(let f) = matchedArgument.completion.kind
         else { throw ParserError.invalidState }
-      completionFunction = f
-      
+        completionFunction = f
+      } else {
+        guard
+          let key = InputKey(fullPathString: value),
+          let matchedArgument = argset.firstPositional(withKey: key),
+          case .custom(let f) = matchedArgument.completion.kind
+        else { throw ParserError.invalidState }
+        completionFunction = f
+      }
     case .terminator:
       throw ParserError.invalidState
     }
