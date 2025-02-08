@@ -23,20 +23,20 @@ enum GenerateDoccReferencePluginError: Error {
 extension GenerateDoccReferencePluginError: CustomStringConvertible {
   var description: String {
     switch self {
-    case let .unknownBuildConfiguration(configuration):
+    case .unknownBuildConfiguration(let configuration):
       return "Build failed: Unknown build configuration '\(configuration)'."
-    case let .buildFailed(logText):
+    case .buildFailed(let logText):
       return "Build failed: \(logText)."
-    case let .createOutputDirectoryFailed(error):
+    case .createOutputDirectoryFailed(let error):
       return """
         Failed to create output directory: '\(error.localizedDescription)'
         """
-    case let .subprocessFailedNonZeroExit(tool, exitCode):
+    case .subprocessFailedNonZeroExit(let tool, let exitCode):
       return """
         '\(tool.lastComponent)' invocation failed with a nonzero exit code: \
         '\(exitCode)'.
         """
-    case let .subprocessFailedError(tool, error):
+    case .subprocessFailedError(let tool, let error):
       return """
         '\(tool.lastComponent)' invocation failed: \
         '\(error.localizedDescription)'

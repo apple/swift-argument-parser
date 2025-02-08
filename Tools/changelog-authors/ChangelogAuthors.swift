@@ -59,13 +59,16 @@ struct ChangelogAuthors: AsyncParsableCommand {
   }
 
   func links(for authors: [Author]) -> String {
+    var authors = authors
     if authors.count <= 2 {
       return authors.map({ $0.inlineLink }).joined(separator: " and ")
     } else {
-      let result = authors.dropLast()
+      let last = authors.removeLast()
+      let result =
+        authors
         .map({ $0.inlineLink })
         .joined(separator: ", ")
-      return "\(result), and \(authors.last!.inlineLink)"
+      return "\(result), and \(last.inlineLink)"
     }
   }
 

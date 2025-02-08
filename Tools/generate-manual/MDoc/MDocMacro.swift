@@ -505,7 +505,7 @@ public enum MDocMacro {
         if let width = width {
           self.arguments.append(contentsOf: ["-width", "\(width)n"])
         }
-      case /*.column, */ .diag, .inset, .item, .ohang:
+      case .diag, .inset, .item, .ohang:  // .column
         assert(width == nil, "`width` should be nil for style: \(style)")
       }
       if let offset = offset {

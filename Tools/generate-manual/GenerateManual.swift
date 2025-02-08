@@ -23,14 +23,14 @@ enum GenerateManualError: Error {
 extension GenerateManualError: CustomStringConvertible {
   var description: String {
     switch self {
-    case let .failedToRunSubprocess(error):
+    case .failedToRunSubprocess(let error):
       return "Failed to run subprocess: \(error)"
-    case let .unableToParseToolOutput(error):
+    case .unableToParseToolOutput(let error):
       return "Failed to parse tool output: \(error)"
-    case let .unsupportedDumpHelpVersion(expected, found):
+    case .unsupportedDumpHelpVersion(let expected, let found):
       return
         "Unsupported dump help version, expected '\(expected)' but found: '\(found)'"
-    case let .failedToGenerateManualPages(error):
+    case .failedToGenerateManualPages(let error):
       return "Failed to generated manual pages: \(error)"
     }
   }

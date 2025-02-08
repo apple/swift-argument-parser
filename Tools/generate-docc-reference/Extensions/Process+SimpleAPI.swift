@@ -18,11 +18,11 @@ enum SubprocessError: Swift.Error, LocalizedError, CustomStringConvertible {
 
   var description: String {
     switch self {
-    case let .missingExecutable(url):
+    case .missingExecutable(let url):
       return "No executable at '\(url.standardizedFileURL.path)'."
-    case let .failedToLaunch(error):
+    case .failedToLaunch(let error):
       return "Couldn't run command process. \(error.localizedDescription)"
-    case let .nonZeroExitCode(code):
+    case .nonZeroExitCode(let code):
       return "Process returned non-zero exit code '\(code)'."
     }
   }

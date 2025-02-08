@@ -54,15 +54,15 @@ enum ParsedArgument: Equatable, CustomStringConvertible {
 
   var name: Name {
     switch self {
-    case let .name(n): return n
-    case let .nameWithValue(n, _): return n
+    case .name(let n): return n
+    case .nameWithValue(let n, _): return n
     }
   }
 
   var value: String? {
     switch self {
     case .name: return nil
-    case let .nameWithValue(_, v): return v
+    case .nameWithValue(_, let v): return v
     }
   }
 
@@ -275,7 +275,7 @@ extension SplitArguments {
   /// Returns the original input string at the given origin, or `nil` if
   /// `origin` is a sub-index.
   func originalInput(at origin: InputOrigin.Element) -> String? {
-    guard case let .argumentIndex(index) = origin else {
+    guard case .argumentIndex(let index) = origin else {
       return nil
     }
     return originalInput[index.inputIndex.rawValue]
@@ -283,14 +283,14 @@ extension SplitArguments {
 
   /// Returns the position in `elements` of the given input origin.
   func position(of origin: InputOrigin.Element) -> Int? {
-    guard case let .argumentIndex(index) = origin else { return nil }
+    guard case .argumentIndex(let index) = origin else { return nil }
     return elements.firstIndex(where: { $0.index == index })
   }
 
   /// Returns the position in `elements` of the first element after the given
   /// input origin.
   func position(after origin: InputOrigin.Element) -> Int? {
-    guard case let .argumentIndex(index) = origin else { return nil }
+    guard case .argumentIndex(let index) = origin else { return nil }
     return elements.firstIndex(where: { $0.index > index })
   }
 
@@ -305,10 +305,10 @@ extension SplitArguments {
     return (.argumentIndex(element.index), element)
   }
 
-  func extractJoinedElement(at origin: InputOrigin.Element) -> (
-    InputOrigin.Element, String
-  )? {
-    guard case let .argumentIndex(index) = origin else { return nil }
+  func extractJoinedElement(
+    at origin: InputOrigin.Element
+  ) -> (InputOrigin.Element, String)? {
+    guard case .argumentIndex(let index) = origin else { return nil }
 
     // Joined arguments only apply when parsing the first sub-element of a
     // larger input argument.

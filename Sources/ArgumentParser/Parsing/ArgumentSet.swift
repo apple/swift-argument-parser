@@ -444,7 +444,7 @@ struct LenientParser {
     if let postTerminatorArg = argumentSet.first(where: { def in
       def.isRepeatingPositional && def.parsingStrategy == .postTerminator
     }),
-      case let .unary(update) = postTerminatorArg.update,
+      case .unary(let update) = postTerminatorArg.update,
       let terminatorIndex = unusedInput.elements.firstIndex(
         where: \.isTerminator)
     {
@@ -487,7 +487,7 @@ struct LenientParser {
       default:
         continue ArgumentLoop
       }
-      guard case let .unary(update) = argumentDefinition.update else {
+      guard case .unary(let update) = argumentDefinition.update else {
         preconditionFailure("Shouldn't see a nullary positional argument.")
       }
       let allowOptionsAsInput =
@@ -508,7 +508,7 @@ struct LenientParser {
     if let allUnrecognizedArg = argumentSet.first(where: { def in
       def.isRepeatingPositional && def.parsingStrategy == .allUnrecognized
     }),
-      case let .unary(update) = allUnrecognizedArg.update
+      case .unary(let update) = allUnrecognizedArg.update
     {
       result.capturedUnrecognizedArguments = SplitArguments(
         _elements: Array(argumentStack),
@@ -574,7 +574,7 @@ struct LenientParser {
         if capturesForPassthrough { break ArgumentLoop }
         // We'll parse positional values later.
         break
-      case let .option(parsed):
+      case .option(let parsed):
         // Look for an argument that matches this `--option` or `-o`-style
         // input. If we can't find one, just move on to the next input. We
         // defer catching leftover arguments until we've fully extracted all
@@ -595,7 +595,7 @@ struct LenientParser {
         }
 
         switch argument.update {
-        case let .nullary(update):
+        case .nullary(let update):
           // We don’t expect a value for this option.
           guard parsed.value == nil else {
             throw ParserError.unexpectedValueForOption(
@@ -603,7 +603,7 @@ struct LenientParser {
           }
           _ = try update([origin], parsed.name, &result)
           usedOrigins.insert(origin)
-        case let .unary(update):
+        case .unary(let update):
           try parseValue(
             argument, parsed, origin, update, &result, &usedOrigins)
         }

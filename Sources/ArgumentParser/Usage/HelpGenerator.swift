@@ -32,14 +32,14 @@ internal struct HelpGenerator {
 
         var wrappedDiscussion = ""
 
-        if case let .staticText(discussionText) = discussion {
+        if case .staticText(let discussionText) = discussion {
           wrappedDiscussion =
             discussionText.isEmpty
             ? ""
             : discussionText.wrapped(
               to: screenWidth, wrappingIndent: HelpGenerator.helpIndent * 4)
               + "\n"
-        } else if case let .enumerated(preamble, options) = discussion {
+        } else if case .enumerated(let preamble, let options) = discussion {
           var formattedHelp: String = ""
           let discussionIndentFactor = 4
 

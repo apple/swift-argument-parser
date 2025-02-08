@@ -31,11 +31,13 @@ struct ArgumentSynopsis: MDocComponent {
     case .positional:
       return argument.manualPageDescription
     case .option:
+      // swift-format-ignore: NeverForceUnwrap
       // preferredName cannot be nil
       let name = argument.preferredName!
       return MDocMacro.CommandOption(options: [name.manualPage])
         .withUnsafeChildren(nodes: [argument.manualPageValueName])
     case .flag:
+      // swift-format-ignore: NeverForceUnwrap
       // preferredName cannot be nil
       let name = argument.preferredName!
       return MDocMacro.CommandOption(options: [name.manualPage])

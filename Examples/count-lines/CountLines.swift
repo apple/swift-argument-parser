@@ -58,15 +58,14 @@ extension CountLines {
   }
 
   mutating func run() async throws {
-    let countAllLines = prefix == nil
-    let lineCount = try await fileHandle.bytes.lines.reduce(0) { count, line in
-      if countAllLines || line.starts(with: prefix!) {
-        return count + 1
+    var lineCount = 0
+    for try await line in try fileHandle.bytes.lines {
+      if let prefix, line.starts(with: prefix) {
+        lineCount += 1
       } else {
-        return count
+        lineCount += 1
       }
     }
-
     printCount(lineCount)
   }
 }

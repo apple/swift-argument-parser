@@ -20,6 +20,8 @@ struct DocumentDate: MDocComponent {
 
   init(date: Date) {
     let calendar = Calendar(identifier: .iso8601)
+    // swift-format-ignore: NeverForceUnwrap
+    // Statically known valid key
     let timeZone = TimeZone(identifier: "UTC")!
     let formatter = DateFormatter()
     formatter.calendar = calendar
@@ -27,8 +29,9 @@ struct DocumentDate: MDocComponent {
     formatter.dateFormat = "MMMM"
     self.month = formatter.string(from: date)
     let components = calendar.dateComponents(in: timeZone, from: date)
-    self.day = components.day!
-    self.year = components.year!
+    // FIXME: emit a diagnostic if this fails.
+    self.day = components.day ?? 1
+    self.year = components.year ?? 1970
   }
 
   var body: MDocComponent {

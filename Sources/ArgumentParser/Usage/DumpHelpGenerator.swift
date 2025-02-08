@@ -204,11 +204,11 @@ extension ArgumentInfoV0.KindV0 {
 extension ArgumentInfoV0.NameInfoV0 {
   fileprivate init(name: Name) {
     switch name {
-    case let .long(n):
+    case .long(let n):
       self.init(kind: .long, name: n)
-    case let .short(n, _):
+    case .short(let n, _):
       self.init(kind: .short, name: String(n))
-    case let .longWithSingleDash(n):
+    case .longWithSingleDash(let n):
       self.init(kind: .longWithSingleDash, name: n)
     }
   }

@@ -369,7 +369,7 @@ extension ErrorMessageGenerator {
         return nil
       }
       var argument = "\'\(arguments[split.inputIndex.rawValue])\'"
-      if case let .sub(offsetIndex) = split.subIndex {
+      if case .sub(let offsetIndex) = split.subIndex {
         let stringIndex = argument.index(
           argument.startIndex, offsetBy: offsetIndex + 2)
         argument = "\'\(argument[stringIndex])\' in \(argument)"
@@ -416,9 +416,9 @@ extension ErrorMessageGenerator {
     let valueName = arguments(for: key).first?.valueName
 
     switch (name, valueName) {
-    case let (n?, v?):
+    case (let n?, let v?):
       return "\(n.synopsisString) <\(v)>  \(abstract)"
-    case let (_, v?):
+    case (_, let v?):
       return "<\(v)>  \(abstract)"
     case (_, _):
       return ""
@@ -467,12 +467,12 @@ extension ErrorMessageGenerator {
     }()
 
     switch (name, valueName) {
-    case let (n?, v?):
+    case (let n?, let v?):
       return
         "The value '\(value)' is invalid for '\(n.synopsisString) <\(v)>'\(customErrorMessage)"
-    case let (_, v?):
+    case (_, let v?):
       return "The value '\(value)' is invalid for '<\(v)>'\(customErrorMessage)"
-    case let (n?, _):
+    case (let n?, _):
       return
         "The value '\(value)' is invalid for '\(n.synopsisString)'\(customErrorMessage)"
     case (nil, nil):
