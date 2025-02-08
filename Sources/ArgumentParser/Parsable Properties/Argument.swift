@@ -56,9 +56,11 @@ public struct Argument<Value>:
   }
 
   /// This initializer works around a quirk of property wrappers, where the
-  /// compiler will not see no-argument initializers in extensions. Explicitly
-  /// marking this initializer unavailable means that when `Value` conforms to
-  /// `ExpressibleByArgument`, that overload will be selected instead.
+  /// compiler will not see no-argument initializers in extensions.
+  ///
+  /// Explicitly marking this initializer unavailable means that when `Value`
+  /// conforms to `ExpressibleByArgument`, that overload will be selected
+  /// instead.
   ///
   /// ```swift
   /// @Argument() var foo: String // Syntax without this initializer
@@ -109,7 +111,7 @@ public struct ArgumentArrayParsingStrategy: Hashable {
   internal var base: ArgumentDefinition.ParsingStrategy
 
   /// Parse only unprefixed values from the command-line input, ignoring
-  /// any inputs that have a dash prefix. This is the default strategy.
+  /// any inputs that have a dash prefix; this is the default strategy.
   ///
   /// `remaining` is the default parsing strategy for argument arrays.
   ///
@@ -192,6 +194,8 @@ public struct ArgumentArrayParsingStrategy: Hashable {
     self.init(base: .allUnrecognized)
   }
 
+  // swift-format-ignore: BeginDocumentationCommentWithOneLineSummary
+  // https://github.com/swiftlang/swift-format/issues/924
   /// Before parsing arguments, capture all inputs that follow the `--`
   /// terminator in this argument array.
   ///
@@ -238,6 +242,8 @@ public struct ArgumentArrayParsingStrategy: Hashable {
     self.init(base: .postTerminator)
   }
 
+  // swift-format-ignore: BeginDocumentationCommentWithOneLineSummary
+  // https://github.com/swiftlang/swift-format/issues/924
   /// Parse all remaining inputs after parsing any known options or flags,
   /// including dash-prefixed inputs and the `--` terminator.
   ///

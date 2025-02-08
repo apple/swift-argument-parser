@@ -10,9 +10,11 @@
 //===----------------------------------------------------------------------===//
 
 /// Represents the path to a parsed field, annotated with ``Flag``, ``Option``
-/// or ``Argument``. Fields that are directly declared on a ``ParsableComand``
-/// have a path of length 1, while fields that are declared indirectly (and
-/// included via an option group) have longer paths.
+/// or ``Argument``.
+///
+/// Fields that are directly declared on a ``ParsableComand`` have a path of
+/// length 1, while fields that are declared indirectly (and included via an
+/// option group) have longer paths.
 struct InputKey: Hashable {
   /// The name of the input key.
   var name: String

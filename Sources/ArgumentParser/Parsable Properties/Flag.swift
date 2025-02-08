@@ -81,10 +81,11 @@ public struct Flag<Value>: Decodable, ParsedWrapper {
   }
 
   /// This initializer works around a quirk of property wrappers, where the
-  /// compiler will not see no-argument initializers in extensions. Explicitly
-  /// marking this initializer unavailable means that when `Value` is a type
-  /// supported by `Flag` like `Bool` or `EnumerableFlag`, the appropriate
-  /// overload will be selected instead.
+  /// compiler will not see no-argument initializers in extensions.
+  ///
+  /// Explicitly marking this initializer unavailable means that when `Value`
+  /// is a type supported by `Flag` like `Bool` or `EnumerableFlag`, the
+  /// appropriate overload will be selected instead.
   ///
   /// ```swift
   /// @Flag() var flag: Bool  // Syntax without this initializer
@@ -151,6 +152,8 @@ public struct FlagInversion: Hashable {
     self.init(base: .prefixedNo)
   }
 
+  // swift-format-ignore: BeginDocumentationCommentWithOneLineSummary
+  // https://github.com/swiftlang/swift-format/issues/924
   /// Uses matching flags with `enable-` and `disable-` prefixes.
   ///
   /// For example, the `extraOutput` property in this declaration is set to

@@ -12,7 +12,7 @@
 import ArgumentParser
 
 extension Package {
-  /// Generates an Xcode project
+  /// Generates an Xcode project.
   struct GenerateXcodeProject: ParsableCommand {
     static let configuration =
       CommandConfiguration(commandName: "generate-xcodeproj")

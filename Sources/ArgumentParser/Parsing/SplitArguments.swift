@@ -259,8 +259,10 @@ extension SplitArguments {
     elements.isEmpty
   }
 
-  /// `false` if the arguments are empty, or if the only remaining argument is
-  /// the `--` terminator.
+  // swift-format-ignore: BeginDocumentationCommentWithOneLineSummary
+  // https://github.com/swiftlang/swift-format/issues/924
+  /// Returns `false` if the arguments are empty, or if the only remaining
+  /// argument is the `--` terminator.
   var containsNonTerminatorArguments: Bool {
     if elements.isEmpty { return false }
     if elements.count > 1 { return true }

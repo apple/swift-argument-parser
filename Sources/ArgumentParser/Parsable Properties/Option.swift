@@ -61,9 +61,11 @@ public struct Option<Value>: Decodable, ParsedWrapper {
   }
 
   /// This initializer works around a quirk of property wrappers, where the
-  /// compiler will not see no-argument initializers in extensions. Explicitly
-  /// marking this initializer unavailable means that when `Value` conforms to
-  /// `ExpressibleByArgument`, that overload will be selected instead.
+  /// compiler will not see no-argument initializers in extensions.
+  ///
+  /// Explicitly marking this initializer unavailable means that when `Value`
+  /// conforms to `ExpressibleByArgument`, that overload will be selected
+  /// instead.
   ///
   /// ```swift
   /// @Option() var foo: String // Syntax without this initializer
@@ -114,7 +116,7 @@ extension Option: DecodableParsedWrapper where Value: Decodable {}
 public struct SingleValueParsingStrategy: Hashable {
   internal var base: ArgumentDefinition.ParsingStrategy
 
-  /// Parse the input after the option. Expect it to be a value.
+  /// Parse the input after the option and expect it to be a value.
   ///
   /// For inputs such as `--foo foo`, this would parse `foo` as the
   /// value. However, the input `--foo --bar foo bar` would

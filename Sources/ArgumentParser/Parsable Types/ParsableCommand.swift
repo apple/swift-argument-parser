@@ -199,8 +199,9 @@ extension ParsableCommand {
   }
 
   /// `true` if this command's default subcommand contains any array arguments
-  /// that are declared with `.unconditionalRemaining`. This is `false` if
-  /// there's no default subcommand.
+  /// that are declared with `.unconditionalRemaining`.
+  ///
+  /// This is `false` if there's no default subcommand.
   internal static var defaultIncludesPassthroughArguments: Bool {
     configuration.defaultSubcommand?.includesPassthroughArguments == true
   }

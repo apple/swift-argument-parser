@@ -56,22 +56,31 @@ public struct CompletionShell: RawRepresentable, Hashable, CaseIterable {
 
   static let _requesting = Mutex<CompletionShell?>(nil)
 
-  /// While generating a shell completion script or while a Swift custom completion
-  /// function is executing to offer completions for a word from a command line (e.g.,
-  /// while `customCompletion` from `@Option(completion: .custom(customCompletion))`
-  /// executes), an instance representing the shell for which completions will
-  /// be or are being requested, respectively. Otherwise `nil`.
+  // swift-format-ignore: BeginDocumentationCommentWithOneLineSummary
+  // https://github.com/swiftlang/swift-format/issues/924
+  /// While generating a shell completion script or while a Swift custom
+  /// completion function is executing to offer completions for a word from a
+  /// command line (e.g., while `customCompletion` from
+  /// `@Option(completion: .custom(customCompletion))` executes), an instance
+  /// representing the shell for which completions will be or are being
+  /// requested, respectively.
+  ///
+  /// Otherwise `nil`.
   public static var requesting: CompletionShell? {
     Self._requesting.withLock { $0 }
   }
 
   static let _requestingVersion = Mutex<String?>(nil)
 
+  // swift-format-ignore: BeginDocumentationCommentWithOneLineSummary
+  // https://github.com/swiftlang/swift-format/issues/924
   /// While a Swift custom completion function is executing to offer completions
   /// for a word from a command line (e.g., while `customCompletion` from
   /// `@Option(completion: .custom(customCompletion))` executes), a `String`
   /// representing the version of the shell for which completions are being
-  /// requested. Otherwise `nil`.
+  /// requested.
+  ///
+  /// Otherwise `nil`.
   public static var requestingVersion: String? {
     Self._requestingVersion.withLock { $0 }
   }

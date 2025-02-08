@@ -12,7 +12,7 @@
 import ArgumentParser
 
 extension Package {
-  /// Manipulate configuration of the package
+  /// Manipulate configuration of the package.
   struct Config: ParsableCommand {}
 }
 
@@ -20,7 +20,7 @@ extension Package.Config {
   public static let configuration = CommandConfiguration(
     subcommands: [GetMirror.self, SetMirror.self, UnsetMirror.self])
 
-  /// Print mirror configuration for the given package dependency
+  /// Print mirror configuration for the given package dependency.
   struct GetMirror: ParsableCommand {
     @OptionGroup()
     var options: Options
@@ -30,7 +30,7 @@ extension Package.Config {
     var packageURL: String
   }
 
-  /// Set a mirror for a dependency
+  /// Set a mirror for a dependency.
   struct SetMirror: ParsableCommand {
     @OptionGroup()
     var options: Options
@@ -43,7 +43,7 @@ extension Package.Config {
     var packageURL: String
   }
 
-  /// Remove an existing mirror
+  /// Remove an existing mirror.
   struct UnsetMirror: ParsableCommand {
     @OptionGroup()
     var options: Options

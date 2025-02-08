@@ -416,6 +416,8 @@ extension CommandConfiguration {
 }
 
 extension NameSpecification {
+  // swift-format-ignore: BeginDocumentationCommentWithOneLineSummary
+  // https://github.com/swiftlang/swift-format/issues/924
   /// Generates a list of `Name`s for the help command at any visibility level.
   ///
   /// If the `default` visibility is used, the help names are returned
@@ -443,9 +445,13 @@ extension NameSpecification {
 }
 
 extension BidirectionalCollection where Element == ParsableCommand.Type {
-  /// Returns a list of help names at the request visibility level for the top
-  /// most ParsableCommand in the command stack with custom helpNames. If the
-  /// command stack contains no custom help names the default help names.
+  // swift-format-ignore: BeginDocumentationCommentWithOneLineSummary
+  // https://github.com/swiftlang/swift-format/issues/924
+  /// Returns a list of help names at the request visibility level for the top-
+  /// most ParsableCommand in the command stack with custom helpNames
+  ///
+  ///  If the command stack contains no custom help names the default help
+  ///  names.
   func getHelpNames(visibility: ArgumentVisibility) -> [Name] {
     self.lazy.reversed().compactMap { $0.configuration.helpNames }
       .first

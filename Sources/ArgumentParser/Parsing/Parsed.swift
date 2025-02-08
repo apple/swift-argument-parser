@@ -41,9 +41,10 @@ internal protocol ParsedWrapper: Decodable, ArgumentSetProvider {
   init(_parsedValue: Parsed<Value>)
 }
 
-/// A `Parsed`-wrapper whose value type knows how to decode itself. Types that
-/// conform to this protocol can initialize their values directly from a
-/// `Decoder`.
+/// A `Parsed`-wrapper whose value type knows how to decode itself.
+///
+/// Types that conform to this protocol can initialize their values directly
+/// from a `Decoder`.
 internal protocol DecodableParsedWrapper: ParsedWrapper
 where Value: Decodable {
   init(_parsedValue: Parsed<Value>)

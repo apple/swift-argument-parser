@@ -65,6 +65,8 @@ extension ArgumentSet {
   }
 }
 
+// swift-format-ignore: BeginDocumentationCommentWithOneLineSummary
+// https://github.com/swiftlang/swift-format/issues/925
 /// For positional arguments to be valid, there must be at most one
 /// positional array argument, and it must be the last positional argument
 /// in the argument list. Any other configuration leads to ambiguity in
@@ -129,7 +131,7 @@ struct PositionalArgumentsValidator: ParsableArgumentsValidator {
   }
 }
 
-/// Ensure that all arguments have corresponding coding keys
+/// Ensure that all arguments have corresponding coding keys.
 struct ParsableArgumentsCodingKeyValidator: ParsableArgumentsValidator {
 
   private struct Validator: Decoder {

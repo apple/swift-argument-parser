@@ -1131,6 +1131,8 @@ public enum MDocMacro {
     }
   }
 
+  // swift-format-ignore: BeginDocumentationCommentWithOneLineSummary
+  // https://github.com/swiftlang/swift-format/issues/924
   /// Open a scope enclosed by `"typewriter"` double-quotes.
   ///
   /// Closed by a ``EndTypewriterDoubleQuotes`` macro.
