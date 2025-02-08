@@ -449,6 +449,7 @@ struct LenientParser {
         where: \.isTerminator)
     {
       for input in unusedInput.elements[(terminatorIndex + 1)...] {
+        // swift-format-ignore: NeverForceUnwrap
         // Everything post-terminator is a value, force-unwrapping here is safe:
         let value = input.value.valueString!
         try update([.argumentIndex(input.index)], nil, value, &result)
@@ -498,6 +499,8 @@ struct LenientParser {
           break ArgumentLoop
         }
         let origin: InputOrigin.Element = .argumentIndex(arg.index)
+        // swift-format-ignore: NeverForceUnwrap
+        // FIXME: I dont actually know why this is safe
         let value = unusedInput.originalInput(at: origin)!
         try update([origin], nil, value, &result)
         usedOrigins.insert(origin)
@@ -515,6 +518,8 @@ struct LenientParser {
         originalInput: [])
       while let arg = argumentStack.popFirst() {
         let origin: InputOrigin.Element = .argumentIndex(arg.index)
+        // swift-format-ignore: NeverForceUnwrap
+        // FIXME: I dont actually know why this is safe
         let value = unusedInput.originalInput(at: origin)!
         try update([origin], nil, value, &result)
       }
@@ -597,9 +602,9 @@ struct LenientParser {
         switch argument.update {
         case .nullary(let update):
           // We don’t expect a value for this option.
-          guard parsed.value == nil else {
+          if let value = parsed.value {
             throw ParserError.unexpectedValueForOption(
-              origin, parsed.name, parsed.value!)
+              origin, parsed.name, value)
           }
           _ = try update([origin], parsed.name, &result)
           usedOrigins.insert(origin)

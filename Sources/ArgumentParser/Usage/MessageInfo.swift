@@ -134,6 +134,8 @@ enum MessageInfo {
       case let exitCode as ExitCode:
         self = .other(message: "", exitCode: exitCode)
       case let error as LocalizedError where error.errorDescription != nil:
+        // swift-format-ignore: NeverForceUnwrap
+        // No way to unwrap bind description in pattern
         self = .other(message: error.errorDescription!, exitCode: .failure)
       default:
         if Swift.type(of: error) is NSError.Type {
@@ -149,6 +151,10 @@ enum MessageInfo {
           + HelpGenerator(commandStack: [type.asCommand], visibility: .default)
           .rendered(screenWidth: columns)
       }()
+      // swift-format-ignore: NeverForceUnwrap
+      // FIXME: refactor to avoid force unwrap
+      // this requires a lot of non-local reasoning to understand why the force
+      // unwrap is safe
       let argumentSet = ArgumentSet(
         commandStack.last!, visibility: .default, parent: nil)
       let message = argumentSet.errorDescription(error: parserError) ?? ""

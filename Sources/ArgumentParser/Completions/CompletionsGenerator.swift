@@ -24,13 +24,25 @@ public struct CompletionShell: RawRepresentable, Hashable, CaseIterable {
   }
 
   /// An instance representing `zsh`.
-  public static var zsh: CompletionShell { CompletionShell(rawValue: "zsh")! }
+  public static var zsh: CompletionShell {
+    // swift-format-ignore: NeverForceUnwrap
+    // Statically known valid raw value.
+    CompletionShell(rawValue: "zsh")!
+  }
 
   /// An instance representing `bash`.
-  public static var bash: CompletionShell { CompletionShell(rawValue: "bash")! }
+  public static var bash: CompletionShell {
+    // swift-format-ignore: NeverForceUnwrap
+    // Statically known valid raw value.
+    CompletionShell(rawValue: "bash")!
+  }
 
   /// An instance representing `fish`.
-  public static var fish: CompletionShell { CompletionShell(rawValue: "fish")! }
+  public static var fish: CompletionShell {
+    // swift-format-ignore: NeverForceUnwrap
+    // Statically known valid raw value.
+    CompletionShell(rawValue: "fish")!
+  }
 
   /// Returns an instance representing the current shell, if recognized.
   public static func autodetected() -> CompletionShell? {

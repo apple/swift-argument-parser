@@ -18,7 +18,7 @@ extension FishCompletionsGenerator {
   private static func generateCompletions(_ commands: [ParsableCommand.Type])
     -> [String]
   {
-    let type = commands.last!
+    guard let type = commands.last else { return [] }
     let isRootCommand = commands.count == 1
     let programName = commands[0]._commandName
     var subcommands = type.configuration.subcommands
@@ -97,7 +97,7 @@ extension ArgumentDefinition {
     case .shellCommand(let shellCommand):
       results += ["-r -f -a '(\(shellCommand))'"]
     case .custom:
-      let commandName = commands.first!._commandName
+      guard let commandName = commands.first?._commandName else { return nil }
       results += [
         "-r -f -a '(command \(commandName) \(customCompletionCall(commands)) (commandline -opc)[1..-1])'"
       ]

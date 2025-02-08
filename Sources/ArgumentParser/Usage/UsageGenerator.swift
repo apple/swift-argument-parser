@@ -353,6 +353,8 @@ extension ErrorMessageGenerator {
     case 0:
       return nil
     case 1:
+      // swift-format-ignore: NeverForceUnwrap
+      // We know that `values` is not empty.
       return "Unexpected argument '\(values.first!.1)'"
     default:
       let v = values.map { $0.1 }.joined(separator: "', '")
@@ -400,6 +402,8 @@ extension ErrorMessageGenerator {
       return
         "No value set for non-argument var \(key). Replace with a static variable, or let constant."
     case 1:
+      // swift-format-ignore: NeverForceUnwrap
+      // We know that `possibilities` is not empty.
       return "Missing expected argument '\(possibilities.first!)'"
     default:
       let p = possibilities.joined(separator: "', '")
@@ -458,7 +462,9 @@ extension ErrorMessageGenerator {
     let customErrorMessage: String = {
       switch error {
       case let err as LocalizedError where err.errorDescription != nil:
-        return ": " + err.errorDescription!  // !!! Checked above that this will not be nil
+        // swift-format-ignore: NeverForceUnwrap
+        // Checked above that this will not be nil
+        return ": " + err.errorDescription!
       case let err?:
         return ": " + String(describing: err)
       default:
@@ -493,6 +499,8 @@ extension ArgumentDefinition {
       if quotedValues.count <= 2 {
         validList = quotedValues.joined(separator: " and ")
       } else {
+        // swift-format-ignore: NeverForceUnwrap
+        // We know that `quotedValues` is not empty.
         validList =
           quotedValues.dropLast().joined(separator: ", ")
           + " or \(quotedValues.last!)"

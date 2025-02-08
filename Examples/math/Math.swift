@@ -144,7 +144,7 @@ extension Math.Statistics {
       }
 
       let grouped = Dictionary(grouping: values, by: { $0 })
-      let highestFrequency = grouped.lazy.map { $0.value.count }.max()!
+      let highestFrequency = grouped.lazy.map { $0.value.count }.max() ?? 0
       return grouped.filter { _, v in v.count == highestFrequency }
         .map { k, _ in k }
     }

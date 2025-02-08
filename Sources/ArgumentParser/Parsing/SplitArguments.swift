@@ -321,6 +321,8 @@ extension SplitArguments {
     // Get the value from the original string, following the dash and short
     // option name. For example, for `-Ddebug`, drop the `-D`, leaving `debug`
     // as the value.
+    // swift-format-ignore: NeverForceUnwrap
+    // I don't know why this is safe
     let value = String(originalInput(at: completeOrigin)!.dropFirst(2))
 
     return (completeOrigin, value)
@@ -357,14 +359,16 @@ extension SplitArguments {
   /// Pops the next `.value` after the given index.
   ///
   /// This is used to get the next value in `-f -b name` where `name` is the value of `-f`.
-  mutating func popNextValue(after origin: InputOrigin.Element) -> (
-    InputOrigin.Element, String
-  )? {
+  mutating func popNextValue(
+    after origin: InputOrigin.Element
+  ) -> (InputOrigin.Element, String)? {
     guard let start = position(after: origin) else { return nil }
     guard let resultIndex = elements[start...].firstIndex(where: { $0.isValue })
     else { return nil }
 
     defer { remove(at: resultIndex) }
+    // swift-format-ignore: NeverForceUnwrap
+    // This is safe because we know `resultIndex` is refers to a value
     return (
       .argumentIndex(elements[resultIndex].index),
       elements[resultIndex].value.valueString!
@@ -404,6 +408,8 @@ extension SplitArguments {
   mutating func popNextElementIfValue() -> (InputOrigin.Element, String)? {
     guard let element = elements.first, element.isValue else { return nil }
     removeFirst()
+    // swift-format-ignore: NeverForceUnwrap
+    // This is safe because we know `element` is a value.
     return (.argumentIndex(element.index), element.value.valueString!)
   }
 
@@ -416,6 +422,8 @@ extension SplitArguments {
     else { return nil }
     let e = elements[idx]
     remove(at: idx)
+    // swift-format-ignore: NeverForceUnwrap
+    // This is safe because we know `element` is a value.
     return (e.index, e.value.valueString!)
   }
 
@@ -424,6 +432,8 @@ extension SplitArguments {
     guard let idx = elements.firstIndex(where: { $0.isValue })
     else { return nil }
     let e = elements[idx]
+    // swift-format-ignore: NeverForceUnwrap
+    // This is safe because we know `element` is a value.
     return (e.index, e.value.valueString!)
   }
 
@@ -589,6 +599,8 @@ func parseIndividualArg(_ arg: String, at position: Int) throws
         return [.option(parsed, index: index)]
       case 1:
         // This is a single short '-n' style argument
+        // swift-format-ignore: NeverForceUnwrap
+        // this is safe because we know `parts` is non-empty
         return [.option(.name(.short(remainder.first!)), index: index)]
       default:
         var result: [SplitArguments.Element] = [.option(parsed, index: index)]
@@ -636,7 +648,7 @@ extension SplitArguments {
 
       let parsedElements = try parseIndividualArg(arg, at: position)
       _elements.append(contentsOf: parsedElements)
-      if parsedElements.first!.isTerminator {
+      if parsedElements.first?.isTerminator ?? false {
         break
       }
     }
@@ -664,8 +676,11 @@ extension ParsedArgument {
         ///     `-c=1`      ->  `Name.short("c")`
         /// Otherwise, treat it as a long name with single dash.
         ///     `-count=1`  ->  `Name.longWithSingleDash("count")`
-        $0.count == 1
-          ? Name.short($0.first!) : Name.longWithSingleDash(String($0))
+        if let first = $0.first, $0.count == 1 {
+          return .short(first)
+        } else {
+          return .longWithSingleDash(String($0))
+        }
       })
   }
 

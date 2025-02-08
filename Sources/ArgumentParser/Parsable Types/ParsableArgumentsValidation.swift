@@ -76,15 +76,19 @@ struct PositionalArgumentsValidator: ParsableArgumentsValidator {
     let positionalArgumentFollowingRepeated: String
 
     var description: String {
-      "Can't have a positional argument `\(positionalArgumentFollowingRepeated)` following an array of positional arguments `\(repeatedPositionalArgument)`."
+      """
+      Can't have a positional argument \
+      `\(positionalArgumentFollowingRepeated)` following an array of \
+      positional arguments `\(repeatedPositionalArgument)`.
+      """
     }
 
     var kind: ValidatorErrorKind { .failure }
   }
 
-  static func validate(_ type: ParsableArguments.Type, parent: InputKey?)
-    -> ParsableArgumentsValidatorError?
-  {
+  static func validate(
+    _ type: ParsableArguments.Type, parent: InputKey?
+  ) -> ParsableArgumentsValidatorError? {
     let sets: [ArgumentSet] = Mirror(reflecting: type.init())
       .children
       .compactMap { child in
@@ -108,11 +112,15 @@ struct PositionalArgumentsValidator: ParsableArgumentsValidator {
         .first(where: { $0.firstPositionalArgument != nil })
     else { return nil }
 
+    // swift-format-ignore: NeverForceUnwrap
+    // We know these are non-nil because of the guard statements above.
     let firstRepeatedPositionalArgument: ArgumentDefinition = sets[
       repeatedPositional
     ].firstRepeatedPositionalArgument!
+    // swift-format-ignore: NeverForceUnwrap
     let positionalFollowingRepeatedArgument: ArgumentDefinition =
       positionalFollowingRepeated.firstPositionalArgument!
+    // swift-format-ignore: NeverForceUnwrap
     return Error(
       repeatedPositionalArgument: firstRepeatedPositionalArgument.help.keys
         .first!.name,

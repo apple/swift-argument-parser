@@ -33,7 +33,7 @@ struct ZshCompletionsGenerator {
   static func generateCompletionFunction(_ commands: [ParsableCommand.Type])
     -> String
   {
-    let type = commands.last!
+    guard let type = commands.last else { return "" }
     let functionName = commands.completionFunctionName()
     let isRootCommand = commands.count == 1
 
@@ -215,8 +215,9 @@ extension ArgumentDefinition {
         "{local -a list; list=(${(f)\"$(\(command))\"}); _describe '''' list}"
 
     case .custom:
+      guard let type = commands.first else { return "" }
       // Generate a call back into the command to retrieve a completions list
-      let commandName = commands.first!._commandName.zshEscapingCommandName()
+      let commandName = type._commandName.zshEscapingCommandName()
       return
         "{_custom_completion $_\(commandName)_commandname \(customCompletionCall(commands)) $words}"
     }

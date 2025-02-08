@@ -154,9 +154,8 @@ internal struct HelpGenerator {
   var sections: [Section]
 
   init(commandStack: [ParsableCommand.Type], visibility: ArgumentVisibility) {
-    guard let currentCommand = commandStack.last else {
-      fatalError()
-    }
+    guard let root = commandStack.first, let currentCommand = commandStack.last
+    else { fatalError() }
 
     let currentArgSet = ArgumentSet(
       currentCommand, visibility: visibility, parent: nil)
@@ -164,7 +163,7 @@ internal struct HelpGenerator {
 
     // Build the tool name and subcommand name from the command configuration
     var toolName = commandStack.map { $0._commandName }.joined(separator: " ")
-    if let superName = commandStack.first!.configuration._superCommandName {
+    if let superName = root.configuration._superCommandName {
       toolName = "\(superName) \(toolName)"
     }
 
@@ -285,6 +284,7 @@ internal struct HelpGenerator {
       }
     }
 
+    // swift-format-ignore: NeverForceUnwrap
     let configuration = commandStack.last!.configuration
 
     // Create section for a grouping of subcommands.
@@ -383,6 +383,8 @@ internal struct HelpGenerator {
     var helpSubcommandMessage = ""
     if includesSubcommands {
       var names = commandStack.map { $0._commandName }
+      // swift-format-ignore: NeverForceUnwrap
+      // We must have a non-empty command stack to have gotten this far.
       if let superName = commandStack.first!.configuration._superCommandName {
         names.insert(superName, at: 0)
       }
@@ -445,12 +447,12 @@ extension BidirectionalCollection where Element == ParsableCommand.Type {
   /// most ParsableCommand in the command stack with custom helpNames. If the
   /// command stack contains no custom help names the default help names.
   func getHelpNames(visibility: ArgumentVisibility) -> [Name] {
-    self.last(where: { $0.configuration.helpNames != nil })
-      .map {
-        $0.configuration.helpNames!.generateHelpNames(visibility: visibility)
-      }
-      ?? CommandConfiguration.defaultHelpNames.generateHelpNames(
-        visibility: visibility)
+    self.lazy.reversed().compactMap { $0.configuration.helpNames }
+      .first
+      .map { $0.generateHelpNames(visibility: visibility) }
+      ?? CommandConfiguration
+      .defaultHelpNames
+      .generateHelpNames(visibility: visibility)
   }
 
   func getPrimaryHelpName() -> Name? {

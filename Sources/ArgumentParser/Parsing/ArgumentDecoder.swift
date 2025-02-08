@@ -107,12 +107,13 @@ where K: CodingKey {
 
   func decode<T>(_ type: T.Type, forKey key: K) throws -> T where T: Decodable {
     let parsedElement = element(forKey: key)
-    if parsedElement?.inputOrigin.isDefaultValue ?? false,
-      let rawValue = parsedElement?.value
+    if let parsedElement = parsedElement,
+      parsedElement.inputOrigin.isDefaultValue,
+      let rawValue = parsedElement.value
     {
       guard let value = rawValue as? T else {
         throw InternalParseError.wrongType(
-          valueRepresentation: "\(rawValue)", forKey: parsedElement!.key)
+          valueRepresentation: "\(rawValue)", forKey: parsedElement.key)
       }
       return value
     }
@@ -120,7 +121,7 @@ where K: CodingKey {
       userInfo: decoder.userInfo, underlying: decoder,
       codingPath: codingPath + [key],
       key: InputKey(codingKey: key, path: codingPath),
-      parsedElement: element(forKey: key))
+      parsedElement: parsedElement)
     return try type.init(from: subDecoder)
   }
 
@@ -186,7 +187,9 @@ struct SingleValueDecoder: Decoder {
   func unkeyedContainer() throws -> UnkeyedDecodingContainer {
     guard let e = parsedElement else {
       var errorPath = codingPath
-      let last = errorPath.popLast()!
+      guard let last = errorPath.popLast() else {
+        preconditionFailure("Expected non-empty coding path")
+      }
       throw ParserError.noValue(
         forKey: InputKey(codingKey: last, path: errorPath))
     }
@@ -208,6 +211,8 @@ struct SingleValueDecoder: Decoder {
         type == $0.type
       })
     else { throw ParserError.invalidState }
+    // swift-format-ignore: NeverForceUnwrap
+    // We know the type is correct because we check it above.
     return previous.value as! T
   }
 
@@ -228,7 +233,9 @@ struct SingleValueDecoder: Decoder {
     func decode<T>(_ type: T.Type) throws -> T where T: Decodable {
       guard let e = parsedElement else {
         var errorPath = codingPath
-        let last = errorPath.popLast()!
+        guard let last = errorPath.popLast() else {
+          preconditionFailure("Expected non-empty coding path")
+        }
         throw ParserError.noValue(
           forKey: InputKey(codingKey: last, path: errorPath))
       }

@@ -26,9 +26,11 @@ extension Name {
       baseName.first == "-", "Attempted to create name for unprefixed argument")
     if baseName.hasPrefix("--") {
       self = .long(String(baseName.dropFirst(2)))
-    } else if baseName.count == 2 {  // single character "-x" style
-      self = .short(baseName.last!)
-    } else {  // long name with single dash
+    } else if baseName.count == 2, let name = baseName.last {
+      // single character "-x" style
+      self = .short(name)
+    } else {
+      // long name with single dash
       self = .longWithSingleDash(String(baseName.dropFirst()))
     }
   }

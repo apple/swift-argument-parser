@@ -28,7 +28,9 @@ struct BashCompletionsGenerator {
   fileprivate static func generateCompletionFunction(
     _ commands: [ParsableCommand.Type]
   ) -> String {
-    let type = commands.last!
+    guard let type = commands.last else {
+      fatalError()
+    }
     let functionName = commands.completionFunctionName().makeSafeFunctionName
 
     // The root command gets a different treatment for the parsing index.
@@ -143,7 +145,8 @@ struct BashCompletionsGenerator {
   fileprivate static func generateArgumentCompletions(
     _ commands: [ParsableCommand.Type]
   ) -> [String] {
-    ArgumentSet(commands.last!, visibility: .default, parent: nil)
+    guard let type = commands.last else { return [] }
+    return ArgumentSet(type, visibility: .default, parent: nil)
       .compactMap { arg -> String? in
         guard arg.isPositional else { return nil }
 
@@ -166,7 +169,8 @@ struct BashCompletionsGenerator {
   fileprivate static func generateOptionHandlers(
     _ commands: [ParsableCommand.Type]
   ) -> String {
-    ArgumentSet(commands.last!, visibility: .default, parent: nil)
+    guard let type = commands.last else { return "" }
+    return ArgumentSet(type, visibility: .default, parent: nil)
       .compactMap { arg -> String? in
         let words = arg.bashCompletionWords()
         if words.isEmpty { return nil }

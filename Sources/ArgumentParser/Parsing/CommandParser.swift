@@ -266,16 +266,18 @@ extension CommandParser {
   ///
   /// - Parameter arguments: The array of arguments to parse. This should not
   ///   include the command name as the first argument.
-  mutating func parse(arguments: [String]) -> Result<
-    ParsableCommand, CommandError
-  > {
+  mutating func parse(
+    arguments: [String]
+  ) -> Result<ParsableCommand, CommandError> {
     do {
       try handleCustomCompletion(arguments)
-    } catch {
+    } catch let error as ParserError {
       return .failure(
         CommandError(
           commandStack: [commandTree.element],
-          parserError: error as! ParserError))
+          parserError: error))
+    } catch {
+      fatalError("Internal error: \(error)")
     }
 
     var split: SplitArguments
@@ -393,7 +395,8 @@ extension CommandParser {
 
     // Generate the argument set and parse the argument to find in the set
     let argset = ArgumentSet(current.element, visibility: .private, parent: nil)
-    let parsedArgument = try! parseIndividualArg(argToMatch, at: 0).first!
+    guard let parsedArgument = try parseIndividualArg(argToMatch, at: 0).first
+    else { throw ParserError.invalidState }
 
     // Look up the specified argument and retrieve its custom completion function
     let completionFunction: ([String]) -> [String]
