@@ -83,8 +83,8 @@ extension ArgumentDefinition {
         .joined(separator: ", ")
 
       switch update {
-      case .unary:
-        return "\(joinedSynopsisString) <\(valueName)>"
+      case .unary, .tuplary:
+        return "\(joinedSynopsisString) \(formattedValueName)"
       case .nullary:
         return joinedSynopsisString
       }
@@ -103,13 +103,13 @@ extension ArgumentDefinition {
       }
 
       switch update {
-      case .unary:
-        return "\(name.synopsisString) <\(valueName)>"
+      case .unary, .tuplary:
+        return "\(name.synopsisString) \(formattedValueName)"
       case .nullary:
         return name.synopsisString
       }
     case .positional:
-      return "<\(valueName)>"
+      return formattedValueName
     case .default:
       return ""
     }
@@ -187,6 +187,8 @@ extension ErrorMessageGenerator {
       return unknownOptionMessage(origin: o, name: n)
     case .missingValueForOption(let o, let n):
       return missingValueForOptionMessage(origin: o, name: n)
+    case .insufficientValuesForOption(let o, let n, let e, let g):
+      return insufficientValuesForOptionMessage(origin: o, name: n, expected: e, given: g)
     case .unexpectedValueForOption(let o, let n, let v):
       return unexpectedValueForOptionMessage(origin: o, name: n, value: v)
     case .unexpectedExtraValues(let v):
@@ -316,6 +318,26 @@ extension ErrorMessageGenerator {
     }
   }
   
+  func insufficientValuesForOptionMessage(
+    origin: InputOrigin,
+    name: Name,
+    expected: Int,
+    given: Int
+  ) -> String {
+    let valueString = (expected - given) > 1 ? "values" : "value"
+    return if given > 0 {
+      """
+      Missing \(valueString) for '\(name.synopsisString)'. \
+      Expected \(expected) values, but only received \(given).
+      """
+    } else {
+      """
+      Missing \(valueString) for '\(name.synopsisString)'.
+      Expected \(expected) values after option.
+      """
+    }
+  }
+  
   func unexpectedValueForOptionMessage(origin: InputOrigin.Element, name: Name, value: String) -> String? {
     return "The option '\(name.synopsisString)' does not take any value, but '\(value)' was specified."
   }
@@ -372,13 +394,14 @@ extension ErrorMessageGenerator {
   func unableToParseHelpMessage(origin: InputOrigin, name: Name?, value: String, key: InputKey, error: Error?) -> String {
     guard let abstract = help(for: key)?.abstract else { return "" }
     
-    let valueName = arguments(for: key).first?.valueName
+    let argument = arguments(for: key).first
+    let valueName = argument?.formattedValueName
     
     switch (name, valueName) {
     case let (n?, v?):
-      return "\(n.synopsisString) <\(v)>  \(abstract)"
+      return "\(n.synopsisString) \(v)  \(abstract)"
     case let (_, v?):
-      return "<\(v)>  \(abstract)"
+      return "\(v)  \(abstract)"
     case (_, _):
       return ""
     }

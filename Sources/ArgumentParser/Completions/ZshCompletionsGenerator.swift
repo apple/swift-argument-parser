@@ -144,7 +144,7 @@ extension ArgumentDefinition {
     
     let inputs: String
     switch update {
-    case .unary:
+    case .unary, .tuplary:
       inputs = ":\(valueName):\(zshActionString(commands))"
     case .nullary:
       inputs = ""
