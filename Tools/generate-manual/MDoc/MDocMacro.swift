@@ -250,7 +250,7 @@ public enum MDocMacro {
   /// - Note: Manual pages in sections 1, 6, and 8 may use the name of command
   ///   or feature documented in the manual page as the name.
   ///
-  /// In sections 2, 3, and 9 use the ``FunctionName`` macro instead of the
+  /// In sections 2, 3, and 9 use the `FunctionName` macro instead of the
   /// ``DocumentName`` macro to indicate the name of the document.
   ///
   /// __Example Usage__:
@@ -539,7 +539,7 @@ public enum MDocMacro {
     /// Creates a new `ListItem` macro.
     ///
     /// - Parameter title: List item title, only valid depending on the
-    ///                    ``ListStyle``.
+    ///   `ListStyle`.
     public init(title: MDocASTNode? = nil) {
       arguments = []
       arguments.append(optional: title)

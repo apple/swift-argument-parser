@@ -8,8 +8,8 @@
 - ``init(help:completion:)-4p94d``
 - ``init(help:completion:transform:)-3fjtc``
 - ``init(help:completion:transform:)-7yn32``
-- ``init(wrappedValue:help:completion:)``
-- ``init(wrappedValue:help:completion:transform:)``
+- ``init(wrappedValue:help:completion:)-9yifn``
+- ``init(wrappedValue:help:completion:transform:)-667t1``
 
 ### Array Arguments
 
