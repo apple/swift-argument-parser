@@ -30,19 +30,19 @@ public struct CompletionKind {
     /// Generate completions using the given closure.
     case custom(@Sendable ([String]) -> [String])
   }
-  
+
   internal var kind: Kind
-  
+
   /// Use the default completion kind for the value's type.
   public static var `default`: CompletionKind {
     CompletionKind(kind: .default)
   }
-  
+
   /// Use the specified list of completion strings.
   public static func list(_ words: [String]) -> CompletionKind {
     CompletionKind(kind: .list(words))
   }
-  
+
   /// Complete file names.
   public static func file(extensions: [String] = []) -> CompletionKind {
     CompletionKind(kind: .file(extensions: extensions))
@@ -52,18 +52,20 @@ public struct CompletionKind {
   public static var directory: CompletionKind {
     CompletionKind(kind: .directory)
   }
-  
+
   /// Call the given shell command to generate completions.
   public static func shellCommand(_ command: String) -> CompletionKind {
     CompletionKind(kind: .shellCommand(command))
   }
-  
+
   /// Generate completions using the given closure.
   @preconcurrency
-  public static func custom(_ completion: @Sendable @escaping ([String]) -> [String]) -> CompletionKind {
+  public static func custom(
+    _ completion: @Sendable @escaping ([String]) -> [String]
+  ) -> CompletionKind {
     CompletionKind(kind: .custom(completion))
   }
 }
 
-extension CompletionKind: Sendable { }
-extension CompletionKind.Kind: Sendable { }
+extension CompletionKind: Sendable {}
+extension CompletionKind.Kind: Sendable {}

@@ -9,16 +9,15 @@
 //
 //===----------------------------------------------------------------------===//
 
-import XCTest
-import ArgumentParserTestHelpers
 import ArgumentParser
+import ArgumentParserTestHelpers
+import XCTest
 
-final class NestedCommandEndToEndTests: XCTestCase {
-}
+final class NestedCommandEndToEndTests: XCTestCase {}
 
 // MARK: Single value String
 
-fileprivate struct Foo: ParsableCommand {
+private struct Foo: ParsableCommand {
   static let configuration =
     CommandConfiguration(subcommands: [Build.self, Package.self])
 
@@ -54,11 +53,17 @@ fileprivate struct Foo: ParsableCommand {
   }
 }
 
-fileprivate func AssertParseFooCommand<A>(_ type: A.Type, _ arguments: [String], file: StaticString = #filePath, line: UInt = #line, closure: (A) throws -> Void) where A: ParsableCommand {
-  AssertParseCommand(Foo.self, type, arguments, file: file, line: line, closure: closure)
+// swift-format-ignore: AlwaysUseLowerCamelCase
+private func AssertParseFooCommand<A>(
+  _ type: A.Type, _ arguments: [String], file: StaticString = #filePath,
+  line: UInt = #line, closure: (A) throws -> Void
+) where A: ParsableCommand {
+  AssertParseCommand(
+    Foo.self, type, arguments, file: file, line: line, closure: closure)
 }
 
-
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension NestedCommandEndToEndTests {
   func testParsing_package() throws {
     AssertParseFooCommand(Foo.Package.self, ["package"]) { package in
@@ -69,7 +74,8 @@ extension NestedCommandEndToEndTests {
       XCTAssertFalse(package.force)
     }
 
-    AssertParseFooCommand(Foo.Package.Clean.self, ["package", "clean"]) { clean in
+    AssertParseFooCommand(Foo.Package.Clean.self, ["package", "clean"]) {
+      clean in
       XCTAssertEqual(clean.foo.verbose, false)
       XCTAssertEqual(clean.package.force, false)
     }
@@ -79,102 +85,126 @@ extension NestedCommandEndToEndTests {
       XCTAssertEqual(clean.package.force, false)
     }
 
-    AssertParseFooCommand(Foo.Package.Clean.self, ["package", "-f", "clean"]) { clean in
+    AssertParseFooCommand(Foo.Package.Clean.self, ["package", "-f", "clean"]) {
+      clean in
       XCTAssertEqual(clean.foo.verbose, false)
       XCTAssertEqual(clean.package.force, true)
     }
 
-    AssertParseFooCommand(Foo.Package.Clean.self, ["pkg", "-f", "clean"]) { clean in
+    AssertParseFooCommand(Foo.Package.Clean.self, ["pkg", "-f", "clean"]) {
+      clean in
       XCTAssertEqual(clean.foo.verbose, false)
       XCTAssertEqual(clean.package.force, true)
     }
 
-    AssertParseFooCommand(Foo.Package.Config.self, ["package", "-v", "config"]) { config in
+    AssertParseFooCommand(Foo.Package.Config.self, ["package", "-v", "config"])
+    { config in
       XCTAssertEqual(config.foo.verbose, true)
       XCTAssertEqual(config.package.force, false)
     }
 
-    AssertParseFooCommand(Foo.Package.Config.self, ["pkg", "-v", "cfg"]) { config in
+    AssertParseFooCommand(Foo.Package.Config.self, ["pkg", "-v", "cfg"]) {
+      config in
       XCTAssertEqual(config.foo.verbose, true)
       XCTAssertEqual(config.package.force, false)
     }
 
-    AssertParseFooCommand(Foo.Package.Config.self, ["package", "config", "-v"]) { config in
+    AssertParseFooCommand(Foo.Package.Config.self, ["package", "config", "-v"])
+    { config in
       XCTAssertEqual(config.foo.verbose, true)
       XCTAssertEqual(config.package.force, false)
     }
 
-    AssertParseFooCommand(Foo.Package.Config.self, ["pkg", "cfg", "-v"]) { config in
+    AssertParseFooCommand(Foo.Package.Config.self, ["pkg", "cfg", "-v"]) {
+      config in
       XCTAssertEqual(config.foo.verbose, true)
       XCTAssertEqual(config.package.force, false)
     }
 
-    AssertParseFooCommand(Foo.Package.Config.self, ["-v", "package", "config"]) { config in
+    AssertParseFooCommand(Foo.Package.Config.self, ["-v", "package", "config"])
+    { config in
       XCTAssertEqual(config.foo.verbose, true)
       XCTAssertEqual(config.package.force, false)
     }
 
-    AssertParseFooCommand(Foo.Package.Config.self, ["-v", "pkg", "cfg"]) { config in
+    AssertParseFooCommand(Foo.Package.Config.self, ["-v", "pkg", "cfg"]) {
+      config in
       XCTAssertEqual(config.foo.verbose, true)
       XCTAssertEqual(config.package.force, false)
     }
 
-    AssertParseFooCommand(Foo.Package.Config.self, ["package", "-f", "config"]) { config in
+    AssertParseFooCommand(Foo.Package.Config.self, ["package", "-f", "config"])
+    { config in
       XCTAssertEqual(config.foo.verbose, false)
       XCTAssertEqual(config.package.force, true)
     }
 
-    AssertParseFooCommand(Foo.Package.Config.self, ["pkg", "-f", "cfg"]) { config in
+    AssertParseFooCommand(Foo.Package.Config.self, ["pkg", "-f", "cfg"]) {
+      config in
       XCTAssertEqual(config.foo.verbose, false)
       XCTAssertEqual(config.package.force, true)
     }
 
-    AssertParseFooCommand(Foo.Package.Config.self, ["package", "config", "-f"]) { config in
+    AssertParseFooCommand(Foo.Package.Config.self, ["package", "config", "-f"])
+    { config in
       XCTAssertEqual(config.foo.verbose, false)
       XCTAssertEqual(config.package.force, true)
     }
 
-    AssertParseFooCommand(Foo.Package.Config.self, ["pkg", "cfg", "-f"]) { config in
+    AssertParseFooCommand(Foo.Package.Config.self, ["pkg", "cfg", "-f"]) {
+      config in
       XCTAssertEqual(config.foo.verbose, false)
       XCTAssertEqual(config.package.force, true)
     }
 
-    AssertParseFooCommand(Foo.Package.Config.self, ["package", "-v", "config", "-f"]) { config in
+    AssertParseFooCommand(
+      Foo.Package.Config.self, ["package", "-v", "config", "-f"]
+    ) { config in
       XCTAssertEqual(config.foo.verbose, true)
       XCTAssertEqual(config.package.force, true)
     }
 
-    AssertParseFooCommand(Foo.Package.Config.self, ["pkg", "-v", "cfg", "-f"]) { config in
+    AssertParseFooCommand(Foo.Package.Config.self, ["pkg", "-v", "cfg", "-f"]) {
+      config in
       XCTAssertEqual(config.foo.verbose, true)
       XCTAssertEqual(config.package.force, true)
     }
 
-    AssertParseFooCommand(Foo.Package.Config.self, ["package", "-f", "config", "-v"]) { config in
+    AssertParseFooCommand(
+      Foo.Package.Config.self, ["package", "-f", "config", "-v"]
+    ) { config in
       XCTAssertEqual(config.foo.verbose, true)
       XCTAssertEqual(config.package.force, true)
     }
 
-    AssertParseFooCommand(Foo.Package.Config.self, ["pkg", "-f", "cfg", "-v"]) { config in
+    AssertParseFooCommand(Foo.Package.Config.self, ["pkg", "-f", "cfg", "-v"]) {
+      config in
       XCTAssertEqual(config.foo.verbose, true)
       XCTAssertEqual(config.package.force, true)
     }
 
-    AssertParseFooCommand(Foo.Package.Config.self, ["package", "-vf", "config"]) { config in
+    AssertParseFooCommand(
+      Foo.Package.Config.self, ["package", "-vf", "config"]
+    ) { config in
       XCTAssertEqual(config.foo.verbose, true)
       XCTAssertEqual(config.package.force, true)
     }
 
-    AssertParseFooCommand(Foo.Package.Config.self, ["pkg", "-vf", "cfg"]) { config in
+    AssertParseFooCommand(Foo.Package.Config.self, ["pkg", "-vf", "cfg"]) {
+      config in
       XCTAssertEqual(config.foo.verbose, true)
       XCTAssertEqual(config.package.force, true)
     }
 
-    AssertParseFooCommand(Foo.Package.Config.self, ["package", "-fv", "config"]) { config in
+    AssertParseFooCommand(
+      Foo.Package.Config.self, ["package", "-fv", "config"]
+    ) { config in
       XCTAssertEqual(config.foo.verbose, true)
       XCTAssertEqual(config.package.force, true)
     }
 
-    AssertParseFooCommand(Foo.Package.Config.self, ["pkg", "-fv", "cfg"]) { config in
+    AssertParseFooCommand(Foo.Package.Config.self, ["pkg", "-fv", "cfg"]) {
+      config in
       XCTAssertEqual(config.foo.verbose, true)
       XCTAssertEqual(config.package.force, true)
     }
@@ -239,6 +269,8 @@ private struct Super: ParsableCommand {
   }
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension NestedCommandEndToEndTests {
   func testParsing_SharedOptions() throws {
     AssertParseCommand(Super.self, Super.self, []) { sup in
@@ -253,11 +285,15 @@ extension NestedCommandEndToEndTests {
       XCTAssertNil(sub1.options.firstName)
     }
 
-    AssertParseCommand(Super.self, Super.Sub1.self, ["sub1", "--first-name", "Foo"]) { sub1 in
+    AssertParseCommand(
+      Super.self, Super.Sub1.self, ["sub1", "--first-name", "Foo"]
+    ) { sub1 in
       XCTAssertEqual("Foo", sub1.options.firstName)
     }
 
-    AssertParseCommand(Super.self, Super.Sub2.self, ["sub2", "--last-name", "Foo"]) { sub2 in
+    AssertParseCommand(
+      Super.self, Super.Sub2.self, ["sub2", "--last-name", "Foo"]
+    ) { sub2 in
       XCTAssertEqual("Foo", sub2.options.lastName)
     }
   }

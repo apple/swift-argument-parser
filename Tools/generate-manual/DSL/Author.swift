@@ -18,14 +18,14 @@ struct Author: MDocComponent {
 
   var body: MDocComponent {
     switch author {
-    case let .name(name):
+    case .name(let name):
       MDocMacro.Author(split: false)
       MDocMacro.Author(name: name)
         .withUnsafeChildren(nodes: [trailing])
-    case let .email(email):
+    case .email(let email):
       MDocMacro.MailTo(email: email)
         .withUnsafeChildren(nodes: [trailing])
-    case let .both(name, email):
+    case .both(let name, let email):
       MDocMacro.Author(split: false)
       MDocMacro.Author(name: name)
       MDocMacro.BeginAngleBrackets()

@@ -9,23 +9,23 @@
 //
 //===----------------------------------------------------------------------===//
 
-import XCTest
-import ArgumentParserTestHelpers
 import ArgumentParser
+import ArgumentParserTestHelpers
+import XCTest
 
 final class SubcommandEndToEndTests: XCTestCase {
 }
 
 // MARK: Single value String
 
-fileprivate struct Foo: ParsableCommand {
+private struct Foo: ParsableCommand {
   static let configuration =
     CommandConfiguration(subcommands: [CommandA.self, CommandB.self])
 
   @Option() var name: String
 }
 
-fileprivate struct CommandA: ParsableCommand {
+private struct CommandA: ParsableCommand {
   static let configuration = CommandConfiguration(commandName: "a")
 
   @OptionGroup() var foo: Foo
@@ -33,7 +33,7 @@ fileprivate struct CommandA: ParsableCommand {
   @Option() var bar: Int
 }
 
-fileprivate struct CommandB: ParsableCommand {
+private struct CommandB: ParsableCommand {
   static let configuration = CommandConfiguration(commandName: "b")
 
   @OptionGroup() var foo: Foo
@@ -41,21 +41,29 @@ fileprivate struct CommandB: ParsableCommand {
   @Option() var baz: String
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension SubcommandEndToEndTests {
   func testParsing_SubCommand() throws {
-    AssertParseCommand(Foo.self, CommandA.self, ["--name", "Foo", "a", "--bar", "42"]) { a in
+    AssertParseCommand(
+      Foo.self, CommandA.self, ["--name", "Foo", "a", "--bar", "42"]
+    ) { a in
       XCTAssertEqual(a.bar, 42)
       XCTAssertEqual(a.foo.name, "Foo")
     }
 
-    AssertParseCommand(Foo.self, CommandB.self, ["--name", "A", "b", "--baz", "abc"]) { b in
+    AssertParseCommand(
+      Foo.self, CommandB.self, ["--name", "A", "b", "--baz", "abc"]
+    ) { b in
       XCTAssertEqual(b.baz, "abc")
       XCTAssertEqual(b.foo.name, "A")
     }
   }
 
   func testParsing_SubCommand_manual() throws {
-    AssertParseCommand(Foo.self, CommandA.self, ["--name", "Foo", "a", "--bar", "42"]) { a in
+    AssertParseCommand(
+      Foo.self, CommandA.self, ["--name", "Foo", "a", "--bar", "42"]
+    ) { a in
       XCTAssertEqual(a.bar, 42)
       XCTAssertEqual(a.foo.name, "Foo")
     }
@@ -70,47 +78,56 @@ extension SubcommandEndToEndTests {
     let helpA = Foo.message(for: CleanExit.helpRequest(CommandA.self))
     let helpB = Foo.message(for: CleanExit.helpRequest(CommandB.self))
 
-    AssertEqualStrings(actual: helpFoo, expected: """
-            USAGE: foo --name <name> <subcommand>
+    AssertEqualStrings(
+      actual: helpFoo,
+      expected: """
+        USAGE: foo --name <name> <subcommand>
 
-            OPTIONS:
-              --name <name>
-              -h, --help              Show help information.
+        OPTIONS:
+          --name <name>
+          -h, --help              Show help information.
 
-            SUBCOMMANDS:
-              a
-              b
+        SUBCOMMANDS:
+          a
+          b
 
-              See 'foo help <subcommand>' for detailed help.
-            """)
-    AssertEqualStrings(actual: helpA, expected: """
-            USAGE: foo a --name <name> --bar <bar>
+          See 'foo help <subcommand>' for detailed help.
+        """)
+    AssertEqualStrings(
+      actual: helpA,
+      expected: """
+        USAGE: foo a --name <name> --bar <bar>
 
-            OPTIONS:
-              --name <name>
-              --bar <bar>
-              -h, --help              Show help information.
+        OPTIONS:
+          --name <name>
+          --bar <bar>
+          -h, --help              Show help information.
 
-            """)
-    AssertEqualStrings(actual: helpB, expected: """
-            USAGE: foo b --name <name> --baz <baz>
+        """)
+    AssertEqualStrings(
+      actual: helpB,
+      expected: """
+        USAGE: foo b --name <name> --baz <baz>
 
-            OPTIONS:
-              --name <name>
-              --baz <baz>
-              -h, --help              Show help information.
+        OPTIONS:
+          --name <name>
+          --baz <baz>
+          -h, --help              Show help information.
 
-            """)
+        """)
   }
 
-
   func testParsing_SubCommand_fails() throws {
-    XCTAssertThrowsError(try Foo.parse(["--name", "Foo", "a", "--baz", "42"]), "'baz' is not an option for the 'a' subcommand.")
-    XCTAssertThrowsError(try Foo.parse(["--name", "Foo", "b", "--bar", "42"]), "'bar' is not an option for the 'b' subcommand.")
+    XCTAssertThrowsError(
+      try Foo.parse(["--name", "Foo", "a", "--baz", "42"]),
+      "'baz' is not an option for the 'a' subcommand.")
+    XCTAssertThrowsError(
+      try Foo.parse(["--name", "Foo", "b", "--bar", "42"]),
+      "'bar' is not an option for the 'b' subcommand.")
   }
 }
 
-fileprivate struct Math: ParsableCommand {
+private struct Math: ParsableCommand {
   enum Operation: String, ExpressibleByArgument {
     case add
     case multiply
@@ -135,9 +152,13 @@ fileprivate struct Math: ParsableCommand {
   }
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension SubcommandEndToEndTests {
   func testParsing_SingleCommand() throws {
-    var mathCommand = try Math.parseAsRoot(["--operation", "multiply", "-v", "5", "11"]) as! Math
+    var mathCommand =
+      try Math.parseAsRoot(["--operation", "multiply", "-v", "5", "11"])
+      as! Math
     XCTAssertFalse(mathCommand.didRun)
     mathCommand.run()
     XCTAssertTrue(mathCommand.didRun)
@@ -170,7 +191,7 @@ struct BaseCommand: ParsableCommand {
 }
 
 extension BaseCommand {
-  struct SubCommand : ParsableCommand {
+  struct SubCommand: ParsableCommand {
     static let subFlagValue = "sub"
 
     static let configuration = CommandConfiguration(
@@ -190,8 +211,9 @@ extension BaseCommand {
 }
 
 extension BaseCommand.SubCommand {
-  struct SubSubCommand : ParsableCommand, TestableParsableArguments {
-    let didValidateExpectation = XCTestExpectation(singleExpectation: "did validate subcommand")
+  struct SubSubCommand: ParsableCommand, TestableParsableArguments {
+    let didValidateExpectation = XCTestExpectation(
+      singleExpectation: "did validate subcommand")
 
     static let configuration = CommandConfiguration(
       commandName: "subsub"
@@ -206,6 +228,8 @@ extension BaseCommand.SubCommand {
   }
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension SubcommandEndToEndTests {
   func testValidate_subcommands() {
     // provide a value to base-flag that will throw
@@ -218,19 +242,27 @@ extension SubcommandEndToEndTests {
     // provide a value to sub-flag that will throw
     AssertErrorMessage(
       BaseCommand.self,
-      ["--base-flag", BaseCommand.baseFlagValue, "sub", "--sub-flag", "foo", "subsub"],
+      [
+        "--base-flag", BaseCommand.baseFlagValue, "sub", "--sub-flag", "foo",
+        "subsub",
+      ],
       "subCommandFailure"
     )
 
     // provide a valid command and make sure both validates succeed
-    AssertParseCommand(BaseCommand.self,
-                       BaseCommand.SubCommand.SubSubCommand.self,
-                       ["--base-flag", BaseCommand.baseFlagValue, "sub", "--sub-flag", BaseCommand.SubCommand.subFlagValue, "subsub", "--sub-sub-flag"]) { cmd in
-                        XCTAssertTrue(cmd.subSubFlag)
+    AssertParseCommand(
+      BaseCommand.self,
+      BaseCommand.SubCommand.SubSubCommand.self,
+      [
+        "--base-flag", BaseCommand.baseFlagValue, "sub", "--sub-flag",
+        BaseCommand.SubCommand.subFlagValue, "subsub", "--sub-sub-flag",
+      ]
+    ) { cmd in
+      XCTAssertTrue(cmd.subSubFlag)
 
-                        // make sure that the instance of SubSubCommand provided
-                        // had its validate method called, not just that any instance of SubSubCommand was validated
-                        wait(for: [cmd.didValidateExpectation], timeout: 0.1)
+      // make sure that the instance of SubSubCommand provided
+      // had its validate method called, not just that any instance of SubSubCommand was validated
+      wait(for: [cmd.didValidateExpectation], timeout: 0.1)
     }
   }
 }
@@ -256,7 +288,9 @@ extension SubcommandEndToEndTests {
     AssertErrorMessage(A.self, ["--version"], "1.0.0")
     AssertErrorMessage(A.self, ["no-version-flag", "--version"], "1.0.0")
 
-    AssertParseCommand(A.self, A.HasVersionFlag.self, ["has-version-flag", "--version"]) { cmd in
+    AssertParseCommand(
+      A.self, A.HasVersionFlag.self, ["has-version-flag", "--version"]
+    ) { cmd in
       XCTAssertTrue(cmd.version)
     }
   }

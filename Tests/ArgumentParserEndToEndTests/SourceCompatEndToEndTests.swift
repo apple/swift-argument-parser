@@ -9,17 +9,20 @@
 //
 //===----------------------------------------------------------------------===//
 
-import XCTest
-import ArgumentParserTestHelpers
 import ArgumentParser
+import ArgumentParserTestHelpers
+import XCTest
 
+// swift-format-ignore: BeginDocumentationCommentWithOneLineSummary
+// https://github.com/swiftlang/swift-format/issues/925
 /// The goal of this test class is to validate source compatibility. By running
 /// this class's tests, all property wrapper initializers should be called.
 final class SourceCompatEndToEndTests: XCTestCase {}
 
 // MARK: - Property Wrapper Initializers
 
-fileprivate struct AlmostAllArguments: ParsableArguments {
+// swift-format-ignore: AlwaysUseLowerCamelCase
+private struct AlmostAllArguments: ParsableArguments {
   @Argument(help: "") var a_newDefaultSyntax: Int = 0
   @Argument() var a0: Int
   @Argument(help: "") var a1: Int
@@ -48,7 +51,8 @@ fileprivate struct AlmostAllArguments: ParsableArguments {
   @Argument(help: "") var e5: [Int]
   @Argument(parsing: .remaining) var e6: [Int]
   @Argument() var e7: [Int] = [1, 2]
-  @Argument(parsing: .remaining, help: "", transform: { _ in 0 }) var e8: [Int] = [1, 2]
+  @Argument(parsing: .remaining, help: "", transform: { _ in 0 }) var e8:
+    [Int] = [1, 2]
   @Argument(parsing: .remaining, help: "", transform: { _ in 0 }) var e9: [Int]
   @Argument(parsing: .remaining, transform: { _ in 0 }) var e10: [Int] = [1, 2]
   @Argument(help: "", transform: { _ in 0 }) var e11: [Int] = [1, 2]
@@ -58,7 +62,8 @@ fileprivate struct AlmostAllArguments: ParsableArguments {
   @Argument(transform: { _ in 0 }) var e15: [Int] = [1, 2]
 }
 
-fileprivate struct AllOptions: ParsableArguments {
+// swift-format-ignore: AlwaysUseLowerCamelCase
+private struct AllOptions: ParsableArguments {
   @Option(name: .long, parsing: .next, help: "") var a_newDefaultSyntax: Int = 0
   @Option(parsing: .next, help: "") var a1_newDefaultSyntax: Int = 0
   @Option(name: .long, parsing: .next, help: "") var a2: Int
@@ -82,13 +87,18 @@ fileprivate struct AllOptions: ParsableArguments {
   @Option(parsing: .next) var b12: Int?
   @Option(help: "") var b13: Int?
 
-  @Option(name: .long, parsing: .next, help: "", transform: { _ in 0 }) var c_newDefaultSyntax: Int = 0
-  @Option(parsing: .next, help: "", transform: { _ in 0 }) var c1_newDefaultSyntax: Int = 0
-  @Option(name: .long, parsing: .next, help: "", transform: { _ in 0 }) var c2: Int
-  @Option(name: .long, help: "", transform: { _ in 0 }) var c3_newDefaultSyntax: Int = 0
+  @Option(name: .long, parsing: .next, help: "", transform: { _ in 0 })
+  var c_newDefaultSyntax: Int = 0
+  @Option(parsing: .next, help: "", transform: { _ in 0 })
+  var c1_newDefaultSyntax: Int = 0
+  @Option(name: .long, parsing: .next, help: "", transform: { _ in 0 }) var c2:
+    Int
+  @Option(name: .long, help: "", transform: { _ in 0 }) var c3_newDefaultSyntax:
+    Int = 0
   @Option(parsing: .next, help: "", transform: { _ in 0 }) var c4: Int
   @Option(help: "", transform: { _ in 0 }) var c5_newDefaultSyntax: Int = 0
-  @Option(parsing: .next, transform: { _ in 0 }) var c6_newDefaultSyntax: Int = 0
+  @Option(parsing: .next, transform: { _ in 0 }) var c6_newDefaultSyntax: Int =
+    0
   @Option(name: .long, help: "", transform: { _ in 0 }) var c7: Int
   @Option(name: .long, parsing: .next, transform: { _ in 0 }) var c8: Int
   @Option(name: .long, transform: { _ in 0 }) var c9_newDefaultSyntax: Int = 0
@@ -97,7 +107,8 @@ fileprivate struct AllOptions: ParsableArguments {
   @Option(parsing: .next, transform: { _ in 0 }) var c12: Int
   @Option(help: "", transform: { _ in 0 }) var c13: Int
 
-  @Option(name: .long, parsing: .next, help: "", transform: { _ in 0 }) var d2: Int?
+  @Option(name: .long, parsing: .next, help: "", transform: { _ in 0 }) var d2:
+    Int?
   @Option(parsing: .next, help: "", transform: { _ in 0 }) var d4: Int?
   @Option(name: .long, help: "", transform: { _ in 0 }) var d7: Int?
   @Option(name: .long, parsing: .next, transform: { _ in 0 }) var d8: Int?
@@ -120,15 +131,19 @@ fileprivate struct AllOptions: ParsableArguments {
   @Option(parsing: .singleValue) var e12: [Int]
   @Option(help: "") var e13: [Int]
 
-  @Option(name: .long, parsing: .singleValue, help: "", transform: { _ in 0 }) var f: [Int] = [1, 2]
-  @Option(parsing: .singleValue, help: "", transform: { _ in 0 }) var f1: [Int] = [1, 2]
-  @Option(name: .long, parsing: .singleValue, help: "", transform: { _ in 0 }) var f2: [Int]
+  @Option(name: .long, parsing: .singleValue, help: "", transform: { _ in 0 })
+  var f: [Int] = [1, 2]
+  @Option(parsing: .singleValue, help: "", transform: { _ in 0 }) var f1:
+    [Int] = [1, 2]
+  @Option(name: .long, parsing: .singleValue, help: "", transform: { _ in 0 })
+  var f2: [Int]
   @Option(name: .long, help: "", transform: { _ in 0 }) var f3: [Int] = [1, 2]
   @Option(parsing: .singleValue, help: "", transform: { _ in 0 }) var f4: [Int]
   @Option(help: "", transform: { _ in 0 }) var f5: [Int] = [1, 2]
   @Option(parsing: .singleValue, transform: { _ in 0 }) var f6: [Int] = [1, 2]
   @Option(name: .long, help: "", transform: { _ in 0 }) var f7: [Int]
-  @Option(name: .long, parsing: .singleValue, transform: { _ in 0 }) var f8: [Int]
+  @Option(name: .long, parsing: .singleValue, transform: { _ in 0 }) var f8:
+    [Int]
   @Option(name: .long, transform: { _ in 0 }) var f9: [Int] = [1, 2]
   @Option(name: .long, transform: { _ in 0 }) var f10: [Int]
   @Option(transform: { _ in 0 }) var f11: [Int] = [1, 2]
@@ -136,6 +151,7 @@ fileprivate struct AllOptions: ParsableArguments {
   @Option(help: "", transform: { _ in 0 }) var f13: [Int]
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
 struct AllFlags: ParsableArguments {
   enum E: String, EnumerableFlag {
     case one, two, three
@@ -146,30 +162,42 @@ struct AllFlags: ParsableArguments {
   @Flag(name: .long) var a1_explicitFalse: Bool = false
   @Flag(help: "") var a2_explicitFalse: Bool = false
 
-  @Flag(name: .long, inversion: .prefixedNo, exclusivity: .chooseLast, help: "") var b: Bool
+  @Flag(name: .long, inversion: .prefixedNo, exclusivity: .chooseLast, help: "")
+  var b: Bool
   @Flag(inversion: .prefixedNo, exclusivity: .chooseLast, help: "") var b1: Bool
   @Flag(name: .long, inversion: .prefixedNo, help: "") var b2: Bool
-  @Flag(name: .long, inversion: .prefixedNo, exclusivity: .chooseLast) var b3: Bool
+  @Flag(name: .long, inversion: .prefixedNo, exclusivity: .chooseLast) var b3:
+    Bool
   @Flag(inversion: .prefixedNo, help: "") var b4: Bool
   @Flag(inversion: .prefixedNo, exclusivity: .chooseLast) var b5: Bool
   @Flag(name: .long, inversion: .prefixedNo) var b6: Bool
   @Flag(inversion: .prefixedNo) var b7: Bool
 
-  @Flag(name: .long, inversion: .prefixedNo, exclusivity: .chooseLast, help: "") var c_newDefaultSyntax: Bool = false
-  @Flag(inversion: .prefixedNo, exclusivity: .chooseLast, help: "") var c1_newDefaultSyntax: Bool = false
-  @Flag(name: .long, inversion: .prefixedNo, help: "") var c2_newDefaultSyntax: Bool = false
-  @Flag(name: .long, inversion: .prefixedNo, exclusivity: .chooseLast) var c3_newDefaultSyntax: Bool = false
+  @Flag(name: .long, inversion: .prefixedNo, exclusivity: .chooseLast, help: "")
+  var c_newDefaultSyntax: Bool = false
+  @Flag(inversion: .prefixedNo, exclusivity: .chooseLast, help: "")
+  var c1_newDefaultSyntax: Bool = false
+  @Flag(name: .long, inversion: .prefixedNo, help: "") var c2_newDefaultSyntax:
+    Bool = false
+  @Flag(name: .long, inversion: .prefixedNo, exclusivity: .chooseLast)
+  var c3_newDefaultSyntax: Bool = false
   @Flag(inversion: .prefixedNo, help: "") var c4_newDefaultSyntax: Bool = false
-  @Flag(inversion: .prefixedNo, exclusivity: .chooseLast) var c5_newDefaultSyntax: Bool = false
-  @Flag(name: .long, inversion: .prefixedNo) var c6_newDefaultSyntax: Bool = false
+  @Flag(inversion: .prefixedNo, exclusivity: .chooseLast)
+  var c5_newDefaultSyntax: Bool = false
+  @Flag(name: .long, inversion: .prefixedNo) var c6_newDefaultSyntax: Bool =
+    false
   @Flag(inversion: .prefixedNo) var c7_newDefaultSyntax: Bool = false
 
-  @Flag(name: .long, inversion: .prefixedNo, exclusivity: .chooseLast, help: "") var d_implicitNil: Bool
-  @Flag(inversion: .prefixedNo, exclusivity: .chooseLast, help: "") var d1_implicitNil: Bool
+  @Flag(name: .long, inversion: .prefixedNo, exclusivity: .chooseLast, help: "")
+  var d_implicitNil: Bool
+  @Flag(inversion: .prefixedNo, exclusivity: .chooseLast, help: "")
+  var d1_implicitNil: Bool
   @Flag(name: .long, inversion: .prefixedNo, help: "") var d2_implicitNil: Bool
-  @Flag(name: .long, inversion: .prefixedNo, exclusivity: .chooseLast) var d3_implicitNil: Bool
+  @Flag(name: .long, inversion: .prefixedNo, exclusivity: .chooseLast)
+  var d3_implicitNil: Bool
   @Flag(inversion: .prefixedNo, help: "") var d4_implicitNil: Bool
-  @Flag(inversion: .prefixedNo, exclusivity: .chooseLast) var d5_implicitNil: Bool
+  @Flag(inversion: .prefixedNo, exclusivity: .chooseLast) var d5_implicitNil:
+    Bool
   @Flag(name: .long, inversion: .prefixedNo) var d6_implicitNil: Bool
   @Flag(inversion: .prefixedNo) var d7_implicitNil: Bool
 
@@ -207,4 +235,3 @@ extension SourceCompatEndToEndTests {
     _ = AllFlags()
   }
 }
-

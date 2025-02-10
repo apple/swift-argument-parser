@@ -12,7 +12,7 @@
 import ArgumentParser
 
 extension Package {
-  /// Generates an Xcode project
+  /// Generates an Xcode project.
   struct GenerateXcodeProject: ParsableCommand {
     static let configuration =
       CommandConfiguration(commandName: "generate-xcodeproj")
@@ -29,10 +29,16 @@ extension Package {
     @Option(help: "Path where the Xcode project should be generated")
     var output: String?
 
-    @Flag(help: "Do not add file references for extra files to the generated Xcode project")
+    @Flag(
+      help:
+        "Do not add file references for extra files to the generated Xcode project"
+    )
     var skipExtraFiles: Bool = false
 
-    @Flag(help: "Watch for changes to the Package manifest to regenerate the Xcode project")
+    @Flag(
+      help:
+        "Watch for changes to the Package manifest to regenerate the Xcode project"
+    )
     var watch: Bool = false
 
     @Option(help: "Path to xcconfig file")

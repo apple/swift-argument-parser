@@ -9,9 +9,9 @@
 //
 //===----------------------------------------------------------------------===//
 
+import ArgumentParserToolInfo
 import Foundation
 import XCTest
-import ArgumentParserToolInfo
 
 extension DecodingError: Swift.CustomStringConvertible {
   public var description: String {
@@ -29,13 +29,13 @@ extension DecodingError: Swift.CustomStringConvertible {
     }
 
     switch self {
-    case let .dataCorrupted(context):
+    case .dataCorrupted(let context):
       return "Data corrupted at '\(pathDescription(context.codingPath))'"
-    case let .keyNotFound(key, context):
+    case .keyNotFound(let key, let context):
       return "Key not found at '\(pathDescription(context.codingPath + [key]))'"
-    case let .typeMismatch(_, context):
+    case .typeMismatch(_, let context):
       return "Type mismatch at '\(pathDescription(context.codingPath))'"
-    case let .valueNotFound(_, context):
+    case .valueNotFound(_, let context):
       return "Value not found at '\(pathDescription(context.codingPath))'"
     @unknown default:
       return "\(self)"

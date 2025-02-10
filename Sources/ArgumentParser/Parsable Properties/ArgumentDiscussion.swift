@@ -85,7 +85,9 @@ enum ArgumentDiscussion {
   case staticText(String)
   case enumerated(preamble: String? = nil, any ExpressibleByArgument.Type)
 
-  init?(_ text: String? = nil, _ options: (any ExpressibleByArgument.Type)? = nil) {
+  init?(
+    _ text: String? = nil, _ options: (any ExpressibleByArgument.Type)? = nil
+  ) {
     switch (text, options) {
     case (.some(let text), .some(let options)):
       guard !options.allValueDescriptions.isEmpty else {
@@ -114,14 +116,17 @@ enum ArgumentDiscussion {
   }
 }
 
-extension ArgumentDiscussion: Sendable { }
+extension ArgumentDiscussion: Sendable {}
 
 extension ArgumentDiscussion: Hashable {
   static func == (lhs: ArgumentDiscussion, rhs: ArgumentDiscussion) -> Bool {
     switch (lhs, rhs) {
     case (.staticText(let lhsText), .staticText(let rhsText)):
       return lhsText == rhsText
-    case (.enumerated(let lhsPreamble, let lhsOption), .enumerated(preamble: let rhsPreamble, let rhsOption)):
+    case (
+      .enumerated(let lhsPreamble, let lhsOption),
+      .enumerated(preamble: let rhsPreamble, let rhsOption)
+    ):
       return (lhsPreamble == rhsPreamble) && (lhsOption == rhsOption)
     default:
       return false

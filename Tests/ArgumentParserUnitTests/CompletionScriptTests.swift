@@ -9,11 +9,12 @@
 //
 //===----------------------------------------------------------------------===//
 
-import XCTest
 import ArgumentParserTestHelpers
+import XCTest
+
 @testable import ArgumentParser
 
-fileprivate func candidates(prefix: String) -> [String] {
+private func candidates(prefix: String) -> [String] {
   switch CompletionShell.requesting {
   case CompletionShell.bash:
     return ["\(prefix)1_bash", "\(prefix)2_bash", "\(prefix)3_bash"]
@@ -28,28 +29,31 @@ fileprivate func candidates(prefix: String) -> [String] {
 
 final class CompletionScriptTests: XCTestCase {}
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension CompletionScriptTests {
   struct Path: ExpressibleByArgument {
     var path: String
-    
+
     init?(argument: String) {
       self.path = argument
     }
-    
+
     static var defaultCompletionKind: CompletionKind {
       .file()
     }
   }
-    
+
   enum Kind: String, ExpressibleByArgument, EnumerableFlag {
-    case one, two, three = "custom-three"
+    case one, two
+    case three = "custom-three"
   }
-  
+
   struct NestedArguments: ParsableArguments {
     @Argument(completion: .custom { _ in candidates(prefix: "a") })
     var nestedArgument: String
   }
-  
+
   struct Base: ParsableCommand {
     static let configuration = CommandConfiguration(
       commandName: "base-test",
@@ -66,15 +70,17 @@ extension CompletionScriptTests {
     @Flag(help: .hidden) var verbose = false
     @Flag var allowedKinds: [Kind] = []
     @Flag var kindCounter: Int
-    
+
     @Option() var rep1: [String]
     @Option(name: [.short, .long]) var rep2: [String]
-    
-    @Argument(completion: .custom { _ in candidates(prefix: "d") }) var argument: String
+
+    @Argument(completion: .custom { _ in candidates(prefix: "d") })
+    var argument: String
     @OptionGroup var nested: NestedArguments
-    
+
     struct SubCommand: ParsableCommand {
-      static let configuration = CommandConfiguration(commandName: "sub-command")
+      static let configuration = CommandConfiguration(
+        commandName: "sub-command")
     }
 
     struct HiddenChild: ParsableCommand {
@@ -92,11 +98,11 @@ extension CompletionScriptTests {
 
   func testBase_Zsh() throws {
     let script1 = try CompletionsGenerator(command: Base.self, shell: .zsh)
-          .generateCompletionScript()
+      .generateCompletionScript()
     try assertSnapshot(actual: script1, extension: "zsh")
 
     let script2 = try CompletionsGenerator(command: Base.self, shellName: "zsh")
-          .generateCompletionScript()
+      .generateCompletionScript()
     try assertSnapshot(actual: script2, extension: "zsh")
 
     let script3 = Base.completionScript(for: .zsh)
@@ -105,11 +111,13 @@ extension CompletionScriptTests {
 
   func testBase_Bash() throws {
     let script1 = try CompletionsGenerator(command: Base.self, shell: .bash)
-          .generateCompletionScript()
+      .generateCompletionScript()
     try assertSnapshot(actual: script1, extension: "bash")
 
-    let script2 = try CompletionsGenerator(command: Base.self, shellName: "bash")
-          .generateCompletionScript()
+    let script2 = try CompletionsGenerator(
+      command: Base.self, shellName: "bash"
+    )
+    .generateCompletionScript()
     try assertSnapshot(actual: script2, extension: "bash")
 
     let script3 = Base.completionScript(for: .bash)
@@ -118,11 +126,13 @@ extension CompletionScriptTests {
 
   func testBase_Fish() throws {
     let script1 = try CompletionsGenerator(command: Base.self, shell: .fish)
-          .generateCompletionScript()
+      .generateCompletionScript()
     try assertSnapshot(actual: script1, extension: "fish")
 
-    let script2 = try CompletionsGenerator(command: Base.self, shellName: "fish")
-          .generateCompletionScript()
+    let script2 = try CompletionsGenerator(
+      command: Base.self, shellName: "fish"
+    )
+    .generateCompletionScript()
     try assertSnapshot(actual: script2, extension: "fish")
 
     let script3 = Base.completionScript(for: .fish)
@@ -132,17 +142,20 @@ extension CompletionScriptTests {
 
 extension CompletionScriptTests {
   struct Custom: ParsableCommand {
-    @Option(name: .shortAndLong, completion: .custom { _ in candidates(prefix: "e") })
+    @Option(
+      name: .shortAndLong, completion: .custom { _ in candidates(prefix: "e") })
     var one: String
 
     @Argument(completion: .custom { _ in candidates(prefix: "f") })
     var two: String
 
-    @Option(name: .customShort("z"), completion: .custom { _ in candidates(prefix: "g") })
+    @Option(
+      name: .customShort("z"),
+      completion: .custom { _ in candidates(prefix: "g") })
     var three: String
-    
+
     @OptionGroup var nested: NestedArguments
-    
+
     struct NestedArguments: ParsableArguments {
       @Argument(completion: .custom { _ in candidates(prefix: "h") })
       var four: String
@@ -162,7 +175,8 @@ extension CompletionScriptTests {
       _ = try Custom.parse(["---completion", "--", arg])
       XCTFail("Didn't error as expected", file: file, line: line)
     } catch let error as CommandError {
-      guard case .completionScriptCustomResponse(let output) = error.parserError else {
+      guard case .completionScriptCustomResponse(let output) = error.parserError
+      else {
         throw error
       }
       AssertEqualStrings(
@@ -182,14 +196,21 @@ extension CompletionScriptTests {
     file: StaticString = #filePath,
     line: UInt = #line
   ) throws {
-    try assertCustomCompletion("-o", shell: shell, prefix: "e", file: file, line: line)
-    try assertCustomCompletion("--one", shell: shell, prefix: "e", file: file, line: line)
-    try assertCustomCompletion("two", shell: shell, prefix: "f", file: file, line: line)
-    try assertCustomCompletion("-z", shell: shell, prefix: "g", file: file, line: line)
-    try assertCustomCompletion("nested.four", shell: shell, prefix: "h", file: file, line: line)
+    try assertCustomCompletion(
+      "-o", shell: shell, prefix: "e", file: file, line: line)
+    try assertCustomCompletion(
+      "--one", shell: shell, prefix: "e", file: file, line: line)
+    try assertCustomCompletion(
+      "two", shell: shell, prefix: "f", file: file, line: line)
+    try assertCustomCompletion(
+      "-z", shell: shell, prefix: "g", file: file, line: line)
+    try assertCustomCompletion(
+      "nested.four", shell: shell, prefix: "h", file: file, line: line)
 
-    XCTAssertThrowsError(try assertCustomCompletion("--bad", shell: shell, file: file, line: line))
-    XCTAssertThrowsError(try assertCustomCompletion("four", shell: shell, file: file, line: line))
+    XCTAssertThrowsError(
+      try assertCustomCompletion("--bad", shell: shell, file: file, line: line))
+    XCTAssertThrowsError(
+      try assertCustomCompletion("four", shell: shell, file: file, line: line))
   }
 
   func testBashCustomCompletions() throws {

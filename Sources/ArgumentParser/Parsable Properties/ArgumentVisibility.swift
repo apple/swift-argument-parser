@@ -31,7 +31,7 @@ public struct ArgumentVisibility: Hashable {
   public static let `private` = Self(base: .private)
 }
 
-extension ArgumentVisibility: Sendable { }
+extension ArgumentVisibility: Sendable {}
 
 extension ArgumentVisibility.Representation {
   /// A raw Integer value that represents each visibility level.

@@ -43,7 +43,7 @@ struct MultiPageDescription: MDocComponent {
             if argument.abstract != nil, discussion != nil {
               MDocMacro.ParagraphBreak()
             }
-                  
+
             if let discussion = discussion {
               discussion
             }

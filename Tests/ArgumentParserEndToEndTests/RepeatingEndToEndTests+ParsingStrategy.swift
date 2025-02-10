@@ -9,17 +9,18 @@
 //
 //===----------------------------------------------------------------------===//
 
-import XCTest
 import ArgumentParserTestHelpers
+import XCTest
+
 @testable import ArgumentParser
 
 // MARK: - allUnrecognized
 
-fileprivate struct AllUnrecognizedArgs: ParsableCommand {
+private struct AllUnrecognizedArgs: ParsableCommand {
   static var configuration: CommandConfiguration {
     .init(version: "1.0")
   }
-  
+
   @Flag var verbose: Bool = false
   @Flag(name: .customShort("f")) var useFiles: Bool = false
   @Flag(name: .customShort("i")) var useStandardInput: Bool = false
@@ -28,6 +29,8 @@ fileprivate struct AllUnrecognizedArgs: ParsableCommand {
   @Argument(parsing: .allUnrecognized) var names: [String] = []
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension RepeatingEndToEndTests {
   func testParsing_repeatingAllUnrecognized() throws {
     AssertParse(AllUnrecognizedArgs.self, []) { cmd in
@@ -35,7 +38,10 @@ extension RepeatingEndToEndTests {
       XCTAssertFalse(cmd.hoopla)
       XCTAssertEqual(cmd.names, [])
     }
-    AssertParse(AllUnrecognizedArgs.self, ["foo", "--verbose", "-fi", "bar", "-z", "--other"]) { cmd in
+    AssertParse(
+      AllUnrecognizedArgs.self,
+      ["foo", "--verbose", "-fi", "bar", "-z", "--other"]
+    ) { cmd in
       XCTAssertTrue(cmd.verbose)
       XCTAssertTrue(cmd.useFiles)
       XCTAssertTrue(cmd.useStandardInput)
@@ -43,9 +49,11 @@ extension RepeatingEndToEndTests {
       XCTAssertEqual(cmd.names, ["foo", "bar", "-z", "--other"])
     }
   }
-  
+
   func testParsing_repeatingAllUnrecognized_Builtin() throws {
-    AssertParse(AllUnrecognizedArgs.self, ["foo", "--verbose", "bar", "-z", "-h"]) { cmd in
+    AssertParse(
+      AllUnrecognizedArgs.self, ["foo", "--verbose", "bar", "-z", "-h"]
+    ) { cmd in
       XCTAssertTrue(cmd.verbose)
       XCTAssertFalse(cmd.useFiles)
       XCTAssertFalse(cmd.useStandardInput)
@@ -53,25 +61,29 @@ extension RepeatingEndToEndTests {
       XCTAssertEqual(cmd.names, ["foo", "bar", "-z"])
     }
 
-    AssertParseCommand(AllUnrecognizedArgs.self, HelpCommand.self, ["foo", "--verbose", "bar", "-z", "--help"]) { cmd in
+    AssertParseCommand(
+      AllUnrecognizedArgs.self, HelpCommand.self,
+      ["foo", "--verbose", "bar", "-z", "--help"]
+    ) { cmd in
       // No need to test HelpCommand properties
     }
-    XCTAssertThrowsError(try AllUnrecognizedArgs.parse(["foo", "--verbose", "--version"]))
+    XCTAssertThrowsError(
+      try AllUnrecognizedArgs.parse(["foo", "--verbose", "--version"]))
   }
-  
+
   func testParsing_repeatingAllUnrecognized_Fails() throws {
     // Only partially matches the `-fib` argument
     XCTAssertThrowsError(try PassthroughArgs.parse(["-fib"]))
   }
 }
 
-fileprivate struct AllUnrecognizedRoot: ParsableCommand {
+private struct AllUnrecognizedRoot: ParsableCommand {
   static var configuration: CommandConfiguration {
     .init(subcommands: [Child.self])
   }
-  
+
   @Flag var verbose: Bool = false
-  
+
   struct Child: ParsableCommand {
     @Flag var includeExtras: Bool = false
     @Option var config = "debug"
@@ -80,12 +92,14 @@ fileprivate struct AllUnrecognizedRoot: ParsableCommand {
   }
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension RepeatingEndToEndTests {
   func testParsing_repeatingAllUnrecognized_Nested() throws {
     AssertParseCommand(
       AllUnrecognizedRoot.self, AllUnrecognizedRoot.Child.self,
-      ["child"])
-    { cmd in
+      ["child"]
+    ) { cmd in
       XCTAssertFalse(cmd.root.verbose)
       XCTAssertFalse(cmd.includeExtras)
       XCTAssertEqual(cmd.config, "debug")
@@ -93,24 +107,25 @@ extension RepeatingEndToEndTests {
     }
     AssertParseCommand(
       AllUnrecognizedRoot.self, AllUnrecognizedRoot.Child.self,
-      ["child", "--verbose", "--other", "one", "two", "--config", "prod"])
-    { cmd in
+      ["child", "--verbose", "--other", "one", "two", "--config", "prod"]
+    ) { cmd in
       XCTAssertTrue(cmd.root.verbose)
       XCTAssertFalse(cmd.includeExtras)
       XCTAssertEqual(cmd.config, "prod")
       XCTAssertEqual(cmd.extras, ["--other", "one", "two"])
     }
   }
-  
+
   func testParsing_repeatingAllUnrecognized_Nested_Fails() throws {
     // Extra arguments need to make it to the child
-    XCTAssertThrowsError(try AllUnrecognizedRoot.parse(["--verbose", "--other"]))
+    XCTAssertThrowsError(
+      try AllUnrecognizedRoot.parse(["--verbose", "--other"]))
   }
 }
 
 // MARK: - postTerminator
 
-fileprivate struct PostTerminatorArgs: ParsableArguments {
+private struct PostTerminatorArgs: ParsableArguments {
   @Flag(name: .customShort("f")) var useFiles: Bool = false
   @Flag(name: .customShort("i")) var useStandardInput: Bool = false
   @Option var config = "debug"
@@ -119,6 +134,8 @@ fileprivate struct PostTerminatorArgs: ParsableArguments {
   var names: [String] = []
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension RepeatingEndToEndTests {
   func testParsing_repeatingPostTerminator() throws {
     AssertParse(PostTerminatorArgs.self, []) { cmd in
@@ -135,13 +152,16 @@ extension RepeatingEndToEndTests {
       XCTAssertNil(cmd.title)
       XCTAssertEqual(cmd.names, ["-fi", "--"])
     }
-    AssertParse(PostTerminatorArgs.self, ["-fi", "title", "--", "title"]) { cmd in
+    AssertParse(PostTerminatorArgs.self, ["-fi", "title", "--", "title"]) {
+      cmd in
       XCTAssertTrue(cmd.useFiles)
       XCTAssertTrue(cmd.useStandardInput)
       XCTAssertEqual(cmd.title, "title")
       XCTAssertEqual(cmd.names, ["title"])
     }
-    AssertParse(PostTerminatorArgs.self, ["--config", "config", "--", "--config", "post"]) { cmd in
+    AssertParse(
+      PostTerminatorArgs.self, ["--config", "config", "--", "--config", "post"]
+    ) { cmd in
       XCTAssertEqual(cmd.config, "config")
       XCTAssertNil(cmd.title)
       XCTAssertEqual(cmd.names, ["--config", "post"])
@@ -152,13 +172,14 @@ extension RepeatingEndToEndTests {
     // Only partially matches the `-fib` argument
     XCTAssertThrowsError(try PostTerminatorArgs.parse(["-fib"]))
     // The post-terminator input can't provide the option's value
-    XCTAssertThrowsError(try PostTerminatorArgs.parse(["--config", "--", "config"]))
+    XCTAssertThrowsError(
+      try PostTerminatorArgs.parse(["--config", "--", "config"]))
   }
 }
 
 // MARK: - captureForPassthrough
 
-fileprivate struct PassthroughArgs: ParsableCommand {
+private struct PassthroughArgs: ParsableCommand {
   @Flag var verbose: Bool = false
   @Flag(name: .customShort("f")) var useFiles: Bool = false
   @Flag(name: .customShort("i")) var useStandardInput: Bool = false
@@ -166,6 +187,8 @@ fileprivate struct PassthroughArgs: ParsableCommand {
   @Argument(parsing: .captureForPassthrough) var names: [String] = []
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension RepeatingEndToEndTests {
   func testParsing_repeatingCaptureForPassthrough() throws {
     AssertParse(PassthroughArgs.self, []) { cmd in
@@ -178,34 +201,51 @@ extension RepeatingEndToEndTests {
       XCTAssertEqual(cmd.names, ["--other"])
     }
 
-    AssertParse(PassthroughArgs.self, ["--verbose", "one", "two", "three"]) { cmd in
+    AssertParse(PassthroughArgs.self, ["--verbose", "one", "two", "three"]) {
+      cmd in
       XCTAssertTrue(cmd.verbose)
       XCTAssertEqual(cmd.names, ["one", "two", "three"])
     }
 
-    AssertParse(PassthroughArgs.self, ["one", "two", "three", "--other", "--verbose"]) { cmd in
+    AssertParse(
+      PassthroughArgs.self, ["one", "two", "three", "--other", "--verbose"]
+    ) { cmd in
       XCTAssertFalse(cmd.verbose)
-      XCTAssertEqual(cmd.names, ["one", "two", "three", "--other", "--verbose"])
+      XCTAssertEqual(
+        cmd.names, ["one", "two", "three", "--other", "--verbose"])
     }
 
-    AssertParse(PassthroughArgs.self, ["--verbose", "--other", "one", "two", "three"]) { cmd in
+    AssertParse(
+      PassthroughArgs.self, ["--verbose", "--other", "one", "two", "three"]
+    ) { cmd in
       XCTAssertTrue(cmd.verbose)
       XCTAssertEqual(cmd.names, ["--other", "one", "two", "three"])
     }
 
-    AssertParse(PassthroughArgs.self, ["--verbose", "--other", "one", "--", "two", "three"]) { cmd in
+    AssertParse(
+      PassthroughArgs.self,
+      ["--verbose", "--other", "one", "--", "two", "three"]
+    ) { cmd in
       XCTAssertTrue(cmd.verbose)
       XCTAssertEqual(cmd.names, ["--other", "one", "--", "two", "three"])
     }
 
-    AssertParse(PassthroughArgs.self, ["--other", "one", "--", "two", "three", "--verbose"]) { cmd in
+    AssertParse(
+      PassthroughArgs.self,
+      ["--other", "one", "--", "two", "three", "--verbose"]
+    ) { cmd in
       XCTAssertFalse(cmd.verbose)
-      XCTAssertEqual(cmd.names, ["--other", "one", "--", "two", "three", "--verbose"])
+      XCTAssertEqual(
+        cmd.names, ["--other", "one", "--", "two", "three", "--verbose"])
     }
 
-    AssertParse(PassthroughArgs.self, ["--", "--verbose", "--other", "one", "two", "three"]) { cmd in
+    AssertParse(
+      PassthroughArgs.self,
+      ["--", "--verbose", "--other", "one", "two", "three"]
+    ) { cmd in
       XCTAssertFalse(cmd.verbose)
-      XCTAssertEqual(cmd.names, ["--", "--verbose", "--other", "one", "two", "three"])
+      XCTAssertEqual(
+        cmd.names, ["--", "--verbose", "--other", "one", "two", "three"])
     }
 
     AssertParse(PassthroughArgs.self, ["-one", "-two", "three"]) { cmd in
@@ -215,12 +255,18 @@ extension RepeatingEndToEndTests {
       XCTAssertEqual(cmd.names, ["-one", "-two", "three"])
     }
 
-    AssertParse(PassthroughArgs.self, ["--config", "release", "one", "two", "--config", "debug"]) { cmd in
+    AssertParse(
+      PassthroughArgs.self,
+      ["--config", "release", "one", "two", "--config", "debug"]
+    ) { cmd in
       XCTAssertEqual(cmd.config, "release")
       XCTAssertEqual(cmd.names, ["one", "two", "--config", "debug"])
     }
 
-    AssertParse(PassthroughArgs.self, ["--config", "release", "--config", "debug", "one", "two"]) { cmd in
+    AssertParse(
+      PassthroughArgs.self,
+      ["--config", "release", "--config", "debug", "one", "two"]
+    ) { cmd in
       XCTAssertEqual(cmd.config, "debug")
       XCTAssertEqual(cmd.names, ["one", "two"])
     }
@@ -232,21 +278,25 @@ extension RepeatingEndToEndTests {
       XCTAssertEqual(cmd.names, ["-one", "-two", "three"])
     }
 
-    AssertParse(PassthroughArgs.self, ["-one", "-two", "-three", "-if"]) { cmd in
+    AssertParse(PassthroughArgs.self, ["-one", "-two", "-three", "-if"]) {
+      cmd in
       XCTAssertFalse(cmd.verbose)
       XCTAssertFalse(cmd.useFiles)
       XCTAssertFalse(cmd.useStandardInput)
       XCTAssertEqual(cmd.names, ["-one", "-two", "-three", "-if"])
     }
 
-    AssertParse(PassthroughArgs.self, ["-one", "-two", "-three", "-if", "--help"]) { cmd in
+    AssertParse(
+      PassthroughArgs.self, ["-one", "-two", "-three", "-if", "--help"]
+    ) { cmd in
       XCTAssertFalse(cmd.verbose)
       XCTAssertFalse(cmd.useFiles)
       XCTAssertFalse(cmd.useStandardInput)
       XCTAssertEqual(cmd.names, ["-one", "-two", "-three", "-if", "--help"])
     }
 
-    AssertParse(PassthroughArgs.self, ["-one", "-two", "-three", "-if", "-h"]) { cmd in
+    AssertParse(PassthroughArgs.self, ["-one", "-two", "-three", "-if", "-h"]) {
+      cmd in
       XCTAssertFalse(cmd.verbose)
       XCTAssertFalse(cmd.useFiles)
       XCTAssertFalse(cmd.useStandardInput)
@@ -259,4 +309,3 @@ extension RepeatingEndToEndTests {
     XCTAssertThrowsError(try PassthroughArgs.parse(["-fib"]))
   }
 }
-

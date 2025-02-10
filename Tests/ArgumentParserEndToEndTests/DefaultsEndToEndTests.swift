@@ -9,16 +9,15 @@
 //
 //===----------------------------------------------------------------------===//
 
-import XCTest
-import ArgumentParserTestHelpers
 import ArgumentParser
+import ArgumentParserTestHelpers
+import XCTest
 
-final class DefaultsEndToEndTests: XCTestCase {
-}
+final class DefaultsEndToEndTests: XCTestCase {}
 
 // MARK: -
 
-fileprivate struct Foo: ParsableArguments {
+private struct Foo: ParsableArguments {
   struct Name: RawRepresentable, ExpressibleByArgument {
     var rawValue: String
   }
@@ -28,6 +27,8 @@ fileprivate struct Foo: ParsableArguments {
   var max: Int = 3
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension DefaultsEndToEndTests {
   func testParsing_Defaults() throws {
     AssertParse(Foo.self, []) { foo in
@@ -54,7 +55,8 @@ extension DefaultsEndToEndTests {
 
 // MARK: -
 
-fileprivate struct Bar: ParsableArguments {
+private struct Bar: ParsableArguments {
+  // swift-format-ignore: AlwaysUseLowerCamelCase
   enum Format: String, ExpressibleByArgument {
     case A
     case B
@@ -70,9 +72,12 @@ fileprivate struct Bar: ParsableArguments {
   var bar: String?
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension DefaultsEndToEndTests {
   func testParsing_Optional_WithAllValues_1() {
-    AssertParse(Bar.self, ["--name", "A", "--format", "B", "--foo", "C", "D"]) { bar in
+    AssertParse(Bar.self, ["--name", "A", "--format", "B", "--foo", "C", "D"]) {
+      bar in
       XCTAssertEqual(bar.name, "A")
       XCTAssertEqual(bar.format, .B)
       XCTAssertEqual(bar.foo, "C")
@@ -81,7 +86,8 @@ extension DefaultsEndToEndTests {
   }
 
   func testParsing_Optional_WithAllValues_2() {
-    AssertParse(Bar.self, ["D", "--format", "B", "--foo", "C", "--name", "A"]) { bar in
+    AssertParse(Bar.self, ["D", "--format", "B", "--foo", "C", "--name", "A"]) {
+      bar in
       XCTAssertEqual(bar.name, "A")
       XCTAssertEqual(bar.format, .B)
       XCTAssertEqual(bar.foo, "C")
@@ -90,7 +96,8 @@ extension DefaultsEndToEndTests {
   }
 
   func testParsing_Optional_WithAllValues_3() {
-    AssertParse(Bar.self, ["--format", "B", "--foo", "C", "D", "--name", "A"]) { bar in
+    AssertParse(Bar.self, ["--format", "B", "--foo", "C", "D", "--name", "A"]) {
+      bar in
       XCTAssertEqual(bar.name, "A")
       XCTAssertEqual(bar.format, .B)
       XCTAssertEqual(bar.foo, "C")
@@ -126,7 +133,8 @@ extension DefaultsEndToEndTests {
   }
 
   func testParsing_Optional_WithMissingValues_4() {
-    AssertParse(Bar.self, ["--name", "A", "--format", "B", "--foo", "C"]) { bar in
+    AssertParse(Bar.self, ["--name", "A", "--format", "B", "--foo", "C"]) {
+      bar in
       XCTAssertEqual(bar.name, "A")
       XCTAssertEqual(bar.format, .B)
       XCTAssertEqual(bar.foo, "C")
@@ -135,16 +143,18 @@ extension DefaultsEndToEndTests {
   }
 
   func testParsing_Optional_WithMissingValues_5() {
-    AssertParse(Bar.self, ["--format", "B", "--foo", "C", "--name", "A"]) { bar in
+    AssertParse(Bar.self, ["--format", "B", "--foo", "C", "--name", "A"]) {
+      bar in
       XCTAssertEqual(bar.name, "A")
-      XCTAssertEqual(bar.format,.B)
+      XCTAssertEqual(bar.format, .B)
       XCTAssertEqual(bar.foo, "C")
       XCTAssertEqual(bar.bar, nil)
     }
   }
 
   func testParsing_Optional_WithMissingValues_6() {
-    AssertParse(Bar.self, ["--format", "B", "--foo", "C", "--name", "A"]) { bar in
+    AssertParse(Bar.self, ["--format", "B", "--foo", "C", "--name", "A"]) {
+      bar in
       XCTAssertEqual(bar.name, "A")
       XCTAssertEqual(bar.format, .B)
       XCTAssertEqual(bar.foo, "C")
@@ -205,7 +215,9 @@ extension DefaultsEndToEndTests {
   }
 }
 
-fileprivate struct Bar_NextInput: ParsableArguments {
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
+private struct Bar_NextInput: ParsableArguments {
   enum Format: String, ExpressibleByArgument {
     case A
     case B
@@ -222,9 +234,14 @@ fileprivate struct Bar_NextInput: ParsableArguments {
   var bar: String?
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension DefaultsEndToEndTests {
   func testParsing_Optional_WithOverlappingValues_1() {
-    AssertParse(Bar_NextInput.self, ["--format", "B", "--name", "--foo", "--foo", "--name"]) { bar in
+    AssertParse(
+      Bar_NextInput.self,
+      ["--format", "B", "--name", "--foo", "--foo", "--name"]
+    ) { bar in
       XCTAssertEqual(bar.name, "--foo")
       XCTAssertEqual(bar.format, .B)
       XCTAssertEqual(bar.foo, "--name")
@@ -233,7 +250,10 @@ extension DefaultsEndToEndTests {
   }
 
   func testParsing_Optional_WithOverlappingValues_2() {
-    AssertParse(Bar_NextInput.self, ["--format", "-d", "--foo", "--name", "--name", "--foo"]) { bar in
+    AssertParse(
+      Bar_NextInput.self,
+      ["--format", "-d", "--foo", "--name", "--name", "--foo"]
+    ) { bar in
       XCTAssertEqual(bar.name, "--foo")
       XCTAssertEqual(bar.format, .D)
       XCTAssertEqual(bar.foo, "--name")
@@ -242,7 +262,10 @@ extension DefaultsEndToEndTests {
   }
 
   func testParsing_Optional_WithOverlappingValues_3() {
-    AssertParse(Bar_NextInput.self, ["--format", "-d", "--name", "--foo", "--foo", "--name", "bar"]) { bar in
+    AssertParse(
+      Bar_NextInput.self,
+      ["--format", "-d", "--name", "--foo", "--foo", "--name", "bar"]
+    ) { bar in
       XCTAssertEqual(bar.name, "--foo")
       XCTAssertEqual(bar.format, .D)
       XCTAssertEqual(bar.foo, "--name")
@@ -253,7 +276,7 @@ extension DefaultsEndToEndTests {
 
 // MARK: -
 
-fileprivate struct Baz: ParsableArguments {
+private struct Baz: ParsableArguments {
   @Option(parsing: .unconditional) var int: Int = 0
   @Option(parsing: .unconditional) var int8: Int8 = 0
   @Option(parsing: .unconditional) var int16: Int16 = 0
@@ -271,6 +294,8 @@ fileprivate struct Baz: ParsableArguments {
   @Option var bool: Bool = false
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension DefaultsEndToEndTests {
   func testParsing_AllTypes_1() {
     AssertParse(Baz.self, []) { baz in
@@ -291,11 +316,16 @@ extension DefaultsEndToEndTests {
   }
 
   func testParsing_AllTypes_2() {
-    AssertParse(Baz.self, [
-      "--int", "-1", "--int8", "-2", "--int16", "-3", "--int32", "-4", "--int64", "-5",
-      "--uint", "1", "--uint8", "2", "--uint16", "3", "--uint32", "4", "--uint64", "5",
-      "--float", "1.25", "--double", "2.5", "--bool", "true"
-    ]) { baz in
+    AssertParse(
+      Baz.self,
+      [
+        "--int", "-1", "--int8", "-2", "--int16", "-3", "--int32", "-4",
+        "--int64", "-5",
+        "--uint", "1", "--uint8", "2", "--uint16", "3", "--uint32", "4",
+        "--uint64", "5",
+        "--float", "1.25", "--double", "2.5", "--bool", "true",
+      ]
+    ) { baz in
       XCTAssertEqual(baz.int, -1)
       XCTAssertEqual(baz.int8, -2)
       XCTAssertEqual(baz.int16, -3)
@@ -337,11 +367,13 @@ extension DefaultsEndToEndTests {
   }
 }
 
-fileprivate struct Qux: ParsableArguments {
+private struct Qux: ParsableArguments {
   @Argument
   var name: String = "quux"
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension DefaultsEndToEndTests {
   func testParsing_ArgumentDefaults() throws {
     AssertParse(Qux.self, []) { qux in
@@ -373,11 +405,11 @@ extension DefaultsEndToEndTests {
   }
 }
 
-fileprivate func exclaim(_ input: String) throws -> String {
-  return input + "!"
+private func exclaim(_ input: String) throws -> String {
+  input + "!"
 }
 
-fileprivate struct OptionPropertyInitArguments_Default: ParsableArguments {
+private struct OptionPropertyInitArguments_Default: ParsableArguments {
   @Option
   var data: String = "test"
 
@@ -385,16 +417,22 @@ fileprivate struct OptionPropertyInitArguments_Default: ParsableArguments {
   var transformedData: String = "test"
 }
 
-fileprivate struct OptionPropertyInitArguments_NoDefault_NoTransform: ParsableArguments {
+private struct OptionPropertyInitArguments_NoDefault_NoTransform:
+  ParsableArguments
+{
   @Option()
   var data: String
 }
 
-fileprivate struct OptionPropertyInitArguments_NoDefault_Transform: ParsableArguments {
+private struct OptionPropertyInitArguments_NoDefault_Transform:
+  ParsableArguments
+{
   @Option(transform: exclaim)
   var transformedData: String
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension DefaultsEndToEndTests {
   /// Tests that using default property initialization syntax parses the default value for the argument when nothing is provided from the command-line.
   func testParsing_OptionPropertyInit_Default_NoTransform_UseDefault() throws {
@@ -404,20 +442,30 @@ extension DefaultsEndToEndTests {
   }
 
   /// Tests that using default property initialization syntax parses the command-line-provided value for the argument when provided.
-  func testParsing_OptionPropertyInit_Default_NoTransform_OverrideDefault() throws {
-    AssertParse(OptionPropertyInitArguments_Default.self, ["--data", "test2"]) { arguments in
+  func testParsing_OptionPropertyInit_Default_NoTransform_OverrideDefault()
+    throws
+  {
+    AssertParse(OptionPropertyInitArguments_Default.self, ["--data", "test2"]) {
+      arguments in
       XCTAssertEqual(arguments.data, "test2")
     }
   }
 
+  // swift-format-ignore: BeginDocumentationCommentWithOneLineSummary
+  // https://github.com/swiftlang/swift-format/issues/925
   /// Tests that *not* providing a default value still parses the argument correctly from the command-line.
   /// This test is almost certainly duplicated by others in the repository, but allows for quick use of test filtering during development on the initialization functionality.
   func testParsing_OptionPropertyInit_NoDefault_NoTransform() throws {
-    AssertParse(OptionPropertyInitArguments_NoDefault_NoTransform.self, ["--data", "test"]) { arguments in
+    AssertParse(
+      OptionPropertyInitArguments_NoDefault_NoTransform.self,
+      ["--data", "test"]
+    ) { arguments in
       XCTAssertEqual(arguments.data, "test")
     }
   }
 
+  // swift-format-ignore: BeginDocumentationCommentWithOneLineSummary
+  // https://github.com/swiftlang/swift-format/issues/925
   /// Tests that using default property initialization syntax on a property with a `transform` function provided parses the default value for the argument when nothing is provided from the command-line.
   func testParsing_OptionPropertyInit_Default_Transform_UseDefault() throws {
     AssertParse(OptionPropertyInitArguments_Default.self, []) { arguments in
@@ -425,97 +473,138 @@ extension DefaultsEndToEndTests {
     }
   }
 
+  // swift-format-ignore: BeginDocumentationCommentWithOneLineSummary
+  // https://github.com/swiftlang/swift-format/issues/925
   /// Tests that using default property initialization syntax on a property with a `transform` function provided parses and transforms the command-line-provided value for the argument when provided.
-  func testParsing_OptionPropertyInit_Default_Transform_OverrideDefault() throws {
-    AssertParse(OptionPropertyInitArguments_Default.self, ["--transformed-data", "test2"]) { arguments in
+  func testParsing_OptionPropertyInit_Default_Transform_OverrideDefault() throws
+  {
+    AssertParse(
+      OptionPropertyInitArguments_Default.self, ["--transformed-data", "test2"]
+    ) { arguments in
       XCTAssertEqual(arguments.transformedData, "test2!")
     }
   }
 
+  // swift-format-ignore: BeginDocumentationCommentWithOneLineSummary
+  // https://github.com/swiftlang/swift-format/issues/925
   /// Tests that *not* providing a default value for a property with a `transform` function still parses the argument correctly from the command-line.
   /// This test is almost certainly duplicated by others in the repository, but allows for quick use of test filtering during development on the initialization functionality.
   func testParsing_OptionPropertyInit_NoDefault_Transform() throws {
-    AssertParse(OptionPropertyInitArguments_NoDefault_Transform.self, ["--transformed-data", "test"]) { arguments in
+    AssertParse(
+      OptionPropertyInitArguments_NoDefault_Transform.self,
+      ["--transformed-data", "test"]
+    ) { arguments in
       XCTAssertEqual(arguments.transformedData, "test!")
     }
   }
 }
 
-
-fileprivate struct ArgumentPropertyInitArguments_Default_NoTransform: ParsableArguments {
+private struct ArgumentPropertyInitArguments_Default_NoTransform:
+  ParsableArguments
+{
   @Argument
   var data: String = "test"
 }
 
-fileprivate struct ArgumentPropertyInitArguments_NoDefault_NoTransform: ParsableArguments {
+private struct ArgumentPropertyInitArguments_NoDefault_NoTransform:
+  ParsableArguments
+{
   @Argument()
   var data: String
 }
 
-fileprivate struct ArgumentPropertyInitArguments_Default_Transform: ParsableArguments {
+private struct ArgumentPropertyInitArguments_Default_Transform:
+  ParsableArguments
+{
   @Argument(transform: exclaim)
-    var transformedData: String = "test"
+  var transformedData: String = "test"
 }
 
-fileprivate struct ArgumentPropertyInitArguments_NoDefault_Transform: ParsableArguments {
+private struct ArgumentPropertyInitArguments_NoDefault_Transform:
+  ParsableArguments
+{
   @Argument(transform: exclaim)
   var transformedData: String
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension DefaultsEndToEndTests {
   /// Tests that using default property initialization syntax parses the default value for the argument when nothing is provided from the command-line.
-  func testParsing_ArgumentPropertyInit_Default_NoTransform_UseDefault() throws {
-    AssertParse(ArgumentPropertyInitArguments_Default_NoTransform.self, []) { arguments in
+  func testParsing_ArgumentPropertyInit_Default_NoTransform_UseDefault() throws
+  {
+    AssertParse(ArgumentPropertyInitArguments_Default_NoTransform.self, []) {
+      arguments in
       XCTAssertEqual(arguments.data, "test")
     }
   }
 
   /// Tests that using default property initialization syntax parses the command-line-provided value for the argument when provided.
-  func testParsing_ArgumentPropertyInit_Default_NoTransform_OverrideDefault() throws {
-    AssertParse(ArgumentPropertyInitArguments_Default_NoTransform.self, ["test2"]) { arguments in
+  func testParsing_ArgumentPropertyInit_Default_NoTransform_OverrideDefault()
+    throws
+  {
+    AssertParse(
+      ArgumentPropertyInitArguments_Default_NoTransform.self, ["test2"]
+    ) { arguments in
       XCTAssertEqual(arguments.data, "test2")
     }
   }
 
+  // swift-format-ignore: BeginDocumentationCommentWithOneLineSummary
+  // https://github.com/swiftlang/swift-format/issues/925
   /// Tests that *not* providing a default value still parses the argument correctly from the command-line.
   /// This test is almost certainly duplicated by others in the repository, but allows for quick use of test filtering during development on the initialization functionality.
   func testParsing_ArgumentPropertyInit_NoDefault_NoTransform() throws {
-    AssertParse(ArgumentPropertyInitArguments_NoDefault_NoTransform.self, ["test"]) { arguments in
+    AssertParse(
+      ArgumentPropertyInitArguments_NoDefault_NoTransform.self, ["test"]
+    ) { arguments in
       XCTAssertEqual(arguments.data, "test")
     }
   }
 
   /// Tests that using default property initialization syntax on a property with a `transform` function provided parses the default value for the argument when nothing is provided from the command-line.
   func testParsing_ArgumentPropertyInit_Default_Transform_UseDefault() throws {
-    AssertParse(ArgumentPropertyInitArguments_Default_Transform.self, []) { arguments in
+    AssertParse(ArgumentPropertyInitArguments_Default_Transform.self, []) {
+      arguments in
       XCTAssertEqual(arguments.transformedData, "test")
     }
   }
 
-  /// Tests that using default property initialization syntax on a property with a `transform` function provided parses and transforms the command-line-provided value for the argument when provided.
-  func testParsing_ArgumentPropertyInit_Default_Transform_OverrideDefault() throws {
-    AssertParse(ArgumentPropertyInitArguments_Default_Transform.self, ["test2"]) { arguments in
+  /// Tests that using default property initialization syntax on a property with
+  /// a `transform` function provided parses and transforms the
+  /// command-line-provided value for the argument when provided.
+  func testParsing_ArgumentPropertyInit_Default_Transform_OverrideDefault()
+    throws
+  {
+    AssertParse(ArgumentPropertyInitArguments_Default_Transform.self, ["test2"])
+    { arguments in
       XCTAssertEqual(arguments.transformedData, "test2!")
     }
   }
 
+  // swift-format-ignore: BeginDocumentationCommentWithOneLineSummary
+  // https://github.com/swiftlang/swift-format/issues/925
   /// Tests that *not* providing a default value for a property with a `transform` function still parses the argument correctly from the command-line.
   /// This test is almost certainly duplicated by others in the repository, but allows for quick use of test filtering during development on the initialization functionality.
   func testParsing_ArgumentPropertyInit_NoDefault_Transform() throws {
-    AssertParse(ArgumentPropertyInitArguments_NoDefault_Transform.self, ["test"]) { arguments in
+    AssertParse(
+      ArgumentPropertyInitArguments_NoDefault_Transform.self, ["test"]
+    ) { arguments in
       XCTAssertEqual(arguments.transformedData, "test!")
     }
   }
 }
 
-fileprivate struct Quux: ParsableArguments {
+private struct Quux: ParsableArguments {
   @Option(parsing: .upToNextOption)
   var letters: [String] = ["A", "B"]
-  
+
   @Argument()
   var numbers: [Int] = [1, 2]
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension DefaultsEndToEndTests {
   func testParsing_ArrayDefaults() throws {
     AssertParse(Quux.self, []) { qux in
@@ -537,16 +626,18 @@ extension DefaultsEndToEndTests {
   }
 }
 
-fileprivate struct FlagPropertyInitArguments_Bool_Default: ParsableArguments {
+private struct FlagPropertyInitArguments_Bool_Default: ParsableArguments {
   @Flag(inversion: .prefixedNo)
   var data: Bool = false
 }
 
-fileprivate struct FlagPropertyInitArguments_Bool_NoDefault: ParsableArguments {
+private struct FlagPropertyInitArguments_Bool_NoDefault: ParsableArguments {
   @Flag(inversion: .prefixedNo)
   var data: Bool
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension DefaultsEndToEndTests {
   /// Tests that using default property initialization syntax parses the default value for the argument when nothing is provided from the command-line.
   func testParsing_FlagPropertyInit_Bool_Default_UseDefault() throws {
@@ -557,88 +648,108 @@ extension DefaultsEndToEndTests {
 
   /// Tests that using default property initialization syntax parses the command-line-provided value for the argument when provided.
   func testParsing_FlagPropertyInit_Bool_Default_OverrideDefault() throws {
-    AssertParse(FlagPropertyInitArguments_Bool_Default.self, ["--data"]) { arguments in
+    AssertParse(FlagPropertyInitArguments_Bool_Default.self, ["--data"]) {
+      arguments in
       XCTAssertEqual(arguments.data, true)
     }
   }
 
+  // swift-format-ignore: BeginDocumentationCommentWithOneLineSummary
+  // https://github.com/swiftlang/swift-format/issues/925
   /// Tests that *not* providing a default value still parses the argument correctly from the command-line.
   /// This test is almost certainly duplicated by others in the repository, but allows for quick use of test filtering during development on the initialization functionality.
   func testParsing_FlagPropertyInit_Bool_NoDefault() throws {
-    AssertParse(FlagPropertyInitArguments_Bool_NoDefault.self, ["--data"]) { arguments in
+    AssertParse(FlagPropertyInitArguments_Bool_NoDefault.self, ["--data"]) {
+      arguments in
       XCTAssertEqual(arguments.data, true)
     }
   }
 }
 
-
-fileprivate enum HasData: EnumerableFlag {
+private enum HasData: EnumerableFlag {
   case noData
   case data
 }
 
-fileprivate struct FlagPropertyInitArguments_EnumerableFlag_Default: ParsableArguments {
+private struct FlagPropertyInitArguments_EnumerableFlag_Default:
+  ParsableArguments
+{
   @Flag
   var data: HasData = .noData
 }
 
-fileprivate struct FlagPropertyInitArguments_EnumerableFlag_NoDefault: ParsableArguments {
+private struct FlagPropertyInitArguments_EnumerableFlag_NoDefault:
+  ParsableArguments
+{
   @Flag()
   var data: HasData
 }
 
-
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension DefaultsEndToEndTests {
   /// Tests that using default property initialization syntax parses the default value for the argument when nothing is provided from the command-line.
   func testParsing_FlagPropertyInit_EnumerableFlag_Default_UseDefault() throws {
-    AssertParse(FlagPropertyInitArguments_EnumerableFlag_Default.self, []) { arguments in
+    AssertParse(FlagPropertyInitArguments_EnumerableFlag_Default.self, []) {
+      arguments in
       XCTAssertEqual(arguments.data, .noData)
     }
   }
 
   /// Tests that using default property initialization syntax parses the command-line-provided value for the argument when provided.
-  func testParsing_FlagPropertyInit_EnumerableFlag_Default_OverrideDefault() throws {
-    AssertParse(FlagPropertyInitArguments_EnumerableFlag_Default.self, ["--data"]) { arguments in
+  func testParsing_FlagPropertyInit_EnumerableFlag_Default_OverrideDefault()
+    throws
+  {
+    AssertParse(
+      FlagPropertyInitArguments_EnumerableFlag_Default.self, ["--data"]
+    ) { arguments in
       XCTAssertEqual(arguments.data, .data)
     }
   }
 
+  // swift-format-ignore: BeginDocumentationCommentWithOneLineSummary
+  // https://github.com/swiftlang/swift-format/issues/925
   /// Tests that *not* providing a default value still parses the argument correctly from the command-line.
   /// This test is almost certainly duplicated by others in the repository, but allows for quick use of test filtering during development on the initialization functionality.
   func testParsing_FlagPropertyInit_EnumerableFlag_NoDefault() throws {
-    AssertParse(FlagPropertyInitArguments_EnumerableFlag_NoDefault.self, ["--data"]) { arguments in
+    AssertParse(
+      FlagPropertyInitArguments_EnumerableFlag_NoDefault.self, ["--data"]
+    ) { arguments in
       XCTAssertEqual(arguments.data, .data)
     }
   }
 }
 
-fileprivate struct Main: ParsableCommand {
+private struct Main: ParsableCommand {
   static let configuration = CommandConfiguration(
     subcommands: [Sub.self],
     defaultSubcommand: Sub.self
   )
-  
+
   struct Options: ParsableArguments {
     @Option(parsing: .upToNextOption)
     var letters: [String] = ["A", "B"]
   }
-  
+
   struct Sub: ParsableCommand {
     @Argument()
     var numbers: [Int] = [1, 2]
-    
+
     @OptionGroup()
     var options: Main.Options
   }
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension DefaultsEndToEndTests {
   func testParsing_ArrayDefaults_Subcommands() {
     AssertParseCommand(Main.self, Main.Sub.self, []) { sub in
       XCTAssertEqual(sub.options.letters, ["A", "B"])
       XCTAssertEqual(sub.numbers, [1, 2])
     }
-    AssertParseCommand(Main.self, Main.Sub.self, ["--letters", "C", "D"]) { sub in
+    AssertParseCommand(Main.self, Main.Sub.self, ["--letters", "C", "D"]) {
+      sub in
       XCTAssertEqual(sub.options.letters, ["C", "D"])
       XCTAssertEqual(sub.numbers, [1, 2])
     }
@@ -646,39 +757,42 @@ extension DefaultsEndToEndTests {
       XCTAssertEqual(sub.options.letters, ["A", "B"])
       XCTAssertEqual(sub.numbers, [3, 4])
     }
-    AssertParseCommand(Main.self, Main.Sub.self, ["3", "4", "--letters", "C", "D"]) { sub in
+    AssertParseCommand(
+      Main.self, Main.Sub.self, ["3", "4", "--letters", "C", "D"]
+    ) { sub in
       XCTAssertEqual(sub.options.letters, ["C", "D"])
       XCTAssertEqual(sub.numbers, [3, 4])
     }
   }
 }
 
-
-fileprivate struct RequiredArray_Option_NoTransform: ParsableArguments {
+private struct RequiredArray_Option_NoTransform: ParsableArguments {
   @Option(parsing: .remaining)
   var array: [String]
 }
 
-fileprivate struct RequiredArray_Option_Transform: ParsableArguments {
+private struct RequiredArray_Option_Transform: ParsableArguments {
   @Option(parsing: .remaining, transform: exclaim)
   var array: [String]
 }
 
-fileprivate struct RequiredArray_Argument_NoTransform: ParsableArguments {
+private struct RequiredArray_Argument_NoTransform: ParsableArguments {
   @Argument()
   var array: [String]
 }
 
-fileprivate struct RequiredArray_Argument_Transform: ParsableArguments {
+private struct RequiredArray_Argument_Transform: ParsableArguments {
   @Argument(transform: exclaim)
   var array: [String]
 }
 
-fileprivate struct RequiredArray_Flag: ParsableArguments {
+private struct RequiredArray_Flag: ParsableArguments {
   @Flag
   var array: [HasData]
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension DefaultsEndToEndTests {
   /// Tests that not providing an argument for a required array option produces an error.
   func testParsing_RequiredArray_Option_NoTransform_NoInput() {
@@ -687,14 +801,16 @@ extension DefaultsEndToEndTests {
 
   /// Tests that providing a single argument for a required array option parses that value correctly.
   func testParsing_RequiredArray_Option_NoTransform_SingleInput() {
-    AssertParse(RequiredArray_Option_NoTransform.self, ["--array", "1"]) { arguments in
+    AssertParse(RequiredArray_Option_NoTransform.self, ["--array", "1"]) {
+      arguments in
       XCTAssertEqual(arguments.array, ["1"])
     }
   }
 
   /// Tests that providing multiple arguments for a required array option parses those values correctly.
   func testParsing_RequiredArray_Option_NoTransform_MultipleInput() {
-    AssertParse(RequiredArray_Option_NoTransform.self, ["--array", "2", "3"]) { arguments in
+    AssertParse(RequiredArray_Option_NoTransform.self, ["--array", "2", "3"]) {
+      arguments in
       XCTAssertEqual(arguments.array, ["2", "3"])
     }
   }
@@ -706,18 +822,19 @@ extension DefaultsEndToEndTests {
 
   /// Tests that providing a single argument for a required array option with a transform parses that value correctly.
   func testParsing_RequiredArray_Option_Transform_SingleInput() {
-    AssertParse(RequiredArray_Option_Transform.self, ["--array", "1"]) { arguments in
+    AssertParse(RequiredArray_Option_Transform.self, ["--array", "1"]) {
+      arguments in
       XCTAssertEqual(arguments.array, ["1!"])
     }
   }
 
   /// Tests that providing multiple arguments for a required array option with a transform parses those values correctly.
   func testParsing_RequiredArray_Option_Transform_MultipleInput() {
-    AssertParse(RequiredArray_Option_Transform.self, ["--array", "2", "3"]) { arguments in
+    AssertParse(RequiredArray_Option_Transform.self, ["--array", "2", "3"]) {
+      arguments in
       XCTAssertEqual(arguments.array, ["2!", "3!"])
     }
   }
-
 
   /// Tests that not providing an argument for a required array argument produces an error.
   func testParsing_RequiredArray_Argument_NoTransform_NoInput() {
@@ -733,7 +850,8 @@ extension DefaultsEndToEndTests {
 
   /// Tests that providing multiple arguments for a required array argument parses those values correctly.
   func testParsing_RequiredArray_Argument_NoTransform_MultipleInput() {
-    AssertParse(RequiredArray_Argument_NoTransform.self, ["2", "3"]) { arguments in
+    AssertParse(RequiredArray_Argument_NoTransform.self, ["2", "3"]) {
+      arguments in
       XCTAssertEqual(arguments.array, ["2", "3"])
     }
   }
@@ -752,11 +870,11 @@ extension DefaultsEndToEndTests {
 
   /// Tests that providing multiple arguments for a required array argument with a transform parses those values correctly.
   func testParsing_RequiredArray_Argument_Transform_MultipleInput() {
-    AssertParse(RequiredArray_Argument_Transform.self, ["2", "3"]) { arguments in
+    AssertParse(RequiredArray_Argument_Transform.self, ["2", "3"]) {
+      arguments in
       XCTAssertEqual(arguments.array, ["2!", "3!"])
     }
   }
-
 
   /// Tests that not providing an argument for a required array flag produces an error.
   func testParsing_RequiredArray_Flag_NoInput() {
@@ -779,11 +897,13 @@ extension DefaultsEndToEndTests {
 }
 
 @available(*, deprecated)
-fileprivate struct OptionPropertyDeprecatedInit_NoDefault: ParsableArguments {
+private struct OptionPropertyDeprecatedInit_NoDefault: ParsableArguments {
   @Option(completion: .file(), help: "")
   var data: String = "test"
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension DefaultsEndToEndTests {
   /// Tests that instances created using deprecated initializer with completion and help arguments swapped are constructed and parsed correctly.
   @available(*, deprecated)
@@ -796,12 +916,14 @@ extension DefaultsEndToEndTests {
 
 // MARK: Overload selection
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension DefaultsEndToEndTests {
   private struct AbsolutePath: ExpressibleByArgument {
     init(_ value: String) {}
     init?(argument: String) {}
   }
-  
+
   private struct TwoPaths: ParsableCommand {
     @Argument(help: .init("The path"))
     var path1 = AbsolutePath("abc")
@@ -815,7 +937,9 @@ extension DefaultsEndToEndTests {
     @Option(help: "The path")
     var path4 = AbsolutePath("abc")
   }
-  
+
+  // swift-format-ignore: BeginDocumentationCommentWithOneLineSummary
+  // https://github.com/swiftlang/swift-format/issues/925
   /// Tests that a non-optional `Value` type is inferred, regardless of how the
   /// initializer parameters are spelled. Previously, string literals and
   /// `.init` calls for the help parameter inferred different generic types.
@@ -829,6 +953,8 @@ extension DefaultsEndToEndTests {
   }
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension DefaultsEndToEndTests {
   private struct UnderscoredOptional: ParsableCommand {
     @Option(name: .customLong("arg"))
@@ -853,7 +979,8 @@ extension DefaultsEndToEndTests {
     AssertParse(UnderscoredArray.self, []) { parsed in
       XCTAssertEqual(parsed._columns, [])
     }
-    AssertParse(UnderscoredArray.self, ["--columns", "foo", "bar", "baz"]) { parsed in
+    AssertParse(UnderscoredArray.self, ["--columns", "foo", "bar", "baz"]) {
+      parsed in
       XCTAssertEqual(parsed._columns, ["foo", "bar", "baz"])
     }
   }

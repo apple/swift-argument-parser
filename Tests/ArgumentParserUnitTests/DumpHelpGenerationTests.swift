@@ -8,8 +8,9 @@
 //
 //===----------------------------------------------------------------------===//
 
-import XCTest
 import ArgumentParserTestHelpers
+import XCTest
+
 @testable import ArgumentParser
 
 final class DumpHelpGenerationTests: XCTestCase {
@@ -45,7 +46,9 @@ final class DumpHelpGenerationTests: XCTestCase {
 extension DumpHelpGenerationTests {
   struct A: ParsableCommand {
     enum TestEnum: String, CaseIterable, ExpressibleByArgument {
-      case a = "one", b = "two", c = "three"
+      case a = "one"
+      case b = "two"
+      case c = "three"
     }
 
     @Option
@@ -115,7 +118,10 @@ extension DumpHelpGenerationTests {
     @Option(help: "An optional color.")
     var opt: Color?
 
-    @Option(help: .init(discussion: "A preamble for the list of values in the discussion section."))
+    @Option(
+      help: .init(
+        discussion:
+          "A preamble for the list of values in the discussion section."))
     var extra: Color
 
     @Option(help: .init(discussion: "A discussion."))

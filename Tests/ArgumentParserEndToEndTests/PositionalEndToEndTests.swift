@@ -9,19 +9,21 @@
 //
 //===----------------------------------------------------------------------===//
 
-import XCTest
-import ArgumentParserTestHelpers
 import ArgumentParser
+import ArgumentParserTestHelpers
+import XCTest
 
 final class PositionalEndToEndTests: XCTestCase {
 }
 
 // MARK: Single value String
 
-fileprivate struct Bar: ParsableArguments {
+private struct Bar: ParsableArguments {
   @Argument() var name: String
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension PositionalEndToEndTests {
   func testParsing_SinglePositional() throws {
     AssertParse(Bar.self, ["Bar"]) { bar in
@@ -43,7 +45,7 @@ extension PositionalEndToEndTests {
       XCTAssertEqual(bar.name, "--")
     }
   }
-  
+
   func testParsing_SinglePositional_Fails() throws {
     XCTAssertThrowsError(try Bar.parse([]))
     XCTAssertThrowsError(try Bar.parse(["--name"]))
@@ -53,11 +55,13 @@ extension PositionalEndToEndTests {
 
 // MARK: Two values
 
-fileprivate struct Baz: ParsableArguments {
+private struct Baz: ParsableArguments {
   @Argument() var name: String
   @Argument() var format: String
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension PositionalEndToEndTests {
   func testParsing_TwoPositional() throws {
     AssertParse(Baz.self, ["Bar", "Foo"]) { baz in
@@ -81,7 +85,7 @@ extension PositionalEndToEndTests {
       XCTAssertEqual(baz.format, "--f")
     }
   }
-  
+
   func testParsing_TwoPositional_Fails() throws {
     XCTAssertThrowsError(try Baz.parse(["Bar", "Foo", "Baz"]))
     XCTAssertThrowsError(try Baz.parse(["Bar"]))
@@ -94,10 +98,12 @@ extension PositionalEndToEndTests {
 
 // MARK: Multiple values
 
-fileprivate struct Qux: ParsableArguments {
+private struct Qux: ParsableArguments {
   @Argument() var names: [String] = []
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension PositionalEndToEndTests {
   func testParsing_MultiplePositional() throws {
     AssertParse(Qux.self, []) { qux in
@@ -112,7 +118,7 @@ extension PositionalEndToEndTests {
     AssertParse(Qux.self, ["Bar", "Foo", "Baz"]) { qux in
       XCTAssertEqual(qux.names, ["Bar", "Foo", "Baz"])
     }
-    
+
     AssertParse(Qux.self, ["--", "--b", "--f"]) { qux in
       XCTAssertEqual(qux.names, ["--b", "--f"])
     }
@@ -120,7 +126,7 @@ extension PositionalEndToEndTests {
       XCTAssertEqual(qux.names, ["b", "--f"])
     }
   }
-  
+
   func testParsing_MultiplePositional_Fails() throws {
     // TODO: Allow zero-argument arrays?
     XCTAssertThrowsError(try Qux.parse(["--name", "Bar", "Foo"]))
@@ -131,11 +137,13 @@ extension PositionalEndToEndTests {
 
 // MARK: Single value plus multiple values
 
-fileprivate struct Wobble: ParsableArguments {
+private struct Wobble: ParsableArguments {
   @Argument() var count: Int
   @Argument() var names: [String] = []
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension PositionalEndToEndTests {
   func testParsing_SingleAndMultiplePositional() throws {
     AssertParse(Wobble.self, ["5"]) { wobble in
@@ -154,7 +162,7 @@ extension PositionalEndToEndTests {
       XCTAssertEqual(wobble.count, 5)
       XCTAssertEqual(wobble.names, ["Bar", "Foo", "Baz"])
     }
-    
+
     AssertParse(Wobble.self, ["5", "--", "--b", "--f"]) { wobble in
       XCTAssertEqual(wobble.count, 5)
       XCTAssertEqual(wobble.names, ["--b", "--f"])
@@ -168,7 +176,7 @@ extension PositionalEndToEndTests {
       XCTAssertEqual(wobble.names, ["b", "--f"])
     }
   }
-  
+
   func testParsing_SingleAndMultiplePositional_Fails() throws {
     XCTAssertThrowsError(try Wobble.parse([]))
     XCTAssertThrowsError(try Wobble.parse(["--name", "Bar", "Foo"]))
@@ -179,10 +187,12 @@ extension PositionalEndToEndTests {
 
 // MARK: Multiple parsed values
 
-fileprivate struct Flob: ParsableArguments {
+private struct Flob: ParsableArguments {
   @Argument() var counts: [Int] = []
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension PositionalEndToEndTests {
   func testParsing_MultipleParsedPositional() throws {
     AssertParse(Flob.self, []) { flob in
@@ -194,7 +204,7 @@ extension PositionalEndToEndTests {
     AssertParse(Flob.self, ["5", "6"]) { flob in
       XCTAssertEqual(flob.counts, [5, 6])
     }
-    
+
     AssertParse(Flob.self, ["5", "--", "6"]) { flob in
       XCTAssertEqual(flob.counts, [5, 6])
     }
@@ -205,7 +215,7 @@ extension PositionalEndToEndTests {
       XCTAssertEqual(flob.counts, [5, 6])
     }
   }
-  
+
   func testParsing_MultipleParsedPositional_Fails() throws {
     XCTAssertThrowsError(try Flob.parse(["a"]))
     XCTAssertThrowsError(try Flob.parse(["5", "6", "a"]))
@@ -214,11 +224,13 @@ extension PositionalEndToEndTests {
 
 // MARK: Multiple parsed values
 
-fileprivate struct BadlyFormed: ParsableArguments {
+private struct BadlyFormed: ParsableArguments {
   @Argument() var numbers: [Int] = []
   @Argument() var name: String
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension PositionalEndToEndTests {
   // This test results in a fatal error when run, so it can't be enabled
   // or CI will prevent integration. Delete `disabled_` to verify the trap

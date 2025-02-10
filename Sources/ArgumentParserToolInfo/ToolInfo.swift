@@ -9,9 +9,9 @@
 //
 //===----------------------------------------------------------------------===//
 
-fileprivate extension Collection {
+extension Collection {
   /// - returns: A non-empty collection or `nil`.
-  var nonEmpty: Self? { isEmpty ? nil : self }
+  fileprivate var nonEmpty: Self? { isEmpty ? nil : self }
 }
 
 /// Header used to validate serialization version of an encoded ToolInfo struct.
@@ -86,14 +86,21 @@ public struct CommandInfoV0: Codable, Hashable {
 
   public init(from decoder: any Decoder) throws {
     let container = try decoder.container(keyedBy: CodingKeys.self)
-    self.superCommands = try container.decodeIfPresent([String].self, forKey: .superCommands)
+    self.superCommands = try container.decodeIfPresent(
+      [String].self, forKey: .superCommands)
     self.commandName = try container.decode(String.self, forKey: .commandName)
-    self.abstract = try container.decodeIfPresent(String.self, forKey: .abstract)
-    self.discussion = try container.decodeIfPresent(String.self, forKey: .discussion)
-    self.shouldDisplay = try container.decodeIfPresent(Bool.self, forKey: .shouldDisplay) ?? true
-    self.defaultSubcommand = try container.decodeIfPresent(String.self, forKey: .defaultSubcommand)
-    self.subcommands = try container.decodeIfPresent([CommandInfoV0].self, forKey: .subcommands)
-    self.arguments = try container.decodeIfPresent([ArgumentInfoV0].self, forKey: .arguments)
+    self.abstract = try container.decodeIfPresent(
+      String.self, forKey: .abstract)
+    self.discussion = try container.decodeIfPresent(
+      String.self, forKey: .discussion)
+    self.shouldDisplay =
+      try container.decodeIfPresent(Bool.self, forKey: .shouldDisplay) ?? true
+    self.defaultSubcommand = try container.decodeIfPresent(
+      String.self, forKey: .defaultSubcommand)
+    self.subcommands = try container.decodeIfPresent(
+      [CommandInfoV0].self, forKey: .subcommands)
+    self.arguments = try container.decodeIfPresent(
+      [ArgumentInfoV0].self, forKey: .arguments)
   }
 }
 

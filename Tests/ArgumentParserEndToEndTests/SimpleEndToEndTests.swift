@@ -9,19 +9,20 @@
 //
 //===----------------------------------------------------------------------===//
 
-import XCTest
-import ArgumentParserTestHelpers
 import ArgumentParser
+import ArgumentParserTestHelpers
+import XCTest
 
-final class SimpleEndToEndTests: XCTestCase {
-}
+final class SimpleEndToEndTests: XCTestCase {}
 
 // MARK: Single value String
 
-fileprivate struct Bar: ParsableArguments {
+private struct Bar: ParsableArguments {
   @Option() var name: String
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension SimpleEndToEndTests {
   func testParsing_SingleOption() throws {
     AssertParse(Bar.self, ["--name", "Bar"]) { bar in
@@ -31,7 +32,7 @@ extension SimpleEndToEndTests {
       XCTAssertEqual(bar.name, " foo ")
     }
   }
-  
+
   func testParsing_SingleOption_Fails() throws {
     XCTAssertThrowsError(try Bar.parse([]))
     XCTAssertThrowsError(try Bar.parse(["--name"]))
@@ -49,17 +50,19 @@ extension SimpleEndToEndTests {
 
 // MARK: Single value Int
 
-fileprivate struct Foo: ParsableArguments {
+private struct Foo: ParsableArguments {
   @Option() var count: Int
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension SimpleEndToEndTests {
   func testParsing_SingleOption_Int() throws {
     AssertParse(Foo.self, ["--count", "42"]) { foo in
       XCTAssertEqual(foo.count, 42)
     }
   }
-  
+
   func testParsing_SingleOption_Int_Fails() throws {
     XCTAssertThrowsError(try Foo.parse([]))
     XCTAssertThrowsError(try Foo.parse(["--count"]))
@@ -77,11 +80,13 @@ extension SimpleEndToEndTests {
 
 // MARK: Two values
 
-fileprivate struct Baz: ParsableArguments {
+private struct Baz: ParsableArguments {
   @Option() var name: String
   @Option() var format: String
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension SimpleEndToEndTests {
   func testParsing_TwoOptions_1() throws {
     AssertParse(Baz.self, ["--name", "Bar", "--format", "Foo"]) { baz in
@@ -89,28 +94,31 @@ extension SimpleEndToEndTests {
       XCTAssertEqual(baz.format, "Foo")
     }
   }
-  
+
   func testParsing_TwoOptions_2() throws {
     AssertParse(Baz.self, ["--format", "Foo", "--name", "Bar"]) { baz in
       XCTAssertEqual(baz.name, "Bar")
       XCTAssertEqual(baz.format, "Foo")
     }
   }
-  
+
   func testParsing_TwoOptions_Fails() throws {
     XCTAssertThrowsError(try Baz.parse(["--nam", "Bar", "--format", "Foo"]))
     XCTAssertThrowsError(try Baz.parse(["--name", "Bar", "--forma", "Foo"]))
     XCTAssertThrowsError(try Baz.parse(["--name", "Bar"]))
     XCTAssertThrowsError(try Baz.parse(["--format", "Foo"]))
-    
+
     XCTAssertThrowsError(try Baz.parse(["--name", "--format", "Foo"]))
     XCTAssertThrowsError(try Baz.parse(["--name", "Bar", "--format"]))
-    XCTAssertThrowsError(try Baz.parse(["--name", "Bar", "--format", "Foo", "Baz"]))
+    XCTAssertThrowsError(
+      try Baz.parse(["--name", "Bar", "--format", "Foo", "Baz"]))
     XCTAssertThrowsError(try Baz.parse(["Bar", "--name", "--format", "Foo"]))
     XCTAssertThrowsError(try Baz.parse(["Bar", "--name", "Foo", "--format"]))
     XCTAssertThrowsError(try Baz.parse(["Bar", "Foo", "--name", "--format"]))
-    XCTAssertThrowsError(try Baz.parse(["--name", "--name", "Bar", "--format", "Foo"]))
-    XCTAssertThrowsError(try Baz.parse(["--name", "Bar", "--format", "--format", "Foo"]))
+    XCTAssertThrowsError(
+      try Baz.parse(["--name", "--name", "Bar", "--format", "Foo"]))
+    XCTAssertThrowsError(
+      try Baz.parse(["--name", "Bar", "--format", "--format", "Foo"]))
     XCTAssertThrowsError(try Baz.parse(["--format", "--name", "Bar", "Foo"]))
     XCTAssertThrowsError(try Baz.parse(["--name", "--format", "Bar", "Foo"]))
   }

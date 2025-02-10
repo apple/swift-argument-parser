@@ -17,7 +17,7 @@ public struct CommandConfiguration: Sendable {
   /// the command type to hyphen-separated lowercase words.
   public var commandName: String?
 
-  /// The name of this command's "super-command". (experimental)
+  /// The name of this command's "super-command" (experimental).
   ///
   /// Use this when a command is part of a group of commands that are installed
   /// with a common dash-prefix, like `git`'s and `swift`'s constellation of
@@ -56,7 +56,7 @@ public struct CommandConfiguration: Sendable {
   /// Use 'ungroupedSubcommands' to access 'groupedSubcommands' to retain the grouping structure.
   public var subcommands: [ParsableCommand.Type] {
     get {
-      return ungroupedSubcommands + groupedSubcommands.flatMap { $0.subcommands }
+      ungroupedSubcommands + groupedSubcommands.flatMap { $0.subcommands }
     }
 
     set {
@@ -141,8 +141,8 @@ public struct CommandConfiguration: Sendable {
     self.aliases = aliases
   }
 
-  /// Creates the configuration for a command with a "super-command".
-  /// (experimental)
+  /// Creates the configuration for a command with a "super-command"
+  /// (experimental).
   public init(
     commandName: String? = nil,
     _superCommandName: String,
@@ -173,7 +173,10 @@ public struct CommandConfiguration: Sendable {
 }
 
 extension CommandConfiguration {
-  @available(*, deprecated, message: "Use the memberwise initializer with the aliases parameter.")
+  @available(
+    *, deprecated,
+    message: "Use the memberwise initializer with the aliases parameter."
+  )
   public init(
     commandName _commandName: String?,
     abstract: String,
@@ -198,7 +201,11 @@ extension CommandConfiguration {
       aliases: [])
   }
 
-  @available(*, deprecated, message: "Use the memberwise initializer with the usage and aliases parameters.")
+  @available(
+    *, deprecated,
+    message:
+      "Use the memberwise initializer with the usage and aliases parameters."
+  )
   public init(
     commandName _commandName: String?,
     abstract: String,

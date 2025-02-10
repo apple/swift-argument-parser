@@ -32,10 +32,10 @@ struct InputOrigin: Equatable, ExpressibleByArrayLiteral {
     /// The input value came from a property's default value, not from a
     /// command line argument.
     case defaultValue
-    
+
     /// The input value came from the specified index in the argument string.
     case argumentIndex(SplitArguments.Index)
-    
+
     var baseIndex: Int? {
       switch self {
       case .defaultValue:
@@ -44,7 +44,7 @@ struct InputOrigin: Equatable, ExpressibleByArrayLiteral {
         return i.inputIndex.rawValue
       }
     }
-    
+
     var subIndex: Int? {
       switch self {
       case .defaultValue:
@@ -57,23 +57,23 @@ struct InputOrigin: Equatable, ExpressibleByArrayLiteral {
       }
     }
   }
-  
+
   private var _elements: Set<Element> = []
   var elements: [Element] {
     Array(_elements).sorted()
   }
-  
+
   init() {
   }
-  
+
   init(elements: [Element]) {
     _elements = Set(elements)
   }
-  
+
   init(element: Element) {
     _elements = Set([element])
   }
-  
+
   init(arrayLiteral elements: Element...) {
     self.init(elements: elements)
   }
@@ -81,19 +81,19 @@ struct InputOrigin: Equatable, ExpressibleByArrayLiteral {
   init(argumentIndex: SplitArguments.Index) {
     self.init(element: .argumentIndex(argumentIndex))
   }
-  
+
   mutating func insert(_ other: Element) {
     guard !_elements.contains(other) else { return }
     _elements.insert(other)
   }
-  
+
   func inserting(_ other: Element) -> Self {
     guard !_elements.contains(other) else { return self }
     var result = self
     result.insert(other)
     return result
   }
-  
+
   mutating func formUnion(_ other: InputOrigin) {
     _elements.formUnion(other._elements)
   }
@@ -105,7 +105,7 @@ struct InputOrigin: Equatable, ExpressibleByArrayLiteral {
 
 extension InputOrigin {
   var isDefaultValue: Bool {
-    return _elements.count == 1 && _elements.first == .defaultValue
+    _elements.count == 1 && _elements.first == .defaultValue
   }
 }
 

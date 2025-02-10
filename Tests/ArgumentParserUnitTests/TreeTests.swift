@@ -10,6 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 import XCTest
+
 @testable import ArgumentParser
 
 final class TreeTests: XCTestCase {
@@ -39,7 +40,7 @@ extension TreeTests {
       tree.children.flatMap { $0.children.map { $0.element } },
       [111, 112, 113, 121, 122, 123, 131, 132, 133])
   }
-  
+
   func testSearch() {
     let tree = generateTree()
     XCTAssertEqual(
@@ -51,7 +52,7 @@ extension TreeTests {
     XCTAssertEqual(
       tree.path(toFirstWhere: { $0 == 133 }).map { $0.element },
       [1, 13, 133])
-    
+
     XCTAssertTrue(tree.path(toFirstWhere: { $0 < 0 }).isEmpty)
   }
 }
@@ -68,15 +69,20 @@ extension TreeTests {
   }
 
   struct RootWithNamedNestedSub: ParsableCommand {
-    static let configuration = CommandConfiguration(subcommands: [NestedSub.self])
+    static let configuration = CommandConfiguration(subcommands: [
+      NestedSub.self
+    ])
 
     struct NestedSub: ParsableCommand {
-      static let configuration = CommandConfiguration(commandName: "sub", aliases: ["sub"])
+      static let configuration = CommandConfiguration(
+        commandName: "sub", aliases: ["sub"])
     }
   }
-    
+
   struct RootWithNestedSub: ParsableCommand {
-    static let configuration = CommandConfiguration(subcommands: [NestedSub.self])
+    static let configuration = CommandConfiguration(subcommands: [
+      NestedSub.self
+    ])
 
     struct NestedSub: ParsableCommand {
       static let configuration = CommandConfiguration(aliases: ["nested-sub"])

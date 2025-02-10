@@ -28,7 +28,8 @@ struct GenerateManualPlugin: CommandPlugin {
     // Run generation tool once if help is requested.
     if extractor.helpRequest() {
       try generationToolFile.exec(arguments: ["--help"])
-      print("""
+      print(
+        """
         ADDITIONAL OPTIONS:
           --configuration <configuration>
                                   Tool build configuration used to generate the
@@ -82,7 +83,7 @@ struct GenerateManualPlugin: CommandPlugin {
       var generationToolArguments = [
         builtArtifact.path.string,
         "--output-directory",
-        outputDirectory.string
+        outputDirectory.string,
       ]
       generationToolArguments.append(
         contentsOf: extractor.remainingArguments)

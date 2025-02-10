@@ -75,8 +75,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-fileprivate extension Array {
-  mutating func append(optional newElement: Element?) {
+extension Array {
+  fileprivate mutating func append(optional newElement: Element?) {
     if let newElement = newElement {
       append(newElement)
     }
@@ -117,7 +117,8 @@ extension MDocMacroProtocol {
       context.macroLine = true
 
       result += " "
-      result += arguments
+      result +=
+        arguments
         .map { $0._serialized(context: context) }
         .joined(separator: " ")
     }
@@ -140,8 +141,7 @@ public enum MDocMacro {
     public var arguments: [MDocASTNode]
     /// Creates a new `Comment` macro.
     ///
-    /// - Parameters:
-    ///   - comment: A string to insert as an inline comment.
+    /// - Parameter comment: A string to insert as an inline comment.
     public init(_ comment: String) {
       self.arguments = [comment]
     }
@@ -250,7 +250,7 @@ public enum MDocMacro {
   /// - Note: Manual pages in sections 1, 6, and 8 may use the name of command
   ///   or feature documented in the manual page as the name.
   ///
-  /// In sections 2, 3, and 9 use the ``FunctionName`` macro instead of the
+  /// In sections 2, 3, and 9 use the `FunctionName` macro instead of the
   /// ``DocumentName`` macro to indicate the name of the document.
   ///
   /// __Example Usage__:
@@ -264,8 +264,7 @@ public enum MDocMacro {
     public var arguments: [MDocASTNode]
     /// Creates a new `DocumentName` macro.
     ///
-    /// - Parameters:
-    ///   - name: The name of the manual page.
+    /// - Parameter name: The name of the manual page.
     public init(name: String? = nil) {
       self.arguments = []
       self.arguments.append(optional: name)
@@ -286,8 +285,7 @@ public enum MDocMacro {
     public var arguments: [MDocASTNode]
     /// Creates a new `DocumentDescription` macro.
     ///
-    /// - Parameters:
-    ///   - description: The description of the manual page.
+    /// - Parameter description: The description of the manual page.
     public init(description: String) {
       self.arguments = [description]
     }
@@ -313,8 +311,7 @@ public enum MDocMacro {
     public var arguments: [MDocASTNode]
     /// Creates a new `SectionHeader` macro.
     ///
-    /// - Parameters:
-    ///   - title: The title of the section.
+    /// - Parameter title: The title of the section.
     public init(title: String) {
       self.arguments = [title]
     }
@@ -336,8 +333,7 @@ public enum MDocMacro {
     public var arguments: [MDocASTNode]
     /// Creates a new `SubsectionHeader` macro.
     ///
-    /// - Parameters:
-    ///   - title: The title of the subsection.
+    /// - Parameter title: The title of the subsection.
     public init(title: String) {
       self.arguments = [title]
     }
@@ -357,14 +353,13 @@ public enum MDocMacro {
     public var arguments: [MDocASTNode]
     /// Creates a new `SectionReference` macro.
     ///
-    /// - Parameters:
-    ///   - title: The title of the section or subsection to reference.
+    /// - Parameter title: The title of the section or subsection to reference.
     public init(title: String) {
       self.arguments = [title]
     }
   }
 
-  /// Reference another manual page.  
+  /// Reference another manual page.
   ///
   /// __Example Usage__:
   ///   ```swift
@@ -377,6 +372,7 @@ public enum MDocMacro {
     ///
     /// - Parameters:
     ///   - title: The title of the section or subsection to reference.
+    ///   - section: The section of manual.
     public init(title: String, section: Int) {
       precondition((1...9).contains(section))
       self.arguments = [title, section]
@@ -433,7 +429,7 @@ public enum MDocMacro {
     /// Enumeration of styles supported by the ``BeginList`` macro.
     public enum ListStyle: String {
       /// A bulleted list.
-      /// 
+      ///
       /// Item titles should not be provided, instead item bodies are displayed
       /// indented from a preceding bullet point using the specified width.
       case bullet
@@ -494,14 +490,17 @@ public enum MDocMacro {
     ///   - width: Number of characters to indent item bodies from titles.
     ///   - offset: Number of characters to indent both the item titles and bodies.
     ///   - compact: Disable vertical spacing between list items.
-    public init(style: ListStyle, width: Int? = nil, offset: Int? = nil, compact: Bool = false) {
+    public init(
+      style: ListStyle, width: Int? = nil, offset: Int? = nil,
+      compact: Bool = false
+    ) {
       self.arguments = ["-\(style)"]
       switch style {
       case .bullet, .dash, .`enum`, .hang, .hyphen, .tag:
         if let width = width {
           self.arguments.append(contentsOf: ["-width", "\(width)n"])
         }
-      case /*.column, */.diag, .inset, .item, .ohang:
+      case .diag, .inset, .item, .ohang:  // .column
         assert(width == nil, "`width` should be nil for style: \(style)")
       }
       if let offset = offset {
@@ -539,8 +538,8 @@ public enum MDocMacro {
     public var arguments: [MDocASTNode]
     /// Creates a new `ListItem` macro.
     ///
-    /// - Parameters:
-    ///   - title: List item title, only valid depending on the ``ListStyle``.
+    /// - Parameter title: List item title, only valid depending on the
+    ///   `ListStyle`.
     public init(title: MDocASTNode? = nil) {
       arguments = []
       arguments.append(optional: title)
@@ -576,8 +575,7 @@ public enum MDocMacro {
     public var arguments: [MDocASTNode]
     /// Creates a new `WithoutTrailingSpace` macro.
     ///
-    /// - Parameters:
-    ///   - text: The text to display without a trailing space.
+    /// - Parameter text: The text to display without a trailing space.
     public init(text: String) {
       self.arguments = [text]
     }
@@ -594,8 +592,7 @@ public enum MDocMacro {
     public var arguments: [MDocASTNode]
     /// Creates a new `WithoutLeadingSpace` macro.
     ///
-    /// - Parameters:
-    ///   - text: The text to display without a trailing space.
+    /// - Parameter text: The text to display without a leading space.
     public init(text: String) {
       self.arguments = [text]
     }
@@ -647,8 +644,7 @@ public enum MDocMacro {
     public var arguments: [MDocASTNode]
     /// Creates a new `CommandOption` macro.
     ///
-    /// - Parameters:
-    ///   - arguments: Command-line flags and options.
+    /// - Parameter options: Command-line flags and options.
     public init(options: [MDocASTNode]) {
       self.arguments = options
     }
@@ -671,8 +667,7 @@ public enum MDocMacro {
     public var arguments: [MDocASTNode]
     /// Creates a new `CommandModifier` macro.
     ///
-    /// - Parameters:
-    ///   - modifiers: Command-line modifiers.
+    /// - Parameter modifiers: Command-line modifiers.
     public init(modifiers: [MDocASTNode]) {
       self.arguments = modifiers
     }
@@ -697,8 +692,7 @@ public enum MDocMacro {
     public var arguments: [MDocASTNode]
     /// Creates a new `CommandArgument` macro.
     ///
-    /// - Parameters:
-    ///   - arguments: Command-line argument placeholders.
+    /// - Parameter arguments: Command-line argument placeholders.
     public init(arguments: [MDocASTNode]) {
       self.arguments = arguments
     }
@@ -721,8 +715,7 @@ public enum MDocMacro {
     public var arguments: [MDocASTNode]
     /// Creates a new `OptionalCommandLineComponent` macro.
     ///
-    /// - Parameters:
-    ///   - arguments: Command-line components to enclose.
+    /// - Parameter arguments: Command-line components to enclose.
     public init(arguments: [MDocASTNode]) {
       self.arguments = arguments
     }
@@ -762,7 +755,7 @@ public enum MDocMacro {
   }
 
   /// An interactive command.
-  /// 
+  ///
   /// ``InteractiveCommand`` is similar to ``CommandModifier`` but should be used
   /// to describe commands instead of arguments. For example,
   /// ``InteractiveCommand`` can be used to describe the commands to editors
@@ -779,8 +772,7 @@ public enum MDocMacro {
     public var arguments: [MDocASTNode]
     /// Creates a new `InteractiveCommand` macro.
     ///
-    /// - Parameters:
-    ///   - name: Name of the interactive command.
+    /// - Parameter name: Name of the interactive command.
     public init(name: String) {
       self.arguments = [name]
     }
@@ -798,8 +790,7 @@ public enum MDocMacro {
     public var arguments: [MDocASTNode]
     /// Creates a new `EnvironmentVariable` macro.
     ///
-    /// - Parameters:
-    ///   - name: Name of the environment variable.
+    /// - Parameter name: Name of the environment variable.
     public init(name: String) {
       self.arguments = [name]
     }
@@ -818,9 +809,8 @@ public enum MDocMacro {
     public var arguments: [MDocASTNode]
     /// Creates a new `FilePath` macro.
     ///
-    /// - Parameters:
-    ///   - path: An optional absolute or relative path or a file or directory.
-    ///     Tilde (`~`) will be used, if no path is used.
+    /// - Parameter path: An optional absolute or relative path or a file or
+    ///   directory. Tilde (`~`) will be used, if no path is used.
     public init(path: String? = nil) {
       self.arguments = []
       self.arguments.append(optional: path)
@@ -868,7 +858,7 @@ public enum MDocMacro {
   // MARK: - Various semantic markup
 
   /// An author's name.
-  /// 
+  ///
   /// ``Author`` can be used to designate any author. Specifying an author of
   /// the manual page itself should only occur in the "AUTHORS" section.
   ///
@@ -891,16 +881,14 @@ public enum MDocMacro {
     public var arguments: [MDocASTNode]
     /// Creates a new `Author` macro.
     ///
-    /// - Parameters:
-    ///   - name: The author name to display.
+    /// - Parameter name: The author name to display.
     public init(name: String) {
       self.arguments = [name]
     }
     /// Creates a new `Author` macro.
     ///
-    /// - Parameters:
-    ///   - split: The split display mode to use for subsequent uses of
-    ///     ``Author``.
+    /// - Parameter split: The split display mode to use for subsequent uses of
+    ///   ``Author``.
     public init(split: Bool) {
       self.arguments = [split ? "-split" : "-nosplit"]
     }
@@ -938,42 +926,41 @@ public enum MDocMacro {
     public var arguments: [MDocASTNode]
     /// Creates a new `MailTo` macro.
     ///
-    /// - Parameters:
-    ///   - email: The email address to link.
+    /// - Parameter email: The email address to link.
     public init(email: String) {
       self.arguments = [email]
     }
   }
 
-// TODO: KernelConfiguration
-//  /// Kernel configuration declaration (>0 arguments).
-//  public struct KernelConfiguration: MDocMacroProtocol {
-//    public static let kind = "Cd"
-//    public var arguments: [MDocASTNode]
-//    public init() {
-//      self.arguments = []
-//    }
-//  }
+  // TODO: KernelConfiguration
+  //  /// Kernel configuration declaration (>0 arguments).
+  //  public struct KernelConfiguration: MDocMacroProtocol {
+  //    public static let kind = "Cd"
+  //    public var arguments: [MDocASTNode]
+  //    public init() {
+  //      self.arguments = []
+  //    }
+  //  }
 
-// TODO: MemoryAddress
-//  /// Memory address (>0 arguments).
-//  public struct MemoryAddress: MDocMacroProtocol {
-//    public static let kind = "Ad"
-//    public var arguments: [MDocASTNode]
-//    public init() {
-//      self.arguments = []
-//    }
-//  }
+  // TODO: MemoryAddress
+  //  /// Memory address (>0 arguments).
+  //  public struct MemoryAddress: MDocMacroProtocol {
+  //    public static let kind = "Ad"
+  //    public var arguments: [MDocASTNode]
+  //    public init() {
+  //      self.arguments = []
+  //    }
+  //  }
 
-// TODO: MathematicalSymbol
-//  /// Mathematical symbol (>0 arguments).
-//  public struct MathematicalSymbol: MDocMacroProtocol {
-//    public static let kind = "Ms"
-//    public var arguments: [MDocASTNode]
-//    public init() {
-//      self.arguments = []
-//    }
-//  }
+  // TODO: MathematicalSymbol
+  //  /// Mathematical symbol (>0 arguments).
+  //  public struct MathematicalSymbol: MDocMacroProtocol {
+  //    public static let kind = "Ms"
+  //    public var arguments: [MDocASTNode]
+  //    public init() {
+  //      self.arguments = []
+  //    }
+  //  }
 
   // MARK: - Physical markup
 
@@ -997,8 +984,7 @@ public enum MDocMacro {
     public var arguments: [MDocASTNode]
     /// Creates a new `Emphasis` macro.
     ///
-    /// - Parameters:
-    ///   - arguments: Text to emphasize.
+    /// - Parameter arguments: Text to emphasize.
     public init(arguments: [MDocASTNode]) {
       self.arguments = arguments
     }
@@ -1021,8 +1007,7 @@ public enum MDocMacro {
     public var arguments: [MDocASTNode]
     /// Creates a new `Boldface` macro.
     ///
-    /// - Parameters:
-    ///   - arguments: Text to embolden.
+    /// - Parameter arguments: Text to embolden.
     public init(arguments: [MDocASTNode]) {
       self.arguments = arguments
     }
@@ -1072,8 +1057,7 @@ public enum MDocMacro {
     public var arguments: [MDocASTNode]
     /// Creates a new `BeginFont` macro.
     ///
-    /// - Parameters:
-    ///   - style: The style of font scope the macro opens.
+    /// - Parameter style: The style of font scope the macro opens.
     public init(style: FontStyle) {
       switch style {
       case .emphasis:
@@ -1127,6 +1111,8 @@ public enum MDocMacro {
     }
   }
 
+  // swift-format-ignore: BeginDocumentationCommentWithOneLineSummary
+  // https://github.com/swiftlang/swift-format/issues/924
   /// Open a scope enclosed by `"typewriter"` double-quotes.
   ///
   /// Closed by a ``EndTypewriterDoubleQuotes`` macro.
@@ -1319,36 +1305,35 @@ public enum MDocMacro {
     public var arguments: [MDocASTNode]
     /// Creates a new `ExitStandard` macro.
     ///
-    /// - Parameters:
-    ///   - utilities: A list of utilities the exit standard applies to. If no
-    ///     utilities are specified the document's name set by ``DocumentName``
-    ///     is used.
+    /// - Parameters utilities: A list of utilities the exit standard applies
+    ///   to. If no utilities are specified the document's name set by
+    ///   ``DocumentName`` is used.
     public init(utilities: [String] = []) {
       self.arguments = ["-std"] + utilities
     }
   }
 
-// TODO: ReturnStandard
-//  /// Insert a standard sentence regarding a function call's return value of 0 on success and -1 on error, with the errno libc global variable set on error.
-//  ///
-//  /// If function is not specified, the document's name set by ``DocumentName`` is used. Multiple function arguments are treated as separate functions.
-//  public struct ReturnStandard: MDocMacroProtocol {
-//    public static let kind = "Rv"
-//    public var arguments: [MDocASTNode]
-//    public init() {
-//      self.arguments = []
-//    }
-//  }
+  // TODO: ReturnStandard
+  //  /// Insert a standard sentence regarding a function call's return value of 0 on success and -1 on error, with the errno libc global variable set on error.
+  //  ///
+  //  /// If function is not specified, the document's name set by ``DocumentName`` is used. Multiple function arguments are treated as separate functions.
+  //  public struct ReturnStandard: MDocMacroProtocol {
+  //    public static let kind = "Rv"
+  //    public var arguments: [MDocASTNode]
+  //    public init() {
+  //      self.arguments = []
+  //    }
+  //  }
 
-// TODO: StandardsReference
-//  /// Reference to a standards document (one argument).
-//  public struct StandardsReference: MDocMacroProtocol {
-//    public static let kind = "St"
-//    public var arguments: [MDocASTNode]
-//    public init() {
-//      self.arguments = []
-//    }
-//  }
+  // TODO: StandardsReference
+  //  /// Reference to a standards document (one argument).
+  //  public struct StandardsReference: MDocMacroProtocol {
+  //    public static let kind = "St"
+  //    public var arguments: [MDocASTNode]
+  //    public init() {
+  //      self.arguments = []
+  //    }
+  //  }
 
   /// Display a formatted version of AT&T UNIX.
   ///
@@ -1362,10 +1347,9 @@ public enum MDocMacro {
     public var arguments: [MDocASTNode]
     /// Creates a new `AttUnix` macro.
     ///
-    /// - Parameters:
-    ///   - version: The version of Att Unix to stylize. Omitting
-    ///     `version` will result in an unversioned OS being displayed.
-    ///     `version` should be one of the following values;
+    /// - Parameter version: The version of Att Unix to stylize. Omitting
+    ///   `version` will result in an unversioned OS being displayed.
+    ///   `version` should be one of the following values:
     ///     - `v[1-7] | 32v` - A version of AT&T UNIX.
     ///     - `III` - AT&T System III UNIX.
     ///     - `V | V.[1-4]` - A version of AT&T System V UNIX.
@@ -1415,9 +1399,8 @@ public enum MDocMacro {
     public var arguments: [MDocASTNode]
     /// Creates a new `BSDOS` macro.
     ///
-    /// - Parameters:
-    ///   - version: The version of BSD/OS to stylize. Omitting
-    ///     `version` will result in an unversioned OS being displayed.
+    /// - Parameter version: The version of BSD/OS to stylize. Omitting
+    ///   `version` will result in an unversioned OS being displayed.
     public init(version: String? = nil) {
       self.arguments = []
       self.arguments.append(optional: version)
@@ -1436,9 +1419,8 @@ public enum MDocMacro {
     public var arguments: [MDocASTNode]
     /// Creates a new `NetBSD` macro.
     ///
-    /// - Parameters:
-    ///   - version: The version of NetBSD to stylize. Omitting
-    ///     `version` will result in an unversioned OS being displayed.
+    /// - Parameter version: The version of NetBSD to stylize. Omitting
+    ///   `version` will result in an unversioned OS being displayed.
     public init(version: String? = nil) {
       self.arguments = []
       self.arguments.append(optional: version)
@@ -1457,9 +1439,8 @@ public enum MDocMacro {
     public var arguments: [MDocASTNode]
     /// Creates a new `FreeBSD` macro.
     ///
-    /// - Parameters:
-    ///   - version: The version of FreeBSD to stylize. Omitting
-    ///     `version` will result in an unversioned OS being displayed.
+    /// - Parameter version: The version of FreeBSD to stylize. Omitting
+    ///   `version` will result in an unversioned OS being displayed.
     public init(version: String? = nil) {
       self.arguments = []
       self.arguments.append(optional: version)
@@ -1478,9 +1459,8 @@ public enum MDocMacro {
     public var arguments: [MDocASTNode]
     /// Creates a new `OpenBSD` macro.
     ///
-    /// - Parameters:
-    ///   - version: The version of OpenBSD to stylize. Omitting
-    ///     `version` will result in an unversioned OS being displayed.
+    /// - Parameter version: The version of OpenBSD to stylize. Omitting
+    ///   `version` will result in an unversioned OS being displayed.
     public init(version: String? = nil) {
       self.arguments = []
       self.arguments.append(optional: version)
@@ -1499,9 +1479,8 @@ public enum MDocMacro {
     public var arguments: [MDocASTNode]
     /// Creates a new `DragonFly` macro.
     ///
-    /// - Parameters:
-    ///   - version: The version of DragonFly to stylize. Omitting
-    ///     `version` will result in an unversioned OS being displayed.
+    /// - Parameter version: The version of DragonFly to stylize. Omitting
+    ///   `version` will result in an unversioned OS being displayed.
     public init(version: String? = nil) {
       self.arguments = []
       self.arguments.append(optional: version)

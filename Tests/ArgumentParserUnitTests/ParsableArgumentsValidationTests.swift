@@ -9,8 +9,9 @@
 //
 //===----------------------------------------------------------------------===//
 
-import XCTest
 import ArgumentParserTestHelpers
+import XCTest
+
 @testable import ArgumentParser
 
 final class ParsableArgumentsValidationTests: XCTestCase {
@@ -82,48 +83,56 @@ final class ParsableArgumentsValidationTests: XCTestCase {
 
   func testCodingKeyValidation() throws {
     let parent = InputKey(name: "parentKey", parent: nil)
-    XCTAssertNil(ParsableArgumentsCodingKeyValidator.validate(A.self, parent: parent))
-    XCTAssertNil(ParsableArgumentsCodingKeyValidator.validate(B.self, parent: parent))
+    XCTAssertNil(
+      ParsableArgumentsCodingKeyValidator.validate(A.self, parent: parent))
+    XCTAssertNil(
+      ParsableArgumentsCodingKeyValidator.validate(B.self, parent: parent))
 
-    if let error = ParsableArgumentsCodingKeyValidator.validate(C.self, parent: parent)
+    if let error = ParsableArgumentsCodingKeyValidator.validate(
+      C.self, parent: parent)
       as? ParsableArgumentsCodingKeyValidator.MissingKeysError
     {
-      XCTAssert(error.missingCodingKeys == [InputKey(name: "count", parent: parent)])
-    } else {
-      XCTFail()
-    }
-    
-    if let error = ParsableArgumentsCodingKeyValidator.validate(D.self, parent: parent)
-      as? ParsableArgumentsCodingKeyValidator.MissingKeysError
-    {
-      XCTAssert(error.missingCodingKeys == [
-        InputKey(name: "phrase", parent: parent)
-      ])
+      XCTAssert(
+        error.missingCodingKeys == [InputKey(name: "count", parent: parent)])
     } else {
       XCTFail()
     }
 
-    if let error = ParsableArgumentsCodingKeyValidator.validate(E.self, parent: parent)
+    if let error = ParsableArgumentsCodingKeyValidator.validate(
+      D.self, parent: parent)
       as? ParsableArgumentsCodingKeyValidator.MissingKeysError
     {
-      XCTAssert(error.missingCodingKeys == [
-        InputKey(name: "phrase", parent: parent),
-        InputKey(name: "includeCounter", parent: parent),
-      ])
+      XCTAssert(
+        error.missingCodingKeys == [
+          InputKey(name: "phrase", parent: parent)
+        ])
+    } else {
+      XCTFail()
+    }
+
+    if let error = ParsableArgumentsCodingKeyValidator.validate(
+      E.self, parent: parent)
+      as? ParsableArgumentsCodingKeyValidator.MissingKeysError
+    {
+      XCTAssert(
+        error.missingCodingKeys == [
+          InputKey(name: "phrase", parent: parent),
+          InputKey(name: "includeCounter", parent: parent),
+        ])
     } else {
       XCTFail()
     }
   }
-  
+
   private struct TypeWithInvalidDecoder: ParsableArguments {
     @Argument(help: "The phrase to repeat.")
     var phrase: String = ""
 
     @Option(help: "The number of times to repeat 'phrase'.")
     var count: Int = 0
-    
+
     init() {}
-    
+
     init(from decoder: Decoder) throws {
       self.init()
     }
@@ -131,7 +140,8 @@ final class ParsableArgumentsValidationTests: XCTestCase {
 
   func testCustomDecoderValidation() throws {
     let parent = InputKey(name: "foo", parent: nil)
-        if let error = ParsableArgumentsCodingKeyValidator.validate(TypeWithInvalidDecoder.self, parent: parent)
+    if let error = ParsableArgumentsCodingKeyValidator.validate(
+      TypeWithInvalidDecoder.self, parent: parent)
       as? ParsableArgumentsCodingKeyValidator.InvalidDecoderError
     {
       XCTAssert(error.type == TypeWithInvalidDecoder.self)
@@ -218,14 +228,18 @@ final class ParsableArgumentsValidationTests: XCTestCase {
     XCTAssertNil(PositionalArgumentsValidator.validate(I.self, parent: parent))
     XCTAssertNil(PositionalArgumentsValidator.validate(K.self, parent: parent))
 
-    if let error = PositionalArgumentsValidator.validate(G.self, parent: parent) as? PositionalArgumentsValidator.Error {
+    if let error = PositionalArgumentsValidator.validate(G.self, parent: parent)
+      as? PositionalArgumentsValidator.Error
+    {
       XCTAssert(error.positionalArgumentFollowingRepeated == "phrase")
       XCTAssert(error.repeatedPositionalArgument == "items")
     } else {
       XCTFail()
     }
 
-    if let error = PositionalArgumentsValidator.validate(J.self, parent: parent) as? PositionalArgumentsValidator.Error {
+    if let error = PositionalArgumentsValidator.validate(J.self, parent: parent)
+      as? PositionalArgumentsValidator.Error
+    {
       XCTAssert(error.positionalArgumentFollowingRepeated == "phrase")
       XCTAssert(error.repeatedPositionalArgument == "numberOfItems")
     } else {
@@ -234,7 +248,8 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   }
 
   // MARK: ParsableArgumentsUniqueNamesValidator tests
-  fileprivate let unexpectedErrorMessage = "Expected error of type `ParsableArgumentsUniqueNamesValidator.Error`, but got something else."
+  fileprivate let unexpectedErrorMessage =
+    "Expected error of type `ParsableArgumentsUniqueNamesValidator.Error`, but got something else."
 
   // MARK: Names are unique
   fileprivate struct DifferentNames: ParsableArguments {
@@ -247,7 +262,9 @@ final class ParsableArgumentsValidationTests: XCTestCase {
 
   func testUniqueNamesValidation_NoViolation() throws {
     let parent = InputKey(name: "foo", parent: nil)
-    XCTAssertNil(ParsableArgumentsUniqueNamesValidator.validate(DifferentNames.self, parent: parent))
+    XCTAssertNil(
+      ParsableArgumentsUniqueNamesValidator.validate(
+        DifferentNames.self, parent: parent))
   }
 
   // MARK: One name is duplicated
@@ -260,10 +277,13 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   }
 
   func testUniqueNamesValidation_TwoOfSameName() throws {
-    if let error = ParsableArgumentsUniqueNamesValidator.validate(TwoOfTheSameName.self, parent: nil)
+    if let error = ParsableArgumentsUniqueNamesValidator.validate(
+      TwoOfTheSameName.self, parent: nil)
       as? ParsableArgumentsUniqueNamesValidator.Error
     {
-      XCTAssertEqual(error.description, "Multiple (2) `Option` or `Flag` arguments are named \"--foo\".")
+      XCTAssertEqual(
+        error.description,
+        "Multiple (2) `Option` or `Flag` arguments are named \"--foo\".")
     } else {
       XCTFail(unexpectedErrorMessage)
     }
@@ -289,19 +309,20 @@ final class ParsableArgumentsValidationTests: XCTestCase {
 
   func testUniqueNamesValidation_TwoDuplications() throws {
     let parent = InputKey(name: "option", parent: nil)
-    if let error = ParsableArgumentsUniqueNamesValidator.validate(MultipleUniquenessViolations.self, parent: parent)
+    if let error = ParsableArgumentsUniqueNamesValidator.validate(
+      MultipleUniquenessViolations.self, parent: parent)
       as? ParsableArgumentsUniqueNamesValidator.Error
     {
       XCTAssert(
         /// The `Mirror` reflects the properties `foo` and `bar` in a random order each time it's built.
         error.description == """
-        Multiple (2) `Option` or `Flag` arguments are named \"--bar\".
-        Multiple (2) `Option` or `Flag` arguments are named \"--foo\".
-        """
-        || error.description == """
-        Multiple (2) `Option` or `Flag` arguments are named \"--foo\".
-        Multiple (2) `Option` or `Flag` arguments are named \"--bar\".
-        """
+          Multiple (2) `Option` or `Flag` arguments are named \"--bar\".
+          Multiple (2) `Option` or `Flag` arguments are named \"--foo\".
+          """
+          || error.description == """
+            Multiple (2) `Option` or `Flag` arguments are named \"--foo\".
+            Multiple (2) `Option` or `Flag` arguments are named \"--bar\".
+            """
       )
     } else {
       XCTFail(unexpectedErrorMessage)
@@ -324,10 +345,13 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   }
 
   func testUniqueNamesValidation_ArgumentHasMultipleNames() throws {
-    if let error = ParsableArgumentsUniqueNamesValidator.validate(MultipleNamesPerArgument.self, parent: nil)
+    if let error = ParsableArgumentsUniqueNamesValidator.validate(
+      MultipleNamesPerArgument.self, parent: nil)
       as? ParsableArgumentsUniqueNamesValidator.Error
     {
-      XCTAssertEqual(error.description, "Multiple (2) `Option` or `Flag` arguments are named \"-v\".")
+      XCTAssertEqual(
+        error.description,
+        "Multiple (2) `Option` or `Flag` arguments are named \"-v\".")
     } else {
       XCTFail(unexpectedErrorMessage)
     }
@@ -355,10 +379,13 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   }
 
   func testUniqueNamesValidation_MoreThanTwoDuplications() throws {
-    if let error = ParsableArgumentsUniqueNamesValidator.validate(FourDuplicateNames.self, parent: nil)
+    if let error = ParsableArgumentsUniqueNamesValidator.validate(
+      FourDuplicateNames.self, parent: nil)
       as? ParsableArgumentsUniqueNamesValidator.Error
     {
-      XCTAssertEqual(error.description, "Multiple (4) `Option` or `Flag` arguments are named \"--foo\".")
+      XCTAssertEqual(
+        error.description,
+        "Multiple (4) `Option` or `Flag` arguments are named \"--foo\".")
     } else {
       XCTFail(unexpectedErrorMessage)
     }
@@ -396,20 +423,26 @@ final class ParsableArgumentsValidationTests: XCTestCase {
     var enumFlag2: ExampleEnum = .first
   }
 
-  func testUniqueNamesValidation_DuplicatedFlagFirstLetters_ShortNames() throws {
-    if let error = ParsableArgumentsUniqueNamesValidator.validate(DuplicatedFirstLettersShortNames.self, parent: nil)
+  func testUniqueNamesValidation_DuplicatedFlagFirstLetters_ShortNames() throws
+  {
+    if let error = ParsableArgumentsUniqueNamesValidator.validate(
+      DuplicatedFirstLettersShortNames.self, parent: nil)
       as? ParsableArgumentsUniqueNamesValidator.Error
     {
-      XCTAssertEqual(error.description, "Multiple (3) `Option` or `Flag` arguments are named \"-f\".")
+      XCTAssertEqual(
+        error.description,
+        "Multiple (3) `Option` or `Flag` arguments are named \"-f\".")
     } else {
       XCTFail(unexpectedErrorMessage)
     }
   }
 
   func testUniqueNamesValidation_DuplicatedFlagFirstLetters_LongNames() throws {
-    XCTAssertNil(ParsableArgumentsUniqueNamesValidator.validate(DuplicatedFirstLettersLongNames.self, parent: nil))
+    XCTAssertNil(
+      ParsableArgumentsUniqueNamesValidator.validate(
+        DuplicatedFirstLettersLongNames.self, parent: nil))
   }
-    
+
   fileprivate struct HasOneNonsenseFlag: ParsableCommand {
     enum ExampleEnum: String, EnumerableFlag {
       case first
@@ -421,7 +454,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
 
     @Flag
     var enumFlag: ExampleEnum = .first
-    
+
     @Flag
     var fine: Bool = false
 
@@ -439,7 +472,8 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   }
 
   func testNonsenseFlagsValidation_OneFlag() throws {
-    if let error = NonsenseFlagsValidator.validate(HasOneNonsenseFlag.self, parent: nil)
+    if let error = NonsenseFlagsValidator.validate(
+      HasOneNonsenseFlag.self, parent: nil)
       as? NonsenseFlagsValidator.Error
     {
       XCTAssertEqual(
@@ -448,7 +482,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
         One or more Boolean flags is declared with an initial value of `true`.
         This results in the flag always being `true`, no matter whether the user
         specifies the flag or not.
-        
+
         To resolve this error, change the default to `false`, provide a value
         for the `inversion:` parameter, or remove the `@Flag` property wrapper
         altogether.
@@ -476,8 +510,9 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   }
 
   func testNonsenseFlagsValidation_MultipleFlags() throws {
-    if let error = NonsenseFlagsValidator.validate(MultipleNonsenseFlags.self, parent: nil)
-        as? NonsenseFlagsValidator.Error
+    if let error = NonsenseFlagsValidator.validate(
+      MultipleNonsenseFlags.self, parent: nil)
+      as? NonsenseFlagsValidator.Error
     {
       XCTAssertEqual(
         error.description,
@@ -485,11 +520,11 @@ final class ParsableArgumentsValidationTests: XCTestCase {
         One or more Boolean flags is declared with an initial value of `true`.
         This results in the flag always being `true`, no matter whether the user
         specifies the flag or not.
-        
+
         To resolve this error, change the default to `false`, provide a value
         for the `inversion:` parameter, or remove the `@Flag` property wrapper
         altogether.
-        
+
         Affected flag(s):
         --stuff
         --nonsense

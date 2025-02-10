@@ -9,21 +9,22 @@
 //
 //===----------------------------------------------------------------------===//
 
-import XCTest
-import ArgumentParserTestHelpers
 import ArgumentParser
+import ArgumentParserTestHelpers
+import XCTest
 
-final class EqualsEndToEndTests: XCTestCase {
-}
+final class EqualsEndToEndTests: XCTestCase {}
 
 // MARK: .short name
 
-fileprivate struct Foo: ParsableArguments {
+private struct Foo: ParsableArguments {
   @Flag(name: .short) var toggle: Bool = false
   @Option(name: .short) var name: String?
   @Option(name: .short) var format: String
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension EqualsEndToEndTests {
   func testEquals_withShortName() throws {
     AssertParse(Foo.self, ["-n=Name", "-f=Format"]) { foo in
@@ -48,11 +49,13 @@ extension EqualsEndToEndTests {
 
 // MARK: .shortAndLong name
 
-fileprivate struct Bar: ParsableArguments {
+private struct Bar: ParsableArguments {
   @Option(name: .shortAndLong) var name: String
   @Option(name: .shortAndLong) var format: String
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension EqualsEndToEndTests {
   func testEquals_withShortAndLongName() throws {
     AssertParse(Bar.self, ["-n=Name", "-f=Format"]) { bar in
@@ -64,11 +67,13 @@ extension EqualsEndToEndTests {
 
 // MARK: .customShort name
 
-fileprivate struct Baz: ParsableArguments {
+private struct Baz: ParsableArguments {
   @Option(name: .customShort("i")) var name: String
   @Option(name: .customShort("t")) var format: String
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension EqualsEndToEndTests {
   func testEquals_withCustomShortName() throws {
     AssertParse(Baz.self, ["-i=Name", "-t=Format"]) { baz in

@@ -22,12 +22,15 @@ enum Name {
 
 extension Name {
   init(_ baseName: Substring) {
-    assert(baseName.first == "-", "Attempted to create name for unprefixed argument")
+    assert(
+      baseName.first == "-", "Attempted to create name for unprefixed argument")
     if baseName.hasPrefix("--") {
       self = .long(String(baseName.dropFirst(2)))
-    } else if baseName.count == 2 { // single character "-x" style
-      self = .short(baseName.last!)
-    } else { // long name with single dash
+    } else if baseName.count == 2, let name = baseName.last {
+      // single character "-x" style
+      self = .short(name)
+    } else {
+      // long name with single dash
       self = .longWithSingleDash(String(baseName.dropFirst()))
     }
   }
@@ -37,11 +40,11 @@ extension Name {
 // this will put the single - options before the -- options
 extension Name: Comparable {
   static func < (lhs: Name, rhs: Name) -> Bool {
-    return lhs.synopsisString < rhs.synopsisString
+    lhs.synopsisString < rhs.synopsisString
   }
 }
 
-extension Name: Hashable { }
+extension Name: Hashable {}
 
 extension Name {
   enum Case: Equatable {
@@ -73,7 +76,7 @@ extension Name {
       return "-\(n)"
     }
   }
-  
+
   var valueString: String {
     switch self {
     case .long(let n):
@@ -93,7 +96,7 @@ extension Name {
       return false
     }
   }
-  
+
   /// The instance to match against user input -- this always has
   /// `allowingJoined` as `false`, since that's the way input is parsed.
   var nameToMatch: Name {

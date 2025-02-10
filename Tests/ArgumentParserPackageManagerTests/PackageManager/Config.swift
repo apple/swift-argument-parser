@@ -12,44 +12,47 @@
 import ArgumentParser
 
 extension Package {
-  /// Manipulate configuration of the package
+  /// Manipulate configuration of the package.
   struct Config: ParsableCommand {}
 }
 
 extension Package.Config {
   public static let configuration = CommandConfiguration(
     subcommands: [GetMirror.self, SetMirror.self, UnsetMirror.self])
-  
-  /// Print mirror configuration for the given package dependency
+
+  /// Print mirror configuration for the given package dependency.
   struct GetMirror: ParsableCommand {
     @OptionGroup()
     var options: Options
-    
-    @Option(name: .customLong("package-url"), help: "The package dependency URL")
+
+    @Option(
+      name: .customLong("package-url"), help: "The package dependency URL")
     var packageURL: String
   }
-  
-  /// Set a mirror for a dependency
+
+  /// Set a mirror for a dependency.
   struct SetMirror: ParsableCommand {
     @OptionGroup()
     var options: Options
-    
+
     @Option(name: .customLong("mirror-url"), help: "The mirror URL")
     var mirrorURL: String
-    
-    @Option(name: .customLong("package-url"), help: "The package dependency URL")
+
+    @Option(
+      name: .customLong("package-url"), help: "The package dependency URL")
     var packageURL: String
   }
-  
-  /// Remove an existing mirror
+
+  /// Remove an existing mirror.
   struct UnsetMirror: ParsableCommand {
     @OptionGroup()
     var options: Options
-    
+
     @Option(name: .customLong("mirror-url"), help: "The mirror URL")
     var mirrorURL: String
-    
-    @Option(name: .customLong("package-url"), help: "The package dependency URL")
+
+    @Option(
+      name: .customLong("package-url"), help: "The package dependency URL")
     var packageURL: String
   }
 }

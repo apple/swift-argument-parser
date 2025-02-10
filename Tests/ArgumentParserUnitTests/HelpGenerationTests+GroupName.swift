@@ -9,8 +9,9 @@
 //
 //===----------------------------------------------------------------------===//
 
-import XCTest
 import ArgumentParserTestHelpers
+import XCTest
+
 @testable import ArgumentParser
 
 // This set of tests assert the help output matches the expected value for
@@ -20,217 +21,229 @@ extension HelpGenerationTests {
   fileprivate struct Flags: ParsableArguments {
     @Flag(help: "example")
     var verbose: Bool = false
-    
+
     @Flag(help: "example")
     var oversharing: Bool = false
   }
-  
+
   fileprivate struct Options: ParsableArguments {
     @Option(help: "example")
     var name: String = ""
-    
+
     @Option(help: "example")
     var age: Int
   }
-  
+
   fileprivate struct FlagsAndOptions: ParsableArguments {
     @Flag(help: "example")
     var experimental: Bool = false
-    
+
     @Option(help: "example")
     var prefix: String
   }
-  
+
   fileprivate struct ArgsAndFlags: ParsableArguments {
     @Argument(help: "example")
     var name: String?
-    
+
     @Argument(help: .init("example", visibility: .hidden))
     var title: String
-    
+
     @Flag(help: "example")
     var existingUser: Bool = false
   }
-  
+
   fileprivate struct AllVisible: ParsableCommand {
     @OptionGroup(title: "Flags Group")
     var flags: Flags
-    
+
     @OptionGroup(title: "Options Group")
     var options: Options
-    
+
     @OptionGroup
     var flagsAndOptions: FlagsAndOptions
-    
+
     @OptionGroup
     var argsAndFlags: ArgsAndFlags
   }
-  
+
   fileprivate struct ContainsOptionGroup: ParsableCommand {
     @OptionGroup(title: "Flags Group")
     var flags: Flags
-    
+
     @OptionGroup
     var argsAndFlags: ArgsAndFlags
   }
-  
+
   func testAllVisible() {
-    AssertHelp(.default, for: AllVisible.self, equals: """
-      USAGE: all-visible [--verbose] [--oversharing] [--name <name>] --age <age> [--experimental] --prefix <prefix> [<name>] [--existing-user]
+    AssertHelp(
+      .default, for: AllVisible.self,
+      equals: """
+        USAGE: all-visible [--verbose] [--oversharing] [--name <name>] --age <age> [--experimental] --prefix <prefix> [<name>] [--existing-user]
 
-      ARGUMENTS:
-        <name>                  example
+        ARGUMENTS:
+          <name>                  example
 
-      FLAGS GROUP:
-        --verbose               example
-        --oversharing           example
+        FLAGS GROUP:
+          --verbose               example
+          --oversharing           example
 
-      OPTIONS GROUP:
-        --name <name>           example
-        --age <age>             example
+        OPTIONS GROUP:
+          --name <name>           example
+          --age <age>             example
 
-      OPTIONS:
-        --experimental          example
-        --prefix <prefix>       example
-        --existing-user         example
-        -h, --help              Show help information.
+        OPTIONS:
+          --experimental          example
+          --prefix <prefix>       example
+          --existing-user         example
+          -h, --help              Show help information.
 
-      """)
-    
-    AssertHelp(.hidden, for: AllVisible.self, equals: """
-      USAGE: all-visible [--verbose] [--oversharing] [--name <name>] --age <age> [--experimental] --prefix <prefix> [<name>] <title> [--existing-user]
+        """)
 
-      ARGUMENTS:
-        <name>                  example
-        <title>                 example
+    AssertHelp(
+      .hidden, for: AllVisible.self,
+      equals: """
+        USAGE: all-visible [--verbose] [--oversharing] [--name <name>] --age <age> [--experimental] --prefix <prefix> [<name>] <title> [--existing-user]
 
-      FLAGS GROUP:
-        --verbose               example
-        --oversharing           example
+        ARGUMENTS:
+          <name>                  example
+          <title>                 example
 
-      OPTIONS GROUP:
-        --name <name>           example
-        --age <age>             example
+        FLAGS GROUP:
+          --verbose               example
+          --oversharing           example
 
-      OPTIONS:
-        --experimental          example
-        --prefix <prefix>       example
-        --existing-user         example
-        -h, --help              Show help information.
+        OPTIONS GROUP:
+          --name <name>           example
+          --age <age>             example
 
-      """)
+        OPTIONS:
+          --experimental          example
+          --prefix <prefix>       example
+          --existing-user         example
+          -h, --help              Show help information.
+
+        """)
   }
-  
+
   fileprivate struct Combined: ParsableCommand {
     @OptionGroup(title: "Extras")
     var flags: Flags
-    
+
     @OptionGroup(title: "Extras")
     var options: Options
-    
+
     @OptionGroup(title: "Others")
     var flagsAndOptions: FlagsAndOptions
-    
+
     @OptionGroup(title: "Others")
     var argsAndFlags: ArgsAndFlags
   }
-  
+
   func testCombined() {
-    AssertHelp(.default, for: Combined.self, equals: """
-      USAGE: combined [--verbose] [--oversharing] [--name <name>] --age <age> [--experimental] --prefix <prefix> [<name>] [--existing-user]
+    AssertHelp(
+      .default, for: Combined.self,
+      equals: """
+        USAGE: combined [--verbose] [--oversharing] [--name <name>] --age <age> [--experimental] --prefix <prefix> [<name>] [--existing-user]
 
-      EXTRAS:
-        --verbose               example
-        --oversharing           example
-        --name <name>           example
-        --age <age>             example
+        EXTRAS:
+          --verbose               example
+          --oversharing           example
+          --name <name>           example
+          --age <age>             example
 
-      OTHERS:
-        --experimental          example
-        --prefix <prefix>       example
-        <name>                  example
-        --existing-user         example
+        OTHERS:
+          --experimental          example
+          --prefix <prefix>       example
+          <name>                  example
+          --existing-user         example
 
-      OPTIONS:
-        -h, --help              Show help information.
+        OPTIONS:
+          -h, --help              Show help information.
 
-      """)
-    
-    AssertHelp(.hidden, for: Combined.self, equals: """
-      USAGE: combined [--verbose] [--oversharing] [--name <name>] --age <age> [--experimental] --prefix <prefix> [<name>] <title> [--existing-user]
+        """)
 
-      EXTRAS:
-        --verbose               example
-        --oversharing           example
-        --name <name>           example
-        --age <age>             example
+    AssertHelp(
+      .hidden, for: Combined.self,
+      equals: """
+        USAGE: combined [--verbose] [--oversharing] [--name <name>] --age <age> [--experimental] --prefix <prefix> [<name>] <title> [--existing-user]
 
-      OTHERS:
-        --experimental          example
-        --prefix <prefix>       example
-        <name>                  example
-        <title>                 example
-        --existing-user         example
+        EXTRAS:
+          --verbose               example
+          --oversharing           example
+          --name <name>           example
+          --age <age>             example
 
-      OPTIONS:
-        -h, --help              Show help information.
+        OTHERS:
+          --experimental          example
+          --prefix <prefix>       example
+          <name>                  example
+          <title>                 example
+          --existing-user         example
 
-      """)
+        OPTIONS:
+          -h, --help              Show help information.
+
+        """)
   }
-  
+
   fileprivate struct HiddenGroups: ParsableCommand {
     @OptionGroup(title: "Flags Group", visibility: .hidden)
     var flags: Flags
-    
+
     @OptionGroup(title: "Options Group", visibility: .hidden)
     var options: Options
-    
+
     @OptionGroup(visibility: .hidden)
     var flagsAndOptions: FlagsAndOptions
-    
+
     @OptionGroup(visibility: .private)
     var argsAndFlags: ArgsAndFlags
   }
-  
+
   func testHiddenGroups() {
-    AssertHelp(.default, for: HiddenGroups.self, equals: """
-      USAGE: hidden-groups
+    AssertHelp(
+      .default, for: HiddenGroups.self,
+      equals: """
+        USAGE: hidden-groups
 
-      OPTIONS:
-        -h, --help              Show help information.
+        OPTIONS:
+          -h, --help              Show help information.
 
-      """)
-    
-    AssertHelp(.hidden, for: HiddenGroups.self, equals: """
-      USAGE: hidden-groups [--verbose] [--oversharing] [--name <name>] --age <age> [--experimental] --prefix <prefix>
+        """)
 
-      FLAGS GROUP:
-        --verbose               example
-        --oversharing           example
+    AssertHelp(
+      .hidden, for: HiddenGroups.self,
+      equals: """
+        USAGE: hidden-groups [--verbose] [--oversharing] [--name <name>] --age <age> [--experimental] --prefix <prefix>
 
-      OPTIONS GROUP:
-        --name <name>           example
-        --age <age>             example
+        FLAGS GROUP:
+          --verbose               example
+          --oversharing           example
 
-      OPTIONS:
-        --experimental          example
-        --prefix <prefix>       example
-        -h, --help              Show help information.
+        OPTIONS GROUP:
+          --name <name>           example
+          --age <age>             example
 
-      """)
+        OPTIONS:
+          --experimental          example
+          --prefix <prefix>       example
+          -h, --help              Show help information.
+
+        """)
   }
-  
+
   fileprivate struct ParentWithGroups: ParsableCommand {
     static var configuration: CommandConfiguration {
       .init(subcommands: [ChildWithGroups.self])
     }
-    
+
     @OptionGroup(title: "Extras")
     var flags: Flags
-        
+
     @OptionGroup
     var argsAndFlags: ArgsAndFlags
-  
+
     fileprivate struct ChildWithGroups: ParsableCommand {
       @OptionGroup(title: "Child Extras")
       var flags: Flags
@@ -244,87 +257,97 @@ extension HelpGenerationTests {
   }
 
   func testParentChild() {
-    AssertHelp(.default, for: ParentWithGroups.self, equals: """
-      USAGE: parent-with-groups [--verbose] [--oversharing] [<name>] [--existing-user] <subcommand>
+    AssertHelp(
+      .default, for: ParentWithGroups.self,
+      equals: """
+        USAGE: parent-with-groups [--verbose] [--oversharing] [<name>] [--existing-user] <subcommand>
 
-      ARGUMENTS:
-        <name>                  example
+        ARGUMENTS:
+          <name>                  example
 
-      EXTRAS:
-        --verbose               example
-        --oversharing           example
+        EXTRAS:
+          --verbose               example
+          --oversharing           example
 
-      OPTIONS:
-        --existing-user         example
-        -h, --help              Show help information.
+        OPTIONS:
+          --existing-user         example
+          -h, --help              Show help information.
 
-      SUBCOMMANDS:
-        child-with-groups
+        SUBCOMMANDS:
+          child-with-groups
 
-        See 'parent-with-groups help <subcommand>' for detailed help.
-      """)
-    
-    AssertHelp(.hidden, for: ParentWithGroups.self, equals: """
-      USAGE: parent-with-groups [--verbose] [--oversharing] [<name>] <title> [--existing-user] <subcommand>
+          See 'parent-with-groups help <subcommand>' for detailed help.
+        """)
 
-      ARGUMENTS:
-        <name>                  example
-        <title>                 example
+    AssertHelp(
+      .hidden, for: ParentWithGroups.self,
+      equals: """
+        USAGE: parent-with-groups [--verbose] [--oversharing] [<name>] <title> [--existing-user] <subcommand>
 
-      EXTRAS:
-        --verbose               example
-        --oversharing           example
+        ARGUMENTS:
+          <name>                  example
+          <title>                 example
 
-      OPTIONS:
-        --existing-user         example
-        -h, --help              Show help information.
+        EXTRAS:
+          --verbose               example
+          --oversharing           example
 
-      SUBCOMMANDS:
-        child-with-groups
+        OPTIONS:
+          --existing-user         example
+          -h, --help              Show help information.
 
-        See 'parent-with-groups help <subcommand>' for detailed help.
-      """)
-    
-    AssertHelp(.default, for: ParentWithGroups.ChildWithGroups.self, root: ParentWithGroups.self, equals: """
-      USAGE: parent-with-groups child-with-groups [--verbose] [--oversharing] [--name <name>] --age <age> [<name>] [--existing-user]
+        SUBCOMMANDS:
+          child-with-groups
 
-      ARGUMENTS:
-        <name>                  example
+          See 'parent-with-groups help <subcommand>' for detailed help.
+        """)
 
-      CHILD EXTRAS:
-        --verbose               example
-        --oversharing           example
+    AssertHelp(
+      .default, for: ParentWithGroups.ChildWithGroups.self,
+      root: ParentWithGroups.self,
+      equals: """
+        USAGE: parent-with-groups child-with-groups [--verbose] [--oversharing] [--name <name>] --age <age> [<name>] [--existing-user]
 
-      EXTRAS:
-        --name <name>           example
-        --age <age>             example
+        ARGUMENTS:
+          <name>                  example
 
-      OPTIONS:
-        --existing-user         example
-        -h, --help              Show help information.
+        CHILD EXTRAS:
+          --verbose               example
+          --oversharing           example
 
-      """)
+        EXTRAS:
+          --name <name>           example
+          --age <age>             example
 
-    AssertHelp(.hidden, for: ParentWithGroups.ChildWithGroups.self, root: ParentWithGroups.self, equals: """
-      USAGE: parent-with-groups child-with-groups [--verbose] [--oversharing] [--name <name>] --age <age> [<name>] <title> [--existing-user]
+        OPTIONS:
+          --existing-user         example
+          -h, --help              Show help information.
 
-      ARGUMENTS:
-        <name>                  example
-        <title>                 example
+        """)
 
-      CHILD EXTRAS:
-        --verbose               example
-        --oversharing           example
+    AssertHelp(
+      .hidden, for: ParentWithGroups.ChildWithGroups.self,
+      root: ParentWithGroups.self,
+      equals: """
+        USAGE: parent-with-groups child-with-groups [--verbose] [--oversharing] [--name <name>] --age <age> [<name>] <title> [--existing-user]
 
-      EXTRAS:
-        --name <name>           example
-        --age <age>             example
+        ARGUMENTS:
+          <name>                  example
+          <title>                 example
 
-      OPTIONS:
-        --existing-user         example
-        -h, --help              Show help information.
+        CHILD EXTRAS:
+          --verbose               example
+          --oversharing           example
 
-      """)
+        EXTRAS:
+          --name <name>           example
+          --age <age>             example
+
+        OPTIONS:
+          --existing-user         example
+          -h, --help              Show help information.
+
+        """)
   }
 
   fileprivate struct GroupsWithUnnamedGroups: ParsableCommand {
@@ -333,21 +356,23 @@ extension HelpGenerationTests {
   }
 
   func testUnnamedNestedGroups() {
-    AssertHelp(.default, for: GroupsWithUnnamedGroups.self, equals: """
-      USAGE: groups-with-unnamed-groups [--verbose] [--oversharing] [<name>] [--existing-user]
+    AssertHelp(
+      .default, for: GroupsWithUnnamedGroups.self,
+      equals: """
+        USAGE: groups-with-unnamed-groups [--verbose] [--oversharing] [<name>] [--existing-user]
 
-      ARGUMENTS:
-        <name>                  example
+        ARGUMENTS:
+          <name>                  example
 
-      FLAGS GROUP:
-        --verbose               example
-        --oversharing           example
+        FLAGS GROUP:
+          --verbose               example
+          --oversharing           example
 
-      OPTIONS:
-        --existing-user         example
-        -h, --help              Show help information.
-      
-      """)
+        OPTIONS:
+          --existing-user         example
+          -h, --help              Show help information.
+
+        """)
   }
 
   fileprivate struct GroupsWithNamedGroups: ParsableCommand {
@@ -356,18 +381,20 @@ extension HelpGenerationTests {
   }
 
   func testNamedNestedGroups() {
-    AssertHelp(.default, for: GroupsWithNamedGroups.self, equals: """
-      USAGE: groups-with-named-groups [--verbose] [--oversharing] [<name>] [--existing-user]
+    AssertHelp(
+      .default, for: GroupsWithNamedGroups.self,
+      equals: """
+        USAGE: groups-with-named-groups [--verbose] [--oversharing] [<name>] [--existing-user]
 
-      NESTED:
-        --verbose               example
-        --oversharing           example
-        <name>                  example
-        --existing-user         example
+        NESTED:
+          --verbose               example
+          --oversharing           example
+          <name>                  example
+          --existing-user         example
 
-      OPTIONS:
-        -h, --help              Show help information.
-      
-      """)
+        OPTIONS:
+          -h, --help              Show help information.
+
+        """)
   }
 }

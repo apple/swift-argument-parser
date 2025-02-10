@@ -13,5 +13,5 @@
 public struct MDocSerializationContext {
   var macroLine: Bool = false
 
-  public init() { }
+  public init() {}
 }

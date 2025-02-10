@@ -9,12 +9,11 @@
 //
 //===----------------------------------------------------------------------===//
 
-import XCTest
-import ArgumentParserTestHelpers
 import ArgumentParser
+import ArgumentParserTestHelpers
+import XCTest
 
-final class ParsingEndToEndTests: XCTestCase {
-}
+final class ParsingEndToEndTests: XCTestCase {}
 
 struct Name {
   var rawValue: String
@@ -35,7 +34,7 @@ extension Array where Element == Name {
 
 // MARK: -
 
-fileprivate struct Foo: ParsableCommand {
+private struct Foo: ParsableCommand {
   enum Subgroup: Equatable {
     case first(Int)
     case second(Int)
@@ -62,6 +61,8 @@ fileprivate struct Foo: ParsableCommand {
   var second: Subgroup
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension ParsingEndToEndTests {
   func testParsing() throws {
     AssertParse(Foo.self, ["--first", "1", "2"]) { foo in
@@ -85,7 +86,7 @@ extension ParsingEndToEndTests {
 
 // MARK: -
 
-fileprivate struct Bar: ParsableCommand {
+private struct Bar: ParsableCommand {
   @Option(transform: { try Name(rawValue: $0) })
   var firstName: Name = try! Name(rawValue: "none")
 
@@ -93,6 +94,8 @@ fileprivate struct Bar: ParsableCommand {
   var lastName: Name?
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension ParsingEndToEndTests {
   func testParsing_Defaults() throws {
     AssertParse(Bar.self, ["--first-name", "A", "B"]) { bar in
@@ -124,7 +127,7 @@ extension ParsingEndToEndTests {
 
 // MARK: -
 
-fileprivate struct Qux: ParsableCommand {
+private struct Qux: ParsableCommand {
   @Option(transform: { try Name(rawValue: $0) })
   var firstName: [Name] = []
 
@@ -132,6 +135,8 @@ fileprivate struct Qux: ParsableCommand {
   var lastName: [Name] = []
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension ParsingEndToEndTests {
   func testParsing_Array() throws {
     AssertParse(Qux.self, ["--first-name", "A", "B"]) { qux in
@@ -139,7 +144,8 @@ extension ParsingEndToEndTests {
       XCTAssertEqual(qux.lastName.rawValues, ["B"])
     }
 
-    AssertParse(Qux.self, ["--first-name", "A", "--first-name", "B", "C", "D"]) { qux in
+    AssertParse(Qux.self, ["--first-name", "A", "--first-name", "B", "C", "D"])
+    { qux in
       XCTAssertEqual(qux.firstName.rawValues, ["A", "B"])
       XCTAssertEqual(qux.lastName.rawValues, ["C", "D"])
     }
@@ -161,8 +167,13 @@ extension ParsingEndToEndTests {
   }
 
   func testParsing_Array_Fails() {
-    XCTAssertThrowsError(try Qux.parse(["--first-name", "A", "--first-name", "B", "C", "D", "bad"]))
-    XCTAssertThrowsError(try Qux.parse(["--first-name", "A", "--first-name", "B", "--first-name", "bad", "C", "D"]))
+    XCTAssertThrowsError(
+      try Qux.parse(["--first-name", "A", "--first-name", "B", "C", "D", "bad"])
+    )
+    XCTAssertThrowsError(
+      try Qux.parse([
+        "--first-name", "A", "--first-name", "B", "--first-name", "bad", "C",
+        "D",
+      ]))
   }
 }
-

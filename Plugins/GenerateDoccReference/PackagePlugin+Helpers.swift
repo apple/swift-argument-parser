@@ -14,7 +14,7 @@ import PackagePlugin
 
 extension ArgumentExtractor {
   mutating func helpRequest() -> Bool {
-      self.extractFlag(named: "help") > 0
+    self.extractFlag(named: "help") > 0
   }
 
   mutating func configuration() throws -> PackageManager.BuildConfiguration {
@@ -26,7 +26,8 @@ extension ArgumentExtractor {
       case "release":
         return .release
       default:
-        throw GenerateDoccReferencePluginError
+        throw
+          GenerateDoccReferencePluginError
           .unknownBuildConfiguration(configurationString)
       }
     case .none:
@@ -82,7 +83,7 @@ extension Product {
   }
 
   var recursiveTargetDependencies: [Target] {
-    var dependencies = [Target.ID: Target]()
+    var dependencies: [Target.ID: Target] = [:]
     for target in self.targets {
       for dependency in target.recursiveTargetDependencies {
         dependencies[dependency.id] = dependency

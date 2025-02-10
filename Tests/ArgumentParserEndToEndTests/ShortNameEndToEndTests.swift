@@ -9,16 +9,16 @@
 //
 //===----------------------------------------------------------------------===//
 
-import XCTest
-import ArgumentParserTestHelpers
 import ArgumentParser
+import ArgumentParserTestHelpers
+import XCTest
 
 final class ShortNameEndToEndTests: XCTestCase {
 }
 
 // MARK: -
 
-fileprivate struct Bar: ParsableArguments {
+private struct Bar: ParsableArguments {
   @Flag(name: [.long, .short])
   var verbose: Bool = false
 
@@ -29,6 +29,8 @@ fileprivate struct Bar: ParsableArguments {
   var name: String
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension ShortNameEndToEndTests {
   func testParsing_withLongNames() throws {
     AssertParse(Bar.self, ["foo"]) { options in
@@ -87,7 +89,7 @@ extension ShortNameEndToEndTests {
 
 // MARK: -
 
-fileprivate struct Foo: ParsableArguments {
+private struct Foo: ParsableArguments {
   @Option(name: [.long, .short])
   var name: String
 
@@ -98,6 +100,8 @@ fileprivate struct Foo: ParsableArguments {
   var city: String
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension ShortNameEndToEndTests {
   func testParsing_combinedShortNames() throws {
     AssertParse(Foo.self, ["-nfc", "name", "file", "city"]) { options in
