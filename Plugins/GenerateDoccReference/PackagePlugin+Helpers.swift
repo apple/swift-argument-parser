@@ -83,7 +83,7 @@ extension Product {
   }
 
   var recursiveTargetDependencies: [Target] {
-    var dependencies = [Target.ID: Target]()
+    var dependencies: [Target.ID: Target] = [:]
     for target in self.targets {
       for dependency in target.recursiveTargetDependencies {
         dependencies[dependency.id] = dependency

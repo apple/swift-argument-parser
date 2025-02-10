@@ -148,6 +148,8 @@ final class SplitArgumentTests: XCTestCase {
   }
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension SplitArgumentTests {
   func testMultipleValues() throws {
     let sut = try SplitArguments(arguments: ["abc", "x", "1234"])
@@ -234,6 +236,8 @@ extension SplitArgumentTests {
   }
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension SplitArgumentTests {
   func testMixed_1() throws {
     let sut = try SplitArguments(arguments: [
@@ -386,6 +390,8 @@ extension SplitArgumentTests {
 
 // MARK: - Removing Entries
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension SplitArgumentTests {
   func testRemovingValuesForLongNames() throws {
     var sut = try SplitArguments(arguments: ["--foo", "--bar"])
@@ -452,6 +458,8 @@ extension SplitArgumentTests {
 
 // MARK: - Pop & Peek
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension SplitArgumentTests {
   func testPopNext() throws {
     var sut = try SplitArguments(arguments: ["--foo", "bar"])

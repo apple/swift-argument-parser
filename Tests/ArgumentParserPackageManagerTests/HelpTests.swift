@@ -50,6 +50,8 @@ func getErrorText<T: ParsableCommand>(
   }
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension HelpTests {
   func testGlobalHelp() throws {
     XCTAssertEqual(

@@ -12,8 +12,7 @@
 import ArgumentParser
 import XCTest
 
-final class AsyncCommandEndToEndTests: XCTestCase {
-}
+final class AsyncCommandEndToEndTests: XCTestCase {}
 
 actor AsyncStatusCheck {
   struct Status: OptionSet {
@@ -53,6 +52,8 @@ struct AsyncCommand: AsyncParsableCommand {
   }
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension AsyncCommandEndToEndTests {
   @MainActor
   func testAsyncMain_root() async throws {

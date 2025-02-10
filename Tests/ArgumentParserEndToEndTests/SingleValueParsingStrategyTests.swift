@@ -13,8 +13,7 @@ import ArgumentParser
 import ArgumentParserTestHelpers
 import XCTest
 
-final class SingleValueParsingStrategyTests: XCTestCase {
-}
+final class SingleValueParsingStrategyTests: XCTestCase {}
 
 // MARK: Scanning for Value
 
@@ -24,6 +23,8 @@ private struct Bar: ParsableArguments {
   @Option(parsing: .scanningForValue) var input: String
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension SingleValueParsingStrategyTests {
   func testParsing_scanningForValue_1() throws {
     AssertParse(
@@ -64,6 +65,8 @@ private struct Baz: ParsableArguments {
   @Option(parsing: .unconditional) var input: String
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension SingleValueParsingStrategyTests {
   func testParsing_unconditional_1() throws {
     AssertParse(

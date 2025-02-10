@@ -80,7 +80,7 @@ extension ArgumentInfoV0.NameInfoV0 {
 
 extension Array where Element == ParsableCommand.Type {
   var commandNames: [String] {
-    var commandNames = [String]()
+    var commandNames: [String] = []
     if let superName = first?.configuration._superCommandName {
       commandNames.append(superName)
     }

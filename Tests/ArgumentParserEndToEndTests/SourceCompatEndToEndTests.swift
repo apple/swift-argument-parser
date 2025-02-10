@@ -21,6 +21,7 @@ final class SourceCompatEndToEndTests: XCTestCase {}
 
 // MARK: - Property Wrapper Initializers
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
 private struct AlmostAllArguments: ParsableArguments {
   @Argument(help: "") var a_newDefaultSyntax: Int = 0
   @Argument() var a0: Int
@@ -61,6 +62,7 @@ private struct AlmostAllArguments: ParsableArguments {
   @Argument(transform: { _ in 0 }) var e15: [Int] = [1, 2]
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
 private struct AllOptions: ParsableArguments {
   @Option(name: .long, parsing: .next, help: "") var a_newDefaultSyntax: Int = 0
   @Option(parsing: .next, help: "") var a1_newDefaultSyntax: Int = 0
@@ -149,6 +151,7 @@ private struct AllOptions: ParsableArguments {
   @Option(help: "", transform: { _ in 0 }) var f13: [Int]
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
 struct AllFlags: ParsableArguments {
   enum E: String, EnumerableFlag {
     case one, two, three

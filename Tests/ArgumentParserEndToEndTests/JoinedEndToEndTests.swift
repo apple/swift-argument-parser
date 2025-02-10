@@ -13,8 +13,7 @@ import ArgumentParser
 import ArgumentParserTestHelpers
 import XCTest
 
-final class JoinedEndToEndTests: XCTestCase {
-}
+final class JoinedEndToEndTests: XCTestCase {}
 
 // MARK: -
 
@@ -29,6 +28,8 @@ private struct Foo: ParsableArguments {
   var fdi = false
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension JoinedEndToEndTests {
   func testSingleValueParsing() throws {
     AssertParse(Foo.self, []) { foo in
@@ -102,6 +103,8 @@ private struct Bar: ParsableArguments {
   var debug: [String] = []
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension JoinedEndToEndTests {
   func testArrayValueParsing() throws {
     AssertParse(Bar.self, []) { bar in
@@ -137,6 +140,8 @@ private struct Baz: ParsableArguments {
   @Flag var verbose = false
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension JoinedEndToEndTests {
   func testArrayUpToNextParsing() throws {
     AssertParse(Baz.self, []) { baz in
@@ -173,6 +178,8 @@ private struct Qux: ParsableArguments {
   var debug: [String] = []
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension JoinedEndToEndTests {
   func testArrayRemainingParsing() throws {
     AssertParse(Qux.self, []) { qux in

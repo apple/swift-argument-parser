@@ -13,8 +13,7 @@ import ArgumentParser
 import ArgumentParserTestHelpers
 import XCTest
 
-final class RawRepresentableEndToEndTests: XCTestCase {
-}
+final class RawRepresentableEndToEndTests: XCTestCase {}
 
 // MARK: -
 
@@ -26,6 +25,8 @@ private struct Bar: ParsableArguments {
   @Option() var identifier: Identifier
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension RawRepresentableEndToEndTests {
   func testParsing_SingleOption() throws {
     AssertParse(Bar.self, ["--identifier", "123"]) { bar in

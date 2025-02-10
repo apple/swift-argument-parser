@@ -30,6 +30,8 @@ private struct Quizzo: ParsableArguments {
   init() { self.count = 0 }  // silence warning about count not being decoded
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension UnparsedValuesEndToEndTests {
   func testParsing_TwoPlusUnparsed() throws {
     AssertParse(Qux.self, ["--name", "Qux"]) { qux in
@@ -82,6 +84,8 @@ private struct Piyo: ParsableArguments {
   }
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension UnparsedValuesEndToEndTests {
   func testParsing_TwoPlusOptionalUnparsed() throws {
     AssertParse(Hogeraa.self, []) { hogeraa in
@@ -156,6 +160,8 @@ private struct DefaultedArguments: ParsableArguments {
   @Option var two = 2
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension UnparsedValuesEndToEndTests {
   func testUnparsedNestedValues() {
     AssertParse(Foo.self, []) { foo in
@@ -212,6 +218,8 @@ private struct Bazz: Decodable {
   var age: Int
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension UnparsedValuesEndToEndTests {
   func testUnparsedNestedOptionalValue() {
     AssertParse(Barr.self, []) { barr in
@@ -279,6 +287,8 @@ private struct Bamf: ParsableCommand {
   var bopp: [String: [String]] = [:]
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension UnparsedValuesEndToEndTests {
   func testUnparsedNestedDictionary() {
     AssertParse(Bamf.self, []) { bamf in
@@ -306,6 +316,8 @@ private enum Qiqii: Codable, Equatable {
   case i(Int)
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension UnparsedValuesEndToEndTests {
   func testUnparsedEnumWithAssociatedValues() {
     AssertParse(Qiqi.self, []) { qiqi in
@@ -330,6 +342,8 @@ private final class Vig: Toks {
   var b = "world"
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension UnparsedValuesEndToEndTests {
   func testUnparsedNestedInheritingClassType() {
     AssertParse(Fry.self, []) { fry in

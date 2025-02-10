@@ -21,6 +21,8 @@ final class Tests: XCTestCase {
   }
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension Tests {
   func testParsing() throws {
     AssertParseCommand(Package.self, Package.Clean.self, ["clean"]) { clean in

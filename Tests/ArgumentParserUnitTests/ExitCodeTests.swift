@@ -13,11 +13,12 @@ import XCTest
 
 @testable import ArgumentParser
 
-final class ExitCodeTests: XCTestCase {
-}
+final class ExitCodeTests: XCTestCase {}
 
 // MARK: -
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension ExitCodeTests {
   struct A: ParsableArguments {}
   struct E: Error {}

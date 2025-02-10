@@ -198,6 +198,8 @@ final class MathExampleTests: XCTestCase {
 
 // MARK: - Completion Script
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension MathExampleTests {
   func testMathBashCompletionScript() throws {
     let script = try AssertExecuteCommand(

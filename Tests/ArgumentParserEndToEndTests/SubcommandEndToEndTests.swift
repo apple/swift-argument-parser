@@ -41,6 +41,8 @@ private struct CommandB: ParsableCommand {
   @Option() var baz: String
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension SubcommandEndToEndTests {
   func testParsing_SubCommand() throws {
     AssertParseCommand(
@@ -150,6 +152,8 @@ private struct Math: ParsableCommand {
   }
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension SubcommandEndToEndTests {
   func testParsing_SingleCommand() throws {
     var mathCommand =
@@ -224,6 +228,8 @@ extension BaseCommand.SubCommand {
   }
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension SubcommandEndToEndTests {
   func testValidate_subcommands() {
     // provide a value to base-flag that will throw

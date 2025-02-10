@@ -23,6 +23,8 @@ private struct Bar: ParsableArguments {
   @Option(name: [.short, .long]) var format: String
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension ErrorMessageTests {
   func testMissing_1() {
     AssertErrorMessage(
@@ -231,6 +233,8 @@ private struct Qwz: ParsableArguments {
   @Option(name: [.customLong("title", withSingleDash: true)]) var title: String?
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension ErrorMessageTests {
   func testMispelledArgument_1() {
     AssertErrorMessage(

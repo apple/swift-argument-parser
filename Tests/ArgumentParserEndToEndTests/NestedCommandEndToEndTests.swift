@@ -13,8 +13,7 @@ import ArgumentParser
 import ArgumentParserTestHelpers
 import XCTest
 
-final class NestedCommandEndToEndTests: XCTestCase {
-}
+final class NestedCommandEndToEndTests: XCTestCase {}
 
 // MARK: Single value String
 
@@ -62,6 +61,8 @@ private func AssertParseFooCommand<A>(
     Foo.self, type, arguments, file: file, line: line, closure: closure)
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension NestedCommandEndToEndTests {
   func testParsing_package() throws {
     AssertParseFooCommand(Foo.Package.self, ["package"]) { package in
@@ -267,6 +268,8 @@ private struct Super: ParsableCommand {
   }
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension NestedCommandEndToEndTests {
   func testParsing_SharedOptions() throws {
     AssertParseCommand(Super.self, Super.self, []) { sup in

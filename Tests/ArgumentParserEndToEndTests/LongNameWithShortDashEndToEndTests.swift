@@ -13,8 +13,7 @@ import ArgumentParser
 import ArgumentParserTestHelpers
 import XCTest
 
-final class LongNameWithSingleDashEndToEndTests: XCTestCase {
-}
+final class LongNameWithSingleDashEndToEndTests: XCTestCase {}
 
 // MARK: -
 
@@ -29,6 +28,8 @@ private struct Bar: ParsableArguments {
   var input: Bool = false
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension LongNameWithSingleDashEndToEndTests {
   func testParsing_empty() throws {
     AssertParse(Bar.self, []) { options in
@@ -108,6 +109,8 @@ extension LongNameWithSingleDashEndToEndTests {
   }
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension LongNameWithSingleDashEndToEndTests {
   private struct Issue327: ParsableCommand {
     @Option(

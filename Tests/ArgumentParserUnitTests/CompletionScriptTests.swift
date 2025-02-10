@@ -29,6 +29,8 @@ private func candidates(prefix: String) -> [String] {
 
 final class CompletionScriptTests: XCTestCase {}
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension CompletionScriptTests {
   struct Path: ExpressibleByArgument {
     var path: String

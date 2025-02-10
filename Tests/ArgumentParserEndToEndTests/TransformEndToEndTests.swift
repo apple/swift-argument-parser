@@ -13,8 +13,7 @@ import ArgumentParser
 import ArgumentParserTestHelpers
 import XCTest
 
-final class TransformEndToEndTests: XCTestCase {
-}
+final class TransformEndToEndTests: XCTestCase {}
 
 private enum FooBarError: Error {
   case outOfBounds
@@ -67,6 +66,8 @@ private struct BarOption: Convert, ParsableCommand {
   var strings: [Int] = []
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension TransformEndToEndTests {
 
   // MARK: Single Values
@@ -154,6 +155,8 @@ private struct BarArgument: Convert, ParsableCommand {
   var strings: [Int] = []
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension TransformEndToEndTests {
 
   // MARK: Single Values

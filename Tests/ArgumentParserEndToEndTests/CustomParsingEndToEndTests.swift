@@ -13,8 +13,7 @@ import ArgumentParser
 import ArgumentParserTestHelpers
 import XCTest
 
-final class ParsingEndToEndTests: XCTestCase {
-}
+final class ParsingEndToEndTests: XCTestCase {}
 
 struct Name {
   var rawValue: String
@@ -62,6 +61,8 @@ private struct Foo: ParsableCommand {
   var second: Subgroup
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension ParsingEndToEndTests {
   func testParsing() throws {
     AssertParse(Foo.self, ["--first", "1", "2"]) { foo in
@@ -93,6 +94,8 @@ private struct Bar: ParsableCommand {
   var lastName: Name?
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension ParsingEndToEndTests {
   func testParsing_Defaults() throws {
     AssertParse(Bar.self, ["--first-name", "A", "B"]) { bar in
@@ -132,6 +135,8 @@ private struct Qux: ParsableCommand {
   var lastName: [Name] = []
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension ParsingEndToEndTests {
   func testParsing_Array() throws {
     AssertParse(Qux.self, ["--first-name", "A", "B"]) { qux in

@@ -13,9 +13,10 @@ import XCTest
 
 @testable import ArgumentParser
 
-final class NameSpecificationTests: XCTestCase {
-}
+final class NameSpecificationTests: XCTestCase {}
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension NameSpecificationTests {
   func testFlagNames_withNoPrefix() {
     let key = InputKey(name: "index", parent: nil)
@@ -107,6 +108,8 @@ private func Assert<N>(
   }
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension NameSpecificationTests {
   func testMakeNames_short() {
     Assert(nameSpecification: .short, key: "foo", makeNames: [.short("f")])

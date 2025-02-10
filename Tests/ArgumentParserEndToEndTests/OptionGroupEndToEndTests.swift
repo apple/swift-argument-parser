@@ -13,8 +13,7 @@ import ArgumentParser
 import ArgumentParserTestHelpers
 import XCTest
 
-final class OptionGroupEndToEndTests: XCTestCase {
-}
+final class OptionGroupEndToEndTests: XCTestCase {}
 
 private struct Inner: TestableParsableArguments {
   @Flag(name: [.short, .long])
@@ -70,6 +69,8 @@ private struct Command: TestableParsableCommand {
   }
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension OptionGroupEndToEndTests {
   func testOptionGroup_Defaults() throws {
     AssertParse(Outer.self, ["prefix", "name", "postfix"]) { options in
@@ -146,6 +147,8 @@ private struct DuplicatedFlagGroupLongCommand: ParsableCommand {
   @OptionGroup var option: DuplicatedFlagGroupLong
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension OptionGroupEndToEndTests {
   func testUniqueNamesForDuplicatedFlag_NoFlags() throws {
     AssertParse(DuplicatedFlagGroupCustomCommand.self, []) { command in

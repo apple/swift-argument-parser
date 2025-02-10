@@ -22,6 +22,8 @@ private struct Bar: ParsableArguments {
   @Option() var name: [String] = []
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension RepeatingEndToEndTests {
   func testParsing_repeatingString() throws {
     AssertParse(Bar.self, []) { bar in
@@ -48,6 +50,8 @@ private struct Foo: ParsableArguments {
   var verbose: Int
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension RepeatingEndToEndTests {
   func testParsing_incrementInteger() throws {
     AssertParse(Foo.self, []) { options in
@@ -69,6 +73,8 @@ private struct Baz: ParsableArguments {
   @Option(parsing: .remaining) var names: [String] = []
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension RepeatingEndToEndTests {
   func testParsing_repeatingStringRemaining_1() {
     AssertParse(Baz.self, []) { baz in
@@ -146,6 +152,8 @@ private struct Inner: ParsableCommand {
   var files: [String] = []
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension RepeatingEndToEndTests {
   func testParsing_subcommandRemaining() {
     AssertParseCommand(
@@ -166,6 +174,8 @@ private struct Qux: ParsableArguments {
   @Argument() var extra: String?
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension RepeatingEndToEndTests {
   func testParsing_repeatingStringUpToNext() throws {
     AssertParse(Qux.self, []) { qux in
@@ -276,6 +286,8 @@ private struct Wobble: ParsableArguments {
     []
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension RepeatingEndToEndTests {
   func testParsing_repeatingWithTransform() throws {
     let names = ["--names", "one", "--names", "two"]
@@ -359,6 +371,8 @@ private struct Weazle: ParsableArguments {
   @Argument() var names: [String] = []
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension RepeatingEndToEndTests {
   func testParsing_repeatingArgument() throws {
     AssertParse(Weazle.self, ["one", "two", "three", "--verbose"]) { weazle in
@@ -399,6 +413,8 @@ private func time(_ body: () -> Void) -> TimeInterval {
   return Date().timeIntervalSince(start)
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension RepeatingEndToEndTests {
   // A regression test against array parsing performance going non-linear.
   func testParsing_repeatingPerformance() throws {

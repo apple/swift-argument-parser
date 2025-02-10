@@ -99,6 +99,8 @@ private struct Foo: ParsableArguments {
   }
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension ValidationEndToEndTests {
   func testValidation() throws {
     AssertParse(Foo.self, ["Joe"]) { foo in

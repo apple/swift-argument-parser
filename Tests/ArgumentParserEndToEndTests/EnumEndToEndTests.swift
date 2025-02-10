@@ -13,8 +13,7 @@ import ArgumentParser
 import ArgumentParserTestHelpers
 import XCTest
 
-final class EnumEndToEndTests: XCTestCase {
-}
+final class EnumEndToEndTests: XCTestCase {}
 
 // MARK: -
 
@@ -28,6 +27,8 @@ private struct Bar: ParsableArguments {
   var index: Index
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension EnumEndToEndTests {
   func testParsing_SingleOption() throws {
     AssertParse(Bar.self, ["--index", "hello"]) { bar in
@@ -64,6 +65,8 @@ private struct Baz: ParsableArguments {
   @Argument() var modeArg: Mode?
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension EnumEndToEndTests {
   func test_ParsingRawValue_Option() throws {
     AssertParse(Baz.self, ["--mode", "generate-bash-script"]) { baz in

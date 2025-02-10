@@ -13,8 +13,7 @@ import ArgumentParser
 import ArgumentParserTestHelpers
 import XCTest
 
-final class OptionalEndToEndTests: XCTestCase {
-}
+final class OptionalEndToEndTests: XCTestCase {}
 
 // MARK: -
 
@@ -26,6 +25,8 @@ private struct Foo: ParsableArguments {
   @Option() var max: Int?
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension OptionalEndToEndTests {
   func testParsing_Optional() throws {
     AssertParse(Foo.self, []) { foo in
@@ -64,6 +65,8 @@ private struct Bar: ParsableArguments {
   @Argument() var bar: String? = nil
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension OptionalEndToEndTests {
   func testParsing_Optional_WithAllValues_1() {
     AssertParse(Bar.self, ["--name", "A", "--format", "B", "--foo", "C", "D"]) {
@@ -214,6 +217,8 @@ extension OptionalEndToEndTests {
   }
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension OptionalEndToEndTests {
   // Compilation test: https://github.com/apple/swift-argument-parser/issues/618
   private struct Command: ParsableCommand {

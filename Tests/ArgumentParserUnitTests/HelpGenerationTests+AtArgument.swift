@@ -17,6 +17,8 @@ import XCTest
 // This set of tests assert the help output matches the expected value for all
 // valid combinations of @Argument.
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension HelpGenerationTests {
   enum AtArgumentTransform {
     // Not ExpressibleByArgument
@@ -192,6 +194,8 @@ extension HelpGenerationTests {
   }
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension HelpGenerationTests {
   enum AtArgumentEBA {
     // ExpressibleByArgument
@@ -357,6 +361,8 @@ extension HelpGenerationTests {
   }
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension HelpGenerationTests {
   enum AtArgumentEBATransform {
     // ExpressibleByArgument with Transform

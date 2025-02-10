@@ -22,6 +22,8 @@ private struct Bar: ParsableArguments {
   @Argument() var name: String
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension PositionalEndToEndTests {
   func testParsing_SinglePositional() throws {
     AssertParse(Bar.self, ["Bar"]) { bar in
@@ -58,6 +60,8 @@ private struct Baz: ParsableArguments {
   @Argument() var format: String
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension PositionalEndToEndTests {
   func testParsing_TwoPositional() throws {
     AssertParse(Baz.self, ["Bar", "Foo"]) { baz in
@@ -98,6 +102,8 @@ private struct Qux: ParsableArguments {
   @Argument() var names: [String] = []
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension PositionalEndToEndTests {
   func testParsing_MultiplePositional() throws {
     AssertParse(Qux.self, []) { qux in
@@ -136,6 +142,8 @@ private struct Wobble: ParsableArguments {
   @Argument() var names: [String] = []
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension PositionalEndToEndTests {
   func testParsing_SingleAndMultiplePositional() throws {
     AssertParse(Wobble.self, ["5"]) { wobble in
@@ -183,6 +191,8 @@ private struct Flob: ParsableArguments {
   @Argument() var counts: [Int] = []
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension PositionalEndToEndTests {
   func testParsing_MultipleParsedPositional() throws {
     AssertParse(Flob.self, []) { flob in
@@ -219,6 +229,8 @@ private struct BadlyFormed: ParsableArguments {
   @Argument() var name: String
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension PositionalEndToEndTests {
   // This test results in a fatal error when run, so it can't be enabled
   // or CI will prevent integration. Delete `disabled_` to verify the trap
