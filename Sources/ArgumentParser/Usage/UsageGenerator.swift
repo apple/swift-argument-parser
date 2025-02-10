@@ -143,6 +143,7 @@ extension ArgumentSet {
   /// If no descriptive help message can be generated, `nil` will be returned.
   ///
   /// - Parameter error: the parse error that occurred.
+  /// - Returns: An error description.
   func errorDescription(error: Swift.Error) -> String? {
     switch error {
     case let parserError as ParserError:

@@ -100,6 +100,8 @@ extension CommandParser {
   ///   - split: The remaining arguments to examine.
   ///   - requireSoloArgument: `true` if the built-in flag must be the only
   ///     one remaining for this to catch it.
+  ///
+  /// - Throws: If a built-in flag is found.
   func checkForBuiltInFlags(
     _ split: SplitArguments,
     requireSoloArgument: Bool = false
@@ -266,6 +268,8 @@ extension CommandParser {
   ///
   /// - Parameter arguments: The array of arguments to parse. This should not
   ///   include the command name as the first argument.
+  ///
+  /// - Returns: The parsed command or error.
   mutating func parse(
     arguments: [String]
   ) -> Result<ParsableCommand, CommandError> {

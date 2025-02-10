@@ -465,10 +465,12 @@ extension Argument {
   /// value.
   ///
   /// - Parameters:
+  ///   - wrappedValue: A default value to use for this property, provided
+  ///     implicitly by the compiler during property wrapper initialization.
   ///   - help: Information about how to use this argument.
   ///   - completion: Kind of completion provided to the user for this option.
   public init<T>(
-    wrappedValue _value: _OptionalNilComparisonType,
+    wrappedValue: _OptionalNilComparisonType,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil
   ) where T: ExpressibleByArgument, Value == T? {
@@ -549,13 +551,15 @@ extension Argument {
   /// value.
   ///
   /// - Parameters:
+  ///   - wrappedValue: A default value to use for this property, provided
+  ///     implicitly by the compiler during property wrapper initialization.
   ///   - help: Information about how to use this argument.
   ///   - completion: Kind of completion provided to the user for this option.
   ///   - transform: A closure that converts a string into this property's
   ///     element type or throws an error.
   @preconcurrency
   public init<T>(
-    wrappedValue _value: _OptionalNilComparisonType,
+    wrappedValue: _OptionalNilComparisonType,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
     transform: @Sendable @escaping (String) throws -> T

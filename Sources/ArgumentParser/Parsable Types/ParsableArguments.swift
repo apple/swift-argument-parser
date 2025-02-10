@@ -69,6 +69,7 @@ extension ParsableArguments {
   /// - Parameter arguments: An array of arguments to use for parsing. If
   ///   `arguments` is `nil`, this uses the program's command-line arguments.
   /// - Returns: A new instance of this type.
+  /// - Throws: If parsing failed or arguments contains a help request.
   public static func parse(
     _ arguments: [String]? = nil
   ) throws -> Self {
@@ -128,20 +129,18 @@ extension ParsableArguments {
 
   /// Returns the text of the help screen for this type.
   ///
-  /// - Parameters:
-  ///   - columns: The column width to use when wrapping long line in the
-  ///     help screen. If `columns` is `nil`, uses the current terminal
-  ///     width, or a default value of `80` if the terminal width is not
-  ///     available.
+  /// - Parameter columns: The column width to use when wrapping long line in
+  ///   the help screen. If `columns` is `nil`, uses the current terminal width,
+  ///   or a default value of `80` if the terminal width is not available.
   /// - Returns: The full help screen for this type.
   @_disfavoredOverload
   @available(
     *, deprecated, message: "Use helpMessage(includeHidden:columns:) instead."
   )
   public static func helpMessage(
-    columns _columns: Int?
+    columns: Int?
   ) -> String {
-    helpMessage(includeHidden: false, columns: _columns)
+    helpMessage(includeHidden: false, columns: columns)
   }
 
   /// Returns the text of the help screen for this type.
@@ -225,6 +224,8 @@ extension ParsableArguments {
   ///
   /// - Parameter arguments: An array of arguments to use for parsing. If
   ///   `arguments` is `nil`, this uses the program's command-line arguments.
+  /// - Returns: An instance of `Self` parsable properties populated with the
+  ///   provided argument values.
   public static func parseOrExit(
     _ arguments: [String]? = nil
   ) -> Self {
@@ -237,9 +238,8 @@ extension ParsableArguments {
 
   /// Returns the usage text for this type.
   ///
-  /// - Parameters:
-  ///   - includeHidden: Include hidden help information in the generated
-  ///     message.
+  /// - Parameters includeHidden: Include hidden help information in the
+  ///   generated message.
   /// - Returns: The usage text for this type.
   public static func usageString(
     includeHidden: Bool = false

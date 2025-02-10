@@ -42,9 +42,12 @@ public struct NameSpecification: ExpressibleByArrayLiteral {
     ///   - name: The name of the option or flag.
     ///   - withSingleDash: A Boolean value indicating whether to use a single
     ///     dash as the prefix. If `false`, the name has a double-dash prefix.
-    public static func customLong(_ name: String, withSingleDash: Bool = false)
-      -> Element
-    {
+    ///
+    /// - Returns: A `long` name specification with the requested `name`.
+    public static func customLong(
+      _ name: String,
+      withSingleDash: Bool = false
+    ) -> Element {
       self.init(base: .customLong(name, withSingleDash: withSingleDash))
     }
 
@@ -67,8 +70,11 @@ public struct NameSpecification: ExpressibleByArrayLiteral {
     ///   - char: The name of the option or flag.
     ///   - allowingJoined: A Boolean value indicating whether this short name
     ///     allows a joined value.
+    ///
+    /// - Returns: A `short` name specification with the requested `char`.
     public static func customShort(
-      _ char: Character, allowingJoined: Bool = false
+      _ char: Character,
+      allowingJoined: Bool = false
     ) -> Element {
       self.init(base: .customShort(char, allowingJoined: allowingJoined))
     }
@@ -104,9 +110,12 @@ extension NameSpecification {
   ///   - name: The name of the option or flag.
   ///   - withSingleDash: A Boolean value indicating whether to use a single
   ///     dash as the prefix. If `false`, the name has a double-dash prefix.
-  public static func customLong(_ name: String, withSingleDash: Bool = false)
-    -> NameSpecification
-  {
+  ///
+  /// - Returns: A `long` name specification with the requested `name`.
+  public static func customLong(
+    _ name: String,
+    withSingleDash: Bool = false
+  ) -> NameSpecification {
     [.customLong(name, withSingleDash: withSingleDash)]
   }
 
@@ -127,8 +136,11 @@ extension NameSpecification {
   ///   - char: The name of the option or flag.
   ///   - allowingJoined: A Boolean value indicating whether this short name
   ///     allows a joined value.
+  ///
+  /// - Returns: A `short` name specification with the requested `char`.
   public static func customShort(
-    _ char: Character, allowingJoined: Bool = false
+    _ char: Character,
+    allowingJoined: Bool = false
   ) -> NameSpecification {
     [.customShort(char, allowingJoined: allowingJoined)]
   }

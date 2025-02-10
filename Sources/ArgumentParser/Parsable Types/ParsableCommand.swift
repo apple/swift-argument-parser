@@ -59,6 +59,7 @@ extension ParsableCommand {
   ///   `arguments` is `nil`, this uses the program's command-line arguments.
   /// - Returns: A new instance of this type, one of its subcommands, or a
   ///   command type internal to the `ArgumentParser` library.
+  /// - Throws: If parsing fails.
   public static func parseAsRoot(
     _ arguments: [String]? = nil
   ) throws -> ParsableCommand {
@@ -82,10 +83,10 @@ extension ParsableCommand {
   @_disfavoredOverload
   @available(*, deprecated, renamed: "helpMessage(for:includeHidden:columns:)")
   public static func helpMessage(
-    for _subcommand: ParsableCommand.Type,
+    for subcommand: ParsableCommand.Type,
     columns: Int? = nil
   ) -> String {
-    helpMessage(for: _subcommand, includeHidden: false, columns: columns)
+    helpMessage(for: subcommand, includeHidden: false, columns: columns)
   }
 
   /// Returns the text of the help screen for the given subcommand of this

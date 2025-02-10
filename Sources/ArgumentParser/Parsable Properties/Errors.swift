@@ -83,6 +83,8 @@ public struct CleanExit: Error, CustomStringConvertible {
   ///
   /// - Parameter command: The command type to offer help for, if different
   ///   from the root command.
+  ///
+  /// - Returns: A throwable CleanExit error.
   public static func helpRequest(
     _ command: ParsableCommand.Type? = nil
   ) -> CleanExit {
@@ -101,6 +103,8 @@ public struct CleanExit: Error, CustomStringConvertible {
   ///
   /// - Parameter command: A command to offer help for, if different from
   ///   the root command.
+  ///
+  /// - Returns: A throwable CleanExit error.
   public static func helpRequest(_ command: ParsableCommand) -> CleanExit {
     .helpRequest(type(of: command))
   }

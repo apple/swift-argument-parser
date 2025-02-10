@@ -638,6 +638,8 @@ extension SplitArguments {
   /// Parses the given input into an array of `Element`.
   ///
   /// - Parameter arguments: The input from the command line.
+  ///
+  /// - Throws: If parsing fails.
   init(arguments: [String]) throws {
     self.init(originalInput: arguments)
 

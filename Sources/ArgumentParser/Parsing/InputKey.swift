@@ -27,8 +27,9 @@ struct InputKey: Hashable {
 
   /// Constructs a new input key, cleaning the name, with the specified parent.
   ///
-  /// - Parameter name: The name of the key.
-  /// - Parameter parent: The input key of the parent.
+  /// - Parameters:
+  ///   - name: The name of the key.
+  ///   - parent: The input key of the parent.
   init(name: String, parent: InputKey?) {
     // Property wrappers have underscore-prefixed names, so we remove the
     // leading `_`, if present.
@@ -41,11 +42,11 @@ struct InputKey: Hashable {
 
   /// Constructs a new input key from the given coding key and parent path.
   ///
-  /// - Parameter codingKey: The base ``CodingKey``. Leading underscores in
-  ///   `codingKey` is preserved.
-  /// - Parameter path: The list of ``CodingKey`` values that lead to this one.
-  ///   `path` may be empty.
-  @inlinable
+  /// - Parameters:
+  ///   - codingKey: The base ``CodingKey``. Leading underscores in `codingKey`
+  ///     is preserved.
+  ///   - path: The list of ``CodingKey`` values that lead to this one. `path`
+  ///     may be empty.
   init(codingKey: CodingKey, path: [CodingKey]) {
     self.name = codingKey.stringValue
     self.path = path.map { $0.stringValue }

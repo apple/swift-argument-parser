@@ -220,9 +220,9 @@ extension ArgumentSet {
   ///
   /// As we iterate over the values from the command line, we try to find a
   /// definition that matches the particular element.
-  /// - Parameters:
-  ///   - parsed: The argument from the command line
-  ///   - origin: Where `parsed` came from.
+  ///
+  /// - Parameter parsed: The argument from the command line
+  ///
   /// - Returns: The matching definition.
   func first(
     matching parsed: ParsedArgument

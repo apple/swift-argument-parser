@@ -322,8 +322,9 @@ extension Flag where Value == Bool {
   /// ````
   ///
   /// - Parameters:
+  ///   - wrappedValue: A default value to use for this property, provided
+  ///     implicitly by the compiler during property wrapper initialization.
   ///   - name: A specification for what names are allowed for this flag.
-  ///   - wrappedValue: A default value to use for this property, provided implicitly by the compiler during property wrapper initialization.
   ///   - inversion: The method for converting this flag's name into an on/off pair.
   ///   - exclusivity: The behavior to use when an on/off pair of flags is specified.
   ///   - help: Information about how to use this flag.
@@ -632,8 +633,7 @@ extension Flag {
   /// var foo: [CustomFlagType]
   /// ```
   ///
-  /// - Parameters:
-  ///   - help: Information about how to use this flag.
+  /// - Parameter help: Information about how to use this flag.
   public init<Element>(
     help: ArgumentHelp? = nil
   ) where Value == [Element], Element: EnumerableFlag {
