@@ -22,6 +22,7 @@ extension ArgumentParser.SplitArguments.InputIndex: Swift
   }
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
 private func AssertIndexEqual(
   _ sut: SplitArguments, at index: Int, inputIndex: Int,
   subIndex: SplitArguments.SubIndex, file: StaticString = #filePath,
@@ -49,6 +50,7 @@ private func AssertIndexEqual(
   }
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
 private func AssertElementEqual(
   _ sut: SplitArguments, at index: Int, _ element: SplitArguments.Element.Value,
   file: StaticString = #filePath, line: UInt = #line

@@ -645,7 +645,7 @@ extension HelpGenerationTests {
 }
 
 extension HelpGenerationTests {
-  private struct optionsToHide: ParsableArguments {
+  private struct OptionsToHide: ParsableArguments {
     @Flag(help: "Verbose")
     var verbose: Bool = false
 
@@ -665,7 +665,7 @@ extension HelpGenerationTests {
       commandName: "driver", abstract: "Demo hiding option groups")
 
     @OptionGroup(_hiddenFromHelp: true)
-    var hideMe: optionsToHide
+    var hideMe: OptionsToHide
 
     @Option(help: "Time to wait before timeout (in seconds)")
     var timeout: Int?
@@ -676,7 +676,7 @@ extension HelpGenerationTests {
       commandName: "driver", abstract: "Demo hiding option groups")
 
     @OptionGroup(visibility: .hidden)
-    var hideMe: optionsToHide
+    var hideMe: OptionsToHide
 
     @Option(help: "Time to wait before timeout (in seconds)")
     var timeout: Int?
@@ -687,7 +687,7 @@ extension HelpGenerationTests {
       commandName: "driver", abstract: "Demo hiding option groups")
 
     @OptionGroup(visibility: .private)
-    var hideMe: optionsToHide
+    var hideMe: OptionsToHide
 
     @Option(help: "Time to wait before timeout (in seconds)")
     var timeout: Int?

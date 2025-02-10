@@ -526,6 +526,8 @@ extension SplitArguments {
   }
 
   mutating func removeAll(in origin: InputOrigin) {
+    // swift-format-ignore: ReplaceForEachWithForLoop
+    // does not conform to collection.
     origin.forEach {
       remove(at: $0)
     }

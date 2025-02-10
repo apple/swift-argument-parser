@@ -86,6 +86,7 @@ extension NameSpecificationTests {
   }
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
 private func Assert(
   nameSpecification: NameSpecification, key: String, parent: InputKey? = nil,
   makeNames expected: [Name], file: StaticString = #filePath, line: UInt = #line
@@ -94,17 +95,19 @@ private func Assert(
   Assert(names: names, expected: expected, file: file, line: line)
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
 private func Assert<N>(
   names: [N], expected: [N], file: StaticString = #filePath, line: UInt = #line
 ) where N: Equatable {
-  names.forEach {
+  for name in names {
     XCTAssert(
-      expected.contains($0), "Unexpected name '\($0)'.", file: (file),
+      expected.contains(name), "Unexpected name '\(name)'.", file: file,
       line: line)
   }
-  expected.forEach {
+  for expected in expected {
     XCTAssert(
-      names.contains($0), "Missing name '\($0)'.", file: (file), line: line)
+      names.contains(expected), "Missing name '\(expected)'.", file: file,
+      line: line)
   }
 }
 

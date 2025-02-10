@@ -53,6 +53,7 @@ private struct Foo: ParsableCommand {
   }
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
 private func AssertParseFooCommand<A>(
   _ type: A.Type, _ arguments: [String], file: StaticString = #filePath,
   line: UInt = #line, closure: (A) throws -> Void

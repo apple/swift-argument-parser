@@ -54,6 +54,7 @@ extension OptionalEndToEndTests {
 // MARK: -
 
 private struct Bar: ParsableArguments {
+  // swift-format-ignore: AlwaysUseLowerCamelCase
   enum Format: String, ExpressibleByArgument {
     case A
     case B

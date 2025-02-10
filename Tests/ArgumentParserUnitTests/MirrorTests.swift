@@ -38,7 +38,7 @@ extension MirrorTests {
     }
     func performTest(foo: String?, baz: String!) {
       let fooChild = Foo(foo: foo, bar: "foobar", baz: baz)
-      Mirror(reflecting: fooChild).children.forEach { child in
+      for child in Mirror(reflecting: fooChild).children {
         switch child.label {
         case "foo":
           checkChildValue(child, expectedString: foo)

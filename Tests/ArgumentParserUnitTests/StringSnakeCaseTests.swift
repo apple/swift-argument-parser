@@ -27,9 +27,12 @@ extension StringSnakeCaseTests {
       ("a", "a"),  // single character
       ("aA", "a_a"),  // two characters
       ("version4Thing", "version4_thing"),  // numerics
-      ("partCAPS", "part_caps"),  // only insert underscore before first all caps
-      ("partCAPSLowerAGAIN", "part_caps_lower_again"),  // switch back and forth caps.
-      ("manyWordsInThisThing", "many_words_in_this_thing"),  // simple lowercase + underscore + more
+      // only insert underscore before first all caps
+      ("partCAPS", "part_caps"),
+      // switch back and forth caps.
+      ("partCAPSLowerAGAIN", "part_caps_lower_again"),
+      // simple lowercase + underscore + more
+      ("manyWordsInThisThing", "many_words_in_this_thing"),
       ("asdfĆqer", "asdf_ćqer"),
       ("already_snake_case", "already_snake_case"),
       ("dataPoint22", "data_point22"),
@@ -45,7 +48,8 @@ extension StringSnakeCaseTests {
       ("_test_", "_test_"),
       ("__test", "__test"),
       ("test__", "test__"),
-      ("m͉̟̹y̦̳G͍͚͎̳r̤͉̤͕ͅea̲͕t͇̥̼͖U͇̝̠R͙̻̥͓̣L̥̖͎͓̪̫ͅR̩͖̩eq͈͓u̞e̱s̙t̤̺ͅ", "m͉̟̹y̦̳_g͍͚͎̳r̤͉̤͕ͅea̲͕t͇̥̼͖_u͇̝̠r͙̻̥͓̣l̥̖͎͓̪̫ͅ_r̩͖̩eq͈͓u̞e̱s̙t̤̺ͅ"),  // because Itai wanted to test this
+      // because Itai wanted to test this
+      ("m͉̟̹y̦̳G͍͚͎̳r̤͉̤͕ͅea̲͕t͇̥̼͖U͇̝̠R͙̻̥͓̣L̥̖͎͓̪̫ͅR̩͖̩eq͈͓u̞e̱s̙t̤̺ͅ", "m͉̟̹y̦̳_g͍͚͎̳r̤͉̤͕ͅea̲͕t͇̥̼͖_u͇̝̠r͙̻̥͓̣l̥̖͎͓̪̫ͅ_r̩͖̩eq͈͓u̞e̱s̙t̤̺ͅ"),
       ("🐧🐟", "🐧🐟"),  // fishy emoji example?
       ("URLSession", "url_session"),
       ("RADAR", "radar"),
@@ -69,9 +73,12 @@ extension StringSnakeCaseTests {
       ("a", "a"),  // single character
       ("aA", "a-a"),  // two characters
       ("version4Thing", "version4-thing"),  // numerics
-      ("partCAPS", "part-caps"),  // only insert underscore before first all caps
-      ("partCAPSLowerAGAIN", "part-caps-lower-again"),  // switch back and forth caps.
-      ("manyWordsInThisThing", "many-words-in-this-thing"),  // simple lowercase + underscore + more
+      // only insert underscore before first all caps
+      ("partCAPS", "part-caps"),
+      // switch back and forth caps.
+      ("partCAPSLowerAGAIN", "part-caps-lower-again"),
+      // simple lowercase + underscore + more
+      ("manyWordsInThisThing", "many-words-in-this-thing"),
       ("asdfĆqer", "asdf-ćqer"),
       ("already_snake_case", "already_snake_case"),
       ("dataPoint22", "data-point22"),
@@ -87,7 +94,8 @@ extension StringSnakeCaseTests {
       ("_test_", "_test_"),
       ("__test", "__test"),
       ("test__", "test__"),
-      ("m͉̟̹y̦̳G͍͚͎̳r̤͉̤͕ͅea̲͕t͇̥̼͖U͇̝̠R͙̻̥͓̣L̥̖͎͓̪̫ͅR̩͖̩eq͈͓u̞e̱s̙t̤̺ͅ", "m͉̟̹y̦̳-g͍͚͎̳r̤͉̤͕ͅea̲͕t͇̥̼͖-u͇̝̠r͙̻̥͓̣l̥̖͎͓̪̫ͅ-r̩͖̩eq͈͓u̞e̱s̙t̤̺ͅ"),  // because Itai wanted to test this
+      // because Itai wanted to test this
+      ("m͉̟̹y̦̳G͍͚͎̳r̤͉̤͕ͅea̲͕t͇̥̼͖U͇̝̠R͙̻̥͓̣L̥̖͎͓̪̫ͅR̩͖̩eq͈͓u̞e̱s̙t̤̺ͅ", "m͉̟̹y̦̳-g͍͚͎̳r̤͉̤͕ͅea̲͕t͇̥̼͖-u͇̝̠r͙̻̥͓̣l̥̖͎͓̪̫ͅ-r̩͖̩eq͈͓u̞e̱s̙t̤̺ͅ"),
       ("🐧🐟", "🐧🐟"),  // fishy emoji example?
       ("URLSession", "url-session"),
       ("RADAR", "radar"),

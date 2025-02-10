@@ -75,6 +75,7 @@ extension XCTestExpectation {
   }
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
 public func AssertResultFailure<T, U: Error>(
   _ expression: @autoclosure () -> Result<T, U>,
   _ message: @autoclosure () -> String = "",
@@ -90,6 +91,7 @@ public func AssertResultFailure<T, U: Error>(
   }
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
 public func AssertErrorMessage<A>(
   _ type: A.Type, _ arguments: [String], _ errorMessage: String,
   file: StaticString = #filePath, line: UInt = #line
@@ -103,6 +105,7 @@ public func AssertErrorMessage<A>(
   }
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
 public func AssertFullErrorMessage<A>(
   _ type: A.Type, _ arguments: [String], _ errorMessage: String,
   file: StaticString = #filePath, line: UInt = #line
@@ -117,6 +120,7 @@ public func AssertFullErrorMessage<A>(
   }
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
 public func AssertParse<A>(
   _ type: A.Type, _ arguments: [String], file: StaticString = #filePath,
   line: UInt = #line, closure: (A) throws -> Void
@@ -130,6 +134,7 @@ public func AssertParse<A>(
   }
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
 public func AssertParseCommand<A: ParsableCommand>(
   _ rootCommand: ParsableCommand.Type, _ type: A.Type, _ arguments: [String],
   file: StaticString = #filePath, line: UInt = #line,
@@ -149,6 +154,7 @@ public func AssertParseCommand<A: ParsableCommand>(
   }
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
 public func AssertEqualStrings(
   actual: String,
   expected: String,
@@ -218,6 +224,7 @@ public func AssertEqualStrings(
     line: line)
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
 public func AssertHelp<T: ParsableArguments>(
   _ visibility: ArgumentVisibility,
   for _: T.Type,
@@ -258,6 +265,7 @@ public func AssertHelp<T: ParsableArguments>(
     actual: helpString, expected: expected, file: file, line: line)
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
 public func AssertHelp<T: ParsableCommand, U: ParsableCommand>(
   _ visibility: ArgumentVisibility,
   for _: T.Type,
@@ -296,6 +304,7 @@ extension XCTest {
       : bundleURL
   }
 
+  // swift-format-ignore: AlwaysUseLowerCamelCase
   @discardableResult
   public func AssertExecuteCommand(
     command: String,
@@ -312,6 +321,7 @@ extension XCTest {
       line: line)
   }
 
+  // swift-format-ignore: AlwaysUseLowerCamelCase
   @discardableResult
   public func AssertExecuteCommand(
     command: [String],
@@ -382,6 +392,7 @@ extension XCTest {
     return outputActual
   }
 
+  // swift-format-ignore: AlwaysUseLowerCamelCase
   public func AssertJSONEqualFromString<T: Codable & Equatable>(
     actual: String, expected: String, for type: T.Type,
     file: StaticString = #filePath, line: UInt = #line

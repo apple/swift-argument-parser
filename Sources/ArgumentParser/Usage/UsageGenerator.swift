@@ -305,7 +305,7 @@ extension ErrorMessageGenerator {
     }
 
     // An empirically derived magic number
-    let SIMILARITY_FLOOR = 4
+    let kSimilarityFloor = 4
 
     let notShort: (Name) -> Bool = { (name: Name) in
       switch name {
@@ -319,7 +319,7 @@ extension ErrorMessageGenerator {
       .flatMap({ $0.names })
       .filter({
         $0.synopsisString.editDistance(to: name.synopsisString)
-          < SIMILARITY_FLOOR
+          < kSimilarityFloor
       })  // only include close enough suggestion
       .filter(notShort)  // exclude short option suggestions
       .min(by: { lhs, rhs in  // find the suggestion closest to the argument

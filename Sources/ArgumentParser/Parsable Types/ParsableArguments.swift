@@ -184,9 +184,13 @@ extension ParsableArguments {
   /// - Parameter shell: The shell to generate a completion script for.
   /// - Returns: The completion script for `shell`.
   public static func completionScript(for shell: CompletionShell) -> String {
-    let completionsGenerator = try! CompletionsGenerator(
-      command: self.asCommand, shell: shell)
-    return completionsGenerator.generateCompletionScript()
+    do {
+      let completionsGenerator = try CompletionsGenerator(
+        command: self.asCommand, shell: shell)
+      return completionsGenerator.generateCompletionScript()
+    } catch {
+      fatalError("Failed to generate completion script: \(error)")
+    }
   }
 
   /// Terminates execution with a message and exit code that is appropriate
