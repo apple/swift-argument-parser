@@ -198,6 +198,7 @@ extension CompletionScriptTests {
     file: StaticString = #filePath,
     line: UInt = #line
   ) throws {
+    #if !os(Windows) && !os(WASI)
     try assertCustomCompletion(
       "-o", shell: shell, prefix: "e", file: file, line: line)
     try assertCustomCompletion(
@@ -213,6 +214,7 @@ extension CompletionScriptTests {
       try assertCustomCompletion("--bad", shell: shell, file: file, line: line))
     XCTAssertThrowsError(
       try assertCustomCompletion("four", shell: shell, file: file, line: line))
+    #endif
   }
 
   func testBashCustomCompletions() throws {

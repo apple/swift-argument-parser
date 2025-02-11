@@ -164,7 +164,7 @@ public func AssertEqualStrings(
   // Normalize line endings to '\n'.
   let actual = actual.normalizingLineEndings()
   let expected = expected.normalizingLineEndings()
-  
+
   // If the input strings are not equal, create a simple diff for debugging...
   guard actual != expected else {
     // Otherwise they are equal, early exit.

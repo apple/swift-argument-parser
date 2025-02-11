@@ -25,7 +25,7 @@ extension String {
       .map { $0.trimmed() }
       .joined(separator: "\n")
   }
-  
+
   public func normalizingLineEndings() -> String {
     self
       .replacingOccurrences(of: "\r\n", with: "\n")
