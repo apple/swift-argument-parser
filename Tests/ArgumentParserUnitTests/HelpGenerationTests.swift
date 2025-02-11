@@ -189,7 +189,7 @@ extension HelpGenerationTests {
     var degree: Degree = .bachelor
 
     @Option(help: "Directory.")
-    var directory: URL = URL(filePath: "/path/to/file")
+    var directory: URL = URL(fileURLWithPath: "/path/to/file")
 
     enum Manual: Int, ExpressibleByArgument {
       case foo
