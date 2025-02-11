@@ -169,6 +169,7 @@ extension CompletionScriptTests {
     file: StaticString = #filePath,
     line: UInt = #line
   ) throws {
+    #if !os(Windows) && !os(WASI)
     do {
       setenv("SAP_SHELL", shell, 1)
       defer { unsetenv("SAP_SHELL") }
@@ -189,6 +190,7 @@ extension CompletionScriptTests {
         file: file,
         line: line)
     }
+    #endif
   }
 
   func assertCustomCompletions(
