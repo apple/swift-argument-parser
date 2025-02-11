@@ -320,23 +320,23 @@ public struct DictionaryKeyExclusivity: Hashable {
     case useLast
     case unique
   }
-  
+
   internal var base: Representation
-  
+
   public static var useFirst: DictionaryKeyExclusivity {
     self.init(base: .useFirst)
   }
-  
+
   public static var useLast: DictionaryKeyExclusivity {
     self.init(base: .useLast)
   }
-  
+
   public static var requireUnique: DictionaryKeyExclusivity {
     self.init(base: .unique)
   }
 }
 
-extension DictionaryKeyExclusivity: Sendable { }
+extension DictionaryKeyExclusivity: Sendable {}
 
 // MARK: - @Argument T: ExpressibleByArgument Initializers
 extension Argument where Value: ExpressibleByArgument {
@@ -823,20 +823,21 @@ extension Argument {
     separator: Character,
     initial: Container.Initial?
   ) where Container: ArgumentDefinitionDictionaryContainer {
-    self.init(_parsedValue: .init { key in
-      let arg = ArgumentDefinition(
-        dictionaryContainer: dictionaryContainer,
-        key: key,
-        kind: .positional,
-        help: help,
-        parsingStrategy: .default,
-        separator: separator,
-        initial: initial,
-        completion: completion)
-      return ArgumentSet(arg)
-    })
+    self.init(
+      _parsedValue: .init { key in
+        let arg = ArgumentDefinition(
+          dictionaryContainer: dictionaryContainer,
+          key: key,
+          kind: .positional,
+          help: help,
+          parsingStrategy: .default,
+          separator: separator,
+          initial: initial,
+          completion: completion)
+        return ArgumentSet(arg)
+      })
   }
-  
+
   @preconcurrency
   public init<K: ExpressibleByArgument, V: ExpressibleByArgument>(
     wrappedValue: Value,
@@ -844,7 +845,7 @@ extension Argument {
     completion: CompletionKind? = nil,
     separator: Character = ":",
     exclusivity: DictionaryKeyExclusivity = .useLast
-  ) where Value == Dictionary<K, V> {
+  ) where Value == [K: V] {
     switch exclusivity.base {
     case .useFirst:
       self.init(
@@ -879,7 +880,7 @@ extension Argument {
     completion: CompletionKind? = nil,
     separator: Character = ":",
     exclusivity: DictionaryKeyExclusivity = .useLast
-  ) where Value == Dictionary<K, V> {
+  ) where Value == [K: V] {
     switch exclusivity.base {
     case .useFirst:
       self.init(

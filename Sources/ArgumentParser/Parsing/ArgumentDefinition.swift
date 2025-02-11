@@ -295,7 +295,7 @@ extension ArgumentDefinition {
       initial: initial,
       completion: completion)
   }
-  
+
   init<Container>(
     dictionaryContainer: Container.Type,
     key: InputKey,
@@ -314,9 +314,12 @@ extension ArgumentDefinition {
       help: help,
       defaultValueDescription: nil,
       parsingStrategy: parsingStrategy,
-      parser: { key, origin, name, input -> ((Container.Key, Container.Value)) in
-        let split = input.split(separator: separator, maxSplits: 1, omittingEmptySubsequences: false)
-          .map { String($0) }
+      parser: {
+        key, origin, name, input -> ((Container.Key, Container.Value)) in
+        let split = input.split(
+          separator: separator, maxSplits: 1, omittingEmptySubsequences: false
+        )
+        .map { String($0) }
         guard split.count == 2 else {
           throw ParserError.missingSeparator(
             separator: separator, originalInput: input)
@@ -334,7 +337,7 @@ extension ArgumentDefinition {
       initial: initial,
       completion: completion)
   }
-  
+
   init<Container>(
     container: Container.Type,
     key: InputKey,
@@ -493,18 +496,20 @@ where Element: ExpressibleByArgument {
 // MARK: - Container abstractions for Dictionary<K, V>
 
 protocol ArgumentDefinitionDictionaryContainer: ArgumentDefinitionContainer
-  where Initial == Dictionary<Key, Value>, Contained == (Key, Value)
-{
+where Initial == [Key: Value], Contained == (Key, Value) {
   associatedtype Key: Hashable, ExpressibleByArgument
   associatedtype Value: ExpressibleByArgument
 }
 
 protocol DictionaryMergeBehavior {
-  static func update<K: Hashable, V>(_ dict: inout [K: V], key: K, value: V) throws
+  static func update<K: Hashable, V>(_ dict: inout [K: V], key: K, value: V)
+    throws
 }
 
 struct UseFirst: DictionaryMergeBehavior {
-  static func update<K: Hashable, V>(_ dict: inout [K: V], key: K, value: V) throws {
+  static func update<K: Hashable, V>(_ dict: inout [K: V], key: K, value: V)
+    throws
+  {
     if !dict.keys.contains(key) {
       dict[key] = value
     }
@@ -512,13 +517,17 @@ struct UseFirst: DictionaryMergeBehavior {
 }
 
 struct UseLast: DictionaryMergeBehavior {
-  static func update<K: Hashable, V>(_ dict: inout [K: V], key: K, value: V) throws {
+  static func update<K: Hashable, V>(_ dict: inout [K: V], key: K, value: V)
+    throws
+  {
     dict[key] = value
   }
 }
 
 struct UniqueKey: DictionaryMergeBehavior {
-  static func update<K: Hashable, V>(_ dict: inout [K: V], key: K, value: V) throws {
+  static func update<K: Hashable, V>(_ dict: inout [K: V], key: K, value: V)
+    throws
+  {
     if dict.keys.contains(key) {
       throw ParserError.duplicateKey(String(describing: key))
     }
@@ -526,12 +535,14 @@ struct UniqueKey: DictionaryMergeBehavior {
   }
 }
 
-struct DictionaryContainer<Key, Value, Merge>: ArgumentDefinitionDictionaryContainer
-  where Key: Hashable & ExpressibleByArgument, Value: ExpressibleByArgument,
-        Merge: DictionaryMergeBehavior
+struct DictionaryContainer<Key, Value, Merge>:
+  ArgumentDefinitionDictionaryContainer
+where
+  Key: Hashable & ExpressibleByArgument, Value: ExpressibleByArgument,
+  Merge: DictionaryMergeBehavior
 {
   typealias Contained = (Key, Value)
-  typealias Initial = Dictionary<Key, Value>
+  typealias Initial = [Key: Value]
 
   static var helpOptions: ArgumentDefinition.Help.Options { [.isRepeating] }
 

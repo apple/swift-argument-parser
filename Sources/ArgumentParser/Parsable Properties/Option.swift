@@ -900,27 +900,28 @@ extension Option {
     separator: Character,
     initial: Container.Initial?
   ) where Container: ArgumentDefinitionDictionaryContainer {
-    self.init(_parsedValue: .init { key in
-      let arg = ArgumentDefinition(
-        dictionaryContainer: dictionaryContainer,
-        key: key,
-        kind: .name(key: key, specification: name),
-        help: help,
-        parsingStrategy: .default,
-        separator: separator,
-        initial: initial,
-        completion: completion)
-      return ArgumentSet(arg)
-    })
+    self.init(
+      _parsedValue: .init { key in
+        let arg = ArgumentDefinition(
+          dictionaryContainer: dictionaryContainer,
+          key: key,
+          kind: .name(key: key, specification: name),
+          help: help,
+          parsingStrategy: .default,
+          separator: separator,
+          initial: initial,
+          completion: completion)
+        return ArgumentSet(arg)
+      })
   }
-  
+
   public init<K: ExpressibleByArgument, V: ExpressibleByArgument>(
     name: NameSpecification = .long,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
     separator: Character = ":",
     exclusivity: DictionaryKeyExclusivity = .useLast
-  ) where Value == Dictionary<K, V> {
+  ) where Value == [K: V] {
     switch exclusivity.base {
     case .useFirst:
       self.init(
