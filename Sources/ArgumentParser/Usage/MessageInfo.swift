@@ -9,15 +9,12 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if swift(>=5.11)
+#if swift(>=6.0)
 internal import protocol Foundation.LocalizedError
 internal import class Foundation.NSError
-#elseif swift(>=5.10)
+#else
 import protocol Foundation.LocalizedError
 import class Foundation.NSError
-#else
-@_implementationOnly import protocol Foundation.LocalizedError
-@_implementationOnly import class Foundation.NSError
 #endif
 
 enum MessageInfo {
