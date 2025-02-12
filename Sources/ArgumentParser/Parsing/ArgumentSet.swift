@@ -466,8 +466,9 @@ struct LenientParser {
     }[...]
     guard !argumentStack.isEmpty else { return }
 
-    /// Pops arguments off the stack until the next valid value. Skips over
-    /// dash-prefixed inputs unless `unconditional` is `true`.
+    /// Pops arguments off the stack until the next valid value.
+    ///
+    /// Skips over dash-prefixed inputs unless `unconditional` is `true`.
     func next(unconditional: Bool) -> SplitArguments.Element? {
       while let arg = argumentStack.popFirst() {
         if arg.isValue || unconditional {
