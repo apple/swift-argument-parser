@@ -9,7 +9,13 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if swift(>=5.11)
+internal import Foundation
+#elseif swift(>=5.10)
 import Foundation
+#else
+@_implementationOnly import Foundation
+#endif
 
 /// A synchronization primitive that protects shared mutable state via mutual
 /// exclusion.
