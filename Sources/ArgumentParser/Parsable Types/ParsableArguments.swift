@@ -24,7 +24,7 @@ public protocol ParsableArguments: Decodable {
   /// creating a new instance from command-line arguments.
   mutating func validate() throws
 
-  /// The label to use for "Error: ..." messages from this type. (experimental)
+  /// The label to use for "Error: ..." messages from this type (experimental).
   static var _errorLabel: String { get }
 }
 
