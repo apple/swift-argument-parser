@@ -26,9 +26,7 @@ extension Foundation.URL: ArgumentParser.ExpressibleByArgument {
   }
 
   public var defaultValueDescription: String {
-    self.path == FileManager.default.currentDirectoryPath && self.isFileURL
-      ? "current directory"
-      : String(describing: self)
+    self.path
   }
 }
 
@@ -228,7 +226,7 @@ extension HelpGenerationTests {
           --lucky <numbers>       Your lucky numbers. (default: 7, 14)
           --optional/--required   Vegan diet. (default: --optional)
           --degree <degree>       Your degree.
-          --directory <directory> Directory. (default: file:///path/to/file)
+          --directory <directory> Directory. (default: /path/to/file)
           --manual <manual>       Manual Option. (default: default-value)
           --unspecial <unspecial> Unspecialized Synthesized (values: 0, 1; default: 0)
           --special <special>     Specialized Synthesized (values: Apple, Banana;
