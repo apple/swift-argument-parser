@@ -198,6 +198,10 @@ extension ErrorMessageGenerator {
       return unknownOptionMessage(origin: o, name: n)
     case .missingValueForOption(let o, let n):
       return missingValueForOptionMessage(origin: o, name: n)
+    case .missingValueOrUnknownCompositeOption(
+      let o, let shortName, let compositeName):
+      return missingValueOrUnknownCompositeOptionMessage(
+        origin: o, shortName: shortName, compositeName: compositeName)
     case .unexpectedValueForOption(let o, let n, let v):
       return unexpectedValueForOptionMessage(origin: o, name: n, value: v)
     case .unexpectedExtraValues(let v):
@@ -338,6 +342,23 @@ extension ErrorMessageGenerator {
     } else {
       return "Missing value for '\(name.synopsisString)'"
     }
+  }
+
+  func missingValueOrUnknownCompositeOptionMessage(
+    origin: InputOrigin,
+    shortName: Name,
+    compositeName: Name
+  ) -> String {
+    let unknownOptionMessage = unknownOptionMessage(
+      origin: origin.firstElement,
+      name: compositeName)
+    let missingValueMessage = missingValueForOptionMessage(
+      origin: origin,
+      name: shortName)
+    return """
+      \(unknownOptionMessage)
+         or: \(missingValueMessage) in '\(compositeName.synopsisString)'
+      """
   }
 
   func unexpectedValueForOptionMessage(
