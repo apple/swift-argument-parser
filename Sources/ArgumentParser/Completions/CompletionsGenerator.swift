@@ -98,6 +98,14 @@ public struct CompletionShell: RawRepresentable, Hashable, CaseIterable {
   ///
   /// The environment variable is set in generated completion scripts.
   static let shellVersionEnvironmentVariableName = "SAP_SHELL_VERSION"
+
+  public func format(completions: [String]) -> String {
+    var completions = completions
+    if self == .zsh {
+      completions.append("END_MARKER")
+    }
+    return completions.joined(separator: "\n")
+  }
 }
 
 struct CompletionsGenerator {
@@ -129,7 +137,7 @@ struct CompletionsGenerator {
     CompletionShell._requesting.withLock { $0 = shell }
     switch shell {
     case .zsh:
-      return ZshCompletionsGenerator.generateCompletionScript(command)
+      return [command].zshCompletionScript
     case .bash:
       return BashCompletionsGenerator.generateCompletionScript(command)
     case .fish:
@@ -164,11 +172,39 @@ extension ParsableCommand {
   }
 }
 
+extension [ParsableCommand.Type] {
+  // Include default 'help' subcommand in nonempty subcommand list iff no help subcommand already exists.
+  mutating func addHelpSubcommandIffMissing() {
+    if !isEmpty && allSatisfy({ $0._commandName != "help" }) {
+      append(HelpCommand.self)
+    }
+  }
+}
+
 extension Sequence where Element == ParsableCommand.Type {
   func completionFunctionName() -> String {
     "_"
       + self.flatMap { $0.compositeCommandName }
       .uniquingAdjacentElements()
       .joined(separator: "_")
+  }
+
+  var shellVariableNamePrefix: String {
+    flatMap { $0.compositeCommandName }
+      .joined(separator: "_")
+      .shellEscapeForVariableName()
+  }
+}
+
+extension String {
+  func shellEscapeForSingleQuotedString(iterationCount: UInt64 = 1) -> Self {
+    iterationCount == 0
+      ? self
+      : replacingOccurrences(of: "'", with: "'\\''")
+        .shellEscapeForSingleQuotedString(iterationCount: iterationCount - 1)
+  }
+
+  func shellEscapeForVariableName() -> Self {
+    replacingOccurrences(of: "-", with: "_")
   }
 }

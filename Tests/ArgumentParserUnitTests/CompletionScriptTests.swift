@@ -164,15 +164,15 @@ extension CompletionScriptTests {
 
   func assertCustomCompletion(
     _ arg: String,
-    shell: String,
+    shell: CompletionShell,
     prefix: String = "",
     file: StaticString = #filePath,
     line: UInt = #line
   ) throws {
     #if !os(Windows) && !os(WASI)
     do {
-      setenv("SAP_SHELL", shell, 1)
-      defer { unsetenv("SAP_SHELL") }
+      setenv(CompletionShell.shellEnvironmentVariableName, shell.rawValue, 1)
+      defer { unsetenv(CompletionShell.shellEnvironmentVariableName) }
       _ = try Custom.parse(["---completion", "--", arg])
       XCTFail("Didn't error as expected", file: file, line: line)
     } catch let error as CommandError {
@@ -182,11 +182,11 @@ extension CompletionScriptTests {
       }
       AssertEqualStrings(
         actual: output,
-        expected: """
-          \(prefix)1_\(shell)
-          \(prefix)2_\(shell)
-          \(prefix)3_\(shell)
-          """,
+        expected: shell.format(completions: [
+          "\(prefix)1_\(shell.rawValue)",
+          "\(prefix)2_\(shell.rawValue)",
+          "\(prefix)3_\(shell.rawValue)",
+        ]),
         file: file,
         line: line)
     }
@@ -194,7 +194,7 @@ extension CompletionScriptTests {
   }
 
   func assertCustomCompletions(
-    shell: String,
+    shell: CompletionShell,
     file: StaticString = #filePath,
     line: UInt = #line
   ) throws {
@@ -218,14 +218,14 @@ extension CompletionScriptTests {
   }
 
   func testBashCustomCompletions() throws {
-    try assertCustomCompletions(shell: "bash")
+    try assertCustomCompletions(shell: .bash)
   }
 
   func testFishCustomCompletions() throws {
-    try assertCustomCompletions(shell: "fish")
+    try assertCustomCompletions(shell: .fish)
   }
 
   func testZshCustomCompletions() throws {
-    try assertCustomCompletions(shell: "zsh")
+    try assertCustomCompletions(shell: .zsh)
   }
 }
