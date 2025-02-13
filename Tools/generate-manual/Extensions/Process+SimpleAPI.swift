@@ -47,11 +47,7 @@ func executeCommand(
   }
 
   let process = Process()
-  if #available(macOS 10.13, *) {
-    process.executableURL = executable
-  } else {
-    process.launchPath = executable.path
-  }
+  process.executableURL = executable
   process.arguments = arguments
 
   let output = Pipe()
@@ -59,14 +55,10 @@ func executeCommand(
   let error = Pipe()
   process.standardError = error
 
-  if #available(macOS 10.13, *) {
-    do {
-      try process.run()
-    } catch {
-      throw SubprocessError.failedToLaunch(error: error)
-    }
-  } else {
-    process.launch()
+  do {
+    try process.run()
+  } catch {
+    throw SubprocessError.failedToLaunch(error: error)
   }
   let outputData = output.fileHandleForReading.readDataToEndOfFile()
   let errorData = error.fileHandleForReading.readDataToEndOfFile()

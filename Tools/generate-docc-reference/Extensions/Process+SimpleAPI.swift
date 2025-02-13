@@ -50,14 +50,10 @@ func executeCommand(
   process.standardOutput = output
   process.standardError = FileHandle.nullDevice
 
-  if #available(macOS 10.13, *) {
-    do {
-      try process.run()
-    } catch {
-      throw SubprocessError.failedToLaunch(error: error)
-    }
-  } else {
-    process.launch()
+  do {
+    try process.run()
+  } catch {
+    throw SubprocessError.failedToLaunch(error: error)
   }
   let outputData = output.fileHandleForReading.readDataToEndOfFile()
   process.waitUntilExit()

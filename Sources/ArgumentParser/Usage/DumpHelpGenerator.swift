@@ -31,9 +31,7 @@ internal struct DumpHelpGenerator {
   func rendered() -> String {
     let encoder = JSONEncoder()
     encoder.outputFormatting = .prettyPrinted
-    if #available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *) {
-      encoder.outputFormatting.insert(.sortedKeys)
-    }
+    encoder.outputFormatting.insert(.sortedKeys)
     guard let encoded = try? encoder.encode(self.toolInfo) else { return "" }
     return String(data: encoded, encoding: .utf8) ?? ""
   }

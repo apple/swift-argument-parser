@@ -350,11 +350,7 @@ extension XCTest {
 
     #if !canImport(Darwin) || os(macOS)
     let process = Process()
-    if #available(macOS 10.13, *) {
-      process.executableURL = commandURL
-    } else {
-      process.launchPath = commandURL.path
-    }
+    process.executableURL = commandURL
     process.arguments = arguments
 
     let output = Pipe()
@@ -362,13 +358,9 @@ extension XCTest {
     let error = Pipe()
     process.standardError = error
 
-    if #available(macOS 10.13, *) {
-      guard (try? process.run()) != nil else {
-        XCTFail("Couldn't run command process.", file: file, line: line)
-        return ""
-      }
-    } else {
-      process.launch()
+    guard (try? process.run()) != nil else {
+      XCTFail("Couldn't run command process.", file: file, line: line)
+      return ""
     }
     process.waitUntilExit()
 
@@ -401,13 +393,11 @@ extension XCTest {
     actual: String, expected: String, for type: T.Type,
     file: StaticString = #filePath, line: UInt = #line
   ) throws {
-    if #available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *) {
-      AssertEqualStrings(
-        actual: actual.trimmingCharacters(in: .whitespacesAndNewlines),
-        expected: expected.trimmingCharacters(in: .whitespacesAndNewlines),
-        file: file,
-        line: line)
-    }
+    AssertEqualStrings(
+      actual: actual.trimmingCharacters(in: .whitespacesAndNewlines),
+      expected: expected.trimmingCharacters(in: .whitespacesAndNewlines),
+      file: file,
+      line: line)
 
     let actualJSONData = try XCTUnwrap(
       actual.data(using: .utf8), file: file, line: line)
