@@ -535,3 +535,44 @@ final class ParsableArgumentsValidationTests: XCTestCase {
     }
   }
 }
+
+extension ParsableArgumentsValidationTests {
+  func testMissingValueForShortNameOptions() throws {
+    struct SomeArgs: ParsableArguments {
+      @Option(name: .shortAndLong)
+      var xArg: Int
+      @Option(name: .shortAndLong)
+      var zArg: Int
+      @Option(name: .customLong("long-with-x-or-y", withSingleDash: true))
+      var other: Int?
+    }
+
+    AssertErrorMessage(
+      SomeArgs.self,
+      ["-long_option_with_x_or_z"],
+      """
+      Unknown option '-long_option_with_x_or_z'
+         or: Missing value for '-x <x-arg>' in '-long_option_with_x_or_z'
+      """
+    )
+    // Including near-miss checking.
+    AssertErrorMessage(
+      SomeArgs.self,
+      ["-long-with-x-or-z"],
+      """
+      Unknown option '-long-with-x-or-z'. Did you mean '-long-with-x-or-y'?
+         or: Missing value for '-x <x-arg>' in '-long-with-x-or-z'
+      """
+    )
+    // Missing value for whole option.
+    AssertErrorMessage(
+      SomeArgs.self, ["-x", "-z", "2"],
+      "Missing value for '-x <x-arg>'"
+    )
+    // Standalone unexpected option.
+    AssertErrorMessage(
+      SomeArgs.self, ["-x", "1", "-z", "2", "-q"],
+      "Unknown option '-q'"
+    )
+  }
+}

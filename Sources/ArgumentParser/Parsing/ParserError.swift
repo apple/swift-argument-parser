@@ -26,6 +26,7 @@ enum ParserError: Error {
   case nonAlphanumericShortOption(Character)
   /// The option was there, but its value is missing, e.g. `--name` but no value for the `name`.
   case missingValueForOption(InputOrigin, Name)
+  case missingValueOrUnknownCompositeOption(InputOrigin, Name, Name)
   case unexpectedValueForOption(InputOrigin.Element, Name, String)
   case unexpectedExtraValues([(InputOrigin, String)])
   case duplicateExclusiveValues(

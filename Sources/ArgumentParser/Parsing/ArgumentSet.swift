@@ -263,6 +263,25 @@ struct LenientParser {
     command.configuration.subcommands
   }
 
+  func errorForMissingValue(
+    _ originElement: InputOrigin.Element,
+    _ parsed: ParsedArgument
+  ) -> ParserError {
+    if case .argumentIndex(let index) = originElement,
+      index.subIndex != .complete,
+      let originalInput =
+        inputArguments
+        .originalInput(at: .argumentIndex(index.completeIndex))
+    {
+      let completeName = Name(originalInput[...])
+      return ParserError.missingValueOrUnknownCompositeOption(
+        InputOrigin(element: originElement), parsed.name, completeName)
+    } else {
+      return ParserError.missingValueForOption(
+        InputOrigin(element: originElement), parsed.name)
+    }
+  }
+
   mutating func parseValue(
     _ argument: ArgumentDefinition,
     _ parsed: ParsedArgument,
@@ -296,7 +315,7 @@ struct LenientParser {
         try update(origins, parsed.name, value, &result)
         usedOrigins.formUnion(origins)
       } else {
-        throw ParserError.missingValueForOption(origin, parsed.name)
+        throw errorForMissingValue(originElement, parsed)
       }
 
     case .scanningForValue:
@@ -322,7 +341,7 @@ struct LenientParser {
         try update(origins, parsed.name, value, &result)
         usedOrigins.formUnion(origins)
       } else {
-        throw ParserError.missingValueForOption(origin, parsed.name)
+        throw errorForMissingValue(originElement, parsed)
       }
 
     case .unconditional:
@@ -344,7 +363,7 @@ struct LenientParser {
           let (origin2, value) = inputArguments.popNextElementAsValue(
             after: originElement)
         else {
-          throw ParserError.missingValueForOption(origin, parsed.name)
+          throw errorForMissingValue(originElement, parsed)
         }
         let origins = origin.inserting(origin2)
         try update(origins, parsed.name, value, &result)
@@ -415,7 +434,7 @@ struct LenientParser {
         if foundAttachedValue {
           break
         } else {
-          throw ParserError.missingValueForOption(origin, parsed.name)
+          throw errorForMissingValue(originElement, parsed)
         }
       }
 
