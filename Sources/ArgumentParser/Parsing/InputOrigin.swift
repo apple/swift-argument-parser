@@ -63,7 +63,11 @@ struct InputOrigin: Equatable, ExpressibleByArrayLiteral {
     Array(_elements).sorted()
   }
 
-  init() {
+  var firstElement: Element {
+    guard !elements.isEmpty else {
+      fatalError("Invalid 'InputOrigin' with no positions")
+    }
+    return elements[0]
   }
 
   init(elements: [Element]) {
