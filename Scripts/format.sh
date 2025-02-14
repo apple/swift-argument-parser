@@ -13,7 +13,8 @@
 # Move to the project root
 cd "$(dirname "$0")" || exit
 cd ..
-echo "Formatting 'Sources/' and 'Tests/' from $(pwd)"
+echo "Formatting Swift sources in $(pwd)"
 
 # Run the format / lint commands
-swift format -ir Sources Tests && swift format lint -r --strict Sources Tests
+git ls-files -z '*.swift' | xargs -0 swift format format --parallel --in-place
+git ls-files -z '*.swift' | xargs -0 swift format lint --strict --parallel
