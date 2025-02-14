@@ -379,11 +379,9 @@ extension XCTest {
 
     let outputData = output.fileHandleForReading.readDataToEndOfFile()
     let outputActual = String(data: outputData, encoding: .utf8)!
-      .trimmingCharacters(in: .whitespacesAndNewlines)
 
     let errorData = error.fileHandleForReading.readDataToEndOfFile()
     let errorActual = String(data: errorData, encoding: .utf8)!
-      .trimmingCharacters(in: .whitespacesAndNewlines)
 
     if let expected = expected {
       AssertEqualStrings(
@@ -407,8 +405,8 @@ extension XCTest {
     file: StaticString = #filePath, line: UInt = #line
   ) throws {
     AssertEqualStrings(
-      actual: actual.trimmingCharacters(in: .whitespacesAndNewlines),
-      expected: expected.trimmingCharacters(in: .whitespacesAndNewlines),
+      actual: actual,
+      expected: expected,
       file: file,
       line: line)
 
@@ -463,7 +461,7 @@ extension XCTest {
       let expected = try String(contentsOf: snapshotFileURL, encoding: .utf8)
       AssertEqualStrings(
         actual: actual,
-        expected: expected.trimmingCharacters(in: .newlines),
+        expected: expected,
         file: file,
         line: line)
       return expected

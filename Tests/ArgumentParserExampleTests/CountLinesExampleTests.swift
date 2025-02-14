@@ -26,9 +26,9 @@ final class CountLinesExampleTests: XCTestCase {
     let testFile = try XCTUnwrap(
       Bundle.module.url(forResource: "CountLinesTest", withExtension: "txt"))
     try AssertExecuteCommand(
-      command: "count-lines \(testFile.path)", expected: "20")
+      command: "count-lines \(testFile.path)", expected: "20\n")
     try AssertExecuteCommand(
-      command: "count-lines \(testFile.path) --prefix al", expected: "4")
+      command: "count-lines \(testFile.path) --prefix al", expected: "4\n")
   }
 
   func testCountLinesHelp() throws {
@@ -44,6 +44,8 @@ final class CountLinesExampleTests: XCTestCase {
         --prefix <prefix>       Only count lines with this prefix.
         --verbose               Include extra information in the output.
         -h, --help              Show help information.
+
+
       """
     try AssertExecuteCommand(command: "count-lines -h", expected: helpText)
   }

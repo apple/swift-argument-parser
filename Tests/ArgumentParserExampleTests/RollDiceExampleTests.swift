@@ -34,6 +34,8 @@ final class RollDiceExampleTests: XCTestCase {
         --seed <seed>           A seed to use for repeatable random generation.
         -v, --verbose           Show all roll results.
         -h, --help              Show help information.
+
+
       """
 
     try AssertExecuteCommand(command: "roll -h", expected: helpText)
@@ -48,6 +50,7 @@ final class RollDiceExampleTests: XCTestCase {
         Help:  --times <n>  Rolls the dice <n> times.
         Usage: roll [--times <n>] [--sides <m>] [--seed <seed>] [--verbose]
           See 'roll --help' for more information.
+
         """,
       exitCode: .validationFailure)
 
@@ -58,6 +61,7 @@ final class RollDiceExampleTests: XCTestCase {
         Help:  --times <n>  Rolls the dice <n> times.
         Usage: roll [--times <n>] [--sides <m>] [--seed <seed>] [--verbose]
           See 'roll --help' for more information.
+
         """,
       exitCode: .validationFailure)
   }
