@@ -55,7 +55,7 @@ extension [ParsableCommand.Type] {
       argumentSpecs.append("'(-)*:: :->arg'")
 
       if isRootCommand {
-        subcommands.addHelpSubcommandIffMissing()
+        subcommands.addHelpSubcommandIfMissing()
       }
 
       subcommandHandler = """
