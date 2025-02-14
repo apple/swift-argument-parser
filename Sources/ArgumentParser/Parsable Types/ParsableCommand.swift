@@ -146,15 +146,12 @@ extension ParsableCommand {
   /// - Parameter arguments: An array of arguments to use for parsing. If
   ///   `arguments` is `nil`, this uses the program's command-line arguments.
   public static func main(_ arguments: [String]?) {
-
     #if DEBUG
     if #available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *) {
-      if let asyncCommand = firstAsyncSubcommand(self) {
-        if Self() is AsyncParsableCommand {
-          failAsyncPlatform(rootCommand: self)
-        } else {
-          failAsyncHierarchy(rootCommand: self, subCommand: asyncCommand)
-        }
+      if Self() is AsyncParsableCommand {
+        failAsyncPlatform(rootCommand: self)
+      } else if let asyncCommand = firstAsyncSubcommand(self) {
+        failAsyncHierarchy(rootCommand: self, subCommand: asyncCommand)
       }
     }
     #endif
