@@ -35,7 +35,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
       - name: Install apt dependencies
-        run: sudo apt-get -qq update && sudo apt-get -qq -y install curl ninja-build
+        run: apt-get -qq update && apt-get -qq -y install curl ninja-build
       - name: Install CMake 3.30.2
         run: |
           ARCH=`uname -m`
