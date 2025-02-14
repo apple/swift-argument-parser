@@ -25,6 +25,20 @@ jobs:
     uses: swiftlang/github-workflows/.github/workflows/swift_package_test.yml@main
     with:
       windows_exclude_swift_versions: "[{\"swift_version\": \"5.9\"}]"
+
+  cmake-build:
+    name: CMake Build
+    runs-on: ubuntu-latest
+    container:
+      image: swift:6.0-jammy
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      - name: Configure CMake
+        run: cmake -GNinja -S . -B .cmake-build -DBUILD_EXAMPLES=1 -DBUILD_TESTING=0
+      - name: Build
+        run: cmake --build .cmake-build
+
   soundness:
     name: Soundness
     uses: swiftlang/github-workflows/.github/workflows/soundness.yml@main
