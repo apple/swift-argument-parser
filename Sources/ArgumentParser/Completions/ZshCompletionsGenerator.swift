@@ -12,26 +12,31 @@
 extension [ParsableCommand.Type] {
   /// Generates a Zsh completion script for the given command.
   var zshCompletionScript: String {
-    """
-    #compdef \(first?._commandName ?? "")
+    // swift-format-ignore: NeverForceUnwrap
+    // Preconditions:
+    // - first must be non-empty for a zsh completion script to be of use.
+    // - first is guaranteed non-empty in the one place where this computed var is used.
+    let commandName = first!._commandName
+    return """
+      #compdef \(commandName)
 
-    \(completeFunctionName)() {
-        local -ar non_empty_completions=("${@:#(|:*)}")
-        local -ar empty_completions=("${(M)@:#(|:*)}")
-        _describe '' non_empty_completions -- empty_completions -P $'\\'\\''
-    }
+      \(completeFunctionName)() {
+          local -ar non_empty_completions=("${@:#(|:*)}")
+          local -ar empty_completions=("${(M)@:#(|:*)}")
+          _describe '' non_empty_completions -- empty_completions -P $'\\'\\''
+      }
 
-    \(customCompleteFunctionName)() {
-        local -a completions
-        completions=("${(@f)"$("${@}")"}")
-        if [[ "${#completions[@]}" -gt 1 ]]; then
-            \(completeFunctionName) "${completions[@]:0:-1}"
-        fi
-    }
+      \(customCompleteFunctionName)() {
+          local -a completions
+          completions=("${(@f)"$("${@}")"}")
+          if [[ "${#completions[@]}" -gt 1 ]]; then
+              \(completeFunctionName) "${completions[@]:0:-1}"
+          fi
+      }
 
-    \(completionFunctions)\
-    \(completionFunctionName())
-    """
+      \(completionFunctions)\
+      \(completionFunctionName())
+      """
   }
 
   private var completionFunctions: String {
@@ -203,11 +208,15 @@ extension [ParsableCommand.Type] {
   }
 
   private var completeFunctionName: String {
-    "__\(first?._commandName ?? "")_complete"
+    // swift-format-ignore: NeverForceUnwrap
+    // Precondition: first is guaranteed to be non-empty
+    "__\(first!._commandName)_complete"
   }
 
   private var customCompleteFunctionName: String {
-    "__\(first?._commandName ?? "")_custom_complete"
+    // swift-format-ignore: NeverForceUnwrap
+    // Precondition: first is guaranteed to be non-empty
+    "__\(first!._commandName)_custom_complete"
   }
 }
 
