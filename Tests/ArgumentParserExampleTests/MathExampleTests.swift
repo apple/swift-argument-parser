@@ -13,6 +13,12 @@ import ArgumentParser
 import ArgumentParserTestHelpers
 import XCTest
 
+#if swift(>=6.0)
+@testable internal import struct ArgumentParser.CompletionShell
+#else
+@testable import struct ArgumentParser.CompletionShell
+#endif
+
 final class MathExampleTests: XCTestCase {
   override func setUp() {
     #if !os(Windows) && !os(WASI)
@@ -21,9 +27,9 @@ final class MathExampleTests: XCTestCase {
   }
 
   func testMath_Simple() throws {
-    try AssertExecuteCommand(command: "math 1 2 3 4 5", expected: "15")
+    try AssertExecuteCommand(command: "math 1 2 3 4 5", expected: "15\n")
     try AssertExecuteCommand(
-      command: "math multiply 1 2 3 4 5", expected: "120")
+      command: "math multiply 1 2 3 4 5", expected: "120\n")
   }
 
   func testMath_Help() throws {
@@ -42,6 +48,7 @@ final class MathExampleTests: XCTestCase {
         stats                   Calculate descriptive statistics.
 
         See 'math help <subcommand>' for detailed help.
+
       """
 
     try AssertExecuteCommand(command: "math -h", expected: helpText)
@@ -62,6 +69,8 @@ final class MathExampleTests: XCTestCase {
         -x, --hex-output        Use hexadecimal notation for the result.
         --version               Show the version.
         -h, --help              Show help information.
+
+
       """
 
     try AssertExecuteCommand(command: "math add -h", expected: helpText)
@@ -89,6 +98,8 @@ final class MathExampleTests: XCTestCase {
                                 median, mode; default: mean)
         --version               Show the version.
         -h, --help              Show help information.
+
+
       """
 
     try AssertExecuteCommand(
@@ -117,6 +128,8 @@ final class MathExampleTests: XCTestCase {
         --custom <custom>
         --version               Show the version.
         -h, --help              Show help information.
+
+
       """
 
     // The "quantiles" subcommand's run() method is unimplemented, so it
@@ -139,6 +152,7 @@ final class MathExampleTests: XCTestCase {
         Error: Please provide at least one value to calculate the mode.
         Usage: math stats average [--kind <kind>] [<values> ...]
           See 'math stats average --help' for more information.
+
         """,
       exitCode: .validationFailure)
   }
@@ -146,13 +160,13 @@ final class MathExampleTests: XCTestCase {
   func testMath_Versions() throws {
     try AssertExecuteCommand(
       command: "math --version",
-      expected: "1.0.0")
+      expected: "1.0.0\n")
     try AssertExecuteCommand(
       command: "math stats --version",
-      expected: "1.0.0")
+      expected: "1.0.0\n")
     try AssertExecuteCommand(
       command: "math stats average --version",
-      expected: "1.5.0-alpha")
+      expected: "1.5.0-alpha\n")
   }
 
   func testMath_ExitCodes() throws {
@@ -181,6 +195,7 @@ final class MathExampleTests: XCTestCase {
         Error: Unknown option '--foo'
         Usage: math add [--hex-output] [<values> ...]
           See 'math add --help' for more information.
+
         """,
       exitCode: .validationFailure)
 
@@ -191,6 +206,7 @@ final class MathExampleTests: XCTestCase {
         Help:  <values>  A group of integers to operate on.
         Usage: math add [--hex-output] [<values> ...]
           See 'math add --help' for more information.
+
         """,
       exitCode: .validationFailure)
   }
@@ -219,28 +235,54 @@ extension MathExampleTests {
     try assertSnapshot(actual: script, extension: "fish")
   }
 
-  func testMath_CustomCompletion() throws {
+  func testMath_BashCustomCompletion() throws {
+    try testMath_CustomCompletion(forShell: .bash)
+  }
+
+  func testMath_FishCustomCompletion() throws {
+    try testMath_CustomCompletion(forShell: .fish)
+  }
+
+  func testMath_ZshCustomCompletion() throws {
+    try testMath_CustomCompletion(forShell: .zsh)
+  }
+
+  private func testMath_CustomCompletion(
+    forShell shell: CompletionShell
+  ) throws {
     try AssertExecuteCommand(
       command: "math ---completion stats quantiles -- --custom",
-      expected: """
-        hello
-        helicopter
-        heliotrope
-        """)
+      expected: shell.format(completions: [
+        "hello",
+        "helicopter",
+        "heliotrope",
+      ]) + "\n",
+      environment: [
+        CompletionShell.shellEnvironmentVariableName: shell.rawValue
+      ]
+    )
 
     try AssertExecuteCommand(
       command: "math ---completion stats quantiles -- --custom h",
-      expected: """
-        hello
-        helicopter
-        heliotrope
-        """)
+      expected: shell.format(completions: [
+        "hello",
+        "helicopter",
+        "heliotrope",
+      ]) + "\n",
+      environment: [
+        CompletionShell.shellEnvironmentVariableName: shell.rawValue
+      ]
+    )
 
     try AssertExecuteCommand(
       command: "math ---completion stats quantiles -- --custom a",
-      expected: """
-        aardvark
-        aaaaalbert
-        """)
+      expected: shell.format(completions: [
+        "aardvark",
+        "aaaaalbert",
+      ]) + "\n",
+      environment: [
+        CompletionShell.shellEnvironmentVariableName: shell.rawValue
+      ]
+    )
   }
 }

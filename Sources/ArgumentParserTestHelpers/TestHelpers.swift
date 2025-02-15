@@ -315,14 +315,17 @@ extension XCTest {
     expected: String? = nil,
     exitCode: ExitCode = .success,
     file: StaticString = #filePath,
-    line: UInt = #line
+    line: UInt = #line,
+    environment: [String: String] = [:]
   ) throws -> String {
     try AssertExecuteCommand(
       command: command.split(separator: " ").map(String.init),
       expected: expected,
       exitCode: exitCode,
       file: file,
-      line: line)
+      line: line,
+      environment: environment
+    )
   }
 
   // swift-format-ignore: AlwaysUseLowerCamelCase
@@ -332,7 +335,8 @@ extension XCTest {
     expected: String? = nil,
     exitCode: ExitCode = .success,
     file: StaticString = #filePath,
-    line: UInt = #line
+    line: UInt = #line,
+    environment: [String: String] = [:]
   ) throws -> String {
     #if os(Windows)
     throw XCTSkip("Unsupported on this platform")
@@ -358,6 +362,15 @@ extension XCTest {
     let error = Pipe()
     process.standardError = error
 
+    if !environment.isEmpty {
+      if let existingEnvironment = process.environment {
+        process.environment =
+          existingEnvironment.merging(environment) { (_, new) in new }
+      } else {
+        process.environment = environment
+      }
+    }
+
     guard (try? process.run()) != nil else {
       XCTFail("Couldn't run command process.", file: file, line: line)
       return ""
@@ -366,11 +379,9 @@ extension XCTest {
 
     let outputData = output.fileHandleForReading.readDataToEndOfFile()
     let outputActual = String(data: outputData, encoding: .utf8)!
-      .trimmingCharacters(in: .whitespacesAndNewlines)
 
     let errorData = error.fileHandleForReading.readDataToEndOfFile()
     let errorActual = String(data: errorData, encoding: .utf8)!
-      .trimmingCharacters(in: .whitespacesAndNewlines)
 
     if let expected = expected {
       AssertEqualStrings(
@@ -394,8 +405,8 @@ extension XCTest {
     file: StaticString = #filePath, line: UInt = #line
   ) throws {
     AssertEqualStrings(
-      actual: actual.trimmingCharacters(in: .whitespacesAndNewlines),
-      expected: expected.trimmingCharacters(in: .whitespacesAndNewlines),
+      actual: actual,
+      expected: expected,
       file: file,
       line: line)
 
@@ -450,7 +461,7 @@ extension XCTest {
       let expected = try String(contentsOf: snapshotFileURL, encoding: .utf8)
       AssertEqualStrings(
         actual: actual,
-        expected: expected.trimmingCharacters(in: .newlines),
+        expected: expected,
         file: file,
         line: line)
       return expected

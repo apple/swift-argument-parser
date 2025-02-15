@@ -25,6 +25,7 @@ final class RepeatExampleTests: XCTestCase {
       expected: """
         hello
         hello
+
         """)
   }
 
@@ -34,6 +35,7 @@ final class RepeatExampleTests: XCTestCase {
       expected: """
         1: hello
         2: hello
+
         """)
   }
 
@@ -47,6 +49,7 @@ final class RepeatExampleTests: XCTestCase {
         hello
         hello
         hello
+
         """)
   }
 
@@ -61,6 +64,8 @@ final class RepeatExampleTests: XCTestCase {
         --count <count>         The number of times to repeat 'phrase'.
         --include-counter       Include a counter with each repetition.
         -h, --help              Show help information.
+
+
       """
 
     try AssertExecuteCommand(command: "repeat -h", expected: helpText)
@@ -82,6 +87,8 @@ final class RepeatExampleTests: XCTestCase {
           --count <count>         The number of times to repeat 'phrase'.
           --include-counter       Include a counter with each repetition.
           -h, --help              Show help information.
+
+
         """,
       exitCode: .validationFailure)
 
@@ -92,6 +99,7 @@ final class RepeatExampleTests: XCTestCase {
         Help:  --count <count>  The number of times to repeat 'phrase'.
         Usage: repeat [--count <count>] [--include-counter] <phrase>
           See 'repeat --help' for more information.
+
         """,
       exitCode: .validationFailure)
 
@@ -102,6 +110,7 @@ final class RepeatExampleTests: XCTestCase {
         Help:  --count <count>  The number of times to repeat 'phrase'.
         Usage: repeat [--count <count>] [--include-counter] <phrase>
           See 'repeat --help' for more information.
+
         """,
       exitCode: .validationFailure)
 
@@ -111,6 +120,7 @@ final class RepeatExampleTests: XCTestCase {
         Error: Unknown option '--version'
         Usage: repeat [--count <count>] [--include-counter] <phrase>
           See 'repeat --help' for more information.
+
         """,
       exitCode: .validationFailure)
   }
