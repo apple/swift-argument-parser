@@ -142,7 +142,7 @@ struct CompletionsGenerator {
     case .zsh:
       return [command].zshCompletionScript
     case .bash:
-      return BashCompletionsGenerator.generateCompletionScript(command)
+      return [command].bashCompletionScript
     case .fish:
       return FishCompletionsGenerator.generateCompletionScript(command)
     default:
@@ -176,10 +176,18 @@ extension ParsableCommand {
 }
 
 extension [ParsableCommand.Type] {
+  var positionalArguments: [ArgumentDefinition] {
+    guard let command = last else {
+      return []
+    }
+    return ArgumentSet(command, visibility: .default, parent: nil)
+      .filter(\.isPositional)
+  }
+
   /// Include default 'help' subcommand in nonempty subcommand list if & only if
   /// no help subcommand already exists.
   mutating func addHelpSubcommandIfMissing() {
-    if !isEmpty && allSatisfy({ $0._commandName != "help" }) {
+    if !isEmpty && !contains(where: { $0._commandName == "help" }) {
       append(HelpCommand.self)
     }
   }

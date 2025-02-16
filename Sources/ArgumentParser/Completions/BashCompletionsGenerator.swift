@@ -9,257 +9,389 @@
 //
 //===----------------------------------------------------------------------===//
 
-struct BashCompletionsGenerator {
+extension [ParsableCommand.Type] {
   /// Generates a Bash completion script for the given command.
-  static func generateCompletionScript(_ type: ParsableCommand.Type) -> String {
+  var bashCompletionScript: String {
     // TODO: Add a check to see if the command is installed where we expect?
-    let initialFunctionName = [type].completionFunctionName()
-      .makeSafeFunctionName
+    // swift-format-ignore: NeverForceUnwrap
+    // Preconditions:
+    // - first must be non-empty for a bash completion script to be of use.
+    // - first is guaranteed non-empty in the one place where this computed var is used.
+    let commandName = first!._commandName
     return """
       #!/bin/bash
 
-      \(generateCompletionFunction([type]))
+      # positional arguments:
+      #
+      # - 1: the current (sub)command's count of positional arguments
+      #
+      # required variables:
+      #
+      # - flags: the flags that the current (sub)command can accept
+      # - options: the options that the current (sub)command can accept
+      # - positional_number: value ignored
+      # - unparsed_words: unparsed words from the current command line
+      #
+      # modified variables:
+      #
+      # - flags: remove flags for this (sub)command that are already on the command line
+      # - options: remove options for this (sub)command that are already on the command line
+      # - positional_number: set to the current positional number
+      # - unparsed_words: remove all flags, options, and option values for this (sub)command
+      \(offerFlagsOptionsFunctionName)() {
+          local -ir positional_count="${1}"
+          positional_number=0
 
-      complete -F \(initialFunctionName) \(type._commandName)
+          local was_flag_option_terminator_seen=false
+          local is_parsing_option_value=false
+
+          local -ar unparsed_word_indices=("${!unparsed_words[@]}")
+          local -i word_index
+          for word_index in "${unparsed_word_indices[@]}"; do
+              if "${is_parsing_option_value}"; then
+                  # This word is an option value:
+                  # Reset marker for next word iff not currently the last word
+                  [[ "${word_index}" -ne "${unparsed_word_indices[${#unparsed_word_indices[@]} - 1]}" ]] && is_parsing_option_value=false
+                  unset "unparsed_words[${word_index}]"
+                  # Do not process this word as a flag or an option
+                  continue
+              fi
+
+              local word="${unparsed_words["${word_index}"]}"
+              if ! "${was_flag_option_terminator_seen}"; then
+                  case "${word}" in
+                  --)
+                      unset "unparsed_words[${word_index}]"
+                      # by itself -- is a flag/option terminator, but if it is the last word, it is the start of a completion
+                      if [[ "${word_index}" -ne "${unparsed_word_indices[${#unparsed_word_indices[@]} - 1]}" ]]; then
+                          was_flag_option_terminator_seen=true
+                      fi
+                      continue
+                      ;;
+                  -*)
+                      # ${word} is a flag or an option
+                      # If ${word} is an option, mark that the next word to be parsed is an option value
+                      local option
+                      for option in "${options[@]}"; do
+                          [[ "${word}" = "${option}" ]] && is_parsing_option_value=true && break
+                      done
+
+                      # Remove ${word} from ${flags} or ${options} so it isn't offered again
+                      local not_found=true
+                      local -i index
+                      for index in "${!flags[@]}"; do
+                          if [[ "${flags[${index}]}" = "${word}" ]]; then
+                              unset "flags[${index}]"
+                              flags=("${flags[@]}")
+                              not_found=false
+                              break
+                          fi
+                      done
+                      if "${not_found}"; then
+                          for index in "${!options[@]}"; do
+                              if [[ "${options[${index}]}" = "${word}" ]]; then
+                                  unset "options[${index}]"
+                                  options=("${options[@]}")
+                                  break
+                              fi
+                          done
+                      fi
+                      unset "unparsed_words[${word_index}]"
+                      continue
+                      ;;
+                  esac
+              fi
+
+              # ${word} is neither a flag, nor an option, nor an option value
+              if [[ "${positional_number}" -lt "${positional_count}" ]]; then
+                  # ${word} is a positional
+                  ((positional_number++))
+                  unset "unparsed_words[${word_index}]"
+              else
+                  if [[ -z "${word}" ]]; then
+                      # Could be completing a flag, option, or subcommand
+                      positional_number=-1
+                  else
+                      # ${word} is a subcommand or invalid, so stop processing this (sub)command
+                      positional_number=-2
+                  fi
+                  break
+              fi
+          done
+
+          unparsed_words=("${unparsed_words[@]}")
+
+          if\\
+              ! "${was_flag_option_terminator_seen}"\\
+              && ! "${is_parsing_option_value}"\\
+              && [[ ("${cur}" = -* && "${positional_number}" -ge 0) || "${positional_number}" -eq -1 ]]
+          then
+              COMPREPLY+=($(compgen -W "${flags[*]} ${options[*]}" -- "${cur}"))
+          fi
+      }
+
+      \(addCompletionsFunctionName)() {
+          local completion
+          while IFS='' read -r completion; do
+              COMPREPLY+=("${completion}")
+          done < <(IFS=$'\\n' compgen "${@}" -- "${cur}")
+      }
+
+      \(customCompleteFunctionName)() {
+          if [[ -n "${cur}" || -z ${COMP_WORDS[${COMP_CWORD}]} || "${COMP_LINE:${COMP_POINT}:1}" != ' ' ]]; then
+              local -ar words=("${COMP_WORDS[@]}")
+          else
+              local -ar words=("${COMP_WORDS[@]::${COMP_CWORD}}" '' "${COMP_WORDS[@]:${COMP_CWORD}}")
+          fi
+
+          "${COMP_WORDS[0]}" "${@}" "${words[@]}"
+      }
+
+      \(completionFunctions)\
+      complete -o filenames -F \(completionFunctionName().shellEscapeForVariableName()) \(commandName)
       """
   }
 
   /// Generates a Bash completion function for the last command in the given list.
-  fileprivate static func generateCompletionFunction(
-    _ commands: [ParsableCommand.Type]
-  ) -> String {
-    guard let type = commands.last else {
+  private var completionFunctions: String {
+    guard let type = last else {
       fatalError()
     }
-    let functionName = commands.completionFunctionName().makeSafeFunctionName
+    let functionName =
+      completionFunctionName().shellEscapeForVariableName()
 
-    // The root command gets a different treatment for the parsing index.
-    let isRootCommand = commands.count == 1
-    let dollarOne = isRootCommand ? "1" : "$1"
-    let subcommandArgument = isRootCommand ? "2" : "$(($1+1))"
-
-    // Include 'help' in the list of subcommands for the root command.
-    var subcommands = type.configuration.subcommands
-      .filter { $0.configuration.shouldDisplay }
-    if !subcommands.isEmpty && isRootCommand {
-      subcommands.append(HelpCommand.self)
-    }
-
-    // Generate the words that are available at the "top level" of this
-    // command — these are the dash-prefixed names of options and flags as well
-    // as all the subcommand names.
-    let completionWords =
-      generateArgumentWords(commands)
-      + subcommands.map { $0._commandName }
-
-    // Generate additional top-level completions — these are completion lists
-    // or custom function-based word lists from positional arguments.
-    let additionalCompletions = generateArgumentCompletions(commands)
+    var subcommands =
+      type.configuration.subcommands.filter { $0.configuration.shouldDisplay }
 
     // Start building the resulting function code.
-    var result = "\(functionName)() {\n"
+    var result = ""
 
-    // The function that represents the root command has some additional setup
-    // that other command functions don't need.
-    if isRootCommand {
+    // Include initial setup iff the root command.
+    let declareTopLevelArray: String
+    if count == 1 {
+      subcommands.addHelpSubcommandIfMissing()
+
       result += """
-        export \(CompletionShell.shellEnvironmentVariableName)=bash
-        \(CompletionShell.shellVersionEnvironmentVariableName)="$(IFS='.'; printf %s "${BASH_VERSINFO[*]}")"
-        export \(CompletionShell.shellVersionEnvironmentVariableName)
-        cur="${COMP_WORDS[COMP_CWORD]}"
-        prev="${COMP_WORDS[COMP_CWORD-1]}"
-        COMPREPLY=()
+            trap "$(shopt -p);$(shopt -po)" RETURN
+            shopt -s extglob
+            set +o history +o posix
 
-        """.indentingEachLine(by: 4)
+            local -xr \(CompletionShell.shellEnvironmentVariableName)=bash
+            local -x \(CompletionShell.shellVersionEnvironmentVariableName)
+            \(CompletionShell.shellVersionEnvironmentVariableName)="$(IFS='.';printf %s "${BASH_VERSINFO[*]}")"
+            local -r \(CompletionShell.shellVersionEnvironmentVariableName)
+
+            local -r cur="${2}"
+            local -r prev="${3}"
+
+            local -i positional_number
+            local -a unparsed_words=("${COMP_WORDS[@]:1:${COMP_CWORD}}")
+
+
+        """
+
+      declareTopLevelArray = "local -a "
+    } else {
+      declareTopLevelArray = ""
     }
 
-    // Start by declaring a local var for the top-level completions.
-    // Return immediately if the completion matching hasn't moved further.
-    result += "    opts=\"\(completionWords.joined(separator: " "))\"\n"
-    for line in additionalCompletions {
-      result += "    opts=\"$opts \(line)\"\n"
+    let positionalArguments = positionalArguments
+
+    let flagCompletions = flagCompletions
+    let optionCompletions = optionCompletions
+    if !flagCompletions.isEmpty || !optionCompletions.isEmpty {
+      result += """
+            \(declareTopLevelArray)flags=(\(flagCompletions.joined(separator: " ")))
+            \(declareTopLevelArray)options=(\(optionCompletions.joined(separator: " ")))
+            \(offerFlagsOptionsFunctionName) \(positionalArguments.count)
+
+        """
     }
-
-    result += """
-          if [[ $COMP_CWORD == "\(dollarOne)" ]]; then
-              COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
-              return
-          fi
-
-      """
 
     // Generate the case pattern-matching statements for option values.
     // If there aren't any, skip the case block altogether.
-    let optionHandlers = generateOptionHandlers(commands)
-    if !optionHandlers.isEmpty {
-      result += """
-        case $prev in
-        \(optionHandlers.indentingEachLine(by: 4))
-        esac
-        """.indentingEachLine(by: 4) + "\n"
-    }
-
-    // Build out completions for the subcommands.
-    if !subcommands.isEmpty {
-      // Subcommands have their own case statement that delegates out to
-      // the subcommand completion functions.
-      result += "    case ${COMP_WORDS[\(dollarOne)]} in\n"
-      for subcommand in subcommands {
-        result += """
-          (\(subcommand._commandName))
-              \(functionName)_\(subcommand._commandName) \(subcommandArgument)
-              return
-              ;;
-
-          """
-          .indentingEachLine(by: 8)
-      }
-      result += "    esac\n"
-    }
-
-    // Finish off the function.
-    result += """
-          COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
-      }
-
-      """
-
-    return result
-      + subcommands
-      .map { generateCompletionFunction(commands + [$0]) }
-      .joined()
-  }
-
-  /// Returns the option and flag names that can be top-level completions.
-  fileprivate static func generateArgumentWords(
-    _ commands: [ParsableCommand.Type]
-  ) -> [String] {
-    commands
-      .argumentsForHelp(visibility: .default)
-      .flatMap { $0.bashCompletionWords() }
-  }
-
-  /// Returns additional top-level completions from positional arguments.
-  ///
-  /// These consist of completions that are defined as `.list` or `.custom`.
-  fileprivate static func generateArgumentCompletions(
-    _ commands: [ParsableCommand.Type]
-  ) -> [String] {
-    guard let type = commands.last else { return [] }
-    return ArgumentSet(type, visibility: .default, parent: nil)
+    let optionHandlers =
+      ArgumentSet(type, visibility: .default, parent: nil)
       .compactMap { arg -> String? in
-        guard arg.isPositional else { return nil }
-
-        switch arg.completion.kind {
-        case .default, .file, .directory:
-          return nil
-        case .list(let list):
-          return list.joined(separator: " ")
-        case .shellCommand(let command):
-          return "$(\(command))"
-        case .custom:
-          return """
-            $("${COMP_WORDS[0]}" \(arg.customCompletionCall(commands)) "${COMP_WORDS[@]}")
-            """
-        }
-      }
-  }
-
-  /// Returns the case-matching statements for supplying completions after an option or flag.
-  fileprivate static func generateOptionHandlers(
-    _ commands: [ParsableCommand.Type]
-  ) -> String {
-    guard let type = commands.last else { return "" }
-    return ArgumentSet(type, visibility: .default, parent: nil)
-      .compactMap { arg -> String? in
-        let words = arg.bashCompletionWords()
+        let words = arg.bashCompletionWords
         if words.isEmpty { return nil }
 
         // Flags don't take a value, so we don't provide follow-on completions.
         if arg.isNullary { return nil }
 
         return """
-          \(arg.bashCompletionWords().joined(separator: "|")))
-          \(arg.bashValueCompletion(commands).indentingEachLine(by: 4))
-              return
-          ;;
+              \(arg.bashCompletionWords.joined(separator: "|")))
+          \(bashValueCompletion(arg).indentingEachLine(by: 8))\
+                  return
+                  ;;
           """
       }
       .joined(separator: "\n")
-  }
-}
+    if !optionHandlers.isEmpty {
+      result += """
 
-extension ArgumentDefinition {
-  /// Returns the different completion names for this argument.
-  fileprivate func bashCompletionWords() -> [String] {
-    help.visibility.base == .default
-      ? names.map { $0.synopsisString }
-      : []
+            # Offer option value completions
+            case "${prev}" in
+        \(optionHandlers)
+            esac
+
+        """
+    }
+
+    let positionalCases =
+      zip(1..., positionalArguments)
+      .compactMap { position, arg in
+        let completion = bashValueCompletion(arg)
+        return completion.isEmpty
+          ? nil
+          : """
+              \(position))
+          \(completion.indentingEachLine(by: 8))\
+                  return
+                  ;;
+
+          """
+      }
+
+    if !positionalCases.isEmpty {
+      result += """
+
+            # Offer positional completions
+            case "${positional_number}" in
+        \(positionalCases.joined())\
+            esac
+
+        """
+    }
+
+    if !subcommands.isEmpty {
+      result += """
+
+            # Offer subcommand / subcommand argument completions
+            local -r subcommand="${unparsed_words[0]}"
+            unset 'unparsed_words[0]'
+            unparsed_words=("${unparsed_words[@]}")
+            case "${subcommand}" in
+            \(subcommands.map { $0._commandName }.joined(separator: "|")))
+                # Offer subcommand argument completions
+                "\(functionName)_${subcommand}"
+                ;;
+            *)
+                # Offer subcommand completions
+                COMPREPLY+=($(compgen -W '\(
+                  subcommands.map { $0._commandName.shellEscapeForSingleQuotedString() }.joined(separator: " ")
+                )' -- "${cur}"))
+                ;;
+            esac
+
+        """
+    }
+
+    if result.isEmpty {
+      result = "    :\n"
+    }
+
+    return """
+      \(functionName)() {
+      \(result)\
+      }
+
+      \(subcommands.map { (self + [$0]).completionFunctions }.joined())
+      """
   }
 
-  /// Returns the bash completions that can follow this argument's `--name`.
-  ///
-  /// Uses bash-completion for file and directory values if available.
-  fileprivate func bashValueCompletion(_ commands: [ParsableCommand.Type])
-    -> String
-  {
-    switch completion.kind {
+  /// Returns flag completions for the last command of the given array.
+  private var flagCompletions: [String] {
+    argumentsForHelp(visibility: .default).flatMap {
+      switch ($0.kind, $0.update) {
+      case (.named, .nullary):
+        return $0.bashCompletionWords
+      default:
+        return []
+      }
+    }
+  }
+
+  /// Returns option completions for the last command of the given array.
+  private var optionCompletions: [String] {
+    argumentsForHelp(visibility: .default).flatMap {
+      switch ($0.kind, $0.update) {
+      case (.named, .unary):
+        return $0.bashCompletionWords
+      default:
+        return []
+      }
+    }
+  }
+
+  /// Returns the bash completions that can follow the given argument's `--name`.
+  private func bashValueCompletion(_ arg: ArgumentDefinition) -> String {
+    switch arg.completion.kind {
     case .default:
       return ""
 
     case .file(let extensions) where extensions.isEmpty:
       return """
-        if declare -F _filedir >/dev/null; then
-          _filedir
-        else
-          COMPREPLY=( $(compgen -f -- "$cur") )
-        fi
+        \(addCompletionsFunctionName) -f
+
         """
 
     case .file(let extensions):
-      var safeExts = extensions.map {
-        String($0.flatMap { $0 == "'" ? ["\\", "'"] : [$0] })
-      }
-      safeExts.append(contentsOf: safeExts.map { $0.uppercased() })
-
+      let exts =
+        extensions
+        .map { $0.shellEscapeForSingleQuotedString() }.joined(separator: "|")
       return """
-        if declare -F _filedir >/dev/null; then
-          \(safeExts.map { "_filedir '\($0)'" }.joined(separator:"\n  "))
-          _filedir -d
-        else
-          COMPREPLY=(
-            \(safeExts.map { "$(compgen -f -X '!*.\($0)' -- \"$cur\")" }.joined(separator: "\n    "))
-            $(compgen -d -- "$cur")
-          )
-        fi
+        \(addCompletionsFunctionName) -o plusdirs -fX '!*.@(\(exts))'
+
         """
 
     case .directory:
       return """
-        if declare -F _filedir >/dev/null; then
-          _filedir -d
-        else
-          COMPREPLY=( $(compgen -d -- "$cur") )
-        fi
+        \(addCompletionsFunctionName) -d
+
         """
 
     case .list(let list):
-      return
-        #"COMPREPLY=( $(compgen -W "\#(list.joined(separator: " "))" -- "$cur") )"#
+      return """
+        \(addCompletionsFunctionName) -W\
+         '\(list.map { $0.shellEscapeForSingleQuotedString() }.joined(separator: "'$'\\n''"))'
+
+        """
 
     case .shellCommand(let command):
-      return "COMPREPLY=( $(\(command)) )"
+      return """
+        \(addCompletionsFunctionName) -W "$(eval '\(command.shellEscapeForSingleQuotedString())')"
+
+        """
 
     case .custom:
       // Generate a call back into the command to retrieve a completions list
-      return
-        #"COMPREPLY=( $(compgen -W "$("${COMP_WORDS[0]}" \#(customCompletionCall(commands)) "${COMP_WORDS[@]}")" -- "$cur") )"#
+      return """
+        \(addCompletionsFunctionName) -W\
+         "$(\(customCompleteFunctionName) \(arg.customCompletionCall(self)))"
+
+        """
     }
+  }
+
+  private var offerFlagsOptionsFunctionName: String {
+    "_\(prefix(1).completionFunctionName().shellEscapeForVariableName())_offer_flags_options"
+  }
+
+  private var addCompletionsFunctionName: String {
+    "_\(prefix(1).completionFunctionName().shellEscapeForVariableName())_add_completions"
+  }
+
+  private var customCompleteFunctionName: String {
+    "_\(prefix(1).completionFunctionName().shellEscapeForVariableName())_custom_complete"
   }
 }
 
-extension String {
-  var makeSafeFunctionName: String {
-    self.replacingOccurrences(of: "-", with: "_")
+extension ArgumentDefinition {
+  /// Returns the different completion names for this argument.
+  fileprivate var bashCompletionWords: [String] {
+    help.visibility.base == .default
+      ? names.map(\.synopsisString)
+      : []
   }
 }
