@@ -50,16 +50,12 @@ __base_test_offer_flags_options() {
             -*)
                 # ${word} is a flag or an option
                 # If ${word} is an option, mark that the next word to be parsed is an option value
-                # TODO: handle joined-value options (-o=file.ext), stacked flags (-aBc), legacy long (-long), combos
-                # TODO: if multi-valued options can exist, support them
                 local option
                 for option in "${options[@]}"; do
                     [[ "${word}" = "${option}" ]] && is_parsing_option_value=true && break
                 done
 
                 # Remove ${word} from ${flags} or ${options} so it isn't offered again
-                # TODO: handle repeatable flags & options
-                # TODO: remove equivalent options (-h/--help) & exclusive options (--yes/--no)
                 local not_found=true
                 local -i index
                 for index in "${!flags[@]}"; do
@@ -86,7 +82,6 @@ __base_test_offer_flags_options() {
         fi
 
         # ${word} is neither a flag, nor an option, nor an option value
-        # TODO: can SAP be configured to require options before positionals?
         if [[ "${positional_number}" -lt "${positional_count}" ]]; then
             # ${word} is a positional
             ((positional_number++))
@@ -105,7 +100,6 @@ __base_test_offer_flags_options() {
 
     unparsed_words=("${unparsed_words[@]}")
 
-    # TODO: offer flags & options after all positionals iff they're allowed after positionals
     if\
         ! "${was_flag_option_terminator_seen}"\
         && ! "${is_parsing_option_value}"\
@@ -153,7 +147,6 @@ _base_test() {
     __base_test_offer_flags_options 2
 
     # Offer option value completions
-    # TODO: only if ${prev} matches -* & is not an option value
     case "${prev}" in
     --name)
         return
@@ -226,7 +219,6 @@ _base_test_escaped_command() {
     __base_test_offer_flags_options 1
 
     # Offer option value completions
-    # TODO: only if ${prev} matches -* & is not an option value
     case "${prev}" in
     --one)
         return
