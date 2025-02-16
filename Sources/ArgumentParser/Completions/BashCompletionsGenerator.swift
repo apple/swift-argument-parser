@@ -245,26 +245,27 @@ extension [ParsableCommand.Type] {
         """
     }
 
-    if !positionalArguments.allSatisfy({ bashValueCompletion($0).isEmpty }) {
+    let positionalCases =
+      zip(1..., positionalArguments)
+      .compactMap { position, arg in
+        let completion = bashValueCompletion(arg)
+        return completion.isEmpty
+          ? nil
+          : """
+              \(position))
+          \(completion.indentingEachLine(by: 8))\
+                  return
+                  ;;
+
+          """
+      }
+
+    if !positionalCases.isEmpty {
       result += """
 
             # Offer positional completions
             case "${positional_number}" in
-        \(zip(1..., positionalArguments)
-          .compactMap { position, arg in
-            let completion = bashValueCompletion(arg)
-            return completion.isEmpty
-              ? nil
-              : """
-                  \(position))
-              \(completion.indentingEachLine(by: 8))\
-                      return
-                      ;;
-
-              """
-          }
-          .joined()
-        )\
+        \(positionalCases.joined())\
             esac
 
         """
