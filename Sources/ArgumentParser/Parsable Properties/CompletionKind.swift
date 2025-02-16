@@ -60,13 +60,11 @@ public struct CompletionKind {
     CompletionKind(kind: .list(words))
   }
 
-  // swift-format-ignore: BeginDocumentationCommentWithOneLineSummary
-  /// The completion candidates include:
+  /// The completion candidates include directory & file names, the latter
+  /// filtered by the given list of extensions.
   ///
-  /// - all directory names
-  /// - if `extensions` is empty, all file names
-  /// - if `extensions` is not empty, all file names whose respective
-  ///   extension matches any element of `extensions`
+  /// If the given list of extensions is empty, then file names are not
+  /// filtered.
   ///
   /// Given file extensions must not include the `.` initial extension
   /// separator.
