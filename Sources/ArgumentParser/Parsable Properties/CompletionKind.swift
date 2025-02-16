@@ -15,6 +15,8 @@
 /// the following settings, which will not affect the requesting shell outside
 /// the completion script:
 ///
+/// TODO: investigate more settings
+///
 /// - bash:
 ///
 ///   ```shell
@@ -72,8 +74,19 @@ public struct CompletionKind {
   /// Given file extensions are parsed by the requesting shell as globs; Swift
   /// Argument Parser does not perform any escaping or quoting.
   ///
-  /// In zsh, `EXTENDED_GLOB` & `NULL_GLOB` are set, while `KSH_GLOB` & `SH_GLOB` are unset
-  /// ? `BARE_GLOB_QUAL`, `GLOB_DOTS`, `GLOB_STAR_SHORT`, `GLOB_SUBST`, `NOMATCH`, `NUMERIC_GLOB_SORT`
+  /// In zsh, `EXTENDED_GLOB` & `NULL_GLOB` are set, while `KSH_GLOB` &
+  /// `SH_GLOB` are unset.
+  ///
+  /// TODO: determine if the following should be set or unset:
+  ///
+  /// `BARE_GLOB_QUAL`
+  /// `GLOB_DOTS`
+  /// `GLOB_STAR_SHORT`
+  /// `GLOB_SUBST`
+  /// `NOMATCH`
+  /// `NUMERIC_GLOB_SORT`
+  ///
+  /// TODO: determine settings for bash & fish
   ///
   /// The directory/file filter & the given list of extensions are included in a
   /// completion script when it is generated.
