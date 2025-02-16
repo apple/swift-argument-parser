@@ -187,7 +187,7 @@ extension [ParsableCommand.Type] {
   /// Include default 'help' subcommand in nonempty subcommand list if & only if
   /// no help subcommand already exists.
   mutating func addHelpSubcommandIfMissing() {
-    if !isEmpty && allSatisfy({ $0._commandName != "help" }) {
+    if !isEmpty && !contains(where: { $0._commandName == "help" }) {
       append(HelpCommand.self)
     }
   }
