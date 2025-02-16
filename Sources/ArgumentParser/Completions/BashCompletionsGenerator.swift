@@ -246,14 +246,12 @@ extension [ParsableCommand.Type] {
     }
 
     if !positionalArguments.allSatisfy({ bashValueCompletion($0).isEmpty }) {
-      var position = 0
       result += """
 
             # Offer positional completions
             case "${positional_number}" in
-        \(positionalArguments
-          .compactMap { arg in
-            position += 1
+        \(zip(1..., positionalArguments)
+          .compactMap { position, arg in
             let completion = bashValueCompletion(arg)
             return completion.isEmpty
               ? nil
