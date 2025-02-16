@@ -112,23 +112,46 @@ public struct CompletionKind {
   /// shell (normally by pressing TAB); it is not evaluated when a completion
   /// script is generated.
   ///
-  /// Depending on which shell is requesting completions, the `[String]`
-  /// argument passed to the given closure contains:
+  /// The array of strings passed to the given closure contains all the shell
+  /// words in the command line for the current command at completion
+  /// invocation; this is exclusive of words for prior or subsequent commands or
+  /// pipes, but inclusive of redirects & any other command line elements. Each
+  /// word is its own element in the argument array; they appear in the same
+  /// order as in the command line. Note that shell words may contain spaces if
+  /// they are escaped or quoted.
   ///
-  /// - the command being called as the first element (bash & fish, not zsh)
-  /// - either:
-  ///   - all the arguments on the command line (bash & zsh, presumably fish 4+)
-  ///   - the arguments on the command line only up to & including the argument
-  ///     for which completions are being requested (fish 3-)
+  /// TODO: ensure that process substitutions work in bash 4. If not, check bash
+  /// 5, then check minor then patch releases until the first version where they
+  /// work has been identified. Assume that they work in all subsequent bash
+  /// versions.
   ///
-  /// The arguments are passed to Swift verbatim, not unquoted. e.g., the
-  /// representation in Swift of the shell argument `"abc\\""def"` would be
-  /// exactly the same, including the quotes & the double backslash.
+  /// In bash 3?-, a process substitution (`<(…)`) in the command line prevents
+  /// Swift custom completion functions from being called.
   ///
-  /// Due to limitations in fish 3, arguments are passed to Swift unquoted.
-  /// e.g., the aforementioned example argument would be passed as `abc\def`.
-  /// fish 4 will not be constrained by such limitations, so this behavior will
-  /// be able to be fixed in a subsequent update to Swift Argument Parser.
+  /// In bash 4?+, a process substitution (`<(…)`) is split into multiple
+  /// elements in the argument array: one for the starting `<(`, and one for
+  /// each unescaped/unquoted-space-separated token through the closing `)`.
+  ///
+  /// In bash, if the cursor is between the backslash and the single quote for
+  /// the last escaped single quote in a word, all subsequent pipes or other
+  /// commands are included in the words passed to Swift. This oddity might
+  /// occur only when additional constraints are met. This or similar oddities
+  /// might occur in other circumstances.
+  ///
+  /// In fish 3-, due to a bug, the argument array includes the fish words only
+  /// through the word being completed. This is fixed in fish 4+.
+  ///
+  /// In fish, a redirect's symbol is not included, but its source/target is.
+  ///
+  /// In zsh, redirects (both their symbol & source/target) are omitted.
+  ///
+  /// Shell words are passed to Swift verbatim, not unquoted. e.g., the
+  /// representation in Swift of the shell word `"abc\\""def"` would be exactly
+  /// the same, including the double quotes & the double backslash.
+  ///
+  /// In fish 3-, due to limitations, words are passed to Swift unquoted. e.g.,
+  /// the aforementioned example word would be passed as `abc\def`. This is
+  /// fixed in fish 4+.
   @preconcurrency
   public static func custom(
     _ completion: @Sendable @escaping ([String]) -> [String]
