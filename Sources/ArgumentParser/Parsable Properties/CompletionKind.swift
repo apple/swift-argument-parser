@@ -48,7 +48,7 @@ public struct CompletionKind {
     CompletionKind(kind: .default)
   }
 
-  /// The completion candidates are the elements of `words`.
+  /// The completion candidates are the strings in the given array.
   ///
   /// Completion candidates are interpreted by the requesting shell as literals.
   /// They must be neither escaped nor quoted; Swift Argument Parser escapes or
@@ -89,11 +89,11 @@ public struct CompletionKind {
     CompletionKind(kind: .directory)
   }
 
-  /// The completion candidates are specified by the stdout output of `command`
-  /// run as a shell command when a user requests completions.
+  /// The completion candidates are specified by the stdout output of the given
+  /// string run as a shell command when a user requests completions.
   ///
-  /// Swift Argument Parser does not perform any escaping or quoting on
-  /// `command`.
+  /// Swift Argument Parser does not perform any escaping or quoting on the
+  /// given shell command.
   ///
   /// The given shell command is included in a completion script when it is
   /// generated.
@@ -101,8 +101,8 @@ public struct CompletionKind {
     CompletionKind(kind: .shellCommand(command))
   }
 
-  /// The completion candidates are the elements of the `[String]` returned by
-  /// the given closure when it is run when a user requests completions.
+  /// The completion candidates are the strings in the array returned by the
+  /// given closure when it is run when a user requests completions.
   ///
   /// Completion candidates are interpreted by the requesting shell as literals.
   /// They must be neither escaped nor quoted; Swift Argument Parser escapes or
