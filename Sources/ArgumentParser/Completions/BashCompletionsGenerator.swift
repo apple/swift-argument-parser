@@ -203,12 +203,12 @@ extension [ParsableCommand.Type] {
 
     let positionalArguments = positionalArguments
 
-    let flags = flags
-    let options = options
-    if !flags.isEmpty || !options.isEmpty {
+    let flagCompletions = flagCompletions
+    let optionCompletions = optionCompletions
+    if !flagCompletions.isEmpty || !optionCompletions.isEmpty {
       result += """
-            \(declareTopLevelArray)flags=(\(flags.joined(separator: " ")))
-            \(declareTopLevelArray)options=(\(options.joined(separator: " ")))
+            \(declareTopLevelArray)flags=(\(flagCompletions.joined(separator: " ")))
+            \(declareTopLevelArray)options=(\(optionCompletions.joined(separator: " ")))
             \(offerFlagsOptionsFunctionName) \(positionalArguments.count)
 
         """
@@ -307,8 +307,8 @@ extension [ParsableCommand.Type] {
       """
   }
 
-  /// Returns flags for the last command of the given array.
-  private var flags: [String] {
+  /// Returns flag completions for the last command of the given array.
+  private var flagCompletions: [String] {
     argumentsForHelp(visibility: .default).flatMap {
       switch ($0.kind, $0.update) {
       case (.named, .nullary):
@@ -319,8 +319,8 @@ extension [ParsableCommand.Type] {
     }
   }
 
-  /// Returns options for the last command of the given array.
-  private var options: [String] {
+  /// Returns option completions for the last command of the given array.
+  private var optionCompletions: [String] {
     argumentsForHelp(visibility: .default).flatMap {
       switch ($0.kind, $0.update) {
       case (.named, .unary):
