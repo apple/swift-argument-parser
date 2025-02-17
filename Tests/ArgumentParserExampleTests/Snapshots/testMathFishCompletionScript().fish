@@ -39,7 +39,7 @@ function _swift_math_commands_and_positionals_helper -S -a argparse_options -a o
 end
 
 function _swift_math_tokens
-    if test (string split -m 1 -f 1 . $FISH_VERSION) -gt 3
+    if test (string split -m 1 -f 1 -- . $FISH_VERSION) -gt 3
         commandline --tokens-raw $argv
     else
         commandline -o $argv

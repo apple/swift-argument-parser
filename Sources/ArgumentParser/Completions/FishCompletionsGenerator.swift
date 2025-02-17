@@ -39,7 +39,7 @@ extension [ParsableCommand.Type] {
       end
 
       function \(tokensFunctionName)
-          if test (string split -m 1 -f 1 . $FISH_VERSION) -gt 3
+          if test (string split -m 1 -f 1 -- . $FISH_VERSION) -gt 3
               commandline --tokens-raw $argv
           else
               commandline -o $argv
