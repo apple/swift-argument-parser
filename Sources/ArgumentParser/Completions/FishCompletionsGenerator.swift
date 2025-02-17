@@ -18,23 +18,23 @@ extension [ParsableCommand.Type] {
     let commandName = first!._commandName
     return """
       function \(commandsAndPositionalsFunctionName) -S
-          switch $POSITIONALS[1]
+          switch $positionals[1]
       \(commandCases)
           case '*'
-              set COMMANDS $POSITIONALS[1]
-              set -e POSITIONALS[1]
+              set commands $positionals[1]
+              set -e positionals[1]
           end
       end
 
       function \(commandsAndPositionalsFunctionName)_helper -S -a argparse_options -a option_specs
-          set -a COMMANDS $POSITIONALS[1]
-          set -e POSITIONALS[1]
+          set -a commands $positionals[1]
+          set -e positionals[1]
           if test -z $argparse_options
-              argparse -n (string join -- '\(separator)' $COMMANDS) (string split -- '\(separator)' $option_specs) -- $POSITIONALS 2> /dev/null
-              set POSITIONALS $argv
+              argparse -n (string join -- '\(separator)' $commands) (string split -- '\(separator)' $option_specs) -- $positionals 2> /dev/null
+              set positionals $argv
           else
-              argparse (string split -- '\(separator)' $argparse_options) -n (string join -- '\(separator)' $COMMANDS) (string split -- '\(separator)' $option_specs) -- $POSITIONALS 2> /dev/null
-              set POSITIONALS $argv
+              argparse (string split -- '\(separator)' $argparse_options) -n (string join -- '\(separator)' $commands) (string split -- '\(separator)' $option_specs) -- $positionals 2> /dev/null
+              set positionals $argv
           end
       end
 
@@ -47,16 +47,16 @@ extension [ParsableCommand.Type] {
       end
 
       function \(usingCommandFunctionName) -a expected_commands
-          set COMMANDS
-          set POSITIONALS (\(tokensFunctionName) -pc)
+          set commands
+          set positionals (\(tokensFunctionName) -pc)
           \(commandsAndPositionalsFunctionName)
-          test "$COMMANDS" = $expected_commands
+          test "$commands" = $expected_commands
       end
 
       function \(positionalIndexFunctionName)
-          set POSITIONALS (\(tokensFunctionName) -pc)
+          set positionals (\(tokensFunctionName) -pc)
           \(commandsAndPositionalsFunctionName)
-          math (count $POSITIONALS) + 1
+          math (count $positionals) + 1
       end
 
       function \(completeDirectoriesFunctionName)
@@ -96,7 +96,7 @@ extension [ParsableCommand.Type] {
               ? ""
               : """
 
-                  switch $POSITIONALS[1]
+                  switch $positionals[1]
               \(subcommands.map { (self + [$0]).commandCases }.joined(separator: "\n"))
                   end
               """

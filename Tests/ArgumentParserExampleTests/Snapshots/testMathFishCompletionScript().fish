@@ -1,15 +1,15 @@
 function _swift_math_commands_and_positionals -S
-    switch $POSITIONALS[1]
+    switch $positionals[1]
     case 'math'
         _swift_math_commands_and_positionals_helper '-s' 'version h/help'
-        switch $POSITIONALS[1]
+        switch $positionals[1]
         case 'add'
             _swift_math_commands_and_positionals_helper '' 'x/hex-output version h/help'
         case 'multiply'
             _swift_math_commands_and_positionals_helper '' 'x/hex-output version h/help'
         case 'stats'
             _swift_math_commands_and_positionals_helper '-s' 'version h/help'
-            switch $POSITIONALS[1]
+            switch $positionals[1]
             case 'average'
                 _swift_math_commands_and_positionals_helper '' 'kind= version h/help'
             case 'stdev'
@@ -21,20 +21,20 @@ function _swift_math_commands_and_positionals -S
             _swift_math_commands_and_positionals_helper '' 'version'
         end
     case '*'
-        set COMMANDS $POSITIONALS[1]
-        set -e POSITIONALS[1]
+        set commands $positionals[1]
+        set -e positionals[1]
     end
 end
 
 function _swift_math_commands_and_positionals_helper -S -a argparse_options -a option_specs
-    set -a COMMANDS $POSITIONALS[1]
-    set -e POSITIONALS[1]
+    set -a commands $positionals[1]
+    set -e positionals[1]
     if test -z $argparse_options
-        argparse -n (string join -- ' ' $COMMANDS) (string split -- ' ' $option_specs) -- $POSITIONALS 2> /dev/null
-        set POSITIONALS $argv
+        argparse -n (string join -- ' ' $commands) (string split -- ' ' $option_specs) -- $positionals 2> /dev/null
+        set positionals $argv
     else
-        argparse (string split -- ' ' $argparse_options) -n (string join -- ' ' $COMMANDS) (string split -- ' ' $option_specs) -- $POSITIONALS 2> /dev/null
-        set POSITIONALS $argv
+        argparse (string split -- ' ' $argparse_options) -n (string join -- ' ' $commands) (string split -- ' ' $option_specs) -- $positionals 2> /dev/null
+        set positionals $argv
     end
 end
 
@@ -47,16 +47,16 @@ function _swift_math_tokens
 end
 
 function _swift_math_using_command -a expected_commands
-    set COMMANDS
-    set POSITIONALS (_swift_math_tokens -pc)
+    set commands
+    set positionals (_swift_math_tokens -pc)
     _swift_math_commands_and_positionals
-    test "$COMMANDS" = $expected_commands
+    test "$commands" = $expected_commands
 end
 
 function _swift_math_positional_index
-    set POSITIONALS (_swift_math_tokens -pc)
+    set positionals (_swift_math_tokens -pc)
     _swift_math_commands_and_positionals
-    math (count $POSITIONALS) + 1
+    math (count $positionals) + 1
 end
 
 function _swift_math_complete_directories
