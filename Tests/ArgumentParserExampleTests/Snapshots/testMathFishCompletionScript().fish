@@ -16,6 +16,7 @@ function _swift_math_commands_and_positionals -S
                 _swift_math_commands_and_positionals_helper '' 'version h/help'
             case 'quantiles'
                 _swift_math_commands_and_positionals_helper '' 'file= directory= shell= custom= version h/help'
+            end
         case 'help'
             _swift_math_commands_and_positionals_helper '' 'version'
         end
