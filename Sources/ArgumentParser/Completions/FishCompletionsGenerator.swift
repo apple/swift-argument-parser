@@ -1,109 +1,313 @@
-struct FishCompletionsGenerator {
-  static func generateCompletionScript(_ type: ParsableCommand.Type) -> String {
-    let programName = type._commandName
-    let helperFunctions = [
-      preprocessorFunction(commandName: programName),
-      helperFunction(commandName: programName),
-    ]
-    let completions = generateCompletions([type])
+//===----------------------------------------------------------*- swift -*-===//
+//
+// This source file is part of the Swift Argument Parser open source project
+//
+// Copyright (c) 2020 Apple Inc. and the Swift project authors
+// Licensed under Apache License v2.0 with Runtime Library Exception
+//
+// See https://swift.org/LICENSE.txt for license information
+//
+//===----------------------------------------------------------------------===//
 
-    return helperFunctions.joined(separator: "\n\n") + "\n\n"
-      + completions.joined(separator: "\n")
+extension [ParsableCommand.Type] {
+  var fishCompletionScript: String {
+    // swift-format-ignore: NeverForceUnwrap
+    // Preconditions:
+    // - first must be non-empty for a fish completion script to be of use.
+    // - first is guaranteed non-empty in the one place where this computed var is used.
+    let commandName = first!._commandName
+    return """
+      function \(commandsAndPositionalsFunctionName) -S
+          switch $POSITIONALS[1]
+      \(commandCases)
+          case '*'
+              set COMMANDS $POSITIONALS[1]
+              set -e POSITIONALS[1]
+          end
+      end
+
+      function \(commandsAndPositionalsFunctionName)_helper -S -a argparse_options -a option_specs
+          set -a COMMANDS $POSITIONALS[1]
+          set -e POSITIONALS[1]
+          if test -z $argparse_options
+              argparse -n (string join -- '\(separator)' $COMMANDS) (string split -- '\(separator)' $option_specs) -- $POSITIONALS 2> /dev/null
+              set POSITIONALS $argv
+          else
+              argparse (string split -- '\(separator)' $argparse_options) -n (string join -- '\(separator)' $COMMANDS) (string split -- '\(separator)' $option_specs) -- $POSITIONALS 2> /dev/null
+              set POSITIONALS $argv
+          end
+      end
+
+      function \(tokensFunctionName)
+          if test (string split -m 1 -f 1 . $FISH_VERSION) -gt 3
+              commandline --tokens-raw $argv
+          else
+              commandline -o $argv
+          end
+      end
+
+      function \(usingCommandFunctionName) -a expected_commands
+          set COMMANDS
+          set POSITIONALS (\(tokensFunctionName) -pc)
+          \(commandsAndPositionalsFunctionName)
+          test "$COMMANDS" = $expected_commands
+      end
+
+      function \(positionalIndexFunctionName)
+          set POSITIONALS (\(tokensFunctionName) -pc)
+          \(commandsAndPositionalsFunctionName)
+          math (count $POSITIONALS) + 1
+      end
+
+      function \(completeDirectoriesFunctionName)
+          set token (commandline -t)
+          string match -- '*/' $token
+          set subdirs $token*/
+          printf '%s\\n' $subdirs
+      end
+
+      function \(customCompletionFunctionName)
+          set -x \(CompletionShell.shellEnvironmentVariableName) fish
+          set -x \(CompletionShell.shellVersionEnvironmentVariableName) $FISH_VERSION
+
+          set tokens (\(tokensFunctionName) -p)
+          if test -z (\(tokensFunctionName) -t)
+              set index (count (\(tokensFunctionName) -pc))
+              set tokens $tokens[..$index] \\'\\' $tokens[$(math $index + 1)..]
+          end
+          command $tokens[1] $argv $tokens
+      end
+
+      complete -c \(commandName) -f
+      \(completions.joined(separator: "\n"))
+      """
   }
-}
 
-// MARK: - Private functions
+  private var commandCases: String {
+    let subcommands = subcommands
+    // swift-format-ignore: NeverForceUnwrap
+    // Precondition: last is guaranteed to be non-empty
+    return """
+      case '\(last!._commandName)'
+          \(commandsAndPositionalsFunctionName)_helper '\(
+            subcommands.isEmpty ? "" : "-s"
+          )' '\(completableArguments.compactMap(\.optionSpec).map { "\($0)" }.joined(separator: separator))'\(
+            subcommands.isEmpty
+              ? ""
+              : """
 
-extension FishCompletionsGenerator {
-  private static func generateCompletions(_ commands: [ParsableCommand.Type])
-    -> [String]
-  {
-    guard let type = commands.last else { return [] }
-    let isRootCommand = commands.count == 1
-    let programName = commands[0]._commandName
-    var subcommands = type.configuration.subcommands
-      .filter { $0.configuration.shouldDisplay }
+                  switch $POSITIONALS[1]
+              \(subcommands.map { (self + [$0]).commandCases }.joined(separator: "\n"))
+                  end
+              """
+          )
+      """
+      .indentingEachLine(by: 4)
+  }
 
-    if !subcommands.isEmpty && isRootCommand {
-      subcommands.append(HelpCommand.self)
-    }
+  private var completions: [String] {
+    // swift-format-ignore: NeverForceUnwrap
+    // Precondition: first is guaranteed to be non-empty
+    let commandName = first!._commandName
+    let prefix = """
+      complete -c \(commandName)\
+       -n '\(usingCommandFunctionName)\
+       "\(map { $0._commandName }.joined(separator: separator))"
+      """
 
-    let helperFunctionName = helperFunctionName(commandName: programName)
+    let subcommands = subcommands
 
-    var prefix =
-      "complete -c \(programName) -n '\(helperFunctionName) \"\(commands.map { $0._commandName }.joined(separator: separator))\""
-    if !subcommands.isEmpty {
-      prefix +=
-        " \"\(subcommands.map { $0._commandName }.joined(separator: separator))\""
-    }
-    prefix += "'"
-
-    func complete(suggestion: String) -> String {
-      "\(prefix) \(suggestion)"
+    func complete(suggestion: String, extraTests: [String] = []) -> String {
+      "\(prefix)\(extraTests.map { ";\($0)" }.joined())' \(suggestion)"
     }
 
     let subcommandCompletions: [String] = subcommands.map { subcommand in
-      let escapedAbstract = subcommand.configuration.abstract.fishEscape()
-      let suggestion =
-        "-f -a '\(subcommand._commandName)' -d '\(escapedAbstract)'"
-      return complete(suggestion: suggestion)
+      complete(
+        suggestion:
+          "-fa '\(subcommand._commandName)' -d '\(subcommand.configuration.abstract.fishEscapeForSingleQuotedString())'"
+      )
     }
+
+    var positionalIndex = 0
 
     let argumentCompletions =
-      commands
-      .argumentsForHelp(visibility: .default)
-      .compactMap { $0.argumentSegments(commands) }
-      .map { $0.joined(separator: " ") }
-      .map { complete(suggestion: $0) }
+      completableArguments
+      .map { (arg: ArgumentDefinition) in
+        complete(
+          suggestion: argumentSegments(arg).joined(separator: separator),
+          extraTests: arg.isPositional
+            ? [
+              """
+              and test (\(positionalIndexFunctionName)) \
+              -eq \({
+                positionalIndex += 1
+                return positionalIndex
+              }())
+              """
+            ]
+            : []
+        )
+      }
 
     let completionsFromSubcommands = subcommands.flatMap { subcommand in
-      generateCompletions(commands + [subcommand])
+      (self + [subcommand]).completions
     }
 
-    return completionsFromSubcommands + argumentCompletions
-      + subcommandCompletions
+    return
+      completionsFromSubcommands + argumentCompletions + subcommandCompletions
   }
-}
 
-extension ArgumentDefinition {
-  fileprivate func argumentSegments(_ commands: [ParsableCommand.Type])
-    -> [String]?
-  {
-    guard help.visibility.base == .default
-    else { return nil }
+  private var subcommands: Self {
+    guard
+      let command = last,
+      ArgumentSet(command, visibility: .default, parent: nil)
+        .filter(\.isPositional).isEmpty
+    else {
+      return []
+    }
+    var subcommands = command.configuration.subcommands
+      .filter { $0.configuration.shouldDisplay }
+    if count == 1 {
+      subcommands.addHelpSubcommandIfMissing()
+    }
+    return subcommands
+  }
 
+  private var completableArguments: [ArgumentDefinition] {
+    argumentsForHelp(visibility: .default).compactMap { arg in
+      switch arg.completion.kind {
+      case .default where arg.names.isEmpty:
+        return nil
+      default:
+        return
+          arg.help.visibility.base == .default
+          ? arg
+          : nil
+      }
+    }
+  }
+
+  private func argumentSegments(_ arg: ArgumentDefinition) -> [String] {
     var results: [String] = []
 
-    if !names.isEmpty {
-      results += names.map { $0.asFishSuggestion }
+    if !arg.names.isEmpty {
+      results += arg.names.map { $0.asFishSuggestion }
+      if !arg.help.abstract.isEmpty {
+        results += [
+          "-d '\(arg.help.abstract.fishEscapeForSingleQuotedString())'"
+        ]
+      }
     }
 
-    if !help.abstract.isEmpty {
-      results += ["-d '\(help.abstract.fishEscape())'"]
-    }
-
-    switch completion.kind {
-    case .default where names.isEmpty:
-      return nil
+    switch arg.completion.kind {
     case .default:
       break
     case .list(let list):
-      results += ["-r -f -k -a '\(list.joined(separator: " "))'"]
+      results += ["-rfka '\(list.joined(separator: separator))'"]
     case .file(let extensions):
-      let pattern = "*.{\(extensions.joined(separator: ","))}"
-      results += ["-r -f -a '(for i in \(pattern); echo $i;end)'"]
+      switch extensions.count {
+      case 0:
+        results += ["-rF"]
+      case 1:
+        results += [
+          """
+          -rfa '(\
+          for p in (string match -e -- \\'*/\\' (commandline -t);or printf \\n)*.\\'\(extensions.map { $0.fishEscapeForSingleQuotedString(iterationCount: 2) }.joined())\\';printf %s\\n $p;end;\
+          __fish_complete_directories (commandline -t) \\'\\'\
+          )'
+          """
+        ]
+      default:
+        results += [
+          """
+          -rfa '(\
+          set exts \(extensions.map { "\\'\($0.fishEscapeForSingleQuotedString(iterationCount: 2))\\'" }.joined(separator: separator));\
+          for p in (string match -e -- \\'*/\\' (commandline -t);or printf \\n)*.{$exts};printf %s\\n $p;end;\
+          __fish_complete_directories (commandline -t) \\'\\'\
+          )'
+          """
+        ]
+      }
     case .directory:
-      results += ["-r -f -a '(__fish_complete_directories)'"]
+      results += ["-rfa '(\(completeDirectoriesFunctionName))'"]
     case .shellCommand(let shellCommand):
-      results += ["-r -f -a '(\(shellCommand))'"]
+      results += ["-rfka '(\(shellCommand))'"]
     case .custom:
-      guard let commandName = commands.first?._commandName else { return nil }
       results += [
-        "-r -f -a '(command \(commandName) \(customCompletionCall(commands)) (commandline -opc)[1..-1])'"
+        """
+        -rfka '(\(customCompletionFunctionName) \(arg.customCompletionCall(self)))'
+        """
       ]
     }
 
     return results
+  }
+
+  private var commandsAndPositionalsFunctionName: String {
+    // swift-format-ignore: NeverForceUnwrap
+    // Precondition: first is guaranteed to be non-empty
+    "_swift_\(first!._commandName)_commands_and_positionals"
+  }
+
+  private var tokensFunctionName: String {
+    // swift-format-ignore: NeverForceUnwrap
+    // Precondition: first is guaranteed to be non-empty
+    "_swift_\(first!._commandName)_tokens"
+  }
+
+  private var usingCommandFunctionName: String {
+    // swift-format-ignore: NeverForceUnwrap
+    // Precondition: first is guaranteed to be non-empty
+    "_swift_\(first!._commandName)_using_command"
+  }
+
+  private var positionalIndexFunctionName: String {
+    // swift-format-ignore: NeverForceUnwrap
+    // Precondition: first is guaranteed to be non-empty
+    "_swift_\(first!._commandName)_positional_index"
+  }
+
+  private var completeDirectoriesFunctionName: String {
+    // swift-format-ignore: NeverForceUnwrap
+    // Precondition: first is guaranteed to be non-empty
+    "_swift_\(first!._commandName)_complete_directories"
+  }
+
+  private var customCompletionFunctionName: String {
+    // swift-format-ignore: NeverForceUnwrap
+    // Precondition: first is guaranteed to be non-empty
+    "_swift_\(first!._commandName)_custom_completion"
+  }
+}
+
+extension ArgumentDefinition {
+  fileprivate var optionSpec: String? {
+    guard let shortName = name(.short) else {
+      guard let longName = name(.long) else {
+        return nil
+      }
+      return optionSpecRequiresValue(longName)
+    }
+    guard let longName = name(.long) else {
+      return optionSpecRequiresValue(shortName)
+    }
+    return optionSpecRequiresValue("\(shortName)/\(longName)")
+  }
+
+  private func name(_ nameType: Name.Case) -> String? {
+    names.first(where: {
+      $0.case == nameType
+    })?
+    .valueString
+  }
+
+  private func optionSpecRequiresValue(_ optionSpec: String) -> String {
+    switch update {
+    case .unary:
+      return "\(optionSpec)="
+    default:
+      return optionSpec
+    }
   }
 }
 
@@ -121,70 +325,15 @@ extension Name {
 }
 
 extension String {
-  fileprivate func fishEscape() -> String {
-    replacingOccurrences(of: "'", with: #"\'"#)
+  fileprivate func fishEscapeForSingleQuotedString(
+    iterationCount: UInt64 = 1
+  ) -> Self {
+    iterationCount == 0
+      ? self
+      : replacingOccurrences(of: "\\", with: "\\\\")
+        .replacingOccurrences(of: "'", with: "\\'")
+        .fishEscapeForSingleQuotedString(iterationCount: iterationCount - 1)
   }
 }
 
-extension FishCompletionsGenerator {
-
-  private static var separator: String { " " }
-
-  private static func preprocessorFunctionName(commandName: String) -> String {
-    "_swift_\(commandName)_preprocessor"
-  }
-
-  private static func preprocessorFunction(commandName: String) -> String {
-    """
-    # A function which filters options which starts with "-" from $argv.
-    function \(preprocessorFunctionName(commandName: commandName))
-        set -l results
-        for i in (seq (count $argv))
-            switch (echo $argv[$i] | string sub -l 1)
-                case '-'
-                case '*'
-                    echo $argv[$i]
-            end
-        end
-    end
-    """
-  }
-
-  private static func helperFunctionName(commandName: String) -> String {
-    "_swift_" + commandName + "_using_command"
-  }
-
-  private static func helperFunction(commandName: String) -> String {
-    let functionName = helperFunctionName(commandName: commandName)
-    let preprocessorFunctionName = preprocessorFunctionName(
-      commandName: commandName)
-    return """
-      function \(functionName)
-          set -gx \(CompletionShell.shellEnvironmentVariableName) fish
-          set -gx \(CompletionShell.shellVersionEnvironmentVariableName) "$FISH_VERSION"
-          set -l currentCommands (\(preprocessorFunctionName) (commandline -opc))
-          set -l expectedCommands (string split \"\(separator)\" $argv[1])
-          set -l subcommands (string split \"\(separator)\" $argv[2])
-          if [ (count $currentCommands) -ge (count $expectedCommands) ]
-              for i in (seq (count $expectedCommands))
-                  if [ $currentCommands[$i] != $expectedCommands[$i] ]
-                      return 1
-                  end
-              end
-              if [ (count $currentCommands) -eq (count $expectedCommands) ]
-                  return 0
-              end
-              if [ (count $subcommands) -gt 1 ]
-                  for i in (seq (count $subcommands))
-                      if [ $currentCommands[(math (count $expectedCommands) + 1)] = $subcommands[$i] ]
-                          return 1
-                      end
-                  end
-              end
-              return 0
-          end
-          return 1
-      end
-      """
-  }
-}
+private var separator: String { " " }
