@@ -2,7 +2,6 @@ function _swift_base-test_commands_and_positionals -S
     switch $POSITIONALS[1]
     case 'base-test'
         _swift_base-test_commands_and_positionals_helper '' 'name= kind= other-kind= path1= path2= path3= one two three kind-counter rep1= r/rep2= h/help'
-        end
     case '*'
         set COMMANDS $POSITIONALS[1]
         set -e POSITIONALS[1]

@@ -19,8 +19,7 @@ extension [ParsableCommand.Type] {
     return """
       function \(commandsAndPositionalsFunctionName) -S
           switch $POSITIONALS[1]
-      \(commandCases)\
-              end
+      \(commandCases)
           case '*'
               set COMMANDS $POSITIONALS[1]
               set -e POSITIONALS[1]
@@ -91,11 +90,19 @@ extension [ParsableCommand.Type] {
     return """
       case '\(last!._commandName)'
           \(commandsAndPositionalsFunctionName)_helper '\(
-          subcommands.isEmpty ? "" : "-s"
+            subcommands.isEmpty ? "" : "-s"
           )' '\(completableArguments.compactMap(\.optionSpec).map { "\($0)" }.joined(separator: separator))'\(
-      subcommands.isEmpty ? "" : "\n    switch $POSITIONALS[1]")
-      \(subcommands.map { (self + [$0]).commandCases }.joined(separator: ""))
-      """.indentingEachLine(by: 4)
+            subcommands.isEmpty
+              ? ""
+              : """
+
+                  switch $POSITIONALS[1]
+              \(subcommands.map { (self + [$0]).commandCases }.joined(separator: "\n"))
+                  end
+              """
+          )
+      """
+      .indentingEachLine(by: 4)
   }
 
   private var completions: [String] {
