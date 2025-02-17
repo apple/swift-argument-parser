@@ -451,10 +451,12 @@ extension DefaultsEndToEndTests {
     }
   }
 
-  // swift-format-ignore: BeginDocumentationCommentWithOneLineSummary
-  // https://github.com/swiftlang/swift-format/issues/925
-  /// Tests that *not* providing a default value still parses the argument correctly from the command-line.
-  /// This test is almost certainly duplicated by others in the repository, but allows for quick use of test filtering during development on the initialization functionality.
+  /// Tests that *not* providing a default value still parses the argument
+  /// correctly from the command-line.
+  ///
+  /// This test is almost certainly duplicated by others in the repository,
+  /// but allows for quick use of test filtering during development on the
+  /// initialization functionality.
   func testParsing_OptionPropertyInit_NoDefault_NoTransform() throws {
     AssertParse(
       OptionPropertyInitArguments_NoDefault_NoTransform.self,
@@ -464,18 +466,18 @@ extension DefaultsEndToEndTests {
     }
   }
 
-  // swift-format-ignore: BeginDocumentationCommentWithOneLineSummary
-  // https://github.com/swiftlang/swift-format/issues/925
-  /// Tests that using default property initialization syntax on a property with a `transform` function provided parses the default value for the argument when nothing is provided from the command-line.
+  /// Tests that using default property initialization syntax on a property
+  /// with a transform function provided parses the default value for the
+  /// argument when nothing is provided from the command-line.
   func testParsing_OptionPropertyInit_Default_Transform_UseDefault() throws {
     AssertParse(OptionPropertyInitArguments_Default.self, []) { arguments in
       XCTAssertEqual(arguments.transformedData, "test")
     }
   }
 
-  // swift-format-ignore: BeginDocumentationCommentWithOneLineSummary
-  // https://github.com/swiftlang/swift-format/issues/925
-  /// Tests that using default property initialization syntax on a property with a `transform` function provided parses and transforms the command-line-provided value for the argument when provided.
+  /// Tests that using default property initialization syntax on a property
+  /// with a transform function provided parses and transforms the
+  /// command-line-provided value for the argument when provided.
   func testParsing_OptionPropertyInit_Default_Transform_OverrideDefault() throws
   {
     AssertParse(
@@ -485,10 +487,13 @@ extension DefaultsEndToEndTests {
     }
   }
 
-  // swift-format-ignore: BeginDocumentationCommentWithOneLineSummary
-  // https://github.com/swiftlang/swift-format/issues/925
-  /// Tests that *not* providing a default value for a property with a `transform` function still parses the argument correctly from the command-line.
-  /// This test is almost certainly duplicated by others in the repository, but allows for quick use of test filtering during development on the initialization functionality.
+  /// Tests that *not* providing a default value for a property with a
+  /// transform function still parses the argument correctly from the
+  /// command-line.
+  ///
+  /// This test is almost certainly duplicated by others in the repository,
+  /// but allows for quick use of test filtering during development on the
+  /// initialization functionality.
   func testParsing_OptionPropertyInit_NoDefault_Transform() throws {
     AssertParse(
       OptionPropertyInitArguments_NoDefault_Transform.self,
@@ -550,10 +555,12 @@ extension DefaultsEndToEndTests {
     }
   }
 
-  // swift-format-ignore: BeginDocumentationCommentWithOneLineSummary
-  // https://github.com/swiftlang/swift-format/issues/925
-  /// Tests that *not* providing a default value still parses the argument correctly from the command-line.
-  /// This test is almost certainly duplicated by others in the repository, but allows for quick use of test filtering during development on the initialization functionality.
+  /// Tests that *not* providing a default value still parses the argument
+  /// correctly from the command-line.
+  ///
+  /// This test is almost certainly duplicated by others in the repository, but
+  /// allows for quick use of test filtering during development on the
+  /// initialization functionality.
   func testParsing_ArgumentPropertyInit_NoDefault_NoTransform() throws {
     AssertParse(
       ArgumentPropertyInitArguments_NoDefault_NoTransform.self, ["test"]
@@ -582,10 +589,13 @@ extension DefaultsEndToEndTests {
     }
   }
 
-  // swift-format-ignore: BeginDocumentationCommentWithOneLineSummary
-  // https://github.com/swiftlang/swift-format/issues/925
-  /// Tests that *not* providing a default value for a property with a `transform` function still parses the argument correctly from the command-line.
-  /// This test is almost certainly duplicated by others in the repository, but allows for quick use of test filtering during development on the initialization functionality.
+  /// Tests that *not* providing a default value for a property with a
+  /// transform function still parses the argument correctly from the
+  /// command-line.
+  ///
+  /// This test is almost certainly duplicated by others in the repository,
+  /// but allows for quick use of test filtering during development on the
+  /// initialization functionality.
   func testParsing_ArgumentPropertyInit_NoDefault_Transform() throws {
     AssertParse(
       ArgumentPropertyInitArguments_NoDefault_Transform.self, ["test"]
@@ -654,10 +664,12 @@ extension DefaultsEndToEndTests {
     }
   }
 
-  // swift-format-ignore: BeginDocumentationCommentWithOneLineSummary
-  // https://github.com/swiftlang/swift-format/issues/925
-  /// Tests that *not* providing a default value still parses the argument correctly from the command-line.
-  /// This test is almost certainly duplicated by others in the repository, but allows for quick use of test filtering during development on the initialization functionality.
+  /// Tests that *not* providing a default value still parses the argument
+  /// correctly from the command-line.
+  ///
+  /// This test is almost certainly duplicated by others in the repository, but
+  /// allows for quick use of test filtering during development on the
+  /// initialization functionality.
   func testParsing_FlagPropertyInit_Bool_NoDefault() throws {
     AssertParse(FlagPropertyInitArguments_Bool_NoDefault.self, ["--data"]) {
       arguments in
@@ -707,10 +719,12 @@ extension DefaultsEndToEndTests {
     }
   }
 
-  // swift-format-ignore: BeginDocumentationCommentWithOneLineSummary
-  // https://github.com/swiftlang/swift-format/issues/925
-  /// Tests that *not* providing a default value still parses the argument correctly from the command-line.
-  /// This test is almost certainly duplicated by others in the repository, but allows for quick use of test filtering during development on the initialization functionality.
+  /// Tests that *not* providing a default value still parses the argument
+  /// correctly from the command-line.
+  ///
+  /// This test is almost certainly duplicated by others in the repository, but
+  /// allows for quick use of test filtering during development on the
+  /// initialization functionality.
   func testParsing_FlagPropertyInit_EnumerableFlag_NoDefault() throws {
     AssertParse(
       FlagPropertyInitArguments_EnumerableFlag_NoDefault.self, ["--data"]
@@ -916,8 +930,6 @@ extension DefaultsEndToEndTests {
 
 // MARK: Overload selection
 
-// swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension DefaultsEndToEndTests {
   private struct AbsolutePath: ExpressibleByArgument {
     init(_ value: String) {}
@@ -938,11 +950,11 @@ extension DefaultsEndToEndTests {
     var path4 = AbsolutePath("abc")
   }
 
-  // swift-format-ignore: BeginDocumentationCommentWithOneLineSummary
-  // https://github.com/swiftlang/swift-format/issues/925
   /// Tests that a non-optional `Value` type is inferred, regardless of how the
-  /// initializer parameters are spelled. Previously, string literals and
-  /// `.init` calls for the help parameter inferred different generic types.
+  /// initializer parameters are spelled.
+  ///
+  /// Previously, string literals and `.init` calls for the help parameter
+  /// inferred different generic types.
   func testHelpInitInferredType() throws {
     AssertParse(TwoPaths.self, []) { cmd in
       XCTAssert(type(of: cmd.path1) == AbsolutePath.self)

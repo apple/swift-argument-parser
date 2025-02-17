@@ -56,31 +56,25 @@ public struct CompletionShell: RawRepresentable, Hashable, CaseIterable {
 
   static let _requesting = Mutex<CompletionShell?>(nil)
 
-  // swift-format-ignore: BeginDocumentationCommentWithOneLineSummary
-  // https://github.com/swiftlang/swift-format/issues/924
-  /// While generating a shell completion script or while a Swift custom
-  /// completion function is executing to offer completions for a word from a
-  /// command line (e.g., while `customCompletion` from
-  /// `@Option(completion: .custom(customCompletion))` executes), an instance
-  /// representing the shell for which completions will be or are being
-  /// requested, respectively.
+  /// The shell for which completions will be or are being requested.
   ///
-  /// Otherwise `nil`.
+  /// `CompletionShell.requesting` is non-`nil` only while generating a shell
+  /// completion script or while a Swift custom completion function is executing
+  /// to offer completions for a word from a command line (that is, while
+  /// `customCompletion` from `@Option(completion: .custom(customCompletion))`
+  /// executes).
   public static var requesting: CompletionShell? {
     Self._requesting.withLock { $0 }
   }
 
   static let _requestingVersion = Mutex<String?>(nil)
 
-  // swift-format-ignore: BeginDocumentationCommentWithOneLineSummary
-  // https://github.com/swiftlang/swift-format/issues/924
-  /// While a Swift custom completion function is executing to offer completions
-  /// for a word from a command line (e.g., while `customCompletion` from
-  /// `@Option(completion: .custom(customCompletion))` executes), a `String`
-  /// representing the version of the shell for which completions are being
-  /// requested.
+  /// The shell version for which completions will be or are being requested.
   ///
-  /// Otherwise `nil`.
+  /// `CompletionShell.requestingVersion` is non-`nil` only while generating a
+  /// shell completion script or while a Swift custom completion function is
+  /// running (that is, while `customCompletion` from
+  /// `@Option(completion: .custom(customCompletion))` executes).
   public static var requestingVersion: String? {
     Self._requestingVersion.withLock { $0 }
   }

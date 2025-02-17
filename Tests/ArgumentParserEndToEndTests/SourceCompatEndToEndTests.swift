@@ -13,10 +13,8 @@ import ArgumentParser
 import ArgumentParserTestHelpers
 import XCTest
 
-// swift-format-ignore: BeginDocumentationCommentWithOneLineSummary
-// https://github.com/swiftlang/swift-format/issues/925
-/// The goal of this test class is to validate source compatibility. By running
-/// this class's tests, all property wrapper initializers should be called.
+// The goal of this test class is to validate source compatibility. By running
+// this class's tests, all property wrapper initializers should be called.
 final class SourceCompatEndToEndTests: XCTestCase {}
 
 // MARK: - Property Wrapper Initializers

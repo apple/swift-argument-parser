@@ -65,8 +65,8 @@ extension ArgumentSet {
   }
 }
 
-// swift-format-ignore: BeginDocumentationCommentWithOneLineSummary
-// https://github.com/swiftlang/swift-format/issues/925
+/// A validator for positional argument arrays.
+///
 /// For positional arguments to be valid, there must be at most one
 /// positional array argument, and it must be the last positional argument
 /// in the argument list. Any other configuration leads to ambiguity in
@@ -131,7 +131,7 @@ struct PositionalArgumentsValidator: ParsableArgumentsValidator {
   }
 }
 
-/// Ensure that all arguments have corresponding coding keys.
+/// A validator that ensures that all arguments have corresponding coding keys.
 struct ParsableArgumentsCodingKeyValidator: ParsableArgumentsValidator {
 
   private struct Validator: Decoder {
@@ -252,7 +252,8 @@ struct ParsableArgumentsCodingKeyValidator: ParsableArgumentsValidator {
   }
 }
 
-/// Ensure argument names are unique within a `ParsableArguments` or `ParsableCommand`.
+/// A validator that ensures argument names are unique within a
+/// `ParsableArguments` or `ParsableCommand`.
 struct ParsableArgumentsUniqueNamesValidator: ParsableArgumentsValidator {
   struct Error: ParsableArgumentsValidatorError, CustomStringConvertible {
     var duplicateNames: [String: Int] = [:]
@@ -295,6 +296,7 @@ struct ParsableArgumentsUniqueNamesValidator: ParsableArgumentsValidator {
   }
 }
 
+/// A validator that prevents declaring flags that can't be turned off.
 struct NonsenseFlagsValidator: ParsableArgumentsValidator {
   struct Error: ParsableArgumentsValidatorError, CustomStringConvertible {
     var names: [String]
