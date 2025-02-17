@@ -21,7 +21,7 @@ function _swift_base-test_commands_and_positionals_helper -S -a argparse_options
 end
 
 function _swift_base-test_tokens
-    if test (string split -m 1 -f 1 . $FISH_VERSION) -gt 3
+    if test (string split -m 1 -f 1 -- . $FISH_VERSION) -gt 3
         commandline --tokens-raw $argv
     else
         commandline -o $argv
