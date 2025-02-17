@@ -17,53 +17,51 @@ extension [ParsableCommand.Type] {
     // - first is guaranteed non-empty in the one place where this computed var is used.
     let commandName = first!._commandName
     return """
-      function \(commandsAndPositionalsFunctionName) -S
-          switch $positionals[1]
-      \(commandCases)
-          case '*'
-              set commands $positionals[1]
-              set -e positionals[1]
-          end
-      end
+      function \(shouldOfferCompletionsForFunctionName) -a expected_commands -a expected_positional_index
+          set -f unparsed_tokens (\(tokensFunctionName) -pc)
+          set -f positional_index 0
+          set -f commands
 
-      function \(commandsAndPositionalsFunctionName)_helper -S -a argparse_options
-          set -l option_specs $argv[2..]
-          set -a commands $positionals[1]
-          set -e positionals[1]
-          if test -z $argparse_options
-              argparse -n "$commands" $option_specs -- $positionals 2> /dev/null
-              set positionals $argv
-          else
-              argparse (string split -- '\(separator)' $argparse_options) -n "$commands" $option_specs -- $positionals 2> /dev/null
-              set positionals $argv
+          switch $unparsed_tokens[1]
+      \(commandCases)
           end
+
+          test "$commands" = "$expected_commands" -a \\( -z "$expected_positional_index" -o "$expected_positional_index" -eq "$positional_index" \\)
       end
 
       function \(tokensFunctionName)
-          if test (string split -m 1 -f 1 -- . $FISH_VERSION) -gt 3
+          if test "$(string split -m 1 -f 1 -- . "$FISH_VERSION")" -gt 3
               commandline --tokens-raw $argv
           else
               commandline -o $argv
           end
       end
 
-      function \(usingCommandFunctionName) -a expected_commands
-          set commands
-          set positionals (\(tokensFunctionName) -pc)
-          \(commandsAndPositionalsFunctionName)
-          test "$commands" = $expected_commands
-      end
+      function \(parseSubcommandFunctionName) -S
+          argparse -s r -- $argv
+          set -f positional_count $argv[1]
+          set -f option_specs $argv[2..]
 
-      function \(positionalIndexFunctionName)
-          set positionals (\(tokensFunctionName) -pc)
-          \(commandsAndPositionalsFunctionName)
-          math (count $positionals) + 1
+          set -a commands $unparsed_tokens[1]
+          set -e unparsed_tokens[1]
+
+          set positional_index 0
+
+          while true
+              argparse -sn "$commands" $option_specs -- $unparsed_tokens 2> /dev/null
+              set unparsed_tokens $argv
+              set positional_index (math $positional_index + 1)
+              if test (count $unparsed_tokens) -eq 0 -o \\( -z "$_flag_r" -a "$positional_index" -gt "$positional_count" \\)
+                  return 0
+              end
+              set -e unparsed_tokens[1]
+          end
       end
 
       function \(completeDirectoriesFunctionName)
-          set token (commandline -t)
+          set -f token (commandline -t)
           string match -- '*/' $token
-          set subdirs $token*/
+          set -f subdirs $token*/
           printf '%s\\n' $subdirs
       end
 
@@ -71,15 +69,15 @@ extension [ParsableCommand.Type] {
           set -x \(CompletionShell.shellEnvironmentVariableName) fish
           set -x \(CompletionShell.shellVersionEnvironmentVariableName) $FISH_VERSION
 
-          set tokens (\(tokensFunctionName) -p)
-          if test -z (\(tokensFunctionName) -t)
-              set index (count (\(tokensFunctionName) -pc))
-              set tokens $tokens[..$index] \\'\\' $tokens[$(math $index + 1)..]
+          set -f tokens (\(tokensFunctionName) -p)
+          if test -z "$(\(tokensFunctionName) -t)"
+              set -f index (count (\(tokensFunctionName) -pc))
+              set -f tokens $tokens[..$index] \\'\\' $tokens[$(math $index + 1)..]
           end
           command $tokens[1] $argv $tokens
       end
 
-      complete -c \(commandName) -f
+      complete -c '\(commandName)' -f
       \(completions.joined(separator: "\n"))
       """
   }
@@ -90,9 +88,7 @@ extension [ParsableCommand.Type] {
     // Precondition: last is guaranteed to be non-empty
     return """
       case '\(last!._commandName)'
-          \(commandsAndPositionalsFunctionName)_helper '\(
-            subcommands.isEmpty ? "" : "-s"
-          )' \(
+          \(parseSubcommandFunctionName) \(positionalArgumentCountArguments) \(
             completableArguments
             .compactMap(\.optionSpec)
             .map { "'\($0.fishEscapeForSingleQuotedString())'" }
@@ -102,7 +98,7 @@ extension [ParsableCommand.Type] {
               ? ""
               : """
 
-                  switch $positionals[1]
+                  switch $unparsed_tokens[1]
               \(subcommands.map { (self + [$0]).commandCases }.joined(separator: "\n"))
                   end
               """
@@ -114,64 +110,48 @@ extension [ParsableCommand.Type] {
   private var completions: [String] {
     // swift-format-ignore: NeverForceUnwrap
     // Precondition: first is guaranteed to be non-empty
-    let commandName = first!._commandName
     let prefix = """
-      complete -c \(commandName)\
-       -n '\(usingCommandFunctionName)\
+      complete -c '\(first!._commandName)'\
+       -n '\(shouldOfferCompletionsForFunctionName)\
        "\(map { $0._commandName }.joined(separator: separator))"
       """
 
     let subcommands = subcommands
-
-    func complete(suggestion: String, extraTests: [String] = []) -> String {
-      "\(prefix)\(extraTests.map { ";\($0)" }.joined())' \(suggestion)"
-    }
-
-    let subcommandCompletions: [String] = subcommands.map { subcommand in
-      complete(
-        suggestion:
-          "-fa '\(subcommand._commandName)' -d '\(subcommand.configuration.abstract.fishEscapeForSingleQuotedString())'"
-      )
-    }
 
     var positionalIndex = 0
 
     let argumentCompletions =
       completableArguments
       .map { (arg: ArgumentDefinition) in
-        complete(
-          suggestion: argumentSegments(arg).joined(separator: separator),
-          extraTests: arg.isPositional
-            ? [
-              """
-              and test (\(positionalIndexFunctionName)) \
-              -eq \({
-                positionalIndex += 1
-                return positionalIndex
-              }())
-              """
-            ]
-            : []
-        )
+        """
+        \(prefix)\(arg.isPositional
+          ? """
+          \({
+            positionalIndex += 1
+            return " \(positionalIndex)"
+          }())
+          """
+          : ""
+        )' \(argumentSegments(arg).joined(separator: separator))
+        """
       }
 
-    let completionsFromSubcommands = subcommands.flatMap { subcommand in
-      (self + [subcommand]).completions
-    }
+    positionalIndex += 1
 
     return
-      completionsFromSubcommands + argumentCompletions + subcommandCompletions
+      argumentCompletions
+      + subcommands.map { subcommand in
+        "\(prefix) \(positionalIndex)' -fa '\(subcommand._commandName)' -d '\(subcommand.configuration.abstract.fishEscapeForSingleQuotedString())'"
+      }
+      + subcommands.flatMap { subcommand in
+        (self + [subcommand]).completions
+      }
   }
 
   private var subcommands: Self {
-    guard
-      let command = last,
-      ArgumentSet(command, visibility: .default, parent: nil)
-        .filter(\.isPositional).isEmpty
-    else {
-      return []
-    }
-    var subcommands = command.configuration.subcommands
+    // swift-format-ignore: NeverForceUnwrap
+    // Precondition: last is guaranteed to be non-empty
+    var subcommands = last!.configuration.subcommands
       .filter { $0.configuration.shouldDisplay }
     if count == 1 {
       subcommands.addHelpSubcommandIfMissing()
@@ -205,19 +185,24 @@ extension [ParsableCommand.Type] {
       }
     }
 
+    let r = arg.isPositional ? "" : "r"
+
     switch arg.completion.kind {
     case .default:
+      if case .unary = arg.update {
+        results += ["-\(r)fka ''"]
+      }
       break
     case .list(let list):
-      results += ["-rfka '\(list.joined(separator: separator))'"]
+      results += ["-\(r)fka '\(list.joined(separator: separator))'"]
     case .file(let extensions):
       switch extensions.count {
       case 0:
-        results += ["-rF"]
+        results += ["-\(r)F"]
       case 1:
         results += [
           """
-          -rfa '(\
+          -\(r)fa '(\
           for p in (string match -e -- \\'*/\\' (commandline -t);or printf \\n)*.\\'\(extensions.map { $0.fishEscapeForSingleQuotedString(iterationCount: 2) }.joined())\\';printf %s\\n $p;end;\
           __fish_complete_directories (commandline -t) \\'\\'\
           )'
@@ -226,8 +211,8 @@ extension [ParsableCommand.Type] {
       default:
         results += [
           """
-          -rfa '(\
-          set exts \(extensions.map { "\\'\($0.fishEscapeForSingleQuotedString(iterationCount: 2))\\'" }.joined(separator: separator));\
+          -\(r)fa '(\
+          set -l exts \(extensions.map { "\\'\($0.fishEscapeForSingleQuotedString(iterationCount: 2))\\'" }.joined(separator: separator));\
           for p in (string match -e -- \\'*/\\' (commandline -t);or printf \\n)*.{$exts};printf %s\\n $p;end;\
           __fish_complete_directories (commandline -t) \\'\\'\
           )'
@@ -235,13 +220,13 @@ extension [ParsableCommand.Type] {
         ]
       }
     case .directory:
-      results += ["-rfa '(\(completeDirectoriesFunctionName))'"]
+      results += ["-\(r)fa '(\(completeDirectoriesFunctionName))'"]
     case .shellCommand(let shellCommand):
-      results += ["-rfka '(\(shellCommand))'"]
+      results += ["-\(r)fka '(\(shellCommand))'"]
     case .custom:
       results += [
         """
-        -rfka '(\(customCompletionFunctionName) \(arg.customCompletionCall(self)))'
+        -\(r)fka '(\(customCompletionFunctionName) \(arg.customCompletionCall(self)))'
         """
       ]
     }
@@ -249,10 +234,17 @@ extension [ParsableCommand.Type] {
     return results
   }
 
-  private var commandsAndPositionalsFunctionName: String {
+  var positionalArgumentCountArguments: String {
+    let positionalArguments = positionalArguments
+    return """
+      \(positionalArguments.contains(where: { $0.isRepeatingPositional }) ? "-r " : "")\(positionalArguments.count)
+      """
+  }
+
+  private var shouldOfferCompletionsForFunctionName: String {
     // swift-format-ignore: NeverForceUnwrap
     // Precondition: first is guaranteed to be non-empty
-    "_swift_\(first!._commandName)_commands_and_positionals"
+    "_swift_\(first!._commandName)_should_offer_completions_for"
   }
 
   private var tokensFunctionName: String {
@@ -261,16 +253,10 @@ extension [ParsableCommand.Type] {
     "_swift_\(first!._commandName)_tokens"
   }
 
-  private var usingCommandFunctionName: String {
+  private var parseSubcommandFunctionName: String {
     // swift-format-ignore: NeverForceUnwrap
     // Precondition: first is guaranteed to be non-empty
-    "_swift_\(first!._commandName)_using_command"
-  }
-
-  private var positionalIndexFunctionName: String {
-    // swift-format-ignore: NeverForceUnwrap
-    // Precondition: first is guaranteed to be non-empty
-    "_swift_\(first!._commandName)_positional_index"
+    "_swift_\(first!._commandName)_parse_subcommand"
   }
 
   private var completeDirectoriesFunctionName: String {
