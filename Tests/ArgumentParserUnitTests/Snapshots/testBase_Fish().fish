@@ -12,10 +12,10 @@ function _swift_base-test_commands_and_positionals_helper -S -a argparse_options
     set -a commands $positionals[1]
     set -e positionals[1]
     if test -z $argparse_options
-        argparse -n (string join -- ' ' $commands) (string split -- ' ' $option_specs) -- $positionals 2> /dev/null
+        argparse -n "$commands" (string split -- ' ' $option_specs) -- $positionals 2> /dev/null
         set positionals $argv
     else
-        argparse (string split -- ' ' $argparse_options) -n (string join -- ' ' $commands) (string split -- ' ' $option_specs) -- $positionals 2> /dev/null
+        argparse (string split -- ' ' $argparse_options) -n "$commands" (string split -- ' ' $option_specs) -- $positionals 2> /dev/null
         set positionals $argv
     end
 end

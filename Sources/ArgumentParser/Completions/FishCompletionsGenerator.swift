@@ -30,10 +30,10 @@ extension [ParsableCommand.Type] {
           set -a commands $positionals[1]
           set -e positionals[1]
           if test -z $argparse_options
-              argparse -n (string join -- '\(separator)' $commands) (string split -- '\(separator)' $option_specs) -- $positionals 2> /dev/null
+              argparse -n "$commands" (string split -- '\(separator)' $option_specs) -- $positionals 2> /dev/null
               set positionals $argv
           else
-              argparse (string split -- '\(separator)' $argparse_options) -n (string join -- '\(separator)' $commands) (string split -- '\(separator)' $option_specs) -- $positionals 2> /dev/null
+              argparse (string split -- '\(separator)' $argparse_options) -n "$commands" (string split -- '\(separator)' $option_specs) -- $positionals 2> /dev/null
               set positionals $argv
           end
       end
