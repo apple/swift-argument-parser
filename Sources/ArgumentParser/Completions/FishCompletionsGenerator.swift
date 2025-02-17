@@ -26,14 +26,15 @@ extension [ParsableCommand.Type] {
           end
       end
 
-      function \(commandsAndPositionalsFunctionName)_helper -S -a argparse_options -a option_specs
+      function \(commandsAndPositionalsFunctionName)_helper -S -a argparse_options
+          set -l option_specs $argv[2..]
           set -a commands $positionals[1]
           set -e positionals[1]
           if test -z $argparse_options
-              argparse -n "$commands" (string split -- '\(separator)' $option_specs) -- $positionals 2> /dev/null
+              argparse -n "$commands" $option_specs -- $positionals 2> /dev/null
               set positionals $argv
           else
-              argparse (string split -- '\(separator)' $argparse_options) -n "$commands" (string split -- '\(separator)' $option_specs) -- $positionals 2> /dev/null
+              argparse (string split -- '\(separator)' $argparse_options) -n "$commands" $option_specs -- $positionals 2> /dev/null
               set positionals $argv
           end
       end
@@ -91,7 +92,12 @@ extension [ParsableCommand.Type] {
       case '\(last!._commandName)'
           \(commandsAndPositionalsFunctionName)_helper '\(
             subcommands.isEmpty ? "" : "-s"
-          )' '\(completableArguments.compactMap(\.optionSpec).map { "\($0)" }.joined(separator: separator))'\(
+          )' \(
+            completableArguments
+            .compactMap(\.optionSpec)
+            .map { "'\($0.fishEscapeForSingleQuotedString())'" }
+            .joined(separator: separator)
+          )\(
             subcommands.isEmpty
               ? ""
               : """

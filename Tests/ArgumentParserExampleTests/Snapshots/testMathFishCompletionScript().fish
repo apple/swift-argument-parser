@@ -1,21 +1,21 @@
 function _swift_math_commands_and_positionals -S
     switch $positionals[1]
     case 'math'
-        _swift_math_commands_and_positionals_helper '-s' 'version h/help'
+        _swift_math_commands_and_positionals_helper '-s' 'version' 'h/help'
         switch $positionals[1]
         case 'add'
-            _swift_math_commands_and_positionals_helper '' 'x/hex-output version h/help'
+            _swift_math_commands_and_positionals_helper '' 'x/hex-output' 'version' 'h/help'
         case 'multiply'
-            _swift_math_commands_and_positionals_helper '' 'x/hex-output version h/help'
+            _swift_math_commands_and_positionals_helper '' 'x/hex-output' 'version' 'h/help'
         case 'stats'
-            _swift_math_commands_and_positionals_helper '-s' 'version h/help'
+            _swift_math_commands_and_positionals_helper '-s' 'version' 'h/help'
             switch $positionals[1]
             case 'average'
-                _swift_math_commands_and_positionals_helper '' 'kind= version h/help'
+                _swift_math_commands_and_positionals_helper '' 'kind=' 'version' 'h/help'
             case 'stdev'
-                _swift_math_commands_and_positionals_helper '' 'version h/help'
+                _swift_math_commands_and_positionals_helper '' 'version' 'h/help'
             case 'quantiles'
-                _swift_math_commands_and_positionals_helper '' 'file= directory= shell= custom= version h/help'
+                _swift_math_commands_and_positionals_helper '' 'file=' 'directory=' 'shell=' 'custom=' 'version' 'h/help'
             end
         case 'help'
             _swift_math_commands_and_positionals_helper '' 'version'
@@ -26,14 +26,15 @@ function _swift_math_commands_and_positionals -S
     end
 end
 
-function _swift_math_commands_and_positionals_helper -S -a argparse_options -a option_specs
+function _swift_math_commands_and_positionals_helper -S -a argparse_options
+    set -l option_specs $argv[2..]
     set -a commands $positionals[1]
     set -e positionals[1]
     if test -z $argparse_options
-        argparse -n "$commands" (string split -- ' ' $option_specs) -- $positionals 2> /dev/null
+        argparse -n "$commands" $option_specs -- $positionals 2> /dev/null
         set positionals $argv
     else
-        argparse (string split -- ' ' $argparse_options) -n "$commands" (string split -- ' ' $option_specs) -- $positionals 2> /dev/null
+        argparse (string split -- ' ' $argparse_options) -n "$commands" $option_specs -- $positionals 2> /dev/null
         set positionals $argv
     end
 end

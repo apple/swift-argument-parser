@@ -1,21 +1,22 @@
 function _swift_base-test_commands_and_positionals -S
     switch $positionals[1]
     case 'base-test'
-        _swift_base-test_commands_and_positionals_helper '' 'name= kind= other-kind= path1= path2= path3= one two three kind-counter rep1= r/rep2= h/help'
+        _swift_base-test_commands_and_positionals_helper '' 'name=' 'kind=' 'other-kind=' 'path1=' 'path2=' 'path3=' 'one' 'two' 'three' 'kind-counter' 'rep1=' 'r/rep2=' 'h/help'
     case '*'
         set commands $positionals[1]
         set -e positionals[1]
     end
 end
 
-function _swift_base-test_commands_and_positionals_helper -S -a argparse_options -a option_specs
+function _swift_base-test_commands_and_positionals_helper -S -a argparse_options
+    set -l option_specs $argv[2..]
     set -a commands $positionals[1]
     set -e positionals[1]
     if test -z $argparse_options
-        argparse -n "$commands" (string split -- ' ' $option_specs) -- $positionals 2> /dev/null
+        argparse -n "$commands" $option_specs -- $positionals 2> /dev/null
         set positionals $argv
     else
-        argparse (string split -- ' ' $argparse_options) -n "$commands" (string split -- ' ' $option_specs) -- $positionals 2> /dev/null
+        argparse (string split -- ' ' $argparse_options) -n "$commands" $option_specs -- $positionals 2> /dev/null
         set positionals $argv
     end
 end
