@@ -15,8 +15,6 @@
 /// the following settings, which will not affect the requesting shell outside
 /// the completion script:
 ///
-/// TODO: investigate more settings
-///
 /// - bash:
 ///
 ///   ```shell
@@ -30,7 +28,7 @@
 ///
 ///   ```shell
 ///   emulate -RL zsh -G
-///   setopt extendedglob
+///   setopt extendedglob nullglob numericglobsort
 ///   unsetopt aliases banghist
 ///   ```
 public struct CompletionKind {
@@ -73,20 +71,6 @@ public struct CompletionKind {
   ///
   /// Given file extensions are parsed by the requesting shell as globs; Swift
   /// Argument Parser does not perform any escaping or quoting.
-  ///
-  /// In zsh, `EXTENDED_GLOB` & `NULL_GLOB` are set, while `KSH_GLOB` &
-  /// `SH_GLOB` are unset.
-  ///
-  /// TODO: determine if the following should be set or unset:
-  ///
-  /// `BARE_GLOB_QUAL`
-  /// `GLOB_DOTS`
-  /// `GLOB_STAR_SHORT`
-  /// `GLOB_SUBST`
-  /// `NOMATCH`
-  /// `NUMERIC_GLOB_SORT`
-  ///
-  /// TODO: determine settings for bash & fish
   ///
   /// The directory/file filter & the given list of extensions are included in a
   /// completion script when it is generated.
@@ -133,15 +117,10 @@ public struct CompletionKind {
   /// order as in the command line. Note that shell words may contain spaces if
   /// they are escaped or quoted.
   ///
-  /// TODO: ensure that process substitutions work in bash 4. If not, check bash
-  /// 5, then check minor then patch releases until the first version where they
-  /// work has been identified. Assume that they work in all subsequent bash
-  /// versions.
-  ///
-  /// In bash 3?-, a process substitution (`<(…)`) in the command line prevents
+  /// In bash 3-, a process substitution (`<(…)`) in the command line prevents
   /// Swift custom completion functions from being called.
   ///
-  /// In bash 4?+, a process substitution (`<(…)`) is split into multiple
+  /// In bash 4+, a process substitution (`<(…)`) is split into multiple
   /// elements in the argument array: one for the starting `<(`, and one for
   /// each unescaped/unquoted-space-separated token through the closing `)`.
   ///
