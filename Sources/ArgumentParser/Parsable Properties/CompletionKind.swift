@@ -40,7 +40,8 @@ public struct CompletionKind {
     case file(extensions: [String])
     case directory
     case shellCommand(String)
-    case custom(@Sendable ([String]) -> [String])
+    case custom(@Sendable ([String], Int, Int) -> [String])
+    case customDeprecated(@Sendable ([String]) -> [String])
   }
 
   internal var kind: Kind
@@ -125,6 +126,12 @@ public struct CompletionKind {
   /// passed to Swift as `"abc\\""def"` (i.e. the Swift String's contents would
   /// include all 4 of the double quotes and the 2 consecutive backslashes).
   ///
+  /// The first of the two `Int` arguments is the 0-based index of the word
+  /// for which completions are being requested within the given `[String]`.
+  ///
+  /// The second of the two `Int` arguments is the 0-based index of the shell
+  /// cursor within the word for which completions are being requested.
+  ///
   /// ### bash
   ///
   /// In bash 3-, a process substitution (`<(…)`) in the command line prevents
@@ -151,14 +158,39 @@ public struct CompletionKind {
   /// example, the shell word `"abc\\""def"` would be passed to Swift as
   /// `abc\def`. This is fixed in fish 4+.
   ///
+  /// In fish 3-, the cursor index is provided based on the verbatim word, not
+  /// based on the unquoted word, so it can be inconsistent with the unquoted
+  /// word that is supplied to Swift. This problem does not exist in fish 4+.
+  ///
   /// ### zsh
   ///
   /// In zsh, redirects (both their symbol and source/target) are omitted.
+  ///
+  /// In zsh, if the cursor is between a backslash and the character that it
+  /// escapes, the shell cursor index will be indicated as after the escaped
+  /// character, not as after the backslash.
   @preconcurrency
+  public static func custom(
+    _ completion: @Sendable @escaping ([String], Int, Int) -> [String]
+  ) -> CompletionKind {
+    CompletionKind(kind: .custom(completion))
+  }
+
+  /// Deprecated; only kept for backwards compatibility.
+  ///
+  /// The same as `custom(@Sendable @escaping ([String], Int, Int) -> [String])`,
+  /// except that index arguments are not supplied.
+  @preconcurrency
+  @available(
+    *,
+    deprecated,
+    message:
+      "Use custom(@Sendable @escaping ([String], Int, Int) -> [String]) instead."
+  )
   public static func custom(
     _ completion: @Sendable @escaping ([String]) -> [String]
   ) -> CompletionKind {
-    CompletionKind(kind: .custom(completion))
+    CompletionKind(kind: .customDeprecated(completion))
   }
 }
 

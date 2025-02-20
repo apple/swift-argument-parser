@@ -437,6 +437,18 @@
                 "valueName" : "custom-arg"
               },
               {
+                "completionKind" : {
+                  "customDeprecated" : {
+
+                  }
+                },
+                "isOptional" : true,
+                "isRepeating" : false,
+                "kind" : "positional",
+                "shouldDisplay" : true,
+                "valueName" : "custom-deprecated-arg"
+              },
+              {
                 "abstract" : "A group of floating-point values to operate on.",
                 "isOptional" : true,
                 "isRepeating" : true,
@@ -602,6 +614,28 @@
                 },
                 "shouldDisplay" : true,
                 "valueName" : "custom"
+              },
+              {
+                "completionKind" : {
+                  "customDeprecated" : {
+
+                  }
+                },
+                "isOptional" : true,
+                "isRepeating" : false,
+                "kind" : "option",
+                "names" : [
+                  {
+                    "kind" : "long",
+                    "name" : "custom-deprecated"
+                  }
+                ],
+                "preferredName" : {
+                  "kind" : "long",
+                  "name" : "custom-deprecated"
+                },
+                "shouldDisplay" : true,
+                "valueName" : "custom-deprecated"
               },
               {
                 "abstract" : "Show the version.",
