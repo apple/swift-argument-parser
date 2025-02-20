@@ -53,7 +53,7 @@ extension BidirectionalCollection where Element == ParsableCommand.Type {
 }
 
 extension ToolInfoV0 {
-  fileprivate init(commandStack: [ParsableCommand.Type]) {
+  init(commandStack: [ParsableCommand.Type]) {
     self.init(command: CommandInfoV0(commandStack: commandStack))
     // FIXME: This is a hack to inject the help command into the tool info
     // instead we should try to lift this into the parseable command tree

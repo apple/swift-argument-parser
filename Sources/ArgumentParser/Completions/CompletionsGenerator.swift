@@ -9,6 +9,12 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if swift(>=6.0)
+internal import ArgumentParserToolInfo
+#else
+import ArgumentParserToolInfo
+#endif
+
 /// A shell for which the parser can generate a completion script.
 public struct CompletionShell: RawRepresentable, Hashable, CaseIterable {
   public var rawValue: String
@@ -136,7 +142,7 @@ struct CompletionsGenerator {
     case .zsh:
       return [command].zshCompletionScript
     case .bash:
-      return [command].bashCompletionScript
+      return ToolInfoV0(commandStack: [command]).bashCompletionScript
     case .fish:
       return [command].fishCompletionScript
     default:
@@ -213,5 +219,60 @@ extension String {
 
   func shellEscapeForVariableName() -> Self {
     replacingOccurrences(of: "-", with: "_")
+  }
+}
+
+extension CommandInfoV0 {
+  var commandContext: [String] {
+    (superCommands ?? []) + [commandName]
+  }
+
+  var initialCommand: String {
+    superCommands?.first ?? commandName
+  }
+
+  var positionalArguments: [ArgumentInfoV0] {
+    (arguments ?? []).filter { $0.kind == .positional }
+  }
+
+  var completionFunctionName: String {
+    "_" + commandContext.joined(separator: "_")
+  }
+
+  var completionFunctionPrefix: String {
+    "__\(initialCommand)"
+  }
+}
+
+extension ArgumentInfoV0 {
+  /// Returns a string with the arguments for the callback to generate custom
+  /// completions for this argument.
+  func commonCustomCompletionCall(command: CommandInfoV0) -> String {
+    let subcommandNames =
+      command.commandContext.dropFirst().map { "\($0) " }.joined()
+
+    let argumentName: String
+    switch kind {
+    case .positional:
+      if let index = command.positionalArguments.firstIndex(of: self) {
+        argumentName = "positional@\(index)"
+      } else {
+        argumentName = "---"
+      }
+    default:
+      argumentName = preferredName?.commonCompletionSynopsisString() ?? "---"
+    }
+    return "---completion \(subcommandNames)-- \(argumentName)"
+  }
+}
+
+extension ArgumentInfoV0.NameInfoV0 {
+  func commonCompletionSynopsisString() -> String {
+    switch kind {
+    case .long:
+      return "--\(name)"
+    case .short, .longWithSingleDash:
+      return "-\(name)"
+    }
   }
 }
