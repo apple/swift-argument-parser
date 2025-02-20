@@ -217,9 +217,9 @@ public struct ArgumentInfoV0: Codable, Hashable {
   /// Mapping of valid values to descriptions of the value.
   public var allValueDescriptions: [String: String]?
 
-  /// The type of completion to use for an argument or option.
+  /// The type of completion to use for an argument or an option value.
   ///
-  /// `nil` if the tool use use the default completion kind.
+  /// `nil` if the tool uses the default completion kind.
   public var completionKind: CompletionKindV0?
 
   /// Short description of the argument's functionality.
