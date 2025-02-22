@@ -82,7 +82,7 @@ public struct Argument<Value>:
       case .value(let v):
         return v
       case .definition:
-        fatalError(directlyInitializedError)
+        configurationFailure(directlyInitializedError)
       }
     }
     set {

@@ -54,13 +54,9 @@ struct ParsableArgumentsValidationError: Error, CustomStringConvertible {
           .hangingIndentingEachLine(by: 2)
       }
     return """
-
-      --------------------------------------------------------------------
       Validation failed for `\(parsableArgumentsType)`:
 
       \(errorDescriptions.joined(separator: "\n"))
-      --------------------------------------------------------------------
-
       """
   }
 }

@@ -48,15 +48,18 @@ struct CommandParser {
     } catch Tree<ParsableCommand.Type>.InitializationError.recursiveSubcommand(
       let command)
     {
-      fatalError(
-        "The ParsableCommand \"\(command)\" can't have itself as its own subcommand."
-      )
-    } catch Tree<ParsableCommand.Type>.InitializationError.aliasMatchingCommand(
-      let command)
+      configurationFailure(
+        """
+        The command \"\(command)\" can't have itself as its own subcommand.
+        """.wrapped(to: 70))
+    } catch Tree<ParsableCommand.Type>
+      .InitializationError.aliasMatchingCommand(let command)
     {
-      fatalError(
-        "The ParsableCommand \"\(command)\" can't have an alias with the same name as the command itself."
-      )
+      configurationFailure(
+        """
+        The command \"\(command)\" can't have an alias with the same name \
+        as the command itself.
+        """.wrapped(to: 70))
     } catch {
       fatalError("Unexpected error: \(error).")
     }
