@@ -62,9 +62,7 @@ public struct ExitCode: Error, RawRepresentable, Hashable {
   }
 }
 
-// swift-format-ignore: BeginDocumentationCommentWithOneLineSummary
-// https://github.com/swiftlang/swift-format/issues/924
-/// An error type that represents a clean (i.e. non-error state) exit of the
+/// An error type that represents a clean (non-error state) exit of the
 /// utility.
 ///
 /// Throwing a `CleanExit` instance from a `validate` or `run` method, or
