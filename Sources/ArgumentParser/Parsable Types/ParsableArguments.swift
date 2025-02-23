@@ -327,11 +327,11 @@ extension ArgumentSet {
 ///   should be pre-wrapped, if desired.
 func configurationFailure(_ message: String) -> Never {
   var errorOut = Platform.standardError
-  print("\n")
-  print(String(repeating: "-", count: 70))
+  print("\n", to: &errorOut)
+  print(String(repeating: "-", count: 70), to: &errorOut)
   print(message, to: &errorOut)
-  print(String(repeating: "-", count: 70))
-  print("\n")
+  print(String(repeating: "-", count: 70), to: &errorOut)
+  print("\n", to: &errorOut)
   Platform.exit(Platform.exitCodeFailure)
 }
 
