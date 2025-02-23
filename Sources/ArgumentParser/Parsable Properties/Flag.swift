@@ -107,7 +107,7 @@ public struct Flag<Value>: Decodable, ParsedWrapper {
       case .value(let v):
         return v
       case .definition:
-        fatalError(directlyInitializedError)
+        configurationFailure(directlyInitializedError)
       }
     }
     set {

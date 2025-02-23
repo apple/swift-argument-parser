@@ -84,13 +84,13 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   func testCodingKeyValidation() throws {
     let parent = InputKey(name: "parentKey", parent: nil)
     XCTAssertNil(
-      ParsableArgumentsCodingKeyValidator.validate(A.self, parent: parent))
+      CodingKeyValidator.validate(A.self, parent: parent))
     XCTAssertNil(
-      ParsableArgumentsCodingKeyValidator.validate(B.self, parent: parent))
+      CodingKeyValidator.validate(B.self, parent: parent))
 
-    if let error = ParsableArgumentsCodingKeyValidator.validate(
+    if let error = CodingKeyValidator.validate(
       C.self, parent: parent)
-      as? ParsableArgumentsCodingKeyValidator.MissingKeysError
+      as? CodingKeyValidator.MissingKeysError
     {
       XCTAssert(
         error.missingCodingKeys == [InputKey(name: "count", parent: parent)])
@@ -98,9 +98,9 @@ final class ParsableArgumentsValidationTests: XCTestCase {
       XCTFail()
     }
 
-    if let error = ParsableArgumentsCodingKeyValidator.validate(
+    if let error = CodingKeyValidator.validate(
       D.self, parent: parent)
-      as? ParsableArgumentsCodingKeyValidator.MissingKeysError
+      as? CodingKeyValidator.MissingKeysError
     {
       XCTAssert(
         error.missingCodingKeys == [
@@ -110,9 +110,9 @@ final class ParsableArgumentsValidationTests: XCTestCase {
       XCTFail()
     }
 
-    if let error = ParsableArgumentsCodingKeyValidator.validate(
+    if let error = CodingKeyValidator.validate(
       E.self, parent: parent)
-      as? ParsableArgumentsCodingKeyValidator.MissingKeysError
+      as? CodingKeyValidator.MissingKeysError
     {
       XCTAssert(
         error.missingCodingKeys == [
@@ -140,9 +140,9 @@ final class ParsableArgumentsValidationTests: XCTestCase {
 
   func testCustomDecoderValidation() throws {
     let parent = InputKey(name: "foo", parent: nil)
-    if let error = ParsableArgumentsCodingKeyValidator.validate(
+    if let error = CodingKeyValidator.validate(
       TypeWithInvalidDecoder.self, parent: parent)
-      as? ParsableArgumentsCodingKeyValidator.InvalidDecoderError
+      as? CodingKeyValidator.InvalidDecoderError
     {
       XCTAssert(error.type == TypeWithInvalidDecoder.self)
     } else {
@@ -247,9 +247,9 @@ final class ParsableArgumentsValidationTests: XCTestCase {
     }
   }
 
-  // MARK: ParsableArgumentsUniqueNamesValidator tests
+  // MARK: UniqueNamesValidator tests
   fileprivate let unexpectedErrorMessage =
-    "Expected error of type `ParsableArgumentsUniqueNamesValidator.Error`, but got something else."
+    "Expected error of type `UniqueNamesValidator.Error`, but got something else."
 
   // MARK: Names are unique
   fileprivate struct DifferentNames: ParsableArguments {
@@ -263,7 +263,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   func testUniqueNamesValidation_NoViolation() throws {
     let parent = InputKey(name: "foo", parent: nil)
     XCTAssertNil(
-      ParsableArgumentsUniqueNamesValidator.validate(
+      UniqueNamesValidator.validate(
         DifferentNames.self, parent: parent))
   }
 
@@ -277,9 +277,9 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   }
 
   func testUniqueNamesValidation_TwoOfSameName() throws {
-    if let error = ParsableArgumentsUniqueNamesValidator.validate(
+    if let error = UniqueNamesValidator.validate(
       TwoOfTheSameName.self, parent: nil)
-      as? ParsableArgumentsUniqueNamesValidator.Error
+      as? UniqueNamesValidator.Error
     {
       XCTAssertEqual(
         error.description,
@@ -309,9 +309,9 @@ final class ParsableArgumentsValidationTests: XCTestCase {
 
   func testUniqueNamesValidation_TwoDuplications() throws {
     let parent = InputKey(name: "option", parent: nil)
-    if let error = ParsableArgumentsUniqueNamesValidator.validate(
+    if let error = UniqueNamesValidator.validate(
       MultipleUniquenessViolations.self, parent: parent)
-      as? ParsableArgumentsUniqueNamesValidator.Error
+      as? UniqueNamesValidator.Error
     {
       XCTAssert(
         /// The `Mirror` reflects the properties `foo` and `bar` in a random order each time it's built.
@@ -345,9 +345,9 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   }
 
   func testUniqueNamesValidation_ArgumentHasMultipleNames() throws {
-    if let error = ParsableArgumentsUniqueNamesValidator.validate(
+    if let error = UniqueNamesValidator.validate(
       MultipleNamesPerArgument.self, parent: nil)
-      as? ParsableArgumentsUniqueNamesValidator.Error
+      as? UniqueNamesValidator.Error
     {
       XCTAssertEqual(
         error.description,
@@ -379,9 +379,9 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   }
 
   func testUniqueNamesValidation_MoreThanTwoDuplications() throws {
-    if let error = ParsableArgumentsUniqueNamesValidator.validate(
+    if let error = UniqueNamesValidator.validate(
       FourDuplicateNames.self, parent: nil)
-      as? ParsableArgumentsUniqueNamesValidator.Error
+      as? UniqueNamesValidator.Error
     {
       XCTAssertEqual(
         error.description,
@@ -425,9 +425,9 @@ final class ParsableArgumentsValidationTests: XCTestCase {
 
   func testUniqueNamesValidation_DuplicatedFlagFirstLetters_ShortNames() throws
   {
-    if let error = ParsableArgumentsUniqueNamesValidator.validate(
+    if let error = UniqueNamesValidator.validate(
       DuplicatedFirstLettersShortNames.self, parent: nil)
-      as? ParsableArgumentsUniqueNamesValidator.Error
+      as? UniqueNamesValidator.Error
     {
       XCTAssertEqual(
         error.description,
@@ -439,7 +439,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
 
   func testUniqueNamesValidation_DuplicatedFlagFirstLetters_LongNames() throws {
     XCTAssertNil(
-      ParsableArgumentsUniqueNamesValidator.validate(
+      UniqueNamesValidator.validate(
         DuplicatedFirstLettersLongNames.self, parent: nil))
   }
 
@@ -479,13 +479,9 @@ final class ParsableArgumentsValidationTests: XCTestCase {
       XCTAssertEqual(
         error.description,
         """
-        One or more Boolean flags is declared with an initial value of `true`.
-        This results in the flag always being `true`, no matter whether the user
-        specifies the flag or not.
+        One or more Boolean flags is declared with an initial value of `true`. This results in the flag always being `true`, no matter whether the user specifies the flag or not.
 
-        To resolve this error, change the default to `false`, provide a value
-        for the `inversion:` parameter, or remove the `@Flag` property wrapper
-        altogether.
+        To resolve this error, change the default to `false`, provide a value for the `inversion:` parameter, or remove the `@Flag` property wrapper altogether.
 
         Affected flag(s):
         --nonsense
@@ -517,13 +513,9 @@ final class ParsableArgumentsValidationTests: XCTestCase {
       XCTAssertEqual(
         error.description,
         """
-        One or more Boolean flags is declared with an initial value of `true`.
-        This results in the flag always being `true`, no matter whether the user
-        specifies the flag or not.
+        One or more Boolean flags is declared with an initial value of `true`. This results in the flag always being `true`, no matter whether the user specifies the flag or not.
 
-        To resolve this error, change the default to `false`, provide a value
-        for the `inversion:` parameter, or remove the `@Flag` property wrapper
-        altogether.
+        To resolve this error, change the default to `false`, provide a value for the `inversion:` parameter, or remove the `@Flag` property wrapper altogether.
 
         Affected flag(s):
         --stuff

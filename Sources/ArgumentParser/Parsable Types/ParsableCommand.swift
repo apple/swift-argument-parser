@@ -215,17 +215,13 @@ extension ParsableCommand {
       guard sub.configuration.subcommands.isEmpty else { continue }
       guard sub is AsyncParsableCommand.Type else { continue }
 
-      fatalError(
+      configurationFailure(
         """
-
-        --------------------------------------------------------------------
         Asynchronous subcommand of a synchronous root.
 
         The asynchronous command `\(sub)` is declared as a subcommand of the synchronous root command `\(root)`.
 
         With this configuration, your asynchronous `run()` method will not be called. To fix this issue, change `\(root)`'s `ParsableCommand` conformance to `AsyncParsableCommand`.
-        --------------------------------------------------------------------
-
         """.wrapped(to: 70))
     }
   }
@@ -256,25 +252,19 @@ extension ParsableCommand {
 func failAsyncHierarchy(
   rootCommand: ParsableCommand.Type, subCommand: ParsableCommand.Type
 ) -> Never {
-  fatalError(
+  configurationFailure(
     """
-
-    --------------------------------------------------------------------
     Asynchronous subcommand of a synchronous root.
 
     The asynchronous command `\(subCommand)` is declared as a subcommand of the synchronous root command `\(rootCommand)`.
 
     With this configuration, your asynchronous `run()` method will not be called. To fix this issue, change `\(rootCommand)`'s `ParsableCommand` conformance to `AsyncParsableCommand`.
-    --------------------------------------------------------------------
-
     """.wrapped(to: 70))
 }
 
 func failAsyncPlatform(rootCommand: ParsableCommand.Type) -> Never {
-  fatalError(
+  configurationFailure(
     """
-
-    --------------------------------------------------------------------
     Asynchronous root command needs availability annotation.
 
     The asynchronous root command `\(rootCommand)` needs an availability annotation in order to be executed asynchronously. To fix this issue, add the following availability attribute to your `\(rootCommand)` declaration or set the minimum platform in your "Package.swift" file.
@@ -283,7 +273,5 @@ func failAsyncPlatform(rootCommand: ParsableCommand.Type) -> Never {
       + """
 
       @available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
-      --------------------------------------------------------------------
-
       """)
 }

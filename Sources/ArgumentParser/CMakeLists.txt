@@ -21,7 +21,6 @@ add_library(ArgumentParser
   "Parsable Types/EnumerableFlag.swift"
   "Parsable Types/ExpressibleByArgument.swift"
   "Parsable Types/ParsableArguments.swift"
-  "Parsable Types/ParsableArgumentsValidation.swift"
   "Parsable Types/ParsableCommand.swift"
 
   Parsing/ArgumentDecoder.swift
@@ -47,7 +46,13 @@ add_library(ArgumentParser
   Utilities/Platform.swift
   Utilities/SequenceExtensions.swift
   Utilities/StringExtensions.swift
-  Utilities/Tree.swift)
+  Utilities/Tree.swift
+  
+  Validators/CodingKeyValidator.swift
+  Validators/NonsenseFlagsValidator.swift
+  Validators/ParsableArgumentsValidation.swift
+  Validators/PositionalArgumentsValidator.swift
+  Validators/UniqueNamesValidator.swift)
 # NOTE: workaround for CMake not setting up include flags yet
 set_target_properties(ArgumentParser PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_Swift_MODULE_DIRECTORY})

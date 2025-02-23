@@ -87,7 +87,7 @@ public struct Option<Value>: Decodable, ParsedWrapper {
       case .value(let v):
         return v
       case .definition:
-        fatalError(directlyInitializedError)
+        configurationFailure(directlyInitializedError)
       }
     }
     set {

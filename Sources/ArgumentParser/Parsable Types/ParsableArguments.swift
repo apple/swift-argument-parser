@@ -290,7 +290,7 @@ extension ArgumentSet {
     do {
       try type._validate(parent: parent)
     } catch {
-      assertionFailure("\(error)")
+      configurationFailure("\(error)")
     }
     #endif
 
@@ -321,11 +321,23 @@ extension ArgumentSet {
   }
 }
 
+/// Prints the given message to standard error and exits with a failure code.
+///
+/// - Parameter message: The message to print to standard error. `message`
+///   should be pre-wrapped, if desired.
+func configurationFailure(_ message: String) -> Never {
+  var errorOut = Platform.standardError
+  print("\n", to: &errorOut)
+  print(String(repeating: "-", count: 70), to: &errorOut)
+  print(message, to: &errorOut)
+  print(String(repeating: "-", count: 70), to: &errorOut)
+  print("\n", to: &errorOut)
+  Platform.exit(Platform.exitCodeFailure)
+}
+
 /// The fatal error message to display when someone accesses a
 /// `ParsableArguments` type after initializing it directly.
 internal let directlyInitializedError = """
-
-  --------------------------------------------------------------------
   Can't read a value from a parsable argument definition.
 
   This error indicates that a property declared with an `@Argument`,
@@ -335,6 +347,4 @@ internal let directlyInitializedError = """
   To get a valid value, either call one of the static parsing methods
   (`parse`, `parseAsRoot`, or `main`) or define an initializer that
   initializes _every_ property of your parsable type.
-  --------------------------------------------------------------------
-
   """
