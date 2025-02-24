@@ -133,9 +133,9 @@ struct GenerateManual: ParsableCommand {
     }
   }
 
-  func generatePages(from command: CommandInfoV0, savingTo directory: URL?)
-    throws
-  {
+  func generatePages(
+    from command: CommandInfoV0, savingTo directory: URL?
+  ) throws {
     let document = Document(
       multiPage: multiPage,
       date: date,

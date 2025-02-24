@@ -22,9 +22,9 @@ final class HelpTests: XCTestCase {
   }
 }
 
-func getErrorText<T: ParsableArguments>(_: T.Type, _ arguments: [String])
-  -> String
-{
+func getErrorText<T: ParsableArguments>(
+  _: T.Type, _ arguments: [String]
+) -> String {
   do {
     _ = try T.parse(arguments)
     XCTFail("Didn't generate a help error")

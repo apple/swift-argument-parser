@@ -336,9 +336,9 @@ extension SplitArguments {
   /// value for `-f`, or `--foo name` where `name` is the value for `--foo`.
   /// If `--foo` expects a value, an input of `--foo --bar name` will return
   /// `nil`, since the option `--bar` comes before the value `name`.
-  mutating func popNextElementIfValue(after origin: InputOrigin.Element) -> (
-    InputOrigin.Element, String
-  )? {
+  mutating func popNextElementIfValue(
+    after origin: InputOrigin.Element
+  ) -> (InputOrigin.Element, String)? {
     // Look for the index of the input that comes from immediately after
     // `origin` in the input string. We look at the input index so that
     // packed short options can be followed, in order, by their values.
@@ -384,9 +384,9 @@ extension SplitArguments {
   ///
   /// For an input such as `--a --b foo`, if passed the origin of `--a`,
   /// this will first pop the value `--b`, then the value `foo`.
-  mutating func popNextElementAsValue(after origin: InputOrigin.Element) -> (
-    InputOrigin.Element, String
-  )? {
+  mutating func popNextElementAsValue(
+    after origin: InputOrigin.Element
+  ) -> (InputOrigin.Element, String)? {
     guard let start = position(after: origin) else { return nil }
     // Elements are sorted by their `InputIndex`. Find the first `InputIndex`
     // after `origin`:
@@ -581,9 +581,9 @@ extension SplitArguments {
   }
 }
 
-func parseIndividualArg(_ arg: String, at position: Int) throws
-  -> [SplitArguments.Element]
-{
+func parseIndividualArg(
+  _ arg: String, at position: Int
+) throws -> [SplitArguments.Element] {
   let index = SplitArguments.Index(inputIndex: .init(rawValue: position))
   if let nonDashIdx = arg.firstIndex(where: { $0 != "-" }) {
     let dashCount = arg.distance(from: arg.startIndex, to: nonDashIdx)
@@ -706,9 +706,9 @@ extension ParsedArgument {
     }
   }
 
-  fileprivate static func shortOptions(shortArgRemainder: Substring) throws
-    -> [ParsedArgument]
-  {
+  fileprivate static func shortOptions(
+    shortArgRemainder: Substring
+  ) throws -> [ParsedArgument] {
     var result: [ParsedArgument] = []
     var remainder = shortArgRemainder
     while let char = remainder.popFirst() {

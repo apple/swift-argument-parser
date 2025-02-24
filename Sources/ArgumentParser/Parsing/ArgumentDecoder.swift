@@ -150,9 +150,9 @@ where K: CodingKey {
     }
   }
 
-  func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type, forKey key: K)
-    throws -> KeyedDecodingContainer<NestedKey> where NestedKey: CodingKey
-  {
+  func nestedContainer<NestedKey>(
+    keyedBy type: NestedKey.Type, forKey key: K
+  ) throws -> KeyedDecodingContainer<NestedKey> where NestedKey: CodingKey {
     fatalError()
   }
 
@@ -277,9 +277,9 @@ struct SingleValueDecoder: Decoder {
       return t
     }
 
-    mutating func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type)
-      throws -> KeyedDecodingContainer<NestedKey> where NestedKey: CodingKey
-    {
+    mutating func nestedContainer<NestedKey>(
+      keyedBy type: NestedKey.Type
+    ) throws -> KeyedDecodingContainer<NestedKey> where NestedKey: CodingKey {
       fatalError()
     }
 

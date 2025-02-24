@@ -26,9 +26,9 @@ struct FishCompletionsGenerator {
 // MARK: - Private functions
 
 extension FishCompletionsGenerator {
-  private static func generateCompletions(_ commands: [ParsableCommand.Type])
-    -> [String]
-  {
+  private static func generateCompletions(
+    _ commands: [ParsableCommand.Type]
+  ) -> [String] {
     guard let type = commands.last else { return [] }
     let isRootCommand = commands.count == 1
     let programName = commands[0]._commandName
@@ -77,9 +77,9 @@ extension FishCompletionsGenerator {
 }
 
 extension ArgumentDefinition {
-  fileprivate func argumentSegments(_ commands: [ParsableCommand.Type])
-    -> [String]?
-  {
+  fileprivate func argumentSegments(
+    _ commands: [ParsableCommand.Type]
+  ) -> [String]? {
     guard help.visibility.base == .default
     else { return nil }
 

@@ -12,9 +12,9 @@
 // MARK: Helpers
 
 extension Sequence {
-  func uniqued<T: Hashable>(by transform: (Element) throws -> T) rethrows
-    -> [Element]
-  {
+  func uniqued<T: Hashable>(
+    by transform: (Element) throws -> T
+  ) rethrows -> [Element] {
     var seen: Set<T> = []
     var result: [Element] = []
 

@@ -205,9 +205,9 @@ extension ArgumentDefinition {
 }
 
 extension ArgumentDefinition.Kind {
-  static func name(key: InputKey, specification: NameSpecification)
-    -> ArgumentDefinition.Kind
-  {
+  static func name(
+    key: InputKey, specification: NameSpecification
+  ) -> ArgumentDefinition.Kind {
     let names = specification.makeNames(key)
     return ArgumentDefinition.Kind.named(names)
   }

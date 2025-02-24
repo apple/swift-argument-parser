@@ -82,9 +82,9 @@ extension CommandParser {
   ///
   /// - Returns: A node for the matched subcommand if one was found;
   ///   otherwise, `nil`.
-  fileprivate func consumeNextCommand(split: inout SplitArguments) -> Tree<
-    ParsableCommand.Type
-  >? {
+  fileprivate func consumeNextCommand(
+    split: inout SplitArguments
+  ) -> Tree<ParsableCommand.Type>? {
     guard let (origin, element) = split.peekNext(),
       element.isValue,
       let value = split.originalInput(at: origin),
@@ -144,9 +144,9 @@ extension CommandParser {
   ///
   /// If there are remaining arguments or if no commands have been parsed,
   /// this throws an error.
-  fileprivate func extractLastParsedValue(_ split: SplitArguments) throws
-    -> ParsableCommand
-  {
+  fileprivate func extractLastParsedValue(
+    _ split: SplitArguments
+  ) throws -> ParsableCommand {
     try checkForBuiltInFlags(split)
 
     // We should have used up all arguments at this point:
@@ -174,9 +174,9 @@ extension CommandParser {
 
   /// Extracts the current command from `split`, throwing if decoding isn't
   /// possible.
-  fileprivate mutating func parseCurrent(_ split: inout SplitArguments) throws
-    -> ParsableCommand
-  {
+  fileprivate mutating func parseCurrent(
+    _ split: inout SplitArguments
+  ) throws -> ParsableCommand {
     // Parse the arguments, ignoring anything unexpected
     var parser = LenientParser(currentNode.element, split)
     let values = try parser.parse()
@@ -472,9 +472,9 @@ extension CommandParser {
     return result
   }
 
-  func commandStack(for subcommand: ParsableCommand.Type)
-    -> [ParsableCommand.Type]
-  {
+  func commandStack(
+    for subcommand: ParsableCommand.Type
+  ) -> [ParsableCommand.Type] {
     let path = commandTree.path(to: subcommand)
     return path.isEmpty
       ? [commandTree.element]

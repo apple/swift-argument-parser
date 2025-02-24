@@ -32,9 +32,9 @@ struct NonsenseFlagsValidator: ParsableArgumentsValidator {
     var kind: ValidatorErrorKind { .warning }
   }
 
-  static func validate(_ type: ParsableArguments.Type, parent: InputKey?)
-    -> ParsableArgumentsValidatorError?
-  {
+  static func validate(
+    _ type: ParsableArguments.Type, parent: InputKey?
+  ) -> ParsableArgumentsValidatorError? {
     let argSets: [ArgumentSet] = Mirror(reflecting: type.init())
       .children
       .compactMap { child in

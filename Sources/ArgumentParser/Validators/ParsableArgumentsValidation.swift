@@ -28,8 +28,9 @@ extension ParsableArguments {
 }
 
 protocol ParsableArgumentsValidator {
-  static func validate(_ type: ParsableArguments.Type, parent: InputKey?)
-    -> ParsableArgumentsValidatorError?
+  static func validate(
+    _ type: ParsableArguments.Type, parent: InputKey?
+  ) -> ParsableArgumentsValidatorError?
 }
 
 enum ValidatorErrorKind {

@@ -30,9 +30,9 @@ struct CodingKeyValidator: ParsableArgumentsValidator {
       fatalError()
     }
 
-    func container<Key>(keyedBy type: Key.Type) throws
-      -> KeyedDecodingContainer<Key> where Key: CodingKey
-    {
+    func container<Key>(
+      keyedBy type: Key.Type
+    ) throws -> KeyedDecodingContainer<Key> where Key: CodingKey {
       let missingKeys = argumentKeys.filter { Key(stringValue: $0.name) == nil }
       if missingKeys.isEmpty {
         throw ValidationResult.success
@@ -96,9 +96,9 @@ struct CodingKeyValidator: ParsableArgumentsValidator {
     }
   }
 
-  static func validate(_ type: ParsableArguments.Type, parent: InputKey?)
-    -> ParsableArgumentsValidatorError?
-  {
+  static func validate(
+    _ type: ParsableArguments.Type, parent: InputKey?
+  ) -> ParsableArgumentsValidatorError? {
     let argumentKeys: [InputKey] = Mirror(reflecting: type.init())
       .children
       .compactMap { child in

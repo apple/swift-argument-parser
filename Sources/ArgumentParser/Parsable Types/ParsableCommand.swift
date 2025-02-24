@@ -227,9 +227,9 @@ extension ParsableCommand {
   }
 
   @available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
-  internal static func firstAsyncSubcommand(_ command: ParsableCommand.Type)
-    -> AsyncParsableCommand.Type?
-  {
+  internal static func firstAsyncSubcommand(
+    _ command: ParsableCommand.Type
+  ) -> AsyncParsableCommand.Type? {
     for sub in command.configuration.subcommands {
       if let asyncCommand = sub as? AsyncParsableCommand.Type,
         sub.configuration.subcommands.isEmpty

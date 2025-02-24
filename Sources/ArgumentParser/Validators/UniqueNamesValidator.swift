@@ -27,9 +27,9 @@ struct UniqueNamesValidator: ParsableArgumentsValidator {
     var kind: ValidatorErrorKind { .failure }
   }
 
-  static func validate(_ type: ParsableArguments.Type, parent: InputKey?)
-    -> ParsableArgumentsValidatorError?
-  {
+  static func validate(
+    _ type: ParsableArguments.Type, parent: InputKey?
+  ) -> ParsableArgumentsValidatorError? {
     let argSets: [ArgumentSet] = Mirror(reflecting: type.init())
       .children
       .compactMap { child in
