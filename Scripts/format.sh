@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 ##===----------------------------------------------------------------------===##
 ##
 ## This source file is part of the Swift Argument Parser open source project

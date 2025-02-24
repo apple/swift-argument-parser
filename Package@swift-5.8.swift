@@ -1,5 +1,5 @@
 // swift-tools-version:5.8
-//===----------------------------------------------------------*- swift -*-===//
+//===----------------------------------------------------------------------===//
 //
 // This source file is part of the Swift Argument Parser open source project
 //
