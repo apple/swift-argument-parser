@@ -9,85 +9,90 @@
 //
 //===----------------------------------------------------------------------===//
 
-extension [ParsableCommand.Type] {
+#if swift(>=6.0)
+internal import ArgumentParserToolInfo
+#else
+import ArgumentParserToolInfo
+#endif
+
+extension ToolInfoV0 {
   var fishCompletionScript: String {
-    // swift-format-ignore: NeverForceUnwrap
-    // Preconditions:
-    // - first must be non-empty for a fish completion script to be of use.
-    // - first is guaranteed non-empty in the one place where this computed var is used.
-    let commandName = first!._commandName
-    return """
-      function \(shouldOfferCompletionsForFunctionName) -a expected_commands -a expected_positional_index
-          set -l unparsed_tokens (\(tokensFunctionName) -pc)
-          set -l positional_index 0
-          set -l commands
+    command.fishCompletionScript
+  }
+}
 
-          switch $unparsed_tokens[1]
-      \(commandCases)
-          end
+extension CommandInfoV0 {
+  fileprivate var fishCompletionScript: String {
+    """
+    function \(shouldOfferCompletionsForFunctionName) -a expected_commands -a expected_positional_index
+        set -l unparsed_tokens (\(tokensFunctionName) -pc)
+        set -l positional_index 0
+        set -l commands
 
-          test "$commands" = "$expected_commands" -a \\( -z "$expected_positional_index" -o "$expected_positional_index" -eq "$positional_index" \\)
-      end
+        switch $unparsed_tokens[1]
+    \(commandCases)
+        end
 
-      function \(tokensFunctionName)
-          if test (string split -m 1 -f 1 -- . "$FISH_VERSION") -gt 3
-              commandline --tokens-raw $argv
-          else
-              commandline -o $argv
-          end
-      end
+        test "$commands" = "$expected_commands" -a \\( -z "$expected_positional_index" -o "$expected_positional_index" -eq "$positional_index" \\)
+    end
 
-      function \(parseSubcommandFunctionName) -S
-          argparse -s r -- $argv
-          set -l positional_count $argv[1]
-          set -l option_specs $argv[2..]
+    function \(tokensFunctionName)
+        if test (string split -m 1 -f 1 -- . "$FISH_VERSION") -gt 3
+            commandline --tokens-raw $argv
+        else
+            commandline -o $argv
+        end
+    end
 
-          set -a commands $unparsed_tokens[1]
-          set -e unparsed_tokens[1]
+    function \(parseSubcommandFunctionName) -S
+        argparse -s r -- $argv
+        set -l positional_count $argv[1]
+        set -l option_specs $argv[2..]
 
-          set positional_index 0
+        set -a commands $unparsed_tokens[1]
+        set -e unparsed_tokens[1]
 
-          while true
-              argparse -sn "$commands" $option_specs -- $unparsed_tokens 2> /dev/null
-              set unparsed_tokens $argv
-              set positional_index (math $positional_index + 1)
-              if test (count $unparsed_tokens) -eq 0 -o \\( -z "$_flag_r" -a "$positional_index" -gt "$positional_count" \\)
-                  return 0
-              end
-              set -e unparsed_tokens[1]
-          end
-      end
+        set positional_index 0
 
-      function \(completeDirectoriesFunctionName)
-          set -l token (commandline -t)
-          string match -- '*/' $token
-          set -l subdirs $token*/
-          printf '%s\\n' $subdirs
-      end
+        while true
+            argparse -sn "$commands" $option_specs -- $unparsed_tokens 2> /dev/null
+            set unparsed_tokens $argv
+            set positional_index (math $positional_index + 1)
+            if test (count $unparsed_tokens) -eq 0 -o \\( -z "$_flag_r" -a "$positional_index" -gt "$positional_count" \\)
+                return 0
+            end
+            set -e unparsed_tokens[1]
+        end
+    end
 
-      function \(customCompletionFunctionName)
-          set -x \(CompletionShell.shellEnvironmentVariableName) fish
-          set -x \(CompletionShell.shellVersionEnvironmentVariableName) $FISH_VERSION
+    function \(completeDirectoriesFunctionName)
+        set -l token (commandline -t)
+        string match -- '*/' $token
+        set -l subdirs $token*/
+        printf '%s\\n' $subdirs
+    end
 
-          set -l tokens (\(tokensFunctionName) -p)
-          if test -z (\(tokensFunctionName) -t)
-              set -l index (count (\(tokensFunctionName) -pc))
-              set tokens $tokens[..$index] \\'\\' $tokens[(math $index + 1)..]
-          end
-          command $tokens[1] $argv $tokens
-      end
+    function \(customCompletionFunctionName)
+        set -x \(CompletionShell.shellEnvironmentVariableName) fish
+        set -x \(CompletionShell.shellVersionEnvironmentVariableName) $FISH_VERSION
 
-      complete -c '\(commandName)' -f
-      \(completions.joined(separator: "\n"))
-      """
+        set -l tokens (\(tokensFunctionName) -p)
+        if test -z (\(tokensFunctionName) -t)
+            set -l index (count (\(tokensFunctionName) -pc))
+            set tokens $tokens[..$index] \\'\\' $tokens[(math $index + 1)..]
+        end
+        command $tokens[1] $argv $tokens
+    end
+
+    complete -c '\(commandName)' -f
+    \(completions.joined(separator: "\n"))
+    """
   }
 
   private var commandCases: String {
-    let subcommands = subcommands
-    // swift-format-ignore: NeverForceUnwrap
-    // Precondition: last is guaranteed to be non-empty
+    let subcommands = (subcommands ?? []).filter(\.shouldDisplay)
     return """
-      case '\(last!._commandName)'
+      case '\(commandName)'
           \(parseSubcommandFunctionName) \(positionalArgumentCountArguments) \(
             completableArguments
             .compactMap(\.optionSpec)
@@ -99,7 +104,7 @@ extension [ParsableCommand.Type] {
               : """
 
                   switch $unparsed_tokens[1]
-              \(subcommands.map { (self + [$0]).commandCases }.joined(separator: "\n"))
+              \(subcommands.map(\.commandCases).joined(separator: "\n"))
                   end
               """
           )
@@ -108,23 +113,22 @@ extension [ParsableCommand.Type] {
   }
 
   private var completions: [String] {
-    // swift-format-ignore: NeverForceUnwrap
-    // Precondition: first is guaranteed to be non-empty
     let prefix = """
-      complete -c '\(first!._commandName)'\
+      complete -c '\(initialCommand)'\
        -n '\(shouldOfferCompletionsForFunctionName)\
-       "\(map { $0._commandName }.joined(separator: separator))"
+       "\(commandContext.joined(separator: separator))"
       """
 
-    let subcommands = subcommands
+    let subcommands = (subcommands ?? []).filter(\.shouldDisplay)
 
     var positionalIndex = 0
 
     let argumentCompletions =
       completableArguments
-      .map { (arg: ArgumentDefinition) in
+      .map { arg in
         """
-        \(prefix)\(arg.isPositional
+        \(prefix)\(
+          arg.kind == .positional
           ? """
           \({
             positionalIndex += 1
@@ -140,57 +144,48 @@ extension [ParsableCommand.Type] {
 
     return
       argumentCompletions
-      + subcommands.map { subcommand in
-        "\(prefix) \(positionalIndex)' -fa '\(subcommand._commandName)' -d '\(subcommand.configuration.abstract.fishEscapeForSingleQuotedString())'"
+      + subcommands.map {
+        "\(prefix) \(positionalIndex)' -fa '\($0.commandName)' -d '\($0.abstract?.fishEscapeForSingleQuotedString() ?? "")'"
       }
-      + subcommands.flatMap { subcommand in
-        (self + [subcommand]).completions
-      }
+      + subcommands.flatMap(\.completions)
   }
 
-  private var subcommands: Self {
-    // swift-format-ignore: NeverForceUnwrap
-    // Precondition: last is guaranteed to be non-empty
-    var subcommands = last!.configuration.subcommands
-      .filter { $0.configuration.shouldDisplay }
-    if count == 1 {
-      subcommands.addHelpSubcommandIfMissing()
-    }
-    return subcommands
-  }
-
-  private var completableArguments: [ArgumentDefinition] {
-    argumentsForHelp(visibility: .default).compactMap { arg in
-      switch arg.completion.kind {
-      case .default where arg.names.isEmpty:
+  private var completableArguments: [ArgumentInfoV0] {
+    (arguments ?? []).compactMap { arg in
+      switch arg.completionKind {
+      case .none where arg.names?.isEmpty ?? true:
         return nil
       default:
         return
-          arg.help.visibility.base == .default
+          arg.shouldDisplay
           ? arg
           : nil
       }
     }
   }
 
-  private func argumentSegments(_ arg: ArgumentDefinition) -> [String] {
+  private func argumentSegments(_ arg: ArgumentInfoV0) -> [String] {
     var results: [String] = []
 
-    if !arg.names.isEmpty {
-      results += arg.names.map { $0.asFishSuggestion }
-      if !arg.help.abstract.isEmpty {
+    if let names = arg.names, !names.isEmpty {
+      results += names.map(\.asCompleteArgument)
+      if let abstract = arg.abstract, !abstract.isEmpty {
         results += [
-          "-d '\(arg.help.abstract.fishEscapeForSingleQuotedString())'"
+          "-d '\(abstract.fishEscapeForSingleQuotedString())'"
         ]
       }
     }
 
-    let r = arg.isPositional ? "" : "r"
+    let r = arg.kind == .positional ? "" : "r"
 
-    switch arg.completion.kind {
-    case .default:
-      if case .unary = arg.update {
+    switch arg.completionKind {
+    case .none:
+      switch arg.kind {
+      case .positional,
+        .option:
         results += ["-\(r)fka ''"]
+      default:
+        break
       }
       break
     case .list(let list):
@@ -227,7 +222,7 @@ extension [ParsableCommand.Type] {
       results += [
         """
         -\(r)fka '(\
-        \(customCompletionFunctionName) \(arg.customCompletionCall(self)) \
+        \(customCompletionFunctionName) \(arg.commonCustomCompletionCall(command: self)) \
         (count (\(tokensFunctionName) -pc)) (\(tokensFunctionName) -tC)\
         )'
         """
@@ -235,7 +230,7 @@ extension [ParsableCommand.Type] {
     case .customDeprecated:
       results += [
         """
-        -\(r)fka '(\(customCompletionFunctionName) \(arg.customCompletionCall(self)))'
+        -\(r)fka '(\(customCompletionFunctionName) \(arg.commonCustomCompletionCall(command: self)))'
         """
       ]
     }
@@ -246,42 +241,32 @@ extension [ParsableCommand.Type] {
   var positionalArgumentCountArguments: String {
     let positionalArguments = positionalArguments
     return """
-      \(positionalArguments.contains(where: { $0.isRepeatingPositional }) ? "-r " : "")\(positionalArguments.count)
+      \(positionalArguments.contains(where: { $0.isRepeating }) ? "-r " : "")\(positionalArguments.count)
       """
   }
 
   private var shouldOfferCompletionsForFunctionName: String {
-    // swift-format-ignore: NeverForceUnwrap
-    // Precondition: first is guaranteed to be non-empty
-    "__\(first!._commandName)_should_offer_completions_for"
+    "\(completionFunctionPrefix)_should_offer_completions_for"
   }
 
   private var tokensFunctionName: String {
-    // swift-format-ignore: NeverForceUnwrap
-    // Precondition: first is guaranteed to be non-empty
-    "__\(first!._commandName)_tokens"
+    "\(completionFunctionPrefix)_tokens"
   }
 
   private var parseSubcommandFunctionName: String {
-    // swift-format-ignore: NeverForceUnwrap
-    // Precondition: first is guaranteed to be non-empty
-    "__\(first!._commandName)_parse_subcommand"
+    "\(completionFunctionPrefix)_parse_subcommand"
   }
 
   private var completeDirectoriesFunctionName: String {
-    // swift-format-ignore: NeverForceUnwrap
-    // Precondition: first is guaranteed to be non-empty
-    "__\(first!._commandName)_complete_directories"
+    "\(completionFunctionPrefix)_complete_directories"
   }
 
   private var customCompletionFunctionName: String {
-    // swift-format-ignore: NeverForceUnwrap
-    // Precondition: first is guaranteed to be non-empty
-    "__\(first!._commandName)_custom_completion"
+    "\(completionFunctionPrefix)_custom_completion"
   }
 }
 
-extension ArgumentDefinition {
+extension ArgumentInfoV0 {
   fileprivate var optionSpec: String? {
     guard let shortName = name(.short) else {
       guard let longName = name(.long) else {
@@ -295,16 +280,13 @@ extension ArgumentDefinition {
     return optionSpecRequiresValue("\(shortName)/\(longName)")
   }
 
-  private func name(_ nameType: Name.Case) -> String? {
-    names.first(where: {
-      $0.case == nameType
-    })?
-    .valueString
+  private func name(_ nameKind: NameInfoV0.KindV0) -> String? {
+    (names ?? []).first(where: { $0.kind == nameKind })?.name
   }
 
   private func optionSpecRequiresValue(_ optionSpec: String) -> String {
-    switch update {
-    case .unary:
+    switch kind {
+    case .option:
       return "\(optionSpec)="
     default:
       return optionSpec
@@ -312,15 +294,15 @@ extension ArgumentDefinition {
   }
 }
 
-extension Name {
-  fileprivate var asFishSuggestion: String {
-    switch self {
-    case .long(let longName):
-      return "-l '\(longName.fishEscapeForSingleQuotedString())'"
-    case .short(let shortName, _):
-      return "-s '\(String(shortName).fishEscapeForSingleQuotedString())'"
-    case .longWithSingleDash(let dashedName):
-      return "-o '\(dashedName.fishEscapeForSingleQuotedString())'"
+extension ArgumentInfoV0.NameInfoV0 {
+  fileprivate var asCompleteArgument: String {
+    switch kind {
+    case .long:
+      return "-l '\(name.fishEscapeForSingleQuotedString())'"
+    case .short:
+      return "-s '\(name.fishEscapeForSingleQuotedString())'"
+    case .longWithSingleDash:
+      return "-o '\(name.fishEscapeForSingleQuotedString())'"
     }
   }
 }

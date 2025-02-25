@@ -144,7 +144,7 @@ struct CompletionsGenerator {
     case .bash:
       return ToolInfoV0(commandStack: [command]).bashCompletionScript
     case .fish:
-      return [command].fishCompletionScript
+      return ToolInfoV0(commandStack: [command]).fishCompletionScript
     default:
       fatalError("Invalid CompletionShell: \(shell)")
     }
@@ -177,14 +177,6 @@ extension ParsableCommand {
 }
 
 extension [ParsableCommand.Type] {
-  var positionalArguments: [ArgumentDefinition] {
-    guard let command = last else {
-      return []
-    }
-    return ArgumentSet(command, visibility: .default, parent: nil)
-      .filter(\.isPositional)
-  }
-
   /// Include default 'help' subcommand in nonempty subcommand list if & only if
   /// no help subcommand already exists.
   mutating func addHelpSubcommandIfMissing() {
