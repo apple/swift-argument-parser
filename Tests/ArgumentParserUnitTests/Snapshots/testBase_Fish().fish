@@ -1,7 +1,7 @@
 function _swift_base-test_should_offer_completions_for -a expected_commands -a expected_positional_index
-    set -f unparsed_tokens (_swift_base-test_tokens -pc)
-    set -f positional_index 0
-    set -f commands
+    set -l unparsed_tokens (_swift_base-test_tokens -pc)
+    set -l positional_index 0
+    set -l commands
 
     switch $unparsed_tokens[1]
     case 'base-test'
@@ -20,7 +20,7 @@ function _swift_base-test_should_offer_completions_for -a expected_commands -a e
 end
 
 function _swift_base-test_tokens
-    if test "$(string split -m 1 -f 1 -- . "$FISH_VERSION")" -gt 3
+    if test (string split -m 1 -f 1 -- . "$FISH_VERSION") -gt 3
         commandline --tokens-raw $argv
     else
         commandline -o $argv
@@ -29,8 +29,8 @@ end
 
 function _swift_base-test_parse_subcommand -S
     argparse -s r -- $argv
-    set -f positional_count $argv[1]
-    set -f option_specs $argv[2..]
+    set -l positional_count $argv[1]
+    set -l option_specs $argv[2..]
 
     set -a commands $unparsed_tokens[1]
     set -e unparsed_tokens[1]
@@ -49,9 +49,9 @@ function _swift_base-test_parse_subcommand -S
 end
 
 function _swift_base-test_complete_directories
-    set -f token (commandline -t)
+    set -l token (commandline -t)
     string match -- '*/' $token
-    set -f subdirs $token*/
+    set -l subdirs $token*/
     printf '%s\n' $subdirs
 end
 
@@ -59,10 +59,10 @@ function _swift_base-test_custom_completion
     set -x SAP_SHELL fish
     set -x SAP_SHELL_VERSION $FISH_VERSION
 
-    set -f tokens (_swift_base-test_tokens -p)
-    if test -z "$(_swift_base-test_tokens -t)"
-        set -f index (count (_swift_base-test_tokens -pc))
-        set -f tokens $tokens[..$index] \'\' $tokens[$(math $index + 1)..]
+    set -l tokens (_swift_base-test_tokens -p)
+    if test -z (_swift_base-test_tokens -t)
+        set -l index (count (_swift_base-test_tokens -pc))
+        set tokens $tokens[..$index] \'\' $tokens[(math $index + 1)..]
     end
     command $tokens[1] $argv $tokens
 end

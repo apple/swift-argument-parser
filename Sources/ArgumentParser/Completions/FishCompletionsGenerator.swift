@@ -18,9 +18,9 @@ extension [ParsableCommand.Type] {
     let commandName = first!._commandName
     return """
       function \(shouldOfferCompletionsForFunctionName) -a expected_commands -a expected_positional_index
-          set -f unparsed_tokens (\(tokensFunctionName) -pc)
-          set -f positional_index 0
-          set -f commands
+          set -l unparsed_tokens (\(tokensFunctionName) -pc)
+          set -l positional_index 0
+          set -l commands
 
           switch $unparsed_tokens[1]
       \(commandCases)
@@ -30,7 +30,7 @@ extension [ParsableCommand.Type] {
       end
 
       function \(tokensFunctionName)
-          if test "$(string split -m 1 -f 1 -- . "$FISH_VERSION")" -gt 3
+          if test (string split -m 1 -f 1 -- . "$FISH_VERSION") -gt 3
               commandline --tokens-raw $argv
           else
               commandline -o $argv
@@ -39,8 +39,8 @@ extension [ParsableCommand.Type] {
 
       function \(parseSubcommandFunctionName) -S
           argparse -s r -- $argv
-          set -f positional_count $argv[1]
-          set -f option_specs $argv[2..]
+          set -l positional_count $argv[1]
+          set -l option_specs $argv[2..]
 
           set -a commands $unparsed_tokens[1]
           set -e unparsed_tokens[1]
@@ -59,9 +59,9 @@ extension [ParsableCommand.Type] {
       end
 
       function \(completeDirectoriesFunctionName)
-          set -f token (commandline -t)
+          set -l token (commandline -t)
           string match -- '*/' $token
-          set -f subdirs $token*/
+          set -l subdirs $token*/
           printf '%s\\n' $subdirs
       end
 
@@ -69,10 +69,10 @@ extension [ParsableCommand.Type] {
           set -x \(CompletionShell.shellEnvironmentVariableName) fish
           set -x \(CompletionShell.shellVersionEnvironmentVariableName) $FISH_VERSION
 
-          set -f tokens (\(tokensFunctionName) -p)
-          if test -z "$(\(tokensFunctionName) -t)"
-              set -f index (count (\(tokensFunctionName) -pc))
-              set -f tokens $tokens[..$index] \\'\\' $tokens[$(math $index + 1)..]
+          set -l tokens (\(tokensFunctionName) -p)
+          if test -z (\(tokensFunctionName) -t)
+              set -l index (count (\(tokensFunctionName) -pc))
+              set tokens $tokens[..$index] \\'\\' $tokens[(math $index + 1)..]
           end
           command $tokens[1] $argv $tokens
       end
