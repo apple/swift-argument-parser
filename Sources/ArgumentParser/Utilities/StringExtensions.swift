@@ -256,3 +256,24 @@ extension StringProtocol where SubSequence == Substring {
     isEmpty ? nil : self
   }
 }
+
+extension Character {
+  /// Returns a Boolean value indicating whether this character is valid for the
+  /// command-line name of an option or flag.
+  ///
+  /// Only ASCII letters, numbers, dashes, and the underscore are valid name
+  /// characters.
+  var isValidForName: Bool {
+    guard isASCII, let firstScalar = unicodeScalars.first else { return false }
+    switch firstScalar.value {
+    case 0x41...0x5A,  // uppercase
+      0x61...0x7A,  // lowercase
+      0x30...0x39,  // numbers
+      0x5F,  // underscore
+      0x2D:  // dash
+      return true
+    default:
+      return false
+    }
+  }
+}

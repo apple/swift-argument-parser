@@ -114,10 +114,10 @@ extension NameSpecification.Element:
       return
     }
     // Check for non-ascii chars
-    guard string.allSatisfy({ $0.isASCII }) else {
+    guard string.allSatisfy({ $0.isValidForName }) else {
       self = .invalidLiteral(
         literal: string,
-        message: "Must use only ASCII characters.")
+        message: "Must use only letters, numbers, underscores, or dashes.")
       return
     }
 

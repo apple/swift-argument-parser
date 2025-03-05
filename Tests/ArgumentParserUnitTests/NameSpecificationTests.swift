@@ -228,8 +228,9 @@ extension NameSpecificationTests {
     AssertInvalid(nameSpecification: "---")
     // Triple dash
     AssertInvalid(nameSpecification: "---x")
-    // Non-ASCII
+    // Invalid characters
     AssertInvalid(nameSpecification: "--café")
+    AssertInvalid(nameSpecification: "--c!f!")
 
     // Repeating as elements
     AssertInvalid(nameSpecification: [""])
