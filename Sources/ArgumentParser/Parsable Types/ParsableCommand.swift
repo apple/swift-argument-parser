@@ -17,9 +17,9 @@ public protocol ParsableCommand: ParsableArguments {
 
   /// *For internal use only:* The name for the command on the command line.
   ///
-  /// This is generated from the configuration, if given, or from the type
-  /// name if not. This is a customization point so that a WrappedParsable
-  /// can pass through the wrapped type's name.
+  /// This is generated from the configuration, if given, or from the type name
+  /// if not. This is a customization point so that a WrappedParsable can pass
+  /// through the wrapped type's name.
   static var _commandName: String { get }
 
   /// The behavior or functionality of this command.
@@ -73,12 +73,10 @@ extension ParsableCommand {
   ///
   /// - Parameters:
   ///   - subcommand: The subcommand to generate the help screen for.
-  ///     `subcommand` must be declared in the subcommand tree of this
-  ///     command.
-  ///   - columns: The column width to use when wrapping long line in the
-  ///     help screen. If `columns` is `nil`, uses the current terminal
-  ///     width, or a default value of `80` if the terminal width is not
-  ///     available.
+  ///     `subcommand` must be declared in the subcommand tree of this command.
+  ///   - columns: The column width to use when wrapping long line in the help
+  ///     screen. If `columns` is `nil`, uses the current terminal width, or a
+  ///     default value of `80` if the terminal width is not available.
   /// - Returns: The full help screen for this type.
   @_disfavoredOverload
   @available(*, deprecated, renamed: "helpMessage(for:includeHidden:columns:)")
@@ -94,14 +92,12 @@ extension ParsableCommand {
   ///
   /// - Parameters:
   ///   - subcommand: The subcommand to generate the help screen for.
-  ///     `subcommand` must be declared in the subcommand tree of this
-  ///     command.
+  ///     `subcommand` must be declared in the subcommand tree of this command.
   ///   - includeHidden: Include hidden help information in the generated
   ///     message.
-  ///   - columns: The column width to use when wrapping long line in the
-  ///     help screen. If `columns` is `nil`, uses the current terminal
-  ///     width, or a default value of `80` if the terminal width is not
-  ///     available.
+  ///   - columns: The column width to use when wrapping long line in the help
+  ///     screen. If `columns` is `nil`, uses the current terminal width, or a
+  ///     default value of `80` if the terminal width is not available.
   /// - Returns: The full help screen for this type.
   public static func helpMessage(
     for subcommand: ParsableCommand.Type,
@@ -119,8 +115,7 @@ extension ParsableCommand {
   ///
   /// - Parameters:
   ///   - subcommand: The subcommand to generate the help screen for.
-  ///     `subcommand` must be declared in the subcommand tree of this
-  ///     command.
+  ///     `subcommand` must be declared in the subcommand tree of this command.
   ///   - includeHidden: Include hidden help information in the generated
   ///     message.
   /// - Returns: The usage text for this type.
@@ -139,9 +134,9 @@ extension ParsableCommand {
   /// arguments.
   ///
   /// This method parses an instance of this type, one of its subcommands, or
-  /// another built-in `ParsableCommand` type, from command-line arguments,
-  /// and then calls its `run()` method, exiting with a relevant error message
-  /// if necessary.
+  /// another built-in `ParsableCommand` type, from command-line arguments, and
+  /// then calls its `run()` method, exiting with a relevant error message if
+  /// necessary.
   ///
   /// - Parameter arguments: An array of arguments to use for parsing. If
   ///   `arguments` is `nil`, this uses the program's command-line arguments.
@@ -171,9 +166,9 @@ extension ParsableCommand {
   /// command for your command-line tool.
   ///
   /// This method parses an instance of this type, one of its subcommands, or
-  /// another built-in `ParsableCommand` type, from command-line arguments,
-  /// and then calls its `run()` method, exiting with a relevant error message
-  /// if necessary.
+  /// another built-in `ParsableCommand` type, from command-line arguments, and
+  /// then calls its `run()` method, exiting with a relevant error message if
+  /// necessary.
   public static func main() {
     self.main(nil)
   }

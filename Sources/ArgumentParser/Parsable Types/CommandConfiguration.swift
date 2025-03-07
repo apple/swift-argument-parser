@@ -13,8 +13,8 @@
 public struct CommandConfiguration: Sendable {
   /// The name of the command to use on the command line.
   ///
-  /// If `nil`, the command name is derived by converting the name of
-  /// the command type to hyphen-separated lowercase words.
+  /// If `nil`, the command name is derived by converting the name of the
+  /// command type to hyphen-separated lowercase words.
   public var commandName: String?
 
   /// The name of this command's "super-command" (experimental).
@@ -39,21 +39,22 @@ public struct CommandConfiguration: Sendable {
   /// display.
   ///
   /// Can include specific abstracts about the argument's possible values (e.g.
-  /// for a custom `EnumerableOptionValue` type), or can describe
-  /// a static block of text that extends the description of the argument.
+  /// for a custom `EnumerableOptionValue` type), or can describe a static
+  /// block of text that extends the description of the argument.
   public var discussion: String
 
   /// Version information for this command.
   public var version: String
 
-  /// A Boolean value indicating whether this command should be shown in
-  /// the extended help display.
+  /// A Boolean value indicating whether this command should be shown in the
+  /// extended help display.
   public var shouldDisplay: Bool
 
   /// An array of the types that define subcommands for this command.
   ///
-  /// This property "flattens" the grouping structure of the subcommands.
-  /// Use 'ungroupedSubcommands' to access 'groupedSubcommands' to retain the grouping structure.
+  /// This property "flattens" the grouping structure of the subcommands. Use
+  /// 'ungroupedSubcommands' to access 'groupedSubcommands' to retain the
+  /// grouping structure.
   public var subcommands: [ParsableCommand.Type] {
     get {
       ungroupedSubcommands + groupedSubcommands.flatMap { $0.subcommands }
@@ -65,8 +66,8 @@ public struct CommandConfiguration: Sendable {
     }
   }
 
-  /// An array of types that define subcommands for this command and are
-  /// not part of any command group.
+  /// An array of types that define subcommands for this command and are not
+  /// part of any command group.
   public var ungroupedSubcommands: [ParsableCommand.Type]
 
   /// The list of subcommands and subcommand groups.
@@ -80,28 +81,28 @@ public struct CommandConfiguration: Sendable {
 
   /// An array of aliases for the command's name.
   ///
-  /// All of the aliases MUST not match the actual command's name,
-  /// whether that be the derived name if `commandName` is not provided,
-  /// or `commandName` itself if provided.
+  /// All of the aliases MUST not match the actual command's name, whether that
+  /// be the derived name if `commandName` is not provided, or `commandName`
+  /// itself if provided.
   public var aliases: [String]
 
   /// Creates the configuration for a command.
   ///
   /// - Parameters:
   ///   - commandName: The name of the command to use on the command line. If
-  ///     `commandName` is `nil`, the command name is derived by converting
-  ///     the name of the command type to hyphen-separated lowercase words.
+  ///     `commandName` is `nil`, the command name is derived by converting the
+  ///     name of the command type to hyphen-separated lowercase words.
   ///   - abstract: A one-line description of the command.
-  ///   - usage: A custom usage description for the command. When you provide
-  ///     a non-`nil` string, the argument parser uses `usage` instead of
+  ///   - usage: A custom usage description for the command. When you provide a
+  ///     non-`nil` string, the argument parser uses `usage` instead of
   ///     automatically generating a usage description. Passing an empty string
   ///     hides the usage string altogether.
   ///   - discussion: A longer description of the command.
   ///   - version: The version number for this command. When you provide a
   ///     non-empty string, the argument parser prints it if the user provides
   ///     a `--version` flag.
-  ///   - shouldDisplay: A Boolean value indicating whether the command
-  ///     should be shown in the extended help display.
+  ///   - shouldDisplay: A Boolean value indicating whether the command should
+  ///     be shown in the extended help display.
   ///   - ungroupedSubcommands: An array of the types that define subcommands
   ///     for the command that are not part of any command group.
   ///   - groupedSubcommands: An array of command groups, each of which defines
@@ -112,9 +113,10 @@ public struct CommandConfiguration: Sendable {
   ///     with a simulated Boolean property named `help`. If `helpNames` is
   ///     `nil`, the names are inherited from the parent command, if any, or
   ///     are `-h` and `--help`.
-  ///   - aliases: An array of aliases for the command's name. All of the aliases
-  ///     MUST not match the actual command name, whether that be the derived name
-  ///     if `commandName` is not provided, or `commandName` itself if provided.
+  ///   - aliases: An array of aliases for the command's name. All of the
+  ///     aliases MUST not match the actual command name, whether that be the
+  ///     derived name if `commandName` is not provided, or `commandName`
+  ///     itself if provided.
   public init(
     commandName: String? = nil,
     abstract: String = "",

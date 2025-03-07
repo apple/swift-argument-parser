@@ -77,11 +77,11 @@ extension CommandParser {
   /// Consumes the next argument in `split` if it matches a subcommand at the
   /// current node of the command tree.
   ///
-  /// If a matching subcommand is found, the subcommand argument is consumed
-  /// in `split`.
+  /// If a matching subcommand is found, the subcommand argument is consumed in
+  /// `split`.
   ///
-  /// - Returns: A node for the matched subcommand if one was found;
-  ///   otherwise, `nil`.
+  /// - Returns: A node for the matched subcommand if one was found; otherwise,
+  ///   `nil`.
   fileprivate func consumeNextCommand(split: inout SplitArguments) -> Tree<
     ParsableCommand.Type
   >? {
@@ -99,9 +99,8 @@ extension CommandParser {
   ///
   /// - Parameters:
   ///   - split: The remaining arguments to examine.
-  ///   - requireSoloArgument: `true` if the built-in flag must be the only
-  ///     one remaining for this to catch it.
-  ///
+  ///   - requireSoloArgument: `true` if the built-in flag must be the only one
+  ///     remaining for this to catch it.
   /// - Throws: If a built-in flag is found.
   func checkForBuiltInFlags(
     _ split: SplitArguments,
@@ -142,8 +141,8 @@ extension CommandParser {
 
   /// Returns the last parsed value if there are no remaining unused arguments.
   ///
-  /// If there are remaining arguments or if no commands have been parsed,
-  /// this throws an error.
+  /// If there are remaining arguments or if no commands have been parsed, this
+  /// throws an error.
   fileprivate func extractLastParsedValue(_ split: SplitArguments) throws
     -> ParsableCommand
   {
@@ -269,7 +268,6 @@ extension CommandParser {
   ///
   /// - Parameter arguments: The array of arguments to parse. This should not
   ///   include the command name as the first argument.
-  ///
   /// - Returns: The parsed command or error.
   mutating func parse(
     arguments: [String]

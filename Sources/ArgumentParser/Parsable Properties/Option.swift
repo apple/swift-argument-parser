@@ -15,10 +15,10 @@
 /// command-line option. An *option* is a named value passed to a command-line
 /// tool, like `--configuration debug`. Options can be specified in any order.
 ///
-/// An option can have a default value specified as part of its
-/// declaration; options with optional `Value` types implicitly have `nil` as
-/// their default value. Options that are neither declared as `Optional` nor
-/// given a default value are required for users of your command-line tool.
+/// An option can have a default value specified as part of its declaration;
+/// options with optional `Value` types implicitly have `nil` as their default
+/// value. Options that are neither declared as `Optional` nor given a default
+/// value are required for users of your command-line tool.
 ///
 /// For example, the following program defines three options:
 ///
@@ -43,11 +43,13 @@
 /// `name` is a required option because it is non-`nil` and has no default
 /// value.
 ///
-///     $ greet --name Alicia
-///     Hello Alicia!
-///     $ greet --age 28 --name Seungchin --greeting Hi
-///     Hi Seungchin!
-///     Congrats on making it to the ripe old age of 28!
+/// ```
+/// $ greet --name Alicia
+/// Hello Alicia!
+/// $ greet --age 28 --name Seungchin --greeting Hi
+/// Hi Seungchin!
+/// Congrats on making it to the ripe old age of 28!
+/// ```
 @propertyWrapper
 public struct Option<Value>: Decodable, ParsedWrapper {
   internal var _parsedValue: Parsed<Value>
@@ -118,13 +120,15 @@ public struct SingleValueParsingStrategy: Hashable {
 
   /// Parse the input after the option and expect it to be a value.
   ///
-  /// For inputs such as `--foo foo`, this would parse `foo` as the
-  /// value. However, the input `--foo --bar foo bar` would
-  /// result in an error. Even though two values are provided, they don’t
-  /// succeed each option. Parsing would result in an error such as the following:
+  /// For inputs such as `--foo foo`, this would parse `foo` as the value.
+  /// However, the input `--foo --bar foo bar` would result in an error. Even
+  /// though two values are provided, they don’t succeed each option. Parsing
+  /// would result in an error such as the following:
   ///
-  ///     Error: Missing value for '--foo <foo>'
-  ///     Usage: command [--foo <foo>]
+  /// ```
+  /// Error: Missing value for '--foo <foo>'
+  /// Usage: command [--foo <foo>]
+  /// ```
   ///
   /// This is the **default behavior** for `@Option`-wrapped properties.
   public static var next: SingleValueParsingStrategy {
@@ -134,9 +138,9 @@ public struct SingleValueParsingStrategy: Hashable {
   /// Parse the next input, even if it could be interpreted as an option or
   /// flag.
   ///
-  /// For inputs such as `--foo --bar baz`, if `.unconditional` is used for `foo`,
-  /// this would read `--bar` as the value for `foo` and would use `baz` as
-  /// the next positional argument.
+  /// For inputs such as `--foo --bar baz`, if `.unconditional` is used for
+  /// `foo`, this would read `--bar` as the value for `foo` and would use `baz`
+  /// as the next positional argument.
   ///
   /// This allows reading negative numeric values or capturing flags to be
   /// passed through to another program since the leading hyphen is normally
@@ -147,12 +151,12 @@ public struct SingleValueParsingStrategy: Hashable {
     self.init(base: .unconditional)
   }
 
-  /// Parse the next input, as long as that input can't be interpreted as
-  /// an option or flag.
+  /// Parse the next input, as long as that input can't be interpreted as an
+  /// option or flag.
   ///
-  /// - Note: This will skip other options and _read ahead_ in the input
-  /// to find the next available value. This may be *unexpected* for users.
-  /// Use with caution.
+  /// - Note: This will skip other options and *read ahead* in the input to
+  ///   find the next available value. This may be *unexpected* for users. Use
+  ///   with caution.
   ///
   /// For example, if `--foo` takes a value, then the input `--foo --bar bar`
   /// would be parsed such that the value `bar` is used for `--foo`.
@@ -163,40 +167,42 @@ public struct SingleValueParsingStrategy: Hashable {
 
 extension SingleValueParsingStrategy: Sendable {}
 
-/// The strategy to use when parsing multiple values from `@Option` arguments into an
-/// array.
+/// The strategy to use when parsing multiple values from `@Option` arguments
+/// into an array.
 public struct ArrayParsingStrategy: Hashable {
   internal var base: ArgumentDefinition.ParsingStrategy
 
   /// Parse one value per option, joining multiple into an array.
   ///
   /// For example, for a parsable type with a property defined as
-  /// `@Option(parsing: .singleValue) var read: [String]`,
-  /// the input `--read foo --read bar` would result in the array
-  /// `["foo", "bar"]`. The same would be true for the input
-  /// `--read=foo --read=bar`.
+  /// `@Option(parsing: .singleValue) var read: [String]`, the input
+  /// `--read foo --read bar` would result in the array `["foo", "bar"]`. The
+  /// same would be true for the input `--read=foo --read=bar`.
   ///
-  /// - Note: This follows the default behavior of differentiating between values and options. As
-  ///     such, the value for this option will be the next value (non-option) in the input. For the
-  ///     above example, the input `--read --name Foo Bar` would parse `Foo` into
-  ///     `read` (and `Bar` into `name`).
+  /// - Note: This follows the default behavior of differentiating between
+  ///   values and options. As such, the value for this option will be the next
+  ///   value (non-option) in the input. For the above example, the input
+  ///   `--read --name Foo Bar` would parse `Foo` into `read` (and `Bar` into
+  ///   `name`).
   public static var singleValue: ArrayParsingStrategy {
     self.init(base: .default)
   }
 
-  /// Parse the value immediately after the option while allowing repeating options, joining multiple into an array.
+  /// Parse the value immediately after the option while allowing repeating
+  /// options, joining multiple into an array.
   ///
   /// This is identical to `.singleValue` except that the value will be read
-  /// from the input immediately after the option, even if it could be interpreted as an option.
+  /// from the input immediately after the option, even if it could be
+  /// interpreted as an option.
   ///
   /// For example, for a parsable type with a property defined as
-  /// `@Option(parsing: .unconditionalSingleValue) var read: [String]`,
-  /// the input `--read foo --read bar` would result in the array
-  /// `["foo", "bar"]` -- just as it would have been the case for `.singleValue`.
+  /// `@Option(parsing: .unconditionalSingleValue) var read: [String]`, the
+  /// input `--read foo --read bar` would result in the array `["foo", "bar"]`
+  /// -- just as it would have been the case for `.singleValue`.
   ///
-  /// - Note: However, the input `--read --name Foo Bar --read baz` would result in
-  /// `read` being set to the array `["--name", "baz"]`. This is usually *not* what users
-  /// would expect. Use with caution.
+  /// - Note: However, the input `--read --name Foo Bar --read baz` would
+  ///   result in `read` being set to the array `["--name", "baz"]`. This is
+  ///   usually *not* what users would expect. Use with caution.
   public static var unconditionalSingleValue: ArrayParsingStrategy {
     self.init(base: .unconditional)
   }
@@ -204,9 +210,8 @@ public struct ArrayParsingStrategy: Hashable {
   /// Parse all values up to the next option.
   ///
   /// For example, for a parsable type with a property defined as
-  /// `@Option(parsing: .upToNextOption) var files: [String]`,
-  /// the input `--files foo bar` would result in the array
-  /// `["foo", "bar"]`.
+  /// `@Option(parsing: .upToNextOption) var files: [String]`, the input
+  /// `--files foo bar` would result in the array `["foo", "bar"]`.
   ///
   /// Parsing stops as soon as there’s another option in the input such that
   /// `--files foo bar --verbose` would also set `files` to the array
@@ -217,27 +222,33 @@ public struct ArrayParsingStrategy: Hashable {
 
   /// Parse all remaining arguments into an array.
   ///
-  /// `.remaining` can be used for capturing pass-through flags. For example, for
-  /// a parsable type defined as
+  /// `.remaining` can be used for capturing pass-through flags. For example,
+  /// for a parsable type defined as
   /// `@Option(parsing: .remaining) var passthrough: [String]`:
   ///
-  ///     $ cmd --passthrough --foo 1 --bar 2 -xvf
-  ///     ------------
-  ///     options.passthrough == ["--foo", "1", "--bar", "2", "-xvf"]
+  /// ```
+  /// $ cmd --passthrough --foo 1 --bar 2 -xvf
+  /// ------------
+  /// options.passthrough == ["--foo", "1", "--bar", "2", "-xvf"]
+  /// ```
   ///
-  /// - Note: This will read all inputs following the option without attempting to do any parsing. This is
-  /// usually *not* what users would expect. Use with caution.
+  /// - Note: This will read all inputs following the option without attempting
+  ///   to do any parsing. This is usually *not* what users would expect. Use
+  ///   with caution.
   ///
-  /// Consider using a trailing `@Argument` instead and letting users explicitly turn off parsing
-  /// through the terminator `--`. That is the more common approach. For example:
+  /// Consider using a trailing `@Argument` instead and letting users
+  /// explicitly turn off parsing through the terminator `--`. That is the more
+  /// common approach. For example:
+  ///
   /// ```swift
   /// struct Options: ParsableArguments {
   ///     @Option var title: String
   ///     @Argument var remainder: [String]
   /// }
   /// ```
-  /// would parse the input `--title Foo -- Bar --baz` such that the `remainder`
-  /// would hold the value `["Bar", "--baz"]`.
+  ///
+  /// would parse the input `--title Foo -- Bar --baz` such that the
+  /// `remainder` would hold the value `["Bar", "--baz"]`.
   public static var remaining: ArrayParsingStrategy {
     self.init(base: .allRemainingInput)
   }
@@ -250,8 +261,9 @@ extension Option where Value: ExpressibleByArgument {
   /// Creates a property with a default value that reads its value from a
   /// labeled option.
   ///
-  /// This initializer is used when you declare an `@Option`-attributed property
-  /// that has an `ExpressibleByArgument` type, providing a default value:
+  /// This initializer is used when you declare an `@Option`-attributed
+  /// property that has an `ExpressibleByArgument` type, providing a default
+  /// value:
   ///
   /// ```swift
   /// @Option var title: String = "<Title>"
@@ -317,8 +329,9 @@ extension Option where Value: ExpressibleByArgument {
 
   /// Creates a required property that reads its value from a labeled option.
   ///
-  /// This initializer is used when you declare an `@Option`-attributed property
-  /// that has an `ExpressibleByArgument` type, but without a default value:
+  /// This initializer is used when you declare an `@Option`-attributed
+  /// property that has an `ExpressibleByArgument` type, but without a default
+  /// value:
   ///
   /// ```swift
   /// @Option var title: String
@@ -364,8 +377,8 @@ extension Option {
   /// Creates a property with a default value that reads its value from a
   /// labeled option, parsing with the given closure.
   ///
-  /// This initializer is used when you declare an `@Option`-attributed property
-  /// with a transform closure and a default value:
+  /// This initializer is used when you declare an `@Option`-attributed
+  /// property with a transform closure and a default value:
   ///
   /// ```swift
   /// @Option(transform: { $0.first ?? " " })
@@ -411,8 +424,8 @@ extension Option {
   /// Creates a required property that reads its value from a labeled option,
   /// parsing with the given closure.
   ///
-  /// This initializer is used when you declare an `@Option`-attributed property
-  /// with a transform closure and without a default value:
+  /// This initializer is used when you declare an `@Option`-attributed
+  /// property with a transform closure and without a default value:
   ///
   /// ```swift
   /// @Option(transform: { $0.first ?? " " })
@@ -540,8 +553,8 @@ extension Option {
 
   /// Creates an optional property that reads its value from a labeled option.
   ///
-  /// This initializer is used when you declare an `@Option`-attributed property
-  /// with an optional type and no default value:
+  /// This initializer is used when you declare an `@Option`-attributed
+  /// property with an optional type and no default value:
   ///
   /// ```swift
   /// @Option var count: Int?
@@ -587,8 +600,8 @@ extension Option {
   /// Creates an optional property that reads its value from a labeled option,
   /// parsing with the given closure, with an explicit `nil` default.
   ///
-  /// This initializer is used when you declare an `@Option`-attributed property
-  /// with a transform closure and with a default value of `nil`:
+  /// This initializer is used when you declare an `@Option`-attributed
+  /// property with a transform closure and with a default value of `nil`:
   ///
   /// ```swift
   /// @Option(transform: { $0.first ?? " " })
@@ -666,8 +679,8 @@ extension Option {
   /// Creates an optional property that reads its value from a labeled option,
   /// parsing with the given closure.
   ///
-  /// This initializer is used when you declare an `@Option`-attributed property
-  /// with a transform closure and without a default value:
+  /// This initializer is used when you declare an `@Option`-attributed
+  /// property with a transform closure and without a default value:
   ///
   /// ```swift
   /// @Option(transform: { $0.first ?? " " })
@@ -710,8 +723,8 @@ extension Option {
 
 // MARK: - @Option Array<T: ExpressibleByArgument> Initializers
 extension Option {
-  /// Creates an array property that reads its values from zero or
-  /// more labeled options.
+  /// Creates an array property that reads its values from zero or more labeled
+  /// options.
   ///
   /// This initializer is used when you declare an `@Option`-attributed array
   /// property with a default value:
@@ -723,8 +736,8 @@ extension Option {
   ///
   /// - Parameters:
   ///   - wrappedValue: A default value to use for this property, provided
-  ///     implicitly by the compiler during property wrapper initialization.
-  ///     If this initial value is non-empty, elements passed from the command
+  ///     implicitly by the compiler during property wrapper initialization. If
+  ///     this initial value is non-empty, elements passed from the command
   ///     line are appended to the original contents.
   ///   - name: A specification for what names are allowed for this option.
   ///   - parsingStrategy: The behavior to use when parsing the elements for
@@ -754,8 +767,8 @@ extension Option {
       })
   }
 
-  /// Creates a required array property that reads its values from zero or
-  /// more labeled options.
+  /// Creates a required array property that reads its values from zero or more
+  /// labeled options.
   ///
   /// This initializer is used when you declare an `@Option`-attributed array
   /// property without a default value:
@@ -796,8 +809,8 @@ extension Option {
 
 // MARK: - @Option Array<T> Initializers
 extension Option {
-  /// Creates an array property that reads its values from zero or
-  /// more labeled options, parsing each element with the given closure.
+  /// Creates an array property that reads its values from zero or more labeled
+  /// options, parsing each element with the given closure.
   ///
   /// This initializer is used when you declare an `@Option`-attributed array
   /// property with a transform closure and a default value:
@@ -809,8 +822,8 @@ extension Option {
   ///
   /// - Parameters:
   ///   - wrappedValue: A default value to use for this property, provided
-  ///     implicitly by the compiler during property wrapper initialization.
-  ///     If this initial value is non-empty, elements passed from the command
+  ///     implicitly by the compiler during property wrapper initialization. If
+  ///     this initial value is non-empty, elements passed from the command
   ///     line are appended to the original contents.
   ///   - name: A specification for what names are allowed for this option.
   ///   - parsingStrategy: The behavior to use when parsing the elements for
@@ -845,8 +858,8 @@ extension Option {
       })
   }
 
-  /// Creates a required array property that reads its values from zero or
-  /// more labeled options, parsing each element with the given closure.
+  /// Creates a required array property that reads its values from zero or more
+  /// labeled options, parsing each element with the given closure.
   ///
   /// This initializer is used when you declare an `@Option`-attributed array
   /// property with a transform closure and without a default value:

@@ -232,8 +232,10 @@ extension String {
 }
 
 extension ArgumentDefinition {
-  /// - returns: `true` if `self` is an option and can be tab-completed multiple times in one command line.
-  ///   For example, `ssh` allows the `-L` option to be given multiple times, to establish multiple port forwardings.
+  /// - Returns: `true` if `self` is an option and can be tab-completed
+  ///   multiple times in one command line. For example, `ssh` allows the `-L`
+  ///   option to be given multiple times, to establish multiple port
+  ///   forwardings.
   fileprivate var isRepeatableOption: Bool {
     guard
       case .named(_) = kind,

@@ -133,17 +133,19 @@ extension Platform {
     (width: 80, height: 25)
   }
 
-  /// The terminal size specified by the COLUMNS and LINES overrides
-  /// (if present).
+  /// The terminal size specified by the COLUMNS and LINES overrides (if
+  /// present).
   ///
-  /// Per the [Linux environ(7) manpage][linenv]:
+  /// Per the
+  /// [Linux environ(7) manpage](https://man7.org/linux/man-pages/man7/environ.7.html:~:text=COLUMNS):
   ///
   /// ```
   /// * COLUMNS and LINES tell applications about the window size,
   ///   possibly overriding the actual size.
   /// ```
   ///
-  /// And the [FreeBSD environ(7) version][bsdenv]:
+  /// And the
+  /// [FreeBSD environ(7) version](https://man.freebsd.org/cgi/man.cgi?environ(7)#:~:text=COLUMNS):
   ///
   /// ```
   /// COLUMNS    The user's preferred width in column positions for the
@@ -155,12 +157,10 @@ extension Platform {
   ///
   /// > Note: Always returns `(nil, nil)` on Windows and WASI.
   ///
-  /// - Returns: A tuple consisting of a width found in the `COLUMNS` environment
-  ///   variable (or `nil` if the variable is not present) and a height found in
-  ///   the `LINES` environment variable (or `nil` if that variable is not present).
-  ///
-  /// [linenv]: https://man7.org/linux/man-pages/man7/environ.7.html:~:text=COLUMNS
-  /// [bsdenv]: https://man.freebsd.org/cgi/man.cgi?environ(7)#:~:text=COLUMNS
+  /// - Returns: A tuple consisting of a width found in the `COLUMNS`
+  ///   environment variable (or `nil` if the variable is not present) and a
+  ///   height found in the `LINES` environment variable (or `nil` if that
+  ///   variable is not present).
   private static func userSpecifiedTerminalSize() -> (width: Int?, height: Int?)
   {
     var width: Int? = nil
@@ -182,8 +182,8 @@ extension Platform {
     return (width: width, height: height)
   }
 
-  /// The current terminal size as reported by the windowing system,
-  /// if available.
+  /// The current terminal size as reported by the windowing system, if
+  /// available.
   ///
   /// Returns (nil, nil) if no reported size is available.
   private static func reportedTerminalSize() -> (width: Int?, height: Int?) {
@@ -224,7 +224,8 @@ extension Platform {
     #endif
   }
 
-  /// Returns the current terminal size, or the default if the size is unavailable.
+  /// Returns the current terminal size, or the default if the size is
+  /// unavailable.
   static func terminalSize() -> (width: Int, height: Int) {
     let specifiedSize = self.userSpecifiedTerminalSize()
 

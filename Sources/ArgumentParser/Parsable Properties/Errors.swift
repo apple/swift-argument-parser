@@ -12,8 +12,8 @@
 /// An error type that is presented to the user as an error with parsing their
 /// command-line input.
 public struct ValidationError: Error, CustomStringConvertible {
-  /// The error message represented by this instance, this string is presented to
-  /// the user when a `ValidationError` is thrown from either; `run()`,
+  /// The error message represented by this instance, this string is presented
+  /// to the user when a `ValidationError` is thrown from either; `run()`,
   /// `validate()` or a transform closure.
   public internal(set) var message: String
 
@@ -83,7 +83,6 @@ public struct CleanExit: Error, CustomStringConvertible {
   ///
   /// - Parameter command: The command type to offer help for, if different
   ///   from the root command.
-  ///
   /// - Returns: A throwable CleanExit error.
   public static func helpRequest(
     _ command: ParsableCommand.Type? = nil
@@ -101,9 +100,8 @@ public struct CleanExit: Error, CustomStringConvertible {
   /// You can use this case to simulate the user specifying one of the help
   /// flags or subcommands.
   ///
-  /// - Parameter command: A command to offer help for, if different from
-  ///   the root command.
-  ///
+  /// - Parameter command: A command to offer help for, if different from the
+  ///   root command.
   /// - Returns: A throwable CleanExit error.
   public static func helpRequest(_ command: ParsableCommand) -> CleanExit {
     .helpRequest(type(of: command))

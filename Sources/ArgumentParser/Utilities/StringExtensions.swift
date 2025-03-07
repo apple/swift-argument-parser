@@ -58,8 +58,10 @@ extension StringProtocol where SubSequence == Substring {
   ///
   /// Example:
   ///
-  ///     "hello".addingIntercappedPrefix("my")
-  ///     // myHello
+  /// ```
+  /// "hello".addingIntercappedPrefix("my")
+  /// // myHello
+  /// ```
   func addingIntercappedPrefix(_ prefix: String) -> String {
     guard let firstChar = first else { return prefix }
     return "\(prefix)\(firstChar.uppercased())\(self.dropFirst())"
@@ -70,14 +72,16 @@ extension StringProtocol where SubSequence == Substring {
   ///
   /// Examples:
   ///
-  ///     "hello".addingPrefixWithAutodetectedStyle("my")
-  ///     // my-hello
-  ///     "hello_there".addingPrefixWithAutodetectedStyle("my")
-  ///     // my_hello_there
-  ///     "hello-there".addingPrefixWithAutodetectedStyle("my")
-  ///     // my-hello-there
-  ///     "helloThere".addingPrefixWithAutodetectedStyle("my")
-  ///     // myHelloThere
+  /// ```
+  /// "hello".addingPrefixWithAutodetectedStyle("my")
+  /// // my-hello
+  /// "hello_there".addingPrefixWithAutodetectedStyle("my")
+  /// // my_hello_there
+  /// "hello-there".addingPrefixWithAutodetectedStyle("my")
+  /// // my-hello-there
+  /// "helloThere".addingPrefixWithAutodetectedStyle("my")
+  /// // myHelloThere
+  /// ```
   func addingPrefixWithAutodetectedStyle(_ prefix: String) -> String {
     if contains("-") {
       return "\(prefix)-\(self)"
@@ -91,17 +95,19 @@ extension StringProtocol where SubSequence == Substring {
     }
   }
 
-  /// Returns a new string with the camel-case-based words of this string
-  /// split by the specified separator.
+  /// Returns a new string with the camel-case-based words of this string split
+  /// by the specified separator.
   ///
   /// Examples:
   ///
-  ///     "myProperty".convertedToSnakeCase()
-  ///     // my_property
-  ///     "myURLProperty".convertedToSnakeCase()
-  ///     // my_url_property
-  ///     "myURLProperty".convertedToSnakeCase(separator: "-")
-  ///     // my-url-property
+  /// ```
+  /// "myProperty".convertedToSnakeCase()
+  /// // my_property
+  /// "myURLProperty".convertedToSnakeCase()
+  /// // my_url_property
+  /// "myURLProperty".convertedToSnakeCase(separator: "-")
+  /// // my-url-property
+  /// ```
   func convertedToSnakeCase(separator: Character = "_") -> String {
     guard !isEmpty else { return "" }
     var result = ""
@@ -130,7 +136,8 @@ extension StringProtocol where SubSequence == Substring {
     return result
   }
 
-  /// Returns the edit distance between this string and the provided target string.
+  /// Returns the edit distance between this string and the provided target
+  /// string.
   ///
   /// Uses the Levenshtein distance algorithm internally.
   ///
@@ -138,10 +145,12 @@ extension StringProtocol where SubSequence == Substring {
   ///
   /// Examples:
   ///
-  ///     "kitten".editDistance(to: "sitting")
-  ///     // 3
-  ///     "bar".editDistance(to: "baz")
-  ///     // 1
+  /// ```
+  /// "kitten".editDistance(to: "sitting")
+  /// // 3
+  /// "bar".editDistance(to: "baz")
+  /// // 1
+  /// ```
   func editDistance(to target: String) -> Int {
     let rows = self.count
     let columns = target.count

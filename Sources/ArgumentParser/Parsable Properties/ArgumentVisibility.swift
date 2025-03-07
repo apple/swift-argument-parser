@@ -37,8 +37,8 @@ extension ArgumentVisibility.Representation {
   /// A raw Integer value that represents each visibility level.
   ///
   /// `_comparableLevel` can be used to test if a Visibility case is more or
-  /// less visible than another, without committing this behavior to API.
-  /// A lower `_comparableLevel` indicates that the case is less visible (more
+  /// less visible than another, without committing this behavior to API. A
+  /// lower `_comparableLevel` indicates that the case is less visible (more
   /// secret).
   internal var _comparableLevel: Int {
     switch self {
@@ -53,7 +53,8 @@ extension ArgumentVisibility.Representation {
 }
 
 extension ArgumentVisibility {
-  /// - Returns: true if `self` is at least as visible as the supplied argument.
+  /// - Returns: true if `self` is at least as visible as the supplied
+  ///   argument.
   internal func isAtLeastAsVisible(as other: Self) -> Bool {
     self.base._comparableLevel >= other.base._comparableLevel
   }

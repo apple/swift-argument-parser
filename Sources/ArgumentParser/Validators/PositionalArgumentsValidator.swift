@@ -11,10 +11,9 @@
 
 /// A validator for positional argument arrays.
 ///
-/// For positional arguments to be valid, there must be at most one
-/// positional array argument, and it must be the last positional argument
-/// in the argument list. Any other configuration leads to ambiguity in
-/// parsing the arguments.
+/// For positional arguments to be valid, there must be at most one positional
+/// array argument, and it must be the last positional argument in the argument
+/// list. Any other configuration leads to ambiguity in parsing the arguments.
 struct PositionalArgumentsValidator: ParsableArgumentsValidator {
   struct Error: ParsableArgumentsValidatorError, CustomStringConvertible {
     let repeatedPositionalArgument: String

@@ -9,11 +9,11 @@
 //
 //===----------------------------------------------------------------------===//
 
-/// A type that represents the different possible flags to be used by a
-/// `@Flag` property.
+/// A type that represents the different possible flags to be used by a `@Flag`
+/// property.
 ///
-/// For example, the `Size` enumeration declared here can be used as the type of
-/// a `@Flag` property:
+/// For example, the `Size` enumeration declared here can be used as the type
+/// of a `@Flag` property:
 ///
 /// ```swift
 /// enum Size: String, EnumerableFlag {
@@ -32,8 +32,10 @@
 /// By default, each case name is converted to a flag by using the `.long` name
 /// specification, so a user can call `example` like this:
 ///
-///     $ example --small --large
-///     [.small, .large]
+/// ```
+/// $ example --small --large
+/// [.small, .large]
+/// ```
 ///
 /// Provide alternative or additional name specifications for each case by
 /// implementing the `name(for:)` static method on your `EnumerableFlag` type.
@@ -53,8 +55,10 @@
 ///
 /// With this extension, a user can use short or long versions of the flags:
 ///
-///     $ example -s -l -x --medium
-///     [.small, .large, .extraLarge, .medium]
+/// ```
+/// $ example -s -l -x --medium
+/// [.small, .large, .extraLarge, .medium]
+/// ```
 public protocol EnumerableFlag: CaseIterable, Equatable {
   /// Returns the name specification to use for the given flag.
   ///

@@ -78,19 +78,22 @@ struct ArgumentDefinition {
     }
   }
 
-  /// This folds the public `ArrayParsingStrategy` and `SingleValueParsingStrategy`
-  /// into a single enum.
+  /// This folds the public `ArrayParsingStrategy` and
+  /// `SingleValueParsingStrategy` into a single enum.
   enum ParsingStrategy {
     /// Expect the next `SplitArguments.Element` to be a value and parse it.
     /// Will fail if the next input is an option.
     case `default`
     /// Parse the next `SplitArguments.Element.value`
     case scanningForValue
-    /// Parse the next `SplitArguments.Element` as a value, regardless of its type.
+    /// Parse the next `SplitArguments.Element` as a value, regardless of its
+    /// type.
     case unconditional
-    /// Parse multiple `SplitArguments.Element.value` up to the next non-`.value`
+    /// Parse multiple `SplitArguments.Element.value` up to the next non-
+    /// `.value`
     case upToNextOption
-    /// Parse all remaining `SplitArguments.Element` as values, regardless of its type.
+    /// Parse all remaining `SplitArguments.Element` as values, regardless of
+    /// its type.
     case allRemainingInput
     /// Collect all the elements after the terminator, preventing them from
     /// appearing in any other position.
@@ -219,8 +222,9 @@ extension ArgumentDefinition {
   /// Creates an argument definition for a property that isn't parsed from the
   /// command line.
   ///
-  /// This initializer is used for any property defined on a `ParsableArguments`
-  /// type that isn't decorated with one of ArgumentParser's property wrappers.
+  /// This initializer is used for any property defined on a
+  /// `ParsableArguments` type that isn't decorated with one of
+  /// ArgumentParser's property wrappers.
   init(unparsedKey: String, default defaultValue: Any?, parent: InputKey?) {
     self.init(
       container: Bare<Any>.self,

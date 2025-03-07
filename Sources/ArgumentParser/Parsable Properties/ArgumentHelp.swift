@@ -28,8 +28,8 @@ public struct ArgumentHelp {
   /// the extended help display.
   public var visibility: ArgumentVisibility = .default
 
-  /// A Boolean value indicating whether this argument should be shown in
-  /// the extended help display.
+  /// A Boolean value indicating whether this argument should be shown in the
+  /// extended help display.
   @available(*, deprecated, message: "Use visibility level instead.")
   public var shouldDisplay: Bool {
     get {
@@ -40,8 +40,9 @@ public struct ArgumentHelp {
     }
   }
 
-  /// A property of meta type `any ExpressibleByArgument.Type` that serves to retain
-  /// information about any arguments that have enumerable values and their descriptions.
+  /// A property of meta type `any ExpressibleByArgument.Type` that serves to
+  /// retain information about any arguments that have enumerable values and
+  /// their descriptions.
   public var argumentType: (any ExpressibleByArgument.Type)?
 
   /// Creates a new help instance.
@@ -76,7 +77,8 @@ public struct ArgumentHelp {
     self.argumentType = argumentType
   }
 
-  /// A `Help` instance that shows an argument only in the extended help display.
+  /// A `Help` instance that shows an argument only in the extended help
+  /// display.
   public static var hidden: ArgumentHelp {
     ArgumentHelp(visibility: .hidden)
   }

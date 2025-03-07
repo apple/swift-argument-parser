@@ -420,9 +420,9 @@ extension NameSpecification {
   ///
   /// If the `default` visibility is used, the help names are returned
   /// unmodified. If a non-default visibility is used the short names are
-  /// removed and the long names (both single and double dash) are appended with
-  /// the name of the visibility level. After the optional name modification
-  /// step, the name are returned in descending order.
+  /// removed and the long names (both single and double dash) are appended
+  /// with the name of the visibility level. After the optional name
+  /// modification step, the name are returned in descending order.
   fileprivate func generateHelpNames(visibility: ArgumentVisibility) -> [Name] {
     self
       .makeNames(InputKey(name: "help", parent: nil))

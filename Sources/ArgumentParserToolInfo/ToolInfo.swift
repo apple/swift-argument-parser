@@ -10,11 +10,12 @@
 //===----------------------------------------------------------------------===//
 
 extension Collection {
-  /// - returns: A non-empty collection or `nil`.
+  /// - Returns: A non-empty collection or `nil`.
   fileprivate var nonEmpty: Self? { isEmpty ? nil : self }
 }
 
-/// Header used to validate serialization version of an encoded ToolInfo struct.
+/// Header used to validate serialization version of an encoded ToolInfo
+/// struct.
 public struct ToolInfoHeader: Decodable {
   /// A sentinel value indicating the version of the ToolInfo struct used to
   /// generate the serialized form.
@@ -25,8 +26,8 @@ public struct ToolInfoHeader: Decodable {
   }
 }
 
-/// Top-level structure containing serialization version and information for all
-/// commands in a tool.
+/// Top-level structure containing serialization version and information for
+/// all commands in a tool.
 public struct ToolInfoV0: Codable, Hashable {
   /// A sentinel value indicating the version of the ToolInfo struct used to
   /// generate the serialized form.
@@ -134,7 +135,8 @@ public struct ArgumentInfoV0: Codable, Hashable {
   public enum KindV0: String, Codable, Hashable {
     /// Argument specified as a bare value on the command line.
     case positional
-    /// Argument specified as a value prefixed by a `--flag` on the command line.
+    /// Argument specified as a value prefixed by a `--flag` on the command
+    /// line.
     case option
     /// Argument specified only as a `--flag` on the command line.
     case flag

@@ -17,11 +17,13 @@ extension Sequence where Element: Hashable {
     return self.filter { seen.insert($0).0 }
   }
 
-  /// Returns an array, collapsing runs of consecutive equal elements into
-  /// the first element of each run.
+  /// Returns an array, collapsing runs of consecutive equal elements into the
+  /// first element of each run.
   ///
-  ///     [1, 2, 2, 2, 3, 3, 2, 2, 1, 1, 1].uniquingAdjacentElements()
-  ///     // [1, 2, 3, 2, 1]
+  /// ```
+  /// [1, 2, 2, 2, 3, 3, 2, 2, 1, 1, 1].uniquingAdjacentElements()
+  /// // [1, 2, 3, 2, 1]
+  /// ```
   func uniquingAdjacentElements() -> [Element] {
     var iterator = makeIterator()
     guard let first = iterator.next()

@@ -16,8 +16,9 @@
 /// descriptions. Optionally, users can add a discussion preamble that will be
 /// appended to the beginning of the value list section.
 ///
-/// For example, the following `EnumerableOptionValue` type defined in a command
-/// could contain an additional discussion block defined in its `ArgumentHelp`:
+/// For example, the following `EnumerableOptionValue` type defined in a
+/// command could contain an additional discussion block defined in its
+/// `ArgumentHelp`:
 ///
 /// ```swift
 /// enum Color: String, EnumerableOptionValue {

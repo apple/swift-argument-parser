@@ -59,10 +59,10 @@ public struct CompletionShell: RawRepresentable, Hashable, CaseIterable {
   /// The shell for which completions will be or are being requested.
   ///
   /// `CompletionShell.requesting` is non-`nil` only while generating a shell
-  /// completion script or while a Swift custom completion function is executing
-  /// to offer completions for a word from a command line (that is, while
-  /// `customCompletion` from `@Option(completion: .custom(customCompletion))`
-  /// executes).
+  /// completion script or while a Swift custom completion function is
+  /// executing to offer completions for a word from a command line (that is,
+  /// while `customCompletion` from
+  /// `@Option(completion: .custom(customCompletion))` executes).
   public static var requesting: CompletionShell? {
     Self._requesting.withLock { $0 }
   }
@@ -129,7 +129,8 @@ struct CompletionsGenerator {
     }
   }
 
-  /// Generates a shell completion script for this generator's shell and command.
+  /// Generates a shell completion script for this generator's shell and
+  /// command.
   func generateCompletionScript() -> String {
     CompletionShell._requesting.withLock { $0 = shell }
     switch shell {
@@ -146,8 +147,8 @@ struct CompletionsGenerator {
 }
 
 extension ArgumentDefinition {
-  /// Returns a string with the arguments for the callback to generate custom completions for
-  /// this argument.
+  /// Returns a string with the arguments for the callback to generate custom
+  /// completions for this argument.
   func customCompletionCall(_ commands: [ParsableCommand.Type]) -> String {
     let subcommandNames = commands.dropFirst().map { $0._commandName }.joined(
       separator: " ")
@@ -178,8 +179,8 @@ extension [ParsableCommand.Type] {
       .filter(\.isPositional)
   }
 
-  /// Include default 'help' subcommand in nonempty subcommand list if & only if
-  /// no help subcommand already exists.
+  /// Include default 'help' subcommand in nonempty subcommand list if & only
+  /// if no help subcommand already exists.
   mutating func addHelpSubcommandIfMissing() {
     if !isEmpty && !contains(where: { $0._commandName == "help" }) {
       append(HelpCommand.self)

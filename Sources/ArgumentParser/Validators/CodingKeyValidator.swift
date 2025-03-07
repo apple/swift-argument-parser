@@ -42,8 +42,8 @@ struct CodingKeyValidator: ParsableArgumentsValidator {
     }
   }
 
-  /// This error indicates that an option, a flag, or an argument of
-  /// a `ParsableArguments` is defined without a corresponding `CodingKey`.
+  /// This error indicates that an option, a flag, or an argument of a
+  /// `ParsableArguments` is defined without a corresponding `CodingKey`.
   struct MissingKeysError: ParsableArgumentsValidatorError,
     CustomStringConvertible
   {

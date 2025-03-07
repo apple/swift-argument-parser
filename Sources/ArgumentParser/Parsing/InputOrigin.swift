@@ -14,16 +14,20 @@
 /// When reading from the command line, a value might originate from a single
 /// index, multiple indices, or from part of an index. For this command:
 ///
-///     struct Example: ParsableCommand {
-///         @Flag(name: .short) var verbose = false
-///         @Flag(name: .short) var expert = false
+/// ```
+/// struct Example: ParsableCommand {
+///     @Flag(name: .short) var verbose = false
+///     @Flag(name: .short) var expert = false
 ///
-///         @Option var count: Int
-///     }
+///     @Option var count: Int
+/// }
+/// ```
 ///
 /// ...with this usage:
 ///
-///     $ example -ve --count 5
+/// ```
+/// $ example -ve --count 5
+/// ```
 ///
 /// The parsed value for the `count` property will come from indices `1` and
 /// `2`, while the value for `verbose` will come from index `1`, sub-index `0`.

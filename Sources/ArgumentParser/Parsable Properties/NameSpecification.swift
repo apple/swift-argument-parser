@@ -26,8 +26,8 @@ public struct NameSpecification: ExpressibleByArrayLiteral {
     /// Use the property's name, converted to lowercase with words separated by
     /// hyphens.
     ///
-    /// For example, a property named `allowLongNames` would be converted to the
-    /// label `--allow-long-names`.
+    /// For example, a property named `allowLongNames` would be converted to
+    /// the label `--allow-long-names`.
     public static var long: Element {
       self.init(base: .long)
     }
@@ -42,7 +42,6 @@ public struct NameSpecification: ExpressibleByArrayLiteral {
     ///   - name: The name of the option or flag.
     ///   - withSingleDash: A Boolean value indicating whether to use a single
     ///     dash as the prefix. If `false`, the name has a double-dash prefix.
-    ///
     /// - Returns: A `long` name specification with the requested `name`.
     public static func customLong(
       _ name: String,
@@ -53,8 +52,8 @@ public struct NameSpecification: ExpressibleByArrayLiteral {
 
     /// Use the first character of the property's name as a short option label.
     ///
-    /// For example, a property named `verbose` would be converted to the
-    /// label `-v`. Short labels can be combined into groups.
+    /// For example, a property named `verbose` would be converted to the label
+    /// `-v`. Short labels can be combined into groups.
     public static var short: Element {
       self.init(base: .short)
     }
@@ -70,7 +69,6 @@ public struct NameSpecification: ExpressibleByArrayLiteral {
     ///   - char: The name of the option or flag.
     ///   - allowingJoined: A Boolean value indicating whether this short name
     ///     allows a joined value.
-    ///
     /// - Returns: A `short` name specification with the requested `char`.
     public static func customShort(
       _ char: Character,
@@ -110,7 +108,6 @@ extension NameSpecification {
   ///   - name: The name of the option or flag.
   ///   - withSingleDash: A Boolean value indicating whether to use a single
   ///     dash as the prefix. If `false`, the name has a double-dash prefix.
-  ///
   /// - Returns: A `long` name specification with the requested `name`.
   public static func customLong(
     _ name: String,
@@ -121,22 +118,21 @@ extension NameSpecification {
 
   /// Use the first character of the property's name as a short option label.
   ///
-  /// For example, a property named `verbose` would be converted to the
-  /// label `-v`. Short labels can be combined into groups.
+  /// For example, a property named `verbose` would be converted to the label
+  /// `-v`. Short labels can be combined into groups.
   public static var short: NameSpecification { [.short] }
 
   /// Use the given character as a short option label.
   ///
-  /// When passing `true` as `allowingJoined` in an `@Option` declaration,
-  /// the user can join a value with the option name. For example, if an
-  /// option is declared as `-D`, allowing joined values, a user could pass
-  /// `-Ddebug` to specify `debug` as the value for that option.
+  /// When passing `true` as `allowingJoined` in an `@Option` declaration, the
+  /// user can join a value with the option name. For example, if an option is
+  /// declared as `-D`, allowing joined values, a user could pass `-Ddebug` to
+  /// specify `debug` as the value for that option.
   ///
   /// - Parameters:
   ///   - char: The name of the option or flag.
   ///   - allowingJoined: A Boolean value indicating whether this short name
   ///     allows a joined value.
-  ///
   /// - Returns: A `short` name specification with the requested `char`.
   public static func customShort(
     _ char: Character,
@@ -145,8 +141,8 @@ extension NameSpecification {
     [.customShort(char, allowingJoined: allowingJoined)]
   }
 
-  /// Combine the `.short` and `.long` specifications to allow both long
-  /// and short labels.
+  /// Combine the `.short` and `.long` specifications to allow both long and
+  /// short labels.
   ///
   /// For example, a property named `verbose` would be converted to both the
   /// long `--verbose` and short `-v` labels.

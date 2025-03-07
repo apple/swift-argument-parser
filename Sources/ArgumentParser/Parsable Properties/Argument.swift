@@ -14,8 +14,8 @@
 /// Use the `@Argument` wrapper to define a property of your custom command as
 /// a positional argument. A *positional argument* for a command-line tool is
 /// specified without a label and must appear in declaration order. `@Argument`
-/// properties with `Optional` type or a default value are optional for the user
-/// of your command-line tool.
+/// properties with `Optional` type or a default value are optional for the
+/// user of your command-line tool.
 ///
 /// For example, the following program has two positional arguments. The `name`
 /// argument is required, while `greeting` is optional because it has a default
@@ -33,14 +33,16 @@
 /// }
 /// ```
 ///
-/// You can call this program with just a name or with a name and a
-/// greeting. When you supply both arguments, the first argument is always
-/// treated as the name, due to the order of the property declarations.
+/// You can call this program with just a name or with a name and a greeting.
+/// When you supply both arguments, the first argument is always treated as the
+/// name, due to the order of the property declarations.
 ///
-///     $ greet Nadia
-///     Hello Nadia!
-///     $ greet Tamara Hi
-///     Hi Tamara!
+/// ```
+/// $ greet Nadia
+/// Hello Nadia!
+/// $ greet Tamara Hi
+/// Hi Tamara!
+/// ```
 @propertyWrapper
 public struct Argument<Value>:
   Decodable, ParsedWrapper
@@ -110,25 +112,27 @@ extension Argument: DecodableParsedWrapper where Value: Decodable {}
 public struct ArgumentArrayParsingStrategy: Hashable {
   internal var base: ArgumentDefinition.ParsingStrategy
 
-  /// Parse only unprefixed values from the command-line input, ignoring
-  /// any inputs that have a dash prefix; this is the default strategy.
+  /// Parse only unprefixed values from the command-line input, ignoring any
+  /// inputs that have a dash prefix; this is the default strategy.
   ///
   /// `remaining` is the default parsing strategy for argument arrays.
   ///
   /// For example, the `Example` command defined below has a `words` array that
   /// uses the `remaining` parsing strategy:
   ///
-  ///     @main
-  ///     struct Example: ParsableCommand {
-  ///         @Flag var verbose = false
+  /// ```
+  /// @main
+  /// struct Example: ParsableCommand {
+  ///     @Flag var verbose = false
   ///
-  ///         @Argument(parsing: .remaining)
-  ///         var words: [String]
+  ///     @Argument(parsing: .remaining)
+  ///     var words: [String]
   ///
-  ///         func run() {
-  ///             print(words.joined(separator: "\n"))
-  ///         }
+  ///     func run() {
+  ///         print(words.joined(separator: "\n"))
   ///     }
+  /// }
+  /// ```
   ///
   /// Any non-dash-prefixed inputs will be captured in the `words` array.
   ///
@@ -160,24 +164,26 @@ public struct ArgumentArrayParsingStrategy: Hashable {
   /// After parsing, capture all unrecognized inputs in this argument array.
   ///
   /// You can use the `allUnrecognized` parsing strategy to suppress
-  /// "unexpected argument" errors or to capture unrecognized inputs for further
-  /// processing.
+  /// "unexpected argument" errors or to capture unrecognized inputs for
+  /// further processing.
   ///
-  /// For example, the `Example` command defined below has an `other` array that
-  /// uses the `allUnrecognized` parsing strategy:
+  /// For example, the `Example` command defined below has an `other` array
+  /// that uses the `allUnrecognized` parsing strategy:
   ///
-  ///     @main
-  ///     struct Example: ParsableCommand {
-  ///         @Flag var verbose = false
-  ///         @Argument var name: String
+  /// ```
+  /// @main
+  /// struct Example: ParsableCommand {
+  ///     @Flag var verbose = false
+  ///     @Argument var name: String
   ///
-  ///         @Argument(parsing: .allUnrecognized)
-  ///         var other: [String]
+  ///     @Argument(parsing: .allUnrecognized)
+  ///     var other: [String]
   ///
-  ///         func run() {
-  ///             print(other.joined(separator: "\n"))
-  ///         }
+  ///     func run() {
+  ///         print(other.joined(separator: "\n"))
   ///     }
+  /// }
+  /// ```
   ///
   /// After parsing the `--verbose` flag and `<name>` argument, any remaining
   /// input is captured in the `other` array.
@@ -202,18 +208,20 @@ public struct ArgumentArrayParsingStrategy: Hashable {
   /// For example, the `Example` command defined below has a `words` array that
   /// uses the `postTerminator` parsing strategy:
   ///
-  ///     @main
-  ///     struct Example: ParsableCommand {
-  ///         @Flag var verbose = false
-  ///         @Argument var name = ""
+  /// ```
+  /// @main
+  /// struct Example: ParsableCommand {
+  ///     @Flag var verbose = false
+  ///     @Argument var name = ""
   ///
-  ///         @Argument(parsing: .postTerminator)
-  ///         var words: [String]
+  ///     @Argument(parsing: .postTerminator)
+  ///     var words: [String]
   ///
-  ///         func run() {
-  ///             print(words.joined(separator: "\n"))
-  ///         }
+  ///     func run() {
+  ///         print(words.joined(separator: "\n"))
   ///     }
+  /// }
+  /// ```
   ///
   /// Before looking for the `--verbose` flag and `<name>` argument, any inputs
   /// after the `--` terminator are captured into the `words` array.
@@ -232,8 +240,8 @@ public struct ArgumentArrayParsingStrategy: Hashable {
   /// array from capturing any input. In particular, the
   /// ``SingleValueParsingStrategy/unconditional``,
   /// ``ArrayParsingStrategy/unconditionalSingleValue``, and
-  /// ``ArrayParsingStrategy/remaining`` parsing strategies can all consume
-  /// the terminator as part of their values.
+  /// ``ArrayParsingStrategy/remaining`` parsing strategies can all consume the
+  /// terminator as part of their values.
   ///
   /// - Note: This parsing strategy can be surprising for users, since it
   ///   changes the behavior of the `--` terminator. Prefer ``remaining``
@@ -254,20 +262,22 @@ public struct ArgumentArrayParsingStrategy: Hashable {
   /// options as soon as it encounters a positional argument or an unrecognized
   /// flag, and captures all remaining inputs in the array argument.
   ///
-  /// For example, the `Example` command defined below has an `words` array that
-  /// uses the `captureForPassthrough` parsing strategy:
+  /// For example, the `Example` command defined below has an `words` array
+  /// that uses the `captureForPassthrough` parsing strategy:
   ///
-  ///     @main
-  ///     struct Example: ParsableCommand {
-  ///         @Flag var verbose = false
+  /// ```
+  /// @main
+  /// struct Example: ParsableCommand {
+  ///     @Flag var verbose = false
   ///
-  ///         @Argument(parsing: .captureForPassthrough)
-  ///         var words: [String] = []
+  ///     @Argument(parsing: .captureForPassthrough)
+  ///     var words: [String] = []
   ///
-  ///         func run() {
-  ///             print(words.joined(separator: "\n"))
-  ///         }
+  ///     func run() {
+  ///         print(words.joined(separator: "\n"))
   ///     }
+  /// }
+  /// ```
   ///
   /// Any values after the first unrecognized input are captured in the `words`
   /// array.
@@ -283,8 +293,8 @@ public struct ArgumentArrayParsingStrategy: Hashable {
   /// --verbose
   /// ```
   ///
-  /// With the `captureForPassthrough` parsing strategy, the `--` terminator
-  /// is included in the captured values.
+  /// With the `captureForPassthrough` parsing strategy, the `--` terminator is
+  /// included in the captured values.
   ///
   /// ```
   /// $ example --verbose one two -- --other
@@ -314,18 +324,19 @@ extension ArgumentArrayParsingStrategy: Sendable {}
 
 // MARK: - @Argument T: ExpressibleByArgument Initializers
 extension Argument where Value: ExpressibleByArgument {
-  /// Creates a property with a default value provided by standard Swift default
-  /// value syntax.
+  /// Creates a property with a default value provided by standard Swift
+  /// default value syntax.
   ///
   /// This method is called to initialize an `Argument` with a default value
   /// such as:
+  ///
   /// ```swift
   /// @Argument var foo: String = "bar"
   /// ```
   ///
   /// - Parameters:
   ///   - wrappedValue: A default value to use for this property, provided
-  ///   implicitly by the compiler during property wrapper initialization.
+  ///     implicitly by the compiler during property wrapper initialization.
   ///   - help: Information about how to use this argument.
   ///   - completion: Kind of completion provided to the user for this option.
   public init(
@@ -352,6 +363,7 @@ extension Argument where Value: ExpressibleByArgument {
   ///
   /// This method is called to initialize an `Argument` without a default value
   /// such as:
+  ///
   /// ```swift
   /// @Argument var foo: String
   /// ```
@@ -381,11 +393,12 @@ extension Argument where Value: ExpressibleByArgument {
 
 // MARK: - @Argument T Initializers
 extension Argument {
-  /// Creates a property with a default value provided by standard Swift default
-  /// value syntax, parsing with the given closure.
+  /// Creates a property with a default value provided by standard Swift
+  /// default value syntax, parsing with the given closure.
   ///
   /// This method is called to initialize an `Argument` with a default value
   /// such as:
+  ///
   /// ```swift
   /// @Argument(transform: baz)
   /// var foo: String = "bar"
@@ -423,7 +436,9 @@ extension Argument {
 
   /// Creates a property with no default value, parsing with the given closure.
   ///
-  /// This method is called to initialize an `Argument` with no default value such as:
+  /// This method is called to initialize an `Argument` with no default value
+  /// such as:
+  ///
   /// ```swift
   /// @Argument(transform: baz)
   /// var foo: String
@@ -649,8 +664,8 @@ extension Argument {
   ///
   /// - Parameters:
   ///   - wrappedValue: A default value to use for this property.
-  ///   - parsingStrategy: The behavior to use when parsing multiple values from
-  ///     the command-line arguments.
+  ///   - parsingStrategy: The behavior to use when parsing multiple values
+  ///     from the command-line arguments.
   ///   - help: Information about how to use this argument.
   ///   - completion: Kind of completion provided to the user for this option.
   public init<T>(
@@ -679,14 +694,15 @@ extension Argument {
   ///
   /// This method is called to initialize an array `Argument` with no default
   /// value such as:
+  ///
   /// ```swift
   /// @Argument()
   /// var foo: [String]
   /// ```
   ///
   /// - Parameters:
-  ///   - parsingStrategy: The behavior to use when parsing multiple values from
-  ///   the command-line arguments.
+  ///   - parsingStrategy: The behavior to use when parsing multiple values
+  ///     from the command-line arguments.
   ///   - help: Information about how to use this argument.
   ///   - completion: Kind of completion provided to the user for this option.
   public init<T>(
@@ -717,8 +733,8 @@ extension Argument {
   ///
   /// - Parameters:
   ///   - wrappedValue: A default value to use for this property.
-  ///   - parsingStrategy: The behavior to use when parsing multiple values from
-  ///     the command-line arguments.
+  ///   - parsingStrategy: The behavior to use when parsing multiple values
+  ///     from the command-line arguments.
   ///   - help: Information about how to use this argument.
   ///   - completion: Kind of completion provided to the user for this option.
   ///   - transform: A closure that converts a string into this property's
@@ -752,14 +768,15 @@ extension Argument {
   ///
   /// This method is called to initialize an array `Argument` with no default
   /// value such as:
+  ///
   /// ```swift
   /// @Argument(transform: baz)
   /// var foo: [String]
   /// ```
   ///
   /// - Parameters:
-  ///   - parsingStrategy: The behavior to use when parsing multiple values from
-  ///     the command-line arguments.
+  ///   - parsingStrategy: The behavior to use when parsing multiple values
+  ///     from the command-line arguments.
   ///   - help: Information about how to use this argument.
   ///   - completion: Kind of completion provided to the user for this option.
   ///   - transform: A closure that converts a string into this property's

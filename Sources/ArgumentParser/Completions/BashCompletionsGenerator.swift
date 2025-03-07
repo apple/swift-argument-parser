@@ -152,7 +152,8 @@ extension [ParsableCommand.Type] {
       """
   }
 
-  /// Generates a Bash completion function for the last command in the given list.
+  /// Generates a Bash completion function for the last command in the given
+  /// list.
   private var completionFunctions: String {
     guard let type = last else {
       fatalError()
@@ -324,7 +325,8 @@ extension [ParsableCommand.Type] {
     }
   }
 
-  /// Returns the bash completions that can follow the given argument's `--name`.
+  /// Returns the bash completions that can follow the given argument's
+  /// `--name`.
   private func bashValueCompletion(_ arg: ArgumentDefinition) -> String {
     switch arg.completion.kind {
     case .default:

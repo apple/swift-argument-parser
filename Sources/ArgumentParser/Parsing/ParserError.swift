@@ -9,7 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-/// Gets thrown while parsing and will be handled by the error output generation.
+/// Gets thrown while parsing and will be handled by the error output
+/// generation.
 enum ParserError: Error {
   case helpRequested(visibility: ArgumentVisibility)
   case versionRequested
@@ -24,14 +25,16 @@ enum ParserError: Error {
   case unknownOption(InputOrigin.Element, Name)
   case invalidOption(String)
   case nonAlphanumericShortOption(Character)
-  /// The option was there, but its value is missing, e.g. `--name` but no value for the `name`.
+  /// The option was there, but its value is missing, e.g. `--name` but no
+  /// value for the `name`.
   case missingValueForOption(InputOrigin, Name)
   case missingValueOrUnknownCompositeOption(InputOrigin, Name, Name)
   case unexpectedValueForOption(InputOrigin.Element, Name, String)
   case unexpectedExtraValues([(InputOrigin, String)])
   case duplicateExclusiveValues(
     previous: InputOrigin, duplicate: InputOrigin, originalInput: [String])
-  /// We need a value for the given key, but it’s not there. Some non-optional option or argument is missing.
+  /// We need a value for the given key, but it’s not there. Some non-optional
+  /// option or argument is missing.
   case noValue(forKey: InputKey)
   case unableToParseValue(
     InputOrigin, Name?, String, forKey: InputKey, originalError: Error?)
@@ -40,7 +43,8 @@ enum ParserError: Error {
   case noArguments(Error)
 }
 
-/// These are errors used internally to the parsing, and will not be exposed to the help generation.
+/// These are errors used internally to the parsing, and will not be exposed to
+/// the help generation.
 enum InternalParseError: Error {
   case wrongType(valueRepresentation: String, forKey: InputKey)
   case subcommandNameMismatch

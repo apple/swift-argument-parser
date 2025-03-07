@@ -44,11 +44,10 @@ class Mutex<T>: @unchecked Sendable {
   ///   the process, deadlock, or leave this behavior unspecified. This will
   ///   never reacquire the lock however.
   ///
-  /// - Parameter body: A closure with a parameter of `Value` that has exclusive
-  ///   access to the value being stored within this mutex. This closure is
-  ///   considered the critical section as it will only be executed once the
-  ///   calling thread has acquired the lock.
-  ///
+  /// - Parameter body: A closure with a parameter of `Value` that has
+  ///   exclusive access to the value being stored within this mutex. This
+  ///   closure is considered the critical section as it will only be executed
+  ///   once the calling thread has acquired the lock.
   /// - Returns: The return value, if any, of the `body` closure parameter.
   func withLock<U>(
     _ body: (inout T) throws -> U

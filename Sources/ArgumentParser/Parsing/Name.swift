@@ -10,11 +10,13 @@
 //===----------------------------------------------------------------------===//
 
 enum Name {
-  /// A name (usually multi-character) prefixed with `--` (2 dashes) or equivalent.
+  /// A name (usually multi-character) prefixed with `--` (2 dashes) or
+  /// equivalent.
   case long(String)
   /// A single character name prefixed with `-` (1 dash) or equivalent.
   ///
-  /// Usually supports mixing multiple short names with a single dash, i.e. `-ab` is equivalent to `-a -b`.
+  /// Usually supports mixing multiple short names with a single dash, i.e.
+  /// `-ab` is equivalent to `-a -b`.
   case short(Character, allowingJoined: Bool = false)
   /// A name (usually multi-character) prefixed with `-` (1 dash).
   case longWithSingleDash(String)
