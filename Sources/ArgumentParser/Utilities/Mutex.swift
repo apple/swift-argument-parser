@@ -249,13 +249,13 @@ final class LockStorage<Value>: ManagedBuffer<Value, LockPrimitive> {
 /// of lock is safe to use with `libpthread`-based threading models, such as the
 /// one used by NIO. On Windows, the lock is based on the substantially similar
 /// `SRWLOCK` type.
-public struct NIOLock {
+internal struct NIOLock {
     @usableFromInline
     internal let _storage: LockStorage<Void>
 
     /// Create a new lock.
     @inlinable
-    public init() {
+    init() {
         self._storage = .create(value: ())
     }
 
@@ -264,7 +264,7 @@ public struct NIOLock {
     /// Whenever possible, consider using `withLock` instead of this method and
     /// `unlock`, to simplify lock handling.
     @inlinable
-    public func lock() {
+    func lock() {
         self._storage.lock()
     }
 
@@ -273,7 +273,7 @@ public struct NIOLock {
     /// Whenever possible, consider using `withLock` instead of this method and
     /// `lock`, to simplify lock handling.
     @inlinable
-    public func unlock() {
+    func unlock() {
         self._storage.unlock()
     }
 
@@ -293,7 +293,7 @@ extension NIOLock {
     /// - Parameter body: The block to execute while holding the lock.
     /// - Returns: The value returned by the block.
     @inlinable
-    public func withLock<T>(_ body: () throws -> T) rethrows -> T {
+    func withLock<T>(_ body: () throws -> T) rethrows -> T {
         self.lock()
         defer {
             self.unlock()
@@ -302,7 +302,7 @@ extension NIOLock {
     }
 
     @inlinable
-    public func withLockVoid(_ body: () throws -> Void) rethrows {
+    func withLockVoid(_ body: () throws -> Void) rethrows {
         try self.withLock(body)
     }
 }
@@ -314,4 +314,19 @@ extension UnsafeMutablePointer {
     func assertValidAlignment() {
         assert(UInt(bitPattern: self) % UInt(MemoryLayout<Pointee>.alignment) == 0)
     }
+}
+
+/// A utility function that runs the body code only in debug builds, without
+/// emitting compiler warnings.
+///
+/// This is currently the only way to do this in Swift: see
+/// https://forums.swift.org/t/support-debug-only-code/11037 for a discussion.
+@inlinable
+internal func debugOnly(_ body: () -> Void) {
+    assert(
+        {
+            body()
+            return true
+        }()
+    )
 }
