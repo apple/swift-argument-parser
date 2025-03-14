@@ -132,9 +132,15 @@ extension Name {
 }
 
 extension String {
+  #if canImport(FoundationEssentials)
   fileprivate func fishEscape() -> String {
     replacing("'", with: #"\'"#)
   }
+  #else
+  fileprivate func fishEscape() -> String {
+    replacingOccurrences(of: "'", with: #"\'"#)
+  }
+  #endif
 }
 
 extension FishCompletionsGenerator {

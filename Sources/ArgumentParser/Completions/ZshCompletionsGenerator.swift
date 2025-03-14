@@ -221,10 +221,20 @@ extension [ParsableCommand.Type] {
 }
 
 extension String {
+  #if canImport(FoundationEssentials)
   fileprivate func zshEscapeForSingleQuotedExplanation() -> String {
-    replacing(#"[\\\[\]]"#, with: #"\\$0"#)
+    replacing(#/[\\\[\]]/#, with: { "\\\($0.output)" })
     .shellEscapeForSingleQuotedString()
   }
+  #else
+  fileprivate func zshEscapeForSingleQuotedExplanation() -> String {
+    replacingOccurrences(
+      of: #"[\\\[\]]"#,
+      with: #"\\$0"#,
+      options: .regularExpression)
+    .shellEscapeForSingleQuotedString()
+  }
+  #endif
 }
 
 extension ArgumentDefinition {

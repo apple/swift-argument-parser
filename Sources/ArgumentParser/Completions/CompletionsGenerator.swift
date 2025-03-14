@@ -203,14 +203,28 @@ extension Sequence where Element == ParsableCommand.Type {
 }
 
 extension String {
+  #if canImport(FoundationEssentials)
   func shellEscapeForSingleQuotedString(iterationCount: UInt64 = 1) -> Self {
     iterationCount == 0
       ? self
       : replacing("'", with: "'\\''")
         .shellEscapeForSingleQuotedString(iterationCount: iterationCount - 1)
   }
-
+  #else
+  func shellEscapeForSingleQuotedString(iterationCount: UInt64 = 1) -> Self {
+    iterationCount == 0
+      ? self
+      : replacingOccurrences(of: "'", with: "'\\''")
+        .shellEscapeForSingleQuotedString(iterationCount: iterationCount - 1)
+  }
+  #endif
+  #if canImport(FoundationEssentials)
   func shellEscapeForVariableName() -> Self {
     replacing("-", with: "_")
   }
+  #else
+  func shellEscapeForVariableName() -> Self {
+    replacingOccurrences(of: "-", with: "_")
+  }
+  #endif
 }
