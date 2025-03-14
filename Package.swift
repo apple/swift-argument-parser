@@ -119,8 +119,7 @@ var package = Package(
       name: "ArgumentParserUnitTests",
       dependencies: ["ArgumentParser", "ArgumentParserTestHelpers"],
       exclude: ["CMakeLists.txt", "Snapshots"]),
-  ],
-  swiftLanguageModes: [.v6]
+  ]
 )
 
 #if os(macOS)
