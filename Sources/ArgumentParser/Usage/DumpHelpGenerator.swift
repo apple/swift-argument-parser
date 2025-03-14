@@ -11,7 +11,11 @@
 
 #if swift(>=6.0)
 internal import ArgumentParserToolInfo
-internal import class Foundation.JSONEncoder
+#if canImport(FoundationEssentials)
+internal import class FoundationEssentials.ProcessInfo
+#else
+internal import class Foundation.ProcessInfo
+#endif
 #else
 import ArgumentParserToolInfo
 import class Foundation.JSONEncoder

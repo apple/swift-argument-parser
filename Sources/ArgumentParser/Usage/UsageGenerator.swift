@@ -10,7 +10,11 @@
 //===----------------------------------------------------------------------===//
 
 #if swift(>=6.0)
+#if canImport(FoundationEssentials)
+internal import protocol FoundationEssentials.LocalizedError
+#else
 internal import protocol Foundation.LocalizedError
+#endif
 #else
 import protocol Foundation.LocalizedError
 #endif

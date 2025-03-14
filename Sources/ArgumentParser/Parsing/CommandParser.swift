@@ -10,7 +10,11 @@
 //===----------------------------------------------------------------------===//
 
 #if swift(>=6.0)
+#if canImport(FoundationEssentials)
+internal import class FoundationEssentials.ProcessInfo
+#else
 internal import class Foundation.ProcessInfo
+#endif
 #else
 import class Foundation.ProcessInfo
 #endif

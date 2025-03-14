@@ -10,8 +10,12 @@
 //===----------------------------------------------------------------------===//
 
 #if swift(>=6.0)
+#if canImport(FoundationEssentials)
+internal import protocol FoundationEssentials.LocalizedError
+#else
 internal import protocol Foundation.LocalizedError
 internal import class Foundation.NSError
+#endif
 #else
 import protocol Foundation.LocalizedError
 import class Foundation.NSError
@@ -135,11 +139,15 @@ enum MessageInfo {
         // No way to unwrap bind description in pattern
         self = .other(message: error.errorDescription!, exitCode: .failure)
       default:
+        #if canImport(FoundationEssentials)
+        self = .other(message: String(describing: error), exitCode: .failure)
+        #else
         if Swift.type(of: error) is NSError.Type {
           self = .other(message: error.localizedDescription, exitCode: .failure)
         } else {
           self = .other(message: String(describing: error), exitCode: .failure)
         }
+        #endif
       }
     } else if let parserError = parserError {
       let usage: String = {
