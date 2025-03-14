@@ -35,7 +35,7 @@ struct _WrappedParsableCommand<P: ParsableArguments>: ParsableCommand {
 
     // If the type is named something like "TransformOptions", we only want
     // to use "transform" as the command name.
-    if let optionsRange = name.range(of: "_options"),
+    if let optionsRange = name._range(of: "_options"),
       optionsRange.upperBound == name.endIndex
     {
       return String(name[..<optionsRange.lowerBound])

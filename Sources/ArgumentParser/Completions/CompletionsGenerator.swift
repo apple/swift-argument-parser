@@ -206,11 +206,11 @@ extension String {
   func shellEscapeForSingleQuotedString(iterationCount: UInt64 = 1) -> Self {
     iterationCount == 0
       ? self
-      : replacingOccurrences(of: "'", with: "'\\''")
+      : replacing("'", with: "'\\''")
         .shellEscapeForSingleQuotedString(iterationCount: iterationCount - 1)
   }
 
   func shellEscapeForVariableName() -> Self {
-    replacingOccurrences(of: "-", with: "_")
+    replacing("-", with: "_")
   }
 }

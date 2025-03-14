@@ -133,7 +133,7 @@ extension Name {
 
 extension String {
   fileprivate func fishEscape() -> String {
-    replacingOccurrences(of: "'", with: #"\'"#)
+    replacing("'", with: #"\'"#)
   }
 }
 

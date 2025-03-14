@@ -12,13 +12,17 @@
 #if swift(>=6.0)
 internal import ArgumentParserToolInfo
 #if canImport(FoundationEssentials)
-internal import class FoundationEssentials.ProcessInfo
+internal import class FoundationEssentials.JSONEncoder
 #else
-internal import class Foundation.ProcessInfo
+internal import class Foundation.JSONEncoder
 #endif
 #else
 import ArgumentParserToolInfo
+#if canImport(FoundationEssentials)
+import class FoundationEssentials.JSONEncoder
+#else
 import class Foundation.JSONEncoder
+#endif
 #endif
 
 internal struct DumpHelpGenerator {

@@ -17,8 +17,12 @@ internal import protocol Foundation.LocalizedError
 internal import class Foundation.NSError
 #endif
 #else
+#if canImport(FoundationEssentials)
+import protocol FoundationEssentials.LocalizedError
+#else
 import protocol Foundation.LocalizedError
 import class Foundation.NSError
+#endif
 #endif
 
 enum MessageInfo {

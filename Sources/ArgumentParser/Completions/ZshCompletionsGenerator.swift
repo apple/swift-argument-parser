@@ -222,11 +222,7 @@ extension [ParsableCommand.Type] {
 
 extension String {
   fileprivate func zshEscapeForSingleQuotedExplanation() -> String {
-    replacingOccurrences(
-      of: #"[\\\[\]]"#,
-      with: #"\\$0"#,
-      options: .regularExpression
-    )
+    replacing(#"[\\\[\]]"#, with: #"\\$0"#)
     .shellEscapeForSingleQuotedString()
   }
 }
