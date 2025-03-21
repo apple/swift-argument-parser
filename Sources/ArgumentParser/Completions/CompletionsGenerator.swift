@@ -218,6 +218,7 @@ extension String {
         .shellEscapeForSingleQuotedString(iterationCount: iterationCount - 1)
   }
   #endif
+  
   #if canImport(FoundationEssentials)
   func shellEscapeForVariableName() -> Self {
     replacing("-", with: "_")
