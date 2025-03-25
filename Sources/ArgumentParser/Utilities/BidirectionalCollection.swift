@@ -10,55 +10,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-extension BidirectionalCollection where Index == String.Index {
-    internal func _alignIndex(roundingDown i: Index) -> Index {
-        index(i, offsetBy: 0)
-    }
-
-    internal func _alignIndex(roundingUp i: Index) -> Index {
-        let truncated = _alignIndex(roundingDown: i)
-        guard i > truncated && truncated < endIndex else { return truncated }
-        return index(after: truncated)
-    }
-
-    internal func _boundaryAlignedRange(_ r: some RangeExpression<Index>) -> Range<Index> {
-        let range = r.relative(to: self)
-        return _alignIndex(roundingDown: range.lowerBound)..<_alignIndex(roundingUp: range.upperBound)
-    }
-
-    internal func _checkRange(_ r: Range<Index>) -> Range<Index>? {
-        guard r.lowerBound >= startIndex, r.upperBound <= endIndex else {
-            return nil
-        }
-        return r
-    }
-}
 
 extension BidirectionalCollection {
-    func _trimmingCharacters(while predicate: (Element) -> Bool) -> SubSequence {
-        var idx = startIndex
-        while idx < endIndex && predicate(self[idx]) {
-            formIndex(after: &idx)
-        }
-
-        let startOfNonTrimmedRange = idx // Points at the first char not in the set
-        guard startOfNonTrimmedRange != endIndex else {
-            return self[endIndex...]
-        }
-
-        let beforeEnd = index(before: endIndex)
-        guard startOfNonTrimmedRange < beforeEnd else {
-            return self[startOfNonTrimmedRange ..< endIndex]
-        }
-
-        var backIdx = beforeEnd
-        // No need to bound-check because we've already trimmed from the beginning, so we'd definitely break off of this loop before `backIdx` rewinds before `startIndex`
-        while predicate(self[backIdx]) {
-            formIndex(before: &backIdx)
-        }
-        return self[startOfNonTrimmedRange ... backIdx]
-    }
-
     // Equal to calling `index(&idx, offsetBy: -other.count)` with just one loop
     func _index<S: BidirectionalCollection>(_ index: Index, backwardsOffsetByCountOf other: S) -> Index? {
         var idx = index
