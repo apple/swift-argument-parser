@@ -59,25 +59,70 @@ extension CommandInfoV0 {
     }
 
     if let args = self.arguments {
-      for arg in args {
-        guard arg.shouldDisplay else {
-          continue
+      // Group arguments by sectionTitle
+      // This is done to organize the arguments into categories (e.g., optionals, flags)
+      let groupedArgs = Dictionary(
+        grouping: args.filter {
+          $0.shouldDisplay
         }
+      ) { $0.sectionTitle ?? "General" }
 
-        result += "**\(arg.identity()):**\n\n"
-        if let abstract = arg.abstract {
-          result += "*\(abstract)*\n\n"
+      // Iterate through the grouped arguments, sorted by section title
+      // Sorting ensures that the sections appear in a clear, predictable order in the final documentation.
+      // The sections are listed alphabetically based on their title, enhancing readability.
+      for (section, arguments) in groupedArgs.sorted(by: { $0.key < $1.key }) {
+        // Add section title as a Markdown header to the result
+        // Adding section titles as Markdown headers helps separate sections in the documentation,
+        // making it easier for users to navigate and understand the structure of the arguments.
+        result += "## \(section)\n\n"
+
+        // Iterate through each argument in the section
+        // Iterating through each argument allows us to add details for each argument under its respective section.
+        for arg in arguments {
+          // Add the argument identity in bold Markdown format
+          // The argument identity is emphasized in bold to make it stand out in the documentation.
+          result += "**`\(arg.identity())`**\n\n"
+
+          // If the argument has an abstract, add it in italic Markdown format
+          // Including the abstract provides a brief description of the argument's purpose.
+          // The italic formatting helps to distinguish the abstract from other parts of the documentation.
+          if let abstract = arg.abstract {
+            result += "*\(abstract)*\n\n"
+          }
+
+          // If the argument has a discussion, add it directly
+          // If a discussion is available, it is added to provide further explanation on how the argument works.
+          // This additional context is helpful for users to understand the full usage of the argument.
+          if let discussion = arg.discussion {
+            result += discussion + "\n\n"
+          }
+
+          // Add an empty line for separation between arguments
+          // The empty line improves the visual structure of the documentation,
+          // making it easier to read and separating each argument for clarity.
+          result += "\n"
         }
-        if let discussion = arg.discussion {
-          result += discussion + "\n\n"
-        }
-        result += "\n"
       }
     }
 
-    for subcommand in self.subcommands ?? [] {
-      result += subcommand.toMarkdown(path + [self.commandName]) + "\n\n"
+    if let subcommands = self.subcommands, !subcommands.isEmpty {
+      // Add a separate section for subcommands.
+      // Subcommands are treated differently from regular arguments, so they deserve their own section in the documentation.
+      // This helps to visually distinguish subcommands from regular arguments, enhancing readability.
+      result += "## Subcommands\n\n"
+
+      // Iterate through each subcommand and convert it to Markdown format
+      // Each subcommand is processed and added to the documentation under the "Subcommands" section.
+      // This ensures that users can easily identify and understand the subcommands available for the command.
+      for subcommand in subcommands {
+        result += subcommand.toMarkdown(path + [self.commandName])
+      }
     }
+
+    // Trim any unnecessary trailing newline that could have been added inadvertently
+    // By trimming, we prevent extra lines at the end of the generated document
+    // which is important for snapshot comparison.
+    result = result.trimmingCharacters(in: .newlines)
 
     return result
   }

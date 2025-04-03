@@ -8,15 +8,19 @@ A utility for performing maths.
 math [--version] [--help]
 ```
 
-**--version:**
+## Flags
+
+**`--version`**
 
 *Show the version.*
 
 
-**--help:**
+**`--help`**
 
 *Show help information.*
 
+
+## Subcommands
 
 ## math.add
 
@@ -26,29 +30,28 @@ Print the sum of the values.
 math add [--hex-output] [<values>...] [--version] [--help]
 ```
 
-**--hex-output:**
+## Arguments
 
-*Use hexadecimal notation for the result.*
-
-
-**values:**
+**`values`**
 
 *A group of integers to operate on.*
 
 
-**--version:**
+## Flags
+
+**`--hex-output`**
+
+*Use hexadecimal notation for the result.*
+
+
+**`--version`**
 
 *Show the version.*
 
 
-**--help:**
+**`--help`**
 
-*Show help information.*
-
-
-
-
-## math.multiply
+*Show help information.*## math.multiply
 
 Print the product of the values.
 
@@ -56,29 +59,28 @@ Print the product of the values.
 math multiply [--hex-output] [<values>...] [--version] [--help]
 ```
 
-**--hex-output:**
+## Arguments
 
-*Use hexadecimal notation for the result.*
-
-
-**values:**
+**`values`**
 
 *A group of integers to operate on.*
 
 
-**--version:**
+## Flags
+
+**`--hex-output`**
+
+*Use hexadecimal notation for the result.*
+
+
+**`--version`**
 
 *Show the version.*
 
 
-**--help:**
+**`--help`**
 
-*Show help information.*
-
-
-
-
-## math.stats
+*Show help information.*## math.stats
 
 Calculate descriptive statistics.
 
@@ -86,15 +88,19 @@ Calculate descriptive statistics.
 math stats [--version] [--help]
 ```
 
-**--version:**
+## Flags
+
+**`--version`**
 
 *Show the version.*
 
 
-**--help:**
+**`--help`**
 
 *Show help information.*
 
+
+## Subcommands
 
 ### math.stats.average
 
@@ -104,29 +110,30 @@ Print the average of the values.
 math stats average [--kind=<kind>] [<values>...] [--version] [--help]
 ```
 
-**--kind=\<kind\>:**
+## Arguments
 
-*The kind of average to provide.*
-
-
-**values:**
+**`values`**
 
 *A group of floating-point values to operate on.*
 
 
-**--version:**
+## Flags
+
+**`--version`**
 
 *Show the version.*
 
 
-**--help:**
+**`--help`**
 
 *Show help information.*
 
 
+## Optionals
 
+**`--kind=\<kind\>`**
 
-### math.stats.stdev
+*The kind of average to provide.*### math.stats.stdev
 
 Print the standard deviation of the values.
 
@@ -134,24 +141,23 @@ Print the standard deviation of the values.
 math stats stdev [<values>...] [--version] [--help]
 ```
 
-**values:**
+## Arguments
+
+**`values`**
 
 *A group of floating-point values to operate on.*
 
 
-**--version:**
+## Flags
+
+**`--version`**
 
 *Show the version.*
 
 
-**--help:**
+**`--help`**
 
-*Show help information.*
-
-
-
-
-### math.stats.quantiles
+*Show help information.*### math.stats.quantiles
 
 Print the quantiles of the values (TBD).
 
@@ -159,44 +165,43 @@ Print the quantiles of the values (TBD).
 math stats quantiles [<one-of-four>] [<custom-arg>] [<values>...]     [--file=<file>] [--directory=<directory>] [--shell=<shell>] [--custom=<custom>] [--version] [--help]
 ```
 
-**one-of-four:**
+## Arguments
+
+**`one-of-four`**
 
 
-**custom-arg:**
+**`custom-arg`**
 
 
-**values:**
+**`values`**
 
 *A group of floating-point values to operate on.*
 
 
-**--file=\<file\>:**
+## Flags
 
-
-**--directory=\<directory\>:**
-
-
-**--shell=\<shell\>:**
-
-
-**--custom=\<custom\>:**
-
-
-**--version:**
+**`--version`**
 
 *Show the version.*
 
 
-**--help:**
+**`--help`**
 
 *Show help information.*
 
 
+## Optionals
+
+**`--file=\<file\>`**
 
 
+**`--directory=\<directory\>`**
 
 
-## math.help
+**`--shell=\<shell\>`**
+
+
+**`--custom=\<custom\>`**## math.help
 
 Show subcommand help information.
 
@@ -204,9 +209,6 @@ Show subcommand help information.
 math help [<subcommands>...] 
 ```
 
-**subcommands:**
+## Arguments
 
-
-
-
-
+**`subcommands`**

@@ -17,6 +17,7 @@
           "kind" : "long",
           "name" : "version"
         },
+        "sectionTitle" : "Flags",
         "shouldDisplay" : true,
         "valueName" : "version"
       },
@@ -39,6 +40,7 @@
           "kind" : "long",
           "name" : "help"
         },
+        "sectionTitle" : "Flags",
         "shouldDisplay" : true,
         "valueName" : "help"
       }
@@ -79,6 +81,7 @@
               "kind" : "long",
               "name" : "kind"
             },
+            "sectionTitle" : "Optionals",
             "shouldDisplay" : true,
             "valueName" : "kind"
           },
@@ -87,6 +90,7 @@
             "isOptional" : true,
             "isRepeating" : true,
             "kind" : "positional",
+            "sectionTitle" : "Arguments",
             "shouldDisplay" : true,
             "valueName" : "values"
           },
@@ -105,6 +109,7 @@
               "kind" : "long",
               "name" : "version"
             },
+            "sectionTitle" : "Flags",
             "shouldDisplay" : true,
             "valueName" : "version"
           },
@@ -127,6 +132,7 @@
               "kind" : "long",
               "name" : "help"
             },
+            "sectionTitle" : "Flags",
             "shouldDisplay" : true,
             "valueName" : "help"
           }
@@ -146,6 +152,7 @@
             "isOptional" : true,
             "isRepeating" : true,
             "kind" : "positional",
+            "sectionTitle" : "Arguments",
             "shouldDisplay" : true,
             "valueName" : "values"
           },
@@ -164,6 +171,7 @@
               "kind" : "long",
               "name" : "version"
             },
+            "sectionTitle" : "Flags",
             "shouldDisplay" : true,
             "valueName" : "version"
           },
@@ -186,6 +194,7 @@
               "kind" : "long",
               "name" : "help"
             },
+            "sectionTitle" : "Flags",
             "shouldDisplay" : true,
             "valueName" : "help"
           }
@@ -214,6 +223,7 @@
             "isOptional" : true,
             "isRepeating" : false,
             "kind" : "positional",
+            "sectionTitle" : "Arguments",
             "shouldDisplay" : true,
             "valueName" : "one-of-four"
           },
@@ -226,6 +236,7 @@
             "isOptional" : true,
             "isRepeating" : false,
             "kind" : "positional",
+            "sectionTitle" : "Arguments",
             "shouldDisplay" : true,
             "valueName" : "custom-arg"
           },
@@ -234,6 +245,7 @@
             "isOptional" : true,
             "isRepeating" : true,
             "kind" : "positional",
+            "sectionTitle" : "Arguments",
             "shouldDisplay" : true,
             "valueName" : "values"
           },
@@ -251,6 +263,7 @@
               "kind" : "long",
               "name" : "test-success-exit-code"
             },
+            "sectionTitle" : "Flags",
             "shouldDisplay" : false,
             "valueName" : "test-success-exit-code"
           },
@@ -268,6 +281,7 @@
               "kind" : "long",
               "name" : "test-failure-exit-code"
             },
+            "sectionTitle" : "Flags",
             "shouldDisplay" : false,
             "valueName" : "test-failure-exit-code"
           },
@@ -285,6 +299,7 @@
               "kind" : "long",
               "name" : "test-validation-exit-code"
             },
+            "sectionTitle" : "Flags",
             "shouldDisplay" : false,
             "valueName" : "test-validation-exit-code"
           },
@@ -302,6 +317,7 @@
               "kind" : "long",
               "name" : "test-custom-exit-code"
             },
+            "sectionTitle" : "Optionals",
             "shouldDisplay" : false,
             "valueName" : "test-custom-exit-code"
           },
@@ -327,6 +343,7 @@
               "kind" : "long",
               "name" : "file"
             },
+            "sectionTitle" : "Optionals",
             "shouldDisplay" : true,
             "valueName" : "file"
           },
@@ -349,6 +366,7 @@
               "kind" : "long",
               "name" : "directory"
             },
+            "sectionTitle" : "Optionals",
             "shouldDisplay" : true,
             "valueName" : "directory"
           },
@@ -371,6 +389,7 @@
               "kind" : "long",
               "name" : "shell"
             },
+            "sectionTitle" : "Optionals",
             "shouldDisplay" : true,
             "valueName" : "shell"
           },
@@ -393,6 +412,7 @@
               "kind" : "long",
               "name" : "custom"
             },
+            "sectionTitle" : "Optionals",
             "shouldDisplay" : true,
             "valueName" : "custom"
           },
@@ -411,6 +431,7 @@
               "kind" : "long",
               "name" : "version"
             },
+            "sectionTitle" : "Flags",
             "shouldDisplay" : true,
             "valueName" : "version"
           },
@@ -433,6 +454,7 @@
               "kind" : "long",
               "name" : "help"
             },
+            "sectionTitle" : "Flags",
             "shouldDisplay" : true,
             "valueName" : "help"
           }
@@ -451,6 +473,7 @@
             "isOptional" : true,
             "isRepeating" : true,
             "kind" : "positional",
+            "sectionTitle" : "Arguments",
             "shouldDisplay" : true,
             "valueName" : "subcommands"
           },
@@ -476,6 +499,7 @@
               "kind" : "long",
               "name" : "help"
             },
+            "sectionTitle" : "Flags",
             "shouldDisplay" : false,
             "valueName" : "help"
           }

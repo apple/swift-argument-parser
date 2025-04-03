@@ -218,7 +218,23 @@ public struct ArgumentInfoV0: Codable, Hashable {
     self.kind = kind
 
     self.shouldDisplay = shouldDisplay
-    self.sectionTitle = sectionTitle
+
+    // The section title helps categorize arguments
+    // for better organization in documentation.
+
+    // The switch statement checks the kind of argument
+    // and assigns a default section title related to the argument type
+    // if the provided one is nil.
+    switch kind {
+    case .positional:
+      self.sectionTitle = sectionTitle ?? "Arguments"
+
+    case .option:
+      self.sectionTitle = sectionTitle ?? "Optionals"
+
+    case .flag:
+      self.sectionTitle = sectionTitle ?? "Flags"
+    }
 
     self.isOptional = isOptional
     self.isRepeating = isRepeating
