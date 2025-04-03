@@ -35,7 +35,6 @@
           "kind" : "long",
           "name" : "color"
         },
-        "sectionTitle" : "Optionals",
         "shouldDisplay" : true,
         "valueName" : "color"
       },
@@ -74,7 +73,6 @@
           "kind" : "long",
           "name" : "default-color"
         },
-        "sectionTitle" : "Optionals",
         "shouldDisplay" : true,
         "valueName" : "default-color"
       },
@@ -112,7 +110,6 @@
           "kind" : "long",
           "name" : "opt"
         },
-        "sectionTitle" : "Optionals",
         "shouldDisplay" : true,
         "valueName" : "opt"
       },
@@ -150,7 +147,6 @@
           "kind" : "long",
           "name" : "extra"
         },
-        "sectionTitle" : "Optionals",
         "shouldDisplay" : true,
         "valueName" : "extra"
       },
@@ -169,7 +165,6 @@
           "kind" : "long",
           "name" : "discussion"
         },
-        "sectionTitle" : "Optionals",
         "shouldDisplay" : true,
         "valueName" : "discussion"
       },
@@ -192,7 +187,6 @@
           "kind" : "long",
           "name" : "help"
         },
-        "sectionTitle" : "Flags",
         "shouldDisplay" : true,
         "valueName" : "help"
       }
@@ -207,7 +201,6 @@
             "isOptional" : true,
             "isRepeating" : true,
             "kind" : "positional",
-            "sectionTitle" : "Arguments",
             "shouldDisplay" : true,
             "valueName" : "subcommands"
           },
@@ -233,7 +226,6 @@
               "kind" : "long",
               "name" : "help"
             },
-            "sectionTitle" : "Flags",
             "shouldDisplay" : false,
             "valueName" : "help"
           }

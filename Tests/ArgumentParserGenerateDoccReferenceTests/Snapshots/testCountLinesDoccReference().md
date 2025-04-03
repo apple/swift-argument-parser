@@ -25,7 +25,7 @@ count-lines [<input-file>] [--prefix=<prefix>] [--verbose] [--help]
 *Show help information.*
 
 
-## Optionals
+## Options
 
 **`--prefix=\<prefix\>`**
 
@@ -42,6 +42,6 @@ Show subcommand help information.
 count-lines help [<subcommands>...] 
 ```
 
-## Arguments
+## General
 
 **`subcommands`**

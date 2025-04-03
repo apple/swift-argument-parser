@@ -30,18 +30,16 @@ Print the sum of the values.
 math add [--hex-output] [<values>...] [--version] [--help]
 ```
 
-## Arguments
-
-**`values`**
-
-*A group of integers to operate on.*
-
-
-## Flags
+## General
 
 **`--hex-output`**
 
 *Use hexadecimal notation for the result.*
+
+
+**`values`**
+
+*A group of integers to operate on.*
 
 
 **`--version`**
@@ -59,18 +57,16 @@ Print the product of the values.
 math multiply [--hex-output] [<values>...] [--version] [--help]
 ```
 
-## Arguments
-
-**`values`**
-
-*A group of integers to operate on.*
-
-
-## Flags
+## General
 
 **`--hex-output`**
 
 *Use hexadecimal notation for the result.*
+
+
+**`values`**
+
+*A group of integers to operate on.*
 
 
 **`--version`**
@@ -88,7 +84,7 @@ Calculate descriptive statistics.
 math stats [--version] [--help]
 ```
 
-## Flags
+## General
 
 **`--version`**
 
@@ -110,14 +106,17 @@ Print the average of the values.
 math stats average [--kind=<kind>] [<values>...] [--version] [--help]
 ```
 
-## Arguments
+## General
+
+**`--kind=\<kind\>`**
+
+*The kind of average to provide.*
+
 
 **`values`**
 
 *A group of floating-point values to operate on.*
 
-
-## Flags
 
 **`--version`**
 
@@ -126,14 +125,7 @@ math stats average [--kind=<kind>] [<values>...] [--version] [--help]
 
 **`--help`**
 
-*Show help information.*
-
-
-## Optionals
-
-**`--kind=\<kind\>`**
-
-*The kind of average to provide.*### math.stats.stdev
+*Show help information.*### math.stats.stdev
 
 Print the standard deviation of the values.
 
@@ -141,14 +133,12 @@ Print the standard deviation of the values.
 math stats stdev [<values>...] [--version] [--help]
 ```
 
-## Arguments
+## General
 
 **`values`**
 
 *A group of floating-point values to operate on.*
 
-
-## Flags
 
 **`--version`**
 
@@ -165,7 +155,7 @@ Print the quantiles of the values (TBD).
 math stats quantiles [<one-of-four>] [<custom-arg>] [<values>...]     [--file=<file>] [--directory=<directory>] [--shell=<shell>] [--custom=<custom>] [--version] [--help]
 ```
 
-## Arguments
+## General
 
 **`one-of-four`**
 
@@ -178,20 +168,6 @@ math stats quantiles [<one-of-four>] [<custom-arg>] [<values>...]     [--file=<f
 *A group of floating-point values to operate on.*
 
 
-## Flags
-
-**`--version`**
-
-*Show the version.*
-
-
-**`--help`**
-
-*Show help information.*
-
-
-## Optionals
-
 **`--file=\<file\>`**
 
 
@@ -201,7 +177,17 @@ math stats quantiles [<one-of-four>] [<custom-arg>] [<values>...]     [--file=<f
 **`--shell=\<shell\>`**
 
 
-**`--custom=\<custom\>`**## math.help
+**`--custom=\<custom\>`**
+
+
+**`--version`**
+
+*Show the version.*
+
+
+**`--help`**
+
+*Show help information.*## math.help
 
 Show subcommand help information.
 
@@ -209,6 +195,6 @@ Show subcommand help information.
 math help [<subcommands>...] 
 ```
 
-## Arguments
+## General
 
 **`subcommands`**

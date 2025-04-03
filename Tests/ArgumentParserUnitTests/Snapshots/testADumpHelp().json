@@ -29,7 +29,6 @@
           "kind" : "long",
           "name" : "enumerated-option"
         },
-        "sectionTitle" : "Optionals",
         "shouldDisplay" : true,
         "valueName" : "enumerated-option"
       },
@@ -62,7 +61,6 @@
           "kind" : "long",
           "name" : "enumerated-option-with-default-value"
         },
-        "sectionTitle" : "Optionals",
         "shouldDisplay" : true,
         "valueName" : "enumerated-option-with-default-value"
       },
@@ -80,7 +78,6 @@
           "kind" : "long",
           "name" : "no-help-option"
         },
-        "sectionTitle" : "Optionals",
         "shouldDisplay" : true,
         "valueName" : "no-help-option"
       },
@@ -99,7 +96,6 @@
           "kind" : "long",
           "name" : "int-option"
         },
-        "sectionTitle" : "Optionals",
         "shouldDisplay" : true,
         "valueName" : "int-option"
       },
@@ -119,7 +115,6 @@
           "kind" : "long",
           "name" : "int-option-with-default-value"
         },
-        "sectionTitle" : "Optionals",
         "shouldDisplay" : true,
         "valueName" : "int-option-with-default-value"
       },
@@ -127,7 +122,6 @@
         "isOptional" : false,
         "isRepeating" : false,
         "kind" : "positional",
-        "sectionTitle" : "Arguments",
         "shouldDisplay" : true,
         "valueName" : "arg"
       },
@@ -136,7 +130,6 @@
         "isOptional" : false,
         "isRepeating" : false,
         "kind" : "positional",
-        "sectionTitle" : "Arguments",
         "shouldDisplay" : true,
         "valueName" : "arg-with-help"
       },
@@ -146,7 +139,6 @@
         "isOptional" : true,
         "isRepeating" : false,
         "kind" : "positional",
-        "sectionTitle" : "Arguments",
         "shouldDisplay" : true,
         "valueName" : "arg-with-default-value"
       },
@@ -169,7 +161,6 @@
           "kind" : "long",
           "name" : "help"
         },
-        "sectionTitle" : "Flags",
         "shouldDisplay" : true,
         "valueName" : "help"
       }
@@ -184,7 +175,6 @@
             "isOptional" : true,
             "isRepeating" : true,
             "kind" : "positional",
-            "sectionTitle" : "Arguments",
             "shouldDisplay" : true,
             "valueName" : "subcommands"
           },
@@ -210,7 +200,6 @@
               "kind" : "long",
               "name" : "help"
             },
-            "sectionTitle" : "Flags",
             "shouldDisplay" : false,
             "valueName" : "help"
           }

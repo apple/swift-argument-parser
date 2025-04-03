@@ -25,7 +25,7 @@ repeat [--count=<count>] [--include-counter] <phrase> [--help]
 *Show help information.*
 
 
-## Optionals
+## Options
 
 **`--count=\<count\>`**
 
@@ -42,6 +42,6 @@ Show subcommand help information.
 repeat help [<subcommands>...] 
 ```
 
-## Arguments
+## General
 
 **`subcommands`**

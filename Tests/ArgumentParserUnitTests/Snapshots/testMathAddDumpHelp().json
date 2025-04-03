@@ -21,7 +21,6 @@
           "kind" : "long",
           "name" : "hex-output"
         },
-        "sectionTitle" : "Flags",
         "shouldDisplay" : true,
         "valueName" : "hex-output"
       },
@@ -30,7 +29,6 @@
         "isOptional" : true,
         "isRepeating" : true,
         "kind" : "positional",
-        "sectionTitle" : "Arguments",
         "shouldDisplay" : true,
         "valueName" : "values"
       },
@@ -49,7 +47,6 @@
           "kind" : "long",
           "name" : "version"
         },
-        "sectionTitle" : "Flags",
         "shouldDisplay" : true,
         "valueName" : "version"
       },
@@ -72,7 +69,6 @@
           "kind" : "long",
           "name" : "help"
         },
-        "sectionTitle" : "Flags",
         "shouldDisplay" : true,
         "valueName" : "help"
       }
@@ -87,7 +83,6 @@
             "isOptional" : true,
             "isRepeating" : true,
             "kind" : "positional",
-            "sectionTitle" : "Arguments",
             "shouldDisplay" : true,
             "valueName" : "subcommands"
           },
@@ -113,7 +108,6 @@
               "kind" : "long",
               "name" : "help"
             },
-            "sectionTitle" : "Flags",
             "shouldDisplay" : false,
             "valueName" : "help"
           }

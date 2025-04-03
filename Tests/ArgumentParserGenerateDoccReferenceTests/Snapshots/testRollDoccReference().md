@@ -18,7 +18,7 @@ roll [--times=<n>] [--sides=<m>] [--seed=<seed>] [--verbose] [--help]
 *Show help information.*
 
 
-## Optionals
+## Options
 
 **`--times=\<n\>`**
 
@@ -47,6 +47,6 @@ Show subcommand help information.
 roll help [<subcommands>...] 
 ```
 
-## Arguments
+## General
 
 **`subcommands`**
