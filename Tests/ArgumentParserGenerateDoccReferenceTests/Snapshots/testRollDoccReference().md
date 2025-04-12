@@ -37,8 +37,6 @@ Use this option to override the default value of a six-sided die.
 *A seed to use for repeatable random generation.*
 
 
-## Subcommands
-
 ## roll.help
 
 Show subcommand help information.
@@ -47,6 +45,6 @@ Show subcommand help information.
 roll help [<subcommands>...] 
 ```
 
-## General
+## Arguments
 
 **`subcommands`**

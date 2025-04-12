@@ -65,7 +65,7 @@ extension CommandInfoV0 {
         grouping: args.filter {
           $0.shouldDisplay
         }
-      ) { $0.sectionTitle ?? "General" }
+      ) { self.assignSectionTitle(to: $0) }
 
       // Iterate through the grouped arguments, sorted by section title
       // Sorting ensures that the sections appear in a clear, predictable order in the final documentation.
@@ -105,18 +105,8 @@ extension CommandInfoV0 {
       }
     }
 
-    if let subcommands = self.subcommands, !subcommands.isEmpty {
-      // Add a separate section for subcommands.
-      // Subcommands are treated differently from regular arguments, so they deserve their own section in the documentation.
-      // This helps to visually distinguish subcommands from regular arguments, enhancing readability.
-      result += "## Subcommands\n\n"
-
-      // Iterate through each subcommand and convert it to Markdown format
-      // Each subcommand is processed and added to the documentation under the "Subcommands" section.
-      // This ensures that users can easily identify and understand the subcommands available for the command.
-      for subcommand in subcommands {
-        result += subcommand.toMarkdown(path + [self.commandName])
-      }
+    for subcommand in self.subcommands ?? [] {
+      result += subcommand.toMarkdown(path + [self.commandName]) + "\n\n"
     }
 
     // Trim any unnecessary trailing newline that could have been added inadvertently
@@ -134,7 +124,24 @@ extension CommandInfoV0 {
 
     return args.map { $0.usage() }.joined(separator: " ")
   }
+
+  // Assign a default section title based on the arguments types
+  func assignSectionTitle(to argument: ArgumentInfoV0) -> String {
+    if let sectionTitle = argument.sectionTitle {
+      return sectionTitle
+    } else {
+      switch argument.kind {
+      case .positional:
+        return "Arguments"
+      case .option:
+        return "Options"
+      case .flag:
+        return "Flags"
+      }
+    }
+  }
 }
+
 
 extension ArgumentInfoV0 {
   public func usage() -> String {

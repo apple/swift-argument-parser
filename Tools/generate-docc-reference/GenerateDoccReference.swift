@@ -18,7 +18,6 @@ enum GenerateDoccReferenceError: Error {
   case unableToParseToolOutput(error: Error)
   case unsupportedDumpHelpVersion(expected: Int, found: Int)
   case failedToGenerateDoccReference(error: Error)
-  case argumentAssignmentFailed(description: String)
 }
 
 extension GenerateDoccReferenceError: CustomStringConvertible {
@@ -29,12 +28,9 @@ extension GenerateDoccReferenceError: CustomStringConvertible {
     case .unableToParseToolOutput(let error):
       return "Failed to parse tool output: \(error)"
     case .unsupportedDumpHelpVersion(let expected, let found):
-      return
-        "Unsupported dump help version, expected '\(expected)' but found: '\(found)'"
+      return "Unsupported dump help version, expected '\(expected)' but found: '\(found)'"
     case .failedToGenerateDoccReference(let error):
       return "Failed to generated docc reference: \(error)"
-    case .argumentAssignmentFailed(let description):
-      return "Argument assignment failed: \(description)"
     }
   }
 }
@@ -102,30 +98,7 @@ struct GenerateDoccReference: ParsableCommand {
     } catch {
       throw GenerateDoccReferenceError.unableToParseToolOutput(error: error)
     }
-
-    do {
-      // Ensure each argument has a properly categorized section title.
-      // This improves documentation clarity and makes the generated output easier to navigate.
-      var modifiedArguments = toolInfo.command.arguments ?? []
-
-      // Assign a section title to the argument to ensure it's correctly classified
-      // (e.g., positional arguments, options, or flags). This enhances the structure
-      // of the generated docc reference.
-      modifiedArguments = try modifiedArguments.map { argument in
-        var modifiedArgument = argument
-        modifiedArgument.sectionTitle = try assignSectionTitle(to: argument)
-
-        return modifiedArgument
-      }
-
-      toolInfo.command.arguments = modifiedArguments
-    } catch {
-      throw GenerateDoccReferenceError.argumentAssignmentFailed(
-        description:
-          "Failed to assign section titles to arguments: \(error.localizedDescription)"
-      )
-    }
-
+    
     do {
       if self.outputDirectory == "-" {
         try self.generatePages(from: toolInfo.command, savingTo: nil)
@@ -151,21 +124,6 @@ struct GenerateDoccReference: ParsableCommand {
       try page.write(to: outputPath, atomically: false, encoding: .utf8)
     } else {
       print(page)
-    }
-  }
-
-  func assignSectionTitle(to argument: ArgumentInfoV0) throws -> String {
-    if let sectionTitle = argument.sectionTitle {
-      return sectionTitle
-    } else {
-      switch argument.kind {
-      case .positional:
-        return "Arguments"
-      case .option:
-        return "Options"
-      case .flag:
-        return "Flags"
-      }
     }
   }
 }

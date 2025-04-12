@@ -32,8 +32,6 @@ count-lines [<input-file>] [--prefix=<prefix>] [--verbose] [--help]
 *Only count lines with this prefix.*
 
 
-## Subcommands
-
 ## count-lines.help
 
 Show subcommand help information.
@@ -42,6 +40,6 @@ Show subcommand help information.
 count-lines help [<subcommands>...] 
 ```
 
-## General
+## Arguments
 
 **`subcommands`**

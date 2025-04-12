@@ -27,8 +27,6 @@ color --fav=<fav> [--second=<second>] [--help]
 This is optional.
 
 
-## Subcommands
-
 ## color.help
 
 Show subcommand help information.
@@ -37,6 +35,6 @@ Show subcommand help information.
 color help [<subcommands>...] 
 ```
 
-## General
+## Arguments
 
 **`subcommands`**

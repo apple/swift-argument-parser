@@ -32,8 +32,6 @@ repeat [--count=<count>] [--include-counter] <phrase> [--help]
 *The number of times to repeat 'phrase'.*
 
 
-## Subcommands
-
 ## repeat.help
 
 Show subcommand help information.
@@ -42,6 +40,6 @@ Show subcommand help information.
 repeat help [<subcommands>...] 
 ```
 
-## General
+## Arguments
 
 **`subcommands`**
