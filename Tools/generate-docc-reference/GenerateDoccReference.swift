@@ -49,7 +49,7 @@ struct GenerateDoccReference: ParsableCommand {
     name: .shortAndLong,
     help: "Directory to save generated docc reference. Use '-' for stdout.")
   var outputDirectory: String
-  
+
   @Option(
     name: .shortAndLong,
     help: "Use docc flavored markdown for the generated output.")
@@ -111,7 +111,8 @@ struct GenerateDoccReference: ParsableCommand {
 
     do {
       if self.outputDirectory == "-" {
-        try self.generatePages(from: toolInfo.command, savingTo: nil, doccFlavored: doccFlavored)
+        try self.generatePages(
+          from: toolInfo.command, savingTo: nil, doccFlavored: doccFlavored)
       } else {
         try self.generatePages(
           from: toolInfo.command,
@@ -123,13 +124,15 @@ struct GenerateDoccReference: ParsableCommand {
         error: error)
     }
   }
-  
+
   /// Generates a markdown file from the CommandInfoV0 object you provide.
   /// - Parameters:
   ///   - command: The command to parse into a markdown output.
   ///   - directory: The directory to save the generated markdown file, printing it if `nil`.
   ///   - doccFlavored: A Boolean value the indicates whether to generate docc-flavored markdown.
-  func generatePages(from command: CommandInfoV0, savingTo directory: URL?, doccFlavored: Bool)
+  func generatePages(
+    from command: CommandInfoV0, savingTo directory: URL?, doccFlavored: Bool
+  )
     throws
   {
     let page = command.toMarkdown([], doccFlavored: doccFlavored)

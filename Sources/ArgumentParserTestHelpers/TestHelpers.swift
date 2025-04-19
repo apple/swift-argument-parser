@@ -530,7 +530,7 @@ extension XCTest {
     } else {
       command = [
         "generate-docc-reference", commandURL.path,
-        "--output-directory", "-"
+        "--output-directory", "-",
       ]
     }
     let actual = try AssertExecuteCommand(

@@ -88,7 +88,9 @@ extension CommandInfoV0 {
     }
 
     for subcommand in self.subcommands ?? [] {
-      result += subcommand.toMarkdown(path + [self.commandName], doccFlavored: doccFlavored) + "\n\n"
+      result +=
+        subcommand.toMarkdown(
+          path + [self.commandName], doccFlavored: doccFlavored) + "\n\n"
     }
 
     return result

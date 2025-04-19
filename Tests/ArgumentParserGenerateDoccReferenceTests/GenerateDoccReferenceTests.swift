@@ -23,7 +23,7 @@ final class GenerateDoccReferenceTests: XCTestCase {
     guard #available(macOS 12, *) else { return }
     try assertGeneratedReference(command: "count-lines", doccFlavored: true)
   }
-#endif
+  #endif
 
   func testColorMarkdownReference() throws {
     try assertGeneratedReference(command: "color", doccFlavored: false)
@@ -38,7 +38,6 @@ final class GenerateDoccReferenceTests: XCTestCase {
   func testMathDoccReference() throws {
     try assertGeneratedReference(command: "math", doccFlavored: true)
   }
-
 
   func testRepeatMarkdownReference() throws {
     try assertGeneratedReference(command: "repeat", doccFlavored: false)
