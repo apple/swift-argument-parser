@@ -130,6 +130,7 @@ struct GenerateDoccReference: ParsableCommand {
   ///   - command: The command to parse into a markdown output.
   ///   - directory: The directory to save the generated markdown file, printing it if `nil`.
   ///   - doccFlavored: A Boolean value the indicates whether to generate docc-flavored markdown.
+  /// - Throws: An error if the markdown file cannot be generated or saved.
   func generatePages(
     from command: CommandInfoV0, savingTo directory: URL?, doccFlavored: Bool
   )
