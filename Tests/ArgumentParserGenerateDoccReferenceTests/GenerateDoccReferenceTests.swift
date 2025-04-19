@@ -14,25 +14,43 @@ import XCTest
 
 final class GenerateDoccReferenceTests: XCTestCase {
   #if os(macOS)
+  func testCountLinesMarkdownReference() throws {
+    guard #available(macOS 12, *) else { return }
+    try assertGeneratedReference(command: "count-lines", doccFlavored: false)
+  }
+
   func testCountLinesDoccReference() throws {
     guard #available(macOS 12, *) else { return }
-    try assertGenerateDoccReference(command: "count-lines")
+    try assertGeneratedReference(command: "count-lines", doccFlavored: true)
   }
-  #endif
+#endif
 
+  func testColorMarkdownReference() throws {
+    try assertGeneratedReference(command: "color", doccFlavored: false)
+  }
   func testColorDoccReference() throws {
-    try assertGenerateDoccReference(command: "color")
+    try assertGeneratedReference(command: "color", doccFlavored: true)
   }
 
+  func testMathMarkdownReference() throws {
+    try assertGeneratedReference(command: "math", doccFlavored: false)
+  }
   func testMathDoccReference() throws {
-    try assertGenerateDoccReference(command: "math")
+    try assertGeneratedReference(command: "math", doccFlavored: true)
   }
 
+
+  func testRepeatMarkdownReference() throws {
+    try assertGeneratedReference(command: "repeat", doccFlavored: false)
+  }
   func testRepeatDoccReference() throws {
-    try assertGenerateDoccReference(command: "repeat")
+    try assertGeneratedReference(command: "repeat", doccFlavored: true)
   }
 
+  func testRollMarkdownReference() throws {
+    try assertGeneratedReference(command: "roll", doccFlavored: false)
+  }
   func testRollDoccReference() throws {
-    try assertGenerateDoccReference(command: "roll")
+    try assertGeneratedReference(command: "roll", doccFlavored: true)
   }
 }

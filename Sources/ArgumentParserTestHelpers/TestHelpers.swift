@@ -448,7 +448,7 @@ extension XCTest {
       ProcessInfo.processInfo.environment["RECORD_SNAPSHOTS"] != nil
 
     if record || recordEnvironment || !snapshotExists {
-      let recordedValue = actual + "\n"
+      let recordedValue = actual
       try FileManager.default.createDirectory(
         at: snapshotDirectoryURL,
         withIntermediateDirectories: true,
@@ -507,8 +507,9 @@ extension XCTest {
       line: line)
   }
 
-  public func assertGenerateDoccReference(
+  public func assertGeneratedReference(
     command: String,
+    doccFlavored: Bool,
     record: Bool = false,
     test: StaticString = #function,
     file: StaticString = #filePath,
@@ -519,10 +520,19 @@ extension XCTest {
     #endif
 
     let commandURL = debugURL.appendingPathComponent(command)
-    let command = [
-      "generate-docc-reference", commandURL.path,
-      "--output-directory", "-",
-    ]
+    let command: [String]
+    if doccFlavored {
+      command = [
+        "generate-docc-reference", commandURL.path,
+        "--output-directory", "-",
+        "--docc-flavored", "true",
+      ]
+    } else {
+      command = [
+        "generate-docc-reference", commandURL.path,
+        "--output-directory", "-"
+      ]
+    }
     let actual = try AssertExecuteCommand(
       command: command,
       file: file,

@@ -49,6 +49,11 @@ struct GenerateDoccReference: ParsableCommand {
     name: .shortAndLong,
     help: "Directory to save generated docc reference. Use '-' for stdout.")
   var outputDirectory: String
+  
+  @Option(
+    name: .shortAndLong,
+    help: "Use docc flavored markdown for the generated output.")
+  var doccFlavored: Bool = false
 
   func validate() throws {
     if outputDirectory != "-" {
@@ -71,6 +76,8 @@ struct GenerateDoccReference: ParsableCommand {
 
   func run() throws {
     let data: Data
+    // runs the tool with the --experimental-dump-help argument to capture
+    // the output.
     do {
       let tool = URL(fileURLWithPath: tool)
       let output = try executeCommand(
@@ -80,9 +87,12 @@ struct GenerateDoccReference: ParsableCommand {
       throw GenerateDoccReferenceError.failedToRunSubprocess(error: error)
     }
 
+    // ToolInfoHeader is intentionally kept internal to argument parser to
+    // allow the library some flexibility to update/change its content/format.
     do {
       let toolInfoThin = try JSONDecoder().decode(
         ToolInfoHeader.self, from: data)
+      // verify the serialization version is known/expected
       guard toolInfoThin.serializationVersion == 0 else {
         throw GenerateDoccReferenceError.unsupportedDumpHelpVersion(
           expected: 0,
@@ -101,22 +111,28 @@ struct GenerateDoccReference: ParsableCommand {
 
     do {
       if self.outputDirectory == "-" {
-        try self.generatePages(from: toolInfo.command, savingTo: nil)
+        try self.generatePages(from: toolInfo.command, savingTo: nil, doccFlavored: doccFlavored)
       } else {
         try self.generatePages(
           from: toolInfo.command,
-          savingTo: URL(fileURLWithPath: outputDirectory))
+          savingTo: URL(fileURLWithPath: outputDirectory),
+          doccFlavored: doccFlavored)
       }
     } catch {
       throw GenerateDoccReferenceError.failedToGenerateDoccReference(
         error: error)
     }
   }
-
-  func generatePages(from command: CommandInfoV0, savingTo directory: URL?)
+  
+  /// Generates a markdown file from the CommandInfoV0 object you provide.
+  /// - Parameters:
+  ///   - command: The command to parse into a markdown output.
+  ///   - directory: The directory to save the generated markdown file, printing it if `nil`.
+  ///   - doccFlavored: A Boolean value the indicates whether to generate docc-flavored markdown.
+  func generatePages(from command: CommandInfoV0, savingTo directory: URL?, doccFlavored: Bool)
     throws
   {
-    let page = command.toMarkdown([])
+    let page = command.toMarkdown([], doccFlavored: doccFlavored)
 
     if let directory = directory {
       let fileName = command.doccReferenceFileName
