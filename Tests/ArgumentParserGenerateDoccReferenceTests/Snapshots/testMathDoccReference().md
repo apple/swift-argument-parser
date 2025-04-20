@@ -8,7 +8,7 @@ A utility for performing maths.
 math [--version] [--help]
 ```
 
-## Flags
+### Flags
 
 **`--version`**
 
@@ -28,14 +28,14 @@ Print the sum of the values.
 math add [--hex-output] [<values>...] [--version] [--help]
 ```
 
-## Arguments
+### Arguments
 
 **`values`**
 
 *A group of integers to operate on.*
 
 
-## Flags
+### Flags
 
 **`--hex-output`**
 
@@ -59,14 +59,14 @@ Print the product of the values.
 math multiply [--hex-output] [<values>...] [--version] [--help]
 ```
 
-## Arguments
+### Arguments
 
 **`values`**
 
 *A group of integers to operate on.*
 
 
-## Flags
+### Flags
 
 **`--hex-output`**
 
@@ -90,7 +90,7 @@ Calculate descriptive statistics.
 math stats [--version] [--help]
 ```
 
-## Flags
+### Flags
 
 **`--version`**
 
@@ -110,14 +110,14 @@ Print the average of the values.
 math stats average [--kind=<kind>] [<values>...] [--version] [--help]
 ```
 
-## Arguments
+### Arguments
 
 **`values`**
 
 *A group of floating-point values to operate on.*
 
 
-## Flags
+### Flags
 
 **`--version`**
 
@@ -129,7 +129,7 @@ math stats average [--kind=<kind>] [<values>...] [--version] [--help]
 *Show help information.*
 
 
-## Options
+### Options
 
 **`--kind=\<kind\>`**
 
@@ -143,14 +143,14 @@ Print the standard deviation of the values.
 math stats stdev [<values>...] [--version] [--help]
 ```
 
-## Arguments
+### Arguments
 
 **`values`**
 
 *A group of floating-point values to operate on.*
 
 
-## Flags
+### Flags
 
 **`--version`**
 
@@ -169,7 +169,7 @@ Print the quantiles of the values (TBD).
 math stats quantiles [<one-of-four>] [<custom-arg>] [<values>...]     [--file=<file>] [--directory=<directory>] [--shell=<shell>] [--custom=<custom>] [--version] [--help]
 ```
 
-## Arguments
+### Arguments
 
 **`one-of-four`**
 
@@ -182,7 +182,7 @@ math stats quantiles [<one-of-four>] [<custom-arg>] [<values>...]     [--file=<f
 *A group of floating-point values to operate on.*
 
 
-## Flags
+### Flags
 
 **`--version`**
 
@@ -194,7 +194,7 @@ math stats quantiles [<one-of-four>] [<custom-arg>] [<values>...]     [--file=<f
 *Show help information.*
 
 
-## Options
+### Options
 
 **`--file=\<file\>`**
 
@@ -215,6 +215,6 @@ Show subcommand help information.
 math help [<subcommands>...] 
 ```
 
-## Arguments
+### Arguments
 
 **`subcommands`**

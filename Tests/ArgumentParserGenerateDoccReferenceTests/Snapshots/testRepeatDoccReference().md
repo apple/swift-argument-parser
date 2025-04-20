@@ -6,14 +6,14 @@
 repeat [--count=<count>] [--include-counter] <phrase> [--help]
 ```
 
-## Arguments
+### Arguments
 
 **`phrase`**
 
 *The phrase to repeat.*
 
 
-## Flags
+### Flags
 
 **`--include-counter`**
 
@@ -25,7 +25,7 @@ repeat [--count=<count>] [--include-counter] <phrase> [--help]
 *Show help information.*
 
 
-## Options
+### Options
 
 **`--count=\<count\>`**
 
@@ -40,6 +40,6 @@ Show subcommand help information.
 repeat help [<subcommands>...] 
 ```
 
-## Arguments
+### Arguments
 
 **`subcommands`**

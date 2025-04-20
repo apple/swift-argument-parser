@@ -74,7 +74,7 @@ extension CommandInfoV0 {
         // Add section title as a Markdown header to the result
         // Adding section titles as Markdown headers helps separate sections in the documentation,
         // making it easier for users to navigate and understand the structure of the arguments.
-        result += "## \(section)\n\n"
+        result += "### \(section)\n\n"
 
         // Iterate through each argument in the section
         // Iterating through each argument allows us to add details for each argument under its respective section.

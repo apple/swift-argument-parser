@@ -6,7 +6,7 @@
 roll [--times=<n>] [--sides=<m>] [--seed=<seed>] [--verbose] [--help]
 ```
 
-## Flags
+### Flags
 
 **`--verbose`**
 
@@ -18,7 +18,7 @@ roll [--times=<n>] [--sides=<m>] [--seed=<seed>] [--verbose] [--help]
 *Show help information.*
 
 
-## Options
+### Options
 
 **`--times=\<n\>`**
 
@@ -45,6 +45,6 @@ Show subcommand help information.
 roll help [<subcommands>...] 
 ```
 
-## Arguments
+### Arguments
 
 **`subcommands`**
