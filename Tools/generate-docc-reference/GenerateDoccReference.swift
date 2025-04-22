@@ -36,6 +36,14 @@ extension GenerateDoccReferenceError: CustomStringConvertible {
   }
 }
 
+/// The flavor of generated markdown to emit.
+enum OutputStyle: String, EnumerableFlag, ExpressibleByArgument {
+  /// DocC-supported markdown
+  case docc
+  /// GitHub-flavored markdown
+  case github
+}
+
 @main
 struct GenerateDoccReference: ParsableCommand {
   static let configuration = CommandConfiguration(
@@ -53,7 +61,7 @@ struct GenerateDoccReference: ParsableCommand {
   @Option(
     name: .shortAndLong,
     help: "Use docc flavored markdown for the generated output.")
-  var doccFlavored: Bool = false
+  var style: OutputStyle = .github
 
   func validate() throws {
     if outputDirectory != "-" {
@@ -112,12 +120,12 @@ struct GenerateDoccReference: ParsableCommand {
     do {
       if self.outputDirectory == "-" {
         try self.generatePages(
-          from: toolInfo.command, savingTo: nil, doccFlavored: doccFlavored)
+          from: toolInfo.command, savingTo: nil, flavor: style)
       } else {
         try self.generatePages(
           from: toolInfo.command,
           savingTo: URL(fileURLWithPath: outputDirectory),
-          doccFlavored: doccFlavored)
+          flavor: style)
       }
     } catch {
       throw GenerateDoccReferenceError.failedToGenerateDoccReference(
@@ -129,14 +137,14 @@ struct GenerateDoccReference: ParsableCommand {
   /// - Parameters:
   ///   - command: The command to parse into a markdown output.
   ///   - directory: The directory to save the generated markdown file, printing it if `nil`.
-  ///   - doccFlavored: A Boolean value the indicates whether to generate docc-flavored markdown.
+  ///   - flavor: The flavor of markdown to use when generating the content.
   /// - Throws: An error if the markdown file cannot be generated or saved.
   func generatePages(
-    from command: CommandInfoV0, savingTo directory: URL?, doccFlavored: Bool
+    from command: CommandInfoV0, savingTo directory: URL?, flavor: OutputStyle
   )
     throws
   {
-    let page = command.toMarkdown([], doccFlavored: doccFlavored)
+    let page = command.toMarkdown([], markdownStyle: style)
 
     if let directory = directory {
       let fileName = command.doccReferenceFileName

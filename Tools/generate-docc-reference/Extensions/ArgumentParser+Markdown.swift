@@ -37,12 +37,12 @@ extension CommandInfoV0 {
   /// Recursively parses a command to generate markdown content that describes the command.
   /// - Parameters:
   ///   - path: The path of subcommands from the root command.
-  ///   - doccFlavored: a Boolean value that indicates whether to use docc-flavored markdown.
+  ///   - markdownStyle: The flavor of markdown to emit, either `docc` or `github`
   /// - Returns: A multi-line markdown file that describes the command.
   ///
   /// If `path` is empty, it represents a top-level command.
   /// Otherwise it's a subcommand, potentially recursive to multiple levels.
-  func toMarkdown(_ path: [String], doccFlavored: Bool) -> String {
+  func toMarkdown(_ path: [String], markdownStyle: OutputStyle) -> String {
     var result =
       String(repeating: "#", count: path.count + 1)
       + " \(self.doccReferenceTitle)\n\n"
@@ -72,11 +72,13 @@ extension CommandInfoV0 {
           continue
         }
 
-        if doccFlavored {
+        switch markdownStyle {
+        case .docc:
           result += "- term **\(arg.identity()):**\n\n"
-        } else {
+        case .github:
           result += "**\(arg.identity()):**\n\n"
         }
+
         if let abstract = arg.abstract {
           result += "*\(abstract)*\n\n"
         }
@@ -90,7 +92,7 @@ extension CommandInfoV0 {
     for subcommand in self.subcommands ?? [] {
       result +=
         subcommand.toMarkdown(
-          path + [self.commandName], doccFlavored: doccFlavored) + "\n\n"
+          path + [self.commandName], markdownStyle: markdownStyle) + "\n\n"
     }
 
     return result

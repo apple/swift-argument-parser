@@ -525,7 +525,7 @@ extension XCTest {
       command = [
         "generate-docc-reference", commandURL.path,
         "--output-directory", "-",
-        "--docc-flavored", "true",
+        "--style", "docc",
       ]
     } else {
       command = [
