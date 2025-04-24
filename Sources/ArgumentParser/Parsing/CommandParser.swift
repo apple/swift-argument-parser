@@ -10,10 +10,19 @@
 //===----------------------------------------------------------------------===//
 
 #if swift(>=6.0)
+#if canImport(FoundationEssentials)
+internal import class FoundationEssentials.ProcessInfo
+#else
 internal import class Foundation.ProcessInfo
+#endif
+#else
+#if canImport(FoundationEssentials)
+import class FoundationEssentials.ProcessInfo
 #else
 import class Foundation.ProcessInfo
 #endif
+#endif
+
 
 struct CommandError: Error {
   var commandStack: [ParsableCommand.Type]

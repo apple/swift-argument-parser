@@ -10,9 +10,17 @@
 //===----------------------------------------------------------------------===//
 
 #if swift(>=6.0)
+#if canImport(FoundationEssentials)
+internal import protocol FoundationEssentials.LocalizedError
+#else
 internal import protocol Foundation.LocalizedError
+#endif
+#else
+#if canImport(FoundationEssentials)
+import protocol FoundationEssentials.LocalizedError
 #else
 import protocol Foundation.LocalizedError
+#endif
 #endif
 
 struct UsageGenerator {
