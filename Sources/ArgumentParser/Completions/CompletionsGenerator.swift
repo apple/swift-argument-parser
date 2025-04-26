@@ -140,7 +140,7 @@ struct CompletionsGenerator {
     CompletionShell._requesting.withLock { $0 = shell }
     switch shell {
     case .zsh:
-      return [command].zshCompletionScript
+      return ToolInfoV0(commandStack: [command]).zshCompletionScript
     case .bash:
       return ToolInfoV0(commandStack: [command]).bashCompletionScript
     case .fish:
@@ -148,56 +148,6 @@ struct CompletionsGenerator {
     default:
       fatalError("Invalid CompletionShell: \(shell)")
     }
-  }
-}
-
-extension ArgumentDefinition {
-  /// Returns a string with the arguments for the callback to generate custom completions for
-  /// this argument.
-  func customCompletionCall(_ commands: [ParsableCommand.Type]) -> String {
-    let subcommandNames =
-      commands.dropFirst().map { "\($0._commandName) " }.joined()
-    let argumentName =
-      names.preferredName?.synopsisString
-      ?? self.help.keys.first?.fullPathString
-      ?? "---"
-    return "---completion \(subcommandNames)-- \(argumentName)"
-  }
-}
-
-extension ParsableCommand {
-  fileprivate static var compositeCommandName: [String] {
-    if let superCommandName = configuration._superCommandName {
-      return [superCommandName]
-        + _commandName.split(separator: " ").map(String.init)
-    } else {
-      return _commandName.split(separator: " ").map(String.init)
-    }
-  }
-}
-
-extension [ParsableCommand.Type] {
-  /// Include default 'help' subcommand in nonempty subcommand list if & only if
-  /// no help subcommand already exists.
-  mutating func addHelpSubcommandIfMissing() {
-    if !isEmpty && !contains(where: { $0._commandName == "help" }) {
-      append(HelpCommand.self)
-    }
-  }
-}
-
-extension Sequence where Element == ParsableCommand.Type {
-  func completionFunctionName() -> String {
-    "_"
-      + self.flatMap { $0.compositeCommandName }
-      .uniquingAdjacentElements()
-      .joined(separator: "_")
-  }
-
-  var shellVariableNamePrefix: String {
-    flatMap { $0.compositeCommandName }
-      .joined(separator: "_")
-      .shellEscapeForVariableName()
   }
 }
 
@@ -233,6 +183,10 @@ extension CommandInfoV0 {
 
   var completionFunctionPrefix: String {
     "__\(initialCommand)"
+  }
+
+  var shellVariableNamePrefix: String {
+    commandContext.joined(separator: "_").shellEscapeForVariableName()
   }
 }
 
