@@ -156,8 +156,8 @@ _math_stats_quantiles() {
     local -ar math_stats_quantiles_one_of_four=('alphabet' 'alligator' 'branch' 'braggart')
     local -ar arg_specs=(
         ':one-of-four:{__math_complete "${math_stats_quantiles_one_of_four[@]}"}'
-        ':custom-arg:{__math_custom_complete ---completion stats quantiles -- customArg "${current_word_index}" "$(__math_cursor_index_in_current_word)"}'
-        ':custom-deprecated-arg:{__math_custom_complete ---completion stats quantiles -- customDeprecatedArg}'
+        ':custom-arg:{__math_custom_complete ---completion stats quantiles -- positional@1 "${current_word_index}" "$(__math_cursor_index_in_current_word)"}'
+        ':custom-deprecated-arg:{__math_custom_complete ---completion stats quantiles -- positional@2}'
         ':values:'
         '--file:file:_files -g '\''*.txt *.md'\'''
         '--directory:directory:_files -/'
