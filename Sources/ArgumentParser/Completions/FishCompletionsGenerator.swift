@@ -244,31 +244,31 @@ extension [ParsableCommand.Type] {
   private var shouldOfferCompletionsForFunctionName: String {
     // swift-format-ignore: NeverForceUnwrap
     // Precondition: first is guaranteed to be non-empty
-    "_swift_\(first!._commandName)_should_offer_completions_for"
+    "__\(first!._commandName)_should_offer_completions_for"
   }
 
   private var tokensFunctionName: String {
     // swift-format-ignore: NeverForceUnwrap
     // Precondition: first is guaranteed to be non-empty
-    "_swift_\(first!._commandName)_tokens"
+    "__\(first!._commandName)_tokens"
   }
 
   private var parseSubcommandFunctionName: String {
     // swift-format-ignore: NeverForceUnwrap
     // Precondition: first is guaranteed to be non-empty
-    "_swift_\(first!._commandName)_parse_subcommand"
+    "__\(first!._commandName)_parse_subcommand"
   }
 
   private var completeDirectoriesFunctionName: String {
     // swift-format-ignore: NeverForceUnwrap
     // Precondition: first is guaranteed to be non-empty
-    "_swift_\(first!._commandName)_complete_directories"
+    "__\(first!._commandName)_complete_directories"
   }
 
   private var customCompletionFunctionName: String {
     // swift-format-ignore: NeverForceUnwrap
     // Precondition: first is guaranteed to be non-empty
-    "_swift_\(first!._commandName)_custom_completion"
+    "__\(first!._commandName)_custom_completion"
   }
 }
 
