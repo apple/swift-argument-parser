@@ -15,22 +15,24 @@
 /// the following settings, which will not affect the requesting shell outside
 /// the completion script:
 ///
-/// - bash:
+/// ### bash
 ///
-///   ```shell
-///   shopt -s extglob
-///   set +o history +o posix
-///   ```
+/// ```shell
+/// shopt -s extglob
+/// set +o history +o posix
+/// ```
 ///
-/// - fish: no settings
+/// ### fish
 ///
-/// - zsh:
+/// no settings
 ///
-///   ```shell
-///   emulate -RL zsh -G
-///   setopt extendedglob nullglob numericglobsort
-///   unsetopt aliases banghist
-///   ```
+/// ### zsh
+///
+/// ```shell
+/// emulate -RL zsh -G
+/// setopt extendedglob nullglob numericglobsort
+/// unsetopt aliases banghist
+/// ```
 public struct CompletionKind {
   internal enum Kind {
     case `default`
@@ -117,6 +119,12 @@ public struct CompletionKind {
   /// order as in the command line. Note that shell words may contain spaces if
   /// they are escaped or quoted.
   ///
+  /// Shell words are passed to Swift verbatim, not unquoted. e.g., the
+  /// representation in Swift of the shell word `"abc\\""def"` would be exactly
+  /// the same, including the double quotes & the double backslash.
+  ///
+  /// ### bash
+  ///
   /// In bash 3-, a process substitution (`<(…)`) in the command line prevents
   /// Swift custom completion functions from being called.
   ///
@@ -130,20 +138,20 @@ public struct CompletionKind {
   /// occur only when additional constraints are met. This or similar oddities
   /// might occur in other circumstances.
   ///
+  /// ### fish
+  ///
   /// In fish 3-, due to a bug, the argument array includes the fish words only
   /// through the word being completed. This is fixed in fish 4+.
   ///
   /// In fish, a redirect's symbol is not included, but its source/target is.
   ///
-  /// In zsh, redirects (both their symbol & source/target) are omitted.
-  ///
-  /// Shell words are passed to Swift verbatim, not unquoted. e.g., the
-  /// representation in Swift of the shell word `"abc\\""def"` would be exactly
-  /// the same, including the double quotes & the double backslash.
-  ///
   /// In fish 3-, due to limitations, words are passed to Swift unquoted. e.g.,
   /// the aforementioned example word would be passed as `abc\def`. This is
   /// fixed in fish 4+.
+  ///
+  /// ### zsh
+  ///
+  /// In zsh, redirects (both their symbol & source/target) are omitted.
   @preconcurrency
   public static func custom(
     _ completion: @Sendable @escaping ([String]) -> [String]
