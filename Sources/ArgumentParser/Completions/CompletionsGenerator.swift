@@ -138,7 +138,7 @@ struct CompletionsGenerator {
     case .bash:
       return [command].bashCompletionScript
     case .fish:
-      return FishCompletionsGenerator.generateCompletionScript(command)
+      return [command].fishCompletionScript
     default:
       fatalError("Invalid CompletionShell: \(shell)")
     }
