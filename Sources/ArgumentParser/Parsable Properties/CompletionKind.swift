@@ -62,7 +62,7 @@ public struct CompletionKind {
     CompletionKind(kind: .list(words))
   }
 
-  /// The completion candidates include directory & file names, the latter
+  /// The completion candidates include directory and file names, the latter
   /// filtered by the given list of extensions.
   ///
   /// If the given list of extensions is empty, then file names are not
@@ -74,8 +74,8 @@ public struct CompletionKind {
   /// Given file extensions are parsed by the requesting shell as globs; Swift
   /// Argument Parser does not perform any escaping or quoting.
   ///
-  /// The directory/file filter & the given list of extensions are included in a
-  /// completion script when it is generated.
+  /// The directory/file filter and the given list of extensions are included in
+  /// a completion script when it is generated.
   public static func file(extensions: [String] = []) -> CompletionKind {
     CompletionKind(kind: .file(extensions: extensions))
   }
@@ -88,8 +88,8 @@ public struct CompletionKind {
     CompletionKind(kind: .directory)
   }
 
-  /// The completion candidates are specified by the stdout output of the given
-  /// string run as a shell command when a user requests completions.
+  /// The completion candidates are specified by the `stdout` output of the
+  /// given string run as a shell command when a user requests completions.
   ///
   /// Swift Argument Parser does not perform any escaping or quoting on the
   /// given shell command.
@@ -101,7 +101,8 @@ public struct CompletionKind {
   }
 
   /// The completion candidates are the strings in the array returned by the
-  /// given closure when it is run when a user requests completions.
+  /// given closure when it is executed in response to a user's request for
+  /// completions.
   ///
   /// Completion candidates are interpreted by the requesting shell as literals.
   /// They must be neither escaped nor quoted; Swift Argument Parser escapes or
@@ -114,14 +115,15 @@ public struct CompletionKind {
   /// The array of strings passed to the given closure contains all the shell
   /// words in the command line for the current command at completion
   /// invocation; this is exclusive of words for prior or subsequent commands or
-  /// pipes, but inclusive of redirects & any other command line elements. Each
-  /// word is its own element in the argument array; they appear in the same
-  /// order as in the command line. Note that shell words may contain spaces if
-  /// they are escaped or quoted.
+  /// pipes, but inclusive of redirects and any other command line elements.
+  /// Each word is its own element in the argument array; they appear in the
+  /// same order as in the command line. Note that shell words may contain
+  /// spaces if they are escaped or quoted.
   ///
-  /// Shell words are passed to Swift verbatim, not unquoted. e.g., the
-  /// representation in Swift of the shell word `"abc\\""def"` would be exactly
-  /// the same, including the double quotes & the double backslash.
+  /// Shell words are passed to Swift verbatim, without processing or removing
+  /// any quotes or escapes. For example, the shell word `"abc\\""def"` would be
+  /// passed to Swift as `"abc\\""def"` (i.e. the Swift String's contents would
+  /// include all 4 of the double quotes and the 2 consecutive backslashes).
   ///
   /// ### bash
   ///
@@ -145,13 +147,13 @@ public struct CompletionKind {
   ///
   /// In fish, a redirect's symbol is not included, but its source/target is.
   ///
-  /// In fish 3-, due to limitations, words are passed to Swift unquoted. e.g.,
-  /// the aforementioned example word would be passed as `abc\def`. This is
-  /// fixed in fish 4+.
+  /// In fish 3-, due to limitations, words are passed to Swift unquoted. For
+  /// example, the shell word `"abc\\""def"` would be passed to Swift as
+  /// `abc\def`. This is fixed in fish 4+.
   ///
   /// ### zsh
   ///
-  /// In zsh, redirects (both their symbol & source/target) are omitted.
+  /// In zsh, redirects (both their symbol and source/target) are omitted.
   @preconcurrency
   public static func custom(
     _ completion: @Sendable @escaping ([String]) -> [String]
