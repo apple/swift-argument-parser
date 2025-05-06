@@ -16,7 +16,7 @@ __math_custom_complete() {
 
 _math() {
     emulate -RL zsh -G
-    setopt extendedglob
+    setopt extendedglob nullglob numericglobsort
     unsetopt aliases banghist
 
     local -xr SAP_SHELL=zsh
