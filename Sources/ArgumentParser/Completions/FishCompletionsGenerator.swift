@@ -226,6 +226,15 @@ extension [ParsableCommand.Type] {
     case .custom:
       results += [
         """
+        -\(r)fka '(\
+        \(customCompletionFunctionName) \(arg.customCompletionCall(self)) \
+        (count (\(tokensFunctionName) -pc)) (\(tokensFunctionName) -tC)\
+        )'
+        """
+      ]
+    case .customDeprecated:
+      results += [
+        """
         -\(r)fka '(\(customCompletionFunctionName) \(arg.customCompletionCall(self)))'
         """
       ]

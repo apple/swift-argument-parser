@@ -1,5 +1,21 @@
 #!/bin/bash
 
+__math_cursor_index_in_current_word() {
+    local remaining="${COMP_LINE}"
+
+    local word
+    for word in "${COMP_WORDS[@]::COMP_CWORD}"; do
+        remaining="${remaining##*([[:space:]])"${word}"*([[:space:]])}"
+    done
+
+    local -ir index="$((COMP_POINT - ${#COMP_LINE} + ${#remaining}))"
+    if [[ "${index}" -le 0 ]]; then
+        printf 0
+    else
+        printf %s "${index}"
+    fi
+}
+
 # positional arguments:
 #
 # - 1: the current (sub)command's count of positional arguments
@@ -217,8 +233,8 @@ _math_stats_stdev() {
 
 _math_stats_quantiles() {
     flags=(--version -h --help)
-    options=(--file --directory --shell --custom)
-    __math_offer_flags_options 3
+    options=(--file --directory --shell --custom --custom-deprecated)
+    __math_offer_flags_options 4
 
     # Offer option value completions
     case "${prev}" in
@@ -235,7 +251,11 @@ _math_stats_quantiles() {
         return
         ;;
     --custom)
-        __math_add_completions -W "$(__math_custom_complete ---completion stats quantiles -- --custom)"
+        __math_add_completions -W "$(__math_custom_complete ---completion stats quantiles -- --custom "${COMP_CWORD}" "$(__math_cursor_index_in_current_word)")"
+        return
+        ;;
+    --custom-deprecated)
+        __math_add_completions -W "$(__math_custom_complete ---completion stats quantiles -- --custom-deprecated)"
         return
         ;;
     esac
@@ -247,7 +267,11 @@ _math_stats_quantiles() {
         return
         ;;
     2)
-        __math_add_completions -W "$(__math_custom_complete ---completion stats quantiles -- customArg)"
+        __math_add_completions -W "$(__math_custom_complete ---completion stats quantiles -- customArg "${COMP_CWORD}" "$(__math_cursor_index_in_current_word)")"
+        return
+        ;;
+    3)
+        __math_add_completions -W "$(__math_custom_complete ---completion stats quantiles -- customDeprecatedArg)"
         return
         ;;
     esac
