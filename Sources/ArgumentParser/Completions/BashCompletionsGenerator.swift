@@ -1,4 +1,4 @@
-//===----------------------------------------------------------*- swift -*-===//
+//===----------------------------------------------------------------------===//
 //
 // This source file is part of the Swift Argument Parser open source project
 //
@@ -20,6 +20,22 @@ extension [ParsableCommand.Type] {
     let commandName = first!._commandName
     return """
       #!/bin/bash
+
+      \(cursorIndexInCurrentWordFunctionName)() {
+          local remaining="${COMP_LINE}"
+
+          local word
+          for word in "${COMP_WORDS[@]::COMP_CWORD}"; do
+              remaining="${remaining##*([[:space:]])"${word}"*([[:space:]])}"
+          done
+
+          local -ir index="$((COMP_POINT - ${#COMP_LINE} + ${#remaining}))"
+          if [[ "${index}" -le 0 ]]; then
+              printf 0
+          else
+              printf %s "${index}"
+          fi
+      }
 
       # positional arguments:
       #
@@ -368,10 +384,24 @@ extension [ParsableCommand.Type] {
       // Generate a call back into the command to retrieve a completions list
       return """
         \(addCompletionsFunctionName) -W\
+         "$(\(customCompleteFunctionName) \(arg.customCompletionCall(self))\
+         "${COMP_CWORD}"\
+         "$(\(cursorIndexInCurrentWordFunctionName))")"
+
+        """
+
+    case .customDeprecated:
+      // Generate a call back into the command to retrieve a completions list
+      return """
+        \(addCompletionsFunctionName) -W\
          "$(\(customCompleteFunctionName) \(arg.customCompletionCall(self)))"
 
         """
     }
+  }
+
+  private var cursorIndexInCurrentWordFunctionName: String {
+    "_\(prefix(1).completionFunctionName().shellEscapeForVariableName())_cursor_index_in_current_word"
   }
 
   private var offerFlagsOptionsFunctionName: String {

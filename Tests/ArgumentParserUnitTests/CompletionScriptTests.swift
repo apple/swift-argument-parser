@@ -1,4 +1,4 @@
-//===----------------------------------------------------------*- swift -*-===//
+//===----------------------------------------------------------------------===//
 //
 // This source file is part of the Swift Argument Parser open source project
 //
@@ -50,7 +50,7 @@ extension CompletionScriptTests {
   }
 
   struct NestedArguments: ParsableArguments {
-    @Argument(completion: .custom { _ in candidates(prefix: "a") })
+    @Argument(completion: .custom { _, _, _ in candidates(prefix: "a") })
     var nestedArgument: String
   }
 
@@ -74,7 +74,7 @@ extension CompletionScriptTests {
     @Option() var rep1: [String]
     @Option(name: [.short, .long]) var rep2: [String]
 
-    @Argument(completion: .custom { _ in candidates(prefix: "d") })
+    @Argument(completion: .custom { _, _, _ in candidates(prefix: "d") })
     var argument: String
     @OptionGroup var nested: NestedArguments
 
@@ -91,7 +91,7 @@ extension CompletionScriptTests {
       @Option(help: #"Escaped chars: '[]\."#)
       var one: String
 
-      @Argument(completion: .custom { _ in candidates(prefix: "i") })
+      @Argument(completion: .custom { _, _, _ in candidates(prefix: "i") })
       var two: String
     }
   }
@@ -143,21 +143,24 @@ extension CompletionScriptTests {
 extension CompletionScriptTests {
   struct Custom: ParsableCommand {
     @Option(
-      name: .shortAndLong, completion: .custom { _ in candidates(prefix: "e") })
+      name: .shortAndLong,
+      completion: .custom { _, _, _ in candidates(prefix: "e") }
+    )
     var one: String
 
-    @Argument(completion: .custom { _ in candidates(prefix: "f") })
+    @Argument(completion: .custom { _, _, _ in candidates(prefix: "f") })
     var two: String
 
     @Option(
       name: .customShort("z"),
-      completion: .custom { _ in candidates(prefix: "g") })
+      completion: .custom { _, _, _ in candidates(prefix: "g") }
+    )
     var three: String
 
     @OptionGroup var nested: NestedArguments
 
     struct NestedArguments: ParsableArguments {
-      @Argument(completion: .custom { _ in candidates(prefix: "h") })
+      @Argument(completion: .custom { _, _, _ in candidates(prefix: "h") })
       var four: String
     }
   }
@@ -173,7 +176,7 @@ extension CompletionScriptTests {
     do {
       setenv(CompletionShell.shellEnvironmentVariableName, shell.rawValue, 1)
       defer { unsetenv(CompletionShell.shellEnvironmentVariableName) }
-      _ = try Custom.parse(["---completion", "--", arg])
+      _ = try Custom.parse(["---completion", "--", arg, "0", "0"])
       XCTFail("Didn't error as expected", file: file, line: line)
     } catch let error as CommandError {
       guard case .completionScriptCustomResponse(let output) = error.parserError

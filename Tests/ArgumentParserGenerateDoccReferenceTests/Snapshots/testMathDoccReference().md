@@ -8,12 +8,12 @@ A utility for performing maths.
 math [--version] [--help]
 ```
 
-**--version:**
+- term **--version:**
 
 *Show the version.*
 
 
-**--help:**
+- term **--help:**
 
 *Show help information.*
 
@@ -26,22 +26,22 @@ Print the sum of the values.
 math add [--hex-output] [<values>...] [--version] [--help]
 ```
 
-**--hex-output:**
+- term **--hex-output:**
 
 *Use hexadecimal notation for the result.*
 
 
-**values:**
+- term **values:**
 
 *A group of integers to operate on.*
 
 
-**--version:**
+- term **--version:**
 
 *Show the version.*
 
 
-**--help:**
+- term **--help:**
 
 *Show help information.*
 
@@ -56,22 +56,22 @@ Print the product of the values.
 math multiply [--hex-output] [<values>...] [--version] [--help]
 ```
 
-**--hex-output:**
+- term **--hex-output:**
 
 *Use hexadecimal notation for the result.*
 
 
-**values:**
+- term **values:**
 
 *A group of integers to operate on.*
 
 
-**--version:**
+- term **--version:**
 
 *Show the version.*
 
 
-**--help:**
+- term **--help:**
 
 *Show help information.*
 
@@ -86,12 +86,12 @@ Calculate descriptive statistics.
 math stats [--version] [--help]
 ```
 
-**--version:**
+- term **--version:**
 
 *Show the version.*
 
 
-**--help:**
+- term **--help:**
 
 *Show help information.*
 
@@ -104,22 +104,22 @@ Print the average of the values.
 math stats average [--kind=<kind>] [<values>...] [--version] [--help]
 ```
 
-**--kind=\<kind\>:**
+- term **--kind=\<kind\>:**
 
 *The kind of average to provide.*
 
 
-**values:**
+- term **values:**
 
 *A group of floating-point values to operate on.*
 
 
-**--version:**
+- term **--version:**
 
 *Show the version.*
 
 
-**--help:**
+- term **--help:**
 
 *Show help information.*
 
@@ -134,17 +134,17 @@ Print the standard deviation of the values.
 math stats stdev [<values>...] [--version] [--help]
 ```
 
-**values:**
+- term **values:**
 
 *A group of floating-point values to operate on.*
 
 
-**--version:**
+- term **--version:**
 
 *Show the version.*
 
 
-**--help:**
+- term **--help:**
 
 *Show help information.*
 
@@ -156,38 +156,44 @@ math stats stdev [<values>...] [--version] [--help]
 Print the quantiles of the values (TBD).
 
 ```
-math stats quantiles [<one-of-four>] [<custom-arg>] [<values>...]     [--file=<file>] [--directory=<directory>] [--shell=<shell>] [--custom=<custom>] [--version] [--help]
+math stats quantiles [<one-of-four>] [<custom-arg>] [<custom-deprecated-arg>] [<values>...]     [--file=<file>] [--directory=<directory>] [--shell=<shell>] [--custom=<custom>] [--custom-deprecated=<custom-deprecated>] [--version] [--help]
 ```
 
-**one-of-four:**
+- term **one-of-four:**
 
 
-**custom-arg:**
+- term **custom-arg:**
 
 
-**values:**
+- term **custom-deprecated-arg:**
+
+
+- term **values:**
 
 *A group of floating-point values to operate on.*
 
 
-**--file=\<file\>:**
+- term **--file=\<file\>:**
 
 
-**--directory=\<directory\>:**
+- term **--directory=\<directory\>:**
 
 
-**--shell=\<shell\>:**
+- term **--shell=\<shell\>:**
 
 
-**--custom=\<custom\>:**
+- term **--custom=\<custom\>:**
 
 
-**--version:**
+- term **--custom-deprecated=\<custom-deprecated\>:**
+
+
+- term **--version:**
 
 *Show the version.*
 
 
-**--help:**
+- term **--help:**
 
 *Show help information.*
 
@@ -204,7 +210,7 @@ Show subcommand help information.
 math help [<subcommands>...] 
 ```
 
-**subcommands:**
+- term **subcommands:**
 
 
 

@@ -1,4 +1,4 @@
-//===----------------------------------------------------------*- swift -*-===//
+//===----------------------------------------------------------------------===//
 //
 // This source file is part of the Swift Argument Parser open source project
 //
@@ -198,9 +198,16 @@ extension Math.Statistics {
     var oneOfFour: String?
 
     @Argument(
-      completion: .custom { _ in ["alabaster", "breakfast", "crunch", "crash"] }
+      completion: .custom { _, _, _ in
+        ["alabaster", "breakfast", "crunch", "crash"]
+      }
     )
     var customArg: String?
+
+    @Argument(
+      completion: .custom { _ in ["alabaster", "breakfast", "crunch", "crash"] }
+    )
+    var customDeprecatedArg: String?
 
     @Argument(help: "A group of floating-point values to operate on.")
     var values: [Double] = []
@@ -222,11 +229,15 @@ extension Math.Statistics {
     var directory: String?
 
     @Option(
-      completion: .shellCommand("head -100 /usr/share/dict/words | tail -50"))
+      completion: .shellCommand("head -100 /usr/share/dict/words | tail -50")
+    )
     var shell: String?
 
     @Option(completion: .custom(customCompletion))
     var custom: String?
+
+    @Option(completion: .custom(customDeprecatedCompletion))
+    var customDeprecated: String?
 
     func validate() throws {
       if testSuccessExitCode {
@@ -248,7 +259,13 @@ extension Math.Statistics {
   }
 }
 
-func customCompletion(_ s: [String]) -> [String] {
+func customCompletion(_ s: [String], _: Int, _: Int) -> [String] {
+  (s.last ?? "").starts(with: "a")
+    ? ["aardvark", "aaaaalbert"]
+    : ["hello", "helicopter", "heliotrope"]
+}
+
+func customDeprecatedCompletion(_ s: [String]) -> [String] {
   (s.last ?? "").starts(with: "a")
     ? ["aardvark", "aaaaalbert"]
     : ["hello", "helicopter", "heliotrope"]

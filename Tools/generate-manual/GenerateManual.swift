@@ -1,4 +1,4 @@
-//===----------------------------------------------------------*- swift -*-===//
+//===----------------------------------------------------------------------===//
 //
 // This source file is part of the Swift Argument Parser open source project
 //
@@ -92,6 +92,8 @@ struct GenerateManual: ParsableCommand {
 
   func run() throws {
     let data: Data
+    // runs the tool with the --experimental-dump-help argument to capture
+    // the output.
     do {
       let tool = URL(fileURLWithPath: tool)
       let output = try executeCommand(
@@ -101,9 +103,12 @@ struct GenerateManual: ParsableCommand {
       throw GenerateManualError.failedToRunSubprocess(error: error)
     }
 
+    // ToolInfoHeader is intentionally kept internal to argument parser to
+    // allow the library some flexibility to update/change its content/format.
     do {
       let toolInfoThin = try JSONDecoder().decode(
         ToolInfoHeader.self, from: data)
+      // verify the serialization version is known/expected
       guard toolInfoThin.serializationVersion == 0 else {
         throw GenerateManualError.unsupportedDumpHelpVersion(
           expected: 0,

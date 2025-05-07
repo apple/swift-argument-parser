@@ -1,4 +1,4 @@
-//===----------------------------------------------------------*- swift -*-===//
+//===----------------------------------------------------------------------===//
 //
 // This source file is part of the Swift Argument Parser open source project
 //
@@ -114,11 +114,12 @@ final class MathExampleTests: XCTestCase {
     let helpText = """
       OVERVIEW: Print the quantiles of the values (TBD).
 
-      USAGE: math stats quantiles [<one-of-four>] [<custom-arg>] [<values> ...] [--file <file>] [--directory <directory>] [--shell <shell>] [--custom <custom>]
+      USAGE: math stats quantiles [<one-of-four>] [<custom-arg>] [<custom-deprecated-arg>] [<values> ...] [--file <file>] [--directory <directory>] [--shell <shell>] [--custom <custom>] [--custom-deprecated <custom-deprecated>]
 
       ARGUMENTS:
         <one-of-four>
         <custom-arg>
+        <custom-deprecated-arg>
         <values>                A group of floating-point values to operate on.
 
       OPTIONS:
@@ -126,6 +127,7 @@ final class MathExampleTests: XCTestCase {
         --directory <directory>
         --shell <shell>
         --custom <custom>
+        --custom-deprecated <custom-deprecated>
         --version               Show the version.
         -h, --help              Show help information.
 
@@ -251,7 +253,7 @@ extension MathExampleTests {
     forShell shell: CompletionShell
   ) throws {
     try AssertExecuteCommand(
-      command: "math ---completion stats quantiles -- --custom",
+      command: "math ---completion stats quantiles -- --custom 0 0",
       expected: shell.format(completions: [
         "hello",
         "helicopter",
@@ -263,7 +265,7 @@ extension MathExampleTests {
     )
 
     try AssertExecuteCommand(
-      command: "math ---completion stats quantiles -- --custom h",
+      command: "math ---completion stats quantiles -- --custom 0 1 h",
       expected: shell.format(completions: [
         "hello",
         "helicopter",
@@ -275,7 +277,7 @@ extension MathExampleTests {
     )
 
     try AssertExecuteCommand(
-      command: "math ---completion stats quantiles -- --custom a",
+      command: "math ---completion stats quantiles -- --custom 0 1 a",
       expected: shell.format(completions: [
         "aardvark",
         "aaaaalbert",

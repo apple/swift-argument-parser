@@ -1,4 +1,4 @@
-//===----------------------------------------------------------*- swift -*-===//
+//===----------------------------------------------------------------------===//
 //
 // This source file is part of the Swift Argument Parser open source project
 //
@@ -224,6 +224,8 @@ extension ArgumentInfoV0.CompletionKindV0 {
       self = .shellCommand(command: command)
     case .custom(_):
       self = .custom
+    case .customDeprecated(_):
+      self = .customDeprecated
     }
   }
 }

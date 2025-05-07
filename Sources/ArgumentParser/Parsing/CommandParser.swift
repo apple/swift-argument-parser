@@ -1,4 +1,4 @@
-//===----------------------------------------------------------*- swift -*-===//
+//===----------------------------------------------------------------------===//
 //
 // This source file is part of the Swift Argument Parser open source project
 //
@@ -373,7 +373,12 @@ extension CommandParser {
   func handleCustomCompletion(_ arguments: [String]) throws {
     // Completion functions use a custom format:
     //
-    // <command> ---completion [<subcommand> ...] -- <argument-name> [<completion-text>]
+    // <command> ---completion [<subcommand> ...] -- <argument-name> <argument-index> <cursor-index> [<argument> ...]
+    //
+    // <argument-index> is the 0-based index of the <argument> for which completions are being requested.
+    //
+    // <cursor-index> is the 0-based index of the character within the <argument> before which the cursor is located.
+    // For an <argument> whose length is n, if the cursor is after the last element, <cursor-index> will be set to n.
     //
     // The triple-dash prefix makes '---completion' invalid syntax for regular
     // arguments, so it's safe to use for this internal purpose.
@@ -395,35 +400,38 @@ extension CommandParser {
     guard let argToMatch = args.popFirst() else {
       throw ParserError.invalidState
     }
-    // Completion text is optional here
-    let completionValues = Array(args)
 
     // Generate the argument set and parse the argument to find in the set
     let argset = ArgumentSet(current.element, visibility: .private, parent: nil)
     guard let parsedArgument = try parseIndividualArg(argToMatch, at: 0).first
     else { throw ParserError.invalidState }
 
-    // Look up the specified argument and retrieve its custom completion function
-    let completionFunction: ([String]) -> [String]
-
+    // Look up the specified argument, then retrieve & run its custom completion function
     switch parsedArgument.value {
     case .option(let parsed):
-      guard let matchedArgument = argset.first(matching: parsed),
-        case .custom(let f) = matchedArgument.completion.kind
-      else { throw ParserError.invalidState }
-      completionFunction = f
+      guard let matchedArgument = argset.first(matching: parsed) else {
+        throw ParserError.invalidState
+      }
+      try customComplete(matchedArgument, forArguments: Array(args))
 
     case .value(let str):
-      guard let key = InputKey(fullPathString: str),
-        let matchedArgument = argset.firstPositional(withKey: key),
-        case .custom(let f) = matchedArgument.completion.kind
-      else { throw ParserError.invalidState }
-      completionFunction = f
+      guard
+        let key = InputKey(fullPathString: str),
+        let matchedArgument = argset.firstPositional(withKey: key)
+      else {
+        throw ParserError.invalidState
+      }
+      try customComplete(matchedArgument, forArguments: Array(args))
 
     case .terminator:
       throw ParserError.invalidState
     }
+  }
 
+  private func customComplete(
+    _ argument: ArgumentDefinition,
+    forArguments args: [String]
+  ) throws {
     let environment = ProcessInfo.processInfo.environment
     if let completionShellName = environment[
       CompletionShell.shellEnvironmentVariableName]
@@ -436,10 +444,38 @@ extension CommandParser {
       $0 = environment[CompletionShell.shellVersionEnvironmentVariableName]
     }
 
+    let completions: [String]
+    switch argument.completion.kind {
+    case .custom(let complete):
+      var args = args.dropFirst(0)
+      guard
+        let s = args.popFirst(),
+        let completingArgumentIndex = Int(s)
+      else {
+        throw ParserError.invalidState
+      }
+
+      guard
+        let s = args.popFirst(),
+        let cursorIndexWithinCompletingArgument = Int(s)
+      else {
+        throw ParserError.invalidState
+      }
+
+      completions = complete(
+        Array(args),
+        completingArgumentIndex,
+        cursorIndexWithinCompletingArgument
+      )
+    case .customDeprecated(let complete):
+      completions = complete(args)
+    default:
+      throw ParserError.invalidState
+    }
+
     // Parsing and retrieval successful! We don't want to continue with any
     // other parsing here, so after printing the result of the completion
     // function, exit with a success code.
-    let completions = completionFunction(completionValues)
     throw ParserError.completionScriptCustomResponse(
       CompletionShell.requesting?.format(completions: completions)
         ?? completions.joined(separator: "\n")
@@ -472,9 +508,9 @@ extension CommandParser {
     return result
   }
 
-  func commandStack(for subcommand: ParsableCommand.Type)
-    -> [ParsableCommand.Type]
-  {
+  func commandStack(
+    for subcommand: ParsableCommand.Type
+  ) -> [ParsableCommand.Type] {
     let path = commandTree.path(to: subcommand)
     return path.isEmpty
       ? [commandTree.element]

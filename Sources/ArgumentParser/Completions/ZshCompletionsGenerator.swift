@@ -1,4 +1,4 @@
-//===----------------------------------------------------------*- swift -*-===//
+//===----------------------------------------------------------------------===//
 //
 // This source file is part of the Swift Argument Parser open source project
 //
@@ -28,9 +28,17 @@ extension [ParsableCommand.Type] {
 
       \(customCompleteFunctionName)() {
           local -a completions
-          completions=("${(@f)"$("${@}")"}")
+          completions=("${(@f)"$("${command_name}" "${@}" "${command_line[@]}")"}")
           if [[ "${#completions[@]}" -gt 1 ]]; then
               \(completeFunctionName) "${completions[@]:0:-1}"
+          fi
+      }
+
+      \(cursorIndexInCurrentWordFunctionName)() {
+          if [[ -z "${QIPREFIX}${IPREFIX}${PREFIX}" ]]; then
+              printf 0
+          else
+              printf %s "${#${(z)LBUFFER}[-1]}"
           fi
       }
 
@@ -94,7 +102,7 @@ extension [ParsableCommand.Type] {
       \(isRootCommand
         ? """
               emulate -RL zsh -G
-              setopt extendedglob
+              setopt extendedglob nullglob numericglobsort
               unsetopt aliases banghist
 
               local -xr \(CompletionShell.shellEnvironmentVariableName)=zsh
@@ -107,6 +115,7 @@ extension [ParsableCommand.Type] {
 
               local -r command_name="${words[1]}"
               local -ar command_line=("${words[@]}")
+              local -ir current_word_index="$((CURRENT - 1))"
 
 
           """
@@ -192,7 +201,13 @@ extension [ParsableCommand.Type] {
 
     case .custom:
       return (
-        "{\(customCompleteFunctionName) \"${command_name}\" \(arg.customCompletionCall(self)) \"${command_line[@]}\"}",
+        "{\(customCompleteFunctionName) \(arg.customCompletionCall(self)) \"${current_word_index}\" \"$(\(cursorIndexInCurrentWordFunctionName))\"}",
+        nil
+      )
+
+    case .customDeprecated:
+      return (
+        "{\(customCompleteFunctionName) \(arg.customCompletionCall(self))}",
         nil
       )
     }
@@ -217,6 +232,10 @@ extension [ParsableCommand.Type] {
     // swift-format-ignore: NeverForceUnwrap
     // Precondition: first is guaranteed to be non-empty
     "__\(first!._commandName)_custom_complete"
+  }
+
+  private var cursorIndexInCurrentWordFunctionName: String {
+    "__\(first?._commandName ?? "")_cursor_index_in_current_word"
   }
 }
 
