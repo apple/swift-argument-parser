@@ -198,7 +198,9 @@ extension Math.Statistics {
     var oneOfFour: String?
 
     @Argument(
-      completion: .custom { _, _, _ in ["alabaster", "breakfast", "crunch", "crash"] }
+      completion: .custom { _, _, _ in
+        ["alabaster", "breakfast", "crunch", "crash"]
+      }
     )
     var customArg: String?
 
