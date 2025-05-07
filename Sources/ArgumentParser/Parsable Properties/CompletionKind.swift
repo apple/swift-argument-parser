@@ -185,7 +185,7 @@ public struct CompletionKind {
     *,
     deprecated,
     message:
-      "Use custom(@Sendable @escaping ([String], Int, Int) -> [String]) instead."
+      "Provide a three-parameter closure instead. See custom(@Sendable @escaping ([String], Int, Int) -> [String])."
   )
   public static func custom(
     _ completion: @Sendable @escaping ([String]) -> [String]
