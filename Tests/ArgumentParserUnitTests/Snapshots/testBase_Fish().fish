@@ -80,8 +80,8 @@ complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"
 complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"' -l kind-counter
 complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"' -l rep1 -rfka ''
 complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"' -s r -l rep2 -rfka ''
-complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test" 1' -fka '(__base-test_custom_completion ---completion  -- argument)'
-complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test" 2' -fka '(__base-test_custom_completion ---completion  -- nested.nestedArgument)'
+complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test" 1' -fka '(__base-test_custom_completion ---completion -- argument)'
+complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test" 2' -fka '(__base-test_custom_completion ---completion -- nested.nestedArgument)'
 complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"' -s h -l help -d 'Show help information.'
 complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test" 3' -fa 'sub-command' -d ''
 complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test" 3' -fa 'escaped-command' -d ''
