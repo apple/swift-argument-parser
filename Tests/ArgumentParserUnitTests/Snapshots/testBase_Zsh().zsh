@@ -56,8 +56,8 @@ _base-test() {
         '*--kind-counter'
         '*--rep1:rep1:'
         '*'{-r,--rep2}':rep2:'
-        ':argument:{__base-test_custom_complete ---completion -- argument "${current_word_index}" "$(__base-test_cursor_index_in_current_word)"}'
-        ':nested-argument:{__base-test_custom_complete ---completion -- nested.nestedArgument "${current_word_index}" "$(__base-test_cursor_index_in_current_word)"}'
+        ':argument:{__base-test_custom_complete ---completion -- positional@0 "${current_word_index}" "$(__base-test_cursor_index_in_current_word)"}'
+        ':nested-argument:{__base-test_custom_complete ---completion -- positional@1 "${current_word_index}" "$(__base-test_cursor_index_in_current_word)"}'
         '(-h --help)'{-h,--help}'[Show help information.]'
         '(-): :->command'
         '(-)*:: :->arg'
@@ -98,7 +98,7 @@ _base-test_escaped-command() {
     local -i ret=1
     local -ar arg_specs=(
         '--one[Escaped chars: '\''\[\]\\.]:one:'
-        ':two:{__base-test_custom_complete ---completion escaped-command -- two "${current_word_index}" "$(__base-test_cursor_index_in_current_word)"}'
+        ':two:{__base-test_custom_complete ---completion escaped-command -- positional@0 "${current_word_index}" "$(__base-test_cursor_index_in_current_word)"}'
         '(-h --help)'{-h,--help}'[Show help information.]'
     )
     _arguments -w -s -S : "${arg_specs[@]}" && ret=0
