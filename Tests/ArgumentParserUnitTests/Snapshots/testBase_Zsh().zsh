@@ -8,9 +8,17 @@ __base-test_complete() {
 
 __base-test_custom_complete() {
     local -a completions
-    completions=("${(@f)"$("${@}")"}")
+    completions=("${(@f)"$("${command_name}" "${@}" "${command_line[@]}")"}")
     if [[ "${#completions[@]}" -gt 1 ]]; then
         __base-test_complete "${completions[@]:0:-1}"
+    fi
+}
+
+__base-test_cursor_index_in_current_word() {
+    if [[ -z "${QIPREFIX}${IPREFIX}${PREFIX}" ]]; then
+        printf 0
+    else
+        printf %s "${#${(z)LBUFFER}[-1]}"
     fi
 }
 
@@ -29,6 +37,7 @@ _base-test() {
 
     local -r command_name="${words[1]}"
     local -ar command_line=("${words[@]}")
+    local -ir current_word_index="$((CURRENT - 1))"
 
     local -i ret=1
     local -ar __base_test_kind=('one' 'two' 'custom-three')
@@ -47,8 +56,8 @@ _base-test() {
         '*--kind-counter'
         '*--rep1:rep1:'
         '*'{-r,--rep2}':rep2:'
-        ':argument:{__base-test_custom_complete "${command_name}" ---completion  -- argument "${command_line[@]}"}'
-        ':nested-argument:{__base-test_custom_complete "${command_name}" ---completion  -- nested.nestedArgument "${command_line[@]}"}'
+        ':argument:{__base-test_custom_complete ---completion -- argument "${current_word_index}" "$(__base-test_cursor_index_in_current_word)"}'
+        ':nested-argument:{__base-test_custom_complete ---completion -- nested.nestedArgument "${current_word_index}" "$(__base-test_cursor_index_in_current_word)"}'
         '(-h --help)'{-h,--help}'[Show help information.]'
         '(-): :->command'
         '(-)*:: :->arg'
@@ -89,7 +98,7 @@ _base-test_escaped-command() {
     local -i ret=1
     local -ar arg_specs=(
         '--one[Escaped chars: '\''\[\]\\.]:one:'
-        ':two:{__base-test_custom_complete "${command_name}" ---completion escaped-command -- two "${command_line[@]}"}'
+        ':two:{__base-test_custom_complete ---completion escaped-command -- two "${current_word_index}" "$(__base-test_cursor_index_in_current_word)"}'
         '(-h --help)'{-h,--help}'[Show help information.]'
     )
     _arguments -w -s -S : "${arg_specs[@]}" && ret=0

@@ -8,9 +8,17 @@ __math_complete() {
 
 __math_custom_complete() {
     local -a completions
-    completions=("${(@f)"$("${@}")"}")
+    completions=("${(@f)"$("${command_name}" "${@}" "${command_line[@]}")"}")
     if [[ "${#completions[@]}" -gt 1 ]]; then
         __math_complete "${completions[@]:0:-1}"
+    fi
+}
+
+__math_cursor_index_in_current_word() {
+    if [[ -z "${QIPREFIX}${IPREFIX}${PREFIX}" ]]; then
+        printf 0
+    else
+        printf %s "${#${(z)LBUFFER}[-1]}"
     fi
 }
 
@@ -29,6 +37,7 @@ _math() {
 
     local -r command_name="${words[1]}"
     local -ar command_line=("${words[@]}")
+    local -ir current_word_index="$((CURRENT - 1))"
 
     local -i ret=1
     local -ar arg_specs=(
@@ -147,12 +156,14 @@ _math_stats_quantiles() {
     local -ar math_stats_quantiles_one_of_four=('alphabet' 'alligator' 'branch' 'braggart')
     local -ar arg_specs=(
         ':one-of-four:{__math_complete "${math_stats_quantiles_one_of_four[@]}"}'
-        ':custom-arg:{__math_custom_complete "${command_name}" ---completion stats quantiles -- customArg "${command_line[@]}"}'
+        ':custom-arg:{__math_custom_complete ---completion stats quantiles -- customArg "${current_word_index}" "$(__math_cursor_index_in_current_word)"}'
+        ':custom-deprecated-arg:{__math_custom_complete ---completion stats quantiles -- customDeprecatedArg}'
         ':values:'
         '--file:file:_files -g '\''*.txt *.md'\'''
         '--directory:directory:_files -/'
         '--shell:shell:{local -a list;list=(${(f)"$(head -100 /usr/share/dict/words | tail -50)"});_describe "" list}'
-        '--custom:custom:{__math_custom_complete "${command_name}" ---completion stats quantiles -- --custom "${command_line[@]}"}'
+        '--custom:custom:{__math_custom_complete ---completion stats quantiles -- --custom "${current_word_index}" "$(__math_cursor_index_in_current_word)"}'
+        '--custom-deprecated:custom-deprecated:{__math_custom_complete ---completion stats quantiles -- --custom-deprecated}'
         '--version[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
     )
