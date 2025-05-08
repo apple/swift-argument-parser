@@ -28,8 +28,7 @@ extension GenerateDoccReferenceError: CustomStringConvertible {
     case .unableToParseToolOutput(let error):
       return "Failed to parse tool output: \(error)"
     case .unsupportedDumpHelpVersion(let expected, let found):
-      return
-        "Unsupported dump help version, expected '\(expected)' but found: '\(found)'"
+      return "Unsupported dump help version, expected '\(expected)' but found: '\(found)'"
     case .failedToGenerateDoccReference(let error):
       return "Failed to generated docc reference: \(error)"
     }
@@ -110,13 +109,14 @@ struct GenerateDoccReference: ParsableCommand {
       throw GenerateDoccReferenceError.unableToParseToolOutput(error: error)
     }
 
-    let toolInfo: ToolInfoV0
+    var toolInfo: ToolInfoV0
+
     do {
       toolInfo = try JSONDecoder().decode(ToolInfoV0.self, from: data)
     } catch {
       throw GenerateDoccReferenceError.unableToParseToolOutput(error: error)
     }
-
+    
     do {
       if self.outputDirectory == "-" {
         try self.generatePages(
