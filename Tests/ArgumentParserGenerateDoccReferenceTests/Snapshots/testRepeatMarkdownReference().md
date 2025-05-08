@@ -8,26 +8,26 @@ repeat [--count=<count>] [--include-counter] <phrase> [--help]
 
 ### Arguments
 
-- term **phrase:**
+**phrase:**
 
 *The phrase to repeat.*
 
 
 ### Flags
 
-- term **--include-counter:**
+**--include-counter:**
 
 *Include a counter with each repetition.*
 
 
-- term **--help:**
+**--help:**
 
 *Show help information.*
 
 
 ### Options
 
-- term **--count=\<count\>:**
+**--count=\<count\>:**
 
 *The number of times to repeat 'phrase'.*
 
@@ -42,4 +42,4 @@ repeat help [<subcommands>...]
 
 ### Arguments
 
-- term **subcommands:**
+**subcommands:**

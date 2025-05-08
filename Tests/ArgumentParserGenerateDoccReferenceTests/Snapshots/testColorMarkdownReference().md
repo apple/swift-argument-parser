@@ -8,19 +8,19 @@ color --fav=<fav> [--second=<second>] [--help]
 
 ### Flags
 
-- term **--help:**
+**--help:**
 
 *Show help information.*
 
 
 ### Options
 
-- term **--fav=\<fav\>:**
+**--fav=\<fav\>:**
 
 *Your favorite color.*
 
 
-- term **--second=\<second\>:**
+**--second=\<second\>:**
 
 *Your second favorite color.*
 
@@ -37,4 +37,4 @@ color help [<subcommands>...]
 
 ### Arguments
 
-- term **subcommands:**
+**subcommands:**

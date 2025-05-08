@@ -8,26 +8,26 @@ count-lines [<input-file>] [--prefix=<prefix>] [--verbose] [--help]
 
 ### Arguments
 
-- term **input-file:**
+**input-file:**
 
 *A file to count lines in. If omitted, counts the lines of stdin.*
 
 
 ### Flags
 
-- term **--verbose:**
+**--verbose:**
 
 *Include extra information in the output.*
 
 
-- term **--help:**
+**--help:**
 
 *Show help information.*
 
 
 ### Options
 
-- term **--prefix=\<prefix\>:**
+**--prefix=\<prefix\>:**
 
 *Only count lines with this prefix.*
 
@@ -42,4 +42,4 @@ count-lines help [<subcommands>...]
 
 ### Arguments
 
-- term **subcommands:**
+**subcommands:**

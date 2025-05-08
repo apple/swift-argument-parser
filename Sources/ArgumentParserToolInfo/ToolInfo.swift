@@ -149,8 +149,11 @@ public struct ArgumentInfoV0: Codable, Hashable {
     case directory
     /// Call the given shell command to generate completions.
     case shellCommand(command: String)
-    /// Generate completions using the given closure.
+    /// Generate completions using the given closure including index arguments.
     case custom
+    /// Generate completions using the given closure without index arguments.
+    @available(*, deprecated, message: "Use custom instead.")
+    case customDeprecated
   }
 
   /// Kind of argument the ArgumentInfo describes.

@@ -1,5 +1,21 @@
 #!/bin/bash
 
+__base_test_cursor_index_in_current_word() {
+    local remaining="${COMP_LINE}"
+
+    local word
+    for word in "${COMP_WORDS[@]::COMP_CWORD}"; do
+        remaining="${remaining##*([[:space:]])"${word}"*([[:space:]])}"
+    done
+
+    local -ir index="$((COMP_POINT - ${#COMP_LINE} + ${#remaining}))"
+    if [[ "${index}" -le 0 ]]; then
+        printf 0
+    else
+        printf %s "${index}"
+    fi
+}
+
 # positional arguments:
 #
 # - 1: the current (sub)command's count of positional arguments
@@ -182,11 +198,11 @@ _base_test() {
     # Offer positional completions
     case "${positional_number}" in
     1)
-        __base_test_add_completions -W "$(__base_test_custom_complete ---completion  -- argument)"
+        __base_test_add_completions -W "$(__base_test_custom_complete ---completion -- argument "${COMP_CWORD}" "$(__base_test_cursor_index_in_current_word)")"
         return
         ;;
     2)
-        __base_test_add_completions -W "$(__base_test_custom_complete ---completion  -- nested.nestedArgument)"
+        __base_test_add_completions -W "$(__base_test_custom_complete ---completion -- nested.nestedArgument "${COMP_CWORD}" "$(__base_test_cursor_index_in_current_word)")"
         return
         ;;
     esac
@@ -228,7 +244,7 @@ _base_test_escaped_command() {
     # Offer positional completions
     case "${positional_number}" in
     1)
-        __base_test_add_completions -W "$(__base_test_custom_complete ---completion escaped-command -- two)"
+        __base_test_add_completions -W "$(__base_test_custom_complete ---completion escaped-command -- two "${COMP_CWORD}" "$(__base_test_cursor_index_in_current_word)")"
         return
         ;;
     esac

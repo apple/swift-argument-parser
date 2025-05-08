@@ -34,7 +34,15 @@ extension CommandInfoV0 {
 }
 
 extension CommandInfoV0 {
-  func toMarkdown(_ path: [String]) -> String {
+  /// Recursively parses a command to generate markdown content that describes the command.
+  /// - Parameters:
+  ///   - path: The path of subcommands from the root command.
+  ///   - markdownStyle: The flavor of markdown to emit, either `docc` or `github`
+  /// - Returns: A multi-line markdown file that describes the command.
+  ///
+  /// If `path` is empty, it represents a top-level command.
+  /// Otherwise it's a subcommand, potentially recursive to multiple levels.
+  func toMarkdown(_ path: [String], markdownStyle: OutputStyle) -> String {
     var result =
       String(repeating: "#", count: path.count + 1)
       + " \(self.doccReferenceTitle)\n\n"
@@ -81,11 +89,18 @@ extension CommandInfoV0 {
         for arg in arguments {
           // Add the argument identity in bold Markdown format
           // The argument identity is emphasized in bold to make it stand out in the documentation.
-          result += "**`\(arg.identity())`**\n\n"
+
 
           // If the argument has an abstract, add it in italic Markdown format
           // Including the abstract provides a brief description of the argument's purpose.
           // The italic formatting helps to distinguish the abstract from other parts of the documentation.
+          switch markdownStyle {
+          case .docc:
+            result += "- term **\(arg.identity()):**\n\n"
+          case .github:
+            result += "**\(arg.identity()):**\n\n"
+          }
+
           if let abstract = arg.abstract {
             result += "*\(abstract)*\n\n"
           }
@@ -106,7 +121,9 @@ extension CommandInfoV0 {
     }
 
     for subcommand in self.subcommands ?? [] {
-      result += subcommand.toMarkdown(path + [self.commandName]) + "\n\n"
+      result +=
+        subcommand.toMarkdown(
+          path + [self.commandName], markdownStyle: markdownStyle) + "\n\n"
     }
 
     // Trim any unnecessary trailing newline that could have been added inadvertently
@@ -144,6 +161,9 @@ extension CommandInfoV0 {
 
 
 extension ArgumentInfoV0 {
+  /// Returns a string that describes the use of the argument.
+  ///
+  /// If `shouldDisplay` is `false`, an empty string is returned.
   public func usage() -> String {
     guard self.shouldDisplay else {
       return ""
