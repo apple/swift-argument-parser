@@ -6,15 +6,14 @@
 count-lines [<input-file>] [--prefix=<prefix>] [--verbose] [--help]
 ```
 
+### Arguments
+
 **input-file:**
 
 *A file to count lines in. If omitted, counts the lines of stdin.*
 
 
-**--prefix=\<prefix\>:**
-
-*Only count lines with this prefix.*
-
+### Flags
 
 **--verbose:**
 
@@ -26,6 +25,13 @@ count-lines [<input-file>] [--prefix=<prefix>] [--verbose] [--help]
 *Show help information.*
 
 
+### Options
+
+**--prefix=\<prefix\>:**
+
+*Only count lines with this prefix.*
+
+
 ## count-lines.help
 
 Show subcommand help information.
@@ -34,9 +40,6 @@ Show subcommand help information.
 count-lines help [<subcommands>...] 
 ```
 
+### Arguments
+
 **subcommands:**
-
-
-
-
-
