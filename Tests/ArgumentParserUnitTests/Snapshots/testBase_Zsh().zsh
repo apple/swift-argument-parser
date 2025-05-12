@@ -97,7 +97,7 @@ _base-test_sub-command() {
 _base-test_escaped-command() {
     local -i ret=1
     local -ar arg_specs=(
-        '--one[Escaped chars: '\''\[\]\\.]:one:'
+        '--o\:n\[e[Escaped chars\: '\''\[\]\\.]:path\[\:options\]:'
         ':two:{__base-test_custom_complete ---completion escaped-command -- two "${current_word_index}" "$(__base-test_cursor_index_in_current_word)"}'
         '(-h --help)'{-h,--help}'[Show help information.]'
     )

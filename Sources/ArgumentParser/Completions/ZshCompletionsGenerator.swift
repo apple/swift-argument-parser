@@ -77,7 +77,7 @@ extension [ParsableCommand.Type] {
                 local -ar subcommands=(
         \(
           subcommands.map { """
-                        '\($0._commandName):\($0.configuration.abstract.zshEscapeForSingleQuotedExplanation())'
+                        '\($0._commandName.zshEscapeForSingleQuotedDescribeCompletion()):\($0.configuration.abstract.shellEscapeForSingleQuotedString())'
             """
           }
           .joined(separator: "\n")
@@ -146,10 +146,12 @@ extension [ParsableCommand.Type] {
       line = ""
     case 1:
       line = """
-        \(arg.isRepeatableOption ? "*" : "")\(arg.names[0].synopsisString)\(arg.zshCompletionAbstract)
+        \(arg.isRepeatableOption ? "*" : "")\(arg.names[0].synopsisString.zshEscapeForSingleQuotedOptionSpec())\(arg.zshCompletionAbstract)
         """
     default:
-      let synopses = arg.names.map { $0.synopsisString }
+      let synopses = arg.names.map {
+        $0.synopsisString.zshEscapeForSingleQuotedOptionSpec()
+      }
       line = """
         \(arg.isRepeatableOption ? "*" : "(\(synopses.joined(separator: " ")))")'\
         {\(synopses.joined(separator: ","))}\
@@ -160,7 +162,10 @@ extension [ParsableCommand.Type] {
     switch arg.update {
     case .unary:
       let (argumentAction, setupScript) = argumentActionAndSetupScript(arg)
-      return ("'\(line):\(arg.valueName):\(argumentAction)'", setupScript)
+      return (
+        "'\(line):\(arg.valueName.zshEscapeForSingleQuotedOptionSpec()):\(argumentAction)'",
+        setupScript
+      )
     case .nullary:
       return ("'\(line)'", nil)
     }
@@ -179,7 +184,7 @@ extension [ParsableCommand.Type] {
         extensions.isEmpty
         ? ("_files", nil)
         : (
-          "_files -g '\\''\(extensions.map { "*.\($0.zshEscapeForSingleQuotedExplanation())" }.joined(separator: " "))'\\''",
+          "_files -g '\\''\(extensions.map { "*.\($0.shellEscapeForSingleQuotedString())" }.joined(separator: " "))'\\''",
           nil
         )
 
@@ -239,17 +244,6 @@ extension [ParsableCommand.Type] {
   }
 }
 
-extension String {
-  fileprivate func zshEscapeForSingleQuotedExplanation() -> String {
-    replacingOccurrences(
-      of: #"[\\\[\]]"#,
-      with: #"\\$0"#,
-      options: .regularExpression
-    )
-    .shellEscapeForSingleQuotedString()
-  }
-}
-
 extension ArgumentDefinition {
   /// - returns: `true` if `self` is an option and can be tab-completed multiple times in one command line.
   ///   For example, `ssh` allows the `-L` option to be given multiple times, to establish multiple port forwardings.
@@ -266,7 +260,27 @@ extension ArgumentDefinition {
   }
 
   fileprivate var zshCompletionAbstract: String {
-    guard !help.abstract.isEmpty else { return "" }
-    return "[\(help.abstract.zshEscapeForSingleQuotedExplanation())]"
+    help.abstract.isEmpty
+      ? ""
+      : "[\(help.abstract.zshEscapeForSingleQuotedOptionSpec())]"
+  }
+}
+
+extension String {
+  fileprivate func zshEscapeForSingleQuotedDescribeCompletion() -> String {
+    replacingOccurrences(
+      of: #"[:\\]"#,
+      with: #"\\$0"#,
+      options: .regularExpression
+    )
+    .shellEscapeForSingleQuotedString()
+  }
+  fileprivate func zshEscapeForSingleQuotedOptionSpec() -> String {
+    replacingOccurrences(
+      of: #"[:\\\[\]]"#,
+      with: #"\\$0"#,
+      options: .regularExpression
+    )
+    .shellEscapeForSingleQuotedString()
   }
 }

@@ -88,7 +88,12 @@ extension CompletionScriptTests {
     }
 
     struct EscapedCommand: ParsableCommand {
-      @Option(help: #"Escaped chars: '[]\."#)
+      @Option(
+        name: .customLong("o:n[e"),
+        help: ArgumentHelp(
+          #"Escaped chars: '[]\."#, valueName: "path[:options]"
+        )
+      )
       var one: String
 
       @Argument(completion: .custom { _, _, _ in candidates(prefix: "i") })
