@@ -55,7 +55,7 @@ _math() {
             'stats:Calculate descriptive statistics.'
             'help:Show subcommand help information.'
         )
-        _describe "subcommand" subcommands
+        _describe subcommand subcommands
         ;;
     arg)
         case "${words[1]}" in
@@ -111,7 +111,7 @@ _math_stats() {
             'stdev:Print the standard deviation of the values.'
             'quantiles:Print the quantiles of the values (TBD).'
         )
-        _describe "subcommand" subcommands
+        _describe subcommand subcommands
         ;;
     arg)
         case "${words[1]}" in
