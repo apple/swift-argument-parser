@@ -204,7 +204,7 @@ extension [ParsableCommand.Type] {
         nil
       )
 
-    case .custom:
+    case .custom, .customAsync:
       return (
         "{\(customCompleteFunctionName) \(arg.customCompletionCall(self)) \"${current_word_index}\" \"$(\(cursorIndexInCurrentWordFunctionName))\"}",
         nil
