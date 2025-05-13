@@ -259,7 +259,7 @@ extension Math.Statistics {
   }
 }
 
-func customCompletion(_ s: [String], _: Int, _: Int) -> [String] {
+func customCompletion(_ s: [String], _: Int, _: String) -> [String] {
   (s.last ?? "").starts(with: "a")
     ? ["aardvark", "aaaaalbert"]
     : ["hello", "helicopter", "heliotrope"]
