@@ -31,6 +31,7 @@
             "name" : "color"
           }
         ],
+        "parsingStrategy" : "default",
         "preferredName" : {
           "kind" : "long",
           "name" : "color"
@@ -69,6 +70,7 @@
             "name" : "default-color"
           }
         ],
+        "parsingStrategy" : "default",
         "preferredName" : {
           "kind" : "long",
           "name" : "default-color"
@@ -106,6 +108,7 @@
             "name" : "opt"
           }
         ],
+        "parsingStrategy" : "default",
         "preferredName" : {
           "kind" : "long",
           "name" : "opt"
@@ -143,6 +146,7 @@
             "name" : "extra"
           }
         ],
+        "parsingStrategy" : "default",
         "preferredName" : {
           "kind" : "long",
           "name" : "extra"
@@ -161,6 +165,7 @@
             "name" : "discussion"
           }
         ],
+        "parsingStrategy" : "default",
         "preferredName" : {
           "kind" : "long",
           "name" : "discussion"
@@ -183,6 +188,7 @@
             "name" : "help"
           }
         ],
+        "parsingStrategy" : "default",
         "preferredName" : {
           "kind" : "long",
           "name" : "help"
@@ -201,6 +207,7 @@
             "isOptional" : true,
             "isRepeating" : true,
             "kind" : "positional",
+            "parsingStrategy" : "default",
             "shouldDisplay" : true,
             "valueName" : "subcommands"
           },
@@ -222,6 +229,7 @@
                 "name" : "help"
               }
             ],
+            "parsingStrategy" : "default",
             "preferredName" : {
               "kind" : "long",
               "name" : "help"

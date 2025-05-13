@@ -127,6 +127,7 @@ extension ArgumentInfoV0 {
       sectionTitle: argument.help.parentTitle.nonEmpty,
       isOptional: argument.help.options.contains(.isOptional),
       isRepeating: argument.help.options.contains(.isRepeating),
+      parsingStrategy: ArgumentInfoV0.ParsingStrategyV0(argument: argument),
       names: argument.names.map(ArgumentInfoV0.NameInfoV0.init),
       preferredName: argument.names.preferredName.map(
         ArgumentInfoV0.NameInfoV0.init),
@@ -155,6 +156,27 @@ extension ArgumentInfoV0.KindV0 {
       self = .positional
     case .default:
       return nil
+    }
+  }
+}
+
+extension ArgumentInfoV0.ParsingStrategyV0 {
+  fileprivate init(argument: ArgumentDefinition) {
+    switch argument.parsingStrategy {
+    case .`default`:
+      self = .default
+    case .scanningForValue:
+      self = .scanningForValue
+    case .unconditional:
+      self = .unconditional
+    case .upToNextOption:
+      self = .upToNextOption
+    case .allRemainingInput:
+      self = .allRemainingInput
+    case .postTerminator:
+      self = .postTerminator
+    case .allUnrecognized:
+      self = .allUnrecognized
     }
   }
 }
