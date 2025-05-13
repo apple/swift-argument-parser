@@ -52,41 +52,6 @@ extension BidirectionalCollection where Element == ParsableCommand.Type {
   }
 }
 
-extension ArgumentSet {
-  fileprivate func mergingCompositeArguments() -> ArgumentSet {
-    var arguments = ArgumentSet()
-    var slice = self[...]
-    while var argument = slice.popFirst() {
-      if argument.help.isComposite {
-        // If this argument is composite, we have a group of arguments to
-        // merge together.
-        let groupEnd =
-          slice
-          .firstIndex { $0.help.keys != argument.help.keys }
-          ?? slice.endIndex
-        let group = [argument] + slice[..<groupEnd]
-        slice = slice[groupEnd...]
-
-        switch argument.kind {
-        case .named:
-          argument.kind = .named(group.flatMap(\.names))
-        case .positional, .default:
-          break
-        }
-
-        argument.help.valueName =
-          group.map(\.valueName).first { !$0.isEmpty } ?? ""
-        argument.help.defaultValue = group.compactMap(\.help.defaultValue).first
-        argument.help.abstract =
-          group.map(\.help.abstract).first { !$0.isEmpty } ?? ""
-        argument.help.discussion = group.compactMap(\.help.discussion).first
-      }
-      arguments.append(argument)
-    }
-    return arguments
-  }
-}
-
 extension ToolInfoV0 {
   fileprivate init(commandStack: [ParsableCommand.Type]) {
     self.init(command: CommandInfoV0(commandStack: commandStack))
@@ -123,7 +88,6 @@ extension CommandInfoV0 {
     let arguments =
       commandStack
       .allArguments()
-      .mergingCompositeArguments()
       .compactMap(ArgumentInfoV0.init)
 
     self = CommandInfoV0(
