@@ -57,11 +57,10 @@ extension ToolInfoV0 {
     self.init(command: CommandInfoV0(commandStack: commandStack))
     // FIXME: This is a hack to inject the help command into the tool info
     // instead we should try to lift this into the parseable command tree
-    var helpCommandInfo = CommandInfoV0(commandStack: [HelpCommand.self])
-    helpCommandInfo.superCommands =
-      (self.command.superCommands ?? []) + [self.command.commandName]
     self.command.subcommands =
-      (self.command.subcommands ?? []) + [helpCommandInfo]
+      (self.command.subcommands ?? []) + [
+        CommandInfoV0(commandStack: commandStack + [HelpCommand.self])
+      ]
   }
 }
 

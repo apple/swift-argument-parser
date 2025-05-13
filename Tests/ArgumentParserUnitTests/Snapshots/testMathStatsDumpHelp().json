@@ -512,6 +512,24 @@
             },
             "shouldDisplay" : false,
             "valueName" : "help"
+          },
+          {
+            "abstract" : "Show the version.",
+            "isOptional" : true,
+            "isRepeating" : false,
+            "kind" : "flag",
+            "names" : [
+              {
+                "kind" : "long",
+                "name" : "version"
+              }
+            ],
+            "preferredName" : {
+              "kind" : "long",
+              "name" : "version"
+            },
+            "shouldDisplay" : true,
+            "valueName" : "version"
           }
         ],
         "commandName" : "help",
