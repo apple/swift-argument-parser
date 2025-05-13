@@ -456,16 +456,32 @@ extension CommandParser {
       }
 
       guard
-        let s = args.popFirst(),
-        let cursorIndexWithinCompletingArgument = Int(s)
+        let arg = args.popFirst(),
+        let cursorIndexWithinCompletingArgument = Int(arg)
       else {
+        throw ParserError.invalidState
+      }
+
+      let completingPrefix: String
+      if let completingArgument = args.last {
+        completingPrefix = String(
+          completingArgument.prefix(
+            upTo: completingArgument.index(
+              completingArgument.startIndex,
+              offsetBy: cursorIndexWithinCompletingArgument
+            )
+          )
+        )
+      } else if cursorIndexWithinCompletingArgument == 0 {
+        completingPrefix = ""
+      } else {
         throw ParserError.invalidState
       }
 
       completions = complete(
         Array(args),
         completingArgumentIndex,
-        cursorIndexWithinCompletingArgument
+        completingPrefix
       )
     case .customDeprecated(let complete):
       completions = complete(args)
