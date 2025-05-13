@@ -74,7 +74,7 @@ extension CommandInfoV0 {
 
         switch markdownStyle {
         case .docc:
-          result += "- term **\(arg.identity()):**\n\n"
+          result += "- term **\(arg.identity())**:\n\n"
         case .github:
           result += "**\(arg.identity()):**\n\n"
         }
