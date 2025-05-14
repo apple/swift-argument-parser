@@ -109,7 +109,7 @@ _base-test_escaped-command() {
 _base-test_help() {
     local -i ret=1
     local -ar arg_specs=(
-        ':subcommands:'
+        '*:subcommands:'
     )
     _arguments -w -s -S : "${arg_specs[@]}" && ret=0
 
