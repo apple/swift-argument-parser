@@ -143,15 +143,15 @@ extension [ParsableCommand.Type] {
     let line: String
     switch arg.names.count {
     case 0:
-      line = ""
+      line = arg.help.options.contains(.isRepeating) ? "*" : ""
     case 1:
       line = """
-        \(arg.isRepeatableOption ? "*" : "")\(arg.names[0].synopsisString)\(arg.zshCompletionAbstract)
+        \(arg.isRepeatingOption ? "*" : "")\(arg.names[0].synopsisString)\(arg.zshCompletionAbstract)
         """
     default:
       let synopses = arg.names.map { $0.synopsisString }
       line = """
-        \(arg.isRepeatableOption ? "*" : "(\(synopses.joined(separator: " ")))")'\
+        \(arg.isRepeatingOption ? "*" : "(\(synopses.joined(separator: " ")))")'\
         {\(synopses.joined(separator: ","))}\
         '\(arg.zshCompletionAbstract)
         """
@@ -251,9 +251,9 @@ extension String {
 }
 
 extension ArgumentDefinition {
-  /// - returns: `true` if `self` is an option and can be tab-completed multiple times in one command line.
+  /// - returns: `true` if `self` is a flag or an option and can be tab-completed multiple times in one command line.
   ///   For example, `ssh` allows the `-L` option to be given multiple times, to establish multiple port forwardings.
-  fileprivate var isRepeatableOption: Bool {
+  fileprivate var isRepeatingOption: Bool {
     guard
       case .named(_) = kind,
       help.options.contains(.isRepeating)
