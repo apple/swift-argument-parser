@@ -23,7 +23,7 @@ extension [ParsableCommand.Type] {
       \(completeFunctionName)() {
           local -ar non_empty_completions=("${@:#(|:*)}")
           local -ar empty_completions=("${(M)@:#(|:*)}")
-          _describe '' non_empty_completions -- empty_completions -P $'\\'\\''
+          _describe -V '' non_empty_completions -- empty_completions -P $'\\'\\''
       }
 
       \(customCompleteFunctionName)() {
@@ -83,7 +83,7 @@ extension [ParsableCommand.Type] {
           .joined(separator: "\n")
         )
                 )
-                _describe "subcommand" subcommands
+                _describe -V subcommand subcommands
                 ;;
             arg)
                 case "${words[1]}" in
@@ -195,7 +195,7 @@ extension [ParsableCommand.Type] {
 
     case .shellCommand(let command):
       return (
-        "{local -a list;list=(${(f)\"$(\(command.shellEscapeForSingleQuotedString()))\"});_describe \"\" list}",
+        "{local -a list;list=(${(f)\"$(\(command.shellEscapeForSingleQuotedString()))\"});_describe -V \"\" list}",
         nil
       )
 

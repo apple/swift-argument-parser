@@ -3,7 +3,7 @@
 __base-test_complete() {
     local -ar non_empty_completions=("${@:#(|:*)}")
     local -ar empty_completions=("${(M)@:#(|:*)}")
-    _describe '' non_empty_completions -- empty_completions -P $'\'\''
+    _describe -V '' non_empty_completions -- empty_completions -P $'\'\''
 }
 
 __base-test_custom_complete() {
@@ -70,7 +70,7 @@ _base-test() {
             'escaped-command:'
             'help:Show subcommand help information.'
         )
-        _describe "subcommand" subcommands
+        _describe -V subcommand subcommands
         ;;
     arg)
         case "${words[1]}" in
