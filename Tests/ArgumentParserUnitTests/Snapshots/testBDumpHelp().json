@@ -11,6 +11,7 @@
             "name" : "verbose"
           }
         ],
+        "parsingStrategy" : "default",
         "preferredName" : {
           "kind" : "long",
           "name" : "verbose"
@@ -29,6 +30,7 @@
             "name" : "name"
           }
         ],
+        "parsingStrategy" : "default",
         "preferredName" : {
           "kind" : "long",
           "name" : "name"
@@ -52,6 +54,7 @@
             "name" : "help"
           }
         ],
+        "parsingStrategy" : "default",
         "preferredName" : {
           "kind" : "long",
           "name" : "help"
@@ -70,6 +73,7 @@
             "isOptional" : true,
             "isRepeating" : true,
             "kind" : "positional",
+            "parsingStrategy" : "default",
             "shouldDisplay" : true,
             "valueName" : "subcommands"
           },
@@ -91,6 +95,7 @@
                 "name" : "help"
               }
             ],
+            "parsingStrategy" : "default",
             "preferredName" : {
               "kind" : "long",
               "name" : "help"
