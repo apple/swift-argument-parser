@@ -169,7 +169,7 @@ _math() {
     case "${subcommand}" in
     add|multiply|stats|help)
         # Offer subcommand argument completions
-        "_math_${subcommand}"
+        "_math_${subcommand//-/_}"
         ;;
     *)
         # Offer subcommand completions
@@ -202,7 +202,7 @@ _math_stats() {
     case "${subcommand}" in
     average|stdev|quantiles)
         # Offer subcommand argument completions
-        "_math_stats_${subcommand}"
+        "_math_stats_${subcommand//-/_}"
         ;;
     *)
         # Offer subcommand completions

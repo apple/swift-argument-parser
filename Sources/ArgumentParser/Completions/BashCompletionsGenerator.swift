@@ -290,7 +290,7 @@ extension [ParsableCommand.Type] {
             case "${subcommand}" in
             \(subcommands.map { $0._commandName }.joined(separator: "|")))
                 # Offer subcommand argument completions
-                "\(functionName)_${subcommand}"
+                "\(functionName)_${subcommand//-/_}"
                 ;;
             *)
                 # Offer subcommand completions

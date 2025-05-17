@@ -6,7 +6,9 @@ Add new items at the end of the relevant section under **Unreleased**.
 
 ## [Unreleased]
 
-*No new changes.*
+### Fixes
+
+- Bash completion scripts correctly handles subcommands with hyphens. ([#780])
 
 ---
 

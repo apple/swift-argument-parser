@@ -214,7 +214,7 @@ _base_test() {
     case "${subcommand}" in
     sub-command|escaped-command|help)
         # Offer subcommand argument completions
-        "_base_test_${subcommand}"
+        "_base_test_${subcommand//-/_}"
         ;;
     *)
         # Offer subcommand completions
