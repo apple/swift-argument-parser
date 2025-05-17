@@ -184,10 +184,6 @@ extension CommandInfoV0 {
   var completionFunctionPrefix: String {
     "__\(initialCommand)"
   }
-
-  var shellVariableNamePrefix: String {
-    commandContext.joined(separator: "_").shellEscapeForVariableName()
-  }
 }
 
 extension ArgumentInfoV0 {
