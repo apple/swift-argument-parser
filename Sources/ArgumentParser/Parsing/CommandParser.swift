@@ -465,12 +465,7 @@ extension CommandParser {
       let completingPrefix: String
       if let completingArgument = args.last {
         completingPrefix = String(
-          completingArgument.prefix(
-            upTo: completingArgument.index(
-              completingArgument.startIndex,
-              offsetBy: cursorIndexWithinCompletingArgument
-            )
-          )
+          completingArgument.prefix(cursorIndexWithinCompletingArgument)
         )
       } else if cursorIndexWithinCompletingArgument == 0 {
         completingPrefix = ""
