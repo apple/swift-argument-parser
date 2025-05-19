@@ -250,7 +250,6 @@ extension Flag where Value == Bool? {
       exclusivity: exclusivity,
       help: help)
   }
-
 }
 
 extension Flag where Value == Bool {
@@ -556,7 +555,6 @@ extension Flag {
                 key: parentKey, value: value, origin: origin, values: &values,
                 exclusivity: exclusivity)
             }))
-
         }
         return ArgumentSet(args)
       })

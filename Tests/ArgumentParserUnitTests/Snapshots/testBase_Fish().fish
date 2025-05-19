@@ -5,7 +5,7 @@ function __base-test_should_offer_completions_for -a expected_commands -a expect
 
     switch $unparsed_tokens[1]
     case 'base-test'
-        __base-test_parse_subcommand 2 'name=' 'kind=' 'other-kind=' 'path1=' 'path2=' 'path3=' 'one' 'two' 'three' 'kind-counter' 'rep1=' 'r/rep2=' 'h/help'
+        __base-test_parse_subcommand 2 'name=' 'kind=' 'other-kind=' 'path1=' 'path2=' 'path3=' 'one' 'two' 'custom-three' 'kind-counter' 'rep1=' 'r/rep2=' 'h/help'
         switch $unparsed_tokens[1]
         case 'sub-command'
             __base-test_parse_subcommand 0 'h/help'
@@ -76,7 +76,7 @@ complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"
 complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"' -l 'path3' -rfka 'c1_fish c2_fish c3_fish'
 complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"' -l 'one'
 complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"' -l 'two'
-complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"' -l 'three'
+complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"' -l 'custom-three'
 complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"' -l 'kind-counter'
 complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"' -l 'rep1' -rfka ''
 complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"' -s 'r' -l 'rep2' -rfka ''

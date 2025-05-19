@@ -81,3 +81,10 @@ extension EnumerableFlag {
     nil
   }
 }
+
+extension EnumerableFlag
+where Self: RawRepresentable, Self: CustomStringConvertible {
+  public var description: String {
+    String(describing: rawValue)
+  }
+}
