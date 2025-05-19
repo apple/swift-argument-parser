@@ -158,7 +158,7 @@ _base-test() {
     local -i positional_number
     local -a unparsed_words=("${COMP_WORDS[@]:1:${COMP_CWORD}}")
 
-    local -a flags=(--one --two --three --kind-counter -h --help)
+    local -a flags=(--one --two --custom-three --kind-counter -h --help)
     local -a options=(--name --kind --other-kind --path1 --path2 --path3 --rep1 -r --rep2)
     __base-test_offer_flags_options 2
 
