@@ -164,33 +164,33 @@ _base_test() {
 
     # Offer option value completions
     case "${prev}" in
-    --name)
+    '--name')
         return
         ;;
-    --kind)
+    '--kind')
         __base_test_add_completions -W 'one'$'\n''two'$'\n''custom-three'
         return
         ;;
-    --other-kind)
+    '--other-kind')
         __base_test_add_completions -W 'b1_bash'$'\n''b2_bash'$'\n''b3_bash'
         return
         ;;
-    --path1)
+    '--path1')
         __base_test_add_completions -f
         return
         ;;
-    --path2)
+    '--path2')
         __base_test_add_completions -f
         return
         ;;
-    --path3)
+    '--path3')
         __base_test_add_completions -W 'c1_bash'$'\n''c2_bash'$'\n''c3_bash'
         return
         ;;
-    --rep1)
+    '--rep1')
         return
         ;;
-    -r|--rep2)
+    '-r'|'--rep2')
         return
         ;;
     esac
@@ -231,12 +231,12 @@ _base_test_sub_command() {
 
 _base_test_escaped_command() {
     flags=(-h --help)
-    options=(--one)
+    options=(--o:n[e)
     __base_test_offer_flags_options 1
 
     # Offer option value completions
     case "${prev}" in
-    --one)
+    '--o:n[e')
         return
         ;;
     esac

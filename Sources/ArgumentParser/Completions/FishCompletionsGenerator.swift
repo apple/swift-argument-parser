@@ -316,11 +316,11 @@ extension Name {
   fileprivate var asFishSuggestion: String {
     switch self {
     case .long(let longName):
-      return "-l \(longName)"
+      return "-l '\(longName.fishEscapeForSingleQuotedString())'"
     case .short(let shortName, _):
-      return "-s \(shortName)"
+      return "-s '\(String(shortName).fishEscapeForSingleQuotedString())'"
     case .longWithSingleDash(let dashedName):
-      return "-o \(dashedName)"
+      return "-o '\(dashedName.fishEscapeForSingleQuotedString())'"
     }
   }
 }

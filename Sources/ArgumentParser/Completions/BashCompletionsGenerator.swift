@@ -236,7 +236,7 @@ extension [ParsableCommand.Type] {
         if arg.isNullary { return nil }
 
         return """
-              \(arg.bashCompletionWords.joined(separator: "|")))
+              \(arg.bashCompletionWords.map { "'\($0.shellEscapeForSingleQuotedString())'" }.joined(separator: "|")))
           \(bashValueCompletion(arg).indentingEachLine(by: 8))\
                   return
                   ;;
