@@ -40,7 +40,7 @@ public struct CompletionKind {
     case file(extensions: [String])
     case directory
     case shellCommand(String)
-    case custom(@Sendable ([String], Int, Int) -> [String])
+    case custom(@Sendable ([String], Int, String) -> [String])
     case customDeprecated(@Sendable ([String]) -> [String])
   }
 
@@ -126,11 +126,11 @@ public struct CompletionKind {
   /// passed to Swift as `"abc\\""def"` (i.e. the Swift String's contents would
   /// include all 4 of the double quotes and the 2 consecutive backslashes).
   ///
-  /// The first of the two `Int` arguments is the 0-based index of the word
-  /// for which completions are being requested within the given `[String]`.
+  /// The second argument (an `Int`) is the 0-based index of the word for which
+  /// completions are being requested within the given `[String]`.
   ///
-  /// The second of the two `Int` arguments is the 0-based index of the shell
-  /// cursor within the word for which completions are being requested.
+  /// The third argument (a `String`) is the prefix of the word for which
+  /// completions are being requested that precedes the cursor.
   ///
   /// ### bash
   ///
@@ -171,21 +171,21 @@ public struct CompletionKind {
   /// character, not as after the backslash.
   @preconcurrency
   public static func custom(
-    _ completion: @Sendable @escaping ([String], Int, Int) -> [String]
+    _ completion: @Sendable @escaping ([String], Int, String) -> [String]
   ) -> CompletionKind {
     CompletionKind(kind: .custom(completion))
   }
 
   /// Deprecated; only kept for backwards compatibility.
   ///
-  /// The same as `custom(@Sendable @escaping ([String], Int, Int) -> [String])`,
-  /// except that index arguments are not supplied.
+  /// The same as `custom(@Sendable @escaping ([String], Int, String) -> [String])`,
+  /// except that the last two closure arguments are not supplied.
   @preconcurrency
   @available(
     *,
     deprecated,
     message:
-      "Provide a three-parameter closure instead. See custom(@Sendable @escaping ([String], Int, Int) -> [String])."
+      "Provide a three-parameter closure instead. See custom(@Sendable @escaping ([String], Int, String) -> [String])."
   )
   public static func custom(
     _ completion: @Sendable @escaping ([String]) -> [String]
