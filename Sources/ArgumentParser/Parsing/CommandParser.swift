@@ -10,10 +10,12 @@
 //===----------------------------------------------------------------------===//
 
 #if swift(>=6.0)
-private import class Dispatch.DispatchSemaphore
+@preconcurrency private import class Dispatch.DispatchSemaphore
+internal import class Foundation.NSLock
 internal import class Foundation.ProcessInfo
 #else
-import class Dispatch.DispatchSemaphore
+@preconcurrency import class Dispatch.DispatchSemaphore
+import class Foundation.NSLock
 import class Foundation.ProcessInfo
 #endif
 
@@ -518,16 +520,44 @@ private func asyncCustomCompletions(
 ) throws -> [String] {
   let (args, completingArgumentIndex, completingPrefix) =
     try parseCustomCompletionArguments(from: args)
-  var completions: [String] = []
+
+  let completionsBox = SendableBox<[String]>([])
   let semaphore = DispatchSemaphore(value: 0)
+
   Task {
-    completions = await complete(
-      args, completingArgumentIndex, completingPrefix
+    completionsBox.value = await complete(
+      args,
+      completingArgumentIndex,
+      completingPrefix
     )
     semaphore.signal()
   }
+
   semaphore.wait()
-  return completions
+  return completionsBox.value
+}
+
+// Helper class to make values sendable across concurrency boundaries
+private final class SendableBox<T>: @unchecked Sendable {
+  private let lock = NSLock()
+  private var _value: T
+
+  init(_ value: T) {
+    self._value = value
+  }
+
+  var value: T {
+    get {
+      lock.lock()
+      defer { lock.unlock() }
+      return _value
+    }
+    set {
+      lock.lock()
+      defer { lock.unlock() }
+      _value = newValue
+    }
+  }
 }
 
 // MARK: Building Command Stacks
