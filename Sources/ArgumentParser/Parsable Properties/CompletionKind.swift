@@ -41,6 +41,7 @@ public struct CompletionKind {
     case directory
     case shellCommand(String)
     case custom(@Sendable ([String], Int, String) -> [String])
+    case customAsync(@Sendable ([String], Int, String) async -> [String])
     case customDeprecated(@Sendable ([String]) -> [String])
   }
 
@@ -174,6 +175,17 @@ public struct CompletionKind {
     _ completion: @Sendable @escaping ([String], Int, String) -> [String]
   ) -> CompletionKind {
     CompletionKind(kind: .custom(completion))
+  }
+
+  /// Generate completions using the given async closure.
+  ///
+  /// The same as `custom(@Sendable @escaping ([String], Int, String) -> [String])`,
+  /// except that the closure is asynchronous.
+  @available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
+  public static func custom(
+    _ completion: @Sendable @escaping ([String], Int, String) async -> [String]
+  ) -> CompletionKind {
+    CompletionKind(kind: .customAsync(completion))
   }
 
   /// Deprecated; only kept for backwards compatibility.

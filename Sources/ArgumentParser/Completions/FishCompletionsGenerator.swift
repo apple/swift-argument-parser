@@ -223,7 +223,7 @@ extension [ParsableCommand.Type] {
       results += ["-\(r)fa '(\(completeDirectoriesFunctionName))'"]
     case .shellCommand(let shellCommand):
       results += ["-\(r)fka '(\(shellCommand))'"]
-    case .custom:
+    case .custom, .customAsync:
       results += [
         """
         -\(r)fka '(\
