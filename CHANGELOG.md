@@ -39,7 +39,7 @@ Add new items at the end of the relevant section under **Unreleased**.
 - Relax the CMake build system to allow implicit linking of Foundation and XCTest
   when not explicitly given the associated build tree. ([#783])
 
-The 1.3.1 release includes a contribution from [compnerd]. Thank you!
+The 1.5.1 release includes a contribution from [compnerd]. Thank you!
 
 ## [1.5.0] - 2024-07-18
 
@@ -628,7 +628,7 @@ The 0.3.2 release includes contributions from [compnerd], [CypherPoet],
 
 ### Additions
 
-- Shell completions scripts are now available for Fish.
+- Shell completion scripts are now available for Fish.
 
 ### Changes
 
@@ -822,7 +822,7 @@ The 0.1.0 release includes contributions from [aleksey-mashanov], [BradLarson],
 
 ### Fixes
 
-- Errors thrown while parsing in a `transform` closure are printed correclty
+- Errors thrown while parsing in a `transform` closure are printed correctly
   instead of a general `Invalid state` error.
 - Improvements to the guides and in the error message when attempting to access
   a value from an argument/option/flag definition.
@@ -878,8 +878,8 @@ The 0.0.5 release includes contributions from [kennyyork], [natecook1000],
 - The parser no longer treats passing the same exclusive flag more than once as
   an error.
 - `ParsableArguments` types that are declared as `@OptionGroup` properties on
-  commands can now also be declared on subcommands. Previosuly, the parent 
-  command's declaration would prevent subcommands from seeing the user-supplied 
+  commands can now also be declared on subcommands. Previously, the parent
+  command's declaration would prevent subcommands from seeing the user-supplied
   arguments.
 - Default values are rendered correctly for properties with `Optional` types.
 - The output of help requests is now printed during the "exit" phase of execution, 
