@@ -6,9 +6,38 @@ Add new items at the end of the relevant section under **Unreleased**.
 
 ## [Unreleased]
 
-*No new changes.*
+### Additions
+
+- Options with `CaseIterable` types can now provide help descriptions on a per-value basis. ([#647])
+- New API for accessing the shell and shell version while generating completions. ([#680], [#690])
+- The `generate-docc-reference` plugin generates a DocC reference folder for your CLI tool. ([#694], [#754], [#773])
+
+### Changes
+
+- Testing and continuous integration improvements, including migrating to GitHub workflows.
+  ([#692], [#693], [#696], [#698], [#699], [#700], [#701], [#708], [#711], [#718], [#716], [#714], [#712], [#732], [#730], [#746], [#747], [#760])
+
+### Fixes
+
+- Significant fixes and improvements across the entire completion script generation system, too numerous to mention here. A special thanks to @rgoldberg for the investment in completion script quality!
+  ([#727], [#735], [#738], [#740], [#762], [#763], [#775], [#770], [#777], [#767])
+- Improvements to `generate-manual` plugin. ([#663], [#667])
+- Error messaging when a user provides a single-dash option is now improved, along with other error reporting improvements. ([#728, #744])
+- Implementation improvements and fixes for both older and newer versions of Swift.
+  ([#676], [#707], [#705], [#720], [#666], [#724], [#731], [#766], [#685], [#729], [#736], [#741])
+- Better capturing of tool configuration in `ToolInfo`. ([#669], [#697])
+- Documentation improvements. ([#657], [#678], [#743])
 
 ---
+
+## [1.5.1] - 2025-05-28
+
+### Fixes
+
+- Relax the CMake build system to allow implicit linking of Foundation and XCTest
+  when not explicitly given the associated build tree. ([#783])
+
+The 1.3.1 release includes a contribution from [compnerd]. Thank you!
 
 ## [1.5.0] - 2024-07-18
 
@@ -912,7 +941,8 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 
 <!-- Link references for releases -->
 
-[Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.5.0...HEAD
+[Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.5.1...HEAD
+[1.5.1]: https://github.com/apple/swift-argument-parser/compare/1.5.0...1.5.1
 [1.5.0]: https://github.com/apple/swift-argument-parser/compare/1.4.0...1.5.0
 [1.4.0]: https://github.com/apple/swift-argument-parser/compare/1.3.1...1.4.0
 [1.3.1]: https://github.com/apple/swift-argument-parser/compare/1.3.0...1.3.1
@@ -1038,10 +1068,67 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [#634]: https://github.com/apple/swift-argument-parser/pull/634
 [#636]: https://github.com/apple/swift-argument-parser/pull/636
 [#644]: https://github.com/apple/swift-argument-parser/pull/644
+[#647]: https://github.com/apple/swift-argument-parser/pull/647
 [#648]: https://github.com/apple/swift-argument-parser/pull/648
 [#649]: https://github.com/apple/swift-argument-parser/pull/649
 [#650]: https://github.com/apple/swift-argument-parser/pull/650
 [#651]: https://github.com/apple/swift-argument-parser/pull/651
+[#657]: https://github.com/apple/swift-argument-parser/pull/657
+[#663]: https://github.com/apple/swift-argument-parser/pull/663
+[#666]: https://github.com/apple/swift-argument-parser/pull/666
+[#667]: https://github.com/apple/swift-argument-parser/pull/667
+[#669]: https://github.com/apple/swift-argument-parser/pull/669
+[#676]: https://github.com/apple/swift-argument-parser/pull/676
+[#678]: https://github.com/apple/swift-argument-parser/pull/678
+[#680]: https://github.com/apple/swift-argument-parser/pull/680
+[#684]: https://github.com/apple/swift-argument-parser/pull/684
+[#685]: https://github.com/apple/swift-argument-parser/pull/685
+[#690]: https://github.com/apple/swift-argument-parser/pull/690
+[#692]: https://github.com/apple/swift-argument-parser/pull/692
+[#693]: https://github.com/apple/swift-argument-parser/pull/693
+[#694]: https://github.com/apple/swift-argument-parser/pull/694
+[#696]: https://github.com/apple/swift-argument-parser/pull/696
+[#697]: https://github.com/apple/swift-argument-parser/pull/697
+[#698]: https://github.com/apple/swift-argument-parser/pull/698
+[#699]: https://github.com/apple/swift-argument-parser/pull/699
+[#700]: https://github.com/apple/swift-argument-parser/pull/700
+[#701]: https://github.com/apple/swift-argument-parser/pull/701
+[#705]: https://github.com/apple/swift-argument-parser/pull/705
+[#707]: https://github.com/apple/swift-argument-parser/pull/707
+[#708]: https://github.com/apple/swift-argument-parser/pull/708
+[#711]: https://github.com/apple/swift-argument-parser/pull/711
+[#712]: https://github.com/apple/swift-argument-parser/pull/712
+[#714]: https://github.com/apple/swift-argument-parser/pull/714
+[#716]: https://github.com/apple/swift-argument-parser/pull/716
+[#718]: https://github.com/apple/swift-argument-parser/pull/718
+[#720]: https://github.com/apple/swift-argument-parser/pull/720
+[#724]: https://github.com/apple/swift-argument-parser/pull/724
+[#727]: https://github.com/apple/swift-argument-parser/pull/727
+[#728]: https://github.com/apple/swift-argument-parser/pull/728
+[#729]: https://github.com/apple/swift-argument-parser/pull/729
+[#730]: https://github.com/apple/swift-argument-parser/pull/730
+[#731]: https://github.com/apple/swift-argument-parser/pull/731
+[#732]: https://github.com/apple/swift-argument-parser/pull/732
+[#735]: https://github.com/apple/swift-argument-parser/pull/735
+[#736]: https://github.com/apple/swift-argument-parser/pull/736
+[#738]: https://github.com/apple/swift-argument-parser/pull/738
+[#740]: https://github.com/apple/swift-argument-parser/pull/740
+[#741]: https://github.com/apple/swift-argument-parser/pull/741
+[#743]: https://github.com/apple/swift-argument-parser/pull/743
+[#744]: https://github.com/apple/swift-argument-parser/pull/744
+[#746]: https://github.com/apple/swift-argument-parser/pull/746
+[#747]: https://github.com/apple/swift-argument-parser/pull/747
+[#754]: https://github.com/apple/swift-argument-parser/pull/754
+[#760]: https://github.com/apple/swift-argument-parser/pull/760
+[#762]: https://github.com/apple/swift-argument-parser/pull/762
+[#763]: https://github.com/apple/swift-argument-parser/pull/763
+[#766]: https://github.com/apple/swift-argument-parser/pull/766
+[#767]: https://github.com/apple/swift-argument-parser/pull/767
+[#770]: https://github.com/apple/swift-argument-parser/pull/770
+[#773]: https://github.com/apple/swift-argument-parser/pull/773
+[#775]: https://github.com/apple/swift-argument-parser/pull/775
+[#777]: https://github.com/apple/swift-argument-parser/pull/777
+[#783]: https://github.com/apple/swift-argument-parser/pull/783
 
 <!-- Link references for contributors -->
 
