@@ -380,7 +380,7 @@ extension [ParsableCommand.Type] {
 
         """
 
-    case .custom:
+    case .custom, .customAsync:
       // Generate a call back into the command to retrieve a completions list
       return """
         \(addCompletionsFunctionName) -W\
