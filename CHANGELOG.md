@@ -22,7 +22,7 @@ Add new items at the end of the relevant section under **Unreleased**.
 - Significant fixes and improvements across the entire completion script generation system, too numerous to mention here. A special thanks to @rgoldberg for the investment in completion script quality!
   ([#727], [#735], [#738], [#740], [#762], [#763], [#775], [#770], [#777], [#767])
 - Improvements to `generate-manual` plugin. ([#663], [#667])
-- Error messaging when a user provides a single-dash option is now improved, along with other error reporting improvements. ([#728, #744])
+- Error messaging when a user provides a single-dash option is now improved, along with other error reporting improvements. ([#728], [#744])
 - Implementation improvements and fixes for both older and newer versions of Swift.
   ([#676], [#707], [#705], [#720], [#666], [#724], [#731], [#766], [#685], [#729], [#736], [#741])
 - Better capturing of tool configuration in `ToolInfo`. ([#669], [#697])
