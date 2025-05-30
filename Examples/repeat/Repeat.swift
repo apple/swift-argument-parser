@@ -13,7 +13,7 @@ import ArgumentParser
 
 @main
 struct Repeat: ParsableCommand {
-  @Option(help: "The number of times to repeat 'phrase'.")
+  @Option(help: "How many times to repeat 'phrase'.")
   var count: Int? = nil
 
   @Flag(help: "Include a counter with each repetition.")
