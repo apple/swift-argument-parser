@@ -9,6 +9,12 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if swift(>=6.0)
+internal import ArgumentParserToolInfo
+#else
+import ArgumentParserToolInfo
+#endif
+
 /// A shell for which the parser can generate a completion script.
 public struct CompletionShell: RawRepresentable, Hashable, CaseIterable {
   public var rawValue: String
@@ -134,72 +140,14 @@ struct CompletionsGenerator {
     CompletionShell._requesting.withLock { $0 = shell }
     switch shell {
     case .zsh:
-      return [command].zshCompletionScript
+      return ToolInfoV0(commandStack: [command]).zshCompletionScript
     case .bash:
-      return [command].bashCompletionScript
+      return ToolInfoV0(commandStack: [command]).bashCompletionScript
     case .fish:
-      return [command].fishCompletionScript
+      return ToolInfoV0(commandStack: [command]).fishCompletionScript
     default:
       fatalError("Invalid CompletionShell: \(shell)")
     }
-  }
-}
-
-extension ArgumentDefinition {
-  /// Returns a string with the arguments for the callback to generate custom completions for
-  /// this argument.
-  func customCompletionCall(_ commands: [ParsableCommand.Type]) -> String {
-    let subcommandNames =
-      commands.dropFirst().map { "\($0._commandName) " }.joined()
-    let argumentName =
-      names.preferredName?.synopsisString
-      ?? self.help.keys.first?.fullPathString
-      ?? "---"
-    return "---completion \(subcommandNames)-- \(argumentName)"
-  }
-}
-
-extension ParsableCommand {
-  fileprivate static var compositeCommandName: [String] {
-    if let superCommandName = configuration._superCommandName {
-      return [superCommandName]
-        + _commandName.split(separator: " ").map(String.init)
-    } else {
-      return _commandName.split(separator: " ").map(String.init)
-    }
-  }
-}
-
-extension [ParsableCommand.Type] {
-  var positionalArguments: [ArgumentDefinition] {
-    guard let command = last else {
-      return []
-    }
-    return ArgumentSet(command, visibility: .default, parent: nil)
-      .filter(\.isPositional)
-  }
-
-  /// Include default 'help' subcommand in nonempty subcommand list if & only if
-  /// no help subcommand already exists.
-  mutating func addHelpSubcommandIfMissing() {
-    if !isEmpty && !contains(where: { $0._commandName == "help" }) {
-      append(HelpCommand.self)
-    }
-  }
-}
-
-extension Sequence where Element == ParsableCommand.Type {
-  func completionFunctionName() -> String {
-    "_"
-      + self.flatMap { $0.compositeCommandName }
-      .uniquingAdjacentElements()
-      .joined(separator: "_")
-  }
-
-  var shellVariableNamePrefix: String {
-    flatMap { $0.compositeCommandName }
-      .joined(separator: "_")
-      .shellEscapeForVariableName()
   }
 }
 
@@ -213,5 +161,60 @@ extension String {
 
   func shellEscapeForVariableName() -> Self {
     replacingOccurrences(of: "-", with: "_")
+  }
+}
+
+extension CommandInfoV0 {
+  var commandContext: [String] {
+    (superCommands ?? []) + [commandName]
+  }
+
+  var initialCommand: String {
+    superCommands?.first ?? commandName
+  }
+
+  var positionalArguments: [ArgumentInfoV0] {
+    (arguments ?? []).filter { $0.kind == .positional }
+  }
+
+  var completionFunctionName: String {
+    "_" + commandContext.joined(separator: "_")
+  }
+
+  var completionFunctionPrefix: String {
+    "__\(initialCommand)"
+  }
+}
+
+extension ArgumentInfoV0 {
+  /// Returns a string with the arguments for the callback to generate custom
+  /// completions for this argument.
+  func commonCustomCompletionCall(command: CommandInfoV0) -> String {
+    let subcommandNames =
+      command.commandContext.dropFirst().map { "\($0) " }.joined()
+
+    let argumentName: String
+    switch kind {
+    case .positional:
+      if let index = command.positionalArguments.firstIndex(of: self) {
+        argumentName = "positional@\(index)"
+      } else {
+        argumentName = "---"
+      }
+    default:
+      argumentName = preferredName?.commonCompletionSynopsisString() ?? "---"
+    }
+    return "---completion \(subcommandNames)-- \(argumentName)"
+  }
+}
+
+extension ArgumentInfoV0.NameInfoV0 {
+  func commonCompletionSynopsisString() -> String {
+    switch kind {
+    case .long:
+      return "--\(name)"
+    case .short, .longWithSingleDash:
+      return "-\(name)"
+    }
   }
 }
