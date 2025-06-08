@@ -418,14 +418,29 @@ extension CommandParser {
       }
       try customComplete(matchedArgument, forArguments: Array(args))
 
-    case .value(let str):
-      guard
-        let key = InputKey(fullPathString: str),
-        let matchedArgument = argset.firstPositional(withKey: key)
-      else {
-        throw ParserError.invalidState
+    case .value(let value):
+      // Legacy completion script generators use internal key paths to identify
+      // positional args, e.g. optionGroupA.optionGroupB.property. Newer
+      // generators based on ToolInfo use the `positional@<index>` syntax which
+      // avoids leaking implementation details of the tool.
+      let toolInfoPrefix = "positional@"
+      if value.hasPrefix(toolInfoPrefix) {
+        guard
+          let index = Int(value.dropFirst(toolInfoPrefix.count)),
+          let matchedArgument = argset.positional(at: index)
+        else {
+          throw ParserError.invalidState
+        }
+        try customComplete(matchedArgument, forArguments: Array(args))
+      } else {
+        guard
+          let key = InputKey(fullPathString: value),
+          let matchedArgument = argset.firstPositional(withKey: key)
+        else {
+          throw ParserError.invalidState
+        }
+        try customComplete(matchedArgument, forArguments: Array(args))
       }
-      try customComplete(matchedArgument, forArguments: Array(args))
 
     case .terminator:
       throw ParserError.invalidState

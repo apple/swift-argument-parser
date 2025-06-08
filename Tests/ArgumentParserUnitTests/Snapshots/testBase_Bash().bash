@@ -1,6 +1,6 @@
 #!/bin/bash
 
-__base_test_cursor_index_in_current_word() {
+__base-test_cursor_index_in_current_word() {
     local remaining="${COMP_LINE}"
 
     local word
@@ -33,7 +33,7 @@ __base_test_cursor_index_in_current_word() {
 # - options: remove options for this (sub)command that are already on the command line
 # - positional_number: set to the current positional number
 # - unparsed_words: remove all flags, options, and option values for this (sub)command
-__base_test_offer_flags_options() {
+__base-test_offer_flags_options() {
     local -ir positional_count="${1}"
     positional_number=0
 
@@ -125,14 +125,14 @@ __base_test_offer_flags_options() {
     fi
 }
 
-__base_test_add_completions() {
+__base-test_add_completions() {
     local completion
     while IFS='' read -r completion; do
         COMPREPLY+=("${completion}")
     done < <(IFS=$'\n' compgen "${@}" -- "${cur}")
 }
 
-__base_test_custom_complete() {
+__base-test_custom_complete() {
     if [[ -n "${cur}" || -z ${COMP_WORDS[${COMP_CWORD}]} || "${COMP_LINE:${COMP_POINT}:1}" != ' ' ]]; then
         local -ar words=("${COMP_WORDS[@]}")
     else
@@ -142,7 +142,7 @@ __base_test_custom_complete() {
     "${COMP_WORDS[0]}" "${@}" "${words[@]}"
 }
 
-_base_test() {
+_base-test() {
     trap "$(shopt -p);$(shopt -po)" RETURN
     shopt -s extglob
     set +o history +o posix
@@ -160,7 +160,7 @@ _base_test() {
 
     local -a flags=(--one --two --three --kind-counter -h --help)
     local -a options=(--name --kind --other-kind --path1 --path2 --path3 --rep1 -r --rep2)
-    __base_test_offer_flags_options 2
+    __base-test_offer_flags_options 2
 
     # Offer option value completions
     case "${prev}" in
@@ -168,23 +168,23 @@ _base_test() {
         return
         ;;
     '--kind')
-        __base_test_add_completions -W 'one'$'\n''two'$'\n''custom-three'
+        __base-test_add_completions -W 'one'$'\n''two'$'\n''custom-three'
         return
         ;;
     '--other-kind')
-        __base_test_add_completions -W 'b1_bash'$'\n''b2_bash'$'\n''b3_bash'
+        __base-test_add_completions -W 'b1_bash'$'\n''b2_bash'$'\n''b3_bash'
         return
         ;;
     '--path1')
-        __base_test_add_completions -f
+        __base-test_add_completions -f
         return
         ;;
     '--path2')
-        __base_test_add_completions -f
+        __base-test_add_completions -f
         return
         ;;
     '--path3')
-        __base_test_add_completions -W 'c1_bash'$'\n''c2_bash'$'\n''c3_bash'
+        __base-test_add_completions -W 'c1_bash'$'\n''c2_bash'$'\n''c3_bash'
         return
         ;;
     '--rep1')
@@ -198,11 +198,11 @@ _base_test() {
     # Offer positional completions
     case "${positional_number}" in
     1)
-        __base_test_add_completions -W "$(__base_test_custom_complete ---completion -- argument "${COMP_CWORD}" "$(__base_test_cursor_index_in_current_word)")"
+        __base-test_add_completions -W "$(__base-test_custom_complete ---completion -- positional@0 "${COMP_CWORD}" "$(__base-test_cursor_index_in_current_word)")"
         return
         ;;
     2)
-        __base_test_add_completions -W "$(__base_test_custom_complete ---completion -- nested.nestedArgument "${COMP_CWORD}" "$(__base_test_cursor_index_in_current_word)")"
+        __base-test_add_completions -W "$(__base-test_custom_complete ---completion -- positional@1 "${COMP_CWORD}" "$(__base-test_cursor_index_in_current_word)")"
         return
         ;;
     esac
@@ -214,7 +214,7 @@ _base_test() {
     case "${subcommand}" in
     sub-command|escaped-command|help)
         # Offer subcommand argument completions
-        "_base_test_${subcommand}"
+        "_base-test_${subcommand}"
         ;;
     *)
         # Offer subcommand completions
@@ -223,16 +223,16 @@ _base_test() {
     esac
 }
 
-_base_test_sub_command() {
+_base-test_sub-command() {
     flags=(-h --help)
     options=()
-    __base_test_offer_flags_options 0
+    __base-test_offer_flags_options 0
 }
 
-_base_test_escaped_command() {
+_base-test_escaped-command() {
     flags=(-h --help)
     options=(--o:n[e)
-    __base_test_offer_flags_options 1
+    __base-test_offer_flags_options 1
 
     # Offer option value completions
     case "${prev}" in
@@ -244,14 +244,14 @@ _base_test_escaped_command() {
     # Offer positional completions
     case "${positional_number}" in
     1)
-        __base_test_add_completions -W "$(__base_test_custom_complete ---completion escaped-command -- two "${COMP_CWORD}" "$(__base_test_cursor_index_in_current_word)")"
+        __base-test_add_completions -W "$(__base-test_custom_complete ---completion escaped-command -- positional@0 "${COMP_CWORD}" "$(__base-test_cursor_index_in_current_word)")"
         return
         ;;
     esac
 }
 
-_base_test_help() {
+_base-test_help() {
     :
 }
 
-complete -o filenames -F _base_test base-test
+complete -o filenames -F _base-test base-test
