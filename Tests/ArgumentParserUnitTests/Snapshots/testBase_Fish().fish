@@ -10,7 +10,7 @@ function __base-test_should_offer_completions_for -a expected_commands -a expect
         case 'sub-command'
             __base-test_parse_subcommand 0 'h/help'
         case 'escaped-command'
-            __base-test_parse_subcommand 1 'one=' 'h/help'
+            __base-test_parse_subcommand 1 'o:n[e=' 'h/help'
         case 'help'
             __base-test_parse_subcommand -r 1 
         end
@@ -68,25 +68,25 @@ function __base-test_custom_completion
 end
 
 complete -c 'base-test' -f
-complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"' -l name -d 'The user\'s name.' -rfka ''
-complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"' -l kind -rfka 'one two custom-three'
-complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"' -l other-kind -rfka 'b1_fish b2_fish b3_fish'
-complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"' -l path1 -rF
-complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"' -l path2 -rF
-complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"' -l path3 -rfka 'c1_fish c2_fish c3_fish'
-complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"' -l one
-complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"' -l two
-complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"' -l three
-complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"' -l kind-counter
-complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"' -l rep1 -rfka ''
-complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"' -s r -l rep2 -rfka ''
-complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test" 1' -fka '(__base-test_custom_completion ---completion -- argument (count (__base-test_tokens -pc)) (__base-test_tokens -tC))'
-complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test" 2' -fka '(__base-test_custom_completion ---completion -- nested.nestedArgument (count (__base-test_tokens -pc)) (__base-test_tokens -tC))'
-complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"' -s h -l help -d 'Show help information.'
+complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"' -l 'name' -d 'The user\'s name.' -rfka ''
+complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"' -l 'kind' -rfka 'one two custom-three'
+complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"' -l 'other-kind' -rfka 'b1_fish b2_fish b3_fish'
+complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"' -l 'path1' -rF
+complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"' -l 'path2' -rF
+complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"' -l 'path3' -rfka 'c1_fish c2_fish c3_fish'
+complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"' -l 'one'
+complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"' -l 'two'
+complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"' -l 'three'
+complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"' -l 'kind-counter'
+complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"' -l 'rep1' -rfka ''
+complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"' -s 'r' -l 'rep2' -rfka ''
+complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test" 1' -fka '(__base-test_custom_completion ---completion -- positional@0 (count (__base-test_tokens -pc)) (__base-test_tokens -tC))'
+complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test" 2' -fka '(__base-test_custom_completion ---completion -- positional@1 (count (__base-test_tokens -pc)) (__base-test_tokens -tC))'
+complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test"' -s 'h' -l 'help' -d 'Show help information.'
 complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test" 3' -fa 'sub-command' -d ''
 complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test" 3' -fa 'escaped-command' -d ''
 complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test" 3' -fa 'help' -d 'Show subcommand help information.'
-complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test sub-command"' -s h -l help -d 'Show help information.'
-complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test escaped-command"' -l one -d 'Escaped chars: \'[]\\.' -rfka ''
-complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test escaped-command" 1' -fka '(__base-test_custom_completion ---completion escaped-command -- two (count (__base-test_tokens -pc)) (__base-test_tokens -tC))'
-complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test escaped-command"' -s h -l help -d 'Show help information.'
+complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test sub-command"' -s 'h' -l 'help' -d 'Show help information.'
+complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test escaped-command"' -l 'o:n[e' -d 'Escaped chars: \'[]\\.' -rfka ''
+complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test escaped-command" 1' -fka '(__base-test_custom_completion ---completion escaped-command -- positional@0 (count (__base-test_tokens -pc)) (__base-test_tokens -tC))'
+complete -c 'base-test' -n '__base-test_should_offer_completions_for "base-test escaped-command"' -s 'h' -l 'help' -d 'Show help information.'

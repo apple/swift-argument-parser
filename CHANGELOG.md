@@ -1,31 +1,62 @@
 # CHANGELOG
 
-<!-- 
+<!--
 Add new items at the end of the relevant section under **Unreleased**.
 -->
 
 ## [Unreleased]
 
-*No new changes.*
+### Additions
+
+- Options with `CaseIterable` types can now provide help descriptions on a per-value basis. ([#647])
+- New API for accessing the shell and shell version while generating completions. ([#680], [#690])
+- The `generate-docc-reference` plugin generates a DocC reference folder for your CLI tool. ([#694], [#754], [#773])
+
+### Changes
+
+- Testing and continuous integration improvements, including migrating to GitHub workflows.
+  ([#692], [#693], [#696], [#698], [#699], [#700], [#701], [#708], [#711], [#718], [#716], [#714], [#712], [#732], [#730], [#746], [#747], [#760])
+
+### Fixes
+
+- Significant fixes and improvements across the entire completion script generation system, too numerous to mention here.
+  Please note: numerous longstanding issues still remain in the completion scripts (mainly involving quoting/escaping); they will be fixed over time.
+  A special thanks to @rgoldberg for the investment in completion script quality!
+  ([#727], [#735], [#738], [#740], [#762], [#763], [#775], [#770], [#777], [#767])
+- Improvements to `generate-manual` plugin. ([#663], [#667])
+- Error messaging when a user provides a single-dash option is now improved, along with other error reporting improvements. ([#728], [#744])
+- Implementation improvements and fixes for both older and newer versions of Swift.
+  ([#676], [#707], [#705], [#720], [#666], [#724], [#731], [#766], [#685], [#729], [#736], [#741])
+- Better capturing of tool configuration in `ToolInfo`. ([#669], [#697])
+- Documentation improvements. ([#657], [#678], [#743])
 
 ---
+
+## [1.5.1] - 2025-05-28
+
+### Fixes
+
+- Relax the CMake build system to allow implicit linking of Foundation and XCTest
+  when not explicitly given the associated build tree. ([#783])
+
+The 1.5.1 release includes a contribution from [compnerd]. Thank you!
 
 ## [1.5.0] - 2024-07-18
 
 ### Additions
 
-- Subcommands can now be grouped into sections, to enable a better help display
+- Subcommands can now be grouped into sections to enable a better help display
   for commands with many subcommands. ([#644])
 - Improved unofficial support for Android and riscv64 platforms. ([#649], [#651])
 
 ### Fixes
 
-- Command-line completion scripts correctly complete for arguments that are 
+- Command-line completion scripts correctly complete for arguments that are
   included via option group. ([#648])
 - Several warnings when compiling with strict concurrency enabled, or in Swift
   6 language mode, are now silenced. ([#650])
 
-The 1.5.0 release includes contributions from [CraigSiemens], [DougGregor], 
+The 1.5.0 release includes contributions from [CraigSiemens], [DougGregor],
 [finagolfin], [futurejones], and [natecook1000]. Thank you!
 
 ---
@@ -34,7 +65,7 @@ The 1.5.0 release includes contributions from [CraigSiemens], [DougGregor],
 
 ### Additions
 
-- Adds support for subcommand aliases via a new `CommandConfiguration.aliases` 
+- Adds support for subcommand aliases via a new `CommandConfiguration.aliases`
   parameter. Aliases are shown in help text and used during command parsing. For
   example, a subcommand like "average" from the example "math" tool can be
   defined with the aliases `["avg"]`. The resulting subcommand can now be
@@ -76,7 +107,7 @@ The 1.4.0 release includes contributions from [Austinpayne], [dcantah],
 
 - Generated completion scripts for `zsh` handle repeatable options correctly. ([#614])
 
-- Documentation improvements and clarifications. ([#607], [#611], [#617], [#621]) 
+- Documentation improvements and clarifications. ([#607], [#611], [#617], [#621])
 
 - Build improvements for CMake builds. ([#606], [#608])
 
@@ -87,14 +118,14 @@ The 1.3.1 release includes contributions from [Coeur], [compnerd], [keith], [Max
 
 ### Changes
 
-- The `@Option`, `@Argument`, `@Flag`, and `@OptionGroup` property wrappers now 
+- The `@Option`, `@Argument`, `@Flag`, and `@OptionGroup` property wrappers now
   conditionally conform to `Sendable` when the wrapper's `Value` type conforms. With this
   change, you can mark `ParsableCommand` types as `Sendable` when you want to be able to
   pass a parsed command across concurrent contexts. ([#582])
 
   *Migration:* Users that aren't ready to resolve sendability warnings can add the
   `@preconcurrency` attribute to `import ArgumentParser` statements.
-  
+
   As part of this update, changes to the `CommandLine.arguments` array before a command's
   `main` or `parse...` methods are called are no longer observed. Instead of making
   changes to `CommandLine.arguments`, pass an updated array of arguments to the command's
@@ -107,7 +138,7 @@ The 1.3.1 release includes contributions from [Coeur], [compnerd], [keith], [Max
 ### Additions
 
 - Help screens now include possible options for `ExpressibleByArgument` types
-  with non empty `allValueStrings`. Types also conforming to `CaseIterable` do
+  with non-empty `allValueStrings`. Types also conforming to `CaseIterable` do
   not need to manually implement `allValueStrings`, instead it is derived from
   `allCases`. ([#594])
 
@@ -162,15 +193,15 @@ The 1.2.3 release includes contributions from [compnerd], [gwynne],
 
 ### Changes
 
-- Documentation is now primarily hosted at the 
+- Documentation is now primarily hosted at the
   [Swift Package Index](https://swiftpackageindex.com/apple/swift-argument-parser).
 
 ### Fixes
 
 - `exit(_:)` no longer causes infinite recursion on the WASI platform. ([#520])
-- Completion scripts for `fish` now provide completions after a 
-  non-hyphen-prefixed argument has been provided. ([#535]) 
-- Overload selection for custom `ExpressibleByArgument` types has been improved. 
+- Completion scripts for `fish` now provide completions after a
+  non-hyphen-prefixed argument has been provided. ([#535])
+- Overload selection for custom `ExpressibleByArgument` types has been improved.
   ([#522])
 - The usage string for `.postTerminator` arguments now includes the required
   terminator (`--`). ([#542])
@@ -235,7 +266,7 @@ Thank you!
 
 ### Changes
 
-- The generate-manual plugin now defaults to creating single page manuals. The
+- The generate-manual plugin now defaults to creating single-page manuals. The
   `--single-page` flag has been replaced with `--multi-page` to restore the
   previous default functionality. ([#472])
 
@@ -246,7 +277,7 @@ Thank you!
 - The "experimental" prefix from the generate-manual plugin has been removed.
   ([#475])
 
-  *Migration:* Update scripts to invoke the generate manual plugin via
+  *Migration:* Update scripts to invoke the generate-manual plugin via
   `swift package generate-manual` instead of
   `swift package plugin experimental-generate-manual`.
 
@@ -259,7 +290,7 @@ Thank you!
 - Manuals generated by the generate-manual plugin now include the option's value
   names and do not include value names for flags. ([#473])
 - Built-in flags such as `--help` and `--version` are now correctly marked as
-  optional fixing some generated content which indicated the flags are always
+  optional, fixing some generated content that indicated the flags are always
   required. ([#474])
 - Value descriptions are now correctly derived for types which are
   `ExpressibleByArgument` and `RawRepresentable` by `String`. Help menus will
@@ -282,7 +313,7 @@ The 1.1.4 release includes contributions from [ian-twilightcoder],
 - Hidden subcommands are now excluded from completion scripts. ([#443])
 - When an invalid value is provided for a `CaseIterable` type, the error message
   now includes a list of valid inputs. ([#445])
-- There's now a diagnostic when an `AsyncParsableCommand` is incorrectly placed 
+- There's now a diagnostic when an `AsyncParsableCommand` is incorrectly placed
   under a non-`async` root command. ([#436])
 
 The 1.1.3 release includes contributions from [keith], [KeithBird],
@@ -292,7 +323,7 @@ The 1.1.3 release includes contributions from [keith], [KeithBird],
 
 ### Changes
 
-- CMake builds now always statically links `ArgumentParserToolInfo`. 
+- CMake builds now always statically links `ArgumentParserToolInfo`.
   ([#424])
 
 ### Fixes
@@ -310,7 +341,7 @@ Thank you!
 
 - Moves the platform requirement from the package level down to the new
   types and protocols with `async` members. This was a source-breaking
-  change in 1.1.0. ([#427]) 
+  change in 1.1.0. ([#427])
 - Fixed issues in the CMake build configuration.
 
 ## [1.1.0] - 2022-03-14
@@ -320,9 +351,9 @@ Thank you!
 - A command's `run()` method now supports `async`/`await` when the command
   conforms to `AsyncParsableCommand`. ([#404])
 - New API for distinguishing between public, hidden, and private arguments
-  and option groups, and a new extended help screen accessible via 
+  and option groups, and a new extended help screen accessible via
   `--help-hidden`. ([#366], [#390], and [#405 through #413][1.1.0])
-- You can now override the autogenerated usage string when configuring a 
+- You can now override the autogenerated usage string when configuring a
   command. ([#400])
 
 ### Changes
@@ -335,7 +366,7 @@ Thank you!
   when over the length limit. ([#416])
 - One `@Option` initializer now has its parameters in the correct order; the
   incorrect initializer is deprecated. ([#391])
-- Help flags are now correctly captured in `.unconditionalRemaining` argument 
+- Help flags are now correctly captured in `.unconditionalRemaining` argument
   arrays.
 - Documentation fixes and improvements.
 
@@ -348,7 +379,7 @@ The 1.1.0 release includes contributions from [keith], [MartinP7r], [McNight],
 
 ### Changes
 
-- When a user provides an incorrect value for an option, an 
+- When a user provides an incorrect value for an option, an
   `ArgumentParser`-based program now includes the valid values when possible.
 
     ```
@@ -434,8 +465,8 @@ The 1.0 release marks an important milestone —
   strategy now include all provided values. ([#304]) In the example below, all
   four values are now included in the resulting array, where only the last two
   were included in previous releases:
- 
-    ```swift   
+
+    ```swift
     struct Example: ParsableCommand {
         @Option(parsing: .upToNextOption)
         var option: [String]
@@ -455,7 +486,7 @@ The 1.0 release marks an important milestone —
   flag. ([#309])
 - A variety of internal improvements. ([#315], [#316], [#321], [#341])
 
-The 0.5.0 release includes contributions from [atierian], [compnerd], 
+The 0.5.0 release includes contributions from [atierian], [compnerd],
 [dirtyhabits97], [Frizlab], [KS1019], [natecook1000], and [rauhul]. Thank you!
 
 ---
@@ -484,7 +515,7 @@ The 0.4.3 release includes a contribution from [miggs597]. Thank you!
 - Better support for building on OpenBSD.
 - Optional unparsed values are now always properly decoded. ([#290])
 - Help information from super-commands is no longer unnecessarily injected
-  into subcommand help screens. 
+  into subcommand help screens.
 
 The 0.4.2 release includes contributions from [3405691582], [kylemacomber],
 [miggs597], [natecook1000], and [werm098]. Thank you!
@@ -511,7 +542,7 @@ Thank you!
 ### Additions
 
 - Short options can now support "joined option" syntax, which lets users specify
-  a value appended immediately after the option's short name. For example, in 
+  a value appended immediately after the option's short name. For example, in
   addition to calling this `example` command with `-D debug` and `-D=debug`,
   users can now write `-Ddebug` for the same parsed value. ([#240])
 
@@ -520,7 +551,7 @@ Thank you!
   struct Example: ParsableCommand {
       @Option(name: .customShort("D", allowingJoined: true))
       var debugValue: String
-    
+
       func run() {
           print(debugValue)
       }
@@ -532,8 +563,8 @@ Thank you!
 - The `CommandConfiguration.helpNames` property is now optional, to allow the
   overridden help flags of parent commands to flow down to their children. Most
   existing code should not be affected, but if you've customized a command's
-  help flags you may see different behavior. ([#251])
-- The `errorCode` property is no longer used as a command's exit code when 
+  help flags, you may see different behavior. ([#251])
+- The `errorCode` property is no longer used as a command's exit code when
   `CustomNSError` types are thrown. ([#276])
 
   *Migration:* Instead of throwing a `CustomNSError` type, print your error
@@ -545,13 +576,13 @@ Thank you!
 
 ### Fixes
 
-- Validation errors now show the correct help flags when help flags have been 
+- Validation errors now show the correct help flags when help flags have been
   customized.
 - Options, flags, and arguments that are marked as hidden from the help screen
   are also suppressed from completion scripts.
 - Non-parsed variable properties are now allowed in parsable types.
 - Error messages produced when `NSError` types are thrown have been improved.
-- The usage line for commands with a large number of options includes more 
+- The usage line for commands with a large number of options includes more
   detail about required flags and positional arguments.
 - Support for CMake builds on Apple Silicon is improved.
 
@@ -568,7 +599,7 @@ The 0.4.0 release includes contributions from [CodaFi], [lorentey],
   persisted.
 - The exit code defined by error types that conform to `CustomNSError` are now
   honored.
-- Improved error message when declaring a command type with an unadorned 
+- Improved error message when declaring a command type with an unadorned
   mutable property. (See [#256] for more.)
 - Migrated from `CRT` to `MSVCRT` for Windows platforms.
 - Fixes and improvements for building with CMake for Windows and Apple Silicon.
@@ -582,10 +613,10 @@ The 0.3.2 release includes contributions from [compnerd], [CypherPoet],
 
 ### Fixes
 
-- An option or flag can now declare a name with both single- and double-
-  dash prefixes, such as `-my-flag` and `--my-flag`. Specify both names in the
+- An option or flag can now declare a name with both single- and double-dash
+  prefixes, such as `-my-flag` and `--my-flag`. Specify both names in the
   `name` parameter when declaring your property:
-  
+
   ```swift
   @Flag(name: [.long, .customLong("my-flag", withSingleDash: true)])
   var myFlag = false
@@ -597,7 +628,7 @@ The 0.3.2 release includes contributions from [compnerd], [CypherPoet],
 
 ### Additions
 
-- Shell completions scripts are now available for Fish.
+- Shell completion scripts are now available for Fish.
 
 ### Changes
 
@@ -616,7 +647,7 @@ The 0.3.2 release includes contributions from [compnerd], [CypherPoet],
   @Option var names: [String] = []
   ```
 
-The 0.3.0 release includes contributions from [dduan], [MPLew-is], 
+The 0.3.0 release includes contributions from [dduan], [MPLew-is],
 [natecook1000], and [thomasvl]. Thank you!
 
 ---
@@ -629,26 +660,26 @@ The 0.3.0 release includes contributions from [dduan], [MPLew-is],
   multi-word completion strings, escaped characters, non-standard executable
   locations, and empty help strings.
 
-The 0.2.2 release includes contributions from [interstateone], 
+The 0.2.2 release includes contributions from [interstateone],
 [miguelangel-dev], [natecook1000], [stuartcarnie], and [Wevah]. Thank you!
 
 ## [0.2.1] - 2020-07-30
 
 ### Additions
 
-- You can now generate Bash and Zsh shell completion scripts for commands, 
-  either by using the `--generate-completion-script` flag when running a 
-  command, or by calling the static `completionScript(for:)` method on a root 
-  `ParsableCommand` type. See the [guide to completion scripts][comp-guide] for 
-  information on customizing and installing the completion script for your 
+- You can now generate Bash and Zsh shell completion scripts for commands,
+  either by using the `--generate-completion-script` flag when running a
+  command, or by calling the static `completionScript(for:)` method on a root
+  `ParsableCommand` type. See the [guide to completion scripts][comp-guide] for
+  information on customizing and installing the completion script for your
   command.
 
 ### Fixes
 
 - Property wrappers without parameters can now be written without parentheses
   — e.g. `@Flag var verbose = false`.
-- When displaying default values for array properties, the help screen now 
-  correctly uses the element type's `ExpressibleByArgument` conformance to 
+- When displaying default values for array properties, the help screen now
+  correctly uses the element type's `ExpressibleByArgument` conformance to
   generate the description.
 - Running a project that defines a command as its own subcommand now fails with
   a useful error message.
@@ -672,17 +703,17 @@ The 0.2.1 release includes contributions from [natecook1000], [NicFontana],
 - Default values for all properties are now written using default initialization
   syntax, including some values that were previously implicit, such as empty
   arrays and `false` for Boolean flags.
-  
+
   *Migration:* Specify default values using typical Swift default value syntax
   to remove the deprecation warnings:
-  
+
   ```swift
   // old
   @Flag var verbose: Bool
   // new
   @Flag var verbose = false
   ```
-  
+
   **_Important:_** There is a semantic change for flags with inversions that do
   not have a default value. In previous releases, these flags had a default
   value of `false`; starting in 0.2.0, these flags will have no default, and
@@ -698,8 +729,8 @@ The 0.2.1 release includes contributions from [natecook1000], [NicFontana],
   eliminating some false negative reports.
 - CMake compatibility fixes.
 
-The 0.2.0 release includes contributions from [artemnovichkov], [compnerd], 
-[ibrahimoktay], [john-mueller], [MPLew-is], [natecook1000], and [owenv]. 
+The 0.2.0 release includes contributions from [artemnovichkov], [compnerd],
+[ibrahimoktay], [john-mueller], [MPLew-is], [natecook1000], and [owenv].
 Thank you!
 
 ---
@@ -717,13 +748,13 @@ Thank you!
 - The `static func main()` method on `ParsableCommand` no longer returns
   `Never`. This allows `ParsableCommand` types to be designated as the entry
   point for a Swift executable by using the `@main` attribute.
-  
+
   *Migration:* For most uses, this change is source compatible. If you have
   used `main()` where a `() -> Never` function is explicitly required, you'll
   need to change your usage or capture the method in another function.
 
 - `Optional` no longer conforms to `ExpressibleByArgument`, to avoid some
-  property declarations that don't make sense. 
+  property declarations that don't make sense.
 
   *Migration:* This is source-compatible for all property declarations, with
   deprecations for optional properties that define an explicit default. If
@@ -734,7 +765,7 @@ Thank you!
 - `ParsableCommand`'s `run()` method requirement is now a `mutating` method,
   allowing mutations to a command's properties, such as sorting an array of
   arguments, without additional copying.
-  
+
   *Migration:* No changes are required for commands that are executed through
   the `main()` method. If you manually parse a command and then call its
   `run()` method, you may need to change the command from a constant to a
@@ -749,7 +780,7 @@ Thank you!
 
 - `@Option` properties of an optional type that use a `transform` closure now
   correctly indicate their optionality in the usage string.
-- Correct wrapping and indentation are maintained for abstracts and discussions 
+- Correct wrapping and indentation are maintained for abstracts and discussions
   with short lines.
 - Empty abstracts no longer add extra blank lines to the help screen.
 - Help requests are still honored even when a parsed command fails validation.
@@ -774,7 +805,7 @@ The 0.1.0 release includes contributions from [aleksey-mashanov], [BradLarson],
   provide the names for flags. When declaring conformance to `EnumerableFlag`,
   you can override the name specification and help text for individual flags.
   See [#65] for more detail.
-- When a command that requires arguments is called with no arguments at all, 
+- When a command that requires arguments is called with no arguments at all,
   the error message includes the full help text instead of the short usage
   string. This is intended to provide a better experience for first-time users.
 - Added a `helpMessage()` method for generating the help text for a command
@@ -783,15 +814,15 @@ The 0.1.0 release includes contributions from [aleksey-mashanov], [BradLarson],
 ### Deprecations
 
 - `@Flag` properties that use `CaseIterable`/`String` types as their values
-  are deprecated, and the related `@Flag` initializers will be removed 
-  in a future version. 
-  
+  are deprecated, and the related `@Flag` initializers will be removed
+  in a future version.
+
   *Migration:* Add `EnumerableFlag` conformance to the type of these kinds of
   `@Flag` properties.
 
 ### Fixes
 
-- Errors thrown while parsing in a `transform` closure are printed correclty
+- Errors thrown while parsing in a `transform` closure are printed correctly
   instead of a general `Invalid state` error.
 - Improvements to the guides and in the error message when attempting to access
   a value from an argument/option/flag definition.
@@ -799,7 +830,7 @@ The 0.1.0 release includes contributions from [aleksey-mashanov], [BradLarson],
 - You can now use an `=` to join a value with an option's short name when calling
   a command. This previously only worked for long names.
 
-The 0.0.6 release includes contributions from [compnerd], [john-mueller], 
+The 0.0.6 release includes contributions from [compnerd], [john-mueller],
 [natecook1000], [owenv], [rjstelling], and [toddthomas]. Thank you!
 
 ## [0.0.5] - 2020-04-15
@@ -847,13 +878,13 @@ The 0.0.5 release includes contributions from [kennyyork], [natecook1000],
 - The parser no longer treats passing the same exclusive flag more than once as
   an error.
 - `ParsableArguments` types that are declared as `@OptionGroup` properties on
-  commands can now also be declared on subcommands. Previosuly, the parent 
-  command's declaration would prevent subcommands from seeing the user-supplied 
+  commands can now also be declared on subcommands. Previously, the parent
+  command's declaration would prevent subcommands from seeing the user-supplied
   arguments.
 - Default values are rendered correctly for properties with `Optional` types.
-- The output of help requests is now printed during the "exit" phase of execution, 
+- The output of help requests is now printed during the "exit" phase of execution,
   instead of during the "run" phase.
-- Usage strings now correctly show that optional positional arguments aren't 
+- Usage strings now correctly show that optional positional arguments aren't
   required.
 - Extended help now omits extra line breaks when displaying arguments or commands
   with long names that don't provide help text.
@@ -871,7 +902,7 @@ The 0.0.3 release includes contributions from [compnerd], [elliottwilliams],
   option.
 - `ArgumentParser` now builds on Windows.
 - You can throw an `ExitCode` error to exit without printing any output.
-- You can now create optional Boolean flags with inversions that default to 
+- You can now create optional Boolean flags with inversions that default to
   `nil`:
   ```swift
   @Flag(inversion: .prefixedNo) var takeMyShot: Bool?
@@ -892,14 +923,14 @@ The 0.0.3 release includes contributions from [compnerd], [elliottwilliams],
   - Default values are now shown for Boolean options.
   - Case-iterable flags are now grouped correctly.
   - Case-iterable flags with default values now show the default value.
-  - Arguments from parent commands that are included via `@OptionGroup` in 
+  - Arguments from parent commands that are included via `@OptionGroup` in
     subcommands are no longer duplicated.
-- Case-iterable flags created with the `.chooseFirst` exclusivity parameter now 
+- Case-iterable flags created with the `.chooseFirst` exclusivity parameter now
   correctly ignore additional flags.
 
-The 0.0.2 release includes contributions from [AliSoftware], [buttaface], 
-[compnerd], [dduan], [glessard], [griffin-stewie], [IngmarStein], 
-[jonathanpenn], [klaaspieter], [natecook1000], [Sajjon], [sjavora], 
+The 0.0.2 release includes contributions from [AliSoftware], [buttaface],
+[compnerd], [dduan], [glessard], [griffin-stewie], [IngmarStein],
+[jonathanpenn], [klaaspieter], [natecook1000], [Sajjon], [sjavora],
 [Wildchild9], and [zntfdr]. Thank you!
 
 ## [0.0.1] - 2020-02-27
@@ -912,7 +943,8 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 
 <!-- Link references for releases -->
 
-[Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.5.0...HEAD
+[Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.5.1...HEAD
+[1.5.1]: https://github.com/apple/swift-argument-parser/compare/1.5.0...1.5.1
 [1.5.0]: https://github.com/apple/swift-argument-parser/compare/1.4.0...1.5.0
 [1.4.0]: https://github.com/apple/swift-argument-parser/compare/1.3.1...1.4.0
 [1.3.1]: https://github.com/apple/swift-argument-parser/compare/1.3.0...1.3.1
@@ -1038,10 +1070,67 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [#634]: https://github.com/apple/swift-argument-parser/pull/634
 [#636]: https://github.com/apple/swift-argument-parser/pull/636
 [#644]: https://github.com/apple/swift-argument-parser/pull/644
+[#647]: https://github.com/apple/swift-argument-parser/pull/647
 [#648]: https://github.com/apple/swift-argument-parser/pull/648
 [#649]: https://github.com/apple/swift-argument-parser/pull/649
 [#650]: https://github.com/apple/swift-argument-parser/pull/650
 [#651]: https://github.com/apple/swift-argument-parser/pull/651
+[#657]: https://github.com/apple/swift-argument-parser/pull/657
+[#663]: https://github.com/apple/swift-argument-parser/pull/663
+[#666]: https://github.com/apple/swift-argument-parser/pull/666
+[#667]: https://github.com/apple/swift-argument-parser/pull/667
+[#669]: https://github.com/apple/swift-argument-parser/pull/669
+[#676]: https://github.com/apple/swift-argument-parser/pull/676
+[#678]: https://github.com/apple/swift-argument-parser/pull/678
+[#680]: https://github.com/apple/swift-argument-parser/pull/680
+[#684]: https://github.com/apple/swift-argument-parser/pull/684
+[#685]: https://github.com/apple/swift-argument-parser/pull/685
+[#690]: https://github.com/apple/swift-argument-parser/pull/690
+[#692]: https://github.com/apple/swift-argument-parser/pull/692
+[#693]: https://github.com/apple/swift-argument-parser/pull/693
+[#694]: https://github.com/apple/swift-argument-parser/pull/694
+[#696]: https://github.com/apple/swift-argument-parser/pull/696
+[#697]: https://github.com/apple/swift-argument-parser/pull/697
+[#698]: https://github.com/apple/swift-argument-parser/pull/698
+[#699]: https://github.com/apple/swift-argument-parser/pull/699
+[#700]: https://github.com/apple/swift-argument-parser/pull/700
+[#701]: https://github.com/apple/swift-argument-parser/pull/701
+[#705]: https://github.com/apple/swift-argument-parser/pull/705
+[#707]: https://github.com/apple/swift-argument-parser/pull/707
+[#708]: https://github.com/apple/swift-argument-parser/pull/708
+[#711]: https://github.com/apple/swift-argument-parser/pull/711
+[#712]: https://github.com/apple/swift-argument-parser/pull/712
+[#714]: https://github.com/apple/swift-argument-parser/pull/714
+[#716]: https://github.com/apple/swift-argument-parser/pull/716
+[#718]: https://github.com/apple/swift-argument-parser/pull/718
+[#720]: https://github.com/apple/swift-argument-parser/pull/720
+[#724]: https://github.com/apple/swift-argument-parser/pull/724
+[#727]: https://github.com/apple/swift-argument-parser/pull/727
+[#728]: https://github.com/apple/swift-argument-parser/pull/728
+[#729]: https://github.com/apple/swift-argument-parser/pull/729
+[#730]: https://github.com/apple/swift-argument-parser/pull/730
+[#731]: https://github.com/apple/swift-argument-parser/pull/731
+[#732]: https://github.com/apple/swift-argument-parser/pull/732
+[#735]: https://github.com/apple/swift-argument-parser/pull/735
+[#736]: https://github.com/apple/swift-argument-parser/pull/736
+[#738]: https://github.com/apple/swift-argument-parser/pull/738
+[#740]: https://github.com/apple/swift-argument-parser/pull/740
+[#741]: https://github.com/apple/swift-argument-parser/pull/741
+[#743]: https://github.com/apple/swift-argument-parser/pull/743
+[#744]: https://github.com/apple/swift-argument-parser/pull/744
+[#746]: https://github.com/apple/swift-argument-parser/pull/746
+[#747]: https://github.com/apple/swift-argument-parser/pull/747
+[#754]: https://github.com/apple/swift-argument-parser/pull/754
+[#760]: https://github.com/apple/swift-argument-parser/pull/760
+[#762]: https://github.com/apple/swift-argument-parser/pull/762
+[#763]: https://github.com/apple/swift-argument-parser/pull/763
+[#766]: https://github.com/apple/swift-argument-parser/pull/766
+[#767]: https://github.com/apple/swift-argument-parser/pull/767
+[#770]: https://github.com/apple/swift-argument-parser/pull/770
+[#773]: https://github.com/apple/swift-argument-parser/pull/773
+[#775]: https://github.com/apple/swift-argument-parser/pull/775
+[#777]: https://github.com/apple/swift-argument-parser/pull/777
+[#783]: https://github.com/apple/swift-argument-parser/pull/783
 
 <!-- Link references for contributors -->
 

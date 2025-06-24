@@ -218,7 +218,7 @@ _math_stats_average() {
 
     # Offer option value completions
     case "${prev}" in
-    --kind)
+    '--kind')
         __math_add_completions -W 'mean'$'\n''median'$'\n''mode'
         return
         ;;
@@ -238,23 +238,23 @@ _math_stats_quantiles() {
 
     # Offer option value completions
     case "${prev}" in
-    --file)
+    '--file')
         __math_add_completions -o plusdirs -fX '!*.@(txt|md)'
         return
         ;;
-    --directory)
+    '--directory')
         __math_add_completions -d
         return
         ;;
-    --shell)
+    '--shell')
         __math_add_completions -W "$(eval 'head -100 /usr/share/dict/words | tail -50')"
         return
         ;;
-    --custom)
+    '--custom')
         __math_add_completions -W "$(__math_custom_complete ---completion stats quantiles -- --custom "${COMP_CWORD}" "$(__math_cursor_index_in_current_word)")"
         return
         ;;
-    --custom-deprecated)
+    '--custom-deprecated')
         __math_add_completions -W "$(__math_custom_complete ---completion stats quantiles -- --custom-deprecated)"
         return
         ;;
@@ -267,11 +267,11 @@ _math_stats_quantiles() {
         return
         ;;
     2)
-        __math_add_completions -W "$(__math_custom_complete ---completion stats quantiles -- customArg "${COMP_CWORD}" "$(__math_cursor_index_in_current_word)")"
+        __math_add_completions -W "$(__math_custom_complete ---completion stats quantiles -- positional@1 "${COMP_CWORD}" "$(__math_cursor_index_in_current_word)")"
         return
         ;;
     3)
-        __math_add_completions -W "$(__math_custom_complete ---completion stats quantiles -- customDeprecatedArg)"
+        __math_add_completions -W "$(__math_custom_complete ---completion stats quantiles -- positional@2)"
         return
         ;;
     esac

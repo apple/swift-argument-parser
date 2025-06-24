@@ -68,7 +68,7 @@ extension CommandInfoV0 {
 
     if let args = self.arguments {
       // Group arguments by sectionTitle
-      // This is done to organize the arguments into categories (e.g., optionals, flags)
+      // This is done to organize the arguments into categories (e.g., options, flags)
       let groupedArgs = Dictionary(
         grouping: args.filter {
           $0.shouldDisplay

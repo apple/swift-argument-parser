@@ -27,6 +27,10 @@ private func candidates(prefix: String) -> [String] {
   }
 }
 
+private func candidatesAsync(prefix: String) async -> [String] {
+  candidates(prefix: prefix)
+}
+
 final class CompletionScriptTests: XCTestCase {}
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
@@ -88,7 +92,12 @@ extension CompletionScriptTests {
     }
 
     struct EscapedCommand: ParsableCommand {
-      @Option(help: #"Escaped chars: '[]\."#)
+      @Option(
+        name: .customLong("o:n[e"),
+        help: ArgumentHelp(
+          #"Escaped chars: '[]\."#, valueName: "path[:options]"
+        )
+      )
       var one: String
 
       @Argument(completion: .custom { _, _, _ in candidates(prefix: "i") })
@@ -163,6 +172,11 @@ extension CompletionScriptTests {
       @Argument(completion: .custom { _, _, _ in candidates(prefix: "h") })
       var four: String
     }
+
+    @Argument(
+      completion: .custom { _, _, _ in await candidatesAsync(prefix: "j") }
+    )
+    var five: String
   }
 
   func assertCustomCompletion(
@@ -212,6 +226,8 @@ extension CompletionScriptTests {
       "-z", shell: shell, prefix: "g", file: file, line: line)
     try assertCustomCompletion(
       "nested.four", shell: shell, prefix: "h", file: file, line: line)
+    try assertCustomCompletion(
+      "five", shell: shell, prefix: "j", file: file, line: line)
 
     XCTAssertThrowsError(
       try assertCustomCompletion("--bad", shell: shell, file: file, line: line))

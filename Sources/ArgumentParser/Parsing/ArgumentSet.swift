@@ -235,6 +235,14 @@ extension ArgumentSet {
   ) -> ArgumentDefinition? {
     first(where: { $0.help.keys.contains(key) })
   }
+
+  func positional(
+    at index: Int
+  ) -> ArgumentDefinition? {
+    let positionals = content.filter { $0.isPositional }
+    guard positionals.count > index else { return nil }
+    return positionals[index]
+  }
 }
 
 /// A parser for a given input and set of arguments defined by the given

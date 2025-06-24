@@ -140,6 +140,26 @@ public struct ArgumentInfoV0: Codable, Hashable {
     case flag
   }
 
+  public enum ParsingStrategyV0: String, Codable, Hashable {
+    /// Expect the next `SplitArguments.Element` to be a value and parse it.
+    /// Will fail if the next input is an option.
+    case `default`
+    /// Parse the next `SplitArguments.Element.value`
+    case scanningForValue
+    /// Parse the next `SplitArguments.Element` as a value, regardless of its type.
+    case unconditional
+    /// Parse multiple `SplitArguments.Element.value` up to the next non-`.value`
+    case upToNextOption
+    /// Parse all remaining `SplitArguments.Element` as values, regardless of its type.
+    case allRemainingInput
+    /// Collect all the elements after the terminator, preventing them from
+    /// appearing in any other position.
+    case postTerminator
+    /// Collect all unused inputs once recognized arguments/options/flags have
+    /// been parsed.
+    case allUnrecognized
+  }
+
   public enum CompletionKindV0: Codable, Hashable {
     /// Use the specified list of completion strings.
     case list(values: [String])
@@ -149,9 +169,11 @@ public struct ArgumentInfoV0: Codable, Hashable {
     case directory
     /// Call the given shell command to generate completions.
     case shellCommand(command: String)
-    /// Generate completions using the given closure including index arguments.
+    /// Generate completions using the given three-parameter closure.
     case custom
-    /// Generate completions using the given closure without index arguments.
+    /// Generate completions using the given async three-parameter closure.
+    case customAsync
+    /// Generate completions using the given one-parameter closure.
     @available(*, deprecated, message: "Use custom instead.")
     case customDeprecated
   }
@@ -168,6 +190,9 @@ public struct ArgumentInfoV0: Codable, Hashable {
   public var isOptional: Bool
   /// Argument can be specified multiple times.
   public var isRepeating: Bool
+
+  /// Parsing strategy of the ArgumentInfo.
+  public var parsingStrategy: ParsingStrategyV0
 
   /// All names of the argument.
   public var names: [NameInfoV0]?
@@ -192,9 +217,9 @@ public struct ArgumentInfoV0: Codable, Hashable {
   /// Mapping of valid values to descriptions of the value.
   public var allValueDescriptions: [String: String]?
 
-  /// The type of completion to use for an argument or option.
+  /// The type of completion to use for an argument or an option value.
   ///
-  /// `nil` if the tool use use the default completion kind.
+  /// `nil` if the tool uses the default completion kind.
   public var completionKind: CompletionKindV0?
 
   /// Short description of the argument's functionality.
@@ -208,6 +233,7 @@ public struct ArgumentInfoV0: Codable, Hashable {
     sectionTitle: String?,
     isOptional: Bool,
     isRepeating: Bool,
+    parsingStrategy: ParsingStrategyV0,
     names: [NameInfoV0]?,
     preferredName: NameInfoV0?,
     valueName: String?,
@@ -225,6 +251,8 @@ public struct ArgumentInfoV0: Codable, Hashable {
 
     self.isOptional = isOptional
     self.isRepeating = isRepeating
+
+    self.parsingStrategy = parsingStrategy
 
     self.names = names?.nonEmpty
     self.preferredName = preferredName

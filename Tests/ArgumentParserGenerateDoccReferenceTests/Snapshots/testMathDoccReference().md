@@ -218,9 +218,16 @@ math stats quantiles [<one-of-four>] [<custom-arg>] [<custom-deprecated-arg>] [<
 Show subcommand help information.
 
 ```
-math help [<subcommands>...] 
+math help [<subcommands>...]  [--version]
 ```
 
 ### Arguments
 
 - term **subcommands:**
+
+
+### Flags
+
+- term **--version:**
+
+*Show the version.*
