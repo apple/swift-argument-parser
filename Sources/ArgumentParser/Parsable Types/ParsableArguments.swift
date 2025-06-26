@@ -13,7 +13,7 @@
 ///
 /// When you implement a `ParsableArguments` type, all properties must be declared with
 /// one of the four property wrappers provided by the `ArgumentParser` library.
-public protocol ParsableArguments: Decodable {
+public protocol ParsableArguments: Decodable, Sendable {
   /// Creates an instance of this parsable type using the definitions
   /// given by each property's wrapper.
   init()
