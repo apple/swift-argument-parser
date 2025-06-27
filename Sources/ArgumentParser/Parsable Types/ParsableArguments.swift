@@ -9,6 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if compiler(>=6.2)
 /// A type that can be parsed from a program's command-line arguments.
 ///
 /// When you implement a `ParsableArguments` type, all properties must be declared with
@@ -27,6 +28,26 @@ public protocol ParsableArguments: Decodable, SendableMetatype {
   /// The label to use for "Error: ..." messages from this type (experimental).
   static var _errorLabel: String { get }
 }
+#else
+/// A type that can be parsed from a program's command-line arguments.
+///
+/// When you implement a `ParsableArguments` type, all properties must be declared with
+/// one of the four property wrappers provided by the `ArgumentParser` library.
+public protocol ParsableArguments: Decodable {
+  /// Creates an instance of this parsable type using the definitions
+  /// given by each property's wrapper.
+  init()
+
+  /// Validates the properties of the instance after parsing.
+  ///
+  /// Implement this method to perform validation or other processing after
+  /// creating a new instance from command-line arguments.
+  mutating func validate() throws
+
+  /// The label to use for "Error: ..." messages from this type (experimental).
+  static var _errorLabel: String { get }
+}
+#endif
 
 /// A type that provides the `ParsableCommand` interface to a `ParsableArguments` type.
 struct _WrappedParsableCommand<P: ParsableArguments>: ParsableCommand {
