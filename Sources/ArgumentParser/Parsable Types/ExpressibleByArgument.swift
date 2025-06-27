@@ -10,7 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 /// A type that can be expressed as a command-line argument.
-public protocol ExpressibleByArgument {
+public protocol ExpressibleByArgument: _SendableMetatype {
   /// Creates a new instance of this type from a command-line-specified
   /// argument.
   init?(argument: String)

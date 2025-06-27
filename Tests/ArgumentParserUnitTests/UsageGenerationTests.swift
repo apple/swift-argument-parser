@@ -132,6 +132,7 @@ extension UsageGenerationTests {
     enum Color {
       case red, blue
 
+      @Sendable
       static func transform(_ string: String) throws -> Color {
         switch string {
         case "red":
