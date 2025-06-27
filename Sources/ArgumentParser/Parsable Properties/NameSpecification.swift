@@ -19,6 +19,7 @@ public struct NameSpecification: ExpressibleByArrayLiteral {
       case customLong(_ name: String, withSingleDash: Bool)
       case short
       case customShort(_ char: Character, allowingJoined: Bool)
+      case invalidLiteral(literal: String, message: String)
     }
 
     internal var base: Representation
@@ -78,7 +79,16 @@ public struct NameSpecification: ExpressibleByArrayLiteral {
     ) -> Element {
       self.init(base: .customShort(char, allowingJoined: allowingJoined))
     }
+
+    /// An invalid literal, for a later diagnostic.
+    internal static func invalidLiteral(
+      literal str: String,
+      message: String
+    ) -> Element {
+      self.init(base: .invalidLiteral(literal: str, message: message))
+    }
   }
+
   var elements: [Element]
 
   public init<S>(_ sequence: S) where S: Sequence, Element == S.Element {
@@ -91,6 +101,70 @@ public struct NameSpecification: ExpressibleByArrayLiteral {
 }
 
 extension NameSpecification: Sendable {}
+
+extension NameSpecification.Element:
+  ExpressibleByStringLiteral, ExpressibleByStringInterpolation
+{
+  public init(stringLiteral string: String) {
+    // Check for spaces
+    guard !string.contains(where: { $0 == " " }) else {
+      self = .invalidLiteral(
+        literal: string,
+        message: "Can't use spaces in a name.")
+      return
+    }
+    // Check for non-ascii chars
+    guard string.allSatisfy({ $0.isValidForName }) else {
+      self = .invalidLiteral(
+        literal: string,
+        message: "Must use only letters, numbers, underscores, or dashes.")
+      return
+    }
+
+    let dashPrefixCount = string.prefix(while: { $0 == "-" }).count
+    switch (dashPrefixCount, string.count) {
+    case (0, _):
+      self = .invalidLiteral(
+        literal: string,
+        message: "Need one or two prefix dashes.")
+    case (1, 1), (2, 2):
+      self = .invalidLiteral(
+        literal: string,
+        message: "Need at least one character after the dash prefix.")
+    case (1, 2):
+      // swift-format-ignore: NeverForceUnwrap
+      // The case match validates the length.
+      self = .customShort(string.dropFirst().first!)
+    case (1, _):
+      self = .customLong(String(string.dropFirst()), withSingleDash: true)
+    case (2, _):
+      self = .customLong(String(string.dropFirst(2)))
+    default:
+      self = .invalidLiteral(
+        literal: string,
+        message: "Can't have more than a two-dash prefix.")
+    }
+  }
+}
+
+extension NameSpecification:
+  ExpressibleByStringLiteral, ExpressibleByStringInterpolation
+{
+  public init(stringLiteral string: String) {
+    guard !string.isEmpty else {
+      self = [
+        .invalidLiteral(
+          literal: string,
+          message: "Can't use the empty string as a name.")
+      ]
+      return
+    }
+
+    self.elements = string.split(separator: " ").map {
+      Element(stringLiteral: String($0))
+    }
+  }
+}
 
 extension NameSpecification {
   /// Use the property's name converted to lowercase with words separated by
@@ -171,6 +245,10 @@ extension NameSpecification.Element {
         : .long(name)
     case .customShort(let name, let allowingJoined):
       return .short(name, allowingJoined: allowingJoined)
+    case .invalidLiteral(let literal, let message):
+      configurationFailure(
+        "Invalid literal name '\(literal)' for property '\(key.name)': \(message)"
+          .wrapped(to: 70))
     }
   }
 }
@@ -202,6 +280,8 @@ extension FlagInversion {
           let modifiedElement = NameSpecification.Element.customLong(
             modifiedName, withSingleDash: withSingleDash)
           return modifiedElement.name(for: key)
+        case .invalidLiteral:
+          fatalError("Invalid literals are diagnosed previously")
         }
       }
     }
