@@ -9,9 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if compiler(>=6.2)
 /// A type that can be expressed as a command-line argument.
-public protocol ExpressibleByArgument: SendableMetatype {
+public protocol ExpressibleByArgument: _SendableMetatype {
   /// Creates a new instance of this type from a command-line-specified
   /// argument.
   init?(argument: String)
@@ -45,43 +44,6 @@ public protocol ExpressibleByArgument: SendableMetatype {
   /// The default implementation of this property returns `.default`.
   static var defaultCompletionKind: CompletionKind { get }
 }
-#else
-/// A type that can be expressed as a command-line argument.
-public protocol ExpressibleByArgument {
-  /// Creates a new instance of this type from a command-line-specified
-  /// argument.
-  init?(argument: String)
-
-  /// The description of this instance to show as a default value in a
-  /// command-line tool's help screen.
-  var defaultValueDescription: String { get }
-
-  /// An array of all possible strings that can convert to a value of this
-  /// type, for display in the help screen.
-  ///
-  /// The default implementation of this property returns an empty array. If the
-  /// conforming type is also `CaseIterable`, the default implementation returns
-  /// an array with a value for each case.
-  static var allValueStrings: [String] { get }
-
-  /// A dictionary containing the descriptions for each possible value of this type,
-  /// for display in the help screen.
-  ///
-  /// The default implementation of this property returns an empty dictionary. If
-  /// the conforming type is also `CaseIterable`, the default implementation
-  /// returns a dictionary with a description for each value as its key-value pair.
-  /// Note that the conforming type must implement the
-  /// `defaultValueDescription` for each value - if the description and the
-  /// value are the same string, it's assumed that a description is not implemented.
-  static var allValueDescriptions: [String: String] { get }
-
-  /// The completion kind to use for options or arguments of this type that
-  /// don't explicitly declare a completion kind.
-  ///
-  /// The default implementation of this property returns `.default`.
-  static var defaultCompletionKind: CompletionKind { get }
-}
-#endif
 
 extension ExpressibleByArgument {
   public var defaultValueDescription: String {
