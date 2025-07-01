@@ -8,6 +8,13 @@ Add new items at the end of the relevant section under **Unreleased**.
 
 ---
 
+## [1.6.1] - 2025-07-01
+
+### Fixes
+
+- Resolves a source break for clients that have conditional conformances
+  to `ExpressibleByArgument` or `ParsableArguments`. ([#792])
+
 ## [1.6.0] - 2025-06-30
 
 ### Additions
@@ -953,7 +960,8 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 
 <!-- Link references for releases -->
 
-[Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.6.0...HEAD
+[Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.6.1...HEAD
+[1.6.1]: https://github.com/apple/swift-argument-parser/compare/1.6.0...1.6.1
 [1.6.0]: https://github.com/apple/swift-argument-parser/compare/1.5.1...1.6.0
 [1.5.1]: https://github.com/apple/swift-argument-parser/compare/1.5.0...1.5.1
 [1.5.0]: https://github.com/apple/swift-argument-parser/compare/1.4.0...1.5.0
@@ -1144,6 +1152,7 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [#782]: https://github.com/apple/swift-argument-parser/pull/782
 [#783]: https://github.com/apple/swift-argument-parser/pull/783
 [#789]: https://github.com/apple/swift-argument-parser/pull/789
+[#792]: https://github.com/apple/swift-argument-parser/pull/792
 
 <!-- Link references for contributors -->
 
