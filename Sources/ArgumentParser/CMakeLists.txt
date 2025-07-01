@@ -46,6 +46,7 @@ add_library(ArgumentParser
   Utilities/Platform.swift
   Utilities/SequenceExtensions.swift
   Utilities/StringExtensions.swift
+  Utilities/SwiftExtensions.swift
   Utilities/Tree.swift
   
   Validators/CodingKeyValidator.swift
