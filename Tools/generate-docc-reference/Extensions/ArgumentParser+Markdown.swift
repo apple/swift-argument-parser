@@ -113,6 +113,7 @@ extension CommandInfoV0 {
   /// - Parameters:
   ///   - startlength: The starting width of the line this multi-line string appends onto.
   ///   - wraplength: The maximum width  of the multi-linecode block.
+  /// - Returns: A wrapped, multi-line string that wraps the commands arguments into a text block.
   public func usage(startlength: Int, wraplength: Int) -> String {
     guard let args = self.arguments else {
       return ""
@@ -136,7 +137,6 @@ extension CommandInfoV0 {
       }
     }
     return multilineString
-    //return args.map { $0.usage() }.joined(separator: " ")
   }
 }
 
