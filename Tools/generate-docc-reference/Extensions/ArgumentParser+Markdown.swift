@@ -105,6 +105,14 @@ extension CommandInfoV0 {
             result += "*\(abstract)*\n\n"
           }
 
+          // Inject a default help description for the the `help` command positional argument 'subcommands'.
+          // The 'subcommands' argument is missing an abstract in ArgumentParser.
+          // This results in incomplete help documentation, which may confuse users.
+          // Since it's a positional argument named 'subcommands', it can be easily confused with actual subcommands.
+          if arg.identity() == "subcommands" && arg.abstract == nil {
+            result += "*The subcommand(s) you want help for.*\n\n"
+          }
+
           // If the argument has a discussion, add it directly
           // If a discussion is available, it is added to provide further explanation on how the argument works.
           // This additional context is helpful for users to understand the full usage of the argument.
@@ -150,10 +158,8 @@ extension CommandInfoV0 {
       switch argument.kind {
       case .positional:
         return "Arguments"
-      case .option:
+      case .option, .flag:
         return "Options"
-      case .flag:
-        return "Flags"
       }
     }
   }

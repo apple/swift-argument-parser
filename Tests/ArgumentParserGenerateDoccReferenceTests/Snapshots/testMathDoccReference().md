@@ -8,7 +8,7 @@ A utility for performing maths.
 math [--version] [--help]
 ```
 
-### Flags
+### Options
 
 - term **--version:**
 
@@ -35,7 +35,7 @@ math add [--hex-output] [<values>...] [--version] [--help]
 *A group of integers to operate on.*
 
 
-### Flags
+### Options
 
 - term **--hex-output:**
 
@@ -66,7 +66,7 @@ math multiply [--hex-output] [<values>...] [--version] [--help]
 *A group of integers to operate on.*
 
 
-### Flags
+### Options
 
 - term **--hex-output:**
 
@@ -90,7 +90,7 @@ Calculate descriptive statistics.
 math stats [--version] [--help]
 ```
 
-### Flags
+### Options
 
 - term **--version:**
 
@@ -117,7 +117,12 @@ math stats average [--kind=<kind>] [<values>...] [--version] [--help]
 *A group of floating-point values to operate on.*
 
 
-### Flags
+### Options
+
+- term **--kind=\<kind\>:**
+
+*The kind of average to provide.*
+
 
 - term **--version:**
 
@@ -127,13 +132,6 @@ math stats average [--kind=<kind>] [<values>...] [--version] [--help]
 - term **--help:**
 
 *Show help information.*
-
-
-### Options
-
-- term **--kind=\<kind\>:**
-
-*The kind of average to provide.*
 
 ### math.stats.stdev
 
@@ -150,7 +148,7 @@ math stats stdev [<values>...] [--version] [--help]
 *A group of floating-point values to operate on.*
 
 
-### Flags
+### Options
 
 - term **--version:**
 
@@ -185,18 +183,6 @@ math stats quantiles [<one-of-four>] [<custom-arg>] [<custom-deprecated-arg>] [<
 *A group of floating-point values to operate on.*
 
 
-### Flags
-
-- term **--version:**
-
-*Show the version.*
-
-
-- term **--help:**
-
-*Show help information.*
-
-
 ### Options
 
 - term **--file=\<file\>:**
@@ -213,6 +199,16 @@ math stats quantiles [<one-of-four>] [<custom-arg>] [<custom-deprecated-arg>] [<
 
 - term **--custom-deprecated=\<custom-deprecated\>:**
 
+
+- term **--version:**
+
+*Show the version.*
+
+
+- term **--help:**
+
+*Show help information.*
+
 ## math.help
 
 Show subcommand help information.
@@ -225,8 +221,10 @@ math help [<subcommands>...]  [--version]
 
 - term **subcommands:**
 
+*The subcommand(s) you want help for.*
 
-### Flags
+
+### Options
 
 - term **--version:**
 

@@ -13,7 +13,12 @@ repeat [--count=<count>] [--include-counter] <phrase> [--help]
 *The phrase to repeat.*
 
 
-### Flags
+### Options
+
+**--count=\<count\>:**
+
+*The number of times to repeat 'phrase'.*
+
 
 **--include-counter:**
 
@@ -23,13 +28,6 @@ repeat [--count=<count>] [--include-counter] <phrase> [--help]
 **--help:**
 
 *Show help information.*
-
-
-### Options
-
-**--count=\<count\>:**
-
-*The number of times to repeat 'phrase'.*
 
 
 ## repeat.help
@@ -43,3 +41,5 @@ repeat help [<subcommands>...]
 ### Arguments
 
 **subcommands:**
+
+*The subcommand(s) you want help for.*

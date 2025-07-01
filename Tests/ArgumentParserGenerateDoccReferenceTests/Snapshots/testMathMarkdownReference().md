@@ -8,7 +8,7 @@ A utility for performing maths.
 math [--version] [--help]
 ```
 
-### Flags
+### Options
 
 **--version:**
 
@@ -35,7 +35,7 @@ math add [--hex-output] [<values>...] [--version] [--help]
 *A group of integers to operate on.*
 
 
-### Flags
+### Options
 
 **--hex-output:**
 
@@ -66,7 +66,7 @@ math multiply [--hex-output] [<values>...] [--version] [--help]
 *A group of integers to operate on.*
 
 
-### Flags
+### Options
 
 **--hex-output:**
 
@@ -90,7 +90,7 @@ Calculate descriptive statistics.
 math stats [--version] [--help]
 ```
 
-### Flags
+### Options
 
 **--version:**
 
@@ -117,7 +117,12 @@ math stats average [--kind=<kind>] [<values>...] [--version] [--help]
 *A group of floating-point values to operate on.*
 
 
-### Flags
+### Options
+
+**--kind=\<kind\>:**
+
+*The kind of average to provide.*
+
 
 **--version:**
 
@@ -127,13 +132,6 @@ math stats average [--kind=<kind>] [<values>...] [--version] [--help]
 **--help:**
 
 *Show help information.*
-
-
-### Options
-
-**--kind=\<kind\>:**
-
-*The kind of average to provide.*
 
 ### math.stats.stdev
 
@@ -150,7 +148,7 @@ math stats stdev [<values>...] [--version] [--help]
 *A group of floating-point values to operate on.*
 
 
-### Flags
+### Options
 
 **--version:**
 
@@ -185,18 +183,6 @@ math stats quantiles [<one-of-four>] [<custom-arg>] [<custom-deprecated-arg>] [<
 *A group of floating-point values to operate on.*
 
 
-### Flags
-
-**--version:**
-
-*Show the version.*
-
-
-**--help:**
-
-*Show help information.*
-
-
 ### Options
 
 **--file=\<file\>:**
@@ -213,6 +199,16 @@ math stats quantiles [<one-of-four>] [<custom-arg>] [<custom-deprecated-arg>] [<
 
 **--custom-deprecated=\<custom-deprecated\>:**
 
+
+**--version:**
+
+*Show the version.*
+
+
+**--help:**
+
+*Show help information.*
+
 ## math.help
 
 Show subcommand help information.
@@ -225,8 +221,10 @@ math help [<subcommands>...]  [--version]
 
 **subcommands:**
 
+*The subcommand(s) you want help for.*
 
-### Flags
+
+### Options
 
 **--version:**
 
