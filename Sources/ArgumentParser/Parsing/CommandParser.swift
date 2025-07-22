@@ -340,9 +340,11 @@ extension CommandParser {
         CommandError(commandStack: commandStack, parserError: error))
     } catch let helpRequest as HelpRequested {
       return .success(
-        [HelpCommand(
-          commandStack: commandStack,
-          visibility: helpRequest.visibility)])
+        [
+          HelpCommand(
+            commandStack: commandStack,
+            visibility: helpRequest.visibility)
+        ])
     } catch {
       return .failure(
         CommandError(commandStack: commandStack, parserError: .invalidState))
