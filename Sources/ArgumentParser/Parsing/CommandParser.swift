@@ -283,7 +283,8 @@ extension CommandParser {
   mutating func parse(
     arguments: [String]
   ) -> Result<ParsableCommand, CommandError> {
-    return self.parseAll(arguments: arguments).map { $0.last! }
+    // swift-format-ignore: NeverForceUnwrap
+    self.parseAll(arguments: arguments).map { $0.last! }
   }
 
   /// Returns the fully-parsed matching commands for `arguments`, or an
