@@ -148,12 +148,12 @@ extension CommandParser {
     }
   }
 
-  /// Returns the last parsed value if there are no remaining unused arguments.
+  /// Returns the parsed values if there are no remaining unused arguments.
   ///
   /// If there are remaining arguments or if no commands have been parsed,
   /// this throws an error.
-  fileprivate func extractLastParsedValue(_ split: SplitArguments) throws
-    -> ParsableCommand
+  fileprivate func extractParsedValues(_ split: SplitArguments) throws
+    -> [ParsableCommand]
   {
     try checkForBuiltInFlags(split)
 
@@ -172,12 +172,13 @@ extension CommandParser {
     }
 
     guard
-      let lastCommand = decodedArguments.lazy.compactMap({ $0.command }).last
+      case let parsedCommands = decodedArguments.lazy.compactMap({ $0.command }),
+      parsedCommands.count > 0
     else {
       throw ParserError.invalidState
     }
 
-    return lastCommand
+    return [ParsableCommand](parsedCommands)
   }
 
   /// Extracts the current command from `split`, throwing if decoding isn't
@@ -282,6 +283,19 @@ extension CommandParser {
   mutating func parse(
     arguments: [String]
   ) -> Result<ParsableCommand, CommandError> {
+    return self.parseAll(arguments: arguments).map { $0.last! }
+  }
+
+  /// Returns the fully-parsed matching commands for `arguments`, or an
+  /// appropriate error.
+  ///
+  /// - Parameter arguments: The array of arguments to parse. This should not
+  ///   include the command name as the first argument.
+  ///
+  /// - Returns: The parsed commands or error.
+  mutating func parseAll(
+    arguments: [String]
+  ) -> Result<[ParsableCommand], CommandError> {
     do {
       try handleCustomCompletion(arguments)
     } catch let error as ParserError {
@@ -308,13 +322,13 @@ extension CommandParser {
     do {
       try checkForCompletionScriptRequest(&split)
       try descendingParse(&split)
-      let result = try extractLastParsedValue(split)
+      let result = try extractParsedValues(split)
 
       // HelpCommand is a valid result, but needs extra information about
       // the tree from the parser to build its stack of commands.
-      if var helpResult = result as? HelpCommand {
+      if var helpResult = result.last as? HelpCommand {
         try helpResult.buildCommandStack(with: self)
-        return .success(helpResult)
+        return .success([helpResult])
       }
       return .success(result)
     } catch let error as CommandError {
@@ -325,9 +339,9 @@ extension CommandParser {
         CommandError(commandStack: commandStack, parserError: error))
     } catch let helpRequest as HelpRequested {
       return .success(
-        HelpCommand(
+        [HelpCommand(
           commandStack: commandStack,
-          visibility: helpRequest.visibility))
+          visibility: helpRequest.visibility)])
     } catch {
       return .failure(
         CommandError(commandStack: commandStack, parserError: .invalidState))

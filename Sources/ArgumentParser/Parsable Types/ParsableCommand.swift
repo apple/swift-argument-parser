@@ -68,6 +68,23 @@ extension ParsableCommand {
     return try parser.parse(arguments: arguments).get()
   }
 
+  /// Parses an instance of this type, from command-line arguments
+  /// and provide all of the commands in order from this one to possible
+  /// subcommands to a final leaf command to be run.
+  ///
+  /// - Parameter arguments: An array of arguments to use for parsing. If
+  ///   `arguments` is `nil`, this uses the program's command-line arguments.
+  /// - Returns: A new instance of this type, one of its subcommands, or a
+  ///   command type internal to the `ArgumentParser` library.
+  /// - Throws: If parsing fails.
+  public static func parseAllAsRoot(
+    _ arguments: [String]? = nil
+  ) throws -> [ParsableCommand] {
+    var parser = CommandParser(self)
+    let arguments = arguments ?? Array(CommandLine._staticArguments.dropFirst())
+    return try parser.parseAll(arguments: arguments).get()
+  }
+
   /// Returns the text of the help screen for the given subcommand of this
   /// command.
   ///
