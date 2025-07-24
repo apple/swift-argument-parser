@@ -61,14 +61,11 @@ jobs:
         uses: actions/checkout@v4
       - name: Install Swift SDKs for WebAssembly
         run: |
-          # TODO: We can replace these Swift SDKs with the swift.org one once it supports Foundation.
-          swift sdk install https://github.com/swiftwasm/swift/releases/download/swift-wasm-6.1-RELEASE/swift-wasm-6.1-RELEASE-wasm32-unknown-wasi.artifactbundle.zip --checksum 7550b4c77a55f4b637c376f5d192f297fe185607003a6212ad608276928db992
-          swift sdk install https://github.com/swiftwasm/swift/releases/download/swift-wasm-6.1-RELEASE/swift-wasm-6.1-RELEASE-wasm32-unknown-wasip1-threads.artifactbundle.zip --checksum 0dd273be28741f8e1eb00682c39bdc956361ed24b5572e183dd8a4e9d1c5f6ec
+          swift sdk install https://download.swift.org/swift-6.2-branch/wasm-sdk/swift-6.2-DEVELOPMENT-SNAPSHOT-2025-07-23-a/swift-6.2-DEVELOPMENT-SNAPSHOT-2025-07-23-a_wasm.artifactbundle.tar.gz --checksum 0294f106efcf4ca8944da5284b7a12825e9c4ca1316daa3f45d05ea0f65bedff
           swift sdk list
       - name: Build
         run: |
           swift build --swift-sdk wasm32-unknown-wasi --target ArgumentParser
-          swift build --swift-sdk wasm32-unknown-wasip1-threads --target ArgumentParser
 
   soundness:
     name: Soundness
