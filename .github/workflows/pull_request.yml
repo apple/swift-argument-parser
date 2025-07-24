@@ -65,7 +65,7 @@ jobs:
           swift sdk list
       - name: Build
         run: |
-          swift build --swift-sdk wasm32-unknown-wasip1 --target ArgumentParser
+          swift build --swift-sdk swift-6.2-DEVELOPMENT-SNAPSHOT-2025-07-23-a_wasm --target ArgumentParser
 
   soundness:
     name: Soundness
