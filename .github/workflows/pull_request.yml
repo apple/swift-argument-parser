@@ -56,7 +56,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       # pinned nightly-6.2-noble with `swift-6.2-DEVELOPMENT-SNAPSHOT-2025-07-23-a` for Wasm Swift SDK
-      image: swiftlang/swift:ab5c6ddd6a7e
+      image: swiftlang/swift:nightly-6.2-noble@sha256:cc6ee97537f601b344dfe02071e91b0952212bba377ece463f1c2737984c06c2
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
