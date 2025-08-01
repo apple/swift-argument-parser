@@ -61,7 +61,7 @@ final class RepeatExampleTests: XCTestCase {
         <phrase>                The phrase to repeat.
 
       OPTIONS:
-        --count <count>         The number of times to repeat 'phrase'.
+        --count <count>         How many times to repeat 'phrase'.
         --include-counter       Include a counter with each repetition.
         -h, --help              Show help information.
 
@@ -84,7 +84,7 @@ final class RepeatExampleTests: XCTestCase {
           <phrase>                The phrase to repeat.
 
         OPTIONS:
-          --count <count>         The number of times to repeat 'phrase'.
+          --count <count>         How many times to repeat 'phrase'.
           --include-counter       Include a counter with each repetition.
           -h, --help              Show help information.
 
@@ -96,7 +96,7 @@ final class RepeatExampleTests: XCTestCase {
       command: "repeat hello --count",
       expected: """
         Error: Missing value for '--count <count>'
-        Help:  --count <count>  The number of times to repeat 'phrase'.
+        Help:  --count <count>  How many times to repeat 'phrase'.
         Usage: repeat [--count <count>] [--include-counter] <phrase>
           See 'repeat --help' for more information.
 
@@ -107,7 +107,7 @@ final class RepeatExampleTests: XCTestCase {
       command: "repeat hello --count ZZZ",
       expected: """
         Error: The value 'ZZZ' is invalid for '--count <count>'
-        Help:  --count <count>  The number of times to repeat 'phrase'.
+        Help:  --count <count>  How many times to repeat 'phrase'.
         Usage: repeat [--count <count>] [--include-counter] <phrase>
           See 'repeat --help' for more information.
 
