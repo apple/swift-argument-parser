@@ -148,6 +148,8 @@ extension HelpGenerationTests {
   enum OptionFlags: String, EnumerableFlag { case optional, required }
   enum Degree {
     case bachelor, graduate, doctorate
+
+    @Sendable
     static func degreeTransform(_ string: String) throws -> Degree {
       switch string {
       case "bachelor":

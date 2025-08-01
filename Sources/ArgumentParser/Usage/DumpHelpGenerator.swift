@@ -52,51 +52,15 @@ extension BidirectionalCollection where Element == ParsableCommand.Type {
   }
 }
 
-extension ArgumentSet {
-  fileprivate func mergingCompositeArguments() -> ArgumentSet {
-    var arguments = ArgumentSet()
-    var slice = self[...]
-    while var argument = slice.popFirst() {
-      if argument.help.isComposite {
-        // If this argument is composite, we have a group of arguments to
-        // merge together.
-        let groupEnd =
-          slice
-          .firstIndex { $0.help.keys != argument.help.keys }
-          ?? slice.endIndex
-        let group = [argument] + slice[..<groupEnd]
-        slice = slice[groupEnd...]
-
-        switch argument.kind {
-        case .named:
-          argument.kind = .named(group.flatMap(\.names))
-        case .positional, .default:
-          break
-        }
-
-        argument.help.valueName =
-          group.map(\.valueName).first { !$0.isEmpty } ?? ""
-        argument.help.defaultValue = group.compactMap(\.help.defaultValue).first
-        argument.help.abstract =
-          group.map(\.help.abstract).first { !$0.isEmpty } ?? ""
-        argument.help.discussion = group.compactMap(\.help.discussion).first
-      }
-      arguments.append(argument)
-    }
-    return arguments
-  }
-}
-
 extension ToolInfoV0 {
-  fileprivate init(commandStack: [ParsableCommand.Type]) {
+  init(commandStack: [ParsableCommand.Type]) {
     self.init(command: CommandInfoV0(commandStack: commandStack))
     // FIXME: This is a hack to inject the help command into the tool info
     // instead we should try to lift this into the parseable command tree
-    var helpCommandInfo = CommandInfoV0(commandStack: [HelpCommand.self])
-    helpCommandInfo.superCommands =
-      (self.command.superCommands ?? []) + [self.command.commandName]
     self.command.subcommands =
-      (self.command.subcommands ?? []) + [helpCommandInfo]
+      (self.command.subcommands ?? []) + [
+        CommandInfoV0(commandStack: commandStack + [HelpCommand.self])
+      ]
   }
 }
 
@@ -123,7 +87,6 @@ extension CommandInfoV0 {
     let arguments =
       commandStack
       .allArguments()
-      .mergingCompositeArguments()
       .compactMap(ArgumentInfoV0.init)
 
     self = CommandInfoV0(
@@ -164,6 +127,7 @@ extension ArgumentInfoV0 {
       sectionTitle: argument.help.parentTitle.nonEmpty,
       isOptional: argument.help.options.contains(.isOptional),
       isRepeating: argument.help.options.contains(.isRepeating),
+      parsingStrategy: ArgumentInfoV0.ParsingStrategyV0(argument: argument),
       names: argument.names.map(ArgumentInfoV0.NameInfoV0.init),
       preferredName: argument.names.preferredName.map(
         ArgumentInfoV0.NameInfoV0.init),
@@ -196,6 +160,27 @@ extension ArgumentInfoV0.KindV0 {
   }
 }
 
+extension ArgumentInfoV0.ParsingStrategyV0 {
+  fileprivate init(argument: ArgumentDefinition) {
+    switch argument.parsingStrategy {
+    case .`default`:
+      self = .default
+    case .scanningForValue:
+      self = .scanningForValue
+    case .unconditional:
+      self = .unconditional
+    case .upToNextOption:
+      self = .upToNextOption
+    case .allRemainingInput:
+      self = .allRemainingInput
+    case .postTerminator:
+      self = .postTerminator
+    case .allUnrecognized:
+      self = .allUnrecognized
+    }
+  }
+}
+
 extension ArgumentInfoV0.NameInfoV0 {
   fileprivate init(name: Name) {
     switch name {
@@ -224,6 +209,8 @@ extension ArgumentInfoV0.CompletionKindV0 {
       self = .shellCommand(command: command)
     case .custom(_):
       self = .custom
+    case .customAsync(_):
+      self = .customAsync
     case .customDeprecated(_):
       self = .customDeprecated
     }

@@ -10,8 +10,16 @@
 //===----------------------------------------------------------------------===//
 
 #if swift(>=6.0)
+#if canImport(Dispatch)
+@preconcurrency private import class Dispatch.DispatchSemaphore
+#endif
+internal import class Foundation.NSLock
 internal import class Foundation.ProcessInfo
 #else
+#if canImport(Dispatch)
+@preconcurrency import class Dispatch.DispatchSemaphore
+#endif
+import class Foundation.NSLock
 import class Foundation.ProcessInfo
 #endif
 
@@ -414,14 +422,29 @@ extension CommandParser {
       }
       try customComplete(matchedArgument, forArguments: Array(args))
 
-    case .value(let str):
-      guard
-        let key = InputKey(fullPathString: str),
-        let matchedArgument = argset.firstPositional(withKey: key)
-      else {
-        throw ParserError.invalidState
+    case .value(let value):
+      // Legacy completion script generators use internal key paths to identify
+      // positional args, e.g. optionGroupA.optionGroupB.property. Newer
+      // generators based on ToolInfo use the `positional@<index>` syntax which
+      // avoids leaking implementation details of the tool.
+      let toolInfoPrefix = "positional@"
+      if value.hasPrefix(toolInfoPrefix) {
+        guard
+          let index = Int(value.dropFirst(toolInfoPrefix.count)),
+          let matchedArgument = argset.positional(at: index)
+        else {
+          throw ParserError.invalidState
+        }
+        try customComplete(matchedArgument, forArguments: Array(args))
+      } else {
+        guard
+          let key = InputKey(fullPathString: value),
+          let matchedArgument = argset.firstPositional(withKey: key)
+        else {
+          throw ParserError.invalidState
+        }
+        try customComplete(matchedArgument, forArguments: Array(args))
       }
-      try customComplete(matchedArgument, forArguments: Array(args))
 
     case .terminator:
       throw ParserError.invalidState
@@ -447,37 +470,24 @@ extension CommandParser {
     let completions: [String]
     switch argument.completion.kind {
     case .custom(let complete):
-      var args = args.dropFirst(0)
-      guard
-        let s = args.popFirst(),
-        let completingArgumentIndex = Int(s)
-      else {
-        throw ParserError.invalidState
-      }
-
-      guard
-        let arg = args.popFirst(),
-        let cursorIndexWithinCompletingArgument = Int(arg)
-      else {
-        throw ParserError.invalidState
-      }
-
-      let completingPrefix: String
-      if let completingArgument = args.last {
-        completingPrefix = String(
-          completingArgument.prefix(cursorIndexWithinCompletingArgument)
-        )
-      } else if cursorIndexWithinCompletingArgument == 0 {
-        completingPrefix = ""
-      } else {
-        throw ParserError.invalidState
-      }
-
+      let (args, completingArgumentIndex, completingPrefix) =
+        try parseCustomCompletionArguments(from: args)
       completions = complete(
-        Array(args),
+        args,
         completingArgumentIndex,
         completingPrefix
       )
+    case .customAsync(let complete):
+      #if canImport(Dispatch)
+      if #available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
+      {
+        completions = try asyncCustomCompletions(from: args, complete: complete)
+      } else {
+        throw ParserError.invalidState
+      }
+      #else
+      throw ParserError.invalidState
+      #endif
     case .customDeprecated(let complete):
       completions = complete(args)
     default:
@@ -491,6 +501,92 @@ extension CommandParser {
       CompletionShell.requesting?.format(completions: completions)
         ?? completions.joined(separator: "\n")
     )
+  }
+}
+
+private func parseCustomCompletionArguments(
+  from args: [String]
+) throws -> ([String], Int, String) {
+  var args = args.dropFirst(0)
+  guard
+    let s = args.popFirst(),
+    let completingArgumentIndex = Int(s)
+  else {
+    throw ParserError.invalidState
+  }
+
+  guard
+    let arg = args.popFirst(),
+    let cursorIndexWithinCompletingArgument = Int(arg)
+  else {
+    throw ParserError.invalidState
+  }
+
+  let completingPrefix: String
+  if let completingArgument = args.last {
+    completingPrefix = String(
+      completingArgument.prefix(cursorIndexWithinCompletingArgument)
+    )
+  } else if cursorIndexWithinCompletingArgument == 0 {
+    completingPrefix = ""
+  } else {
+    throw ParserError.invalidState
+  }
+
+  return (Array(args), completingArgumentIndex, completingPrefix)
+}
+
+#if !canImport(Dispatch)
+@available(*, unavailable, message: "DispatchSemaphore is unavailable")
+#endif
+@available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
+private func asyncCustomCompletions(
+  from args: [String],
+  complete: @escaping @Sendable ([String], Int, String) async -> [String]
+) throws -> [String] {
+  #if !canImport(Dispatch)
+  throw ParserError.invalidState
+  #else
+  let (args, completingArgumentIndex, completingPrefix) =
+    try parseCustomCompletionArguments(from: args)
+
+  let completionsBox = SendableBox<[String]>([])
+  let semaphore = DispatchSemaphore(value: 0)
+
+  Task {
+    completionsBox.value = await complete(
+      args,
+      completingArgumentIndex,
+      completingPrefix
+    )
+    semaphore.signal()
+  }
+
+  semaphore.wait()
+  return completionsBox.value
+  #endif
+}
+
+// Helper class to make values sendable across concurrency boundaries
+private final class SendableBox<T>: @unchecked Sendable {
+  private let lock = NSLock()
+  private var _value: T
+
+  init(_ value: T) {
+    self._value = value
+  }
+
+  var value: T {
+    get {
+      lock.lock()
+      defer { lock.unlock() }
+      return _value
+    }
+    set {
+      lock.lock()
+      defer { lock.unlock() }
+      _value = newValue
+    }
   }
 }
 

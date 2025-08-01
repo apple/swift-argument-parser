@@ -127,9 +127,9 @@ _math_stats() {
 
 _math_stats_average() {
     local -i ret=1
-    local -ar __math_stats_average_kind=('mean' 'median' 'mode')
+    local -ar ___kind=('mean' 'median' 'mode')
     local -ar arg_specs=(
-        '--kind[The kind of average to provide.]:kind:{__math_complete "${__math_stats_average_kind[@]}"}'
+        '--kind[The kind of average to provide.]:kind:{__math_complete "${___kind[@]}"}'
         '*:values:'
         '--version[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
@@ -153,11 +153,11 @@ _math_stats_stdev() {
 
 _math_stats_quantiles() {
     local -i ret=1
-    local -ar math_stats_quantiles_one_of_four=('alphabet' 'alligator' 'branch' 'braggart')
+    local -ar _one_of_four=('alphabet' 'alligator' 'branch' 'braggart')
     local -ar arg_specs=(
-        ':one-of-four:{__math_complete "${math_stats_quantiles_one_of_four[@]}"}'
-        ':custom-arg:{__math_custom_complete ---completion stats quantiles -- customArg "${current_word_index}" "$(__math_cursor_index_in_current_word)"}'
-        ':custom-deprecated-arg:{__math_custom_complete ---completion stats quantiles -- customDeprecatedArg}'
+        ':one-of-four:{__math_complete "${_one_of_four[@]}"}'
+        ':custom-arg:{__math_custom_complete ---completion stats quantiles -- positional@1 "${current_word_index}" "$(__math_cursor_index_in_current_word)"}'
+        ':custom-deprecated-arg:{__math_custom_complete ---completion stats quantiles -- positional@2}'
         '*:values:'
         '--file:file:_files -g '\''*.txt *.md'\'''
         '--directory:directory:_files -/'

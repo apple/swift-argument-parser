@@ -267,11 +267,11 @@ _math_stats_quantiles() {
         return
         ;;
     2)
-        __math_add_completions -W "$(__math_custom_complete ---completion stats quantiles -- customArg "${COMP_CWORD}" "$(__math_cursor_index_in_current_word)")"
+        __math_add_completions -W "$(__math_custom_complete ---completion stats quantiles -- positional@1 "${COMP_CWORD}" "$(__math_cursor_index_in_current_word)")"
         return
         ;;
     3)
-        __math_add_completions -W "$(__math_custom_complete ---completion stats quantiles -- customDeprecatedArg)"
+        __math_add_completions -W "$(__math_custom_complete ---completion stats quantiles -- positional@2)"
         return
         ;;
     esac
