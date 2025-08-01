@@ -16,7 +16,7 @@ import XCTest
 
 final class ParsableArgumentsValidationTests: XCTestCase {
   private struct A: ParsableCommand {
-    @Option(help: "The number of times to repeat 'phrase'.")
+    @Option(help: "How many times to repeat 'phrase'.")
     var count: Int?
 
     @Argument(help: "The phrase to repeat.")
@@ -31,7 +31,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   }
 
   private struct B: ParsableCommand {
-    @Option(help: "The number of times to repeat 'phrase'.")
+    @Option(help: "How many times to repeat 'phrase'.")
     var count: Int?
 
     @Argument(help: "The phrase to repeat.")
@@ -41,7 +41,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
   }
 
   private struct C: ParsableCommand {
-    @Option(help: "The number of times to repeat 'phrase'.")
+    @Option(help: "How many times to repeat 'phrase'.")
     var count: Int?
 
     @Argument(help: "The phrase to repeat.")
@@ -58,7 +58,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
     @Argument(help: "The phrase to repeat.")
     var phrase: String
 
-    @Option(help: "The number of times to repeat 'phrase'.")
+    @Option(help: "How many times to repeat 'phrase'.")
     var count: Int?
 
     enum CodingKeys: String, CodingKey {
@@ -70,7 +70,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
     @Argument(help: "The phrase to repeat.")
     var phrase: String
 
-    @Option(help: "The number of times to repeat 'phrase'.")
+    @Option(help: "How many times to repeat 'phrase'.")
     var count: Int?
 
     @Flag(help: "Include a counter with each repetition.")
@@ -128,7 +128,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
     @Argument(help: "The phrase to repeat.")
     var phrase: String = ""
 
-    @Option(help: "The number of times to repeat 'phrase'.")
+    @Option(help: "How many times to repeat 'phrase'.")
     var count: Int = 0
 
     init() {}
