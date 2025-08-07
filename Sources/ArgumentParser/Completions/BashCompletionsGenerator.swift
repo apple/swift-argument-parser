@@ -217,7 +217,8 @@ extension CommandInfoV0 {
       result += """
             \(declareTopLevelArray)flags=(\(flagCompletions.joined(separator: " ")))
             \(declareTopLevelArray)options=(\(optionCompletions.joined(separator: " ")))
-            \(offerFlagsOptionsFunctionName) \(positionalArguments.count)
+            \(offerFlagsOptionsFunctionName) \
+        \(positionalArguments.contains { $0.isRepeating } ? 9_223_372_036_854_775_807 : positionalArguments.count)
 
         """
     }
@@ -248,14 +249,23 @@ extension CommandInfoV0 {
         """
     }
 
+    var encounteredRepeatingPositional = false
     let positionalCases =
       zip(1..., positionalArguments)
       .compactMap { position, arg in
+        guard !encounteredRepeatingPositional else {
+          return nil as String?
+        }
+
+        if arg.isRepeating {
+          encounteredRepeatingPositional = true
+        }
+
         let completion = valueCompletion(arg)
         return completion.isEmpty
           ? nil
           : """
-              \(position))
+              \(encounteredRepeatingPositional ? "*" : position.description))
           \(completion.indentingEachLine(by: 8))\
                   return
                   ;;
@@ -375,7 +385,6 @@ extension CommandInfoV0 {
         """
 
     case .custom, .customAsync:
-      // Generate a call back into the command to retrieve a completions list
       return """
         \(addCompletionsFunctionName) -W\
          "$(\(customCompleteFunctionName) \(arg.commonCustomCompletionCall(command: self))\
@@ -385,7 +394,6 @@ extension CommandInfoV0 {
         """
 
     case .customDeprecated:
-      // Generate a call back into the command to retrieve a completions list
       return """
         \(addCompletionsFunctionName) -W\
          "$(\(customCompleteFunctionName) \(arg.commonCustomCompletionCall(command: self)))"

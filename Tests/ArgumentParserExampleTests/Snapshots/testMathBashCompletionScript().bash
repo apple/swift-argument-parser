@@ -181,13 +181,13 @@ _math() {
 _math_add() {
     flags=(--hex-output -x --version -h --help)
     options=()
-    __math_offer_flags_options 1
+    __math_offer_flags_options 9223372036854775807
 }
 
 _math_multiply() {
     flags=(--hex-output -x --version -h --help)
     options=()
-    __math_offer_flags_options 1
+    __math_offer_flags_options 9223372036854775807
 }
 
 _math_stats() {
@@ -214,7 +214,7 @@ _math_stats() {
 _math_stats_average() {
     flags=(--version -h --help)
     options=(--kind)
-    __math_offer_flags_options 1
+    __math_offer_flags_options 9223372036854775807
 
     # Offer option value completions
     case "${prev}" in
@@ -228,13 +228,13 @@ _math_stats_average() {
 _math_stats_stdev() {
     flags=(--version -h --help)
     options=()
-    __math_offer_flags_options 1
+    __math_offer_flags_options 9223372036854775807
 }
 
 _math_stats_quantiles() {
     flags=(--version -h --help)
     options=(--file --directory --shell --custom --custom-deprecated)
-    __math_offer_flags_options 4
+    __math_offer_flags_options 9223372036854775807
 
     # Offer option value completions
     case "${prev}" in
@@ -280,7 +280,7 @@ _math_stats_quantiles() {
 _math_help() {
     flags=(--version)
     options=()
-    __math_offer_flags_options 1
+    __math_offer_flags_options 9223372036854775807
 }
 
 complete -o filenames -F _math math
