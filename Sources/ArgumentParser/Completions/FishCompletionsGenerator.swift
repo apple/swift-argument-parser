@@ -24,16 +24,20 @@ extension ToolInfoV0 {
 extension CommandInfoV0 {
   fileprivate var fishCompletionScript: String {
     """
-    function \(shouldOfferCompletionsForFunctionName) -a expected_commands -a expected_positional_index
+    function \(shouldOfferCompletionsForFunctionName) -a expected_commands expected_positional_index positional_index_comparison
         set -l unparsed_tokens (\(tokensFunctionName) -pc)
         set -l positional_index 0
         set -l commands
+
+        if test -z $positional_index_comparison
+            set positional_index_comparison -eq
+        end
 
         switch $unparsed_tokens[1]
     \(commandCases)
         end
 
-        test "$commands" = "$expected_commands" -a \\( -z "$expected_positional_index" -o "$expected_positional_index" -eq "$positional_index" \\)
+        test "$commands" = "$expected_commands" -a \\( -z "$expected_positional_index" -o "$positional_index" "$positional_index_comparison" "$expected_positional_index" \\)
     end
 
     function \(tokensFunctionName)
@@ -123,21 +127,32 @@ extension CommandInfoV0 {
 
     var positionalIndex = 0
 
+    var repeatingPositionalComparison = ""
     let argumentCompletions =
       completableArguments
-      .map { arg in
-        """
-        \(prefix)\(
-          arg.kind == .positional
-          ? """
-          \({
-            positionalIndex += 1
-            return " \(positionalIndex)"
-          }())
+      .compactMap { arg in
+        if arg.kind == .positional {
+          guard repeatingPositionalComparison.isEmpty else {
+            return nil as String?
+          }
+
+          if arg.isRepeating {
+            repeatingPositionalComparison = " -ge"
+          }
+        }
+
+        return """
+          \(prefix)\(
+            arg.kind == .positional
+            ? """
+            \({
+              positionalIndex += 1
+              return " \(positionalIndex)\(repeatingPositionalComparison)"
+            }())
+            """
+            : ""
+          )' \(argumentSegments(arg).joined(separator: separator))
           """
-          : ""
-        )' \(argumentSegments(arg).joined(separator: separator))
-        """
       }
 
     positionalIndex += 1

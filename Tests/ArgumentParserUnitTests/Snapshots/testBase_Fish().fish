@@ -1,7 +1,11 @@
-function __base-test_should_offer_completions_for -a expected_commands -a expected_positional_index
+function __base-test_should_offer_completions_for -a expected_commands expected_positional_index positional_index_comparison
     set -l unparsed_tokens (__base-test_tokens -pc)
     set -l positional_index 0
     set -l commands
+
+    if test -z $positional_index_comparison
+        set positional_index_comparison -eq
+    end
 
     switch $unparsed_tokens[1]
     case 'base-test'
@@ -16,7 +20,7 @@ function __base-test_should_offer_completions_for -a expected_commands -a expect
         end
     end
 
-    test "$commands" = "$expected_commands" -a \( -z "$expected_positional_index" -o "$expected_positional_index" -eq "$positional_index" \)
+    test "$commands" = "$expected_commands" -a \( -z "$expected_positional_index" -o "$positional_index" "$positional_index_comparison" "$expected_positional_index" \)
 end
 
 function __base-test_tokens
