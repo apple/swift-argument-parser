@@ -53,7 +53,8 @@ math add [--hex-output] [<values>...] [--version] [--help]
 Print the product of the values.
 
 ```
-math multiply [--hex-output] [<values>...] [--version] [--help]
+math multiply [--hex-output] [<values>...] [--version]
+  [--help]
 ```
 
 - term **--hex-output**:
@@ -101,7 +102,8 @@ math stats [--version] [--help]
 Print the average of the values.
 
 ```
-math stats average [--kind=<kind>] [<values>...] [--version] [--help]
+math stats average [--kind=<kind>] [<values>...] [--version]
+  [--help]
 ```
 
 - term **--kind=\<kind\>**:
@@ -156,7 +158,12 @@ math stats stdev [<values>...] [--version] [--help]
 Print the quantiles of the values (TBD).
 
 ```
-math stats quantiles [<one-of-four>] [<custom-arg>] [<custom-deprecated-arg>] [<values>...]     [--file=<file>] [--directory=<directory>] [--shell=<shell>] [--custom=<custom>] [--custom-deprecated=<custom-deprecated>] [--version] [--help]
+math stats quantiles [<one-of-four>] [<custom-arg>]
+  [<custom-deprecated-arg>] [<values>...] [--file=<file>]
+  [--directory=<directory>] [--shell=<shell>]
+  [--custom=<custom>]
+  [--custom-deprecated=<custom-deprecated>] [--version]
+  [--help]
 ```
 
 - term **one-of-four**:
@@ -207,7 +214,7 @@ math stats quantiles [<one-of-four>] [<custom-arg>] [<custom-deprecated-arg>] [<
 Show subcommand help information.
 
 ```
-math help [<subcommands>...]  [--version]
+math help [<subcommands>...] [--version]
 ```
 
 - term **subcommands**:

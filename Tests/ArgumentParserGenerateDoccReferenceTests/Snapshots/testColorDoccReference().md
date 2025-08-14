@@ -28,7 +28,7 @@ This is optional.
 Show subcommand help information.
 
 ```
-color help [<subcommands>...] 
+color help [<subcommands>...]
 ```
 
 - term **subcommands**:
