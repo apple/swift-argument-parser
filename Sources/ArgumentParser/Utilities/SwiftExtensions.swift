@@ -11,7 +11,7 @@
 
 #if compiler(>=6.2)
 /// Designates a type as having a sendable metatype.
-public protocol _SendableMetatype: SendableMetatype {}
+@_marker public protocol _SendableMetatype: SendableMetatype {}
 #else
-public protocol _SendableMetatype {}
+@_marker public protocol _SendableMetatype {}
 #endif

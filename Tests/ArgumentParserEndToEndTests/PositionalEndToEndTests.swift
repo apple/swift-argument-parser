@@ -241,3 +241,33 @@ extension PositionalEndToEndTests {
     }
   }
 }
+
+// MARK: Conditional ExpressibleByArgument conformance
+
+// Note: This retroactive conformance is a compilation test
+extension Range<Int>: ArgumentParser.ExpressibleByArgument {
+  public init?(argument: String) {
+    guard let i = argument.firstIndex(of: ":"),
+      let low = Int(String(argument[..<i])),
+      let high = Int(String(argument[i...].dropFirst())),
+      low <= high
+    else { return nil }
+    self = low..<high
+  }
+}
+
+extension PositionalEndToEndTests {
+  struct HasRange: ParsableArguments {
+    @Argument var range: Range<Int>
+  }
+
+  func testParseCustomRangeConformance() throws {
+    AssertParse(HasRange.self, ["0:4"]) { args in
+      XCTAssertEqual(args.range, 0..<4)
+    }
+
+    XCTAssertThrowsError(try HasRange.parse([]))
+    XCTAssertThrowsError(try HasRange.parse(["1"]))
+    XCTAssertThrowsError(try HasRange.parse(["1:0"]))
+  }
+}
