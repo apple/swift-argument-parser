@@ -345,6 +345,9 @@ struct AutodetectedGenerateCompletions: ParsableCommand {
   @Flag() var generateCompletionScript = false
 }
 
+func swiftBug72841Unwrap<T>(_ x: T) -> T { x }
+func swiftBug72841Unwrap<T>(_ x: T?) -> T { x! }
+
 extension CommandParser {
   func checkForCompletionScriptRequest(_ split: inout SplitArguments) throws {
     // Pseudo-commands don't support `--generate-completion-script` flag
@@ -363,14 +366,14 @@ extension CommandParser {
       throw CommandError(
         commandStack: commandStack,
         parserError: .completionScriptRequested(
-          shell: result.generateCompletionScript))
+          shell: swiftBug72841Unwrap(result).generateCompletionScript))
     }
 
     // Check for for `--generate-completion-script` without a value
     var autodetectedParser = CommandParser(AutodetectedGenerateCompletions.self)
     if let result = try? autodetectedParser.parseCurrent(&split)
       as? AutodetectedGenerateCompletions,
-      result.generateCompletionScript
+      swiftBug72841Unwrap(result).generateCompletionScript
     {
       throw CommandError(
         commandStack: commandStack,
