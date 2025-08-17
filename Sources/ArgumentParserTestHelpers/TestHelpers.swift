@@ -156,7 +156,8 @@ public func AssertParseCommand<A: ParsableCommand>(
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
 public func AssertParseCommandErrorMessage<A: ParsableCommand>(
-  _ rootCommand: ParsableCommand.Type, _ type: A.Type, _ arguments: [String], _ errorMessage: String,
+  _ rootCommand: ParsableCommand.Type, _ type: A.Type, _ arguments: [String],
+  _ errorMessage: String,
   file: StaticString = #filePath, line: UInt = #line
 ) {
   do {

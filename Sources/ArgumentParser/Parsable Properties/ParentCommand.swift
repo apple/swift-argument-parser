@@ -56,7 +56,7 @@ public struct ParentCommand<Value: ParsableCommand>: Decodable, ParsedWrapper {
 
   public init() {
     self.init(
-      _parsedValue: .init {_ in
+      _parsedValue: .init { _ in
         .init()
       }
     )

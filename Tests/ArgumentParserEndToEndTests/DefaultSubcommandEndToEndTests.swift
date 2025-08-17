@@ -75,7 +75,9 @@ extension DefaultSubcommandEndToEndTests {
 extension DefaultSubcommandEndToEndTests {
   fileprivate struct MyCommand: ParsableCommand {
     static let configuration = CommandConfiguration(
-      subcommands: [Plugin.self, NonDefault.self, Other.self, Child.self, BadParent.self],
+      subcommands: [
+        Plugin.self, NonDefault.self, Other.self, Child.self, BadParent.self,
+      ],
       defaultSubcommand: Plugin.self
     )
 
@@ -121,14 +123,18 @@ extension DefaultSubcommandEndToEndTests {
   }
 
   func testAccessToParent() throws {
-    AssertParseCommand(MyCommand.self, Child.self, ["--verbose", "--foo=bar", "child"]) { child in
+    AssertParseCommand(
+      MyCommand.self, Child.self, ["--verbose", "--foo=bar", "child"]
+    ) { child in
       XCTAssertEqual(child.parent.foo, "bar")
       XCTAssertEqual(child.parent.options.verbose, true)
     }
   }
 
-   func testNotMyParent() throws {
-    AssertParseCommandErrorMessage(MyCommand.self, BadParent.self, ["--verbose", "bad-parent"], "Command 'Other' is not a parent of the current command.")
+  func testNotMyParent() throws {
+    AssertParseCommandErrorMessage(
+      MyCommand.self, BadParent.self, ["--verbose", "bad-parent"],
+      "Command 'Other' is not a parent of the current command.")
   }
 
   func testRemainingDefaultImplicit() throws {
