@@ -8,7 +8,7 @@ repeat [--count=<count>] [--include-counter] <phrase> [--help]
 
 - term **--count=\<count\>**:
 
-*The number of times to repeat 'phrase'.*
+*How many times to repeat 'phrase'.*
 
 
 - term **--include-counter**:
