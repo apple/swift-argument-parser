@@ -6,6 +6,8 @@
 color --fav=<fav> [--second=<second>] [--help]
 ```
 
+### Options
+
 **--fav=\<fav\>:**
 
 *Your favorite color.*
@@ -31,9 +33,8 @@ Show subcommand help information.
 color help [<subcommands>...]
 ```
 
+### Arguments
+
 **subcommands:**
 
-
-
-
-
+*The subcommand(s) you want help for.*
