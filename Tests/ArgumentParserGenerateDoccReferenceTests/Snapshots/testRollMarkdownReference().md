@@ -40,7 +40,7 @@ Use this option to override the default value of a six-sided die.
 Show subcommand help information.
 
 ```
-roll help [<subcommands>...] 
+roll help [<subcommands>...]
 ```
 
 ### Arguments

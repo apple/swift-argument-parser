@@ -17,7 +17,7 @@ repeat [--count=<count>] [--include-counter] <phrase> [--help]
 
 **--count=\<count\>:**
 
-*The number of times to repeat 'phrase'.*
+*How many times to repeat 'phrase'.*
 
 
 **--include-counter:**
@@ -35,7 +35,7 @@ repeat [--count=<count>] [--include-counter] <phrase> [--help]
 Show subcommand help information.
 
 ```
-repeat help [<subcommands>...] 
+repeat help [<subcommands>...]
 ```
 
 ### Arguments

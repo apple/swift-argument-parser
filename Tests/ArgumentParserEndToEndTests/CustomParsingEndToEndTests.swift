@@ -35,10 +35,11 @@ extension Array where Element == Name {
 // MARK: -
 
 private struct Foo: ParsableCommand {
-  enum Subgroup: Equatable {
+  enum Subgroup: Equatable, Sendable {
     case first(Int)
     case second(Int)
 
+    @Sendable
     static func makeFirst(_ str: String) throws -> Subgroup {
       guard let value = Int(str) else {
         throw ValidationError("Not a valid integer for 'first'")
@@ -46,6 +47,7 @@ private struct Foo: ParsableCommand {
       return .first(value)
     }
 
+    @Sendable
     static func makeSecond(_ str: String) throws -> Subgroup {
       guard let value = Int(str) else {
         throw ValidationError("Not a valid integer for 'second'")

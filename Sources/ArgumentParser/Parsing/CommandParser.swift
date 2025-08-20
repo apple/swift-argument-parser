@@ -10,11 +10,15 @@
 //===----------------------------------------------------------------------===//
 
 #if swift(>=6.0)
+#if canImport(Dispatch)
 @preconcurrency private import class Dispatch.DispatchSemaphore
+#endif
 internal import class Foundation.NSLock
 internal import class Foundation.ProcessInfo
 #else
+#if canImport(Dispatch)
 @preconcurrency import class Dispatch.DispatchSemaphore
+#endif
 import class Foundation.NSLock
 import class Foundation.ProcessInfo
 #endif
@@ -474,12 +478,16 @@ extension CommandParser {
         completingPrefix
       )
     case .customAsync(let complete):
+      #if canImport(Dispatch)
       if #available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
       {
         completions = try asyncCustomCompletions(from: args, complete: complete)
       } else {
         throw ParserError.invalidState
       }
+      #else
+      throw ParserError.invalidState
+      #endif
     case .customDeprecated(let complete):
       completions = complete(args)
     default:
@@ -528,11 +536,17 @@ private func parseCustomCompletionArguments(
   return (Array(args), completingArgumentIndex, completingPrefix)
 }
 
+#if !canImport(Dispatch)
+@available(*, unavailable, message: "DispatchSemaphore is unavailable")
+#endif
 @available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
 private func asyncCustomCompletions(
   from args: [String],
   complete: @escaping @Sendable ([String], Int, String) async -> [String]
 ) throws -> [String] {
+  #if !canImport(Dispatch)
+  throw ParserError.invalidState
+  #else
   let (args, completingArgumentIndex, completingPrefix) =
     try parseCustomCompletionArguments(from: args)
 
@@ -550,6 +564,7 @@ private func asyncCustomCompletions(
 
   semaphore.wait()
   return completionsBox.value
+  #endif
 }
 
 // Helper class to make values sendable across concurrency boundaries
