@@ -52,7 +52,7 @@ _base-test() {
         '--path3:path3:{__base-test_complete "${___path3[@]}"}'
         '--one'
         '--two'
-        '--three'
+        '--custom-three'
         '*--kind-counter'
         '*--rep1:rep1:'
         '*'{-r,--rep2}':rep2:'
