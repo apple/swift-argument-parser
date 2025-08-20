@@ -68,6 +68,19 @@ extension SubcommandEndToEndTests {
       XCTAssertEqual(a.foo.name, "Foo")
     }
 
+    let allCmds = try Foo.parseAllAsRoot(["--name", "Foo", "a", "--bar", "42"])
+    XCTAssertEqual(allCmds.count, 2)
+    guard let fooCmd = (allCmds[0] as? Foo) else {
+      XCTFail("")
+      return
+    }
+    XCTAssertEqual(fooCmd.name, "Foo")
+    guard let aCmd = (allCmds[1] as? CommandA) else {
+      XCTFail("")
+      return
+    }
+    XCTAssertEqual(aCmd.bar, 42)
+
     AssertParseCommand(Foo.self, Foo.self, ["--name", "Foo"]) { foo in
       XCTAssertEqual(foo.name, "Foo")
     }
