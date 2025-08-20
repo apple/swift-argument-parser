@@ -31,7 +31,7 @@ repeat [--count=<count>] [--include-counter] <phrase> [--help]
 Show subcommand help information.
 
 ```
-repeat help [<subcommands>...] 
+repeat help [<subcommands>...]
 ```
 
 **subcommands:**
