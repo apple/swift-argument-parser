@@ -137,6 +137,20 @@ extension DefaultSubcommandEndToEndTests {
       "Command 'Other' is not a parent of the current command.")
   }
 
+  func testNotLeakingParentOptions() throws {
+    // Verify that the help for the child command doesn't leak the parent command's options in the help
+    let childHelp = MyCommand.message(for: CleanExit.helpRequest(Child.self))
+    XCTAssertEqual(
+      childHelp,
+      """
+      USAGE: my-command child
+
+      OPTIONS:
+        -h, --help              Show help information.
+
+      """)
+  }
+
   func testRemainingDefaultImplicit() throws {
     AssertParseCommand(MyCommand.self, Plugin.self, ["my-plugin"]) { plugin in
       XCTAssertEqual(plugin.pluginName, "my-plugin")
