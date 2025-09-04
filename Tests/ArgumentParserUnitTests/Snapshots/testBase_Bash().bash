@@ -22,15 +22,17 @@ __base-test_cursor_index_in_current_word() {
 #
 # required variables:
 #
-# - flags: the flags that the current (sub)command can accept
-# - options: the options that the current (sub)command can accept
+# - repeating_flags: the repeating flags that the current (sub)command can accept
+# - non_repeating_flags: the non-repeating flags that the current (sub)command can accept
+# - repeating_options: the repeating options that the current (sub)command can accept
+# - non_repeating_options: the non-repeating options that the current (sub)command can accept
 # - positional_number: value ignored
 # - unparsed_words: unparsed words from the current command line
 #
 # modified variables:
 #
-# - flags: remove flags for this (sub)command that are already on the command line
-# - options: remove options for this (sub)command that are already on the command line
+# - non_repeating_flags: remove flags for this (sub)command that are already on the command line
+# - non_repeating_options: remove options for this (sub)command that are already on the command line
 # - positional_number: set to the current positional number
 # - unparsed_words: remove all flags, options, and option values for this (sub)command
 __base-test_offer_flags_options() {
@@ -67,26 +69,26 @@ __base-test_offer_flags_options() {
                 # ${word} is a flag or an option
                 # If ${word} is an option, mark that the next word to be parsed is an option value
                 local option
-                for option in "${options[@]}"; do
+                for option in "${repeating_options[@]}" "${non_repeating_options[@]}"; do
                     [[ "${word}" = "${option}" ]] && is_parsing_option_value=true && break
                 done
 
-                # Remove ${word} from ${flags} or ${options} so it isn't offered again
+                # Remove ${word} from ${non_repeating_flags} or ${non_repeating_options} so it isn't offered again
                 local not_found=true
                 local -i index
-                for index in "${!flags[@]}"; do
-                    if [[ "${flags[${index}]}" = "${word}" ]]; then
-                        unset "flags[${index}]"
-                        flags=("${flags[@]}")
+                for index in "${!non_repeating_flags[@]}"; do
+                    if [[ "${non_repeating_flags[${index}]}" = "${word}" ]]; then
+                        unset "non_repeating_flags[${index}]"
+                        non_repeating_flags=("${non_repeating_flags[@]}")
                         not_found=false
                         break
                     fi
                 done
                 if "${not_found}"; then
-                    for index in "${!options[@]}"; do
-                        if [[ "${options[${index}]}" = "${word}" ]]; then
-                            unset "options[${index}]"
-                            options=("${options[@]}")
+                    for index in "${!non_repeating_flags[@]}"; do
+                        if [[ "${non_repeating_flags[${index}]}" = "${word}" ]]; then
+                            unset "non_repeating_flags[${index}]"
+                            non_repeating_flags=("${non_repeating_flags[@]}")
                             break
                         fi
                     done
@@ -121,7 +123,7 @@ __base-test_offer_flags_options() {
         && ! "${is_parsing_option_value}"\
         && [[ ("${cur}" = -* && "${positional_number}" -ge 0) || "${positional_number}" -eq -1 ]]
     then
-        COMPREPLY+=($(compgen -W "${flags[*]} ${options[*]}" -- "${cur}"))
+        COMPREPLY+=($(compgen -W "${repeating_flags[*]} ${non_repeating_flags[*]} ${repeating_options[*]} ${non_repeating_options[*]}" -- "${cur}"))
     fi
 }
 
@@ -158,8 +160,10 @@ _base-test() {
     local -i positional_number
     local -a unparsed_words=("${COMP_WORDS[@]:1:${COMP_CWORD}}")
 
-    local -a flags=(--one --two --custom-three --kind-counter -h --help)
-    local -a options=(--name --kind --other-kind --path1 --path2 --path3 --rep1 -r --rep2)
+    local -a repeating_flags=(--kind-counter)
+    local -a non_repeating_flags=(--one --two --custom-three -h --help)
+    local -a repeating_options=(--rep1 -r --rep2)
+    local -a non_repeating_options=(--name --kind --other-kind --path1 --path2 --path3)
     __base-test_offer_flags_options 2
 
     # Offer option value completions
@@ -224,14 +228,18 @@ _base-test() {
 }
 
 _base-test_sub-command() {
-    flags=(-h --help)
-    options=()
+    repeating_flags=()
+    non_repeating_flags=(-h --help)
+    repeating_options=()
+    non_repeating_options=()
     __base-test_offer_flags_options 0
 }
 
 _base-test_escaped-command() {
-    flags=(-h --help)
-    options=(--o:n[e)
+    repeating_flags=()
+    non_repeating_flags=(-h --help)
+    repeating_options=()
+    non_repeating_options=(--o:n[e)
     __base-test_offer_flags_options 1
 
     # Offer option value completions
