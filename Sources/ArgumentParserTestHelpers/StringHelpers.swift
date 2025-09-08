@@ -9,6 +9,12 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if swift(>=6.0)
+internal import Foundation
+#else
+import Foundation
+#endif
+
 extension Substring {
   func trimmed() -> Substring {
     guard let i = lastIndex(where: { $0 != " " }) else {

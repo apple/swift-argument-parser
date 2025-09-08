@@ -11,8 +11,10 @@
 
 #if swift(>=6.0)
 internal import ArgumentParserToolInfo
+internal import Foundation
 #else
 import ArgumentParserToolInfo
+import Foundation
 #endif
 
 /// A shell for which the parser can generate a completion script.
