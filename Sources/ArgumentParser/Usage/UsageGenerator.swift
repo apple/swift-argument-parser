@@ -9,7 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if swift(>=6.0)
+#if compiler(>=6.0)
 internal import protocol Foundation.LocalizedError
 #else
 import protocol Foundation.LocalizedError

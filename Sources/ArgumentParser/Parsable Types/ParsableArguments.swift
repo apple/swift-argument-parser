@@ -9,6 +9,12 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if compiler(>=6.0)
+internal import Foundation
+#else
+import Foundation
+#endif
+
 /// A type that can be parsed from a program's command-line arguments.
 ///
 /// When you implement a `ParsableArguments` type, all properties must be declared with

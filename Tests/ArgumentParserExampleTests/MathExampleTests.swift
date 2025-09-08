@@ -9,15 +9,10 @@
 //
 //===----------------------------------------------------------------------===//
 
-import ArgumentParser
 import ArgumentParserTestHelpers
 import XCTest
 
-#if swift(>=6.0)
-@testable internal import struct ArgumentParser.CompletionShell
-#else
-@testable import struct ArgumentParser.CompletionShell
-#endif
+@testable import ArgumentParser
 
 final class MathExampleTests: XCTestCase {
   override func setUp() {
