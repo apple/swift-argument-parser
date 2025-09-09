@@ -31,11 +31,11 @@ extension Error {
       #if canImport(FoundationEssentials)
       return String(describing: self)
       #else
-        if Swift.type(of: self) is NSError.Type {
-          return self.localizedDescription
-        } else {
-          return String(describing: self)
-        }
+      if Swift.type(of: self) is NSError.Type {
+        return self.localizedDescription
+      } else {
+        return String(describing: self)
+      }
       #endif
     }
   }

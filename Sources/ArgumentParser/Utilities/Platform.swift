@@ -79,7 +79,7 @@ extension Platform {
       }
     }
 
-    static subscript<Value>(_ key: Key, as _: Value.Type = Value.self) -> Value?
+    static subscript<Value>(_ key: Key, as _: Value.Type) -> Value?
     where Value: LosslessStringConvertible
     {
       get {
@@ -95,7 +95,7 @@ extension Platform {
       }
     }
 
-    static subscript<Value>(_ key: Key, as _: Value.Type = Value.self) -> Value?
+    static subscript<Value>(_ key: Key, as _: Value.Type) -> Value?
     where Value: RawRepresentable, Value.RawValue == String
     {
       get {

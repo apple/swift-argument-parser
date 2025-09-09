@@ -1387,7 +1387,7 @@ extension HelpGenerationTests {
 
         """)
 
-    Platform.Environment[.columns] = 60
+    Platform.Environment[.columns, as: Int.self] = 60
     AssertHelp(
       .default, for: WideHelp.self, columns: nil,
       equals: """
@@ -1402,7 +1402,7 @@ extension HelpGenerationTests {
 
         """)
 
-    Platform.Environment[.columns] = 79
+    Platform.Environment[.columns, as: Int.self] = 79
     AssertHelp(
       .default, for: WideHelp.self, columns: nil,
       equals: """
