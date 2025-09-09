@@ -25,7 +25,9 @@ import Foundation
 
 extension Error {
   func describe() -> String {
-    #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS) || os(visionOS)
+    #if canImport(FoundationEssentials)
+    return String(describing: self)
+    #else
     if let description = (self as? LocalizedError)?.errorDescription {
       return description
     } else {
@@ -35,8 +37,6 @@ extension Error {
         return String(describing: self)
       }
     }
-    #else
-    return String(describing: self)
     #endif
   }
 }
