@@ -16,9 +16,7 @@ import XCTest
 
 final class MathExampleTests: XCTestCase {
   override func setUp() {
-    #if !os(Windows) && !os(WASI)
-    unsetenv("COLUMNS")
-    #endif
+    Platform.Environment[.columns] = nil
   }
 
   func testMath_Simple() throws {

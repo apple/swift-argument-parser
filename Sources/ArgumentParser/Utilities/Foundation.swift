@@ -43,7 +43,11 @@ extension Error {
 
 enum JSONEncoder {
   static func encode<T: Encodable>(_ value: T) -> String {
+    #if canImport(FoundationEssentials)
+    let encoder = FoundationEssentials.JSONEncoder()
+    #else
     let encoder = Foundation.JSONEncoder()
+    #endif
     encoder.outputFormatting = .prettyPrinted
     encoder.outputFormatting.insert(.sortedKeys)
     guard let encoded = try? encoder.encode(value) else { return "" }

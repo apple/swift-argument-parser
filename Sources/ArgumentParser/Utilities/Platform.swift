@@ -62,7 +62,7 @@ extension Platform {
     static subscript(_ key: Key) -> String? {
       get {
         #if !os(Windows) && !os(WASI)
-        guard let cString = getenv("SHELL") else { return nil }
+        guard let cString = getenv(key.rawValue) else { return nil }
         return String(cString: cString)
         #else
         return nil
