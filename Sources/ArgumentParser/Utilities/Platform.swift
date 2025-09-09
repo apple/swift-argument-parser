@@ -61,21 +61,21 @@ extension Platform {
     @_disfavoredOverload
     static subscript(_ key: Key) -> String? {
       get {
-#if !os(Windows) && !os(WASI)
+        #if !os(Windows) && !os(WASI)
         guard let cString = getenv("SHELL") else { return nil }
         return String(cString: cString)
         #else
         return nil
-#endif
+        #endif
       }
       set {
-#if !os(Windows) && !os(WASI)
+        #if !os(Windows) && !os(WASI)
         if let newValue = newValue {
           setenv(key.rawValue, newValue, 1)
         } else {
           unsetenv(key.rawValue)
         }
-#endif
+        #endif
       }
     }
 

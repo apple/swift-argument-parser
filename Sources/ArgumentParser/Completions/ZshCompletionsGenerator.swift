@@ -270,20 +270,20 @@ extension ArgumentInfoV0 {
 extension String {
   fileprivate func zshEscapeForSingleQuotedDescribeCompletion() -> String {
     self
-// FIXME: Don't use Regex
-//      .replacingOccurrences(
-//        of: #"[:\\]"#,
-//        with: #"\\$0"#,
-//        options: .regularExpression)
+      // FIXME: Don't use Regex
+      //      .replacingOccurrences(
+      //        of: #"[:\\]"#,
+      //        with: #"\\$0"#,
+      //        options: .regularExpression)
       .shellEscapeForSingleQuotedString()
   }
   fileprivate func zshEscapeForSingleQuotedOptionSpec() -> String {
     self
-// FIXME: Don't use Regex
-//    .replacingOccurrences(
-//      of: #"[:\\\[\]]"#,
-//      with: #"\\$0"#,
-//      options: .regularExpression)
+      // FIXME: Don't use Regex
+      //    .replacingOccurrences(
+      //      of: #"[:\\\[\]]"#,
+      //      with: #"\\$0"#,
+      //      options: .regularExpression)
       .shellEscapeForSingleQuotedString()
   }
 }

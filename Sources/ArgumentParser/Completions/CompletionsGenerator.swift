@@ -16,7 +16,9 @@ import ArgumentParserToolInfo
 #endif
 
 /// A shell for which the parser can generate a completion script.
-public struct CompletionShell: RawRepresentable, Hashable, CaseIterable, Sendable {
+public struct CompletionShell: RawRepresentable, Hashable, CaseIterable,
+  Sendable
+{
   public var rawValue: String
 
   /// Creates a new instance from the given string.
