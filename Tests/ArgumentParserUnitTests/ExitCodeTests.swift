@@ -98,14 +98,16 @@ extension ExitCodeTests {
       ExitCode(rawValue: 1))
 
     #if canImport(FoundationEssentials)
+    let prefix = "Error Domain=TestError Code=1 \"(null)\""
     #if compiler(<6.1)
     XCTAssertEqual(
       NSErrorCommand.message(for: NSErrorCommand.fileNotFoundNSError),
-      "Error Domain=TestError Code=1 \"(null)\"")
+      "\(prefix)")
     #else
     XCTAssertEqual(
       NSErrorCommand.message(for: NSErrorCommand.fileNotFoundNSError),
-      "Error Domain=TestError Code=1 \"(null)\"UserInfo={NSLocalizedDescription=\(NSErrorCommand.message)}")
+      "\(prefix)UserInfo={NSLocalizedDescription=\(NSErrorCommand.message)}"
+    )
     #endif
     #else
     XCTAssertEqual(
