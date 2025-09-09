@@ -9,12 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if compiler(>=6.0)
-internal import protocol Foundation.LocalizedError
-#else
-import protocol Foundation.LocalizedError
-#endif
-
 struct UsageGenerator {
   var toolName: String
   var definition: ArgumentSet
@@ -223,21 +217,14 @@ extension ErrorMessageGenerator {
     case .missingSubcommand:
       return "Missing required subcommand."
     case .userValidationError(let error):
-      switch error {
-      case let error as LocalizedError:
-        return error.errorDescription
-      default:
-        return String(describing: error)
-      }
+      return error.describe()
     case .noArguments(let error):
       switch error {
       case let error as ParserError:
         return ErrorMessageGenerator(arguments: self.arguments, error: error)
           .makeErrorMessage()
-      case let error as LocalizedError:
-        return error.errorDescription
       default:
-        return String(describing: error)
+        return error.describe()
       }
     }
   }
@@ -479,18 +466,13 @@ extension ErrorMessageGenerator {
     // We favor `LocalizedError.errorDescription` and fall back to
     // `CustomStringConvertible`. To opt in, return your custom error message
     // as the `description` property of `CustomStringConvertible`.
-    let customErrorMessage: String = {
-      switch error {
-      case let err as LocalizedError where err.errorDescription != nil:
-        // swift-format-ignore: NeverForceUnwrap
-        // Checked above that this will not be nil
-        return ": " + err.errorDescription!
-      case let err?:
-        return ": " + String(describing: err)
-      default:
-        return argumentValue?.formattedValueList ?? ""
-      }
-    }()
+    let customErrorMessage: String
+    switch error {
+    case .some(let error):
+      customErrorMessage = ": " + error.describe()
+    case .none:
+      customErrorMessage = argumentValue?.formattedValueList ?? ""
+    }
 
     switch (name, valueName) {
     case (let n?, let v?):

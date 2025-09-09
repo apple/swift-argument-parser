@@ -55,6 +55,24 @@ enum Environment {
   }
 }
 
+extension Error {
+  func describe() -> String {
+    #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS) || os(visionOS)
+    if let description = (self as? LocalizedError)?.errorDescription {
+      return description
+    } else {
+      if Swift.type(of: self) is NSError.Type {
+        return self.localizedDescription
+      } else {
+        return String(describing: self)
+      }
+    }
+    #else
+    return String(describing: error)
+    #endif
+  }
+}
+
 enum JSONEncoder {
   static func encode<T: Encodable>(_ value: T) -> String {
     let encoder = Foundation.JSONEncoder()
