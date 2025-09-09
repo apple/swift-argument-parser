@@ -36,7 +36,7 @@ extension Error {
       }
     }
     #else
-    return String(describing: error)
+    return String(describing: self)
     #endif
   }
 }
