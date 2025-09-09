@@ -79,7 +79,7 @@ extension Platform {
       }
     }
 
-    static subscript<Value>(_ key: Key, as _: Value.Type) -> Value?
+    static subscript<Value>(_ key: Key, as _: Value.Type = Value.self) -> Value?
     where Value: LosslessStringConvertible
     {
       get {
@@ -89,6 +89,22 @@ extension Platform {
       set {
         if let newValue = newValue {
           self[key] = newValue.description
+        } else {
+          self[key] = nil
+        }
+      }
+    }
+
+    static subscript<Value>(_ key: Key, as _: Value.Type = Value.self) -> Value?
+    where Value: RawRepresentable, Value.RawValue == String
+    {
+      get {
+        guard let stringValue = self[key] else { return nil }
+        return Value(rawValue: stringValue)
+      }
+      set {
+        if let newValue = newValue {
+          self[key] = newValue.rawValue
         } else {
           self[key] = nil
         }

@@ -188,7 +188,7 @@ extension CompletionScriptTests {
   ) throws {
     #if !os(Windows) && !os(WASI)
     do {
-      Platform.Environment[.shellName] = shell.rawValue
+      Platform.Environment[.shellName] = shell
       defer { Platform.Environment[.shellName] = nil }
       _ = try Custom.parse(["---completion", "--", arg, "0", "0"])
       XCTFail("Didn't error as expected", file: file, line: line)
