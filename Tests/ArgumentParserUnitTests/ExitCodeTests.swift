@@ -105,7 +105,7 @@ extension ExitCodeTests {
     #else
     XCTAssertEqual(
       NSErrorCommand.message(for: NSErrorCommand.fileNotFoundNSError),
-      "Error Domain=TestError Code=1 \"(null)\"\(NSErrorCommand.message)")
+      "Error Domain=TestError Code=1 \"(null)\"UserInfo={NSLocalizedDescription=\(NSErrorCommand.message)}")
     #endif
     #else
     XCTAssertEqual(
