@@ -109,10 +109,10 @@ extension CommandInfoV0 {
               setopt extendedglob nullglob numericglobsort
               unsetopt aliases banghist
 
-              local -xr \(Platform.Environment.Key.shellName)=zsh
-              local -x \(Platform.Environment.Key.shellVersion)
-              \(Platform.Environment.Key.shellVersion)="$(builtin emulate zsh -c 'printf %s "${ZSH_VERSION}"')"
-              local -r \(Platform.Environment.Key.shellVersion)
+              local -xr \(Platform.Environment.Key.shellName.rawValue)=zsh
+              local -x \(Platform.Environment.Key.shellVersion.rawValue)
+              \(Platform.Environment.Key.shellVersion.rawValue)="$(builtin emulate zsh -c 'printf %s "${ZSH_VERSION}"')"
+              local -r \(Platform.Environment.Key.shellVersion.rawValue)
 
               local context state state_descr line
               local -A opt_args
@@ -270,20 +270,16 @@ extension ArgumentInfoV0 {
 extension String {
   fileprivate func zshEscapeForSingleQuotedDescribeCompletion() -> String {
     self
-      // FIXME: Don't use Regex
-      //      .replacingOccurrences(
-      //        of: #"[:\\]"#,
-      //        with: #"\\$0"#,
-      //        options: .regularExpression)
+      .replacing("\\", with: "\\\\")
+      .replacing(":", with: "\\:")
       .shellEscapeForSingleQuotedString()
   }
   fileprivate func zshEscapeForSingleQuotedOptionSpec() -> String {
     self
-      // FIXME: Don't use Regex
-      //    .replacingOccurrences(
-      //      of: #"[:\\\[\]]"#,
-      //      with: #"\\$0"#,
-      //      options: .regularExpression)
+      .replacing("\\", with: "\\\\")
+      .replacing(":", with: "\\:")
+      .replacing("[", with: "\\[")
+      .replacing("]", with: "\\]")
       .shellEscapeForSingleQuotedString()
   }
 }

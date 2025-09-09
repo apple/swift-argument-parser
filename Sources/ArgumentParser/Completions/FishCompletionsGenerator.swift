@@ -73,8 +73,8 @@ extension CommandInfoV0 {
     end
 
     function \(customCompletionFunctionName)
-        set -x \(Platform.Environment.Key.shellName) fish
-        set -x \(Platform.Environment.Key.shellVersion) $FISH_VERSION
+        set -x \(Platform.Environment.Key.shellName.rawValue) fish
+        set -x \(Platform.Environment.Key.shellVersion.rawValue) $FISH_VERSION
 
         set -l tokens (\(tokensFunctionName) -p)
         if test -z (\(tokensFunctionName) -t)

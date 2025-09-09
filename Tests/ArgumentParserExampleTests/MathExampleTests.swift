@@ -255,7 +255,7 @@ extension MathExampleTests {
         "heliotrope",
       ]) + "\n",
       environment: [
-        Environment.Key.shellName.rawValue: shell.rawValue
+        Platform.Environment.Key.shellName.rawValue: shell.rawValue
       ]
     )
 
@@ -267,7 +267,7 @@ extension MathExampleTests {
         "heliotrope",
       ]) + "\n",
       environment: [
-        Environment.Key.shellName.rawValue: shell.rawValue
+        Platform.Environment.Key.shellName.rawValue: shell.rawValue
       ]
     )
 
@@ -278,7 +278,7 @@ extension MathExampleTests {
         "aaaaalbert",
       ]) + "\n",
       environment: [
-        Environment.Key.shellName.rawValue: shell.rawValue
+        Platform.Environment.Key.shellName.rawValue: shell.rawValue
       ]
     )
   }
