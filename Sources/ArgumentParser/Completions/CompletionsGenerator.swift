@@ -172,16 +172,14 @@ extension String {
 
     // Look for occurrences of the old string.
     while let matchRange = self.firstMatch(of: old, at: startIndex) {
-      let (matchStart, matchEnd) = matchRange
-
       // Add the substring before the match.
-      result.append(contentsOf: self[startIndex..<matchStart])
+      result.append(contentsOf: self[startIndex..<matchRange.start])
 
       // Add the replacement string.
       result.append(contentsOf: new)
 
       // Move past the matched portion.
-      startIndex = matchEnd
+      startIndex = matchRange.end
     }
 
     // No more matches found, add the rest of the string.
@@ -193,7 +191,7 @@ extension String {
   func firstMatch(
     of match: Self,
     at startIndex: Self.Index
-  ) -> (Self.Index, Self.Index)? {
+  ) -> (start: Self.Index, end: Self.Index)? {
     guard !match.isEmpty else { return nil }
     guard match.count <= self.count else { return nil }
 

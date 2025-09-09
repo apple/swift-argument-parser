@@ -9,12 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if compiler(>=6.0)
-internal import Foundation
-#else
-import Foundation
-#endif
-
 /// A type that can be parsed from a program's command-line arguments.
 ///
 /// When you implement a `ParsableArguments` type, all properties must be declared with
@@ -41,13 +35,14 @@ struct _WrappedParsableCommand<P: ParsableArguments>: ParsableCommand {
 
     // If the type is named something like "TransformOptions", we only want
     // to use "transform" as the command name.
-    if let optionsRange = name.range(of: "_options"),
-      optionsRange.upperBound == name.endIndex
-    {
-      return String(name[..<optionsRange.lowerBound])
-    } else {
+    guard
+      let matchRange = name.firstMatch(of: "_options", at: name.startIndex),
+      matchRange.end == name.endIndex
+    else {
       return name
     }
+
+    return String(name[..<matchRange.start])
   }
 
   @OptionGroup var options: P
