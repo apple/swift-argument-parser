@@ -48,7 +48,12 @@ extension CompletionScriptTests {
     }
   }
 
-  enum Kind: String, ExpressibleByArgument, EnumerableFlag {
+  enum Kind:
+    String,
+    ExpressibleByArgument,
+    EnumerableFlag,
+    CustomStringConvertible
+  {
     case one, two
     case three = "custom-three"
   }
