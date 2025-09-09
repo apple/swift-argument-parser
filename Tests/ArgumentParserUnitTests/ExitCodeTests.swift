@@ -84,14 +84,12 @@ extension ExitCodeTests {
 
 extension ExitCodeTests {
   func testNSErrorIsHandled() {
+    let message = "The file “foo/bar” couldn’t be opened because there is no such file"
     struct NSErrorCommand: ParsableCommand {
       static let fileNotFoundNSError = NSError(
         domain: "TestError",
         code: 1,
-        userInfo: [
-          NSLocalizedDescriptionKey:
-            "The file “foo/bar” couldn’t be opened because there is no such file"
-        ])
+        userInfo: [NSLocalizedDescriptionKey: message])
     }
     XCTAssertEqual(
       NSErrorCommand.exitCode(for: NSErrorCommand.fileNotFoundNSError),
@@ -105,12 +103,12 @@ extension ExitCodeTests {
     #else
     XCTAssertEqual(
       NSErrorCommand.message(for: NSErrorCommand.fileNotFoundNSError),
-      "Error Domain=TestError Code=1 \"(null)\"UserInfo={NSLocalizedDescription=The file \"foo/bar\" couldn't be opened because there is no such file}")
+      "Error Domain=TestError Code=1 \"(null)\"\(message)")
     #endif
     #else
     XCTAssertEqual(
       NSErrorCommand.message(for: NSErrorCommand.fileNotFoundNSError),
-      "The file “foo/bar” couldn’t be opened because there is no such file")
+      message)
     #endif
   }
 }
