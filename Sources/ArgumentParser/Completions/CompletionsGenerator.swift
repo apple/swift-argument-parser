@@ -16,7 +16,7 @@ import ArgumentParserToolInfo
 #endif
 
 /// A shell for which the parser can generate a completion script.
-public struct CompletionShell: RawRepresentable, Hashable, CaseIterable {
+public struct CompletionShell: RawRepresentable, Hashable, CaseIterable, Sendable {
   public var rawValue: String
 
   /// Creates a new instance from the given string.
@@ -84,20 +84,6 @@ public struct CompletionShell: RawRepresentable, Hashable, CaseIterable {
   public static var requestingVersion: String? {
     Self._requestingVersion.withLock { $0 }
   }
-
-  /// The name of the environment variable whose value is the name of the shell
-  /// for which completions are being requested from a custom completion
-  /// handler.
-  ///
-  /// The environment variable is set in generated completion scripts.
-  static let shellEnvironmentVariableName = "SAP_SHELL"
-
-  /// The name of the environment variable whose value is the version of the
-  /// shell for which completions are being requested from a custom completion
-  /// handler.
-  ///
-  /// The environment variable is set in generated completion scripts.
-  static let shellVersionEnvironmentVariableName = "SAP_SHELL_VERSION"
 
   func format(completions: [String]) -> String {
     var completions = completions

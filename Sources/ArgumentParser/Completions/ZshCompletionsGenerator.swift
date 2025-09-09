@@ -11,10 +11,8 @@
 
 #if compiler(>=6.0)
 internal import ArgumentParserToolInfo
-internal import Foundation
 #else
 import ArgumentParserToolInfo
-import Foundation
 #endif
 
 extension ToolInfoV0 {
@@ -111,10 +109,10 @@ extension CommandInfoV0 {
               setopt extendedglob nullglob numericglobsort
               unsetopt aliases banghist
 
-              local -xr \(CompletionShell.shellEnvironmentVariableName)=zsh
-              local -x \(CompletionShell.shellVersionEnvironmentVariableName)
-              \(CompletionShell.shellVersionEnvironmentVariableName)="$(builtin emulate zsh -c 'printf %s "${ZSH_VERSION}"')"
-              local -r \(CompletionShell.shellVersionEnvironmentVariableName)
+              local -xr \(Environment.Key.shellName)=zsh
+              local -x \(Environment.Key.shellVersion)
+              \(Environment.Key.shellVersion)="$(builtin emulate zsh -c 'printf %s "${ZSH_VERSION}"')"
+              local -r \(Environment.Key.shellVersion)
 
               local context state state_descr line
               local -A opt_args
@@ -271,19 +269,21 @@ extension ArgumentInfoV0 {
 
 extension String {
   fileprivate func zshEscapeForSingleQuotedDescribeCompletion() -> String {
-    replacingOccurrences(
-      of: #"[:\\]"#,
-      with: #"\\$0"#,
-      options: .regularExpression
-    )
-    .shellEscapeForSingleQuotedString()
+    self
+// FIXME: Don't use Regex
+//      .replacingOccurrences(
+//        of: #"[:\\]"#,
+//        with: #"\\$0"#,
+//        options: .regularExpression)
+      .shellEscapeForSingleQuotedString()
   }
   fileprivate func zshEscapeForSingleQuotedOptionSpec() -> String {
-    replacingOccurrences(
-      of: #"[:\\\[\]]"#,
-      with: #"\\$0"#,
-      options: .regularExpression
-    )
-    .shellEscapeForSingleQuotedString()
+    self
+// FIXME: Don't use Regex
+//    .replacingOccurrences(
+//      of: #"[:\\\[\]]"#,
+//      with: #"\\$0"#,
+//      options: .regularExpression)
+      .shellEscapeForSingleQuotedString()
   }
 }
