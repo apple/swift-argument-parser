@@ -100,8 +100,7 @@ extension HelpTests {
 
   func testConfigHelp() throws {
     XCTAssertEqual(
-      getErrorText(Package.self, ["help", "config"], screenWidth: 80)
-        ,
+      getErrorText(Package.self, ["help", "config"], screenWidth: 80),
       """
       USAGE: package config <subcommand>
 
