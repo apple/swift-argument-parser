@@ -9,12 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if compiler(>=6.0)
-internal import Foundation
-#else
-import Foundation
-#endif
-
 extension Substring {
   func trimmed() -> Substring {
     guard let i = lastIndex(where: { $0 != " " }) else {
@@ -30,11 +24,5 @@ extension String {
       .split(separator: "\n", omittingEmptySubsequences: false)
       .map { $0.trimmed() }
       .joined(separator: "\n")
-  }
-
-  public func normalizingLineEndings() -> String {
-    self
-      .replacingOccurrences(of: "\r\n", with: "\n")
-      .replacingOccurrences(of: "\r", with: "\n")
   }
 }

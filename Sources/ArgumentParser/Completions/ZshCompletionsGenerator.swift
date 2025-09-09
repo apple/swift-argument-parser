@@ -109,10 +109,10 @@ extension CommandInfoV0 {
               setopt extendedglob nullglob numericglobsort
               unsetopt aliases banghist
 
-              local -xr \(Environment.Key.shellName)=zsh
-              local -x \(Environment.Key.shellVersion)
-              \(Environment.Key.shellVersion)="$(builtin emulate zsh -c 'printf %s "${ZSH_VERSION}"')"
-              local -r \(Environment.Key.shellVersion)
+              local -xr \(Platform.Environment.Key.shellName)=zsh
+              local -x \(Platform.Environment.Key.shellVersion)
+              \(Platform.Environment.Key.shellVersion)="$(builtin emulate zsh -c 'printf %s "${ZSH_VERSION}"')"
+              local -r \(Platform.Environment.Key.shellVersion)
 
               local context state state_descr line
               local -A opt_args

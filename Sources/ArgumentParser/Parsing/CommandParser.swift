@@ -451,14 +451,14 @@ extension CommandParser {
     _ argument: ArgumentDefinition,
     forArguments args: [String]
   ) throws {
-    if let completionShellName = Environment.shellName
+    if let completionShellName = Platform.Environment[.shellName]
     {
       let shell = CompletionShell(rawValue: completionShellName)
       CompletionShell._requesting.withLock { $0 = shell }
     }
 
     CompletionShell._requestingVersion.withLock {
-      $0 = Environment.shellVersion
+      $0 = Platform.Environment[.shellVersion]
     }
 
     let completions: [String]
