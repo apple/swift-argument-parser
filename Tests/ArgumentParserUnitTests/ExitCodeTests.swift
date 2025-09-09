@@ -101,11 +101,11 @@ extension ExitCodeTests {
     #if compiler(<6.1)
     XCTAssertEqual(
       NSErrorCommand.message(for: NSErrorCommand.fileNotFoundNSError),
-      "Error Domain= Code=1 \"(null)\"")
+      "Error Domain=TestError Code=1 \"(null)\"")
     #else
     XCTAssertEqual(
       NSErrorCommand.message(for: NSErrorCommand.fileNotFoundNSError),
-      "Error Domain= Code=1 \"(null)\"UserInfo={NSLocalizedDescription=The file \"foo/bar\" couldn't be opened because there is no such file}")
+      "Error Domain=TestError Code=1 \"(null)\"UserInfo={NSLocalizedDescription=The file \"foo/bar\" couldn't be opened because there is no such file}")
     #endif
     #else
     XCTAssertEqual(
