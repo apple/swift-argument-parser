@@ -11,10 +11,8 @@
 
 #if compiler(>=6.0)
 internal import ArgumentParserToolInfo
-internal import Foundation
 #else
 import ArgumentParserToolInfo
-import Foundation
 #endif
 
 /// A shell for which the parser can generate a completion script.
@@ -157,12 +155,84 @@ extension String {
   func shellEscapeForSingleQuotedString(iterationCount: UInt64 = 1) -> Self {
     iterationCount == 0
       ? self
-      : replacingOccurrences(of: "'", with: "'\\''")
+      : self
+        .replacing("'", with: "'\\''")
         .shellEscapeForSingleQuotedString(iterationCount: iterationCount - 1)
   }
 
   func shellEscapeForVariableName() -> Self {
-    replacingOccurrences(of: "-", with: "_")
+    self.replacing("-", with: "_")
+  }
+
+  func replacing(_ old: Self, with new: Self) -> Self {
+    guard !old.isEmpty else { return self }
+
+    var result = ""
+    var startIndex = self.startIndex
+
+    // Look for occurrences of the old string.
+    while let matchRange = self.firstMatch(of: old, at: startIndex) {
+      let (matchStart, matchEnd) = matchRange
+
+      // Add the substring before the match.
+      result.append(contentsOf: self[startIndex..<matchStart])
+
+      // Add the replacement string.
+      result.append(contentsOf: new)
+
+      // Move past the matched portion.
+      startIndex = matchEnd
+    }
+
+    // No more matches found, add the rest of the string.
+    result.append(contentsOf: self[startIndex..<self.endIndex])
+
+    return result
+  }
+
+  func firstMatch(
+    of match: Self,
+    at startIndex: Self.Index
+  ) -> (Self.Index, Self.Index)? {
+    guard !match.isEmpty else { return nil }
+    guard match.count <= self.count else { return nil }
+
+    var startIndex = startIndex
+    while startIndex < self.endIndex {
+      // Check if theres a match.
+      if let endIndex = self.matches(match, at: startIndex) {
+        // Return the match.
+        return (startIndex, endIndex)
+      }
+
+      // Move to the next of index.
+      self.formIndex(after: &startIndex)
+    }
+
+    return nil
+  }
+
+  func matches(
+    _ match: Self,
+    at startIndex: Self.Index
+  ) -> Self.Index? {
+    var selfIndex = startIndex
+    var matchIndex = match.startIndex
+
+    while true {
+      // Only continue checking if there is more match to check
+      guard matchIndex < match.endIndex else { return selfIndex }
+
+      // Exit early if there is no more "self" to check.
+      guard selfIndex < self.endIndex else { return nil }
+
+      // Check match and self are the the same.
+      guard self[selfIndex] == match[matchIndex] else { return nil }
+
+      // Move to the next pair of indices.
+      self.formIndex(after: &selfIndex)
+      match.formIndex(after: &matchIndex)
+    }
   }
 }
 
