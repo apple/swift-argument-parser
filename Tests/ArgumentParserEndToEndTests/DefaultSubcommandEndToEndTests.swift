@@ -10,6 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 import ArgumentParserTestHelpers
+import ArgumentParserToolInfo
 import XCTest
 
 @testable import ArgumentParser
@@ -149,6 +150,16 @@ extension DefaultSubcommandEndToEndTests {
         -h, --help              Show help information.
 
       """)
+
+    // Now check that the foo option doesn't leak into the JSON dump
+    let toolInfo = ToolInfoV0(commandStack: [MyCommand.self.asCommand])
+    // It's there in the parent
+    XCTAssertNotNil(toolInfo.command.arguments!.first { $0.valueName == "foo" })
+    let childInfo = toolInfo.command.subcommands!.first { cmd in
+       cmd.commandName == "child"
+     }
+    // It's not there in the child subcommand
+    XCTAssertNil(childInfo!.arguments!.first { $0.valueName == "foo" })
   }
 
   func testRemainingDefaultImplicit() throws {
