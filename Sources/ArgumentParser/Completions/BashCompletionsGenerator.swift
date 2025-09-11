@@ -190,10 +190,10 @@ extension CommandInfoV0 {
             shopt -s extglob
             set +o history +o posix
 
-            local -xr \(CompletionShell.shellEnvironmentVariableName)=bash
-            local -x \(CompletionShell.shellVersionEnvironmentVariableName)
-            \(CompletionShell.shellVersionEnvironmentVariableName)="$(IFS='.';printf %s "${BASH_VERSINFO[*]}")"
-            local -r \(CompletionShell.shellVersionEnvironmentVariableName)
+            local -xr \(Platform.Environment.Key.shellName.rawValue)=bash
+            local -x \(Platform.Environment.Key.shellVersion.rawValue)
+            \(Platform.Environment.Key.shellVersion.rawValue)="$(IFS='.';printf %s "${BASH_VERSINFO[*]}")"
+            local -r \(Platform.Environment.Key.shellVersion.rawValue)
 
             local -r cur="${2}"
             local -r prev="${3}"

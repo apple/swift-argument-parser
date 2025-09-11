@@ -13,12 +13,11 @@
 
 import XCTest
 import ArgumentParserTestHelpers
+@testable import ArgumentParser
 
 final class CountLinesExampleTests: XCTestCase {
   override func setUp() {
-    #if !os(Windows) && !os(WASI)
-    unsetenv("COLUMNS")
-    #endif
+    Platform.Environment[.columns] = nil
   }
 
   func testCountLines() throws {

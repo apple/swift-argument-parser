@@ -43,6 +43,7 @@ add_library(ArgumentParser
 
   Utilities/CollectionExtensions.swift
   Utilities/Mutex.swift
+  Utilities/Foundation.swift
   Utilities/Platform.swift
   Utilities/SequenceExtensions.swift
   Utilities/StringExtensions.swift
