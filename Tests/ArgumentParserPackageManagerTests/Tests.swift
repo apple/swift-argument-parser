@@ -9,15 +9,14 @@
 //
 //===----------------------------------------------------------------------===//
 
-import ArgumentParser
 import ArgumentParserTestHelpers
 import XCTest
 
+@testable import ArgumentParser
+
 final class Tests: XCTestCase {
   override func setUp() {
-    #if !os(Windows) && !os(WASI)
-    unsetenv("COLUMNS")
-    #endif
+    Platform.Environment[.columns] = nil
   }
 }
 

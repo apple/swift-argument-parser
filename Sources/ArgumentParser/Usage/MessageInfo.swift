@@ -9,14 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if compiler(>=6.0)
-internal import protocol Foundation.LocalizedError
-internal import class Foundation.NSError
-#else
-import protocol Foundation.LocalizedError
-import class Foundation.NSError
-#endif
-
 enum MessageInfo {
   case help(text: String)
   case validation(message: String, usage: String, help: String)
@@ -130,16 +122,8 @@ enum MessageInfo {
         }
       case let exitCode as ExitCode:
         self = .other(message: "", exitCode: exitCode)
-      case let error as LocalizedError where error.errorDescription != nil:
-        // swift-format-ignore: NeverForceUnwrap
-        // No way to unwrap bind description in pattern
-        self = .other(message: error.errorDescription!, exitCode: .failure)
       default:
-        if Swift.type(of: error) is NSError.Type {
-          self = .other(message: error.localizedDescription, exitCode: .failure)
-        } else {
-          self = .other(message: String(describing: error), exitCode: .failure)
-        }
+        self = .other(message: error.describe(), exitCode: .failure)
       }
     } else if let parserError = parserError {
       let usage: String = {
