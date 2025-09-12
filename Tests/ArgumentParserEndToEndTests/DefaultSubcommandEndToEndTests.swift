@@ -156,8 +156,8 @@ extension DefaultSubcommandEndToEndTests {
     // It's there in the parent
     XCTAssertNotNil(toolInfo.command.arguments!.first { $0.valueName == "foo" })
     let childInfo = toolInfo.command.subcommands!.first { cmd in
-       cmd.commandName == "child"
-     }
+      cmd.commandName == "child"
+    }
     // It's not there in the child subcommand
     XCTAssertNil(childInfo!.arguments!.first { $0.valueName == "foo" })
   }
