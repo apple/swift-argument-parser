@@ -155,6 +155,26 @@ public func AssertParseCommand<A: ParsableCommand>(
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
+public func AssertParseCommandErrorMessage<A: ParsableCommand>(
+  _ rootCommand: ParsableCommand.Type, _ type: A.Type, _ arguments: [String],
+  _ errorMessage: String,
+  file: StaticString = #filePath, line: UInt = #line
+) {
+  do {
+    let command = try rootCommand.parseAsRoot(arguments)
+    guard (command as? A) != nil else {
+      XCTFail(
+        "Command is of unexpected type: \(command)", file: (file), line: line)
+      return
+    }
+    XCTFail("Parsing as root should have failed.", file: file, line: line)
+  } catch {
+    let message = rootCommand.message(for: error)
+    XCTAssertEqual(message, errorMessage, file: file, line: line)
+  }
+}
+
+// swift-format-ignore: AlwaysUseLowerCamelCase
 public func AssertEqualStrings(
   actual: String,
   expected: String,

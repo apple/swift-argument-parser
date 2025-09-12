@@ -226,6 +226,8 @@ extension ErrorMessageGenerator {
       default:
         return error.describe()
       }
+    case .notParentCommand(let parent):
+      return "Command '\(parent)' is not a parent of the current command."
     }
   }
 
