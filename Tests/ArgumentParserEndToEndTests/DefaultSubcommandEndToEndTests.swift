@@ -156,13 +156,17 @@ extension DefaultSubcommandEndToEndTests {
 
     let arguments = toolInfo.command.arguments
     guard let arguments else {
-      XCTFail("MyCommand is expected to have a top-level command arguments in its tool info")
+      XCTFail(
+        "MyCommand is expected to have a top-level command arguments in its tool info"
+      )
       return
     }
 
     let subcommands = toolInfo.command.subcommands
     guard let subcommands else {
-      XCTFail("MyCommand is expected to have a top-level command arguments in its tool info")
+      XCTFail(
+        "MyCommand is expected to have a top-level command arguments in its tool info"
+      )
       return
     }
 
@@ -179,7 +183,8 @@ extension DefaultSubcommandEndToEndTests {
     }
 
     guard let childArguments = childInfo.arguments else {
-      XCTFail("The child subcommand is expected to have arguments in the tool info")
+      XCTFail(
+        "The child subcommand is expected to have arguments in the tool info")
       return
     }
 
