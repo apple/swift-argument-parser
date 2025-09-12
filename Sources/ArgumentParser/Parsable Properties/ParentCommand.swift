@@ -53,7 +53,6 @@ public struct ParentCommand<Value: ParsableCommand>: Decodable, ParsedWrapper {
     {
       self.init(_parsedValue: .value(value))
     } else {
-      // TODO produce a specialized error in the case where the parent is not in fact a parent of this command
       throw ParserError.notParentCommand("\(Value.self)")
     }
   }
