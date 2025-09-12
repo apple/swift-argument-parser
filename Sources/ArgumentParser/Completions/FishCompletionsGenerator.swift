@@ -11,10 +11,8 @@
 
 #if compiler(>=6.0)
 internal import ArgumentParserToolInfo
-internal import Foundation
 #else
 import ArgumentParserToolInfo
-import Foundation
 #endif
 
 extension ToolInfoV0 {
@@ -75,8 +73,8 @@ extension CommandInfoV0 {
     end
 
     function \(customCompletionFunctionName)
-        set -x \(CompletionShell.shellEnvironmentVariableName) fish
-        set -x \(CompletionShell.shellVersionEnvironmentVariableName) $FISH_VERSION
+        set -x \(Platform.Environment.Key.shellName.rawValue) fish
+        set -x \(Platform.Environment.Key.shellVersion.rawValue) $FISH_VERSION
 
         set -l tokens (\(tokensFunctionName) -p)
         if test -z (\(tokensFunctionName) -t)
@@ -315,8 +313,9 @@ extension String {
   ) -> Self {
     iterationCount == 0
       ? self
-      : replacingOccurrences(of: "\\", with: "\\\\")
-        .replacingOccurrences(of: "'", with: "\\'")
+      : self
+        .replacing("\\", with: "\\\\")
+        .replacing("'", with: "\\'")
         .fishEscapeForSingleQuotedString(iterationCount: iterationCount - 1)
   }
 }

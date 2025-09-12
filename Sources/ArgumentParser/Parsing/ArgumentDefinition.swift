@@ -304,7 +304,8 @@ extension ArgumentDefinition {
     help: ArgumentHelp?,
     defaultValueDescription: String?,
     parsingStrategy: ParsingStrategy,
-    parser: @escaping (InputKey, InputOrigin, Name?, String) throws ->
+    parser:
+      @escaping (InputKey, InputOrigin, Name?, String) throws ->
       Container.Contained,
     initial: Container.Initial?,
     completion: CompletionKind?

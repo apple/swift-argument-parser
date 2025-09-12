@@ -162,8 +162,14 @@ public func AssertEqualStrings(
   line: UInt = #line
 ) {
   // Normalize line endings to '\n'.
-  let actual = actual.normalizingLineEndings()
-  let expected = expected.normalizingLineEndings()
+  let actual =
+    actual
+    .replacingOccurrences(of: "\r\n", with: "\n")
+    .replacingOccurrences(of: "\r", with: "\n")
+  let expected =
+    expected
+    .replacingOccurrences(of: "\r\n", with: "\n")
+    .replacingOccurrences(of: "\r", with: "\n")
 
   // If the input strings are not equal, create a simple diff for debugging...
   guard actual != expected else {

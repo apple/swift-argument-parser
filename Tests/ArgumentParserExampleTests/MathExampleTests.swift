@@ -16,9 +16,7 @@ import XCTest
 
 final class MathExampleTests: XCTestCase {
   override func setUp() {
-    #if !os(Windows) && !os(WASI)
-    unsetenv("COLUMNS")
-    #endif
+    Platform.Environment[.columns] = nil
   }
 
   func testMath_Simple() throws {
@@ -255,7 +253,7 @@ extension MathExampleTests {
         "heliotrope",
       ]) + "\n",
       environment: [
-        CompletionShell.shellEnvironmentVariableName: shell.rawValue
+        Platform.Environment.Key.shellName.rawValue: shell.rawValue
       ]
     )
 
@@ -267,7 +265,7 @@ extension MathExampleTests {
         "heliotrope",
       ]) + "\n",
       environment: [
-        CompletionShell.shellEnvironmentVariableName: shell.rawValue
+        Platform.Environment.Key.shellName.rawValue: shell.rawValue
       ]
     )
 
@@ -278,7 +276,7 @@ extension MathExampleTests {
         "aaaaalbert",
       ]) + "\n",
       environment: [
-        CompletionShell.shellEnvironmentVariableName: shell.rawValue
+        Platform.Environment.Key.shellName.rawValue: shell.rawValue
       ]
     )
   }

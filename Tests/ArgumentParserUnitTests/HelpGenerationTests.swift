@@ -1372,8 +1372,8 @@ extension HelpGenerationTests {
 
   func testColumnsEnvironmentOverride() throws {
     #if !(os(Windows) || os(WASI))
-    defer { unsetenv("COLUMNS") }
-    unsetenv("COLUMNS")
+    defer { Platform.Environment[.columns] = nil }
+    Platform.Environment[.columns] = nil
     AssertHelp(
       .default, for: WideHelp.self, columns: nil,
       equals: """
@@ -1387,7 +1387,7 @@ extension HelpGenerationTests {
 
         """)
 
-    setenv("COLUMNS", "60", 1)
+    Platform.Environment[.columns, as: Int.self] = 60
     AssertHelp(
       .default, for: WideHelp.self, columns: nil,
       equals: """
@@ -1402,7 +1402,7 @@ extension HelpGenerationTests {
 
         """)
 
-    setenv("COLUMNS", "79", 1)
+    Platform.Environment[.columns, as: Int.self] = 79
     AssertHelp(
       .default, for: WideHelp.self, columns: nil,
       equals: """
