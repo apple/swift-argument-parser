@@ -316,7 +316,7 @@ extension Flag where Value == Bool {
   /// ```swift
   /// @Flag(inversion: .prefixedNo)
   /// var useHTTPS: Bool = true
-  /// ````
+  /// ```
   ///
   /// - Parameters:
   ///   - wrappedValue: A default value to use for this property, provided
@@ -349,7 +349,7 @@ extension Flag where Value == Bool {
   /// ```swift
   /// @Flag(inversion: .prefixedNo)
   /// var useHTTPS: Bool
-  /// ````
+  /// ```
   ///
   /// - Parameters:
   ///   - name: A specification for what names are allowed for this flag.
