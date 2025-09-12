@@ -152,6 +152,7 @@ public struct FlagInversion: Hashable {
     self.init(base: .prefixedNo)
   }
 
+  // swift-format-ignore: BeginDocumentationCommentWithOneLineSummary
   /// Uses matching flags with `enable-` and `disable-` prefixes.
   ///
   /// For example, the `extraOutput` property in this declaration is set to
