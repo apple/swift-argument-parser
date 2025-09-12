@@ -153,13 +153,38 @@ extension DefaultSubcommandEndToEndTests {
 
     // Now check that the foo option doesn't leak into the JSON dump
     let toolInfo = ToolInfoV0(commandStack: [MyCommand.self.asCommand])
-    // It's there in the parent
-    XCTAssertNotNil(toolInfo.command.arguments!.first { $0.valueName == "foo" })
-    let childInfo = toolInfo.command.subcommands!.first { cmd in
+
+    let arguments = toolInfo.command.arguments
+    guard let arguments else {
+      XCTFail("MyCommand is expected to have a top-level command arguments in its tool info")
+      return
+    }
+
+    let subcommands = toolInfo.command.subcommands
+    guard let subcommands else {
+      XCTFail("MyCommand is expected to have a top-level command arguments in its tool info")
+      return
+    }
+
+    // The foo option is present int he parent
+    XCTAssertNotNil(arguments.first { $0.valueName == "foo" })
+
+    let childInfo = subcommands.first { cmd in
       cmd.commandName == "child"
     }
+
+    guard let childInfo else {
+      XCTFail("The child subcommand is expected to be present in the tool info")
+      return
+    }
+
+    guard let childArguments = childInfo.arguments else {
+      XCTFail("The child subcommand is expected to have arguments in the tool info")
+      return
+    }
+
     // It's not there in the child subcommand
-    XCTAssertNil(childInfo!.arguments!.first { $0.valueName == "foo" })
+    XCTAssertNil(childArguments.first { $0.valueName == "foo" })
   }
 
   func testRemainingDefaultImplicit() throws {

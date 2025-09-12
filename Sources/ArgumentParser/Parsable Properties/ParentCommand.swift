@@ -11,7 +11,13 @@
 
 /// A wrapper that adds a reference to a parent command.
 ///
-/// Use the parent command wrapper to gain access to a parent command's state.
+/// Use the `@ParentCommand` wrapper to gain access to a parent command's state.
+///
+/// The arguments, options, and flags in a `@ParentCommand` type are omitted from
+/// the help screen for the including child command, and only appear in the parent's
+/// help screen. To include the help in both screens, use the ``OptionGroup``
+/// wrapper instead.
+///
 ///
 /// ```swift
 /// struct SuperCommand: ParsableCommand {
@@ -36,11 +42,9 @@
 @propertyWrapper
 public struct ParentCommand<Value: ParsableCommand>: Decodable, ParsedWrapper {
   internal var _parsedValue: Parsed<Value>
-  internal var _visibility: ArgumentVisibility
 
   internal init(_parsedValue: Parsed<Value>) {
     self._parsedValue = _parsedValue
-    self._visibility = .default
   }
 
   public init(from _decoder: Decoder) throws {
