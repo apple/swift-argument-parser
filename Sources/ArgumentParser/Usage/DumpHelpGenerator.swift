@@ -9,12 +9,10 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if swift(>=6.0)
+#if compiler(>=6.0)
 internal import ArgumentParserToolInfo
-internal import class Foundation.JSONEncoder
 #else
 import ArgumentParserToolInfo
-import class Foundation.JSONEncoder
 #endif
 
 internal struct DumpHelpGenerator {
@@ -29,11 +27,7 @@ internal struct DumpHelpGenerator {
   }
 
   func rendered() -> String {
-    let encoder = JSONEncoder()
-    encoder.outputFormatting = .prettyPrinted
-    encoder.outputFormatting.insert(.sortedKeys)
-    guard let encoded = try? encoder.encode(self.toolInfo) else { return "" }
-    return String(data: encoded, encoding: .utf8) ?? ""
+    JSONEncoder.encode(self.toolInfo)
   }
 }
 

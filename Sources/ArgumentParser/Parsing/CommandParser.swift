@@ -9,18 +9,14 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if swift(>=6.0)
+#if compiler(>=6.0)
 #if canImport(Dispatch)
 @preconcurrency private import class Dispatch.DispatchSemaphore
 #endif
-internal import class Foundation.NSLock
-internal import class Foundation.ProcessInfo
 #else
 #if canImport(Dispatch)
 @preconcurrency import class Dispatch.DispatchSemaphore
 #endif
-import class Foundation.NSLock
-import class Foundation.ProcessInfo
 #endif
 
 struct CommandError: Error {
@@ -455,16 +451,13 @@ extension CommandParser {
     _ argument: ArgumentDefinition,
     forArguments args: [String]
   ) throws {
-    let environment = ProcessInfo.processInfo.environment
-    if let completionShellName = environment[
-      CompletionShell.shellEnvironmentVariableName]
-    {
+    if let completionShellName = Platform.Environment[.shellName] {
       let shell = CompletionShell(rawValue: completionShellName)
       CompletionShell._requesting.withLock { $0 = shell }
     }
 
     CompletionShell._requestingVersion.withLock {
-      $0 = environment[CompletionShell.shellVersionEnvironmentVariableName]
+      $0 = Platform.Environment[.shellVersion]
     }
 
     let completions: [String]
@@ -550,44 +543,21 @@ private func asyncCustomCompletions(
   let (args, completingArgumentIndex, completingPrefix) =
     try parseCustomCompletionArguments(from: args)
 
-  let completionsBox = SendableBox<[String]>([])
+  let completionsBox = Mutex<[String]>([])
   let semaphore = DispatchSemaphore(value: 0)
 
   Task {
-    completionsBox.value = await complete(
+    let completion = await complete(
       args,
       completingArgumentIndex,
-      completingPrefix
-    )
+      completingPrefix)
+    completionsBox.withLock { $0 = completion }
     semaphore.signal()
   }
 
   semaphore.wait()
-  return completionsBox.value
+  return completionsBox.withLock { $0 }
   #endif
-}
-
-// Helper class to make values sendable across concurrency boundaries
-private final class SendableBox<T>: @unchecked Sendable {
-  private let lock = NSLock()
-  private var _value: T
-
-  init(_ value: T) {
-    self._value = value
-  }
-
-  var value: T {
-    get {
-      lock.lock()
-      defer { lock.unlock() }
-      return _value
-    }
-    set {
-      lock.lock()
-      defer { lock.unlock() }
-      _value = newValue
-    }
-  }
 }
 
 // MARK: Building Command Stacks

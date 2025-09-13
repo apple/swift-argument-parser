@@ -10,6 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 import ArgumentParserTestHelpers
+import ArgumentParserToolInfo
 import XCTest
 
 @testable import ArgumentParser
@@ -75,9 +76,13 @@ extension DefaultSubcommandEndToEndTests {
 extension DefaultSubcommandEndToEndTests {
   fileprivate struct MyCommand: ParsableCommand {
     static let configuration = CommandConfiguration(
-      subcommands: [Plugin.self, NonDefault.self, Other.self],
+      subcommands: [
+        Plugin.self, NonDefault.self, Other.self, Child.self, BadParent.self,
+      ],
       defaultSubcommand: Plugin.self
     )
+
+    @Option var foo: String?
 
     @OptionGroup
     var options: CommonOptions
@@ -108,6 +113,83 @@ extension DefaultSubcommandEndToEndTests {
 
   fileprivate struct Other: ParsableCommand {
     @OptionGroup var options: CommonOptions
+  }
+
+  fileprivate struct Child: ParsableCommand {
+    @ParentCommand var parent: MyCommand
+  }
+
+  fileprivate struct BadParent: ParsableCommand {
+    @ParentCommand var notMyParent: Other
+  }
+
+  func testAccessToParent() throws {
+    AssertParseCommand(
+      MyCommand.self, Child.self, ["--verbose", "--foo=bar", "child"]
+    ) { child in
+      XCTAssertEqual(child.parent.foo, "bar")
+      XCTAssertEqual(child.parent.options.verbose, true)
+    }
+  }
+
+  func testNotMyParent() throws {
+    AssertParseCommandErrorMessage(
+      MyCommand.self, BadParent.self, ["--verbose", "bad-parent"],
+      "Command 'Other' is not a parent of the current command.")
+  }
+
+  func testNotLeakingParentOptions() throws {
+    // Verify that the help for the child command doesn't leak the parent command's options in the help
+    let childHelp = MyCommand.message(for: CleanExit.helpRequest(Child.self))
+    XCTAssertEqual(
+      childHelp,
+      """
+      USAGE: my-command child
+
+      OPTIONS:
+        -h, --help              Show help information.
+
+      """)
+
+    // Now check that the foo option doesn't leak into the JSON dump
+    let toolInfo = ToolInfoV0(commandStack: [MyCommand.self.asCommand])
+
+    let arguments = toolInfo.command.arguments
+    guard let arguments else {
+      XCTFail(
+        "MyCommand is expected to have a top-level command arguments in its tool info"
+      )
+      return
+    }
+
+    let subcommands = toolInfo.command.subcommands
+    guard let subcommands else {
+      XCTFail(
+        "MyCommand is expected to have a top-level command arguments in its tool info"
+      )
+      return
+    }
+
+    // The foo option is present int he parent
+    XCTAssertNotNil(arguments.first { $0.valueName == "foo" })
+
+    let childInfo = subcommands.first { cmd in
+      cmd.commandName == "child"
+    }
+
+    guard let childInfo else {
+      XCTFail("The child subcommand is expected to be present in the tool info")
+      return
+    }
+
+    guard let childArguments = childInfo.arguments else {
+      XCTFail(
+        "The child subcommand is expected to have arguments in the tool info")
+      return
+    }
+
+    // It's not there in the child subcommand
+    XCTAssertNil(childArguments.first { $0.valueName == "foo" })
   }
 
   func testRemainingDefaultImplicit() throws {

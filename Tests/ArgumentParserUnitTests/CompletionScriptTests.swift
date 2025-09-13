@@ -48,7 +48,12 @@ extension CompletionScriptTests {
     }
   }
 
-  enum Kind: String, ExpressibleByArgument, EnumerableFlag {
+  enum Kind:
+    String,
+    ExpressibleByArgument,
+    EnumerableFlag,
+    CustomStringConvertible
+  {
     case one, two
     case three = "custom-three"
   }
@@ -188,8 +193,8 @@ extension CompletionScriptTests {
   ) throws {
     #if !os(Windows) && !os(WASI)
     do {
-      setenv(CompletionShell.shellEnvironmentVariableName, shell.rawValue, 1)
-      defer { unsetenv(CompletionShell.shellEnvironmentVariableName) }
+      Platform.Environment[.shellName, as: CompletionShell.self] = shell
+      defer { Platform.Environment[.shellName] = nil }
       _ = try Custom.parse(["---completion", "--", arg, "0", "0"])
       XCTFail("Didn't error as expected", file: file, line: line)
     } catch let error as CommandError {

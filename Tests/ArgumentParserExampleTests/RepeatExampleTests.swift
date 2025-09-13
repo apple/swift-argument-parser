@@ -12,11 +12,11 @@
 import ArgumentParserTestHelpers
 import XCTest
 
+@testable import ArgumentParser
+
 final class RepeatExampleTests: XCTestCase {
   override func setUp() {
-    #if !os(Windows) && !os(WASI)
-    unsetenv("COLUMNS")
-    #endif
+    Platform.Environment[.columns] = nil
   }
 
   func testRepeat() throws {

@@ -9,52 +9,135 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if swift(>=6.0)
-internal import Foundation
-#else
-import Foundation
+#if canImport(os)
+internal import os
+#if canImport(C.os.lock)
+internal import C.os.lock
+#endif
+#elseif canImport(Bionic)
+@preconcurrency import Bionic
+#elseif canImport(Glibc)
+@preconcurrency import Glibc
+#elseif canImport(Musl)
+@preconcurrency import Musl
+#elseif canImport(WinSDK)
+import WinSDK
 #endif
 
-/// A synchronization primitive that protects shared mutable state via mutual
-/// exclusion.
-///
-/// The `Mutex` type offers non-recursive exclusive access to the state it is
-/// protecting by blocking threads attempting to acquire the lock. Only one
-/// execution context at a time has access to the value stored within the
-/// `Mutex` allowing for exclusive access.
-class Mutex<T>: @unchecked Sendable {
-  /// The lock used to synchronize access to the value.
-  var lock: NSLock
-  /// The value protected by the mutex.
-  var value: T
+struct Mutex<State> {
+  // Internal implementation for a cheap lock to aid sharing code across platforms
+  private struct _Lock {
+    #if canImport(os)
+    typealias Primitive = os_unfair_lock
+    #elseif os(FreeBSD) || os(OpenBSD)
+    typealias Primitive = pthread_mutex_t?
+    #elseif canImport(Bionic) || canImport(Glibc) || canImport(Musl)
+    typealias Primitive = pthread_mutex_t
+    #elseif canImport(WinSDK)
+    typealias Primitive = SRWLOCK
+    #elseif os(WASI)
+    // WASI is single-threaded, so we don't need a lock.
+    typealias Primitive = Void
+    #endif
 
-  /// Initializes a new `Mutex` with the provided value.
-  ///
-  /// - Parameter value: The initial value to be protected by the mutex.
-  init(_ value: T) {
-    self.lock = .init()
-    self.value = value
+    typealias PlatformLock = UnsafeMutablePointer<Primitive>
+    var _platformLock: PlatformLock
+
+    fileprivate static func initialize(_ platformLock: PlatformLock) {
+      #if canImport(os)
+      platformLock.initialize(to: os_unfair_lock())
+      #elseif canImport(Bionic) || canImport(Glibc) || canImport(Musl)
+      pthread_mutex_init(platformLock, nil)
+      #elseif canImport(WinSDK)
+      InitializeSRWLock(platformLock)
+      #elseif os(WASI)
+      // no-op
+      #else
+      #error("Lock._Lock.initialize is unimplemented on this platform")
+      #endif
+    }
+
+    fileprivate static func deinitialize(_ platformLock: PlatformLock) {
+      #if canImport(Bionic) || canImport(Glibc) || canImport(Musl)
+      pthread_mutex_destroy(platformLock)
+      #endif
+      platformLock.deinitialize(count: 1)
+    }
+
+    static fileprivate func lock(_ platformLock: PlatformLock) {
+      #if canImport(os)
+      os_unfair_lock_lock(platformLock)
+      #elseif canImport(Bionic) || canImport(Glibc) || canImport(Musl)
+      pthread_mutex_lock(platformLock)
+      #elseif canImport(WinSDK)
+      AcquireSRWLockExclusive(platformLock)
+      #elseif os(WASI)
+      // no-op
+      #else
+      #error("Lock._Lock.lock is unimplemented on this platform")
+      #endif
+    }
+
+    static fileprivate func unlock(_ platformLock: PlatformLock) {
+      #if canImport(os)
+      os_unfair_lock_unlock(platformLock)
+      #elseif canImport(Bionic) || canImport(Glibc) || canImport(Musl)
+      pthread_mutex_unlock(platformLock)
+      #elseif canImport(WinSDK)
+      ReleaseSRWLockExclusive(platformLock)
+      #elseif os(WASI)
+      // no-op
+      #else
+      #error("Lock._Lock.unlock is unimplemented on this platform")
+      #endif
+    }
   }
 
-  /// Calls the given closure after acquiring the lock and then releases
-  /// ownership.
-  ///
-  /// - Warning: Recursive calls to `withLock` within the closure parameter has
-  ///   behavior that is platform dependent. Some platforms may choose to panic
-  ///   the process, deadlock, or leave this behavior unspecified. This will
-  ///   never reacquire the lock however.
-  ///
-  /// - Parameter body: A closure with a parameter of `Value` that has exclusive
-  ///   access to the value being stored within this mutex. This closure is
-  ///   considered the critical section as it will only be executed once the
-  ///   calling thread has acquired the lock.
-  ///
-  /// - Returns: The return value, if any, of the `body` closure parameter.
-  func withLock<U>(
-    _ body: (inout T) throws -> U
-  ) rethrows -> U {
-    self.lock.lock()
-    defer { self.lock.unlock() }
-    return try body(&self.value)
+  private class _Buffer: ManagedBuffer<State, _Lock.Primitive> {
+    deinit {
+      withUnsafeMutablePointerToElements {
+        _Lock.deinitialize($0)
+      }
+    }
+  }
+
+  private let _buffer: ManagedBuffer<State, _Lock.Primitive>
+
+  init(_ initialState: State) {
+    _buffer = _Buffer.create(
+      minimumCapacity: 1,
+      makingHeaderWith: { buf in
+        buf.withUnsafeMutablePointerToElements {
+          _Lock.initialize($0)
+        }
+        return initialState
+      })
+  }
+
+  func withLock<T>(_ body: @Sendable (inout State) throws -> T) rethrows -> T {
+    try withLockUnchecked(body)
+  }
+
+  func withLockUnchecked<T>(_ body: (inout State) throws -> T) rethrows -> T {
+    try _buffer.withUnsafeMutablePointers { state, lock in
+      _Lock.lock(lock)
+      defer { _Lock.unlock(lock) }
+      return try body(&state.pointee)
+    }
+  }
+
+  // Ensures the managed state outlives the locked scope.
+  func withLockExtendingLifetimeOfState<T>(
+    _ body: @Sendable (inout State) throws -> T
+  ) rethrows -> T {
+    try _buffer.withUnsafeMutablePointers { state, lock in
+      _Lock.lock(lock)
+      return try withExtendedLifetime(state.pointee) {
+        defer { _Lock.unlock(lock) }
+        return try body(&state.pointee)
+      }
+    }
   }
 }
+
+extension Mutex: @unchecked Sendable where State: Sendable {}
