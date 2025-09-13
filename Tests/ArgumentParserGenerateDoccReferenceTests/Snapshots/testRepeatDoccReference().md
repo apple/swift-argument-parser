@@ -7,22 +7,26 @@ repeat [--count=<count>] [--include-counter] <phrase>
   [--help]
 ```
 
-- term **--count=\<count\>**:
+### Arguments
 
-*How many times to repeat 'phrase'.*
-
-
-- term **--include-counter**:
-
-*Include a counter with each repetition.*
-
-
-- term **phrase**:
+- term **phrase:**
 
 *The phrase to repeat.*
 
 
-- term **--help**:
+### Options
+
+- term **--count=\<count\>:**
+
+*How many times to repeat 'phrase'.*
+
+
+- term **--include-counter:**
+
+*Include a counter with each repetition.*
+
+
+- term **--help:**
 
 *Show help information.*
 
@@ -35,9 +39,8 @@ Show subcommand help information.
 repeat help [<subcommands>...]
 ```
 
-- term **subcommands**:
+### Arguments
 
+- term **subcommands:**
 
-
-
-
+*The subcommand(s) you want help for.*
