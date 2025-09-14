@@ -217,7 +217,9 @@ extension CommandInfoV0 {
     case .directory:
       results += ["-\(r)fa '(\(completeDirectoriesFunctionName))'"]
     case .shellCommand(let shellCommand):
-      results += ["-\(r)fka '(\(shellCommand))'"]
+      results += [
+        "-\(r)fka '(\(shellCommand.fishEscapeForSingleQuotedString()))'"
+      ]
     case .custom, .customAsync:
       results += [
         """
