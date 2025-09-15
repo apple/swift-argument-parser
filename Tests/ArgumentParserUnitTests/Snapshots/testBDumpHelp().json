@@ -1,5 +1,8 @@
 {
   "command" : {
+    "aliases" : [
+
+    ],
     "arguments" : [
       {
         "isOptional" : true,
@@ -68,6 +71,9 @@
     "subcommands" : [
       {
         "abstract" : "Show subcommand help information.",
+        "aliases" : [
+
+        ],
         "arguments" : [
           {
             "isOptional" : true,
