@@ -134,6 +134,11 @@ extension CommandParser {
       throw CommandError(
         commandStack: commandStack, parserError: .dumpHelpRequested)
     }
+    // Look for dump-opencli flag
+    guard !split.contains(Name.long("help-dump-opencli-v0.1")) else {
+      throw CommandError(
+        commandStack: commandStack, parserError: .dumpOpenCLIRequested)
+    }
 
     // Look for a version flag if any commands in the stack define a version
     if commandStack.contains(where: { !$0.configuration.version.isEmpty }) {

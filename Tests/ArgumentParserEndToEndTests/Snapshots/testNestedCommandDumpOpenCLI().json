@@ -1,0 +1,65 @@
+{
+  "commands" : [
+    {
+      "description" : "A subcommand",
+      "hidden" : false,
+      "name" : "sub",
+      "options" : [
+        {
+          "arguments" : [
+            {
+              "description" : "Sub option",
+              "hidden" : false,
+              "name" : "value",
+              "required" : false
+            }
+          ],
+          "description" : "Sub option",
+          "hidden" : false,
+          "name" : "--value",
+          "recursive" : false,
+          "required" : false
+        },
+        {
+          "aliases" : [
+            "--help"
+          ],
+          "description" : "Show help information.",
+          "hidden" : false,
+          "name" : "-h",
+          "recursive" : false,
+          "required" : false
+        }
+      ]
+    }
+  ],
+  "conventions" : {
+    "groupOptions" : true,
+    "optionSeparator" : " "
+  },
+  "info" : {
+    "summary" : "A parent command with subcommands",
+    "title" : "parent",
+    "version" : "1.0.0"
+  },
+  "opencli" : "0.1",
+  "options" : [
+    {
+      "description" : "Global flag",
+      "hidden" : false,
+      "name" : "--global",
+      "recursive" : false,
+      "required" : false
+    },
+    {
+      "aliases" : [
+        "--help"
+      ],
+      "description" : "Show help information.",
+      "hidden" : false,
+      "name" : "-h",
+      "recursive" : false,
+      "required" : false
+    }
+  ]
+}

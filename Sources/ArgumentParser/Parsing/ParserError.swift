@@ -14,6 +14,7 @@ enum ParserError: Error {
   case helpRequested(visibility: ArgumentVisibility)
   case versionRequested
   case dumpHelpRequested
+  case dumpOpenCLIRequested
 
   case completionScriptRequested(shell: String?)
   case completionScriptCustomResponse(String)

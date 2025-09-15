@@ -37,6 +37,11 @@ enum MessageInfo {
           text: DumpHelpGenerator(commandStack: e.commandStack).rendered())
         return
 
+      case .dumpOpenCLIRequested:
+        self = .help(
+          text: OpenCLIGenerator(commandStack: e.commandStack).rendered())
+        return
+
       case .versionRequested:
         let versionString =
           commandStack

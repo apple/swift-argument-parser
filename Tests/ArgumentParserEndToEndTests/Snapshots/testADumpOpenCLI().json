@@ -1,0 +1,111 @@
+{
+  "arguments" : [
+    {
+      "hidden" : false,
+      "name" : "arg",
+      "required" : true
+    },
+    {
+      "description" : "argument with help",
+      "hidden" : false,
+      "name" : "arg-with-help",
+      "required" : true
+    },
+    {
+      "description" : "argument with default value",
+      "hidden" : false,
+      "name" : "arg-with-default-value",
+      "required" : false
+    }
+  ],
+  "conventions" : {
+    "groupOptions" : true,
+    "optionSeparator" : " "
+  },
+  "info" : {
+    "title" : "a",
+    "version" : "1.0.0"
+  },
+  "opencli" : "0.1",
+  "options" : [
+    {
+      "arguments" : [
+        {
+          "hidden" : false,
+          "name" : "enumerated-option",
+          "required" : true
+        }
+      ],
+      "hidden" : false,
+      "name" : "--enumerated-option",
+      "recursive" : false,
+      "required" : true
+    },
+    {
+      "arguments" : [
+        {
+          "hidden" : false,
+          "name" : "enumerated-option-with-default-value",
+          "required" : false
+        }
+      ],
+      "hidden" : false,
+      "name" : "--enumerated-option-with-default-value",
+      "recursive" : false,
+      "required" : false
+    },
+    {
+      "arguments" : [
+        {
+          "hidden" : false,
+          "name" : "no-help-option",
+          "required" : true
+        }
+      ],
+      "hidden" : false,
+      "name" : "--no-help-option",
+      "recursive" : false,
+      "required" : true
+    },
+    {
+      "arguments" : [
+        {
+          "description" : "int value option",
+          "hidden" : false,
+          "name" : "int-option",
+          "required" : true
+        }
+      ],
+      "description" : "int value option",
+      "hidden" : false,
+      "name" : "--int-option",
+      "recursive" : false,
+      "required" : true
+    },
+    {
+      "arguments" : [
+        {
+          "description" : "int value option with default value",
+          "hidden" : false,
+          "name" : "int-option-with-default-value",
+          "required" : false
+        }
+      ],
+      "description" : "int value option with default value",
+      "hidden" : false,
+      "name" : "--int-option-with-default-value",
+      "recursive" : false,
+      "required" : false
+    },
+    {
+      "aliases" : [
+        "--help"
+      ],
+      "description" : "Show help information.",
+      "hidden" : false,
+      "name" : "-h",
+      "recursive" : false,
+      "required" : false
+    }
+  ]
+}

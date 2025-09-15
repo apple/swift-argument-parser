@@ -1,0 +1,389 @@
+{
+  "arguments" : [
+    {
+      "description" : "A group of integers to operate on.",
+      "hidden" : false,
+      "name" : "values",
+      "required" : false
+    }
+  ],
+  "commands" : [
+    {
+      "arguments" : [
+        {
+          "description" : "A group of integers to operate on.",
+          "hidden" : false,
+          "name" : "values",
+          "required" : false
+        }
+      ],
+      "description" : "Print the sum of the values.",
+      "hidden" : false,
+      "name" : "add",
+      "options" : [
+        {
+          "aliases" : [
+            "-x"
+          ],
+          "description" : "Use hexadecimal notation for the result.",
+          "hidden" : false,
+          "name" : "--hex-output",
+          "recursive" : false,
+          "required" : false
+        },
+        {
+          "description" : "Show the version.",
+          "hidden" : false,
+          "name" : "--version",
+          "recursive" : false,
+          "required" : false
+        },
+        {
+          "aliases" : [
+            "--help"
+          ],
+          "description" : "Show help information.",
+          "hidden" : false,
+          "name" : "-h",
+          "recursive" : false,
+          "required" : false
+        }
+      ]
+    },
+    {
+      "aliases" : [
+        "mul"
+      ],
+      "arguments" : [
+        {
+          "description" : "A group of integers to operate on.",
+          "hidden" : false,
+          "name" : "values",
+          "required" : false
+        }
+      ],
+      "description" : "Print the product of the values.",
+      "hidden" : false,
+      "name" : "multiply",
+      "options" : [
+        {
+          "aliases" : [
+            "-x"
+          ],
+          "description" : "Use hexadecimal notation for the result.",
+          "hidden" : false,
+          "name" : "--hex-output",
+          "recursive" : false,
+          "required" : false
+        },
+        {
+          "description" : "Show the version.",
+          "hidden" : false,
+          "name" : "--version",
+          "recursive" : false,
+          "required" : false
+        },
+        {
+          "aliases" : [
+            "--help"
+          ],
+          "description" : "Show help information.",
+          "hidden" : false,
+          "name" : "-h",
+          "recursive" : false,
+          "required" : false
+        }
+      ]
+    },
+    {
+      "commands" : [
+        {
+          "aliases" : [
+            "avg"
+          ],
+          "arguments" : [
+            {
+              "description" : "A group of floating-point values to operate on.",
+              "hidden" : false,
+              "name" : "values",
+              "required" : false
+            }
+          ],
+          "description" : "Print the average of the values.",
+          "hidden" : false,
+          "name" : "average",
+          "options" : [
+            {
+              "arguments" : [
+                {
+                  "description" : "The kind of average to provide.",
+                  "hidden" : false,
+                  "name" : "kind",
+                  "required" : false
+                }
+              ],
+              "description" : "The kind of average to provide.",
+              "hidden" : false,
+              "name" : "--kind",
+              "recursive" : false,
+              "required" : false
+            },
+            {
+              "description" : "Show the version.",
+              "hidden" : false,
+              "name" : "--version",
+              "recursive" : false,
+              "required" : false
+            },
+            {
+              "aliases" : [
+                "--help"
+              ],
+              "description" : "Show help information.",
+              "hidden" : false,
+              "name" : "-h",
+              "recursive" : false,
+              "required" : false
+            }
+          ]
+        },
+        {
+          "arguments" : [
+            {
+              "description" : "A group of floating-point values to operate on.",
+              "hidden" : false,
+              "name" : "values",
+              "required" : false
+            }
+          ],
+          "description" : "Print the standard deviation of the values.",
+          "hidden" : false,
+          "name" : "stdev",
+          "options" : [
+            {
+              "description" : "Show the version.",
+              "hidden" : false,
+              "name" : "--version",
+              "recursive" : false,
+              "required" : false
+            },
+            {
+              "aliases" : [
+                "--help"
+              ],
+              "description" : "Show help information.",
+              "hidden" : false,
+              "name" : "-h",
+              "recursive" : false,
+              "required" : false
+            }
+          ]
+        },
+        {
+          "arguments" : [
+            {
+              "hidden" : false,
+              "name" : "one-of-four",
+              "required" : false
+            },
+            {
+              "hidden" : false,
+              "name" : "custom-arg",
+              "required" : false
+            },
+            {
+              "hidden" : false,
+              "name" : "custom-deprecated-arg",
+              "required" : false
+            },
+            {
+              "description" : "A group of floating-point values to operate on.",
+              "hidden" : false,
+              "name" : "values",
+              "required" : false
+            }
+          ],
+          "description" : "Print the quantiles of the values (TBD).",
+          "hidden" : false,
+          "name" : "quantiles",
+          "options" : [
+            {
+              "hidden" : true,
+              "name" : "--test-success-exit-code",
+              "recursive" : false,
+              "required" : false
+            },
+            {
+              "hidden" : true,
+              "name" : "--test-failure-exit-code",
+              "recursive" : false,
+              "required" : false
+            },
+            {
+              "hidden" : true,
+              "name" : "--test-validation-exit-code",
+              "recursive" : false,
+              "required" : false
+            },
+            {
+              "arguments" : [
+                {
+                  "hidden" : false,
+                  "name" : "test-custom-exit-code",
+                  "required" : false
+                }
+              ],
+              "hidden" : true,
+              "name" : "--test-custom-exit-code",
+              "recursive" : false,
+              "required" : false
+            },
+            {
+              "arguments" : [
+                {
+                  "hidden" : false,
+                  "name" : "file",
+                  "required" : false
+                }
+              ],
+              "hidden" : false,
+              "name" : "--file",
+              "recursive" : false,
+              "required" : false
+            },
+            {
+              "arguments" : [
+                {
+                  "hidden" : false,
+                  "name" : "directory",
+                  "required" : false
+                }
+              ],
+              "hidden" : false,
+              "name" : "--directory",
+              "recursive" : false,
+              "required" : false
+            },
+            {
+              "arguments" : [
+                {
+                  "hidden" : false,
+                  "name" : "shell",
+                  "required" : false
+                }
+              ],
+              "hidden" : false,
+              "name" : "--shell",
+              "recursive" : false,
+              "required" : false
+            },
+            {
+              "arguments" : [
+                {
+                  "hidden" : false,
+                  "name" : "custom",
+                  "required" : false
+                }
+              ],
+              "hidden" : false,
+              "name" : "--custom",
+              "recursive" : false,
+              "required" : false
+            },
+            {
+              "arguments" : [
+                {
+                  "hidden" : false,
+                  "name" : "custom-deprecated",
+                  "required" : false
+                }
+              ],
+              "hidden" : false,
+              "name" : "--custom-deprecated",
+              "recursive" : false,
+              "required" : false
+            },
+            {
+              "description" : "Show the version.",
+              "hidden" : false,
+              "name" : "--version",
+              "recursive" : false,
+              "required" : false
+            },
+            {
+              "aliases" : [
+                "--help"
+              ],
+              "description" : "Show help information.",
+              "hidden" : false,
+              "name" : "-h",
+              "recursive" : false,
+              "required" : false
+            }
+          ]
+        }
+      ],
+      "description" : "Calculate descriptive statistics.",
+      "hidden" : false,
+      "name" : "stats",
+      "options" : [
+        {
+          "description" : "Show the version.",
+          "hidden" : false,
+          "name" : "--version",
+          "recursive" : false,
+          "required" : false
+        },
+        {
+          "aliases" : [
+            "--help"
+          ],
+          "description" : "Show help information.",
+          "hidden" : false,
+          "name" : "-h",
+          "recursive" : false,
+          "required" : false
+        }
+      ]
+    }
+  ],
+  "conventions" : {
+    "groupOptions" : true,
+    "optionSeparator" : " "
+  },
+  "info" : {
+    "summary" : "A utility for performing maths.",
+    "title" : "math",
+    "version" : "1.0.0"
+  },
+  "opencli" : "0.1",
+  "options" : [
+    {
+      "aliases" : [
+        "-x"
+      ],
+      "description" : "Use hexadecimal notation for the result.",
+      "hidden" : false,
+      "name" : "--hex-output",
+      "recursive" : false,
+      "required" : false
+    },
+    {
+      "description" : "Show the version.",
+      "hidden" : false,
+      "name" : "--version",
+      "recursive" : false,
+      "required" : false
+    },
+    {
+      "aliases" : [
+        "--help"
+      ],
+      "description" : "Show help information.",
+      "hidden" : false,
+      "name" : "-h",
+      "recursive" : false,
+      "required" : false
+    }
+  ]
+}

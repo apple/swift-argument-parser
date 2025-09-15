@@ -1,0 +1,67 @@
+{
+  "arguments" : [
+    {
+      "description" : "Output file path",
+      "hidden" : false,
+      "name" : "output",
+      "required" : true
+    }
+  ],
+  "conventions" : {
+    "groupOptions" : true,
+    "optionSeparator" : " "
+  },
+  "info" : {
+    "summary" : "A simple command for testing",
+    "title" : "simple",
+    "version" : "1.0.0"
+  },
+  "opencli" : "0.1",
+  "options" : [
+    {
+      "aliases" : [
+        "--verbose"
+      ],
+      "description" : "Show verbose output",
+      "hidden" : false,
+      "name" : "-v",
+      "recursive" : false,
+      "required" : false
+    },
+    {
+      "aliases" : [
+        "--input"
+      ],
+      "arguments" : [
+        {
+          "description" : "Input file path",
+          "hidden" : false,
+          "name" : "input",
+          "required" : false
+        }
+      ],
+      "description" : "Input file path",
+      "hidden" : false,
+      "name" : "-i",
+      "recursive" : false,
+      "required" : false
+    },
+    {
+      "description" : "Show the version.",
+      "hidden" : false,
+      "name" : "--version",
+      "recursive" : false,
+      "required" : false
+    },
+    {
+      "aliases" : [
+        "--help"
+      ],
+      "description" : "Show help information.",
+      "hidden" : false,
+      "name" : "-h",
+      "recursive" : false,
+      "required" : false
+    }
+  ]
+}

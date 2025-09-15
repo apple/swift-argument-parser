@@ -1,0 +1,81 @@
+{
+  "arguments" : [
+    {
+      "description" : "Required argument",
+      "hidden" : false,
+      "name" : "required",
+      "required" : true
+    },
+    {
+      "description" : "Optional argument",
+      "hidden" : false,
+      "name" : "optional",
+      "required" : false
+    }
+  ],
+  "conventions" : {
+    "groupOptions" : true,
+    "optionSeparator" : " "
+  },
+  "info" : {
+    "summary" : "Command with various option types",
+    "title" : "options",
+    "version" : "1.0.0"
+  },
+  "opencli" : "0.1",
+  "options" : [
+    {
+      "aliases" : [
+        "-h"
+      ],
+      "description" : "Help flag",
+      "hidden" : false,
+      "name" : "--help",
+      "recursive" : false,
+      "required" : false
+    },
+    {
+      "aliases" : [
+        "--config"
+      ],
+      "arguments" : [
+        {
+          "description" : "Configuration file",
+          "hidden" : false,
+          "name" : "config",
+          "required" : false
+        }
+      ],
+      "description" : "Configuration file",
+      "hidden" : false,
+      "name" : "-c",
+      "recursive" : false,
+      "required" : false
+    },
+    {
+      "arguments" : [
+        {
+          "description" : "Repeating option",
+          "hidden" : false,
+          "name" : "items",
+          "required" : false
+        }
+      ],
+      "description" : "Repeating option",
+      "hidden" : false,
+      "name" : "--items",
+      "recursive" : false,
+      "required" : false
+    },
+    {
+      "aliases" : [
+        "--help"
+      ],
+      "description" : "Show help information.",
+      "hidden" : false,
+      "name" : "-h",
+      "recursive" : false,
+      "required" : false
+    }
+  ]
+}

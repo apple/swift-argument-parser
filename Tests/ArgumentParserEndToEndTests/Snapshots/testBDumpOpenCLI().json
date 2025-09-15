@@ -1,0 +1,42 @@
+{
+  "conventions" : {
+    "groupOptions" : true,
+    "optionSeparator" : " "
+  },
+  "info" : {
+    "title" : "b",
+    "version" : "1.0.0"
+  },
+  "opencli" : "0.1",
+  "options" : [
+    {
+      "hidden" : false,
+      "name" : "--verbose",
+      "recursive" : false,
+      "required" : false
+    },
+    {
+      "arguments" : [
+        {
+          "hidden" : false,
+          "name" : "name",
+          "required" : true
+        }
+      ],
+      "hidden" : false,
+      "name" : "--name",
+      "recursive" : false,
+      "required" : true
+    },
+    {
+      "aliases" : [
+        "--help"
+      ],
+      "description" : "Show help information.",
+      "hidden" : false,
+      "name" : "-h",
+      "recursive" : false,
+      "required" : false
+    }
+  ]
+}
