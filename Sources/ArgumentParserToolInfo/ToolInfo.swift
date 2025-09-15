@@ -49,6 +49,8 @@ public struct CommandInfoV0: Codable, Hashable {
 
   /// Name used to invoke the command.
   public var commandName: String
+  /// List of command aliases.
+  public var aliases: [String]
   /// Short description of the command's functionality.
   public var abstract: String?
   /// Extended description of the command's functionality.
@@ -66,6 +68,7 @@ public struct CommandInfoV0: Codable, Hashable {
     superCommands: [String],
     shouldDisplay: Bool,
     commandName: String,
+    aliases: [String],
     abstract: String,
     discussion: String,
     defaultSubcommand: String?,
@@ -76,6 +79,7 @@ public struct CommandInfoV0: Codable, Hashable {
     self.shouldDisplay = shouldDisplay
 
     self.commandName = commandName
+    self.aliases = aliases
     self.abstract = abstract.nonEmpty
     self.discussion = discussion.nonEmpty
 
@@ -89,6 +93,7 @@ public struct CommandInfoV0: Codable, Hashable {
     self.superCommands = try container.decodeIfPresent(
       [String].self, forKey: .superCommands)
     self.commandName = try container.decode(String.self, forKey: .commandName)
+    self.aliases = try container.decode([String].self, forKey: .aliases)
     self.abstract = try container.decodeIfPresent(
       String.self, forKey: .abstract)
     self.discussion = try container.decodeIfPresent(

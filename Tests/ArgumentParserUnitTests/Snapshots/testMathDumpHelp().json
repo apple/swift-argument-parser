@@ -1,6 +1,9 @@
 {
   "command" : {
     "abstract" : "A utility for performing maths.",
+    "aliases" : [
+
+    ],
     "arguments" : [
       {
         "abstract" : "Show the version.",
@@ -50,6 +53,9 @@
     "subcommands" : [
       {
         "abstract" : "Print the sum of the values.",
+        "aliases" : [
+
+        ],
         "arguments" : [
           {
             "abstract" : "Use hexadecimal notation for the result.",
@@ -134,6 +140,9 @@
       },
       {
         "abstract" : "Print the product of the values.",
+        "aliases" : [
+          "mul"
+        ],
         "arguments" : [
           {
             "abstract" : "Use hexadecimal notation for the result.",
@@ -218,6 +227,9 @@
       },
       {
         "abstract" : "Calculate descriptive statistics.",
+        "aliases" : [
+
+        ],
         "arguments" : [
           {
             "abstract" : "Show the version.",
@@ -267,6 +279,9 @@
         "subcommands" : [
           {
             "abstract" : "Print the average of the values.",
+            "aliases" : [
+              "avg"
+            ],
             "arguments" : [
               {
                 "abstract" : "The kind of average to provide.",
@@ -363,6 +378,9 @@
           },
           {
             "abstract" : "Print the standard deviation of the values.",
+            "aliases" : [
+
+            ],
             "arguments" : [
               {
                 "abstract" : "A group of floating-point values to operate on.",
@@ -425,6 +443,9 @@
           },
           {
             "abstract" : "Print the quantiles of the values (TBD).",
+            "aliases" : [
+
+            ],
             "arguments" : [
               {
                 "completionKind" : {
@@ -726,6 +747,9 @@
       },
       {
         "abstract" : "Show subcommand help information.",
+        "aliases" : [
+
+        ],
         "arguments" : [
           {
             "isOptional" : true,
