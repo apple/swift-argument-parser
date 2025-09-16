@@ -17,15 +17,15 @@ import Foundation
 import ArgumentParserOpenCLI
 #endif
 
-internal struct OpenCLIGenerator {
-  private var openCLI: OpenCLI
+internal struct OpenCLIv0_1Generator {
+  private var openCLI: OpenCLIv0_1
 
   init(_ type: ParsableArguments.Type) {
     self.init(commandStack: [type.asCommand])
   }
 
   init(commandStack: [ParsableCommand.Type]) {
-    self.openCLI = OpenCLI(commandStack: commandStack)
+    self.openCLI = OpenCLIv0_1(commandStack: commandStack)
   }
 
   func rendered() -> String {
@@ -40,14 +40,14 @@ internal struct OpenCLIGenerator {
   }
 }
 
-extension OpenCLI {
+extension OpenCLIv0_1 {
   init(commandStack: [ParsableCommand.Type]) {
     guard let rootCommand = commandStack.first else {
       preconditionFailure("commandStack must not be empty")
     }
 
     let config = rootCommand.configuration
-    let info = CliInfo(
+    let info = OpenCLIv0_1.CliInfo(
       title: rootCommand._commandName,
       version: config.version.isEmpty ? "1.0.0" : config.version,
       summary: config.abstract.isEmpty ? nil : config.abstract,
@@ -55,19 +55,19 @@ extension OpenCLI {
     )
 
     let argumentSet = commandStack.allArguments()
-    let (options, arguments) = OpenCLI.extractOptionsAndArguments(
+    let (options, arguments) = OpenCLIv0_1.extractOptionsAndArguments(
       from: argumentSet)
 
     let commands = config.subcommands.compactMap {
-      subcommand -> ArgumentParserOpenCLI.Command? in
-      ArgumentParserOpenCLI.Command(
+      subcommand -> OpenCLIv0_1.Command? in
+      OpenCLIv0_1.Command(
         subcommand: subcommand, parentStack: commandStack)
     }
 
     self.init(
       opencli: "0.1",
       info: info,
-      conventions: Conventions(),
+      conventions: OpenCLIv0_1.Conventions(),
       arguments: arguments.isEmpty ? nil : arguments,
       options: options.isEmpty ? nil : options,
       commands: commands.isEmpty ? nil : commands
@@ -75,19 +75,19 @@ extension OpenCLI {
   }
 
   internal static func extractOptionsAndArguments(from argumentSet: ArgumentSet)
-    -> ([ArgumentParserOpenCLI.Option], [ArgumentParserOpenCLI.Argument])
+    -> ([OpenCLIv0_1.Option], [OpenCLIv0_1.Argument])
   {
-    var options: [ArgumentParserOpenCLI.Option] = []
-    var arguments: [ArgumentParserOpenCLI.Argument] = []
+    var options: [OpenCLIv0_1.Option] = []
+    var arguments: [OpenCLIv0_1.Argument] = []
 
     for argDef in argumentSet {
       switch argDef.kind {
       case .named:
-        if let option = ArgumentParserOpenCLI.Option(from: argDef) {
+        if let option = OpenCLIv0_1.Option(from: argDef) {
           options.append(option)
         }
       case .positional:
-        if let argument = ArgumentParserOpenCLI.Argument(from: argDef) {
+        if let argument = OpenCLIv0_1.Argument(from: argDef) {
           arguments.append(argument)
         }
       case .default:
@@ -99,17 +99,17 @@ extension OpenCLI {
   }
 }
 
-extension ArgumentParserOpenCLI.Command {
+extension OpenCLIv0_1.Command {
   init?(subcommand: ParsableCommand.Type, parentStack: [ParsableCommand.Type]) {
     let config = subcommand.configuration
     let commandStack = parentStack + [subcommand]
     let argumentSet = commandStack.allArguments()
-    let (options, arguments) = OpenCLI.extractOptionsAndArguments(
+    let (options, arguments) = OpenCLIv0_1.extractOptionsAndArguments(
       from: argumentSet)
 
     let subcommands = config.subcommands.compactMap {
-      subSubcommand -> ArgumentParserOpenCLI.Command? in
-      ArgumentParserOpenCLI.Command(
+      subSubcommand -> OpenCLIv0_1.Command? in
+      OpenCLIv0_1.Command(
         subcommand: subSubcommand, parentStack: commandStack)
     }
 
@@ -125,7 +125,7 @@ extension ArgumentParserOpenCLI.Command {
   }
 }
 
-extension ArgumentParserOpenCLI.Option {
+extension OpenCLIv0_1.Option {
   init?(from argDef: ArgumentDefinition) {
     guard case .named = argDef.kind else { return nil }
 
@@ -135,10 +135,10 @@ extension ArgumentParserOpenCLI.Option {
     let aliases = Array(names.dropFirst())
 
     // Extract arguments for this option if it takes values
-    var optionArguments: [ArgumentParserOpenCLI.Argument]? = nil
+    var optionArguments: [OpenCLIv0_1.Argument]? = nil
     switch argDef.update {
     case .unary:
-      let argument = ArgumentParserOpenCLI.Argument(
+      let argument = OpenCLIv0_1.Argument(
         name: argDef.valueName,
         required: !argDef.help.options.contains(.isOptional),
         description: argDef.help.abstract.isEmpty ? nil : argDef.help.abstract
@@ -159,7 +159,7 @@ extension ArgumentParserOpenCLI.Option {
   }
 }
 
-extension ArgumentParserOpenCLI.Argument {
+extension OpenCLIv0_1.Argument {
   init?(from argDef: ArgumentDefinition) {
     guard case .positional = argDef.kind else { return nil }
 

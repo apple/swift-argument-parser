@@ -340,7 +340,7 @@ extension XCTest {
   public func AssertExecuteCommand(
     command: String,
     expected: String? = nil,
-    exitCode: ArgumentParser.ExitCode = .success,
+    exitCode: ExitCode = .success,
     file: StaticString = #filePath,
     line: UInt = #line,
     environment: [String: String] = [:]
@@ -360,7 +360,7 @@ extension XCTest {
   public func AssertExecuteCommand(
     command: [String],
     expected: String? = nil,
-    exitCode: ArgumentParser.ExitCode = .success,
+    exitCode: ExitCode = .success,
     file: StaticString = #filePath,
     line: UInt = #line,
     environment: [String: String] = [:]
@@ -663,7 +663,7 @@ extension XCTest {
     try AssertJSONEqualFromString(
       actual: actual,
       expected: expected,
-      for: OpenCLI.self,
+      for: OpenCLIv0_1.self,
       file: file,
       line: line)
   }

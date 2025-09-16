@@ -69,7 +69,7 @@ final class OpenCLIDumpHelpGenerationTests: XCTestCase {
 
     // Parse the JSON to validate structure
     let jsonData = actual.data(using: .utf8)!
-    let openCLI = try JSONDecoder().decode(OpenCLI.self, from: jsonData)
+    let openCLI = try JSONDecoder().decode(OpenCLIv0_1.self, from: jsonData)
 
     // Validate required fields
     XCTAssertEqual(openCLI.opencli, "0.1")
@@ -102,7 +102,7 @@ final class OpenCLIDumpHelpGenerationTests: XCTestCase {
     }
 
     let jsonData = actual.data(using: .utf8)!
-    let openCLI = try JSONDecoder().decode(OpenCLI.self, from: jsonData)
+    let openCLI = try JSONDecoder().decode(OpenCLIv0_1.self, from: jsonData)
 
     // Validate parent command
     XCTAssertEqual(openCLI.info.title, "parent")
@@ -128,28 +128,28 @@ extension OpenCLIDumpHelpGenerationTests {
       case c = "three"
     }
 
-    @ArgumentParser.Option
+    @Option
     var enumeratedOption: TestEnum
 
-    @ArgumentParser.Option
+    @Option
     var enumeratedOptionWithDefaultValue: TestEnum = .b
 
-    @ArgumentParser.Option
+    @Option
     var noHelpOption: Int
 
-    @ArgumentParser.Option(help: "int value option")
+    @Option(help: "int value option")
     var intOption: Int
 
-    @ArgumentParser.Option(help: "int value option with default value")
+    @Option(help: "int value option with default value")
     var intOptionWithDefaultValue: Int = 0
 
-    @ArgumentParser.Argument
+    @Argument
     var arg: Int
 
-    @ArgumentParser.Argument(help: "argument with help")
+    @Argument(help: "argument with help")
     var argWithHelp: Int
 
-    @ArgumentParser.Argument(help: "argument with default value")
+    @Argument(help: "argument with default value")
     var argWithDefaultValue: Int = 1
   }
 
@@ -157,7 +157,7 @@ extension OpenCLIDumpHelpGenerationTests {
     @Flag
     var verbose = false
 
-    @ArgumentParser.Option
+    @Option
     var name: String
   }
 
@@ -186,22 +186,22 @@ extension OpenCLIDumpHelpGenerationTests {
       }
     }
 
-    @ArgumentParser.Option(help: "A color to select.")
+    @Option(help: "A color to select.")
     var color: Color
 
-    @ArgumentParser.Option(help: "Another color to select!")
+    @Option(help: "Another color to select!")
     var defaultColor: Color = .red
 
-    @ArgumentParser.Option(help: "An optional color.")
+    @Option(help: "An optional color.")
     var opt: Color?
 
-    @ArgumentParser.Option(
+    @Option(
       help: .init(
         discussion:
           "A preamble for the list of values in the discussion section."))
     var extra: Color
 
-    @ArgumentParser.Option(help: .init(discussion: "A discussion."))
+    @Option(help: .init(discussion: "A discussion."))
     var discussion: String
   }
 
@@ -215,10 +215,10 @@ extension OpenCLIDumpHelpGenerationTests {
     @Flag(name: [.short, .long], help: "Show verbose output")
     var verbose: Bool = false
 
-    @ArgumentParser.Option(name: [.short, .long], help: "Input file path")
+    @Option(name: [.short, .long], help: "Input file path")
     var input: String?
 
-    @ArgumentParser.Argument(help: "Output file path")
+    @Argument(help: "Output file path")
     var output: String
   }
 
@@ -228,7 +228,7 @@ extension OpenCLIDumpHelpGenerationTests {
       abstract: "A subcommand"
     )
 
-    @ArgumentParser.Option(help: "Sub option")
+    @Option(help: "Sub option")
     var value: Int = 42
   }
 
@@ -252,18 +252,18 @@ extension OpenCLIDumpHelpGenerationTests {
     @Flag(name: .shortAndLong, help: "Help flag")
     var help: Bool = false
 
-    @ArgumentParser.Option(
+    @Option(
       name: [.customShort("c"), .customLong("config")],
       help: "Configuration file")
     var configFile: String?
 
-    @ArgumentParser.Option(parsing: .upToNextOption, help: "Repeating option")
+    @Option(parsing: .upToNextOption, help: "Repeating option")
     var items: [String] = []
 
-    @ArgumentParser.Argument(help: "Required argument")
+    @Argument(help: "Required argument")
     var required: String
 
-    @ArgumentParser.Argument(help: "Optional argument")
+    @Argument(help: "Optional argument")
     var optional: String?
   }
 }

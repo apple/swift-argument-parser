@@ -40,7 +40,7 @@ extension OpenCLIEndToEndTests {
 
       // Verify it can be parsed as valid JSON
       let jsonData = message.data(using: .utf8)!
-      let openCLI = try JSONDecoder().decode(OpenCLI.self, from: jsonData)
+      let openCLI = try JSONDecoder().decode(OpenCLIv0_1.self, from: jsonData)
       XCTAssertEqual(openCLI.opencli, "0.1")
     }
   }
@@ -91,7 +91,7 @@ extension OpenCLIEndToEndTests {
       XCTAssertTrue(message.contains("\"opencli\""))
 
       let jsonData = message.data(using: .utf8)!
-      let openCLI = try JSONDecoder().decode(OpenCLI.self, from: jsonData)
+      let openCLI = try JSONDecoder().decode(OpenCLIv0_1.self, from: jsonData)
       XCTAssertEqual(openCLI.opencli, "0.1")
     }
   }

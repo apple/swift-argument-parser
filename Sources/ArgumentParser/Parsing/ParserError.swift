@@ -9,12 +9,21 @@
 //
 //===----------------------------------------------------------------------===//
 
+/// Represents supported OpenCLI schema versions
+public enum OpenCLIVersion: String, CaseIterable {
+  case v0_1 = "v0.1"
+
+  public var flagName: String {
+    "help-dump-opencli-\(self.rawValue)"
+  }
+}
+
 /// Gets thrown while parsing and will be handled by the error output generation.
 enum ParserError: Error {
   case helpRequested(visibility: ArgumentVisibility)
   case versionRequested
   case dumpHelpRequested
-  case dumpOpenCLIRequested
+  case dumpOpenCLIRequested(version: OpenCLIVersion)
 
   case completionScriptRequested(shell: String?)
   case completionScriptCustomResponse(String)

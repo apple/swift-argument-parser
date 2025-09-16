@@ -83,7 +83,7 @@ final class OpenCLITests: XCTestCase {
     let jsonData = jsonString.data(using: .utf8)!
     let decoder = JSONDecoder()
 
-    let openCLI = try decoder.decode(OpenCLI.self, from: jsonData)
+    let openCLI = try decoder.decode(OpenCLIv0_1.self, from: jsonData)
 
     // Verify root properties
     XCTAssertEqual(openCLI.opencli, "0.1")
@@ -142,8 +142,8 @@ final class OpenCLITests: XCTestCase {
   }
 
   func testEncodeToJSON() throws {
-    let license = License(name: "MIT License", identifier: "MIT")
-    let info = CliInfo(
+    let license = OpenCLIv0_1.License(name: "MIT License", identifier: "MIT")
+    let info = OpenCLIv0_1.CliInfo(
       title: "test-cli",
       version: "1.0.0",
       summary: "A test CLI",
@@ -151,33 +151,33 @@ final class OpenCLITests: XCTestCase {
       license: license
     )
 
-    let helpOption = Option(
+    let helpOption = OpenCLIv0_1.Option(
       name: "--help",
       aliases: ["-h"],
       description: "Show help"
     )
 
-    let arity = Arity(minimum: 1, maximum: 1)
-    let configArg = Argument(
+    let arity = OpenCLIv0_1.Arity(minimum: 1, maximum: 1)
+    let configArg = OpenCLIv0_1.Argument(
       name: "CONFIG",
       required: true,
       arity: arity
     )
 
-    let configOption = Option(
+    let configOption = OpenCLIv0_1.Option(
       name: "--config",
       aliases: ["-c"],
       arguments: [configArg],
       description: "Configuration option"
     )
 
-    let buildCommand = Command(
+    let buildCommand = OpenCLIv0_1.Command(
       name: "build",
       options: [configOption],
       description: "Build the project"
     )
 
-    let openCLI = OpenCLI(
+    let openCLI = OpenCLIv0_1(
       opencli: "0.1",
       info: info,
       options: [helpOption],
@@ -198,7 +198,7 @@ final class OpenCLITests: XCTestCase {
 
     // Verify round-trip: decode the encoded JSON
     let decoder = JSONDecoder()
-    let decodedOpenCLI = try decoder.decode(OpenCLI.self, from: jsonData)
+    let decodedOpenCLI = try decoder.decode(OpenCLIv0_1.self, from: jsonData)
 
     XCTAssertEqual(decodedOpenCLI.opencli, openCLI.opencli)
     XCTAssertEqual(decodedOpenCLI.info.title, openCLI.info.title)
@@ -207,17 +207,21 @@ final class OpenCLITests: XCTestCase {
   }
 
   func testOpenCLIEquatable() throws {
-    let license1 = License(name: "MIT License", identifier: "MIT")
-    let license2 = License(name: "MIT License", identifier: "MIT")
-    let license3 = License(name: "Apache License", identifier: "Apache-2.0")
+    let license1 = OpenCLIv0_1.License(name: "MIT License", identifier: "MIT")
+    let license2 = OpenCLIv0_1.License(name: "MIT License", identifier: "MIT")
+    let license3 = OpenCLIv0_1.License(
+      name: "Apache License", identifier: "Apache-2.0")
 
-    let info1 = CliInfo(title: "test", version: "1.0.0", license: license1)
-    let info2 = CliInfo(title: "test", version: "1.0.0", license: license2)
-    let info3 = CliInfo(title: "test", version: "2.0.0", license: license1)
+    let info1 = OpenCLIv0_1.CliInfo(
+      title: "test", version: "1.0.0", license: license1)
+    let info2 = OpenCLIv0_1.CliInfo(
+      title: "test", version: "1.0.0", license: license2)
+    let info3 = OpenCLIv0_1.CliInfo(
+      title: "test", version: "2.0.0", license: license1)
 
-    let openCLI1 = OpenCLI(opencli: "0.1", info: info1)
-    let openCLI2 = OpenCLI(opencli: "0.1", info: info2)
-    let openCLI3 = OpenCLI(opencli: "0.1", info: info3)
+    let openCLI1 = OpenCLIv0_1(opencli: "0.1", info: info1)
+    let openCLI2 = OpenCLIv0_1(opencli: "0.1", info: info2)
+    let openCLI3 = OpenCLIv0_1(opencli: "0.1", info: info3)
 
     // Test equality
     XCTAssertEqual(license1, license2)
@@ -228,19 +232,22 @@ final class OpenCLITests: XCTestCase {
     XCTAssertNotEqual(openCLI1, openCLI3)
 
     // Test AnyCodable equality
-    let metadata1 = Metadata(name: "key", value: AnyCodable("value"))
-    let metadata2 = Metadata(name: "key", value: AnyCodable("value"))
-    let metadata3 = Metadata(name: "key", value: AnyCodable("different"))
+    let metadata1 = OpenCLIv0_1.Metadata(
+      name: "key", value: OpenCLIv0_1.AnyCodable("value"))
+    let metadata2 = OpenCLIv0_1.Metadata(
+      name: "key", value: OpenCLIv0_1.AnyCodable("value"))
+    let metadata3 = OpenCLIv0_1.Metadata(
+      name: "key", value: OpenCLIv0_1.AnyCodable("different"))
 
     XCTAssertEqual(metadata1, metadata2)
     XCTAssertNotEqual(metadata1, metadata3)
 
     // Test complex structures
-    let option1 = Option(
+    let option1 = OpenCLIv0_1.Option(
       name: "--verbose", aliases: ["-v"], description: "Verbose output")
-    let option2 = Option(
+    let option2 = OpenCLIv0_1.Option(
       name: "--verbose", aliases: ["-v"], description: "Verbose output")
-    let option3 = Option(
+    let option3 = OpenCLIv0_1.Option(
       name: "--quiet", aliases: ["-q"], description: "Quiet output")
 
     XCTAssertEqual(option1, option2)
