@@ -154,7 +154,9 @@ extension OpenCLIv0_1.Option {
       aliases: aliases.isEmpty ? nil : aliases,
       arguments: optionArguments,
       description: argDef.help.abstract.isEmpty ? nil : argDef.help.abstract,
-      hidden: argDef.help.visibility.base != .default
+      hidden: argDef.help.visibility.base != .default,
+      swiftArgumentParserRepeating: argDef.help.options.contains(.isRepeating)
+        ? true : nil
     )
   }
 }

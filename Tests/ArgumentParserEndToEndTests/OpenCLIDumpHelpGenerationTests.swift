@@ -56,6 +56,43 @@ final class OpenCLIDumpHelpGenerationTests: XCTestCase {
     try assertDumpOpenCLI(type: CommandWithOptions.self)
   }
 
+  func testRepeatingOptionProperty() throws {
+    // Test that swiftArgumentParserRepeating is set correctly for repeating options
+    let actual: String
+    do {
+      _ = try CommandWithOptions.parse(["--help-dump-opencli-v0.1"])
+      XCTFail("Expected parsing to fail with OpenCLI dump request")
+      return
+    } catch {
+      actual = CommandWithOptions.fullMessage(for: error)
+    }
+
+    // Parse the JSON output
+    let jsonData = actual.data(using: .utf8)!
+    let openCLI = try JSONDecoder().decode(OpenCLIv0_1.self, from: jsonData)
+
+    // Find the repeating option
+    guard let options = openCLI.options else {
+      XCTFail("Expected options to be present")
+      return
+    }
+
+    // Find the items option (which uses .upToNextOption parsing)
+    let itemsOption = options.first { $0.name == "--items" }
+    XCTAssertNotNil(itemsOption, "Expected to find --items option")
+    XCTAssertEqual(
+      itemsOption?.swiftArgumentParserRepeating, true,
+      "Expected items option to have swiftArgumentParserRepeating set to true")
+
+    // Find a non-repeating option to verify it doesn't have the property set
+    let configOption = options.first { $0.name == "--config" }
+    XCTAssertNotNil(configOption, "Expected to find --config option")
+    XCTAssertNil(
+      configOption?.swiftArgumentParserRepeating,
+      "Expected non-repeating option to have swiftArgumentParserRepeating as nil"
+    )
+  }
+
   func testOpenCLIJSONStructure() throws {
     // Test that the JSON structure matches OpenCLI schema
     let actual: String

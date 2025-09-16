@@ -98,13 +98,14 @@ public struct OpenCLIv0_1: Codable, Equatable {
     public let recursive: Bool?
     public let hidden: Bool?
     public let metadata: [Metadata]?
+    public let swiftArgumentParserRepeating: Bool?
 
     public init(
       name: String, required: Bool? = nil, aliases: [String]? = nil,
       arguments: [Argument]? = nil, group: String? = nil,
       description: String? = nil, recursive: Bool? = false,
       hidden: Bool? = false,
-      metadata: [Metadata]? = nil
+      metadata: [Metadata]? = nil, swiftArgumentParserRepeating: Bool? = nil
     ) {
       self.name = name
       self.required = required
@@ -115,6 +116,7 @@ public struct OpenCLIv0_1: Codable, Equatable {
       self.recursive = recursive
       self.hidden = hidden
       self.metadata = metadata
+      self.swiftArgumentParserRepeating = swiftArgumentParserRepeating
     }
   }
 

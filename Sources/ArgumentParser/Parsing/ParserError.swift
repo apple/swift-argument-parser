@@ -10,7 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 /// Represents supported OpenCLI schema versions
-public enum OpenCLIVersion: String, CaseIterable {
+public enum OpenCLIVersion: String, CaseIterable, Sendable {
   case v0_1 = "v0.1"
 
   public var flagName: String {
