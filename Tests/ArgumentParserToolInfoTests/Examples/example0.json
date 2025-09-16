@@ -1,9 +1,6 @@
 {
   "serializationVersion": 0,
   "command": {
-    "commandName": "empty-example",
-    "aliases": [
-
-    ]
+    "commandName": "empty-example"
   }
 }
