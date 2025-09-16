@@ -65,7 +65,8 @@
       "hidden" : false,
       "name" : "--items",
       "recursive" : false,
-      "required" : false
+      "required" : false,
+      "swiftArgumentParserRepeating" : true
     },
     {
       "aliases" : [

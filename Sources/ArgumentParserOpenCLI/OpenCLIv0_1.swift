@@ -70,12 +70,15 @@ public struct OpenCLIv0_1: Codable, Equatable {
     public let description: String?
     public let hidden: Bool?
     public let metadata: [Metadata]?
+    public let swiftArgumentParserFile: Bool?
+    public let swiftArgumentParserDirectory: Bool?
 
     public init(
       name: String, required: Bool? = nil, arity: Arity? = nil,
       acceptedValues: [String]? = nil, group: String? = nil,
       description: String? = nil, hidden: Bool? = false,
-      metadata: [Metadata]? = nil
+      metadata: [Metadata]? = nil, swiftArgumentParserFile: Bool? = nil,
+      swiftArgumentParserDirectory: Bool? = nil
     ) {
       self.name = name
       self.required = required
@@ -85,6 +88,8 @@ public struct OpenCLIv0_1: Codable, Equatable {
       self.description = description
       self.hidden = hidden
       self.metadata = metadata
+      self.swiftArgumentParserFile = swiftArgumentParserFile
+      self.swiftArgumentParserDirectory = swiftArgumentParserDirectory
     }
   }
 
@@ -99,13 +104,17 @@ public struct OpenCLIv0_1: Codable, Equatable {
     public let hidden: Bool?
     public let metadata: [Metadata]?
     public let swiftArgumentParserRepeating: Bool?
+    public let swiftArgumentParserFile: Bool?
+    public let swiftArgumentParserDirectory: Bool?
 
     public init(
       name: String, required: Bool? = nil, aliases: [String]? = nil,
       arguments: [Argument]? = nil, group: String? = nil,
       description: String? = nil, recursive: Bool? = false,
       hidden: Bool? = false,
-      metadata: [Metadata]? = nil, swiftArgumentParserRepeating: Bool? = nil
+      metadata: [Metadata]? = nil, swiftArgumentParserRepeating: Bool? = nil,
+      swiftArgumentParserFile: Bool? = nil,
+      swiftArgumentParserDirectory: Bool? = nil
     ) {
       self.name = name
       self.required = required
@@ -117,6 +126,8 @@ public struct OpenCLIv0_1: Codable, Equatable {
       self.hidden = hidden
       self.metadata = metadata
       self.swiftArgumentParserRepeating = swiftArgumentParserRepeating
+      self.swiftArgumentParserFile = swiftArgumentParserFile
+      self.swiftArgumentParserDirectory = swiftArgumentParserDirectory
     }
   }
 

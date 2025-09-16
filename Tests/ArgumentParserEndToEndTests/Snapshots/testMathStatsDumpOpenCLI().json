@@ -241,7 +241,8 @@
               "hidden" : false,
               "name" : "--file",
               "recursive" : false,
-              "required" : false
+              "required" : false,
+              "swiftArgumentParserFile" : true
             },
             {
               "arguments" : [
@@ -254,7 +255,8 @@
               "hidden" : false,
               "name" : "--directory",
               "recursive" : false,
-              "required" : false
+              "required" : false,
+              "swiftArgumentParserDirectory" : true
             },
             {
               "arguments" : [
