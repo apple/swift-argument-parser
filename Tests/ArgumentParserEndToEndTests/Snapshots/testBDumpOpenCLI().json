@@ -1,8 +1,4 @@
 {
-  "conventions" : {
-    "groupOptions" : true,
-    "optionSeparator" : " "
-  },
   "info" : {
     "title" : "b",
     "version" : "1.0.0"

@@ -7,10 +7,6 @@
       "required" : true
     }
   ],
-  "conventions" : {
-    "groupOptions" : true,
-    "optionSeparator" : " "
-  },
   "info" : {
     "summary" : "A simple command for testing",
     "title" : "simple",

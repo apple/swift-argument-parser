@@ -349,10 +349,6 @@
       ]
     }
   ],
-  "conventions" : {
-    "groupOptions" : true,
-    "optionSeparator" : " "
-  },
   "info" : {
     "summary" : "A utility for performing maths.",
     "title" : "math",

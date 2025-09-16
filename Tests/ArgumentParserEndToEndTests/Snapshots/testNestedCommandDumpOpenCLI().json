@@ -33,10 +33,6 @@
       ]
     }
   ],
-  "conventions" : {
-    "groupOptions" : true,
-    "optionSeparator" : " "
-  },
   "info" : {
     "summary" : "A parent command with subcommands",
     "title" : "parent",

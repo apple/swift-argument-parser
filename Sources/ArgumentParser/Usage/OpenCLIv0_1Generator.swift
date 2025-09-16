@@ -64,10 +64,14 @@ extension OpenCLIv0_1 {
         subcommand: subcommand, parentStack: commandStack)
     }
 
+    let conventions = OpenCLIv0_1.Conventions()
+    let conventionsToInclude =
+      conventions.hasNonDefaultValues ? conventions : nil
+
     self.init(
       opencli: "0.1",
       info: info,
-      conventions: OpenCLIv0_1.Conventions(),
+      conventions: conventionsToInclude,
       arguments: arguments.isEmpty ? nil : arguments,
       options: options.isEmpty ? nil : options,
       commands: commands.isEmpty ? nil : commands

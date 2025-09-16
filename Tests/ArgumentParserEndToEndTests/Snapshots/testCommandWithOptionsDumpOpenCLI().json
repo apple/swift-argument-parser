@@ -13,10 +13,6 @@
       "required" : false
     }
   ],
-  "conventions" : {
-    "groupOptions" : true,
-    "optionSeparator" : " "
-  },
   "info" : {
     "summary" : "Command with various option types",
     "title" : "options",

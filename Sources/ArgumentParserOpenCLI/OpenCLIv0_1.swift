@@ -66,9 +66,15 @@ public struct OpenCLIv0_1: Codable, Equatable {
     public let groupOptions: Bool?
     public let optionSeparator: String?
 
-    public init(groupOptions: Bool? = true, optionSeparator: String? = " ") {
+    public init(groupOptions: Bool? = nil, optionSeparator: String? = nil) {
       self.groupOptions = groupOptions
       self.optionSeparator = optionSeparator
+    }
+
+    /// Returns true if this Conventions object has any non-default values
+    public var hasNonDefaultValues: Bool {
+      (groupOptions != nil && groupOptions != true)
+        || (optionSeparator != nil && optionSeparator != " ")
     }
   }
 
