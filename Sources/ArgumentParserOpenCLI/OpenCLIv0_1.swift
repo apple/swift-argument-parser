@@ -71,7 +71,7 @@ public struct OpenCLIv0_1: Codable, Equatable {
       self.optionSeparator = optionSeparator
     }
 
-    /// Returns true if this Conventions object has any non-default values
+    /// Returns true if this Conventions object has any non-default values.
     public var hasNonDefaultValues: Bool {
       (groupOptions != nil && groupOptions != true)
         || (optionSeparator != nil && optionSeparator != " ")
