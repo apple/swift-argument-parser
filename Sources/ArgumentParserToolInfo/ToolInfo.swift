@@ -93,7 +93,8 @@ public struct CommandInfoV0: Codable, Hashable {
     self.superCommands = try container.decodeIfPresent(
       [String].self, forKey: .superCommands)
     self.commandName = try container.decode(String.self, forKey: .commandName)
-    self.aliases = try container.decodeIfPresent([String].self, forKey: .aliases)
+    self.aliases = try container.decodeIfPresent(
+      [String].self, forKey: .aliases)
     self.abstract = try container.decodeIfPresent(
       String.self, forKey: .abstract)
     self.discussion = try container.decodeIfPresent(
