@@ -41,8 +41,8 @@ private struct Foo: ParsableArguments {
 
     OPTIONS:
       --count <count>
-      --version
-      --throw
+      --version               (default: false)
+      --throw                 (default: false)
       -h, --help              Show help information.
     """
 

@@ -16,7 +16,8 @@
           ],
           "description" : "Use hexadecimal notation for the result.",
           "name" : "--hex-output",
-          "recursive" : false
+          "recursive" : false,
+          "swiftArgumentParserDefaultValue" : "false"
         },
         {
           "description" : "Show the version.",
@@ -52,7 +53,8 @@
           ],
           "description" : "Use hexadecimal notation for the result.",
           "name" : "--hex-output",
-          "recursive" : false
+          "recursive" : false,
+          "swiftArgumentParserDefaultValue" : "false"
         },
         {
           "description" : "Show the version.",
@@ -88,12 +90,14 @@
               "arguments" : [
                 {
                   "description" : "The kind of average to provide.",
-                  "name" : "kind"
+                  "name" : "kind",
+                  "swiftArgumentParserDefaultValue" : "mean"
                 }
               ],
               "description" : "The kind of average to provide.",
               "name" : "--kind",
-              "recursive" : false
+              "recursive" : false,
+              "swiftArgumentParserDefaultValue" : "mean"
             },
             {
               "description" : "Show the version.",
@@ -157,17 +161,20 @@
             {
               "hidden" : true,
               "name" : "--test-success-exit-code",
-              "recursive" : false
+              "recursive" : false,
+              "swiftArgumentParserDefaultValue" : "false"
             },
             {
               "hidden" : true,
               "name" : "--test-failure-exit-code",
-              "recursive" : false
+              "recursive" : false,
+              "swiftArgumentParserDefaultValue" : "false"
             },
             {
               "hidden" : true,
               "name" : "--test-validation-exit-code",
-              "recursive" : false
+              "recursive" : false,
+              "swiftArgumentParserDefaultValue" : "false"
             },
             {
               "arguments" : [

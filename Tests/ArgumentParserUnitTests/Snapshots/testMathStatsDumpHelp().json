@@ -263,6 +263,7 @@
             "valueName" : "values"
           },
           {
+            "defaultValue" : "false",
             "isOptional" : true,
             "isRepeating" : false,
             "kind" : "flag",
@@ -281,6 +282,7 @@
             "valueName" : "test-success-exit-code"
           },
           {
+            "defaultValue" : "false",
             "isOptional" : true,
             "isRepeating" : false,
             "kind" : "flag",
@@ -299,6 +301,7 @@
             "valueName" : "test-failure-exit-code"
           },
           {
+            "defaultValue" : "false",
             "isOptional" : true,
             "isRepeating" : false,
             "kind" : "flag",
@@ -514,6 +517,7 @@
             "valueName" : "subcommands"
           },
           {
+            "defaultValue" : "false",
             "isOptional" : true,
             "isRepeating" : false,
             "kind" : "flag",

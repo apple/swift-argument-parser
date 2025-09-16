@@ -11,7 +11,8 @@
     },
     {
       "description" : "argument with default value",
-      "name" : "arg-with-default-value"
+      "name" : "arg-with-default-value",
+      "swiftArgumentParserDefaultValue" : "1"
     }
   ],
   "info" : {
@@ -34,11 +35,13 @@
     {
       "arguments" : [
         {
-          "name" : "enumerated-option-with-default-value"
+          "name" : "enumerated-option-with-default-value",
+          "swiftArgumentParserDefaultValue" : "two"
         }
       ],
       "name" : "--enumerated-option-with-default-value",
-      "recursive" : false
+      "recursive" : false,
+      "swiftArgumentParserDefaultValue" : "two"
     },
     {
       "arguments" : [
@@ -68,12 +71,14 @@
       "arguments" : [
         {
           "description" : "int value option with default value",
-          "name" : "int-option-with-default-value"
+          "name" : "int-option-with-default-value",
+          "swiftArgumentParserDefaultValue" : "0"
         }
       ],
       "description" : "int value option with default value",
       "name" : "--int-option-with-default-value",
-      "recursive" : false
+      "recursive" : false,
+      "swiftArgumentParserDefaultValue" : "0"
     },
     {
       "aliases" : [

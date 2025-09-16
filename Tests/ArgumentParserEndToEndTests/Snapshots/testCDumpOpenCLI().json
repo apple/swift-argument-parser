@@ -22,12 +22,14 @@
       "arguments" : [
         {
           "description" : "Another color to select!",
-          "name" : "default-color"
+          "name" : "default-color",
+          "swiftArgumentParserDefaultValue" : "red"
         }
       ],
       "description" : "Another color to select!",
       "name" : "--default-color",
-      "recursive" : false
+      "recursive" : false,
+      "swiftArgumentParserDefaultValue" : "red"
     },
     {
       "arguments" : [

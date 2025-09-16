@@ -23,7 +23,8 @@
       ],
       "description" : "Help flag",
       "name" : "--help",
-      "recursive" : false
+      "recursive" : false,
+      "swiftArgumentParserDefaultValue" : "false"
     },
     {
       "aliases" : [

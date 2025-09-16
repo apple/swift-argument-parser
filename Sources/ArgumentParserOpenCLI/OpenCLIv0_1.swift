@@ -89,13 +89,15 @@ public struct OpenCLIv0_1: Codable, Equatable {
     public let metadata: [Metadata]?
     public let swiftArgumentParserFile: Bool?
     public let swiftArgumentParserDirectory: Bool?
+    public let swiftArgumentParserDefaultValue: String?
 
     public init(
       name: String, required: Bool? = nil, arity: Arity? = nil,
       acceptedValues: [String]? = nil, group: String? = nil,
       description: String? = nil, hidden: Bool? = nil,
       metadata: [Metadata]? = nil, swiftArgumentParserFile: Bool? = nil,
-      swiftArgumentParserDirectory: Bool? = nil
+      swiftArgumentParserDirectory: Bool? = nil,
+      swiftArgumentParserDefaultValue: String? = nil
     ) {
       self.name = name
       self.required = required
@@ -107,6 +109,7 @@ public struct OpenCLIv0_1: Codable, Equatable {
       self.metadata = metadata
       self.swiftArgumentParserFile = swiftArgumentParserFile
       self.swiftArgumentParserDirectory = swiftArgumentParserDirectory
+      self.swiftArgumentParserDefaultValue = swiftArgumentParserDefaultValue
     }
   }
 
@@ -123,6 +126,7 @@ public struct OpenCLIv0_1: Codable, Equatable {
     public let swiftArgumentParserRepeating: Bool?
     public let swiftArgumentParserFile: Bool?
     public let swiftArgumentParserDirectory: Bool?
+    public let swiftArgumentParserDefaultValue: String?
 
     public init(
       name: String, required: Bool? = nil, aliases: [String]? = nil,
@@ -131,7 +135,8 @@ public struct OpenCLIv0_1: Codable, Equatable {
       hidden: Bool? = nil,
       metadata: [Metadata]? = nil, swiftArgumentParserRepeating: Bool? = nil,
       swiftArgumentParserFile: Bool? = nil,
-      swiftArgumentParserDirectory: Bool? = nil
+      swiftArgumentParserDirectory: Bool? = nil,
+      swiftArgumentParserDefaultValue: String? = nil
     ) {
       self.name = name
       self.required = required
@@ -145,6 +150,7 @@ public struct OpenCLIv0_1: Codable, Equatable {
       self.swiftArgumentParserRepeating = swiftArgumentParserRepeating
       self.swiftArgumentParserFile = swiftArgumentParserFile
       self.swiftArgumentParserDirectory = swiftArgumentParserDirectory
+      self.swiftArgumentParserDefaultValue = swiftArgumentParserDefaultValue
     }
   }
 

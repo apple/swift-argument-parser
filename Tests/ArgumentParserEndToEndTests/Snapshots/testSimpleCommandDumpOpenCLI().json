@@ -19,7 +19,8 @@
       ],
       "description" : "Show verbose output",
       "name" : "-v",
-      "recursive" : false
+      "recursive" : false,
+      "swiftArgumentParserDefaultValue" : "false"
     },
     {
       "aliases" : [

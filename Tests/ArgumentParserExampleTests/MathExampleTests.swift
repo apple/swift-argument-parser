@@ -59,7 +59,8 @@ final class MathExampleTests: XCTestCase {
         <values>                A group of integers to operate on.
 
       OPTIONS:
-        -x, --hex-output        Use hexadecimal notation for the result.
+        -x, --hex-output        Use hexadecimal notation for the result. (default:
+                                false)
         --version               Show the version.
         -h, --help              Show help information.
 

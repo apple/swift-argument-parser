@@ -8,12 +8,14 @@
           "arguments" : [
             {
               "description" : "Sub option",
-              "name" : "value"
+              "name" : "value",
+              "swiftArgumentParserDefaultValue" : "42"
             }
           ],
           "description" : "Sub option",
           "name" : "--value",
-          "recursive" : false
+          "recursive" : false,
+          "swiftArgumentParserDefaultValue" : "42"
         },
         {
           "aliases" : [
@@ -36,7 +38,8 @@
     {
       "description" : "Global flag",
       "name" : "--global",
-      "recursive" : false
+      "recursive" : false,
+      "swiftArgumentParserDefaultValue" : "false"
     },
     {
       "aliases" : [

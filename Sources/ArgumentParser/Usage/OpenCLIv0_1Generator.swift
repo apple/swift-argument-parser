@@ -145,7 +145,8 @@ extension OpenCLIv0_1.Option {
       let argument = OpenCLIv0_1.Argument(
         name: argDef.valueName,
         required: !argDef.help.options.contains(.isOptional) ? true : nil,
-        description: argDef.help.abstract.isEmpty ? nil : argDef.help.abstract
+        description: argDef.help.abstract.isEmpty ? nil : argDef.help.abstract,
+        swiftArgumentParserDefaultValue: argDef.help.defaultValue
       )
       optionArguments = [argument]
     case .nullary:
@@ -172,7 +173,8 @@ extension OpenCLIv0_1.Option {
         case .directory: return true
         default: return nil
         }
-      }()
+      }(),
+      swiftArgumentParserDefaultValue: argDef.help.defaultValue
     )
   }
 }
@@ -197,7 +199,8 @@ extension OpenCLIv0_1.Argument {
         case .directory: return true
         default: return nil
         }
-      }()
+      }(),
+      swiftArgumentParserDefaultValue: argDef.help.defaultValue
     )
   }
 }

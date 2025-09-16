@@ -232,6 +232,76 @@ final class OpenCLIDumpHelpGenerationTests: XCTestCase {
       dirArg?.swiftArgumentParserFile,
       "Expected directory argument to have swiftArgumentParserFile as nil")
   }
+
+  func testDefaultValueProperties() throws {
+    // Test that swiftArgumentParserDefaultValue is set correctly for arguments and options with defaults
+    let actual: String
+    do {
+      _ = try CommandWithDefaultValues.parse(["--help-dump-opencli-v0.1"])
+      XCTFail("Expected parsing to fail with OpenCLI dump request")
+      return
+    } catch {
+      actual = CommandWithDefaultValues.fullMessage(for: error)
+    }
+
+    // Parse the JSON output
+    let jsonData = actual.data(using: .utf8)!
+    let openCLI = try JSONDecoder().decode(OpenCLIv0_1.self, from: jsonData)
+
+    // Find the option with default value
+    guard let options = openCLI.options else {
+      XCTFail("Expected options to be present")
+      return
+    }
+
+    let countOption = options.first { $0.name == "--count" }
+    XCTAssertNotNil(countOption, "Expected to find --count option")
+    XCTAssertEqual(
+      countOption?.swiftArgumentParserDefaultValue, "5",
+      "Expected count option to have swiftArgumentParserDefaultValue set to '5'"
+    )
+
+    let nameOption = options.first { $0.name == "--name" }
+    XCTAssertNotNil(nameOption, "Expected to find --name option")
+    XCTAssertEqual(
+      nameOption?.swiftArgumentParserDefaultValue, "default",
+      "Expected name option to have swiftArgumentParserDefaultValue set to 'default'"
+    )
+
+    let verboseOption = options.first { $0.name == "--verbose" }
+    XCTAssertNotNil(verboseOption, "Expected to find --verbose option")
+    XCTAssertEqual(
+      verboseOption?.swiftArgumentParserDefaultValue, "false",
+      "Expected verbose option to have swiftArgumentParserDefaultValue set to 'false'"
+    )
+
+    // Find an option without default to verify it doesn't have the property set
+    let requiredOption = options.first { $0.name == "--required-option" }
+    XCTAssertNotNil(requiredOption, "Expected to find --required-option")
+    XCTAssertNil(
+      requiredOption?.swiftArgumentParserDefaultValue,
+      "Expected required option to have swiftArgumentParserDefaultValue as nil")
+
+    // Check arguments
+    guard let arguments = openCLI.arguments else {
+      XCTFail("Expected arguments to be present")
+      return
+    }
+
+    let outputArg = arguments.first { $0.name == "output" }
+    XCTAssertNotNil(outputArg, "Expected to find output argument")
+    XCTAssertEqual(
+      outputArg?.swiftArgumentParserDefaultValue, "output.txt",
+      "Expected output argument to have swiftArgumentParserDefaultValue set to 'output.txt'"
+    )
+
+    let inputArg = arguments.first { $0.name == "input" }
+    XCTAssertNotNil(inputArg, "Expected to find input argument")
+    XCTAssertNil(
+      inputArg?.swiftArgumentParserDefaultValue,
+      "Expected required input argument to have swiftArgumentParserDefaultValue as nil"
+    )
+  }
 }
 
 extension OpenCLIDumpHelpGenerationTests {
@@ -401,5 +471,30 @@ extension OpenCLIDumpHelpGenerationTests {
 
     @Argument(help: "Output directory", completion: .directory)
     var outputDir: String
+  }
+
+  struct CommandWithDefaultValues: ParsableCommand {
+    static let configuration = CommandConfiguration(
+      commandName: "default-values",
+      abstract: "Command with various default values"
+    )
+
+    @Option(help: "Count value with default")
+    var count: Int = 5
+
+    @Option(help: "Name with default value")
+    var name: String = "default"
+
+    @Flag(help: "Verbose flag with default")
+    var verbose: Bool = false
+
+    @Option(help: "Required option without default")
+    var requiredOption: String
+
+    @Argument(help: "Required input argument")
+    var input: String
+
+    @Argument(help: "Output file with default")
+    var output: String = "output.txt"
   }
 }
