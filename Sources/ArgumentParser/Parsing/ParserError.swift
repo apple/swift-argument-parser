@@ -9,8 +9,9 @@
 //
 //===----------------------------------------------------------------------===//
 
-/// Represents supported OpenCLI schema versions
+/// Represents supported OpenCLI schema versions.
 public enum OpenCLIVersion: String, CaseIterable, Sendable {
+  // swift-format-ignore: AlwaysUseLowerCamelCase
   case v0_1 = "v0.1"
 
   public var flagName: String {
