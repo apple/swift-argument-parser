@@ -195,7 +195,12 @@
               ],
               "name" : "--file",
               "recursive" : false,
-              "swiftArgumentParserFile" : true
+              "swiftArgumentParserFile" : {
+                "extensions" : [
+                  "txt",
+                  "md"
+                ]
+              }
             },
             {
               "arguments" : [

@@ -87,7 +87,7 @@ public struct OpenCLIv0_1: Codable, Equatable {
     public let description: String?
     public let hidden: Bool?
     public let metadata: [Metadata]?
-    public let swiftArgumentParserFile: Bool?
+    public let swiftArgumentParserFile: SwiftArgumentParserFile?
     public let swiftArgumentParserDirectory: Bool?
     public let swiftArgumentParserDefaultValue: String?
 
@@ -95,7 +95,8 @@ public struct OpenCLIv0_1: Codable, Equatable {
       name: String, required: Bool? = nil, arity: Arity? = nil,
       acceptedValues: [String]? = nil, group: String? = nil,
       description: String? = nil, hidden: Bool? = nil,
-      metadata: [Metadata]? = nil, swiftArgumentParserFile: Bool? = nil,
+      metadata: [Metadata]? = nil,
+      swiftArgumentParserFile: SwiftArgumentParserFile? = nil,
       swiftArgumentParserDirectory: Bool? = nil,
       swiftArgumentParserDefaultValue: String? = nil
     ) {
@@ -124,7 +125,7 @@ public struct OpenCLIv0_1: Codable, Equatable {
     public let hidden: Bool?
     public let metadata: [Metadata]?
     public let swiftArgumentParserRepeating: Bool?
-    public let swiftArgumentParserFile: Bool?
+    public let swiftArgumentParserFile: SwiftArgumentParserFile?
     public let swiftArgumentParserDirectory: Bool?
     public let swiftArgumentParserDefaultValue: String?
 
@@ -134,7 +135,7 @@ public struct OpenCLIv0_1: Codable, Equatable {
       description: String? = nil, recursive: Bool? = false,
       hidden: Bool? = nil,
       metadata: [Metadata]? = nil, swiftArgumentParserRepeating: Bool? = nil,
-      swiftArgumentParserFile: Bool? = nil,
+      swiftArgumentParserFile: SwiftArgumentParserFile? = nil,
       swiftArgumentParserDirectory: Bool? = nil,
       swiftArgumentParserDefaultValue: String? = nil
     ) {
@@ -186,6 +187,14 @@ public struct OpenCLIv0_1: Codable, Equatable {
       self.examples = examples
       self.interactive = interactive
       self.metadata = metadata
+    }
+  }
+
+  public struct SwiftArgumentParserFile: Codable, Equatable {
+    public let extensions: [String]
+
+    public init(extensions: [String]) {
+      self.extensions = extensions
     }
   }
 

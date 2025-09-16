@@ -164,7 +164,8 @@ extension OpenCLIv0_1.Option {
         ? true : nil,
       swiftArgumentParserFile: {
         switch argDef.completion.kind {
-        case .file: return true
+        case .file(let extensions):
+          return OpenCLIv0_1.SwiftArgumentParserFile(extensions: extensions)
         default: return nil
         }
       }(),
@@ -190,7 +191,8 @@ extension OpenCLIv0_1.Argument {
       hidden: argDef.help.visibility.base != .default ? true : nil,
       swiftArgumentParserFile: {
         switch argDef.completion.kind {
-        case .file: return true
+        case .file(let extensions):
+          return OpenCLIv0_1.SwiftArgumentParserFile(extensions: extensions)
         default: return nil
         }
       }(),

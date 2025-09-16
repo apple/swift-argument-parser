@@ -179,9 +179,9 @@ final class OpenCLIDumpHelpGenerationTests: XCTestCase {
 
     let fileOption = options.first { $0.name == "--file" }
     XCTAssertNotNil(fileOption, "Expected to find --file option")
-    XCTAssertEqual(
-      fileOption?.swiftArgumentParserFile, true,
-      "Expected file option to have swiftArgumentParserFile set to true")
+    XCTAssertNotNil(
+      fileOption?.swiftArgumentParserFile,
+      "Expected file option to have swiftArgumentParserFile set")
     XCTAssertNil(
       fileOption?.swiftArgumentParserDirectory,
       "Expected file option to have swiftArgumentParserDirectory as nil")
@@ -215,9 +215,9 @@ final class OpenCLIDumpHelpGenerationTests: XCTestCase {
 
     let fileArg = arguments.first { $0.name == "input-file" }
     XCTAssertNotNil(fileArg, "Expected to find input-file argument")
-    XCTAssertEqual(
-      fileArg?.swiftArgumentParserFile, true,
-      "Expected file argument to have swiftArgumentParserFile set to true")
+    XCTAssertNotNil(
+      fileArg?.swiftArgumentParserFile,
+      "Expected file argument to have swiftArgumentParserFile set")
     XCTAssertNil(
       fileArg?.swiftArgumentParserDirectory,
       "Expected file argument to have swiftArgumentParserDirectory as nil")
