@@ -124,7 +124,7 @@ extension OpenCLIv0_1.Command {
       arguments: arguments.isEmpty ? nil : arguments,
       commands: subcommands.isEmpty ? nil : subcommands,
       description: config.abstract.isEmpty ? nil : config.abstract,
-      hidden: !config.shouldDisplay
+      hidden: !config.shouldDisplay ? true : nil
     )
   }
 }
@@ -144,7 +144,7 @@ extension OpenCLIv0_1.Option {
     case .unary:
       let argument = OpenCLIv0_1.Argument(
         name: argDef.valueName,
-        required: !argDef.help.options.contains(.isOptional),
+        required: !argDef.help.options.contains(.isOptional) ? true : nil,
         description: argDef.help.abstract.isEmpty ? nil : argDef.help.abstract
       )
       optionArguments = [argument]
@@ -154,11 +154,11 @@ extension OpenCLIv0_1.Option {
 
     self.init(
       name: primaryName,
-      required: !argDef.help.options.contains(.isOptional),
+      required: !argDef.help.options.contains(.isOptional) ? true : nil,
       aliases: aliases.isEmpty ? nil : aliases,
       arguments: optionArguments,
       description: argDef.help.abstract.isEmpty ? nil : argDef.help.abstract,
-      hidden: argDef.help.visibility.base != .default,
+      hidden: argDef.help.visibility.base != .default ? true : nil,
       swiftArgumentParserRepeating: argDef.help.options.contains(.isRepeating)
         ? true : nil,
       swiftArgumentParserFile: {
@@ -183,9 +183,9 @@ extension OpenCLIv0_1.Argument {
 
     self.init(
       name: argDef.valueName,
-      required: !argDef.help.options.contains(.isOptional),
+      required: !argDef.help.options.contains(.isOptional) ? true : nil,
       description: argDef.help.abstract.isEmpty ? nil : argDef.help.abstract,
-      hidden: argDef.help.visibility.base != .default,
+      hidden: argDef.help.visibility.base != .default ? true : nil,
       swiftArgumentParserFile: {
         switch argDef.completion.kind {
         case .file: return true

@@ -93,7 +93,7 @@ public struct OpenCLIv0_1: Codable, Equatable {
     public init(
       name: String, required: Bool? = nil, arity: Arity? = nil,
       acceptedValues: [String]? = nil, group: String? = nil,
-      description: String? = nil, hidden: Bool? = false,
+      description: String? = nil, hidden: Bool? = nil,
       metadata: [Metadata]? = nil, swiftArgumentParserFile: Bool? = nil,
       swiftArgumentParserDirectory: Bool? = nil
     ) {
@@ -128,7 +128,7 @@ public struct OpenCLIv0_1: Codable, Equatable {
       name: String, required: Bool? = nil, aliases: [String]? = nil,
       arguments: [Argument]? = nil, group: String? = nil,
       description: String? = nil, recursive: Bool? = false,
-      hidden: Bool? = false,
+      hidden: Bool? = nil,
       metadata: [Metadata]? = nil, swiftArgumentParserRepeating: Bool? = nil,
       swiftArgumentParserFile: Bool? = nil,
       swiftArgumentParserDirectory: Bool? = nil
@@ -165,7 +165,7 @@ public struct OpenCLIv0_1: Codable, Equatable {
       name: String, aliases: [String]? = nil, options: [Option]? = nil,
       arguments: [Argument]? = nil, commands: [Command]? = nil,
       exitCodes: [ExitCode]? = nil, description: String? = nil,
-      hidden: Bool? = false, examples: [String]? = nil,
+      hidden: Bool? = nil, examples: [String]? = nil,
       interactive: Bool? = nil,
       metadata: [Metadata]? = nil
     ) {

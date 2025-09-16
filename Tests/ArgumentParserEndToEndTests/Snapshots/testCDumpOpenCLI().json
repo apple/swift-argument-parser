@@ -9,13 +9,11 @@
       "arguments" : [
         {
           "description" : "A color to select.",
-          "hidden" : false,
           "name" : "color",
           "required" : true
         }
       ],
       "description" : "A color to select.",
-      "hidden" : false,
       "name" : "--color",
       "recursive" : false,
       "required" : true
@@ -24,41 +22,31 @@
       "arguments" : [
         {
           "description" : "Another color to select!",
-          "hidden" : false,
-          "name" : "default-color",
-          "required" : false
+          "name" : "default-color"
         }
       ],
       "description" : "Another color to select!",
-      "hidden" : false,
       "name" : "--default-color",
-      "recursive" : false,
-      "required" : false
+      "recursive" : false
     },
     {
       "arguments" : [
         {
           "description" : "An optional color.",
-          "hidden" : false,
-          "name" : "opt",
-          "required" : false
+          "name" : "opt"
         }
       ],
       "description" : "An optional color.",
-      "hidden" : false,
       "name" : "--opt",
-      "recursive" : false,
-      "required" : false
+      "recursive" : false
     },
     {
       "arguments" : [
         {
-          "hidden" : false,
           "name" : "extra",
           "required" : true
         }
       ],
-      "hidden" : false,
       "name" : "--extra",
       "recursive" : false,
       "required" : true
@@ -66,12 +54,10 @@
     {
       "arguments" : [
         {
-          "hidden" : false,
           "name" : "discussion",
           "required" : true
         }
       ],
-      "hidden" : false,
       "name" : "--discussion",
       "recursive" : false,
       "required" : true
@@ -81,10 +67,8 @@
         "--help"
       ],
       "description" : "Show help information.",
-      "hidden" : false,
       "name" : "-h",
-      "recursive" : false,
-      "required" : false
+      "recursive" : false
     }
   ]
 }

@@ -2,15 +2,12 @@
   "arguments" : [
     {
       "description" : "Required argument",
-      "hidden" : false,
       "name" : "required",
       "required" : true
     },
     {
       "description" : "Optional argument",
-      "hidden" : false,
-      "name" : "optional",
-      "required" : false
+      "name" : "optional"
     }
   ],
   "info" : {
@@ -25,10 +22,8 @@
         "-h"
       ],
       "description" : "Help flag",
-      "hidden" : false,
       "name" : "--help",
-      "recursive" : false,
-      "required" : false
+      "recursive" : false
     },
     {
       "aliases" : [
@@ -37,31 +32,23 @@
       "arguments" : [
         {
           "description" : "Configuration file",
-          "hidden" : false,
-          "name" : "config",
-          "required" : false
+          "name" : "config"
         }
       ],
       "description" : "Configuration file",
-      "hidden" : false,
       "name" : "-c",
-      "recursive" : false,
-      "required" : false
+      "recursive" : false
     },
     {
       "arguments" : [
         {
           "description" : "Repeating option",
-          "hidden" : false,
-          "name" : "items",
-          "required" : false
+          "name" : "items"
         }
       ],
       "description" : "Repeating option",
-      "hidden" : false,
       "name" : "--items",
       "recursive" : false,
-      "required" : false,
       "swiftArgumentParserRepeating" : true
     },
     {
@@ -69,10 +56,8 @@
         "--help"
       ],
       "description" : "Show help information.",
-      "hidden" : false,
       "name" : "-h",
-      "recursive" : false,
-      "required" : false
+      "recursive" : false
     }
   ]
 }

@@ -2,7 +2,6 @@
   "arguments" : [
     {
       "description" : "Output file path",
-      "hidden" : false,
       "name" : "output",
       "required" : true
     }
@@ -19,10 +18,8 @@
         "--verbose"
       ],
       "description" : "Show verbose output",
-      "hidden" : false,
       "name" : "-v",
-      "recursive" : false,
-      "required" : false
+      "recursive" : false
     },
     {
       "aliases" : [
@@ -31,33 +28,25 @@
       "arguments" : [
         {
           "description" : "Input file path",
-          "hidden" : false,
-          "name" : "input",
-          "required" : false
+          "name" : "input"
         }
       ],
       "description" : "Input file path",
-      "hidden" : false,
       "name" : "-i",
-      "recursive" : false,
-      "required" : false
+      "recursive" : false
     },
     {
       "description" : "Show the version.",
-      "hidden" : false,
       "name" : "--version",
-      "recursive" : false,
-      "required" : false
+      "recursive" : false
     },
     {
       "aliases" : [
         "--help"
       ],
       "description" : "Show help information.",
-      "hidden" : false,
       "name" : "-h",
-      "recursive" : false,
-      "required" : false
+      "recursive" : false
     }
   ]
 }

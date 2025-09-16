@@ -6,20 +6,16 @@
   "opencli" : "0.1",
   "options" : [
     {
-      "hidden" : false,
       "name" : "--verbose",
-      "recursive" : false,
-      "required" : false
+      "recursive" : false
     },
     {
       "arguments" : [
         {
-          "hidden" : false,
           "name" : "name",
           "required" : true
         }
       ],
-      "hidden" : false,
       "name" : "--name",
       "recursive" : false,
       "required" : true
@@ -29,10 +25,8 @@
         "--help"
       ],
       "description" : "Show help information.",
-      "hidden" : false,
       "name" : "-h",
-      "recursive" : false,
-      "required" : false
+      "recursive" : false
     }
   ]
 }

@@ -2,9 +2,7 @@
   "arguments" : [
     {
       "description" : "A group of integers to operate on.",
-      "hidden" : false,
-      "name" : "values",
-      "required" : false
+      "name" : "values"
     }
   ],
   "commands" : [
@@ -12,13 +10,10 @@
       "arguments" : [
         {
           "description" : "A group of integers to operate on.",
-          "hidden" : false,
-          "name" : "values",
-          "required" : false
+          "name" : "values"
         }
       ],
       "description" : "Print the sum of the values.",
-      "hidden" : false,
       "name" : "add",
       "options" : [
         {
@@ -26,27 +21,21 @@
             "-x"
           ],
           "description" : "Use hexadecimal notation for the result.",
-          "hidden" : false,
           "name" : "--hex-output",
-          "recursive" : false,
-          "required" : false
+          "recursive" : false
         },
         {
           "description" : "Show the version.",
-          "hidden" : false,
           "name" : "--version",
-          "recursive" : false,
-          "required" : false
+          "recursive" : false
         },
         {
           "aliases" : [
             "--help"
           ],
           "description" : "Show help information.",
-          "hidden" : false,
           "name" : "-h",
-          "recursive" : false,
-          "required" : false
+          "recursive" : false
         }
       ]
     },
@@ -57,13 +46,10 @@
       "arguments" : [
         {
           "description" : "A group of integers to operate on.",
-          "hidden" : false,
-          "name" : "values",
-          "required" : false
+          "name" : "values"
         }
       ],
       "description" : "Print the product of the values.",
-      "hidden" : false,
       "name" : "multiply",
       "options" : [
         {
@@ -71,27 +57,21 @@
             "-x"
           ],
           "description" : "Use hexadecimal notation for the result.",
-          "hidden" : false,
           "name" : "--hex-output",
-          "recursive" : false,
-          "required" : false
+          "recursive" : false
         },
         {
           "description" : "Show the version.",
-          "hidden" : false,
           "name" : "--version",
-          "recursive" : false,
-          "required" : false
+          "recursive" : false
         },
         {
           "aliases" : [
             "--help"
           ],
           "description" : "Show help information.",
-          "hidden" : false,
           "name" : "-h",
-          "recursive" : false,
-          "required" : false
+          "recursive" : false
         }
       ]
     },
@@ -104,46 +84,35 @@
           "arguments" : [
             {
               "description" : "A group of floating-point values to operate on.",
-              "hidden" : false,
-              "name" : "values",
-              "required" : false
+              "name" : "values"
             }
           ],
           "description" : "Print the average of the values.",
-          "hidden" : false,
           "name" : "average",
           "options" : [
             {
               "arguments" : [
                 {
                   "description" : "The kind of average to provide.",
-                  "hidden" : false,
-                  "name" : "kind",
-                  "required" : false
+                  "name" : "kind"
                 }
               ],
               "description" : "The kind of average to provide.",
-              "hidden" : false,
               "name" : "--kind",
-              "recursive" : false,
-              "required" : false
+              "recursive" : false
             },
             {
               "description" : "Show the version.",
-              "hidden" : false,
               "name" : "--version",
-              "recursive" : false,
-              "required" : false
+              "recursive" : false
             },
             {
               "aliases" : [
                 "--help"
               ],
               "description" : "Show help information.",
-              "hidden" : false,
               "name" : "-h",
-              "recursive" : false,
-              "required" : false
+              "recursive" : false
             }
           ]
         },
@@ -151,200 +120,149 @@
           "arguments" : [
             {
               "description" : "A group of floating-point values to operate on.",
-              "hidden" : false,
-              "name" : "values",
-              "required" : false
+              "name" : "values"
             }
           ],
           "description" : "Print the standard deviation of the values.",
-          "hidden" : false,
           "name" : "stdev",
           "options" : [
             {
               "description" : "Show the version.",
-              "hidden" : false,
               "name" : "--version",
-              "recursive" : false,
-              "required" : false
+              "recursive" : false
             },
             {
               "aliases" : [
                 "--help"
               ],
               "description" : "Show help information.",
-              "hidden" : false,
               "name" : "-h",
-              "recursive" : false,
-              "required" : false
+              "recursive" : false
             }
           ]
         },
         {
           "arguments" : [
             {
-              "hidden" : false,
-              "name" : "one-of-four",
-              "required" : false
+              "name" : "one-of-four"
             },
             {
-              "hidden" : false,
-              "name" : "custom-arg",
-              "required" : false
+              "name" : "custom-arg"
             },
             {
-              "hidden" : false,
-              "name" : "custom-deprecated-arg",
-              "required" : false
+              "name" : "custom-deprecated-arg"
             },
             {
               "description" : "A group of floating-point values to operate on.",
-              "hidden" : false,
-              "name" : "values",
-              "required" : false
+              "name" : "values"
             }
           ],
           "description" : "Print the quantiles of the values (TBD).",
-          "hidden" : false,
           "name" : "quantiles",
           "options" : [
             {
               "hidden" : true,
               "name" : "--test-success-exit-code",
-              "recursive" : false,
-              "required" : false
+              "recursive" : false
             },
             {
               "hidden" : true,
               "name" : "--test-failure-exit-code",
-              "recursive" : false,
-              "required" : false
+              "recursive" : false
             },
             {
               "hidden" : true,
               "name" : "--test-validation-exit-code",
-              "recursive" : false,
-              "required" : false
+              "recursive" : false
             },
             {
               "arguments" : [
                 {
-                  "hidden" : false,
-                  "name" : "test-custom-exit-code",
-                  "required" : false
+                  "name" : "test-custom-exit-code"
                 }
               ],
               "hidden" : true,
               "name" : "--test-custom-exit-code",
-              "recursive" : false,
-              "required" : false
+              "recursive" : false
             },
             {
               "arguments" : [
                 {
-                  "hidden" : false,
-                  "name" : "file",
-                  "required" : false
+                  "name" : "file"
                 }
               ],
-              "hidden" : false,
               "name" : "--file",
               "recursive" : false,
-              "required" : false,
               "swiftArgumentParserFile" : true
             },
             {
               "arguments" : [
                 {
-                  "hidden" : false,
-                  "name" : "directory",
-                  "required" : false
+                  "name" : "directory"
                 }
               ],
-              "hidden" : false,
               "name" : "--directory",
               "recursive" : false,
-              "required" : false,
               "swiftArgumentParserDirectory" : true
             },
             {
               "arguments" : [
                 {
-                  "hidden" : false,
-                  "name" : "shell",
-                  "required" : false
+                  "name" : "shell"
                 }
               ],
-              "hidden" : false,
               "name" : "--shell",
-              "recursive" : false,
-              "required" : false
+              "recursive" : false
             },
             {
               "arguments" : [
                 {
-                  "hidden" : false,
-                  "name" : "custom",
-                  "required" : false
+                  "name" : "custom"
                 }
               ],
-              "hidden" : false,
               "name" : "--custom",
-              "recursive" : false,
-              "required" : false
+              "recursive" : false
             },
             {
               "arguments" : [
                 {
-                  "hidden" : false,
-                  "name" : "custom-deprecated",
-                  "required" : false
+                  "name" : "custom-deprecated"
                 }
               ],
-              "hidden" : false,
               "name" : "--custom-deprecated",
-              "recursive" : false,
-              "required" : false
+              "recursive" : false
             },
             {
               "description" : "Show the version.",
-              "hidden" : false,
               "name" : "--version",
-              "recursive" : false,
-              "required" : false
+              "recursive" : false
             },
             {
               "aliases" : [
                 "--help"
               ],
               "description" : "Show help information.",
-              "hidden" : false,
               "name" : "-h",
-              "recursive" : false,
-              "required" : false
+              "recursive" : false
             }
           ]
         }
       ],
       "description" : "Calculate descriptive statistics.",
-      "hidden" : false,
       "name" : "stats",
       "options" : [
         {
           "description" : "Show the version.",
-          "hidden" : false,
           "name" : "--version",
-          "recursive" : false,
-          "required" : false
+          "recursive" : false
         },
         {
           "aliases" : [
             "--help"
           ],
           "description" : "Show help information.",
-          "hidden" : false,
           "name" : "-h",
-          "recursive" : false,
-          "required" : false
+          "recursive" : false
         }
       ]
     }
@@ -361,27 +279,21 @@
         "-x"
       ],
       "description" : "Use hexadecimal notation for the result.",
-      "hidden" : false,
       "name" : "--hex-output",
-      "recursive" : false,
-      "required" : false
+      "recursive" : false
     },
     {
       "description" : "Show the version.",
-      "hidden" : false,
       "name" : "--version",
-      "recursive" : false,
-      "required" : false
+      "recursive" : false
     },
     {
       "aliases" : [
         "--help"
       ],
       "description" : "Show help information.",
-      "hidden" : false,
       "name" : "-h",
-      "recursive" : false,
-      "required" : false
+      "recursive" : false
     }
   ]
 }
