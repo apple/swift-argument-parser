@@ -77,7 +77,7 @@ extension ArgumentSet {
     // The flag is required if initialValue is `nil`, otherwise it's optional
     let helpOptions: ArgumentDefinition.Help.Options =
       initialValue != nil ? .isOptional : []
-    let defaultValueString = initialValue.map { String(describing: $0) }
+    let defaultValueString = initialValue == true ? "true" : nil
 
     let help = ArgumentDefinition.Help(
       allValueStrings: [],

@@ -38,8 +38,7 @@
     {
       "description" : "Global flag",
       "name" : "--global",
-      "recursive" : false,
-      "swiftArgumentParserDefaultValue" : "false"
+      "recursive" : false
     },
     {
       "aliases" : [

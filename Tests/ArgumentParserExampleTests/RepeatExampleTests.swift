@@ -62,8 +62,7 @@ final class RepeatExampleTests: XCTestCase {
 
       OPTIONS:
         --count <count>         How many times to repeat 'phrase'.
-        --include-counter       Include a counter with each repetition. (default:
-                                false)
+        --include-counter       Include a counter with each repetition.
         -h, --help              Show help information.
 
 
@@ -86,8 +85,7 @@ final class RepeatExampleTests: XCTestCase {
 
         OPTIONS:
           --count <count>         How many times to repeat 'phrase'.
-          --include-counter       Include a counter with each repetition. (default:
-                                  false)
+          --include-counter       Include a counter with each repetition.
           -h, --help              Show help information.
 
 

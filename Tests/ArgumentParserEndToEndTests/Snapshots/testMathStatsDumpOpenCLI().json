@@ -16,8 +16,7 @@
           ],
           "description" : "Use hexadecimal notation for the result.",
           "name" : "--hex-output",
-          "recursive" : false,
-          "swiftArgumentParserDefaultValue" : "false"
+          "recursive" : false
         },
         {
           "description" : "Show the version.",
@@ -53,8 +52,7 @@
           ],
           "description" : "Use hexadecimal notation for the result.",
           "name" : "--hex-output",
-          "recursive" : false,
-          "swiftArgumentParserDefaultValue" : "false"
+          "recursive" : false
         },
         {
           "description" : "Show the version.",
@@ -161,20 +159,17 @@
             {
               "hidden" : true,
               "name" : "--test-success-exit-code",
-              "recursive" : false,
-              "swiftArgumentParserDefaultValue" : "false"
+              "recursive" : false
             },
             {
               "hidden" : true,
               "name" : "--test-failure-exit-code",
-              "recursive" : false,
-              "swiftArgumentParserDefaultValue" : "false"
+              "recursive" : false
             },
             {
               "hidden" : true,
               "name" : "--test-validation-exit-code",
-              "recursive" : false,
-              "swiftArgumentParserDefaultValue" : "false"
+              "recursive" : false
             },
             {
               "arguments" : [

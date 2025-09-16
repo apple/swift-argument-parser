@@ -32,7 +32,7 @@ final class RollDiceExampleTests: XCTestCase {
         --sides <m>             Rolls an <m>-sided dice. (default: 6)
               Use this option to override the default value of a six-sided die.
         --seed <seed>           A seed to use for repeatable random generation.
-        -v, --verbose           Show all roll results. (default: false)
+        -v, --verbose           Show all roll results.
         -h, --help              Show help information.
 
 

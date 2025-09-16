@@ -7,8 +7,7 @@
   "options" : [
     {
       "name" : "--verbose",
-      "recursive" : false,
-      "swiftArgumentParserDefaultValue" : "false"
+      "recursive" : false
     },
     {
       "arguments" : [

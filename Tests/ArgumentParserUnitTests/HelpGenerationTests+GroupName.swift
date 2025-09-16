@@ -85,17 +85,17 @@ extension HelpGenerationTests {
           <name>                  example
 
         FLAGS GROUP:
-          --verbose               example (default: false)
-          --oversharing           example (default: false)
+          --verbose               example
+          --oversharing           example
 
         OPTIONS GROUP:
           --name <name>           example
           --age <age>             example
 
         OPTIONS:
-          --experimental          example (default: false)
+          --experimental          example
           --prefix <prefix>       example
-          --existing-user         example (default: false)
+          --existing-user         example
           -h, --help              Show help information.
 
         """)
@@ -110,17 +110,17 @@ extension HelpGenerationTests {
           <title>                 example
 
         FLAGS GROUP:
-          --verbose               example (default: false)
-          --oversharing           example (default: false)
+          --verbose               example
+          --oversharing           example
 
         OPTIONS GROUP:
           --name <name>           example
           --age <age>             example
 
         OPTIONS:
-          --experimental          example (default: false)
+          --experimental          example
           --prefix <prefix>       example
-          --existing-user         example (default: false)
+          --existing-user         example
           -h, --help              Show help information.
 
         """)
@@ -147,16 +147,16 @@ extension HelpGenerationTests {
         USAGE: combined [--verbose] [--oversharing] [--name <name>] --age <age> [--experimental] --prefix <prefix> [<name>] [--existing-user]
 
         EXTRAS:
-          --verbose               example (default: false)
-          --oversharing           example (default: false)
+          --verbose               example
+          --oversharing           example
           --name <name>           example
           --age <age>             example
 
         OTHERS:
-          --experimental          example (default: false)
+          --experimental          example
           --prefix <prefix>       example
           <name>                  example
-          --existing-user         example (default: false)
+          --existing-user         example
 
         OPTIONS:
           -h, --help              Show help information.
@@ -169,17 +169,17 @@ extension HelpGenerationTests {
         USAGE: combined [--verbose] [--oversharing] [--name <name>] --age <age> [--experimental] --prefix <prefix> [<name>] <title> [--existing-user]
 
         EXTRAS:
-          --verbose               example (default: false)
-          --oversharing           example (default: false)
+          --verbose               example
+          --oversharing           example
           --name <name>           example
           --age <age>             example
 
         OTHERS:
-          --experimental          example (default: false)
+          --experimental          example
           --prefix <prefix>       example
           <name>                  example
           <title>                 example
-          --existing-user         example (default: false)
+          --existing-user         example
 
         OPTIONS:
           -h, --help              Show help information.
@@ -218,15 +218,15 @@ extension HelpGenerationTests {
         USAGE: hidden-groups [--verbose] [--oversharing] [--name <name>] --age <age> [--experimental] --prefix <prefix>
 
         FLAGS GROUP:
-          --verbose               example (default: false)
-          --oversharing           example (default: false)
+          --verbose               example
+          --oversharing           example
 
         OPTIONS GROUP:
           --name <name>           example
           --age <age>             example
 
         OPTIONS:
-          --experimental          example (default: false)
+          --experimental          example
           --prefix <prefix>       example
           -h, --help              Show help information.
 
@@ -266,11 +266,11 @@ extension HelpGenerationTests {
           <name>                  example
 
         EXTRAS:
-          --verbose               example (default: false)
-          --oversharing           example (default: false)
+          --verbose               example
+          --oversharing           example
 
         OPTIONS:
-          --existing-user         example (default: false)
+          --existing-user         example
           -h, --help              Show help information.
 
         SUBCOMMANDS:
@@ -289,11 +289,11 @@ extension HelpGenerationTests {
           <title>                 example
 
         EXTRAS:
-          --verbose               example (default: false)
-          --oversharing           example (default: false)
+          --verbose               example
+          --oversharing           example
 
         OPTIONS:
-          --existing-user         example (default: false)
+          --existing-user         example
           -h, --help              Show help information.
 
         SUBCOMMANDS:
@@ -312,15 +312,15 @@ extension HelpGenerationTests {
           <name>                  example
 
         CHILD EXTRAS:
-          --verbose               example (default: false)
-          --oversharing           example (default: false)
+          --verbose               example
+          --oversharing           example
 
         EXTRAS:
           --name <name>           example
           --age <age>             example
 
         OPTIONS:
-          --existing-user         example (default: false)
+          --existing-user         example
           -h, --help              Show help information.
 
         """)
@@ -336,15 +336,15 @@ extension HelpGenerationTests {
           <title>                 example
 
         CHILD EXTRAS:
-          --verbose               example (default: false)
-          --oversharing           example (default: false)
+          --verbose               example
+          --oversharing           example
 
         EXTRAS:
           --name <name>           example
           --age <age>             example
 
         OPTIONS:
-          --existing-user         example (default: false)
+          --existing-user         example
           -h, --help              Show help information.
 
         """)
@@ -365,11 +365,11 @@ extension HelpGenerationTests {
           <name>                  example
 
         FLAGS GROUP:
-          --verbose               example (default: false)
-          --oversharing           example (default: false)
+          --verbose               example
+          --oversharing           example
 
         OPTIONS:
-          --existing-user         example (default: false)
+          --existing-user         example
           -h, --help              Show help information.
 
         """)
@@ -387,10 +387,10 @@ extension HelpGenerationTests {
         USAGE: groups-with-named-groups [--verbose] [--oversharing] [<name>] [--existing-user]
 
         NESTED:
-          --verbose               example (default: false)
-          --oversharing           example (default: false)
+          --verbose               example
+          --oversharing           example
           <name>                  example
-          --existing-user         example (default: false)
+          --existing-user         example
 
         OPTIONS:
           -h, --help              Show help information.

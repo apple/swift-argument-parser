@@ -41,8 +41,7 @@ final class CountLinesExampleTests: XCTestCase {
 
       OPTIONS:
         --prefix <prefix>       Only count lines with this prefix.
-        --verbose               Include extra information in the output. (default:
-                                false)
+        --verbose               Include extra information in the output.
         -h, --help              Show help information.
 
 

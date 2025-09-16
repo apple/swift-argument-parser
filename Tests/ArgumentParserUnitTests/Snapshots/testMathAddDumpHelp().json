@@ -4,7 +4,6 @@
     "arguments" : [
       {
         "abstract" : "Use hexadecimal notation for the result.",
-        "defaultValue" : "false",
         "isOptional" : true,
         "isRepeating" : false,
         "kind" : "flag",
@@ -93,7 +92,6 @@
             "valueName" : "subcommands"
           },
           {
-            "defaultValue" : "false",
             "isOptional" : true,
             "isRepeating" : false,
             "kind" : "flag",

@@ -271,8 +271,8 @@ final class OpenCLIDumpHelpGenerationTests: XCTestCase {
     let verboseOption = options.first { $0.name == "--verbose" }
     XCTAssertNotNil(verboseOption, "Expected to find --verbose option")
     XCTAssertEqual(
-      verboseOption?.swiftArgumentParserDefaultValue, "false",
-      "Expected verbose option to have swiftArgumentParserDefaultValue set to 'false'"
+      verboseOption?.swiftArgumentParserDefaultValue, nil,
+      "Expected verbose option to have swiftArgumentParserDefaultValue set to nil"
     )
 
     // Find an option without default to verify it doesn't have the property set

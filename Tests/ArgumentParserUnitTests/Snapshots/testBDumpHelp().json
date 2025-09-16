@@ -2,7 +2,6 @@
   "command" : {
     "arguments" : [
       {
-        "defaultValue" : "false",
         "isOptional" : true,
         "isRepeating" : false,
         "kind" : "flag",
@@ -79,7 +78,6 @@
             "valueName" : "subcommands"
           },
           {
-            "defaultValue" : "false",
             "isOptional" : true,
             "isRepeating" : false,
             "kind" : "flag",

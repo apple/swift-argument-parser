@@ -88,7 +88,7 @@ extension HelpGenerationTests {
           --name <name>           Your name
           --title <title>         Your title
           --hidden-title <hidden-title>
-          --hidden-flag           (default: false)
+          --hidden-flag
           --hidden-inverted-flag/--no-hidden-inverted-flag
                                   (default: --hidden-inverted-flag)
           -h, --help              Show help information.
@@ -712,7 +712,7 @@ extension HelpGenerationTests {
     USAGE: driver [--verbose] [--custom-name <custom-name>] [--hidden-option <hidden-option>] [--timeout <timeout>]
 
     OPTIONS:
-      --verbose               Verbose (default: false)
+      --verbose               Verbose
       --custom-name <custom-name>
                               Custom Name
       --hidden-option <hidden-option>
@@ -857,7 +857,7 @@ extension HelpGenerationTests {
           <argument>              Non-mandatory argument
 
         OPTIONS:
-          --example               example flag (default: false)
+          --example               example flag
           -h, --help              Show help information.
 
         """)
@@ -919,7 +919,7 @@ extension HelpGenerationTests {
           <file>
 
         OPTIONS:
-          --verbose-mode          (default: false)
+          --verbose-mode
           -h, --help              Show help information.
 
         SUBCOMMANDS:
@@ -951,7 +951,7 @@ extension HelpGenerationTests {
           <file>
 
         OPTIONS:
-          --verbose-mode          (default: false)
+          --verbose-mode
           -h, --help              Show help information.
 
         """)
@@ -967,7 +967,7 @@ extension HelpGenerationTests {
           <file>
 
         OPTIONS:
-          --verbose-mode          (default: false)
+          --verbose-mode
           -h, --help              Show help information.
 
         """)
@@ -979,7 +979,7 @@ extension HelpGenerationTests {
           <file>
 
         OPTIONS:
-          --verbose-mode          (default: false)
+          --verbose-mode
           -h, --help              Show help information.
 
         """)

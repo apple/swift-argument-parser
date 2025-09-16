@@ -153,11 +153,9 @@ extension HelpTests {
                                 Change working directory before any other operation
                                 (default: .)
         --sanitize              Turn on runtime checks for erroneous behavior
-                                (default: false)
         --skip-update           Skip updating dependencies from their remote during a
-                                resolution (default: false)
-        -v, --verbose           Increase verbosity of informational output (default:
-                                false)
+                                resolution
+        -v, --verbose           Increase verbosity of informational output
         -Xcc <c-compiler-flag>  Pass flag through to all C compiler invocations
         -Xcxx <cxx-compiler-flag>
                                 Pass flag through to all C++ compiler invocations
@@ -184,7 +182,7 @@ struct Simple: ParsableArguments {
       <max>
 
     OPTIONS:
-      --verbose               (default: false)
+      --verbose
       --min <min>
       -h, --help              Show help information.
 
