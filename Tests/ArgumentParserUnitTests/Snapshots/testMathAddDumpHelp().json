@@ -1,6 +1,9 @@
 {
   "command" : {
     "abstract" : "Print the sum of the values.",
+    "aliases" : [
+
+    ],
     "arguments" : [
       {
         "abstract" : "Use hexadecimal notation for the result.",
@@ -82,6 +85,9 @@
     "subcommands" : [
       {
         "abstract" : "Show subcommand help information.",
+        "aliases" : [
+
+        ],
         "arguments" : [
           {
             "isOptional" : true,
