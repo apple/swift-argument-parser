@@ -8,12 +8,14 @@ A utility for performing maths.
 math [--version] [--help]
 ```
 
-- term **--version**:
+### Options
+
+- term **--version:**
 
 *Show the version.*
 
 
-- term **--help**:
+- term **--help:**
 
 *Show help information.*
 
@@ -26,27 +28,28 @@ Print the sum of the values.
 math add [--hex-output] [<values>...] [--version] [--help]
 ```
 
-- term **--hex-output**:
+### Arguments
 
-*Use hexadecimal notation for the result.*
-
-
-- term **values**:
+- term **values:**
 
 *A group of integers to operate on.*
 
 
-- term **--version**:
+### Options
+
+- term **--hex-output:**
+
+*Use hexadecimal notation for the result.*
+
+
+- term **--version:**
 
 *Show the version.*
 
 
-- term **--help**:
+- term **--help:**
 
 *Show help information.*
-
-
-
 
 ## math.multiply
 
@@ -57,27 +60,28 @@ math multiply [--hex-output] [<values>...] [--version]
   [--help]
 ```
 
-- term **--hex-output**:
+### Arguments
 
-*Use hexadecimal notation for the result.*
-
-
-- term **values**:
+- term **values:**
 
 *A group of integers to operate on.*
 
 
-- term **--version**:
+### Options
+
+- term **--hex-output:**
+
+*Use hexadecimal notation for the result.*
+
+
+- term **--version:**
 
 *Show the version.*
 
 
-- term **--help**:
+- term **--help:**
 
 *Show help information.*
-
-
-
 
 ## math.stats
 
@@ -87,12 +91,14 @@ Calculate descriptive statistics.
 math stats [--version] [--help]
 ```
 
-- term **--version**:
+### Options
+
+- term **--version:**
 
 *Show the version.*
 
 
-- term **--help**:
+- term **--help:**
 
 *Show help information.*
 
@@ -106,27 +112,28 @@ math stats average [--kind=<kind>] [<values>...] [--version]
   [--help]
 ```
 
-- term **--kind=\<kind\>**:
+### Arguments
 
-*The kind of average to provide.*
-
-
-- term **values**:
+- term **values:**
 
 *A group of floating-point values to operate on.*
 
 
-- term **--version**:
+### Options
+
+- term **--kind=\<kind\>:**
+
+*The kind of average to provide.*
+
+
+- term **--version:**
 
 *Show the version.*
 
 
-- term **--help**:
+- term **--help:**
 
 *Show help information.*
-
-
-
 
 ### math.stats.stdev
 
@@ -136,22 +143,23 @@ Print the standard deviation of the values.
 math stats stdev [<values>...] [--version] [--help]
 ```
 
-- term **values**:
+### Arguments
+
+- term **values:**
 
 *A group of floating-point values to operate on.*
 
 
-- term **--version**:
+### Options
+
+- term **--version:**
 
 *Show the version.*
 
 
-- term **--help**:
+- term **--help:**
 
 *Show help information.*
-
-
-
 
 ### math.stats.quantiles
 
@@ -166,48 +174,47 @@ math stats quantiles [<one-of-four>] [<custom-arg>]
   [--help]
 ```
 
-- term **one-of-four**:
+### Arguments
+
+- term **one-of-four:**
 
 
-- term **custom-arg**:
+- term **custom-arg:**
 
 
-- term **custom-deprecated-arg**:
+- term **custom-deprecated-arg:**
 
 
-- term **values**:
+- term **values:**
 
 *A group of floating-point values to operate on.*
 
 
-- term **--file=\<file\>**:
+### Options
+
+- term **--file=\<file\>:**
 
 
-- term **--directory=\<directory\>**:
+- term **--directory=\<directory\>:**
 
 
-- term **--shell=\<shell\>**:
+- term **--shell=\<shell\>:**
 
 
-- term **--custom=\<custom\>**:
+- term **--custom=\<custom\>:**
 
 
-- term **--custom-deprecated=\<custom-deprecated\>**:
+- term **--custom-deprecated=\<custom-deprecated\>:**
 
 
-- term **--version**:
+- term **--version:**
 
 *Show the version.*
 
 
-- term **--help**:
+- term **--help:**
 
 *Show help information.*
-
-
-
-
-
 
 ## math.help
 
@@ -217,14 +224,15 @@ Show subcommand help information.
 math help [<subcommands>...] [--version]
 ```
 
-- term **subcommands**:
+### Arguments
+
+- term **subcommands:**
+
+*The subcommand(s) you want help for.*
 
 
-- term **--version**:
+### Options
+
+- term **--version:**
 
 *Show the version.*
-
-
-
-
-
