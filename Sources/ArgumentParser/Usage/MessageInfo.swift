@@ -37,6 +37,16 @@ enum MessageInfo {
           text: DumpHelpGenerator(commandStack: e.commandStack).rendered())
         return
 
+      case .dumpOpenCLIRequested(let version):
+        let generatorText: String
+        switch version {
+        case .v0_1:
+          generatorText = OpenCLIv0_1Generator(commandStack: e.commandStack)
+            .rendered()
+        }
+        self = .help(text: generatorText)
+        return
+
       case .versionRequested:
         let versionString =
           commandStack

@@ -30,15 +30,20 @@ var package = Package(
     // Core Library
     .target(
       name: "ArgumentParser",
-      dependencies: ["ArgumentParserToolInfo"],
+      dependencies: ["ArgumentParserToolInfo", "ArgumentParserOpenCLI"],
       exclude: ["CMakeLists.txt"]),
     .target(
       name: "ArgumentParserTestHelpers",
-      dependencies: ["ArgumentParser", "ArgumentParserToolInfo"],
+      dependencies: [
+        "ArgumentParser", "ArgumentParserToolInfo", "ArgumentParserOpenCLI",
+      ],
       exclude: ["CMakeLists.txt"]),
     .target(
       name: "ArgumentParserToolInfo",
       exclude: ["CMakeLists.txt"]),
+    .target(
+      name: "ArgumentParserOpenCLI",
+    ),
 
     // Plugins
     .plugin(
@@ -117,7 +122,9 @@ var package = Package(
       exclude: ["Examples"]),
     .testTarget(
       name: "ArgumentParserUnitTests",
-      dependencies: ["ArgumentParser", "ArgumentParserTestHelpers"],
+      dependencies: [
+        "ArgumentParser", "ArgumentParserTestHelpers", "ArgumentParserOpenCLI",
+      ],
       exclude: ["CMakeLists.txt", "Snapshots"]),
   ]
 )

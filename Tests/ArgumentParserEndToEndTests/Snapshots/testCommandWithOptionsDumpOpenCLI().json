@@ -1,0 +1,63 @@
+{
+  "arguments" : [
+    {
+      "description" : "Required argument",
+      "name" : "required",
+      "required" : true
+    },
+    {
+      "description" : "Optional argument",
+      "name" : "optional"
+    }
+  ],
+  "info" : {
+    "summary" : "Command with various option types",
+    "title" : "options",
+    "version" : "1.0.0"
+  },
+  "opencli" : "0.1",
+  "options" : [
+    {
+      "aliases" : [
+        "-h"
+      ],
+      "description" : "Help flag",
+      "name" : "--help",
+      "recursive" : false
+    },
+    {
+      "aliases" : [
+        "--config"
+      ],
+      "arguments" : [
+        {
+          "description" : "Configuration file",
+          "name" : "config"
+        }
+      ],
+      "description" : "Configuration file",
+      "name" : "-c",
+      "recursive" : false
+    },
+    {
+      "arguments" : [
+        {
+          "description" : "Repeating option",
+          "name" : "items"
+        }
+      ],
+      "description" : "Repeating option",
+      "name" : "--items",
+      "recursive" : false,
+      "swiftArgumentParserRepeating" : true
+    },
+    {
+      "aliases" : [
+        "--help"
+      ],
+      "description" : "Show help information.",
+      "name" : "-h",
+      "recursive" : false
+    }
+  ]
+}
