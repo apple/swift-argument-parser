@@ -386,7 +386,7 @@
           {
             "completionKind" : {
               "shellCommand" : {
-                "command" : "head -100 \/usr\/share\/dict\/words | tail -50"
+                "command" : "head -100 '\/usr\/share\/dict\/words' | tail -50"
               }
             },
             "isOptional" : true,

@@ -229,7 +229,7 @@ extension Math.Statistics {
     var directory: String?
 
     @Option(
-      completion: .shellCommand("head -100 /usr/share/dict/words | tail -50")
+      completion: .shellCommand("head -100 '/usr/share/dict/words' | tail -50")
     )
     var shell: String?
 

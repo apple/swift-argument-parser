@@ -161,7 +161,7 @@ _math_stats_quantiles() {
         '*:values:'
         '--file:file:_files -g '\''*.txt *.md'\'''
         '--directory:directory:_files -/'
-        '--shell:shell:{local -a list;list=(${(f)"$(head -100 /usr/share/dict/words | tail -50)"});_describe -V "" list}'
+        '--shell:shell:{local -a list;list=(${(f)"$(head -100 '\''/usr/share/dict/words'\'' | tail -50)"});_describe -V "" list}'
         '--custom:custom:{__math_custom_complete ---completion stats quantiles -- --custom "${current_word_index}" "$(__math_cursor_index_in_current_word)"}'
         '--custom-deprecated:custom-deprecated:{__math_custom_complete ---completion stats quantiles -- --custom-deprecated}'
         '--version[Show the version.]'
