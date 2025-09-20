@@ -592,7 +592,14 @@ func parseIndividualArg(_ arg: String, at position: Int) throws
     case 0:
       return [.value(arg, index: index)]
     case 1:
-      // Long option:
+      // If the remainder is a numeric value (e.g. "-5", "-3.14"), treat it as a value
+      // to allow passing negative numbers to positional arguments.
+      // This preserves typical short/long option parsing while enabling
+      // negative numeric literals to be consumed as values.
+      if remainder.allSatisfy({ $0.isNumber }) || isDecimalNumber(remainder) {
+        return [.value(arg, index: index)]
+      }
+      // Otherwise, treat as an option (short or long-with-single-dash)
       let parsed = try ParsedArgument(longArgWithSingleDashRemainder: remainder)
 
       // Short options:
@@ -634,6 +641,22 @@ func parseIndividualArg(_ arg: String, at position: Int) throws
       throw ParserError.invalidOption(arg)
     }
   }
+}
+
+/// Detects a simple decimal number like "123" or "3.14" (no sign).
+private func isDecimalNumber(_ s: Substring) -> Bool {
+  // must contain exactly one dot or none; all other chars are digits
+  var dotCount = 0
+  for ch in s {
+    if ch == "." {
+      dotCount += 1
+      if dotCount > 1 { return false }
+    } else if !ch.isNumber {
+      return false
+    }
+  }
+  // not just a dot
+  return !s.isEmpty && !(s.count == 1 && s.first == ".")
 }
 
 extension SplitArguments {
