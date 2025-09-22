@@ -100,7 +100,7 @@ __math_offer_flags_options() {
         fi
 
         # ${word} is neither a flag, nor an option, nor an option value
-        if [[ "${positional_number}" -lt "${positional_count}" ]]; then
+        if [[ "${positional_number}" -lt "${positional_count}" || "${positional_count}" -lt 0 ]]; then
             # ${word} is a positional
             ((positional_number++))
             unset "unparsed_words[${word_index}]"
@@ -187,7 +187,7 @@ _math_add() {
     non_repeating_flags=(--hex-output -x --version -h --help)
     repeating_options=()
     non_repeating_options=()
-    __math_offer_flags_options 9223372036854775807
+    __math_offer_flags_options -1
 }
 
 _math_multiply() {
@@ -195,7 +195,7 @@ _math_multiply() {
     non_repeating_flags=(--hex-output -x --version -h --help)
     repeating_options=()
     non_repeating_options=()
-    __math_offer_flags_options 9223372036854775807
+    __math_offer_flags_options -1
 }
 
 _math_stats() {
@@ -226,7 +226,7 @@ _math_stats_average() {
     non_repeating_flags=(--version -h --help)
     repeating_options=()
     non_repeating_options=(--kind)
-    __math_offer_flags_options 9223372036854775807
+    __math_offer_flags_options -1
 
     # Offer option value completions
     case "${prev}" in
@@ -242,7 +242,7 @@ _math_stats_stdev() {
     non_repeating_flags=(--version -h --help)
     repeating_options=()
     non_repeating_options=()
-    __math_offer_flags_options 9223372036854775807
+    __math_offer_flags_options -1
 }
 
 _math_stats_quantiles() {
@@ -250,7 +250,7 @@ _math_stats_quantiles() {
     non_repeating_flags=(--version -h --help)
     repeating_options=()
     non_repeating_options=(--file --directory --shell --custom --custom-deprecated)
-    __math_offer_flags_options 9223372036854775807
+    __math_offer_flags_options -1
 
     # Offer option value completions
     case "${prev}" in
@@ -298,7 +298,7 @@ _math_help() {
     non_repeating_flags=(--version)
     repeating_options=()
     non_repeating_options=()
-    __math_offer_flags_options 9223372036854775807
+    __math_offer_flags_options -1
 }
 
 complete -o filenames -F _math math
