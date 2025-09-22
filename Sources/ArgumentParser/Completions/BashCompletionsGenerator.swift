@@ -234,12 +234,12 @@ extension CommandInfoV0 {
     // Generate the case pattern-matching statements for option values.
     // If there aren't any, skip the case block altogether.
     let optionHandlers =
-      arguments.compactMap { arg in
+      options.compactMap { arg in
         guard arg.kind != .flag else { return nil }
         let words = arg.completionWords
         guard !words.isEmpty else { return nil }
         return """
-              \(arg.completionWords.map { "'\($0.shellEscapeForSingleQuotedString())'" }.joined(separator: "|")))
+              \(words.map { "'\($0.shellEscapeForSingleQuotedString())'" }.joined(separator: "|")))
           \(valueCompletion(arg).indentingEachLine(by: 8))\
                   return
                   ;;
