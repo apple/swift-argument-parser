@@ -100,7 +100,7 @@ __base-test_offer_flags_options() {
         fi
 
         # ${word} is neither a flag, nor an option, nor an option value
-        if [[ "${positional_number}" -lt "${positional_count}" ]]; then
+        if [[ "${positional_number}" -lt "${positional_count}" || "${positional_count}" -lt 0 ]]; then
             # ${word} is a positional
             ((positional_number++))
             unset "unparsed_words[${word_index}]"

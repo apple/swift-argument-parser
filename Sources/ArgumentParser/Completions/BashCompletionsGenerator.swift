@@ -126,7 +126,7 @@ extension CommandInfoV0 {
             fi
 
             # ${word} is neither a flag, nor an option, nor an option value
-            if [[ "${positional_number}" -lt "${positional_count}" ]]; then
+            if [[ "${positional_number}" -lt "${positional_count}" || "${positional_count}" -lt 0 ]]; then
                 # ${word} is a positional
                 ((positional_number++))
                 unset "unparsed_words[${word_index}]"
@@ -226,7 +226,7 @@ extension CommandInfoV0 {
             \(declareTopLevelArray)repeating_options=(\(options.filter(\.isRepeating).flatMap(\.completionWords).joined(separator: " ")))
             \(declareTopLevelArray)non_repeating_options=(\(options.filter { !$0.isRepeating }.flatMap(\.completionWords).joined(separator: " ")))
             \(offerFlagsOptionsFunctionName) \
-        \(positionalArguments.contains { $0.isRepeating } ? 9_223_372_036_854_775_807 : positionalArguments.count)
+        \(positionalArguments.contains { $0.isRepeating } ? -1 : positionalArguments.count)
 
         """
     }
