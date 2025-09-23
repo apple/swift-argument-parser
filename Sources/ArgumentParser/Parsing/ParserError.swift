@@ -18,7 +18,7 @@ public enum DumpHelpVersion: String, CaseIterable, Sendable {
   case v1 = "v1"
 
   public var flagName: String {
-    return switch self {
+    switch self {
     case .v0:
       "experimental-dump-help"
     default:
@@ -27,7 +27,7 @@ public enum DumpHelpVersion: String, CaseIterable, Sendable {
   }
 
   public func render(commandStack: [ParsableCommand.Type]) -> String {
-    return switch self {
+    switch self {
     case .v0:
       DumpHelpGeneratorV0(commandStack: commandStack).rendered()
     case .v1:
@@ -36,7 +36,7 @@ public enum DumpHelpVersion: String, CaseIterable, Sendable {
   }
 
   public func render(_ type: any ParsableArguments.Type) -> String {
-    return switch self {
+    switch self {
     case .v0:
       DumpHelpGeneratorV0(type).rendered()
     case .v1:

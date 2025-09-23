@@ -593,7 +593,9 @@ extension XCTest {
       let apiOutput = T._dumpHelp(version: version)
       AssertEqualStrings(actual: actual, expected: apiOutput)
 
-      let adjustedActual = actual.replacingOccurrences(of: "\"serializationVersion\" : 0", with: "\"serializationVersion\" : 1")
+      let adjustedActual = actual.replacingOccurrences(
+        of: "\"serializationVersion\" : 0", with: "\"serializationVersion\" : 1"
+      )
 
       let expected = try self.assertSnapshot(
         actual: adjustedActual,

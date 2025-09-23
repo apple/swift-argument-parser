@@ -121,7 +121,8 @@ extension ToolInfoV1.ArgumentInfo {
       sectionTitle: argument.help.parentTitle.nonEmpty,
       isOptional: argument.help.options.contains(.isOptional),
       isRepeating: argument.help.options.contains(.isRepeating),
-      parsingStrategy: ToolInfoV1.ArgumentInfo.ParsingStrategy(argument: argument),
+      parsingStrategy: ToolInfoV1.ArgumentInfo.ParsingStrategy(
+        argument: argument),
       names: argument.names.map(ToolInfoV1.ArgumentInfo.NameInfo.init),
       preferredName: argument.names.preferredName.map(
         ToolInfoV1.ArgumentInfo.NameInfo.init),
