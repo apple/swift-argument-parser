@@ -580,45 +580,50 @@ extension XCTest {
     file: StaticString = #filePath,
     line: UInt = #line
   ) throws {
-    let actual: String
-    do {
-      _ = try T.parse(["--experimental-dump-help"])
-      XCTFail(file: file, line: line)
-      return
-    } catch {
-      actual = T.fullMessage(for: error)
+    for version in DumpHelpVersion.allCases {
+      let actual: String
+      do {
+        _ = try T.parse(["--\(version.flagName)"])
+        XCTFail(file: file, line: line)
+        return
+      } catch {
+        actual = T.fullMessage(for: error)
+      }
+
+      let apiOutput = T._dumpHelp(version: version)
+      AssertEqualStrings(actual: actual, expected: apiOutput)
+
+      let adjustedActual = actual.replacingOccurrences(of: "\"serializationVersion\" : 0", with: "\"serializationVersion\" : 1")
+
+      let expected = try self.assertSnapshot(
+        actual: adjustedActual,
+        extension: "json",
+        record: record,
+        test: test,
+        file: file,
+        line: line)
+
+      guard let expected else { return }
+
+      try AssertJSONEqualFromString(
+        actual: adjustedActual,
+        expected: expected,
+        for: ToolInfoV1.self,
+        file: file,
+        line: line)
     }
-
-    let apiOutput = T._dumpHelp()
-    AssertEqualStrings(actual: actual, expected: apiOutput)
-
-    let expected = try self.assertSnapshot(
-      actual: actual,
-      extension: "json",
-      record: record,
-      test: test,
-      file: file,
-      line: line)
-
-    guard let expected else { return }
-
-    try AssertJSONEqualFromString(
-      actual: actual,
-      expected: expected,
-      for: ToolInfoV0.self,
-      file: file,
-      line: line)
   }
 
   public func assertDumpHelp(
     command: String,
+    version: DumpHelpVersion = .v1,
     record: Bool = false,
     test: StaticString = #function,
     file: StaticString = #filePath,
     line: UInt = #line
   ) throws {
     let actual = try AssertExecuteCommand(
-      command: command + " --experimental-dump-help",
+      command: command + " --\(version.flagName)",
       expected: nil,
       file: file,
       line: line)

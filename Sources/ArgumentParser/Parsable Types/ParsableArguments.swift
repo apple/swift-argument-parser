@@ -163,8 +163,8 @@ extension ParsableArguments {
   }
 
   /// Returns the JSON representation of this type.
-  public static func _dumpHelp() -> String {
-    DumpHelpGenerator(self).rendered()
+  public static func _dumpHelp(version: DumpHelpVersion) -> String {
+    version.render(self)
   }
 
   /// Returns the exit code for the given error.

@@ -11,7 +11,7 @@
 
 extension Collection {
   /// - returns: A non-empty collection or `nil`.
-  fileprivate var nonEmpty: Self? { isEmpty ? nil : self }
+  internal var nonEmpty: Self? { isEmpty ? nil : self }
 }
 
 /// Header used to validate serialization version of an encoded ToolInfo struct.
@@ -26,7 +26,9 @@ public struct ToolInfoHeader: Decodable {
 }
 
 /// Top-level structure containing serialization version and information for all
-/// commands in a tool.
+/// commands in a tool. Note that this represents the data behind the initial
+/// experimental dump help feature. For the stable version see ToolInfoV1 and
+/// its internal types.
 public struct ToolInfoV0: Codable, Hashable {
   /// A sentinel value indicating the version of the ToolInfo struct used to
   /// generate the serialized form.
@@ -40,7 +42,9 @@ public struct ToolInfoV0: Codable, Hashable {
 }
 
 /// All information about a particular command, including arguments and
-/// subcommands.
+/// subcommands. Note that this represents the data behind the initial
+/// experimental dump help feature. For the stable version see ToolInfoV1 and
+/// its internal types.
 public struct CommandInfoV0: Codable, Hashable {
   /// Super commands and tools.
   public var superCommands: [String]?
@@ -105,7 +109,9 @@ public struct CommandInfoV0: Codable, Hashable {
 }
 
 /// All information about a particular argument, including display names and
-/// options.
+/// options. Note that this represents the data behind the initial
+/// experimental dump help feature. For the stable version see ToolInfoV1 and
+/// its internal types.
 public struct ArgumentInfoV0: Codable, Hashable {
   /// Information about an argument's name.
   public struct NameInfoV0: Codable, Hashable {
@@ -130,7 +136,9 @@ public struct ArgumentInfoV0: Codable, Hashable {
     }
   }
 
-  /// Kind of argument.
+  /// Kind of argument. Note that this represents the data behind the initial
+  /// experimental dump help feature. For the stable version see ToolInfoV1 and
+  /// its internal types.
   public enum KindV0: String, Codable, Hashable {
     /// Argument specified as a bare value on the command line.
     case positional
@@ -140,6 +148,9 @@ public struct ArgumentInfoV0: Codable, Hashable {
     case flag
   }
 
+  /// Note that this represents the data behind the initial
+  /// experimental dump help feature. For the stable version see ToolInfoV1 and
+  /// its internal types.
   public enum ParsingStrategyV0: String, Codable, Hashable {
     /// Expect the next `SplitArguments.Element` to be a value and parse it.
     /// Will fail if the next input is an option.
@@ -160,6 +171,9 @@ public struct ArgumentInfoV0: Codable, Hashable {
     case allUnrecognized
   }
 
+  /// Note that this represents the data behind the initial
+  /// experimental dump help feature. For the stable version see ToolInfoV1 and
+  /// its internal types.
   public enum CompletionKindV0: Codable, Hashable {
     /// Use the specified list of completion strings.
     case list(values: [String])

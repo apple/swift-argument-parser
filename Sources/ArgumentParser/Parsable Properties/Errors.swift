@@ -71,7 +71,7 @@ public struct CleanExit: Error, CustomStringConvertible {
   internal enum Representation {
     case helpRequest(ParsableCommand.Type? = nil)
     case message(String)
-    case dumpRequest(ParsableCommand.Type? = nil)
+    case dumpRequest(ParsableCommand.Type? = nil, DumpHelpVersion)
   }
 
   internal var base: Representation
@@ -113,7 +113,7 @@ public struct CleanExit: Error, CustomStringConvertible {
     switch self.base {
     case .helpRequest: return "--help"
     case .message(let message): return message
-    case .dumpRequest: return "--experimental-dump-help"
+    case .dumpRequest(_, let version): return "--\(version.flagName)"
     }
   }
 }

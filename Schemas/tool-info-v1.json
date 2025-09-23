@@ -1,0 +1,266 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ToolInfo V1 Schema",
+  "description": "JSON schema for Swift Argument Parser ToolInfo V1 structure",
+  "type": "object",
+  "required": ["serializationVersion", "command"],
+  "properties": {
+    "serializationVersion": {
+      "type": "integer",
+      "const": 1,
+      "description": "A sentinel value indicating the version of the ToolInfo struct used to generate the serialized form"
+    },
+    "command": {
+      "$ref": "#/definitions/CommandInfo"
+    }
+  },
+  "definitions": {
+    "CommandInfo": {
+      "type": "object",
+      "required": ["commandName"],
+      "properties": {
+        "superCommands": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Super commands and tools"
+        },
+        "shouldDisplay": {
+          "type": "boolean",
+          "default": true,
+          "description": "Command should appear in help displays"
+        },
+        "commandName": {
+          "type": "string",
+          "description": "Name used to invoke the command"
+        },
+        "abstract": {
+          "type": "string",
+          "description": "Short description of the command's functionality"
+        },
+        "discussion": {
+          "type": "string",
+          "description": "Extended description of the command's functionality"
+        },
+        "defaultSubcommand": {
+          "type": "string",
+          "description": "Optional name of the subcommand invoked when the command is invoked with no arguments"
+        },
+        "subcommands": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CommandInfo"
+          },
+          "description": "List of nested commands"
+        },
+        "arguments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ArgumentInfo"
+          },
+          "description": "List of supported arguments"
+        }
+      }
+    },
+    "ArgumentInfo": {
+      "type": "object",
+      "required": ["kind", "shouldDisplay", "isOptional", "isRepeating", "parsingStrategy"],
+      "properties": {
+        "kind": {
+          "$ref": "#/definitions/ArgumentKind"
+        },
+        "shouldDisplay": {
+          "type": "boolean",
+          "description": "Argument should appear in help displays"
+        },
+        "sectionTitle": {
+          "type": "string",
+          "description": "Custom name of argument's section"
+        },
+        "isOptional": {
+          "type": "boolean",
+          "description": "Argument can be omitted"
+        },
+        "isRepeating": {
+          "type": "boolean",
+          "description": "Argument can be specified multiple times"
+        },
+        "parsingStrategy": {
+          "$ref": "#/definitions/ParsingStrategy"
+        },
+        "names": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/NameInfo"
+          },
+          "description": "All names of the argument"
+        },
+        "preferredName": {
+          "$ref": "#/definitions/NameInfo",
+          "description": "The best name to use when referring to the argument in help displays"
+        },
+        "valueName": {
+          "type": "string",
+          "description": "Name of argument's value"
+        },
+        "defaultValue": {
+          "type": "string",
+          "description": "Default value of the argument is none is specified on the command line"
+        },
+        "allValues": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of all valid values"
+        },
+        "allValueDescriptions": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Mapping of valid values to descriptions of the value"
+        },
+        "completionKind": {
+          "$ref": "#/definitions/CompletionKind",
+          "description": "The type of completion to use for an argument or an option value"
+        },
+        "abstract": {
+          "type": "string",
+          "description": "Short description of the argument's functionality"
+        },
+        "discussion": {
+          "type": "string",
+          "description": "Extended description of the argument's functionality"
+        }
+      }
+    },
+    "NameInfo": {
+      "type": "object",
+      "required": ["kind", "name"],
+      "properties": {
+        "kind": {
+          "$ref": "#/definitions/NameInfoKind"
+        },
+        "name": {
+          "type": "string",
+          "description": "Single or multi-character name of the argument"
+        }
+      }
+    },
+    "NameInfoKind": {
+      "type": "string",
+      "enum": ["long", "short", "longWithSingleDash"],
+      "description": "Kind of prefix of an argument's name"
+    },
+    "ArgumentKind": {
+      "type": "string",
+      "enum": ["positional", "option", "flag"],
+      "description": "Kind of argument"
+    },
+    "ParsingStrategy": {
+      "type": "string",
+      "enum": ["default", "scanningForValue", "unconditional", "upToNextOption", "allRemainingInput", "postTerminator", "allUnrecognized"],
+      "description": "Parsing strategy of the ArgumentInfo"
+    },
+    "CompletionKind": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["list"],
+          "properties": {
+            "list": {
+              "type": "object",
+              "required": ["values"],
+              "properties": {
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "description": "Use the specified list of completion strings"
+        },
+        {
+          "type": "object",
+          "required": ["file"],
+          "properties": {
+            "file": {
+              "type": "object",
+              "required": ["extensions"],
+              "properties": {
+                "extensions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "description": "Complete file names with the specified extensions"
+        },
+        {
+          "type": "object",
+          "required": ["directory"],
+          "properties": {
+            "directory": {
+              "type": "object"
+            }
+          },
+          "description": "Complete directory names that match the specified pattern"
+        },
+        {
+          "type": "object",
+          "required": ["shellCommand"],
+          "properties": {
+            "shellCommand": {
+              "type": "object",
+              "required": ["command"],
+              "properties": {
+                "command": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "description": "Call the given shell command to generate completions"
+        },
+        {
+          "type": "object",
+          "required": ["custom"],
+          "properties": {
+            "custom": {
+              "type": "object"
+            }
+          },
+          "description": "Generate completions using the given three-parameter closure"
+        },
+        {
+          "type": "object",
+          "required": ["customAsync"],
+          "properties": {
+            "customAsync": {
+              "type": "object"
+            }
+          },
+          "description": "Generate completions using the given async three-parameter closure"
+        },
+        {
+          "type": "object",
+          "required": ["customDeprecated"],
+          "properties": {
+            "customDeprecated": {
+              "type": "object"
+            }
+          },
+          "description": "Generate completions using the given one-parameter closure (deprecated)"
+        }
+      ]
+    }
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "serializationVersion": 0,
+  "serializationVersion": 1,
   "command": {
     "commandName": "empty-example"
   }

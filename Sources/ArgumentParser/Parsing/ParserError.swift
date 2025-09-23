@@ -9,11 +9,47 @@
 //
 //===----------------------------------------------------------------------===//
 
+/// Represents supported OpenCLI schema versions.
+public enum DumpHelpVersion: String, CaseIterable, Sendable {
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  case v0 = "v0"
+
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  case v1 = "v1"
+
+  public var flagName: String {
+    return switch self {
+    case .v0:
+      "experimental-dump-help"
+    default:
+      "help-dump-tool-info-\(self.rawValue)"
+    }
+  }
+
+  public func render(commandStack: [ParsableCommand.Type]) -> String {
+    return switch self {
+    case .v0:
+      DumpHelpGeneratorV0(commandStack: commandStack).rendered()
+    case .v1:
+      DumpHelpGeneratorV1(commandStack: commandStack).rendered()
+    }
+  }
+
+  public func render(_ type: any ParsableArguments.Type) -> String {
+    return switch self {
+    case .v0:
+      DumpHelpGeneratorV0(type).rendered()
+    case .v1:
+      DumpHelpGeneratorV1(type).rendered()
+    }
+  }
+}
+
 /// Gets thrown while parsing and will be handled by the error output generation.
 enum ParserError: Error {
   case helpRequested(visibility: ArgumentVisibility)
   case versionRequested
-  case dumpHelpRequested
+  case dumpHelpRequested(DumpHelpVersion)
 
   case completionScriptRequested(shell: String?)
   case completionScriptCustomResponse(String)
