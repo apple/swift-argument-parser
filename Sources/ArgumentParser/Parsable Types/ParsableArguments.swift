@@ -162,8 +162,14 @@ extension ParsableArguments {
       .rendered(screenWidth: columns)
   }
 
-  /// Returns the JSON representation of this type.
-  public static func _dumpHelp(version: DumpHelpVersion) -> String {
+  /// Returns the JSON representation of this type using the tool-info v0 (experimental-dump-help) schema.
+  @available(*, deprecated, renamed: "_dumpToolInfo(version:)")
+  public static func _dumpHelp() -> String {
+    DumpHelpVersion.v0.render(self)
+  }
+
+  /// Returns the JSON representation of the tool-info of this type using the provided version of the schema.
+  public static func _dumpToolInfo(version: DumpHelpVersion) -> String {
     version.render(self)
   }
 

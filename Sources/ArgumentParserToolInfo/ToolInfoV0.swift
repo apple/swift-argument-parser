@@ -26,9 +26,10 @@ public struct ToolInfoHeader: Decodable {
 }
 
 /// Top-level structure containing serialization version and information for all
-/// commands in a tool. Note that this represents the data behind the initial
-/// experimental dump help feature. For the stable version see ToolInfoV1 and
-/// its internal types.
+/// commands in a tool.
+///
+/// Note: This represents the data behind the initial experimental dump help feature.
+/// For the stable version see ToolInfoV1 and its interior types.
 ///
 public struct ToolInfoV0: Codable, Hashable {
   /// A sentinel value indicating the version of the ToolInfo struct used to
@@ -43,9 +44,10 @@ public struct ToolInfoV0: Codable, Hashable {
 }
 
 /// All information about a particular command, including arguments and
-/// subcommands. Note that this represents the data behind the initial
-/// experimental dump help feature. For the stable version see ToolInfoV1 and
-/// its internal types.
+/// subcommands.
+///
+/// Note: This represents the data behind the initial experimental dump help feature.
+/// For the stable version see ToolInfoV1 and its interior types.
 ///
 public struct CommandInfoV0: Codable, Hashable {
   /// Super commands and tools.
@@ -111,9 +113,10 @@ public struct CommandInfoV0: Codable, Hashable {
 }
 
 /// All information about a particular argument, including display names and
-/// options. Note that this represents the data behind the initial
-/// experimental dump help feature. For the stable version see ToolInfoV1 and
-/// its internal types.
+/// options.
+///
+/// Note: This represents the data behind the initial experimental dump help feature.
+/// For the stable version see ToolInfoV1 and its interior types.
 ///
 public struct ArgumentInfoV0: Codable, Hashable {
   /// Information about an argument's name.
@@ -139,9 +142,10 @@ public struct ArgumentInfoV0: Codable, Hashable {
     }
   }
 
-  /// Kind of argument. Note that this represents the data behind the initial
-  /// experimental dump help feature. For the stable version see ToolInfoV1 and
-  /// its internal types.
+  /// Kind of argument.
+  ///
+  /// Note: This represents the data behind the initial experimental dump help feature.
+  /// For the stable version see ToolInfoV1 and its interior types.
   ///
   public enum KindV0: String, Codable, Hashable {
     /// Argument specified as a bare value on the command line.
@@ -152,9 +156,9 @@ public struct ArgumentInfoV0: Codable, Hashable {
     case flag
   }
 
-  /// Note that this represents the data behind the initial
-  /// experimental dump help feature. For the stable version see ToolInfoV1 and
-  /// its internal types.
+  /// This represents the data behind the initial experimental dump help feature.
+  ///
+  /// For the stable version see ToolInfoV1 and its interior types.
   ///
   public enum ParsingStrategyV0: String, Codable, Hashable {
     /// Expect the next `SplitArguments.Element` to be a value and parse it.
@@ -176,9 +180,9 @@ public struct ArgumentInfoV0: Codable, Hashable {
     case allUnrecognized
   }
 
-  /// Note that this represents the data behind the initial
-  /// experimental dump help feature. For the stable version see ToolInfoV1 and
-  /// its internal types.
+  /// This represents the data behind the initial experimental dump help feature.
+  ///
+  /// For the stable version see ToolInfoV1 and its internal types.
   ///
   public enum CompletionKindV0: Codable, Hashable {
     /// Use the specified list of completion strings.

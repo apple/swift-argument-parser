@@ -590,7 +590,7 @@ extension XCTest {
         actual = T.fullMessage(for: error)
       }
 
-      let apiOutput = T._dumpHelp(version: version)
+      let apiOutput = T._dumpToolInfo(version: version)
       AssertEqualStrings(actual: actual, expected: apiOutput)
 
       let adjustedActual = actual.replacingOccurrences(
