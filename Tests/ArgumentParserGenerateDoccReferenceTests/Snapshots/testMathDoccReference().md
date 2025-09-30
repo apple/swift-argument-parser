@@ -12,12 +12,12 @@ math [--version] [--help]
 
 - term `--version`:
 
-*Show the version.*
+Show the version.
 
 
 - term `--help`:
 
-*Show help information.*
+Show help information.
 
 
 ## math.add
@@ -32,24 +32,24 @@ math add [--hex-output] [<values>...] [--version] [--help]
 
 - term `values`:
 
-*A group of integers to operate on.*
+A group of integers to operate on.
 
 
 ### Options
 
 - term `--hex-output`:
 
-*Use hexadecimal notation for the result.*
+Use hexadecimal notation for the result.
 
 
 - term `--version`:
 
-*Show the version.*
+Show the version.
 
 
 - term `--help`:
 
-*Show help information.*
+Show help information.
 
 ## math.multiply
 
@@ -64,24 +64,24 @@ math multiply [--hex-output] [<values>...] [--version]
 
 - term `values`:
 
-*A group of integers to operate on.*
+A group of integers to operate on.
 
 
 ### Options
 
 - term `--hex-output`:
 
-*Use hexadecimal notation for the result.*
+Use hexadecimal notation for the result.
 
 
 - term `--version`:
 
-*Show the version.*
+Show the version.
 
 
 - term `--help`:
 
-*Show help information.*
+Show help information.
 
 ## math.stats
 
@@ -95,12 +95,12 @@ math stats [--version] [--help]
 
 - term `--version`:
 
-*Show the version.*
+Show the version.
 
 
 - term `--help`:
 
-*Show help information.*
+Show help information.
 
 
 ### math.stats.average
@@ -116,24 +116,24 @@ math stats average [--kind=<kind>] [<values>...] [--version]
 
 - term `values`:
 
-*A group of floating-point values to operate on.*
+A group of floating-point values to operate on.
 
 
 ### Options
 
 - term `--kind=\<kind\>`:
 
-*The kind of average to provide.*
+The kind of average to provide.
 
 
 - term `--version`:
 
-*Show the version.*
+Show the version.
 
 
 - term `--help`:
 
-*Show help information.*
+Show help information.
 
 ### math.stats.stdev
 
@@ -147,19 +147,19 @@ math stats stdev [<values>...] [--version] [--help]
 
 - term `values`:
 
-*A group of floating-point values to operate on.*
+A group of floating-point values to operate on.
 
 
 ### Options
 
 - term `--version`:
 
-*Show the version.*
+Show the version.
 
 
 - term `--help`:
 
-*Show help information.*
+Show help information.
 
 ### math.stats.quantiles
 
@@ -187,7 +187,7 @@ math stats quantiles [<one-of-four>] [<custom-arg>]
 
 - term `values`:
 
-*A group of floating-point values to operate on.*
+A group of floating-point values to operate on.
 
 
 ### Options
@@ -209,12 +209,12 @@ math stats quantiles [<one-of-four>] [<custom-arg>]
 
 - term `--version`:
 
-*Show the version.*
+Show the version.
 
 
 - term `--help`:
 
-*Show help information.*
+Show help information.
 
 ## math.help
 
@@ -235,4 +235,4 @@ math help [<subcommands>...] [--version]
 
 - term `--version`:
 
-*Show the version.*
+Show the version.

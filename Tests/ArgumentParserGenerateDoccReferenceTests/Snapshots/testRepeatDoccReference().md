@@ -11,24 +11,24 @@ repeat [--count=<count>] [--include-counter] <phrase>
 
 - term `phrase`:
 
-*The phrase to repeat.*
+The phrase to repeat.
 
 
 ### Options
 
 - term `--count=\<count\>`:
 
-*How many times to repeat 'phrase'.*
+How many times to repeat 'phrase'.
 
 
 - term `--include-counter`:
 
-*Include a counter with each repetition.*
+Include a counter with each repetition.
 
 
 - term `--help`:
 
-*Show help information.*
+Show help information.
 
 
 ## repeat.help

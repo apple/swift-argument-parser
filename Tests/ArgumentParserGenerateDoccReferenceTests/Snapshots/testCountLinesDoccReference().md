@@ -11,24 +11,24 @@ count-lines [<input-file>] [--prefix=<prefix>] [--verbose]
 
 - term `input-file`:
 
-*A file to count lines in. If omitted, counts the lines of stdin.*
+A file to count lines in. If omitted, counts the lines of stdin.
 
 
 ### Options
 
 - term `--prefix=\<prefix\>`:
 
-*Only count lines with this prefix.*
+Only count lines with this prefix.
 
 
 - term `--verbose`:
 
-*Include extra information in the output.*
+Include extra information in the output.
 
 
 - term `--help`:
 
-*Show help information.*
+Show help information.
 
 
 ## count-lines.help

@@ -113,7 +113,7 @@ extension CommandInfoV0 {
           }
 
           if let abstract = arg.abstract {
-            result += "*\(abstract)*\n\n"
+            result += "\(abstract)\n\n"
           }
 
           // Inject a default help description for the the `help` command positional argument 'subcommands'.

@@ -10,24 +10,24 @@ repeat [--count=<count>] [--include-counter] <phrase> [--help]
 
 **phrase**:
 
-*The phrase to repeat.*
+The phrase to repeat.
 
 
 ### Options
 
 **--count=\<count\>**:
 
-*How many times to repeat 'phrase'.*
+How many times to repeat 'phrase'.
 
 
 **--include-counter**:
 
-*Include a counter with each repetition.*
+Include a counter with each repetition.
 
 
 **--help**:
 
-*Show help information.*
+Show help information.
 
 
 ## repeat.help

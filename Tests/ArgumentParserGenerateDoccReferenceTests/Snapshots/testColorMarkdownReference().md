@@ -10,19 +10,19 @@ color --fav=<fav> [--second=<second>] [--help]
 
 **--fav=\<fav\>**:
 
-*Your favorite color.*
+Your favorite color.
 
 
 **--second=\<second\>**:
 
-*Your second favorite color.*
+Your second favorite color.
 
 This is optional.
 
 
 **--help**:
 
-*Show help information.*
+Show help information.
 
 
 ## color.help

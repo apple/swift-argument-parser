@@ -12,12 +12,12 @@ math [--version] [--help]
 
 **--version**:
 
-*Show the version.*
+Show the version.
 
 
 **--help**:
 
-*Show help information.*
+Show help information.
 
 
 ## math.add
@@ -32,24 +32,24 @@ math add [--hex-output] [<values>...] [--version] [--help]
 
 **values**:
 
-*A group of integers to operate on.*
+A group of integers to operate on.
 
 
 ### Options
 
 **--hex-output**:
 
-*Use hexadecimal notation for the result.*
+Use hexadecimal notation for the result.
 
 
 **--version**:
 
-*Show the version.*
+Show the version.
 
 
 **--help**:
 
-*Show help information.*
+Show help information.
 
 ## math.multiply
 
@@ -63,24 +63,24 @@ math multiply [--hex-output] [<values>...] [--version] [--help]
 
 **values**:
 
-*A group of integers to operate on.*
+A group of integers to operate on.
 
 
 ### Options
 
 **--hex-output**:
 
-*Use hexadecimal notation for the result.*
+Use hexadecimal notation for the result.
 
 
 **--version**:
 
-*Show the version.*
+Show the version.
 
 
 **--help**:
 
-*Show help information.*
+Show help information.
 
 ## math.stats
 
@@ -94,12 +94,12 @@ math stats [--version] [--help]
 
 **--version**:
 
-*Show the version.*
+Show the version.
 
 
 **--help**:
 
-*Show help information.*
+Show help information.
 
 
 ### math.stats.average
@@ -114,24 +114,24 @@ math stats average [--kind=<kind>] [<values>...] [--version] [--help]
 
 **values**:
 
-*A group of floating-point values to operate on.*
+A group of floating-point values to operate on.
 
 
 ### Options
 
 **--kind=\<kind\>**:
 
-*The kind of average to provide.*
+The kind of average to provide.
 
 
 **--version**:
 
-*Show the version.*
+Show the version.
 
 
 **--help**:
 
-*Show help information.*
+Show help information.
 
 ### math.stats.stdev
 
@@ -145,19 +145,19 @@ math stats stdev [<values>...] [--version] [--help]
 
 **values**:
 
-*A group of floating-point values to operate on.*
+A group of floating-point values to operate on.
 
 
 ### Options
 
 **--version**:
 
-*Show the version.*
+Show the version.
 
 
 **--help**:
 
-*Show help information.*
+Show help information.
 
 ### math.stats.quantiles
 
@@ -183,7 +183,7 @@ math stats quantiles [<one-of-four>] [<custom-arg>] [<custom-deprecated-arg>]
 
 **values**:
 
-*A group of floating-point values to operate on.*
+A group of floating-point values to operate on.
 
 
 ### Options
@@ -205,12 +205,12 @@ math stats quantiles [<one-of-four>] [<custom-arg>] [<custom-deprecated-arg>]
 
 **--version**:
 
-*Show the version.*
+Show the version.
 
 
 **--help**:
 
-*Show help information.*
+Show help information.
 
 ## math.help
 
@@ -231,4 +231,4 @@ math help [<subcommands>...] [--version]
 
 **--version**:
 
-*Show the version.*
+Show the version.

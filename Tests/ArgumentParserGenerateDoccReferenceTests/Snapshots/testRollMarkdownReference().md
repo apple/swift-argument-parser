@@ -10,29 +10,29 @@ roll [--times=<n>] [--sides=<m>] [--seed=<seed>] [--verbose] [--help]
 
 **--times=\<n\>**:
 
-*Rolls the dice <n> times.*
+Rolls the dice <n> times.
 
 
 **--sides=\<m\>**:
 
-*Rolls an <m>-sided dice.*
+Rolls an <m>-sided dice.
 
 Use this option to override the default value of a six-sided die.
 
 
 **--seed=\<seed\>**:
 
-*A seed to use for repeatable random generation.*
+A seed to use for repeatable random generation.
 
 
 **--verbose**:
 
-*Show all roll results.*
+Show all roll results.
 
 
 **--help**:
 
-*Show help information.*
+Show help information.
 
 
 ## roll.help
