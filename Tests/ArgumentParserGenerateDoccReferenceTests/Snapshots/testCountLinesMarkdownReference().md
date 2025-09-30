@@ -33,4 +33,4 @@ count-lines help [<subcommands>...]
 ### Arguments
 
 **subcommands**:
-*The subcommand(s) you want help for.*
+*Show help information.*

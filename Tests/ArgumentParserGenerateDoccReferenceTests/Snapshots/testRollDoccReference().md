@@ -37,4 +37,4 @@ roll help [<subcommands>...]
 ### Arguments
 
 - term `subcommands`:
-*The subcommand(s) you want help for.*
+*Show help information.*

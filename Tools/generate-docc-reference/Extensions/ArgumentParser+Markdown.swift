@@ -121,7 +121,7 @@ extension CommandInfoV0 {
           // This results in incomplete help documentation, which may confuse users.
           // Since it's a positional argument named 'subcommands', it can be easily confused with actual subcommands.
           if arg.identity() == "subcommands" && arg.abstract == nil {
-            result += "*The subcommand(s) you want help for.*\n\n"
+            result += "*Show help information.*\n"
           }
 
           // If the argument has a discussion, add it directly
