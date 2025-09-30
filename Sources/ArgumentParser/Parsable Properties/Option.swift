@@ -721,6 +721,11 @@ extension Option {
   /// var chars: [Character] = []
   /// ```
   ///
+  /// If the element type conforms to `ExpressibleByArgument` and has enumerable
+  /// value descriptions (via `defaultValueDescription`), the help output will
+  /// display each possible value with its description, similar to single
+  /// enumerable options.
+  ///
   /// - Parameters:
   ///   - wrappedValue: A default value to use for this property, provided
   ///     implicitly by the compiler during property wrapper initialization.
@@ -745,7 +750,13 @@ extension Option {
           container: Array<T>.self,
           key: key,
           kind: .name(key: key, specification: name),
-          help: help,
+          help: .init(
+            help?.abstract ?? "",
+            discussion: help?.discussion,
+            valueName: help?.valueName,
+            visibility: help?.visibility ?? .default,
+            argumentType: T.self
+          ),
           parsingStrategy: parsingStrategy.base,
           initial: wrappedValue,
           completion: completion)
@@ -764,6 +775,11 @@ extension Option {
   /// @Option(name: .customLong("char"))
   /// var chars: [Character]
   /// ```
+  ///
+  /// If the element type conforms to `ExpressibleByArgument` and has enumerable
+  /// value descriptions (via `defaultValueDescription`), the help output will
+  /// display each possible value with its description, similar to single
+  /// enumerable options.
   ///
   /// - Parameters:
   ///   - name: A specification for what names are allowed for this option.
@@ -784,7 +800,13 @@ extension Option {
           container: Array<T>.self,
           key: key,
           kind: .name(key: key, specification: name),
-          help: help,
+          help: .init(
+            help?.abstract ?? "",
+            discussion: help?.discussion,
+            valueName: help?.valueName,
+            visibility: help?.visibility ?? .default,
+            argumentType: T.self
+          ),
           parsingStrategy: parsingStrategy.base,
           initial: nil,
           completion: completion)
