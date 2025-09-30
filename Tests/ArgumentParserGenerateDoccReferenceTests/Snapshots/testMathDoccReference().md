@@ -11,14 +11,10 @@ math [--version] [--help]
 ### Options
 
 - term `--version`:
-
 Show the version.
 
-
 - term `--help`:
-
 Show help information.
-
 
 ## math.add
 
@@ -31,24 +27,17 @@ math add [--hex-output] [<values>...] [--version] [--help]
 ### Arguments
 
 - term `values`:
-
 A group of integers to operate on.
-
 
 ### Options
 
 - term `--hex-output`:
-
 Use hexadecimal notation for the result.
 
-
 - term `--version`:
-
 Show the version.
 
-
 - term `--help`:
-
 Show help information.
 
 ## math.multiply
@@ -63,24 +52,17 @@ math multiply [--hex-output] [<values>...] [--version]
 ### Arguments
 
 - term `values`:
-
 A group of integers to operate on.
-
 
 ### Options
 
 - term `--hex-output`:
-
 Use hexadecimal notation for the result.
 
-
 - term `--version`:
-
 Show the version.
 
-
 - term `--help`:
-
 Show help information.
 
 ## math.stats
@@ -94,14 +76,10 @@ math stats [--version] [--help]
 ### Options
 
 - term `--version`:
-
 Show the version.
 
-
 - term `--help`:
-
 Show help information.
-
 
 ### math.stats.average
 
@@ -115,24 +93,17 @@ math stats average [--kind=<kind>] [<values>...] [--version]
 ### Arguments
 
 - term `values`:
-
 A group of floating-point values to operate on.
-
 
 ### Options
 
 - term `--kind=\<kind\>`:
-
 The kind of average to provide.
 
-
 - term `--version`:
-
 Show the version.
 
-
 - term `--help`:
-
 Show help information.
 
 ### math.stats.stdev
@@ -146,19 +117,14 @@ math stats stdev [<values>...] [--version] [--help]
 ### Arguments
 
 - term `values`:
-
 A group of floating-point values to operate on.
-
 
 ### Options
 
 - term `--version`:
-
 Show the version.
 
-
 - term `--help`:
-
 Show help information.
 
 ### math.stats.quantiles
@@ -178,42 +144,29 @@ math stats quantiles [<one-of-four>] [<custom-arg>]
 
 - term `one-of-four`:
 
-
 - term `custom-arg`:
-
 
 - term `custom-deprecated-arg`:
 
-
 - term `values`:
-
 A group of floating-point values to operate on.
-
 
 ### Options
 
 - term `--file=\<file\>`:
 
-
 - term `--directory=\<directory\>`:
-
 
 - term `--shell=\<shell\>`:
 
-
 - term `--custom=\<custom\>`:
-
 
 - term `--custom-deprecated=\<custom-deprecated\>`:
 
-
 - term `--version`:
-
 Show the version.
 
-
 - term `--help`:
-
 Show help information.
 
 ## math.help
@@ -227,12 +180,10 @@ math help [<subcommands>...] [--version]
 ### Arguments
 
 - term `subcommands`:
-
 *The subcommand(s) you want help for.*
 
 
 ### Options
 
 - term `--version`:
-
 Show the version.

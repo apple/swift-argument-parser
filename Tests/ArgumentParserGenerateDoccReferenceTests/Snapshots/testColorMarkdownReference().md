@@ -9,21 +9,15 @@ color --fav=<fav> [--second=<second>] [--help]
 ### Options
 
 **--fav=\<fav\>**:
-
 Your favorite color.
 
-
 **--second=\<second\>**:
-
 Your second favorite color.
-
 This is optional.
 
 
 **--help**:
-
 Show help information.
-
 
 ## color.help
 
@@ -36,5 +30,4 @@ color help [<subcommands>...]
 ### Arguments
 
 **subcommands**:
-
 *The subcommand(s) you want help for.*

@@ -107,13 +107,13 @@ extension CommandInfoV0 {
           // The italic formatting helps to distinguish the abstract from other parts of the documentation.
           switch markdownStyle {
           case .docc:
-            result += "- term `\(arg.identity())`:\n\n"
+            result += "- term `\(arg.identity())`:\n"
           case .github:
-            result += "**\(arg.identity())**:\n\n"
+            result += "**\(arg.identity())**:\n"
           }
 
           if let abstract = arg.abstract {
-            result += "\(abstract)\n\n"
+            result += "\(abstract)\n"
           }
 
           // Inject a default help description for the the `help` command positional argument 'subcommands'.

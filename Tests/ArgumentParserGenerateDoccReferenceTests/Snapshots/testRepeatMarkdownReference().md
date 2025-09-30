@@ -9,26 +9,18 @@ repeat [--count=<count>] [--include-counter] <phrase> [--help]
 ### Arguments
 
 **phrase**:
-
 The phrase to repeat.
-
 
 ### Options
 
 **--count=\<count\>**:
-
 How many times to repeat 'phrase'.
 
-
 **--include-counter**:
-
 Include a counter with each repetition.
 
-
 **--help**:
-
 Show help information.
-
 
 ## repeat.help
 
@@ -41,5 +33,4 @@ repeat help [<subcommands>...]
 ### Arguments
 
 **subcommands**:
-
 *The subcommand(s) you want help for.*

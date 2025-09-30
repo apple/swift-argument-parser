@@ -11,14 +11,10 @@ math [--version] [--help]
 ### Options
 
 **--version**:
-
 Show the version.
 
-
 **--help**:
-
 Show help information.
-
 
 ## math.add
 
@@ -31,24 +27,17 @@ math add [--hex-output] [<values>...] [--version] [--help]
 ### Arguments
 
 **values**:
-
 A group of integers to operate on.
-
 
 ### Options
 
 **--hex-output**:
-
 Use hexadecimal notation for the result.
 
-
 **--version**:
-
 Show the version.
 
-
 **--help**:
-
 Show help information.
 
 ## math.multiply
@@ -62,24 +51,17 @@ math multiply [--hex-output] [<values>...] [--version] [--help]
 ### Arguments
 
 **values**:
-
 A group of integers to operate on.
-
 
 ### Options
 
 **--hex-output**:
-
 Use hexadecimal notation for the result.
 
-
 **--version**:
-
 Show the version.
 
-
 **--help**:
-
 Show help information.
 
 ## math.stats
@@ -93,14 +75,10 @@ math stats [--version] [--help]
 ### Options
 
 **--version**:
-
 Show the version.
 
-
 **--help**:
-
 Show help information.
-
 
 ### math.stats.average
 
@@ -113,24 +91,17 @@ math stats average [--kind=<kind>] [<values>...] [--version] [--help]
 ### Arguments
 
 **values**:
-
 A group of floating-point values to operate on.
-
 
 ### Options
 
 **--kind=\<kind\>**:
-
 The kind of average to provide.
 
-
 **--version**:
-
 Show the version.
 
-
 **--help**:
-
 Show help information.
 
 ### math.stats.stdev
@@ -144,19 +115,14 @@ math stats stdev [<values>...] [--version] [--help]
 ### Arguments
 
 **values**:
-
 A group of floating-point values to operate on.
-
 
 ### Options
 
 **--version**:
-
 Show the version.
 
-
 **--help**:
-
 Show help information.
 
 ### math.stats.quantiles
@@ -174,42 +140,29 @@ math stats quantiles [<one-of-four>] [<custom-arg>] [<custom-deprecated-arg>]
 
 **one-of-four**:
 
-
 **custom-arg**:
-
 
 **custom-deprecated-arg**:
 
-
 **values**:
-
 A group of floating-point values to operate on.
-
 
 ### Options
 
 **--file=\<file\>**:
 
-
 **--directory=\<directory\>**:
-
 
 **--shell=\<shell\>**:
 
-
 **--custom=\<custom\>**:
-
 
 **--custom-deprecated=\<custom-deprecated\>**:
 
-
 **--version**:
-
 Show the version.
 
-
 **--help**:
-
 Show help information.
 
 ## math.help
@@ -223,12 +176,10 @@ math help [<subcommands>...] [--version]
 ### Arguments
 
 **subcommands**:
-
 *The subcommand(s) you want help for.*
 
 
 ### Options
 
 **--version**:
-
 Show the version.
