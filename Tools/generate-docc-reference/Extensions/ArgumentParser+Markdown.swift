@@ -183,8 +183,8 @@ extension CommandInfoV0 {
     return multilineString
   }
 
-  // Assign a default section title based on the arguments types
-  func assignSectionTitle(to argument: ArgumentInfoV0) -> String {
+  // Returns the default section title for the provided the argument.
+  func sectionTitle(for argument: ArgumentInfoV0) -> String {
     if let sectionTitle = argument.sectionTitle {
       return sectionTitle
     } else {
