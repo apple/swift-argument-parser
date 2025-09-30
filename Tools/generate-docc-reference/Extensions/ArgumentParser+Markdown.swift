@@ -107,7 +107,7 @@ extension CommandInfoV0 {
           // The italic formatting helps to distinguish the abstract from other parts of the documentation.
           switch markdownStyle {
           case .docc:
-            result += "- term **\(arg.identity()):**\n\n"
+            result += "- term `\(arg.identity()):`\n\n"
           case .github:
             result += "**\(arg.identity()):**\n\n"
           }

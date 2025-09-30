@@ -10,12 +10,12 @@ math [--version] [--help]
 
 ### Options
 
-- term **--version:**
+- term `--version:`
 
 *Show the version.*
 
 
-- term **--help:**
+- term `--help:`
 
 *Show help information.*
 
@@ -30,24 +30,24 @@ math add [--hex-output] [<values>...] [--version] [--help]
 
 ### Arguments
 
-- term **values:**
+- term `values:`
 
 *A group of integers to operate on.*
 
 
 ### Options
 
-- term **--hex-output:**
+- term `--hex-output:`
 
 *Use hexadecimal notation for the result.*
 
 
-- term **--version:**
+- term `--version:`
 
 *Show the version.*
 
 
-- term **--help:**
+- term `--help:`
 
 *Show help information.*
 
@@ -62,24 +62,24 @@ math multiply [--hex-output] [<values>...] [--version]
 
 ### Arguments
 
-- term **values:**
+- term `values:`
 
 *A group of integers to operate on.*
 
 
 ### Options
 
-- term **--hex-output:**
+- term `--hex-output:`
 
 *Use hexadecimal notation for the result.*
 
 
-- term **--version:**
+- term `--version:`
 
 *Show the version.*
 
 
-- term **--help:**
+- term `--help:`
 
 *Show help information.*
 
@@ -93,12 +93,12 @@ math stats [--version] [--help]
 
 ### Options
 
-- term **--version:**
+- term `--version:`
 
 *Show the version.*
 
 
-- term **--help:**
+- term `--help:`
 
 *Show help information.*
 
@@ -114,24 +114,24 @@ math stats average [--kind=<kind>] [<values>...] [--version]
 
 ### Arguments
 
-- term **values:**
+- term `values:`
 
 *A group of floating-point values to operate on.*
 
 
 ### Options
 
-- term **--kind=\<kind\>:**
+- term `--kind=\<kind\>:`
 
 *The kind of average to provide.*
 
 
-- term **--version:**
+- term `--version:`
 
 *Show the version.*
 
 
-- term **--help:**
+- term `--help:`
 
 *Show help information.*
 
@@ -145,19 +145,19 @@ math stats stdev [<values>...] [--version] [--help]
 
 ### Arguments
 
-- term **values:**
+- term `values:`
 
 *A group of floating-point values to operate on.*
 
 
 ### Options
 
-- term **--version:**
+- term `--version:`
 
 *Show the version.*
 
 
-- term **--help:**
+- term `--help:`
 
 *Show help information.*
 
@@ -176,43 +176,43 @@ math stats quantiles [<one-of-four>] [<custom-arg>]
 
 ### Arguments
 
-- term **one-of-four:**
+- term `one-of-four:`
 
 
-- term **custom-arg:**
+- term `custom-arg:`
 
 
-- term **custom-deprecated-arg:**
+- term `custom-deprecated-arg:`
 
 
-- term **values:**
+- term `values:`
 
 *A group of floating-point values to operate on.*
 
 
 ### Options
 
-- term **--file=\<file\>:**
+- term `--file=\<file\>:`
 
 
-- term **--directory=\<directory\>:**
+- term `--directory=\<directory\>:`
 
 
-- term **--shell=\<shell\>:**
+- term `--shell=\<shell\>:`
 
 
-- term **--custom=\<custom\>:**
+- term `--custom=\<custom\>:`
 
 
-- term **--custom-deprecated=\<custom-deprecated\>:**
+- term `--custom-deprecated=\<custom-deprecated\>:`
 
 
-- term **--version:**
+- term `--version:`
 
 *Show the version.*
 
 
-- term **--help:**
+- term `--help:`
 
 *Show help information.*
 
@@ -226,13 +226,13 @@ math help [<subcommands>...] [--version]
 
 ### Arguments
 
-- term **subcommands:**
+- term `subcommands:`
 
 *The subcommand(s) you want help for.*
 
 
 ### Options
 
-- term **--version:**
+- term `--version:`
 
 *Show the version.*
