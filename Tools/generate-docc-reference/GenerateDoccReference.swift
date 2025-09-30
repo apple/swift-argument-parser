@@ -109,7 +109,7 @@ struct GenerateDoccReference: ParsableCommand {
       throw GenerateDoccReferenceError.unableToParseToolOutput(error: error)
     }
 
-    var toolInfo: ToolInfoV0
+    let toolInfo: ToolInfoV0
 
     do {
       toolInfo = try JSONDecoder().decode(ToolInfoV0.self, from: data)
