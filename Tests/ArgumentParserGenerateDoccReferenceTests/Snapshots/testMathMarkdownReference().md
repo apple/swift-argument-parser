@@ -10,12 +10,12 @@ math [--version] [--help]
 
 ### Options
 
-**--version:**
+**--version**:
 
 *Show the version.*
 
 
-**--help:**
+**--help**:
 
 *Show help information.*
 
@@ -30,24 +30,24 @@ math add [--hex-output] [<values>...] [--version] [--help]
 
 ### Arguments
 
-**values:**
+**values**:
 
 *A group of integers to operate on.*
 
 
 ### Options
 
-**--hex-output:**
+**--hex-output**:
 
 *Use hexadecimal notation for the result.*
 
 
-**--version:**
+**--version**:
 
 *Show the version.*
 
 
-**--help:**
+**--help**:
 
 *Show help information.*
 
@@ -61,24 +61,24 @@ math multiply [--hex-output] [<values>...] [--version] [--help]
 
 ### Arguments
 
-**values:**
+**values**:
 
 *A group of integers to operate on.*
 
 
 ### Options
 
-**--hex-output:**
+**--hex-output**:
 
 *Use hexadecimal notation for the result.*
 
 
-**--version:**
+**--version**:
 
 *Show the version.*
 
 
-**--help:**
+**--help**:
 
 *Show help information.*
 
@@ -92,12 +92,12 @@ math stats [--version] [--help]
 
 ### Options
 
-**--version:**
+**--version**:
 
 *Show the version.*
 
 
-**--help:**
+**--help**:
 
 *Show help information.*
 
@@ -112,24 +112,24 @@ math stats average [--kind=<kind>] [<values>...] [--version] [--help]
 
 ### Arguments
 
-**values:**
+**values**:
 
 *A group of floating-point values to operate on.*
 
 
 ### Options
 
-**--kind=\<kind\>:**
+**--kind=\<kind\>**:
 
 *The kind of average to provide.*
 
 
-**--version:**
+**--version**:
 
 *Show the version.*
 
 
-**--help:**
+**--help**:
 
 *Show help information.*
 
@@ -143,19 +143,19 @@ math stats stdev [<values>...] [--version] [--help]
 
 ### Arguments
 
-**values:**
+**values**:
 
 *A group of floating-point values to operate on.*
 
 
 ### Options
 
-**--version:**
+**--version**:
 
 *Show the version.*
 
 
-**--help:**
+**--help**:
 
 *Show help information.*
 
@@ -172,43 +172,43 @@ math stats quantiles [<one-of-four>] [<custom-arg>] [<custom-deprecated-arg>]
 
 ### Arguments
 
-**one-of-four:**
+**one-of-four**:
 
 
-**custom-arg:**
+**custom-arg**:
 
 
-**custom-deprecated-arg:**
+**custom-deprecated-arg**:
 
 
-**values:**
+**values**:
 
 *A group of floating-point values to operate on.*
 
 
 ### Options
 
-**--file=\<file\>:**
+**--file=\<file\>**:
 
 
-**--directory=\<directory\>:**
+**--directory=\<directory\>**:
 
 
-**--shell=\<shell\>:**
+**--shell=\<shell\>**:
 
 
-**--custom=\<custom\>:**
+**--custom=\<custom\>**:
 
 
-**--custom-deprecated=\<custom-deprecated\>:**
+**--custom-deprecated=\<custom-deprecated\>**:
 
 
-**--version:**
+**--version**:
 
 *Show the version.*
 
 
-**--help:**
+**--help**:
 
 *Show help information.*
 
@@ -222,13 +222,13 @@ math help [<subcommands>...] [--version]
 
 ### Arguments
 
-**subcommands:**
+**subcommands**:
 
 *The subcommand(s) you want help for.*
 
 
 ### Options
 
-**--version:**
+**--version**:
 
 *Show the version.*

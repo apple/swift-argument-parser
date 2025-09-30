@@ -8,29 +8,29 @@ roll [--times=<n>] [--sides=<m>] [--seed=<seed>] [--verbose] [--help]
 
 ### Options
 
-**--times=\<n\>:**
+**--times=\<n\>**:
 
 *Rolls the dice <n> times.*
 
 
-**--sides=\<m\>:**
+**--sides=\<m\>**:
 
 *Rolls an <m>-sided dice.*
 
 Use this option to override the default value of a six-sided die.
 
 
-**--seed=\<seed\>:**
+**--seed=\<seed\>**:
 
 *A seed to use for repeatable random generation.*
 
 
-**--verbose:**
+**--verbose**:
 
 *Show all roll results.*
 
 
-**--help:**
+**--help**:
 
 *Show help information.*
 
@@ -45,6 +45,6 @@ roll help [<subcommands>...]
 
 ### Arguments
 
-**subcommands:**
+**subcommands**:
 
 *The subcommand(s) you want help for.*
