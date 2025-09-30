@@ -84,7 +84,7 @@ extension CommandInfoV0 {
         grouping: args.filter {
           $0.shouldDisplay
         }
-      ) { self.assignSectionTitle(to: $0) }
+      ) { $0.sectionTitleDefault }
 
       // Iterate through the grouped arguments, sorted by section title
       // Sorting ensures that the sections appear in a clear, predictable order in the final documentation.
@@ -182,20 +182,6 @@ extension CommandInfoV0 {
     }
     return multilineString
   }
-
-  // Returns the default section title for the provided the argument.
-  func sectionTitle(for argument: ArgumentInfoV0) -> String {
-    if let sectionTitle = argument.sectionTitle {
-      return sectionTitle
-    } else {
-      switch argument.kind {
-      case .positional:
-        return "Arguments"
-      case .option, .flag:
-        return "Options"
-      }
-    }
-  }
 }
 
 
@@ -268,4 +254,18 @@ extension ArgumentInfoV0 {
     }
     return inner
   }
+
+  /// Returns the default section title for this argument.
+      fileprivate var sectionTitleDefault: String {
+          if let sectionTitle = self.sectionTitle {
+              return sectionTitle
+          } else {
+              switch self.kind {
+              case .positional:
+                  return "Arguments"
+              case .option, .flag:
+                  return "Options"
+              }
+          }
+      }
 }
