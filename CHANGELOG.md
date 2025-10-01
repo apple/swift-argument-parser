@@ -8,6 +8,12 @@ Add new items at the end of the relevant section under **Unreleased**.
 
 ---
 
+## [1.6.2] - 2025-10-01
+
+### Fixes
+
+- Fixes an ArgumentParser build failure for WASI. ([#794])
+
 ## [1.6.1] - 2025-07-01
 
 ### Fixes
@@ -960,7 +966,8 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 
 <!-- Link references for releases -->
 
-[Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.6.1...HEAD
+[Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.6.2...HEAD
+[1.6.2]: https://github.com/apple/swift-argument-parser/compare/1.6.1...1.6.2
 [1.6.1]: https://github.com/apple/swift-argument-parser/compare/1.6.0...1.6.1
 [1.6.0]: https://github.com/apple/swift-argument-parser/compare/1.5.1...1.6.0
 [1.5.1]: https://github.com/apple/swift-argument-parser/compare/1.5.0...1.5.1
@@ -1153,6 +1160,7 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [#783]: https://github.com/apple/swift-argument-parser/pull/783
 [#789]: https://github.com/apple/swift-argument-parser/pull/789
 [#792]: https://github.com/apple/swift-argument-parser/pull/792
+[#794]: https://github.com/apple/swift-argument-parser/pull/794
 
 <!-- Link references for contributors -->
 
@@ -1207,6 +1215,7 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [keith]: https://github.com/apple/swift-argument-parser/commits?author=keith
 [KeithBird]: https://github.com/apple/swift-argument-parser/commits?author=KeithBird
 [kennyyork]: https://github.com/apple/swift-argument-parser/commits?author=kennyyork
+[kkebo]: https://github.com/apple/swift-argument-parser/commits?author=kkebo
 [kkk669]: https://github.com/apple/swift-argument-parser/commits?author=kkk669
 [klaaspieter]: https://github.com/apple/swift-argument-parser/commits?author=klaaspieter
 [konomae]: https://github.com/apple/swift-argument-parser/commits?author=konomae
