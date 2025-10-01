@@ -176,7 +176,8 @@ extension ErrorMessageGenerator {
   func makeErrorMessage() -> String? {
     switch error {
     case .helpRequested, .versionRequested, .completionScriptRequested,
-      .completionScriptCustomResponse, .dumpHelpRequested:
+      .completionScriptCustomResponse, .dumpHelpRequested,
+      .dumpOpenCLIRequested:
       return nil
 
     case .unsupportedShell(let shell?):

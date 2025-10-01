@@ -39,6 +39,7 @@ add_library(ArgumentParser
   Usage/HelpCommand.swift
   Usage/HelpGenerator.swift
   Usage/MessageInfo.swift
+  Usage/OpenCLIv0_1Generator.swift
   Usage/UsageGenerator.swift
 
   Utilities/CollectionExtensions.swift
@@ -61,6 +62,7 @@ set_target_properties(ArgumentParser PROPERTIES
 target_compile_options(ArgumentParser PRIVATE
   $<$<BOOL:${BUILD_TESTING}>:-enable-testing>)
 target_link_libraries(ArgumentParser PRIVATE
+  ArgumentParserOpenCLI
   ArgumentParserToolInfo)
 if(Foundation_FOUND)
   target_link_libraries(ArgumentParser PRIVATE

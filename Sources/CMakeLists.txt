@@ -1,4 +1,5 @@
 add_subdirectory(ArgumentParser)
+add_subdirectory(ArgumentParserOpenCLI)
 add_subdirectory(ArgumentParserToolInfo)
 if(BUILD_TESTING)
   add_subdirectory(ArgumentParserTestHelpers)

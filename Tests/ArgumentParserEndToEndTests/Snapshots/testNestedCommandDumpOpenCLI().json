@@ -1,0 +1,52 @@
+{
+  "commands" : [
+    {
+      "description" : "A subcommand",
+      "name" : "sub",
+      "options" : [
+        {
+          "arguments" : [
+            {
+              "description" : "Sub option",
+              "name" : "value",
+              "swiftArgumentParserDefaultValue" : "42"
+            }
+          ],
+          "description" : "Sub option",
+          "name" : "--value",
+          "recursive" : false,
+          "swiftArgumentParserDefaultValue" : "42"
+        },
+        {
+          "aliases" : [
+            "--help"
+          ],
+          "description" : "Show help information.",
+          "name" : "-h",
+          "recursive" : false
+        }
+      ]
+    }
+  ],
+  "info" : {
+    "summary" : "A parent command with subcommands",
+    "title" : "parent",
+    "version" : "1.0.0"
+  },
+  "opencli" : "0.1",
+  "options" : [
+    {
+      "description" : "Global flag",
+      "name" : "--global",
+      "recursive" : false
+    },
+    {
+      "aliases" : [
+        "--help"
+      ],
+      "description" : "Show help information.",
+      "name" : "-h",
+      "recursive" : false
+    }
+  ]
+}
