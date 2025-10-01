@@ -60,8 +60,52 @@ extension CommandInfoV0 {
   private var completionFunctions: String {
     let functionName = completionFunctionName
 
-    let argumentSpecsAndSetupScripts = (arguments ?? []).compactMap {
-      argumentSpecAndSetupScript($0)
+    var repeatingPositionalIndicator = ""
+    let argumentSpecsAndSetupScripts = (arguments ?? []).compactMap { arg in
+      guard arg.shouldDisplay else {
+        return nil as (argumentSpec: String, setupScript: String?)?
+      }
+
+      let line: String
+      let names = arg.names ?? []
+      switch names.count {
+      case 0:
+        guard repeatingPositionalIndicator.isEmpty else {
+          return nil
+        }
+
+        if arg.isRepeating {
+          repeatingPositionalIndicator = "*"
+        }
+        line = repeatingPositionalIndicator
+      case 1:
+        // swift-format-ignore: NeverForceUnwrap
+        // Preconditions: names has exactly one element.
+        line = """
+          \(arg.isRepeatingOption ? "*" : "")\(names.first!.commonCompletionSynopsisString().zshEscapeForSingleQuotedOptionSpec())\(arg.completionAbstract)
+          """
+      default:
+        let synopses = names.map {
+          $0.commonCompletionSynopsisString()
+            .zshEscapeForSingleQuotedOptionSpec()
+        }
+        line = """
+          \(arg.isRepeatingOption ? "*" : "(\(synopses.joined(separator: " ")))")'\
+          {\(synopses.joined(separator: ","))}\
+          '\(arg.completionAbstract)
+          """
+      }
+
+      switch arg.kind {
+      case .option, .positional:
+        let (argumentAction, setupScript) = argumentActionAndSetupScript(arg)
+        return (
+          "'\(line):\(arg.valueName?.zshEscapeForSingleQuotedOptionSpec() ?? ""):\(argumentAction)'",
+          setupScript
+        )
+      case .flag:
+        return ("'\(line)'", nil)
+      }
     }
     var argumentSpecs = argumentSpecsAndSetupScripts.map(\.argumentSpec)
     let setupScripts = argumentSpecsAndSetupScripts.compactMap(\.setupScript)
@@ -137,45 +181,6 @@ extension CommandInfoV0 {
 
       \(subcommands.map(\.completionFunctions).joined())
       """
-  }
-
-  private func argumentSpecAndSetupScript(
-    _ arg: ArgumentInfoV0
-  ) -> (argumentSpec: String, setupScript: String?)? {
-    guard arg.shouldDisplay else { return nil }
-
-    let line: String
-    let names = arg.names ?? []
-    switch names.count {
-    case 0:
-      line = arg.isRepeating ? "*" : ""
-    case 1:
-      // swift-format-ignore: NeverForceUnwrap
-      // Preconditions: names has exactly one element.
-      line = """
-        \(arg.isRepeatingOption ? "*" : "")\(names.first!.commonCompletionSynopsisString().zshEscapeForSingleQuotedOptionSpec())\(arg.completionAbstract)
-        """
-    default:
-      let synopses = names.map {
-        $0.commonCompletionSynopsisString().zshEscapeForSingleQuotedOptionSpec()
-      }
-      line = """
-        \(arg.isRepeatingOption ? "*" : "(\(synopses.joined(separator: " ")))")'\
-        {\(synopses.joined(separator: ","))}\
-        '\(arg.completionAbstract)
-        """
-    }
-
-    switch arg.kind {
-    case .option, .positional:
-      let (argumentAction, setupScript) = argumentActionAndSetupScript(arg)
-      return (
-        "'\(line):\(arg.valueName?.zshEscapeForSingleQuotedOptionSpec() ?? ""):\(argumentAction)'",
-        setupScript
-      )
-    case .flag:
-      return ("'\(line)'", nil)
-    }
   }
 
   /// Returns the zsh "action" for an argument completion string.
