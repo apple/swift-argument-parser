@@ -1095,6 +1095,80 @@ extension HelpGenerationTests {
         """)
   }
 
+  struct CustomOptionAsListWithSingleDefaultValue: ParsableCommand {
+    @Option(
+      help: "An option with enumerable values.")
+    var opt: [OptionValues] = [.red]
+  }
+
+  func testEnumerableOptionAsListWithSingleDefault() {
+    AssertHelp(
+      .default,
+      for: CustomOptionAsListWithSingleDefaultValue.self,
+      columns: 100,
+      equals: """
+        USAGE: custom-option-as-list-with-single-default-value [--opt <opt> ...]
+
+        OPTIONS:
+          --opt <opt>             An option with enumerable values. (default: red)
+                blue              - The color of the sky.
+                red               - The color of a rose.
+                yellow            - The color of the sun.
+          -h, --help              Show help information.
+
+        """)
+  }
+
+  struct CustomOptionAsListWithMultipleDefaultValue: ParsableCommand {
+    @Option(
+      help: "An option with multiple enumerable values.")
+    var opt: [OptionValues] = [.red, .blue]
+  }
+
+  func testEnumerableOptionAsListWithMultipleDefault() {
+    AssertHelp(
+      .default,
+      for: CustomOptionAsListWithMultipleDefaultValue.self,
+      columns: 100,
+      equals: """
+        USAGE: custom-option-as-list-with-multiple-default-value [--opt <opt> ...]
+
+        OPTIONS:
+          --opt <opt>             An option with multiple enumerable values. (default: red, blue)
+                blue              - The color of the sky.
+                red               - The color of a rose.
+                yellow            - The color of the sun.
+          -h, --help              Show help information.
+
+        """)
+
+  }
+
+  struct CustomOptionAsListWithEmptyArrayAsDefault: ParsableCommand {
+    @Option(
+      help: "An option with default value set to empty array.")
+    var opt: [OptionValues] = []
+  }
+
+  func testEnumerableOptionAsListWithEmptyArrayAsDefault() {
+    AssertHelp(
+      .default,
+      for: CustomOptionAsListWithEmptyArrayAsDefault.self,
+      columns: 100,
+      equals: """
+        USAGE: custom-option-as-list-with-empty-array-as-default [--opt <opt> ...]
+
+        OPTIONS:
+          --opt <opt>             An option with default value set to empty array.
+                blue              - The color of the sky.
+                red               - The color of a rose.
+                yellow            - The color of the sun.
+          -h, --help              Show help information.
+
+        """)
+
+  }
+
   struct CustomOptionWithDefault: ParsableCommand {
     @Option(help: "An option with enumerable values and a custom default.")
     var opt: OptionValues = .red
