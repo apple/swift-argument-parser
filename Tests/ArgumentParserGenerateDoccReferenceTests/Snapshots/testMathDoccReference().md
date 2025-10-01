@@ -8,15 +8,13 @@ A utility for performing maths.
 math [--version] [--help]
 ```
 
-- term **--version**:
+### Options
 
-*Show the version.*
+- term `--version`:
+Show the version.
 
-
-- term **--help**:
-
-*Show help information.*
-
+- term `--help`:
+Show help information.
 
 ## math.add
 
@@ -26,27 +24,21 @@ Print the sum of the values.
 math add [--hex-output] [<values>...] [--version] [--help]
 ```
 
-- term **--hex-output**:
+### Arguments
 
-*Use hexadecimal notation for the result.*
+- term `values`:
+A group of integers to operate on.
 
+### Options
 
-- term **values**:
+- term `--hex-output`:
+Use hexadecimal notation for the result.
 
-*A group of integers to operate on.*
+- term `--version`:
+Show the version.
 
-
-- term **--version**:
-
-*Show the version.*
-
-
-- term **--help**:
-
-*Show help information.*
-
-
-
+- term `--help`:
+Show help information.
 
 ## math.multiply
 
@@ -57,27 +49,21 @@ math multiply [--hex-output] [<values>...] [--version]
   [--help]
 ```
 
-- term **--hex-output**:
+### Arguments
 
-*Use hexadecimal notation for the result.*
+- term `values`:
+A group of integers to operate on.
 
+### Options
 
-- term **values**:
+- term `--hex-output`:
+Use hexadecimal notation for the result.
 
-*A group of integers to operate on.*
+- term `--version`:
+Show the version.
 
-
-- term **--version**:
-
-*Show the version.*
-
-
-- term **--help**:
-
-*Show help information.*
-
-
-
+- term `--help`:
+Show help information.
 
 ## math.stats
 
@@ -87,15 +73,13 @@ Calculate descriptive statistics.
 math stats [--version] [--help]
 ```
 
-- term **--version**:
+### Options
 
-*Show the version.*
+- term `--version`:
+Show the version.
 
-
-- term **--help**:
-
-*Show help information.*
-
+- term `--help`:
+Show help information.
 
 ### math.stats.average
 
@@ -106,27 +90,21 @@ math stats average [--kind=<kind>] [<values>...] [--version]
   [--help]
 ```
 
-- term **--kind=\<kind\>**:
+### Arguments
 
-*The kind of average to provide.*
+- term `values`:
+A group of floating-point values to operate on.
 
+### Options
 
-- term **values**:
+- term `--kind=\<kind\>`:
+The kind of average to provide.
 
-*A group of floating-point values to operate on.*
+- term `--version`:
+Show the version.
 
-
-- term **--version**:
-
-*Show the version.*
-
-
-- term **--help**:
-
-*Show help information.*
-
-
-
+- term `--help`:
+Show help information.
 
 ### math.stats.stdev
 
@@ -136,22 +114,18 @@ Print the standard deviation of the values.
 math stats stdev [<values>...] [--version] [--help]
 ```
 
-- term **values**:
+### Arguments
 
-*A group of floating-point values to operate on.*
+- term `values`:
+A group of floating-point values to operate on.
 
+### Options
 
-- term **--version**:
+- term `--version`:
+Show the version.
 
-*Show the version.*
-
-
-- term **--help**:
-
-*Show help information.*
-
-
-
+- term `--help`:
+Show help information.
 
 ### math.stats.quantiles
 
@@ -166,48 +140,34 @@ math stats quantiles [<one-of-four>] [<custom-arg>]
   [--help]
 ```
 
-- term **one-of-four**:
+### Arguments
 
+- term `one-of-four`:
 
-- term **custom-arg**:
+- term `custom-arg`:
 
+- term `custom-deprecated-arg`:
 
-- term **custom-deprecated-arg**:
+- term `values`:
+A group of floating-point values to operate on.
 
+### Options
 
-- term **values**:
+- term `--file=\<file\>`:
 
-*A group of floating-point values to operate on.*
+- term `--directory=\<directory\>`:
 
+- term `--shell=\<shell\>`:
 
-- term **--file=\<file\>**:
+- term `--custom=\<custom\>`:
 
+- term `--custom-deprecated=\<custom-deprecated\>`:
 
-- term **--directory=\<directory\>**:
+- term `--version`:
+Show the version.
 
-
-- term **--shell=\<shell\>**:
-
-
-- term **--custom=\<custom\>**:
-
-
-- term **--custom-deprecated=\<custom-deprecated\>**:
-
-
-- term **--version**:
-
-*Show the version.*
-
-
-- term **--help**:
-
-*Show help information.*
-
-
-
-
-
+- term `--help`:
+Show help information.
 
 ## math.help
 
@@ -217,14 +177,12 @@ Show subcommand help information.
 math help [<subcommands>...] [--version]
 ```
 
-- term **subcommands**:
+### Arguments
 
+- term `subcommands`:
+*Show help information.*
 
-- term **--version**:
+### Options
 
-*Show the version.*
-
-
-
-
-
+- term `--version`:
+Show the version.
