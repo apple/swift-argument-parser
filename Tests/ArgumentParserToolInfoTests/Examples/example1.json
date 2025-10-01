@@ -1,5 +1,5 @@
 {
-  "serializationVersion": 0,
+  "serializationVersion": 1,
   "command": {
     "superCommands": [
       "parent2",
@@ -33,7 +33,7 @@
           {
             "kind": "longWithSingleDash",
             "name": "frt"
-          },
+          }
         ],
         "preferredName": {
           "kind": "long",
@@ -47,21 +47,21 @@
           "coconut"
         ],
         "abstract": "1234",
-        "discussion": "abcd",
+        "discussion": "abcd"
       },
       {
         "kind": "option",
         "shouldDisplay": false,
         "isOptional": false,
         "isRepeating": false,
-        "parsingStrategy" : "default",
+        "parsingStrategy" : "default"
       },
       {
         "kind": "flag",
         "shouldDisplay": false,
         "isOptional": false,
         "isRepeating": false,
-        "parsingStrategy" : "default",
+        "parsingStrategy" : "default"
       }
     ]
   }

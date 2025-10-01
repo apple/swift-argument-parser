@@ -1,5 +1,5 @@
 add_library(ArgumentParserToolInfo STATIC
-  ToolInfo.swift)
+  ToolInfoV0.swift ToolInfoV1.swift)
 # NOTE: workaround for CMake not setting up include flags yet
 set_target_properties(ArgumentParserToolInfo PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_Swift_MODULE_DIRECTORY})
