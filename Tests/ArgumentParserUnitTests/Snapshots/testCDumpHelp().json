@@ -1,5 +1,8 @@
 {
   "command" : {
+    "aliases" : [
+
+    ],
     "arguments" : [
       {
         "abstract" : "A color to select.",
@@ -202,6 +205,9 @@
     "subcommands" : [
       {
         "abstract" : "Show subcommand help information.",
+        "aliases" : [
+
+        ],
         "arguments" : [
           {
             "isOptional" : true,
