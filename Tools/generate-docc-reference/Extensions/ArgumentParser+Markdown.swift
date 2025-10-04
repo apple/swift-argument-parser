@@ -78,10 +78,13 @@ extension CommandInfoV0 {
     }
 
     if let args = self.arguments {
-      // Group arguments by sectionTitle
-      // This is done to organize the arguments into categories (e.g., options, flags)
+      // Group the arguments by their section titles (either default or custom):
+      // - This organizes arguments into meaningful categories (e.g., "Arguments", "Options", or custom sections).
+      // - Using `sectionTitleDefault` ensures each argument falls into a valid section even if no custom title is provided.
       let groupedArgs = Dictionary(grouping: args.filter { $0.shouldDisplay }) { $0.sectionTitleDefault }
 
+      // Extract all custom section titles in the order they appear:
+      // - These titles are user defined and should appear between the default "Arguments" and "Options" sections.
       var customSectionTitles: [String] = []
       for arg in args {
           if let title = arg.sectionTitle,
@@ -91,30 +94,24 @@ extension CommandInfoV0 {
           }
       }
 
-      // Build final section order
+      // Build final section order to match the help output for consistency
       let finalSectionOrder = ["Arguments"] + customSectionTitles + ["Options"]
 
-      // Iterate through the grouped arguments, sorted by section title
-      // Sorting ensures that the sections appear in a clear, predictable order in the final documentation.
-      // The sections are listed alphabetically based on their title, enhancing readability.
+      // Iterate through the sections in the final defined order:
+      // - "Arguments" appear first, followed by any custom section titles, and "Options" last.
+      // - This order mirrors the help output, making the documentation intuitive and consistent.
       for section in finalSectionOrder  {
         guard let arguments = groupedArgs[section] else { continue }
-        
-        // Add section title as a Markdown header to the result
+
         // Adding section titles as Markdown headers helps separate sections in the documentation,
-        // making it easier for users to navigate and understand the structure of the arguments.
+        // improving the visual structure of the documentation.
         result += "### \(section)\n\n"
 
-        // Iterate through each argument in the section
         // Iterating through each argument allows us to add details for each argument under its respective section.
         for arg in arguments {
-          // Add the argument identity in bold Markdown format
-          // The argument identity is emphasized in bold to make it stand out in the documentation.
-
-
-          // If the argument has an abstract, add it in italic Markdown format
-          // Including the abstract provides a brief description of the argument's purpose.
-          // The italic formatting helps to distinguish the abstract from other parts of the documentation.
+          // Format the argument name according to the documentation style:
+          // - For DocC, use `- term `name`:` so it is recognized as a term in a definition list.
+          // - For GitHub Markdown, use bold `**name**:` to visually emphasize the argument as a header.
           switch markdownStyle {
           case .docc:
             result += "- term `\(arg.identity())`:\n"
@@ -122,28 +119,24 @@ extension CommandInfoV0 {
             result += "**\(arg.identity())**:\n"
           }
 
+          // Including the abstract provides a brief description of the argument's purpose.
           if let abstract = arg.abstract {
             result += "\(abstract)\n"
           }
 
-          // Inject a default help description for the the `help` command positional argument 'subcommands'.
-          // The 'subcommands' argument is missing an abstract in ArgumentParser.
-          // This results in incomplete help documentation, which may confuse users.
-          // Since it's a positional argument named 'subcommands', it can be easily confused with actual subcommands.
+          // ArgumentParser does not provide an abstract for the positional `subcommands` argument.
+          // Without this, the generated documentation would be missing a description, which could confuse users.
+          // Here we inject a default description for clarity in the documentation output.
           if arg.identity() == "subcommands" && arg.abstract == nil {
             result += "*Show help information.*\n"
           }
 
-          // If the argument has a discussion, add it directly
-          // If a discussion is available, it is added to provide further explanation on how the argument works.
-          // This additional context is helpful for users to understand the full usage of the argument.
+          // Discussion is added to provide further explanation on how the argument works.
           if let discussion = arg.discussion {
             result += discussion + "\n\n"
           }
 
-          // Add an empty line for separation between arguments
-          // The empty line improves the visual structure of the documentation,
-          // making it easier to read and separating each argument for clarity.
+          // The empty line improves the visual structure of the documentation.
           result += "\n"
         }
       }
