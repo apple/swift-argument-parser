@@ -226,12 +226,11 @@ and
 .Nd "Print the quantiles of the values (TBD)."
 .Sh SYNOPSIS
 .Nm
-.Op Ar one-of-four
-.Op Ar custom-arg
-.Op Ar custom-deprecated-arg
 .Op Ar values...
 .Op Fl -file Ar file
-.Op Fl -directory Ar directory
+.Op Fl -one-of-four Ar one-of-four
+.Op Fl -custom-arg Ar custom-arg
+.Op Fl -custom-deprecated-arg Ar custom-deprecated-arg
 .Op Fl -shell Ar shell
 .Op Fl -custom Ar custom
 .Op Fl -custom-deprecated Ar custom-deprecated
@@ -239,16 +238,22 @@ and
 .Op Fl -help
 .Sh DESCRIPTION
 .Bl -tag -width 6n
-.It Ar one-of-four
-.It Ar custom-arg
-.It Ar custom-deprecated-arg
 .It Ar values...
 A group of floating-point values to operate on.
 .It Fl -file Ar file
-.It Fl -directory Ar directory
+Input file or directory to process (default section).
+.It Fl -one-of-four Ar one-of-four
+Choose one of four predefined options
+.It Fl -custom-arg Ar custom-arg
+Custom argument
+.It Fl -custom-deprecated-arg Ar custom-deprecated-arg
+Deprecated custom argument
 .It Fl -shell Ar shell
+Run a shell command for input or completion
 .It Fl -custom Ar custom
+Custom user-provided option with dynamic completion
 .It Fl -custom-deprecated Ar custom-deprecated
+Deprecated custom option
 .It Fl -version
 Show the version.
 .It Fl h , -help

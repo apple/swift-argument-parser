@@ -153,17 +153,16 @@ _math_stats_stdev() {
 
 _math_stats_quantiles() {
     local -i ret=1
-    local -ar _one_of_four=('alphabet' 'alligator' 'branch' 'braggart')
+    local -ar ___one_of_four=('alphabet' 'alligator' 'branch' 'braggart')
     local -ar arg_specs=(
-        ':one-of-four:{__math_complete "${_one_of_four[@]}"}'
-        ':custom-arg:{__math_custom_complete ---completion stats quantiles -- positional@1 "${current_word_index}" "$(__math_cursor_index_in_current_word)"}'
-        ':custom-deprecated-arg:{__math_custom_complete ---completion stats quantiles -- positional@2}'
         '*:values:'
-        '--file:file:_files -g '\''*.txt *.md'\'''
-        '--directory:directory:_files -/'
-        '--shell:shell:{local -a list;list=(${(f)"$(head -100 '\''/usr/share/dict/words'\'' | tail -50)"});_describe -V "" list}'
-        '--custom:custom:{__math_custom_complete ---completion stats quantiles -- --custom "${current_word_index}" "$(__math_cursor_index_in_current_word)"}'
-        '--custom-deprecated:custom-deprecated:{__math_custom_complete ---completion stats quantiles -- --custom-deprecated}'
+        '--file[Input file or directory to process (default section).]:file:_files -g '\''*.txt *.md'\'''
+        '--one-of-four[Choose one of four predefined options]:one-of-four:{__math_complete "${___one_of_four[@]}"}'
+        '--custom-arg[Custom argument]:custom-arg:{__math_custom_complete ---completion stats quantiles -- --custom-arg "${current_word_index}" "$(__math_cursor_index_in_current_word)"}'
+        '--custom-deprecated-arg[Deprecated custom argument]:custom-deprecated-arg:{__math_custom_complete ---completion stats quantiles -- --custom-deprecated-arg}'
+        '--shell[Run a shell command for input or completion]:shell:{local -a list;list=(${(f)"$(head -100 /usr/share/dict/words | tail -50)"});_describe -V "" list}'
+        '--custom[Custom user-provided option with dynamic completion]:custom:{__math_custom_complete ---completion stats quantiles -- --custom "${current_word_index}" "$(__math_cursor_index_in_current_word)"}'
+        '--custom-deprecated[Deprecated custom option]:custom-deprecated:{__math_custom_complete ---completion stats quantiles -- --custom-deprecated}'
         '--version[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
     )
