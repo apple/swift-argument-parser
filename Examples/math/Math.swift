@@ -193,66 +193,100 @@ extension Math.Statistics {
     static let configuration = CommandConfiguration(
       abstract: "Print the quantiles of the values (TBD).")
 
-    @Argument(
-      completion: .list(["alphabet", "alligator", "branch", "braggart"]))
-    var oneOfFour: String?
-
-    @Argument(
-      completion: .custom { _, _, _ in
-        ["alabaster", "breakfast", "crunch", "crash"]
-      }
-    )
-    var customArg: String?
-
-    @Argument(
-      completion: .custom { _ in ["alabaster", "breakfast", "crunch", "crash"] }
-    )
-    var customDeprecatedArg: String?
-
     @Argument(help: "A group of floating-point values to operate on.")
     var values: [Double] = []
 
+    @Option(
+        help: "Input file or directory to process (default section).",
+        completion: .file(extensions: ["txt", "md"])
+    )
+    var file: String?
+
+    struct InputOptions: ParsableArguments {
+        @Option(
+            help: "Choose one of four predefined options",
+            completion: .list(["alphabet", "alligator", "branch", "braggart"])
+        )
+        var oneOfFour: String?
+
+        @Option(
+            help: "Custom argument",
+            completion: .custom { _, _, _ in ["alabaster", "breakfast", "crunch", "crash"] }
+        )
+        var customArg: String?
+
+        @Option(
+            help: "Deprecated custom argument",
+            completion: .custom { _ in ["alabaster", "breakfast", "crunch", "crash"] }
+        )
+        var customDeprecatedArg: String?
+    }
+
     // These args and the validation method are for testing exit codes:
-    @Flag(help: .hidden)
-    var testSuccessExitCode = false
-    @Flag(help: .hidden)
-    var testFailureExitCode = false
-    @Flag(help: .hidden)
-    var testValidationExitCode = false
-    @Option(help: .hidden)
-    var testCustomExitCode: Int32?
+    struct HiddenOptions: ParsableArguments {
+        @Flag(help: .hidden)
+        var testSuccessExitCode = false
+
+        @Flag(help: .hidden)
+        var testFailureExitCode = false
+
+        @Flag(help: .hidden)
+        var testValidationExitCode = false
+
+        @Option(help: .hidden)
+        var testCustomExitCode: Int32?
+    }
 
     // These args are for testing custom completion scripts:
-    @Option(completion: .file(extensions: ["txt", "md"]))
-    var file: String?
-    @Option(completion: .directory)
-    var directory: String?
+    struct ShellOptions: ParsableArguments {
+      @Option(
+          help: "Run a shell command for input or completion",
+          completion: .shellCommand("head -100 /usr/share/dict/words | tail -50")
+      )
+      var shell: String?
+    }
 
-    @Option(
-      completion: .shellCommand("head -100 /usr/share/dict/words | tail -50")
-    )
-    var shell: String?
+    struct CustomOptions: ParsableArguments {
+        @Option(
+            help: "Custom user-provided option with dynamic completion",
+            completion: .custom(customCompletion)
+        )
+        var custom: String?
 
-    @Option(completion: .custom(customCompletion))
-    var custom: String?
+        @Option(
+            help: "Deprecated custom option",
+            completion: .custom(customDeprecatedCompletion)
+        )
+        var customDeprecated: String?
+    }
 
-    @Option(completion: .custom(customDeprecatedCompletion))
-    var customDeprecated: String?
+    // Assinging custom section titles for option groups
+    @OptionGroup(title: "Input Options")
+    var input: InputOptions
+
+    @OptionGroup(title: "Hidden / Testing Options")
+    var hidden: HiddenOptions
+
+    @OptionGroup(title: "Shell Options")
+    var shell: ShellOptions
+
+    @OptionGroup(title: "Custom Options")
+    var custom: CustomOptions
 
     func validate() throws {
-      if testSuccessExitCode {
+      if hidden.testSuccessExitCode {
         throw ExitCode.success
       }
 
-      if testFailureExitCode {
+      if hidden.testFailureExitCode {
         throw ExitCode.failure
       }
 
-      if testValidationExitCode {
+      if hidden.testValidationExitCode {
         throw ExitCode.validationFailure
       }
 
-      if let exitCode = testCustomExitCode {
+      if let exitCode = hidden.testCustomExitCode {
         throw ExitCode(exitCode)
       }
     }

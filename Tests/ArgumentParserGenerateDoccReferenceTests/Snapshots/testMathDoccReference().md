@@ -132,42 +132,53 @@ Show help information.
 Print the quantiles of the values (TBD).
 
 ```
-math stats quantiles [<one-of-four>] [<custom-arg>]
-  [<custom-deprecated-arg>] [<values>...] [--file=<file>]
-  [--directory=<directory>] [--shell=<shell>]
-  [--custom=<custom>]
+math stats quantiles [<values>...] [--file=<file>]
+  [--one-of-four=<one-of-four>] [--custom-arg=<custom-arg>]
+  [--custom-deprecated-arg=<custom-deprecated-arg>]
+  [--shell=<shell>] [--custom=<custom>]
   [--custom-deprecated=<custom-deprecated>] [--version]
   [--help]
 ```
 
 ### Arguments
 
-- term `one-of-four`:
-
-- term `custom-arg`:
-
-- term `custom-deprecated-arg`:
-
 - term `values`:
 A group of floating-point values to operate on.
+
+### Custom Options
+
+- term `--custom=\<custom\>`:
+Custom user-provided option with dynamic completion
+
+- term `--custom-deprecated=\<custom-deprecated\>`:
+Deprecated custom option
+
+### Input Options
+
+- term `--one-of-four=\<one-of-four\>`:
+Choose one of four predefined options
+
+- term `--custom-arg=\<custom-arg\>`:
+Custom argument
+
+- term `--custom-deprecated-arg=\<custom-deprecated-arg\>`:
+Deprecated custom argument
 
 ### Options
 
 - term `--file=\<file\>`:
-
-- term `--directory=\<directory\>`:
-
-- term `--shell=\<shell\>`:
-
-- term `--custom=\<custom\>`:
-
-- term `--custom-deprecated=\<custom-deprecated\>`:
+Input file or directory to process (default section).
 
 - term `--version`:
 Show the version.
 
 - term `--help`:
 Show help information.
+
+### Shell Options
+
+- term `--shell=\<shell\>`:
+Run a shell command for input or completion
 
 ## math.help
 

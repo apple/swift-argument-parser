@@ -210,50 +210,6 @@
         "abstract" : "Print the quantiles of the values (TBD).",
         "arguments" : [
           {
-            "completionKind" : {
-              "list" : {
-                "values" : [
-                  "alphabet",
-                  "alligator",
-                  "branch",
-                  "braggart"
-                ]
-              }
-            },
-            "isOptional" : true,
-            "isRepeating" : false,
-            "kind" : "positional",
-            "parsingStrategy" : "default",
-            "shouldDisplay" : true,
-            "valueName" : "one-of-four"
-          },
-          {
-            "completionKind" : {
-              "custom" : {
-
-              }
-            },
-            "isOptional" : true,
-            "isRepeating" : false,
-            "kind" : "positional",
-            "parsingStrategy" : "default",
-            "shouldDisplay" : true,
-            "valueName" : "custom-arg"
-          },
-          {
-            "completionKind" : {
-              "customDeprecated" : {
-
-              }
-            },
-            "isOptional" : true,
-            "isRepeating" : false,
-            "kind" : "positional",
-            "parsingStrategy" : "default",
-            "shouldDisplay" : true,
-            "valueName" : "custom-deprecated-arg"
-          },
-          {
             "abstract" : "A group of floating-point values to operate on.",
             "isOptional" : true,
             "isRepeating" : true,
@@ -263,78 +219,7 @@
             "valueName" : "values"
           },
           {
-            "isOptional" : true,
-            "isRepeating" : false,
-            "kind" : "flag",
-            "names" : [
-              {
-                "kind" : "long",
-                "name" : "test-success-exit-code"
-              }
-            ],
-            "parsingStrategy" : "default",
-            "preferredName" : {
-              "kind" : "long",
-              "name" : "test-success-exit-code"
-            },
-            "shouldDisplay" : false,
-            "valueName" : "test-success-exit-code"
-          },
-          {
-            "isOptional" : true,
-            "isRepeating" : false,
-            "kind" : "flag",
-            "names" : [
-              {
-                "kind" : "long",
-                "name" : "test-failure-exit-code"
-              }
-            ],
-            "parsingStrategy" : "default",
-            "preferredName" : {
-              "kind" : "long",
-              "name" : "test-failure-exit-code"
-            },
-            "shouldDisplay" : false,
-            "valueName" : "test-failure-exit-code"
-          },
-          {
-            "isOptional" : true,
-            "isRepeating" : false,
-            "kind" : "flag",
-            "names" : [
-              {
-                "kind" : "long",
-                "name" : "test-validation-exit-code"
-              }
-            ],
-            "parsingStrategy" : "default",
-            "preferredName" : {
-              "kind" : "long",
-              "name" : "test-validation-exit-code"
-            },
-            "shouldDisplay" : false,
-            "valueName" : "test-validation-exit-code"
-          },
-          {
-            "isOptional" : true,
-            "isRepeating" : false,
-            "kind" : "option",
-            "names" : [
-              {
-                "kind" : "long",
-                "name" : "test-custom-exit-code"
-              }
-            ],
-            "parsingStrategy" : "default",
-            "preferredName" : {
-              "kind" : "long",
-              "name" : "test-custom-exit-code"
-            },
-            "shouldDisplay" : false,
-            "valueName" : "test-custom-exit-code"
-          },
-          {
+            "abstract" : "Input file or directory to process (default section).",
             "completionKind" : {
               "file" : {
                 "extensions" : [
@@ -361,8 +246,39 @@
             "valueName" : "file"
           },
           {
+            "abstract" : "Choose one of four predefined options",
             "completionKind" : {
-              "directory" : {
+              "list" : {
+                "values" : [
+                  "alphabet",
+                  "alligator",
+                  "branch",
+                  "braggart"
+                ]
+              }
+            },
+            "isOptional" : true,
+            "isRepeating" : false,
+            "kind" : "option",
+            "names" : [
+              {
+                "kind" : "long",
+                "name" : "one-of-four"
+              }
+            ],
+            "parsingStrategy" : "default",
+            "preferredName" : {
+              "kind" : "long",
+              "name" : "one-of-four"
+            },
+            "sectionTitle" : "Input Options",
+            "shouldDisplay" : true,
+            "valueName" : "one-of-four"
+          },
+          {
+            "abstract" : "Custom argument",
+            "completionKind" : {
+              "custom" : {
 
               }
             },
@@ -372,18 +288,121 @@
             "names" : [
               {
                 "kind" : "long",
-                "name" : "directory"
+                "name" : "custom-arg"
               }
             ],
             "parsingStrategy" : "default",
             "preferredName" : {
               "kind" : "long",
-              "name" : "directory"
+              "name" : "custom-arg"
             },
+            "sectionTitle" : "Input Options",
             "shouldDisplay" : true,
-            "valueName" : "directory"
+            "valueName" : "custom-arg"
           },
           {
+            "abstract" : "Deprecated custom argument",
+            "completionKind" : {
+              "customDeprecated" : {
+
+              }
+            },
+            "isOptional" : true,
+            "isRepeating" : false,
+            "kind" : "option",
+            "names" : [
+              {
+                "kind" : "long",
+                "name" : "custom-deprecated-arg"
+              }
+            ],
+            "parsingStrategy" : "default",
+            "preferredName" : {
+              "kind" : "long",
+              "name" : "custom-deprecated-arg"
+            },
+            "sectionTitle" : "Input Options",
+            "shouldDisplay" : true,
+            "valueName" : "custom-deprecated-arg"
+          },
+          {
+            "isOptional" : true,
+            "isRepeating" : false,
+            "kind" : "flag",
+            "names" : [
+              {
+                "kind" : "long",
+                "name" : "test-success-exit-code"
+              }
+            ],
+            "parsingStrategy" : "default",
+            "preferredName" : {
+              "kind" : "long",
+              "name" : "test-success-exit-code"
+            },
+            "sectionTitle" : "Hidden \/ Testing Options",
+            "shouldDisplay" : false,
+            "valueName" : "test-success-exit-code"
+          },
+          {
+            "isOptional" : true,
+            "isRepeating" : false,
+            "kind" : "flag",
+            "names" : [
+              {
+                "kind" : "long",
+                "name" : "test-failure-exit-code"
+              }
+            ],
+            "parsingStrategy" : "default",
+            "preferredName" : {
+              "kind" : "long",
+              "name" : "test-failure-exit-code"
+            },
+            "sectionTitle" : "Hidden \/ Testing Options",
+            "shouldDisplay" : false,
+            "valueName" : "test-failure-exit-code"
+          },
+          {
+            "isOptional" : true,
+            "isRepeating" : false,
+            "kind" : "flag",
+            "names" : [
+              {
+                "kind" : "long",
+                "name" : "test-validation-exit-code"
+              }
+            ],
+            "parsingStrategy" : "default",
+            "preferredName" : {
+              "kind" : "long",
+              "name" : "test-validation-exit-code"
+            },
+            "sectionTitle" : "Hidden \/ Testing Options",
+            "shouldDisplay" : false,
+            "valueName" : "test-validation-exit-code"
+          },
+          {
+            "isOptional" : true,
+            "isRepeating" : false,
+            "kind" : "option",
+            "names" : [
+              {
+                "kind" : "long",
+                "name" : "test-custom-exit-code"
+              }
+            ],
+            "parsingStrategy" : "default",
+            "preferredName" : {
+              "kind" : "long",
+              "name" : "test-custom-exit-code"
+            },
+            "sectionTitle" : "Hidden \/ Testing Options",
+            "shouldDisplay" : false,
+            "valueName" : "test-custom-exit-code"
+          },
+          {
+            "abstract" : "Run a shell command for input or completion",
             "completionKind" : {
               "shellCommand" : {
                 "command" : "head -100 \/usr\/share\/dict\/words | tail -50"
@@ -403,10 +422,12 @@
               "kind" : "long",
               "name" : "shell"
             },
+            "sectionTitle" : "Shell Options",
             "shouldDisplay" : true,
             "valueName" : "shell"
           },
           {
+            "abstract" : "Custom user-provided option with dynamic completion",
             "completionKind" : {
               "custom" : {
 
@@ -426,10 +447,12 @@
               "kind" : "long",
               "name" : "custom"
             },
+            "sectionTitle" : "Custom Options",
             "shouldDisplay" : true,
             "valueName" : "custom"
           },
           {
+            "abstract" : "Deprecated custom option",
             "completionKind" : {
               "customDeprecated" : {
 
@@ -449,6 +472,7 @@
               "kind" : "long",
               "name" : "custom-deprecated"
             },
+            "sectionTitle" : "Custom Options",
             "shouldDisplay" : true,
             "valueName" : "custom-deprecated"
           },
