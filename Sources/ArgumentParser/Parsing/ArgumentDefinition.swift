@@ -447,7 +447,12 @@ where Element: ExpressibleByArgument {
     guard !initial.isEmpty else { return nil }
     return initial
       .lazy
-      .map { $0.defaultValueDescription }
+      .map { element in
+        if let element = element as? (any CaseIterable & RawRepresentable) {
+          return String(describing: element.rawValue)
+        }
+        return element.defaultValueDescription
+      }
       .joined(separator: ", ")
   }
 }
