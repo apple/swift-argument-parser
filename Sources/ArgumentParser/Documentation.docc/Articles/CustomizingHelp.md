@@ -150,6 +150,150 @@ OPTIONS:
 
 For an ``ExpressibleByArgument`` and `CaseIterable` type with many cases, you may still want to implement ``ExpressibleByArgument/allValueStrings`` to avoid an overly long list of values appearing in the help screen. For these types it is recommended to include the most common possible values.
 
+## Providing Descriptions for Individual Enum Values
+
+When your argument or option uses an enum type, you can provide detailed descriptions for each enum value that will appear in the help screen. This is especially useful when the enum cases represent complex concepts that benefit from explanation.
+
+### Basic Enum Value Descriptions
+
+To provide descriptions for individual enum values, implement a custom `defaultValueDescription` property for each case. The ArgumentParser will automatically detect when descriptions differ from the enum's string representation and display them in an enumerated format.
+
+```swift
+enum LogLevel: String, CaseIterable, ExpressibleByArgument {
+    case error
+    case warning  
+    case info
+    case debug
+    
+    var defaultValueDescription: String {
+        switch self {
+        case .error:
+            return "Show only error messages"
+        case .warning:
+            return "Show warnings and errors" 
+        case .info:
+            return "Show informational messages and above"
+        case .debug:
+            return "Show all messages including debug output"
+        }
+    }
+}
+
+struct Logger: ParsableCommand {
+    @Option(help: "Set the logging level")
+    var level: LogLevel = .info
+}
+```
+
+This produces help output with detailed descriptions for each enum value:
+
+```
+USAGE: logger [--level <level>]
+
+OPTIONS:
+  --level <level>         Set the logging level (default: info)
+        error             - Show only error messages
+        warning           - Show warnings and errors
+        info              - Show informational messages and above
+        debug             - Show all messages including debug output
+  -h, --help              Show help information.
+```
+
+### Array Options with Enum Descriptions
+
+The same enum value descriptions work seamlessly with array options, allowing users to understand each possible value when multiple selections are allowed:
+
+```swift
+enum OutputFormat: String, CaseIterable, ExpressibleByArgument {
+    case json
+    case yaml
+    case xml
+    case csv
+    
+    var defaultValueDescription: String {
+        switch self {
+        case .json:
+            return "JavaScript Object Notation format"
+        case .yaml: 
+            return "YAML Ain't Markup Language format"
+        case .xml:
+            return "eXtensible Markup Language format"
+        case .csv:
+            return "Comma-Separated Values format"
+        }
+    }
+}
+
+struct DataExporter: ParsableCommand {
+    @Option(help: "Output formats to generate")
+    var formats: [OutputFormat] = [.json]
+}
+```
+
+The help screen displays descriptions for each format option:
+
+```
+USAGE: data-exporter [--formats <formats> ...]
+
+OPTIONS:
+  --formats <formats>     Output formats to generate (default: json)
+        json              - JavaScript Object Notation format
+        yaml              - YAML Ain't Markup Language format  
+        xml               - eXtensible Markup Language format
+        csv               - Comma-Separated Values format
+  -h, --help              Show help information.
+```
+
+### Working with Raw Values
+
+For enums with custom raw values, the descriptions work with the raw value representation:
+
+```swift
+enum CompressionAlgorithm: String, CaseIterable, ExpressibleByArgument {
+    case gzip = "gzip"
+    case bzip2 = "bzip2"
+    case lzma = "lzma"
+    case none = "none"
+    
+    var defaultValueDescription: String {
+        switch self {
+        case .gzip:
+            return "GNU zip compression (good speed, decent compression)"
+        case .bzip2:
+            return "Burrows-Wheeler compression (slower, better compression)"
+        case .lzma:
+            return "Lempel-Ziv-Markov compression (slowest, best compression)"
+        case .none:
+            return "No compression applied"
+        }
+    }
+}
+
+struct Archive: ParsableCommand {
+    @Option(help: "Compression algorithm to use")
+    var compression: CompressionAlgorithm = .gzip
+}
+```
+
+### Tips for Effective Enum Descriptions
+
+1. **Keep descriptions concise but informative** - Aim for one line that clearly explains the option's purpose or behavior.
+
+2. **Use consistent formatting** - Maintain a consistent style across all your descriptions (e.g., all sentences or all phrases).
+
+3. **Explain the impact** - Help users understand what choosing each option will do, not just what it is.
+
+4. **Order logically** - The descriptions appear in the same order as your enum cases, so consider ordering them by frequency of use or logical progression.
+
+5. **Only provide descriptions when helpful** - If your enum values are self-explanatory, you don't need custom descriptions. The system will only show the detailed format when descriptions differ from the raw values.
+
+The enum value descriptions feature works automatically with:
+- Single enum options (`@Option var value: MyEnum`)
+- Optional enum options (`@Option var value: MyEnum?`)  
+- Array enum options (`@Option var values: [MyEnum]`)
+- Enum arguments (`@Argument var value: MyEnum`)
+- Default values and value display formatting
+
 ### Controlling Argument Visibility
 
 You can specify the visibility of any argument, option, or flag.
