@@ -159,51 +159,6 @@ When your argument or option uses an enum type, you can provide detailed descrip
 To provide descriptions for individual enum values, implement a custom `defaultValueDescription` property for each case. The ArgumentParser will automatically detect when descriptions differ from the enum's string representation and display them in an enumerated format.
 
 ```swift
-enum LogLevel: String, CaseIterable, ExpressibleByArgument {
-    case error
-    case warning
-    case info
-    case debug
-
-    var defaultValueDescription: String {
-        switch self {
-        case .error:
-            return "Show only error messages"
-        case .warning:
-            return "Show warnings and errors"
-        case .info:
-            return "Show informational messages and above"
-        case .debug:
-            return "Show all messages including debug output"
-        }
-    }
-}
-
-struct Logger: ParsableCommand {
-    @Option(help: "Set the logging level")
-    var level: LogLevel = .info
-}
-```
-
-This produces help output with detailed descriptions for each enum value:
-
-```
-USAGE: logger [--level <level>]
-
-OPTIONS:
-  --level <level>         Set the logging level (default: info)
-        error             - Show only error messages
-        warning           - Show warnings and errors
-        info              - Show informational messages and above
-        debug             - Show all messages including debug output
-  -h, --help              Show help information.
-```
-
-### Array Options with Enum Descriptions
-
-The same enum value descriptions work seamlessly with array options, allowing users to understand each possible value when multiple selections are allowed:
-
-```swift
 enum OutputFormat: String, CaseIterable, ExpressibleByArgument {
     case json
     case yaml
@@ -224,6 +179,31 @@ enum OutputFormat: String, CaseIterable, ExpressibleByArgument {
     }
 }
 
+struct DataExporter: ParsableCommand {
+    @Option(help: "Select output format")
+    var format: OutputFormat = .json
+}
+```
+
+This produces help output with detailed descriptions for each enum value:
+
+```
+USAGE: data-exporter [--format <format>]
+
+OPTIONS:
+  --format <format>       Select output format (default: json)
+        json              - JavaScript Object Notation format
+        yaml              - YAML Ain't Markup Language format
+        xml               - eXtensible Markup Language format
+        csv               - Comma-Separated Values format
+  -h, --help              Show help information.
+```
+
+### Array Options with Enum Descriptions
+
+The same enum value descriptions work seamlessly with array options, allowing users to understand each possible value when multiple selections are allowed:
+
+```swift
 struct DataExporter: ParsableCommand {
     @Option(help: "Output formats to generate")
     var formats: [OutputFormat] = [.json]
@@ -246,34 +226,36 @@ OPTIONS:
 
 ### Working with Raw Values
 
-For enums with custom raw values, the descriptions work with the raw value representation:
+For enums with custom raw values, the descriptions work with the raw value representation. Here's the same `OutputFormat` enum with custom raw values:
 
 ```swift
-enum CompressionAlgorithm: String, CaseIterable, ExpressibleByArgument {
-    case gzip = "gzip"
-    case bzip2 = "bzip2"
-    case lzma = "lzma"
-    case none = "none"
+enum OutputFormat: String, CaseIterable, ExpressibleByArgument {
+    case json = "json"
+    case yaml = "yml"  
+    case xml = "xml"
+    case csv = "csv"
 
     var defaultValueDescription: String {
         switch self {
-        case .gzip:
-            return "GNU zip compression (good speed, decent compression)"
-        case .bzip2:
-            return "Burrows-Wheeler compression (slower, better compression)"
-        case .lzma:
-            return "Lempel-Ziv-Markov compression (slowest, best compression)"
-        case .none:
-            return "No compression applied"
+        case .json:
+            return "JavaScript Object Notation format"
+        case .yaml:
+            return "YAML Ain't Markup Language format"
+        case .xml:
+            return "eXtensible Markup Language format"
+        case .csv:
+            return "Comma-Separated Values format"
         }
     }
 }
 
-struct Archive: ParsableCommand {
-    @Option(help: "Compression algorithm to use")
-    var compression: CompressionAlgorithm = .gzip
+struct DataExporter: ParsableCommand {
+    @Option(help: "Select output format")
+    var format: OutputFormat = .json
 }
 ```
+
+In this example, users would specify `--format yml` to get YAML output, but the help screen still shows the descriptive text.
 
 ### Controlling Argument Visibility
 
