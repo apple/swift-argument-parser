@@ -80,16 +80,26 @@ extension CommandInfoV0 {
     if let args = self.arguments {
       // Group arguments by sectionTitle
       // This is done to organize the arguments into categories (e.g., options, flags)
-      let groupedArgs = Dictionary(
-        grouping: args.filter {
-          $0.shouldDisplay
-        }
-      ) { $0.sectionTitleDefault }
+      let groupedArgs = Dictionary(grouping: args.filter { $0.shouldDisplay }) { $0.sectionTitleDefault }
+
+      var customSectionTitles: [String] = []
+      for arg in args {
+          if let title = arg.sectionTitle,
+             !title.isEmpty,
+             !customSectionTitles.contains(title) {
+              customSectionTitles.append(title)
+          }
+      }
+
+      // Build final section order
+      let finalSectionOrder = ["Arguments"] + customSectionTitles + ["Options"]
 
       // Iterate through the grouped arguments, sorted by section title
       // Sorting ensures that the sections appear in a clear, predictable order in the final documentation.
       // The sections are listed alphabetically based on their title, enhancing readability.
-      for (section, arguments) in groupedArgs.sorted(by: { $0.key < $1.key }) {
+      for section in finalSectionOrder  {
+        guard let arguments = groupedArgs[section] else { continue }
+        
         // Add section title as a Markdown header to the result
         // Adding section titles as Markdown headers helps separate sections in the documentation,
         // making it easier for users to navigate and understand the structure of the arguments.
@@ -256,16 +266,16 @@ extension ArgumentInfoV0 {
   }
 
   /// Returns the default section title for this argument.
-      fileprivate var sectionTitleDefault: String {
-          if let sectionTitle = self.sectionTitle {
-              return sectionTitle
-          } else {
-              switch self.kind {
-              case .positional:
-                  return "Arguments"
-              case .option, .flag:
-                  return "Options"
-              }
+  fileprivate var sectionTitleDefault: String {
+      if let sectionTitle = self.sectionTitle {
+          return sectionTitle
+      } else {
+          switch self.kind {
+          case .positional:
+              return "Arguments"
+          case .option, .flag:
+              return "Options"
           }
       }
+  }
 }

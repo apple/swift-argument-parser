@@ -145,14 +145,6 @@ math stats quantiles [<values>...] [--file=<file>]
 - term `values`:
 A group of floating-point values to operate on.
 
-### Custom Options
-
-- term `--custom=\<custom\>`:
-Custom user-provided option with dynamic completion
-
-- term `--custom-deprecated=\<custom-deprecated\>`:
-Deprecated custom option
-
 ### Input Options
 
 - term `--one-of-four=\<one-of-four\>`:
@@ -164,6 +156,19 @@ Custom argument
 - term `--custom-deprecated-arg=\<custom-deprecated-arg\>`:
 Deprecated custom argument
 
+### Shell Options
+
+- term `--shell=\<shell\>`:
+Run a shell command for input or completion
+
+### Custom Options
+
+- term `--custom=\<custom\>`:
+Custom user-provided option with dynamic completion
+
+- term `--custom-deprecated=\<custom-deprecated\>`:
+Deprecated custom option
+
 ### Options
 
 - term `--file=\<file\>`:
@@ -174,11 +179,6 @@ Show the version.
 
 - term `--help`:
 Show help information.
-
-### Shell Options
-
-- term `--shell=\<shell\>`:
-Run a shell command for input or completion
 
 ## math.help
 
