@@ -8,7 +8,7 @@ Add new items at the end of the relevant section under **Unreleased**.
 
 ---
 
-## [1.6.2] - 2025-10-01
+## [1.6.2] - 2025-10-10
 
 ### Fixes
 
