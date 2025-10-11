@@ -519,7 +519,19 @@ extension BidirectionalCollection where Element == ParsableCommand.Type {
       })
     else { return ArgumentSet() }
     self.versionArgumentDefinition().map { arguments.append($0) }
-    self.helpArgumentDefinition().map { arguments.append($0) }
+    
+    let shouldAppendBuiltinHelp = !arguments
+      .flatMap(\.names)
+      .contains { name in
+        if case .short(let char, _) = name {
+          return char == "h"
+        }
+        return false
+      }
+    
+    if shouldAppendBuiltinHelp {
+      self.helpArgumentDefinition().map { arguments.append($0) }
+    }
 
     // To add when 'dump-help' is public API:
     // arguments.append(self.dumpHelpArgumentDefinition())

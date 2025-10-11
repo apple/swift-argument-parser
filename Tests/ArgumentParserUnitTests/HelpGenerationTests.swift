@@ -1493,3 +1493,28 @@ extension HelpGenerationTests {
     #endif
   }
 }
+
+extension HelpGenerationTests {
+  struct Issue778: ParsableCommand {
+    @Argument(help: "The phrase to repeat.")
+    var phrase: String
+    
+    @Option(name: .shortAndLong, help: "The name of the talking horse.")
+    var horse: String
+  }
+  
+  func testCommandWithShortOptionNameHDoesNotIncludeBuiltInHelp() {
+    AssertHelp(
+      .default, for: Issue778.self, columns: nil,
+      equals: """
+        USAGE: issue778 <phrase> --horse <horse>
+
+        ARGUMENTS:
+          <phrase>                The phrase to repeat.
+
+        OPTIONS:
+          -h, --horse <horse>     The name of the talking horse.
+        
+        """)
+  }
+}
