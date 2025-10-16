@@ -150,11 +150,9 @@ OPTIONS:
 
 For an `ExpressibleByArgument` and `CaseIterable` type with many cases, you may still want to implement `ExpressibleByArgument/allValueStrings` to avoid an overly long list of values appearing in the help screen. For these types it is recommended to include the most common possible values.
 
-## Providing Descriptions for Individual Enum Values
+#### Providing Descriptions for Enum Values
 
 When your argument or option uses an enum type, you can provide detailed descriptions for each enum value that will appear in the help screen. This is especially useful when the enum cases represent complex concepts that benefit from explanation.
-
-### Basic Enum Value Descriptions
 
 To provide descriptions for individual enum values, implement a custom `defaultValueDescription` property for each case. The ArgumentParser will automatically detect when descriptions differ from the enum's string representation and display them in an enumerated format.
 
@@ -198,64 +196,6 @@ OPTIONS:
         csv               - Comma-Separated Values format
   -h, --help              Show help information.
 ```
-
-### Array Options with Enum Descriptions
-
-The same enum value descriptions work seamlessly with array options, allowing users to understand each possible value when multiple selections are allowed:
-
-```swift
-struct DataExporter: ParsableCommand {
-    @Option(help: "Output formats to generate")
-    var formats: [OutputFormat] = [.json]
-}
-```
-
-The help screen displays descriptions for each format option:
-
-```
-USAGE: data-exporter [--formats <formats> ...]
-
-OPTIONS:
-  --formats <formats>     Output formats to generate (default: json)
-        json              - JavaScript Object Notation format
-        yaml              - YAML Ain't Markup Language format
-        xml               - eXtensible Markup Language format
-        csv               - Comma-Separated Values format
-  -h, --help              Show help information.
-```
-
-### Working with Raw Values
-
-For enums with custom raw values, the descriptions work with the raw value representation. Here's the same `OutputFormat` enum with custom raw values:
-
-```swift
-enum OutputFormat: String, CaseIterable, ExpressibleByArgument {
-    case json = "json"
-    case yaml = "yml"
-    case xml = "xml"
-    case csv = "csv"
-
-    var defaultValueDescription: String {
-        switch self {
-        case .json:
-            return "JavaScript Object Notation format"
-        case .yaml:
-            return "YAML Ain't Markup Language format"
-        case .xml:
-            return "eXtensible Markup Language format"
-        case .csv:
-            return "Comma-Separated Values format"
-        }
-    }
-}
-
-struct DataExporter: ParsableCommand {
-    @Option(help: "Select output format")
-    var format: OutputFormat = .json
-}
-```
-
-In this example, users would specify `--format yml` to get YAML output, but the help screen still shows the descriptive text.
 
 ### Controlling Argument Visibility
 
