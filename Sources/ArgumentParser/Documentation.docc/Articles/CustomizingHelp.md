@@ -37,7 +37,7 @@ OPTIONS:
 
 ### Customizing Help for Arguments
 
-For more control over the help text, pass an `ArgumentHelp` instance instead of a string literal. The `ArgumentHelp` type can include an abstract (which is what the string literal becomes), a discussion, a value name to use in the usage string, and a visibility level for that argument.
+For more control over the help text, pass an ``ArgumentHelp`` instance instead of a string literal. The `ArgumentHelp` type can include an abstract (which is what the string literal becomes), a discussion, a value name to use in the usage string, and a visibility level for that argument.
 
 Here's the same command with some extra customization:
 
@@ -231,7 +231,7 @@ For enums with custom raw values, the descriptions work with the raw value repre
 ```swift
 enum OutputFormat: String, CaseIterable, ExpressibleByArgument {
     case json = "json"
-    case yaml = "yml"  
+    case yaml = "yml"
     case xml = "xml"
     case csv = "csv"
 
