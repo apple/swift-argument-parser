@@ -76,7 +76,7 @@ OPTIONS:
 
 ### Enumerating Possible Values
 
-When an argument or option has a fixed set of possible values, listing these values in the help screen can simplify use of your tool. You can customize the displayed set of values for custom `ExpressibleByArgument` types by implementing `ExpressibleByArgument/allValueStrings`. Despite the name, `ExpressibleByArgument/allValueStrings` does _not_ need to be an exhaustive list of possible values.
+When an argument or option has a fixed set of possible values, listing these values in the help screen can simplify use of your tool. You can customize the displayed set of values for custom ``ExpressibleByArgument`` types by implementing ``ExpressibleByArgument/allValueStrings``. Despite the name, ``ExpressibleByArgument/allValueStrings`` does _not_ need to be an exhaustive list of possible values.
 
 ```swift
 enum Fruit: String, ExpressibleByArgument {
@@ -115,7 +115,7 @@ OPTIONS:
 
 #### Deriving Possible Values
 
-ExpressibleByArgument types that conform to `CaseIterable` do not need to manually specify `ExpressibleByArgument/allValueStrings`. Instead, a list of possible values is derived from the type's cases, as in this updated example:
+ExpressibleByArgument types that conform to `CaseIterable` do not need to manually specify ``ExpressibleByArgument/allValueStrings``. Instead, a list of possible values is derived from the type's cases, as in this updated example:
 
 ```swift
 enum Fruit: String, CaseIterable, ExpressibleByArgument {
@@ -148,7 +148,7 @@ OPTIONS:
   -h, --help              Show help information.
 ```
 
-For an `ExpressibleByArgument` and `CaseIterable` type with many cases, you may still want to implement `ExpressibleByArgument/allValueStrings` to avoid an overly long list of values appearing in the help screen. For these types it is recommended to include the most common possible values.
+For an ``ExpressibleByArgument`` and `CaseIterable` type with many cases, you may still want to implement ``ExpressibleByArgument/allValueStrings`` to avoid an overly long list of values appearing in the help screen. For these types it is recommended to include the most common possible values.
 
 #### Providing Descriptions for Enum Values
 
@@ -228,7 +228,7 @@ OPTIONS:
   -h, --help              Show help information.
 ```
 
-Alternatively, you can group multiple arguments, options, and flags together as part of a `ParsableArguments` type, and set the visibility when including them as an `@OptionGroup` property.
+Alternatively, you can group multiple arguments, options, and flags together as part of a ``ParsableArguments`` type, and set the visibility when including them as an `@OptionGroup` property.
 
 ```swift
 struct ExperimentalFlags: ParsableArguments {
