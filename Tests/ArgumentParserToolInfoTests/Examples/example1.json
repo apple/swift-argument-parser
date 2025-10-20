@@ -6,12 +6,18 @@
       "parent1"
     ],
     "commandName": "full-example",
+    "aliases": [
+
+    ],
     "abstract": "this command does everything",
     "discussion": "like actually everything",
     "defaultSubcommand": "do-thing",
     "subcommands": [
       {
-        "commandName": "sub"
+        "commandName": "sub",
+        "aliases": [
+
+        ]
       }
     ],
     "arguments": [
@@ -63,6 +69,6 @@
         "isRepeating": false,
         "parsingStrategy" : "default",
       }
-    ]
+    ],
   }
 }
