@@ -6,22 +6,18 @@
 color --fav=<fav> [--second=<second>] [--help]
 ```
 
-- term **--fav=\<fav\>**:
+### Options
 
-*Your favorite color.*
+- term `--fav=\<fav\>`:
+Your favorite color.
 
-
-- term **--second=\<second\>**:
-
-*Your second favorite color.*
-
+- term `--second=\<second\>`:
+Your second favorite color.
 This is optional.
 
 
-- term **--help**:
-
-*Show help information.*
-
+- term `--help`:
+Show help information.
 
 ## color.help
 
@@ -31,9 +27,7 @@ Show subcommand help information.
 color help [<subcommands>...]
 ```
 
-- term **subcommands**:
+### Arguments
 
-
-
-
-
+- term `subcommands`:
+*Show help information.*

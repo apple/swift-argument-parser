@@ -78,25 +78,67 @@ extension CommandInfoV0 {
     }
 
     if let args = self.arguments {
+      // Group the arguments by their section titles (either default or custom):
+      // - This organizes arguments into meaningful categories (e.g., "Arguments", "Options", or custom sections).
+      // - Using `sectionTitleDefault` ensures each argument falls into a valid section even if no custom title is provided.
+      let groupedArgs = Dictionary(grouping: args.filter { $0.shouldDisplay }) { $0.sectionTitleDefault }
+
+      // Extract all custom section titles in the order they appear:
+      // - These titles are user defined and should appear between the default "Arguments" and "Options" sections.
+      var customSectionTitles: [String] = []
       for arg in args {
-        guard arg.shouldDisplay else {
-          continue
-        }
+          if let title = arg.sectionTitle,
+             !title.isEmpty,
+             !customSectionTitles.contains(title) {
+              customSectionTitles.append(title)
+          }
+      }
 
-        switch markdownStyle {
-        case .docc:
-          result += "- term **\(arg.identity())**:\n\n"
-        case .github:
-          result += "**\(arg.identity()):**\n\n"
-        }
+      // Build final section order to match the help output for consistency
+      let finalSectionOrder = ["Arguments"] + customSectionTitles + ["Options"]
 
-        if let abstract = arg.abstract {
-          result += "*\(abstract)*\n\n"
+      // Iterate through the sections in the final defined order:
+      // - "Arguments" appear first, followed by any custom section titles, and "Options" last.
+      // - This order mirrors the help output, making the documentation intuitive and consistent.
+      for section in finalSectionOrder  {
+        guard let arguments = groupedArgs[section] else { continue }
+
+        // Adding section titles as Markdown headers helps separate sections in the documentation,
+        // improving the visual structure of the documentation.
+        result += "### \(section)\n\n"
+
+        // Iterating through each argument allows us to add details for each argument under its respective section.
+        for arg in arguments {
+          // Format the argument name according to the documentation style:
+          // - For DocC, use `- term `name`:` so it is recognized as a term in a definition list.
+          // - For GitHub Markdown, use bold `**name**:` to visually emphasize the argument as a header.
+          switch markdownStyle {
+          case .docc:
+            result += "- term `\(arg.identity())`:\n"
+          case .github:
+            result += "**\(arg.identity())**:\n"
+          }
+
+          // Including the abstract provides a brief description of the argument's purpose.
+          if let abstract = arg.abstract {
+            result += "\(abstract)\n"
+          }
+
+          // ArgumentParser does not provide an abstract for the positional `subcommands` argument.
+          // Without this, the generated documentation would be missing a description, which could confuse users.
+          // Here we inject a default description for clarity in the documentation output.
+          if arg.identity() == "subcommands" && arg.abstract == nil {
+            result += "*Show help information.*\n"
+          }
+
+          // Discussion is added to provide further explanation on how the argument works.
+          if let discussion = arg.discussion {
+            result += discussion + "\n\n"
+          }
+
+          // The empty line improves the visual structure of the documentation.
+          result += "\n"
         }
-        if let discussion = arg.discussion {
-          result += discussion + "\n\n"
-        }
-        result += "\n"
       }
     }
 
@@ -105,6 +147,11 @@ extension CommandInfoV0 {
         subcommand.toMarkdown(
           path + [self.commandName], markdownStyle: markdownStyle) + "\n\n"
     }
+
+    // Trim any unnecessary trailing newline that could have been added inadvertently
+    // By trimming, we prevent extra lines at the end of the generated document
+    // which is important for snapshot comparison.
+    result = result.trimmingCharacters(in: .newlines)
 
     return result
   }
@@ -139,6 +186,7 @@ extension CommandInfoV0 {
     return multilineString
   }
 }
+
 
 extension ArgumentInfoV0 {
   /// Returns a string that describes the use of the argument.
@@ -208,5 +256,19 @@ extension ArgumentInfoV0 {
       inner = "--\(names.joined(separator: "|"))"
     }
     return inner
+  }
+
+  /// Returns the default section title for this argument.
+  fileprivate var sectionTitleDefault: String {
+      if let sectionTitle = self.sectionTitle {
+          return sectionTitle
+      } else {
+          switch self.kind {
+          case .positional:
+              return "Arguments"
+          case .option, .flag:
+              return "Options"
+          }
+      }
   }
 }
