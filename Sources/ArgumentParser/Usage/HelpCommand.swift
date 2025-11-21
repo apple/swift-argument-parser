@@ -12,7 +12,7 @@
 struct HelpCommand: ParsableCommand {
   static let configuration = CommandConfiguration(
     commandName: "help",
-    abstract: "Show subcommand help information.",
+    abstract: "Show subcommand help information. Use --search to find commands and options.",
     helpNames: [])
 
   /// Any subcommand names provided after the `help` subcommand.

@@ -396,6 +396,18 @@ internal struct HelpGenerator {
         """
     }
 
+    // Add search hint message
+    var searchHintMessage = ""
+    var helpNames = commandStack.map { $0._commandName }
+    if let superName = commandStack.first?.configuration._superCommandName {
+      helpNames.insert(superName, at: 0)
+    }
+    let toolName = helpNames.joined(separator: " ")
+    searchHintMessage = """
+
+        Use '\(toolName) help --search <term>' to search commands and options.
+      """
+
     let renderedUsage =
       usage.isEmpty
       ? ""
@@ -404,7 +416,7 @@ internal struct HelpGenerator {
     return """
       \(renderedAbstract)\
       \(renderedUsage)\
-      \(renderedSections)\(helpSubcommandMessage)
+      \(renderedSections)\(helpSubcommandMessage)\(searchHintMessage)
       """
   }
 }
