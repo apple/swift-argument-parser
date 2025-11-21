@@ -120,7 +120,7 @@ public struct SingleValueParsingStrategy: Hashable {
   ///
   /// For inputs such as `--foo foo`, this would parse `foo` as the
   /// value. However, the input `--foo --bar foo bar` would
-  /// result in an error. Even though two values are provided, they don’t
+  /// result in an error. Even though two values are provided, they don't
   /// succeed each option. Parsing would result in an error such as the following:
   ///
   ///     Error: Missing value for '--foo <foo>'
@@ -208,7 +208,7 @@ public struct ArrayParsingStrategy: Hashable {
   /// the input `--files foo bar` would result in the array
   /// `["foo", "bar"]`.
   ///
-  /// Parsing stops as soon as there’s another option in the input such that
+  /// Parsing stops as soon as there's another option in the input such that
   /// `--files foo bar --verbose` would also set `files` to the array
   /// `["foo", "bar"]`.
   public static var upToNextOption: ArrayParsingStrategy {
@@ -503,6 +503,70 @@ extension Option {
       })
   }
 
+  /// Creates an optional property that reads its value from a labeled option,
+  /// with a default value when the flag is provided without an argument.
+  ///
+  /// This initializer allows providing a `defaultAsFlag` value that is used
+  /// when the flag is present but no value follows it:
+  ///
+  /// ```swift
+  /// @Option(name: .customLong("bin-path"), defaultAsFlag: "/default/path")
+  /// var showBinPath: String? = nil
+  /// ```
+  ///
+  /// - Parameters:
+  ///   - wrappedValue: A default value to use for this property, provided
+  ///     implicitly by the compiler during property wrapper initialization.
+  ///   - name: A specification for what names are allowed for this option.
+  ///   - defaultAsFlag: The value to use when the flag is provided without an argument.
+  ///   - parsingStrategy: The behavior to use when looking for this option's value.
+  ///   - help: Information about how to use this option.
+  ///   - completion: The type of command-line completion provided for this option.
+  public init<T>(
+    wrappedValue: _OptionalNilComparisonType,
+    name: NameSpecification = .long,
+    defaultAsFlag: T,
+    parsing parsingStrategy: SingleValueParsingStrategy = .scanningForValue,
+    help: ArgumentHelp? = nil,
+    completion: CompletionKind? = nil
+  ) where T: ExpressibleByArgument, Value == T? {
+    self.init(
+      _parsedValue: .init { key in
+        let arg = ArgumentDefinition(
+          kind: .name(key: key, specification: name),
+          help: .init(
+            allValueStrings: T.allValueStrings,
+            options: [.isOptional],
+            help: help,
+            defaultValue: String(describing: defaultAsFlag),
+            key: key,
+            isComposite: false),
+          completion: completion ?? T.defaultCompletionKind,
+          parsingStrategy: parsingStrategy.base,
+          update: .optionalUnary(
+            nullaryHandler: { (origin, name, parsedValues) in
+              // Act like a flag - when present without value, use defaultAsFlag
+              parsedValues.set(defaultAsFlag, forKey: key, inputOrigin: origin)
+            },
+            unaryHandler: { (origin, name, valueString, parsedValues) in
+              // Parse the provided value
+              guard let parsedValue = T(argument: valueString) else {
+                throw ParserError.unableToParseValue(
+                  origin, name, valueString, forKey: key, originalError: nil)
+              }
+              parsedValues.set(parsedValue, forKey: key, inputOrigin: origin)
+            }
+          ),
+          initial: { origin, values in
+            values.set(
+              nil, forKey: key, inputOrigin: InputOrigin(element: .defaultValue)
+            )
+          })
+
+        return ArgumentSet(arg)
+      })
+  }
+
   @available(
     *, deprecated,
     message: """
@@ -580,6 +644,68 @@ extension Option {
         return ArgumentSet(arg)
       })
   }
+
+  /// Creates an optional property that reads its value from a labeled option,
+  /// with a default value when the flag is provided without an argument.
+  ///
+  /// This initializer allows providing a `defaultAsFlag` value that is used
+  /// when the flag is present but no value follows it:
+  ///
+  /// ```swift
+  /// @Option(name: .customLong("bin-path"), defaultAsFlag: "/default/path")
+  /// var showBinPath: String?
+  /// ```
+  ///
+  /// - Parameters:
+  ///   - name: A specification for what names are allowed for this option.
+  ///   - defaultAsFlag: The value to use when the flag is provided without an argument.
+  ///   - parsingStrategy: The behavior to use when looking for this option's value.
+  ///   - help: Information about how to use this option.
+  ///   - completion: The type of command-line completion provided for this option.
+  public init<T>(
+    name: NameSpecification = .long,
+    defaultAsFlag: T,
+    parsing parsingStrategy: SingleValueParsingStrategy = .scanningForValue,
+    help: ArgumentHelp? = nil,
+    completion: CompletionKind? = nil
+  ) where T: ExpressibleByArgument, Value == T? {
+    // Implementation matching the first initializer - hybrid flag/option behavior
+    self.init(
+      _parsedValue: .init { key in
+        let arg = ArgumentDefinition(
+          kind: .name(key: key, specification: name),
+          help: .init(
+            allValueStrings: T.allValueStrings,
+            options: [.isOptional],
+            help: help,
+            defaultValue: String(describing: defaultAsFlag),
+            key: key,
+            isComposite: false),
+          completion: completion ?? T.defaultCompletionKind,
+          parsingStrategy: parsingStrategy.base,
+          update: .optionalUnary(
+            nullaryHandler: { (origin, name, parsedValues) in
+              // Act like a flag - when present without value, use defaultAsFlag
+              parsedValues.set(defaultAsFlag, forKey: key, inputOrigin: origin)
+            },
+            unaryHandler: { (origin, name, valueString, parsedValues) in
+              // Parse the provided value
+              guard let parsedValue = T(argument: valueString) else {
+                throw ParserError.unableToParseValue(
+                  origin, name, valueString, forKey: key, originalError: nil)
+              }
+              parsedValues.set(parsedValue, forKey: key, inputOrigin: origin)
+            }
+          ),
+          initial: { origin, values in
+            values.set(
+              nil, forKey: key, inputOrigin: InputOrigin(element: .defaultValue)
+            )
+          })
+
+        return ArgumentSet(arg)
+      })
+  }
 }
 
 // MARK: - @Option Optional<T> Initializers
@@ -626,6 +752,78 @@ extension Option {
           transform: transform,
           initial: nil,
           completion: completion)
+
+        return ArgumentSet(arg)
+      })
+  }
+
+  /// Creates an optional property that reads its value from a labeled option,
+  /// parsing with the given closure, with a default value when the flag is
+  /// provided without an argument.
+  ///
+  /// This initializer allows providing a `defaultAsFlag` value that is used
+  /// when the flag is present but no value follows it:
+  ///
+  /// ```swift
+  /// @Option(name: .customLong("bin-path"), defaultAsFlag: "/default/path", transform: { $0.uppercased() })
+  /// var showBinPath: String? = nil
+  /// ```
+  ///
+  /// - Parameters:
+  ///   - wrappedValue: A default value to use for this property, provided
+  ///     implicitly by the compiler during property wrapper initialization.
+  ///   - name: A specification for what names are allowed for this option.
+  ///   - defaultAsFlag: The value to use when the flag is provided without an argument.
+  ///   - parsingStrategy: The behavior to use when looking for this option's value.
+  ///   - help: Information about how to use this option.
+  ///   - completion: The type of command-line completion provided for this option.
+  ///   - transform: A closure that converts a string into this property's
+  ///     type, or else throws an error.
+  @preconcurrency
+  public init<T>(
+    wrappedValue: _OptionalNilComparisonType,
+    name: NameSpecification = .long,
+    defaultAsFlag: T,
+    parsing parsingStrategy: SingleValueParsingStrategy = .scanningForValue,
+    help: ArgumentHelp? = nil,
+    completion: CompletionKind? = nil,
+    transform: @Sendable @escaping (String) throws -> T
+  ) where Value == T? {
+    // Implementation with hybrid flag/option behavior and transform
+    self.init(
+      _parsedValue: .init { key in
+        let arg = ArgumentDefinition(
+          kind: .name(key: key, specification: name),
+          help: .init(
+            allValueStrings: [],
+            options: [.isOptional],
+            help: help,
+            defaultValue: String(describing: defaultAsFlag),
+            key: key,
+            isComposite: false),
+          completion: completion ?? .default,
+          parsingStrategy: parsingStrategy.base,
+          update: .optionalUnary(
+            nullaryHandler: { (origin, name, parsedValues) in
+              // Act like a flag - when present without value, use defaultAsFlag
+              parsedValues.set(defaultAsFlag, forKey: key, inputOrigin: origin)
+            },
+            unaryHandler: { (origin, name, valueString, parsedValues) in
+              // Parse the provided value using the transform
+              do {
+                let parsedValue = try transform(valueString)
+                parsedValues.set(parsedValue, forKey: key, inputOrigin: origin)
+              } catch {
+                throw ParserError.unableToParseValue(
+                  origin, name, valueString, forKey: key, originalError: error)
+              }
+            }
+          ),
+          initial: { origin, values in
+            values.set(
+              nil, forKey: key, inputOrigin: InputOrigin(element: .defaultValue)
+            )
+          })
 
         return ArgumentSet(arg)
       })
@@ -702,6 +900,75 @@ extension Option {
           transform: transform,
           initial: nil,
           completion: completion)
+
+        return ArgumentSet(arg)
+      })
+  }
+
+  /// Creates an optional property that reads its value from a labeled option,
+  /// parsing with the given closure, with a default value when the flag is
+  /// provided without an argument.
+  ///
+  /// This initializer allows providing a `defaultAsFlag` value that is used
+  /// when the flag is present but no value follows it:
+  ///
+  /// ```swift
+  /// @Option(name: .customLong("bin-path"), defaultAsFlag: "/default/path", transform: { $0.uppercased() })
+  /// var showBinPath: String?
+  /// ```
+  ///
+  /// - Parameters:
+  ///   - name: A specification for what names are allowed for this option.
+  ///   - defaultAsFlag: The value to use when the flag is provided without an argument.
+  ///   - parsingStrategy: The behavior to use when looking for this option's value.
+  ///   - help: Information about how to use this option.
+  ///   - completion: The type of command-line completion provided for this option.
+  ///   - transform: A closure that converts a string into this property's
+  ///     type, or else throws an error.
+  @preconcurrency
+  public init<T>(
+    name: NameSpecification = .long,
+    defaultAsFlag: T,
+    parsing parsingStrategy: SingleValueParsingStrategy = .scanningForValue,
+    help: ArgumentHelp? = nil,
+    completion: CompletionKind? = nil,
+    transform: @Sendable @escaping (String) throws -> T
+  ) where Value == T? {
+    // Implementation with hybrid flag/option behavior and transform
+    self.init(
+      _parsedValue: .init { key in
+        let arg = ArgumentDefinition(
+          kind: .name(key: key, specification: name),
+          help: .init(
+            allValueStrings: [],
+            options: [.isOptional],
+            help: help,
+            defaultValue: String(describing: defaultAsFlag),
+            key: key,
+            isComposite: false),
+          completion: completion ?? .default,
+          parsingStrategy: parsingStrategy.base,
+          update: .optionalUnary(
+            nullaryHandler: { (origin, name, parsedValues) in
+              // Act like a flag - when present without value, use defaultAsFlag
+              parsedValues.set(defaultAsFlag, forKey: key, inputOrigin: origin)
+            },
+            unaryHandler: { (origin, name, valueString, parsedValues) in
+              // Parse the provided value using the transform
+              do {
+                let parsedValue = try transform(valueString)
+                parsedValues.set(parsedValue, forKey: key, inputOrigin: origin)
+              } catch {
+                throw ParserError.unableToParseValue(
+                  origin, name, valueString, forKey: key, originalError: error)
+              }
+            }
+          ),
+          initial: { origin, values in
+            values.set(
+              nil, forKey: key, inputOrigin: InputOrigin(element: .defaultValue)
+            )
+          })
 
         return ArgumentSet(arg)
       })

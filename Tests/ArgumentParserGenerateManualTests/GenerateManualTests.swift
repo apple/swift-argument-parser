@@ -56,4 +56,13 @@ final class GenerateManualTests: XCTestCase {
   func testRollMultiPageManual() throws {
     try assertGenerateManual(multiPage: true, command: "roll")
   }
+
+  func testDefaultAsFlagSinglePageManual() throws {
+    try assertGenerateManual(multiPage: false, command: "default-as-flag")
+  }
+
+  func testDefaultAsFlagMultiPageManual() throws {
+    try assertGenerateManual(multiPage: true, command: "default-as-flag")
+  }
+
 }

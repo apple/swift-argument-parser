@@ -81,7 +81,7 @@ struct Lucky: ParsableCommand {
 ```
 
 ```
-% lucky 
+% lucky
 Your lucky numbers are:
 7 14 21
 % lucky 1 2 3
@@ -327,6 +327,89 @@ If a default is not specified, the user must provide a value for that argument/o
 You must also always specify a default of `false` for a non-optional `Bool` flag, as in the example above. This makes the behavior consistent with both normal Swift properties (which either must be explicitly initialized or optional to initialize a `struct`/`class` containing them) and the other property types.
 
 
+### Creating hybrid flag/option behavior with defaultAsFlag
+
+The `defaultAsFlag` parameter allows you to create options that can work both as flags (without values) and as options (with values). This provides flexible command-line interfaces where users can choose between concise flag usage or explicit value specification.
+
+```swift
+struct Example: ParsableCommand {
+    @Option(defaultAsFlag: "default", help: "Set output format.")
+    var format: String?
+
+    @Option(defaultAsFlag: 8080, help: "Server port.")
+    var port: Int?
+
+    func run() {
+        print("Format: \(format ?? "none")")
+        print("Port: \(port ?? 3000)")
+    }
+}
+```
+
+**Command-line behavior:**
+```
+% example                    # format = nil, port = nil
+% example --format           # format = "default", port = nil
+% example --format json      # format = "json", port = nil
+% example --port             # format = nil, port = 8080
+% example --port 9000        # format = nil, port = 9000
+```
+
+The `defaultAsFlag` parameter creates a hybrid that supports both patterns:
+- **Flag behavior**: `--format` (sets format to "default")
+- **Option behavior**: `--format json` (sets format to "json")
+- **No usage**: format remains `nil`
+
+#### Type requirements
+
+- The property **must** be optional (`T?`)
+- The `defaultAsFlag` value must be of the unwrapped type (`T`)
+- All standard `ExpressibleByArgument` types are supported (String, Int, Bool, Double, etc.)
+
+#### Advanced usage
+
+You can combine `defaultAsFlag` with transform functions:
+
+```swift
+@Option(
+    defaultAsFlag: "info",
+    help: "Set log level.",
+    transform: { $0.uppercased() }
+)
+var logLevel: String?
+```
+
+**Behavior:**
+```
+% app --log-level        # logLevel = "INFO" (transformed default)
+% app --log-level debug  # logLevel = "DEBUG" (transformed input)
+```
+
+#### Help display
+
+DefaultAsFlag options show special help formatting to distinguish them from regular defaults:
+
+```
+OPTIONS:
+  --format [<format>]     Set output format. (default as flag: json)
+  --port [<port>]         Server port. (default as flag: 8080)
+```
+
+Note the `(default as flag: ...)` text instead of regular `(default: ...)`, and the optional value syntax `[<value>]` instead of required `<value>`.
+
+#### Value detection
+
+The parser determines whether a value follows the option:
+
+1. **Next argument is a value** if it doesn't start with `-` and isn't another known option
+2. **No value available**: Use the `defaultAsFlag` value
+3. **Explicit value provided**: Parse and use that value
+
+This works with all parsing strategies (`.next`, `.scanningForValue`, `.unconditional`), though `.unconditional` defeats the purpose by always requiring a value.
+
+For complete examples and API reference, see the [`default-as-flag`](https://github.com/apple/swift-argument-parser/tree/main/Examples/default-as-flag) example.
+
+
 ### Specifying a parsing strategy
 
 When parsing a list of command-line inputs, `ArgumentParser` distinguishes between dash-prefixed keys and un-prefixed values. When looking for the value for a key, only an un-prefixed value will be selected by default.
@@ -479,7 +562,7 @@ When appropriate, you can process supported arguments and ignore unknown ones by
 ```swift
 struct Example: ParsableCommand {
     @Flag var verbose = false
-    
+
     @Argument(parsing: .allUnrecognized)
     var unknowns: [String] = []
 
