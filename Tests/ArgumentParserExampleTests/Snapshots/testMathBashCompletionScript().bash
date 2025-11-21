@@ -279,8 +279,15 @@ _math_stats_quantiles() {
 
 _math_help() {
     flags=(--version)
-    options=()
+    options=(-s --search)
     __math_offer_flags_options 1
+
+    # Offer option value completions
+    case "${prev}" in
+    '-s'|'--search')
+        return
+        ;;
+    esac
 }
 
 complete -o filenames -F _math math

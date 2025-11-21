@@ -725,7 +725,7 @@
         ]
       },
       {
-        "abstract" : "Show subcommand help information.",
+        "abstract" : "Show subcommand help information. Use --search to find commands and options.",
         "arguments" : [
           {
             "isOptional" : true,
@@ -760,6 +760,29 @@
             },
             "shouldDisplay" : false,
             "valueName" : "help"
+          },
+          {
+            "abstract" : "Search for commands and options matching the term.",
+            "isOptional" : true,
+            "isRepeating" : false,
+            "kind" : "option",
+            "names" : [
+              {
+                "kind" : "short",
+                "name" : "s"
+              },
+              {
+                "kind" : "long",
+                "name" : "search"
+              }
+            ],
+            "parsingStrategy" : "default",
+            "preferredName" : {
+              "kind" : "long",
+              "name" : "search"
+            },
+            "shouldDisplay" : true,
+            "valueName" : "search"
           },
           {
             "abstract" : "Show the version.",

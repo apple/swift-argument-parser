@@ -68,7 +68,7 @@ _base-test() {
         local -ar subcommands=(
             'sub-command:'
             'escaped-command:'
-            'help:Show subcommand help information.'
+            'help:Show subcommand help information. Use --search to find commands and options.'
         )
         _describe -V subcommand subcommands
         ;;
@@ -110,6 +110,7 @@ _base-test_help() {
     local -i ret=1
     local -ar arg_specs=(
         '*:subcommands:'
+        '(-s --search)'{-s,--search}'[Search for commands and options matching the term.]:search:'
     )
     _arguments -w -s -S : "${arg_specs[@]}" && ret=0
 
