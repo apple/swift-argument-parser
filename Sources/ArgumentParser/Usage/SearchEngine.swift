@@ -121,44 +121,53 @@ struct SearchEngine {
     // Don't search commands that shouldn't be displayed
     guard configuration.shouldDisplay else { return }
 
-    // Search command name
+    // Track if we've found any match for this command
+    var matchFound = false
+    var bestMatchType: SearchResult.MatchType?
+    var bestSnippet = ""
+
+    // Check 1: Search command name (highest priority)
     let commandName = command._commandName
     if commandName.lowercased().contains(term) {
-      results.append(SearchResult(
-        commandPath: currentPath,
-        matchType: .commandName(matchedText: commandName),
-        contextSnippet: commandName
-      ))
+      bestMatchType = .commandName(matchedText: commandName)
+      bestSnippet = configuration.abstract.isEmpty ? commandName : configuration.abstract
+      matchFound = true
     }
 
-    // Search command aliases
-    for alias in configuration.aliases {
-      if alias.lowercased().contains(term) {
-        results.append(SearchResult(
-          commandPath: currentPath,
-          matchType: .commandName(matchedText: alias),
-          contextSnippet: alias
-        ))
+    // Check 2: Search command aliases (if name didn't match)
+    if !matchFound {
+      for alias in configuration.aliases {
+        if alias.lowercased().contains(term) {
+          bestMatchType = .commandName(matchedText: alias)
+          bestSnippet = configuration.abstract.isEmpty ? alias : configuration.abstract
+          matchFound = true
+          break
+        }
       }
     }
 
-    // Search command abstract
-    if !configuration.abstract.isEmpty && configuration.abstract.lowercased().contains(term) {
+    // Check 3: Search command abstract (if name/aliases didn't match)
+    if !matchFound && !configuration.abstract.isEmpty && configuration.abstract.lowercased().contains(term) {
       let snippet = extractSnippet(from: configuration.abstract, around: term)
-      results.append(SearchResult(
-        commandPath: currentPath,
-        matchType: .commandDescription(matchedText: snippet),
-        contextSnippet: snippet
-      ))
+      bestMatchType = .commandDescription(matchedText: snippet)
+      bestSnippet = snippet
+      matchFound = true
     }
 
-    // Search command discussion
-    if !configuration.discussion.isEmpty && configuration.discussion.lowercased().contains(term) {
+    // Check 4: Search command discussion (if nothing else matched)
+    if !matchFound && !configuration.discussion.isEmpty && configuration.discussion.lowercased().contains(term) {
       let snippet = extractSnippet(from: configuration.discussion, around: term)
+      bestMatchType = .commandDescription(matchedText: snippet)
+      bestSnippet = snippet
+      matchFound = true
+    }
+
+    // Add result if we found a match
+    if matchFound, let matchType = bestMatchType {
       results.append(SearchResult(
         commandPath: currentPath,
-        matchType: .commandDescription(matchedText: snippet),
-        contextSnippet: snippet
+        matchType: matchType,
+        contextSnippet: bestSnippet
       ))
     }
 
@@ -191,64 +200,75 @@ struct SearchEngine {
       guard arg.help.visibility.isAtLeastAsVisible(as: visibility) else { continue }
 
       let names = arg.names
+      let displayNames: String
+      if names.isEmpty {
+        // Positional argument - use computed value name
+        displayNames = "<\(arg.valueName)>"
+      } else {
+        displayNames = names.map { $0.synopsisString }.joined(separator: ", ")
+      }
 
-      // Search argument names
+      // Track if we've found any match for this argument
+      var matchFound = false
+      var bestMatchType: SearchResult.MatchType?
+      var bestSnippet = ""
+
+      // Check 1: Search argument names (highest priority)
       for name in names {
         let nameString = name.synopsisString
         if nameString.lowercased().contains(term) {
-          // Get a display name for this argument
-          let displayNames = names.map { $0.synopsisString }.joined(separator: ", ")
-          results.append(SearchResult(
-            commandPath: commandPath,
-            matchType: .argumentName(name: displayNames, matchedText: nameString),
-            contextSnippet: arg.help.abstract
-          ))
-          break // Only add once per argument even if multiple names match
+          bestMatchType = .argumentName(name: displayNames, matchedText: nameString)
+          bestSnippet = arg.help.abstract
+          matchFound = true
+          break
         }
       }
 
-      // Get display name for this argument
-      let displayNames = names.map { $0.synopsisString }.joined(separator: ", ")
-
-      // Search argument abstract
-      if !arg.help.abstract.isEmpty && arg.help.abstract.lowercased().contains(term) {
+      // Check 2: Search argument abstract (if name didn't match)
+      if !matchFound && !arg.help.abstract.isEmpty && arg.help.abstract.lowercased().contains(term) {
         let snippet = extractSnippet(from: arg.help.abstract, around: term)
-        results.append(SearchResult(
-          commandPath: commandPath,
-          matchType: .argumentDescription(name: displayNames, matchedText: snippet),
-          contextSnippet: snippet
-        ))
+        bestMatchType = .argumentDescription(name: displayNames, matchedText: snippet)
+        bestSnippet = snippet
+        matchFound = true
       }
 
-      // Search argument discussion
-      if case .staticText(let discussionText) = arg.help.discussion,
+      // Check 3: Search argument discussion (if nothing else matched)
+      if !matchFound,
+         case .staticText(let discussionText) = arg.help.discussion,
          !discussionText.isEmpty && discussionText.lowercased().contains(term) {
         let snippet = extractSnippet(from: discussionText, around: term)
-        results.append(SearchResult(
-          commandPath: commandPath,
-          matchType: .argumentDescription(name: displayNames, matchedText: snippet),
-          contextSnippet: snippet
-        ))
+        bestMatchType = .argumentDescription(name: displayNames, matchedText: snippet)
+        bestSnippet = snippet
+        matchFound = true
       }
 
-      // Search possible values
-      for value in arg.help.allValueStrings where !value.isEmpty {
-        if value.lowercased().contains(term) {
-          results.append(SearchResult(
-            commandPath: commandPath,
-            matchType: .argumentValue(name: displayNames, matchedText: value),
-            contextSnippet: "possible value: \(value)"
-          ))
+      // Check 4: Search possible values (if nothing else matched)
+      if !matchFound {
+        for value in arg.help.allValueStrings where !value.isEmpty {
+          if value.lowercased().contains(term) {
+            bestMatchType = .argumentValue(name: displayNames, matchedText: value)
+            bestSnippet = "possible value: \(value)"
+            matchFound = true
+            break
+          }
         }
       }
 
-      // Search default value
-      if let defaultValue = arg.help.defaultValue,
+      // Check 5: Search default value (if nothing else matched)
+      if !matchFound,
+         let defaultValue = arg.help.defaultValue,
          !defaultValue.isEmpty && defaultValue.lowercased().contains(term) {
+        bestMatchType = .argumentValue(name: displayNames, matchedText: defaultValue)
+        bestSnippet = "default: \(defaultValue)"
+        matchFound = true
+      }
+
+      // Add result if we found a match
+      if matchFound, let matchType = bestMatchType {
         results.append(SearchResult(
           commandPath: commandPath,
-          matchType: .argumentValue(name: displayNames, matchedText: defaultValue),
-          contextSnippet: "default: \(defaultValue)"
+          matchType: matchType,
+          contextSnippet: bestSnippet
         ))
       }
     }
@@ -343,12 +363,29 @@ struct SearchEngine {
 
     for result in results {
       let pathString = result.commandPath.joined(separator: " ")
-      output += "  \(pathString)\n"
-      output += "    \(result.displayLabel)\n"
-      if !result.contextSnippet.isEmpty {
+
+      switch result.matchType {
+      case .commandName(let matched):
+        // For command name matches, show path and description inline if available
+        if !result.contextSnippet.isEmpty && result.contextSnippet != matched {
+          output += "  \(pathString)\n"
+          let wrapped = result.contextSnippet.wrapped(to: screenWidth, wrappingIndent: 6)
+          output += "    \(wrapped.dropFirst(6))\n"
+        } else {
+          // No description available, just show the path
+          output += "  \(pathString)\n"
+        }
+
+      case .commandDescription:
+        // For description matches, show path and the matching snippet
+        output += "  \(pathString)\n"
         let wrapped = result.contextSnippet.wrapped(to: screenWidth, wrappingIndent: 6)
-        output += "    \(wrapped.dropFirst(4))\n"
+        output += "    \(wrapped.dropFirst(6))\n"
+
+      default:
+        break
       }
+
       output += "\n"
     }
 
