@@ -83,16 +83,16 @@ struct HelpCommand: ParsableCommand {
     }
 
     // Create search engine and perform search
-    let searchEngine = SearchEngine(
+    let commandSearcher = CommandSearcher(
       rootNode: tree,
       commandStack: commandStack.isEmpty ? [tree.element] : commandStack,
       visibility: visibility
     )
 
-    let results = searchEngine.search(for: term)
+    let results = commandSearcher.search(for: term)
 
     // Format and print results
-    let output = SearchEngine.formatResults(
+    let output = CommandSearcher.formatResults(
       results,
       term: term,
       toolName: toolName,

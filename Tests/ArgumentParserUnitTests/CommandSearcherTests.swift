@@ -13,7 +13,7 @@ import XCTest
 
 @testable import ArgumentParser
 
-final class SearchEngineTests: XCTestCase {}
+final class CommandSearcherTests: XCTestCase {}
 
 // MARK: - Test Commands
 
@@ -79,10 +79,10 @@ private struct CommandWithEnums: ParsableCommand {
 
 // MARK: - Basic Search Tests
 
-extension SearchEngineTests {
+extension CommandSearcherTests {
   func testSearch_CommandName() {
     let tree = CommandParser(ParentCommand.self).commandTree
-    let engine = SearchEngine(
+    let engine = CommandSearcher(
       rootNode: tree,
       commandStack: [ParentCommand.self],
       visibility: .default
@@ -104,7 +104,7 @@ extension SearchEngineTests {
 
   func testSearch_CommandAlias() {
     let tree = CommandParser(ParentCommand.self).commandTree
-    let engine = SearchEngine(
+    let engine = CommandSearcher(
       rootNode: tree,
       commandStack: [ParentCommand.self],
       visibility: .default
@@ -122,7 +122,7 @@ extension SearchEngineTests {
 
   func testSearch_CommandAbstract() {
     let tree = CommandParser(SimpleCommand.self).commandTree
-    let engine = SearchEngine(
+    let engine = CommandSearcher(
       rootNode: tree,
       commandStack: [SimpleCommand.self],
       visibility: .default
@@ -139,7 +139,7 @@ extension SearchEngineTests {
 
   func testSearch_CommandDiscussion() {
     let tree = CommandParser(SimpleCommand.self).commandTree
-    let engine = SearchEngine(
+    let engine = CommandSearcher(
       rootNode: tree,
       commandStack: [SimpleCommand.self],
       visibility: .default
@@ -157,10 +157,10 @@ extension SearchEngineTests {
 
 // MARK: - Argument Search Tests
 
-extension SearchEngineTests {
+extension CommandSearcherTests {
   func testSearch_ArgumentName() {
     let tree = CommandParser(SimpleCommand.self).commandTree
-    let engine = SearchEngine(
+    let engine = CommandSearcher(
       rootNode: tree,
       commandStack: [SimpleCommand.self],
       visibility: .default
@@ -179,7 +179,7 @@ extension SearchEngineTests {
 
   func testSearch_ArgumentHelp() {
     let tree = CommandParser(SimpleCommand.self).commandTree
-    let engine = SearchEngine(
+    let engine = CommandSearcher(
       rootNode: tree,
       commandStack: [SimpleCommand.self],
       visibility: .default
@@ -198,7 +198,7 @@ extension SearchEngineTests {
 
   func testSearch_ArgumentValue() {
     let tree = CommandParser(CommandWithEnums.self).commandTree
-    let engine = SearchEngine(
+    let engine = CommandSearcher(
       rootNode: tree,
       commandStack: [CommandWithEnums.self],
       visibility: .default
@@ -217,7 +217,7 @@ extension SearchEngineTests {
 
   func testSearch_PositionalArgument() {
     let tree = CommandParser(SimpleCommand.self).commandTree
-    let engine = SearchEngine(
+    let engine = CommandSearcher(
       rootNode: tree,
       commandStack: [SimpleCommand.self],
       visibility: .default
@@ -248,7 +248,7 @@ extension SearchEngineTests {
     }
 
     let tree = CommandParser(TestCommand.self).commandTree
-    let engine = SearchEngine(
+    let engine = CommandSearcher(
       rootNode: tree,
       commandStack: [TestCommand.self],
       visibility: .default
@@ -275,7 +275,7 @@ extension SearchEngineTests {
     }
 
     let tree = CommandParser(TestCommand.self).commandTree
-    let engine = SearchEngine(
+    let engine = CommandSearcher(
       rootNode: tree,
       commandStack: [TestCommand.self],
       visibility: .default
@@ -303,7 +303,7 @@ extension SearchEngineTests {
     }
 
     let tree = CommandParser(TestCommand.self).commandTree
-    let engine = SearchEngine(
+    let engine = CommandSearcher(
       rootNode: tree,
       commandStack: [TestCommand.self],
       visibility: .default
@@ -339,7 +339,7 @@ extension SearchEngineTests {
   func testSearch_PossibleValues_Explicit() {
     // Test that all possible enum values are searchable
     let tree = CommandParser(CommandWithEnums.self).commandTree
-    let engine = SearchEngine(
+    let engine = CommandSearcher(
       rootNode: tree,
       commandStack: [CommandWithEnums.self],
       visibility: .default
@@ -363,10 +363,10 @@ extension SearchEngineTests {
 
 // MARK: - Case Sensitivity Tests
 
-extension SearchEngineTests {
+extension CommandSearcherTests {
   func testSearch_CaseInsensitive() {
     let tree = CommandParser(SimpleCommand.self).commandTree
-    let engine = SearchEngine(
+    let engine = CommandSearcher(
       rootNode: tree,
       commandStack: [SimpleCommand.self],
       visibility: .default
@@ -384,10 +384,10 @@ extension SearchEngineTests {
 
 // MARK: - Result Ordering Tests
 
-extension SearchEngineTests {
+extension CommandSearcherTests {
   func testSearch_ResultOrdering() {
     let tree = CommandParser(ParentCommand.self).commandTree
-    let engine = SearchEngine(
+    let engine = CommandSearcher(
       rootNode: tree,
       commandStack: [ParentCommand.self],
       visibility: .default
@@ -410,10 +410,10 @@ extension SearchEngineTests {
 
 // MARK: - Empty and No-Match Tests
 
-extension SearchEngineTests {
+extension CommandSearcherTests {
   func testSearch_EmptyTerm() {
     let tree = CommandParser(SimpleCommand.self).commandTree
-    let engine = SearchEngine(
+    let engine = CommandSearcher(
       rootNode: tree,
       commandStack: [SimpleCommand.self],
       visibility: .default
@@ -426,7 +426,7 @@ extension SearchEngineTests {
 
   func testSearch_NoMatches() {
     let tree = CommandParser(SimpleCommand.self).commandTree
-    let engine = SearchEngine(
+    let engine = CommandSearcher(
       rootNode: tree,
       commandStack: [SimpleCommand.self],
       visibility: .default
@@ -440,7 +440,7 @@ extension SearchEngineTests {
 
 // MARK: - Priority Tests
 
-extension SearchEngineTests {
+extension CommandSearcherTests {
   func testSearch_MatchPriority() {
     // When a term matches multiple attributes of the same item,
     // only the highest priority match should be returned
@@ -455,7 +455,7 @@ extension SearchEngineTests {
     }
 
     let tree = CommandParser(TestCommand.self).commandTree
-    let engine = SearchEngine(
+    let engine = CommandSearcher(
       rootNode: tree,
       commandStack: [TestCommand.self],
       visibility: .default
@@ -483,7 +483,7 @@ extension SearchEngineTests {
 
 // MARK: - ANSI Highlighting Tests
 
-extension SearchEngineTests {
+extension CommandSearcherTests {
   func testANSI_Highlight() {
     let text = "This is a test string"
     let highlighted = ANSICode.highlightMatches(
@@ -525,7 +525,7 @@ extension SearchEngineTests {
 
 // MARK: - Snippet Extraction Tests
 
-extension SearchEngineTests {
+extension CommandSearcherTests {
   func testSnippet_CenteredOnMatch() {
     struct TestCommand: ParsableCommand {
       static let configuration = CommandConfiguration(
@@ -535,7 +535,7 @@ extension SearchEngineTests {
     }
 
     let tree = CommandParser(TestCommand.self).commandTree
-    let engine = SearchEngine(
+    let engine = CommandSearcher(
       rootNode: tree,
       commandStack: [TestCommand.self],
       visibility: .default
@@ -553,9 +553,9 @@ extension SearchEngineTests {
 
 // MARK: - Format Results Tests
 
-extension SearchEngineTests {
+extension CommandSearcherTests {
   func testFormatResults_NoMatches() {
-    let formatted = SearchEngine.formatResults(
+    let formatted = CommandSearcher.formatResults(
       [],
       term: "test",
       toolName: "mytool",
@@ -570,14 +570,14 @@ extension SearchEngineTests {
 
   func testFormatResults_WithMatches() {
     let tree = CommandParser(SimpleCommand.self).commandTree
-    let engine = SearchEngine(
+    let engine = CommandSearcher(
       rootNode: tree,
       commandStack: [SimpleCommand.self],
       visibility: .default
     )
 
     let results = engine.search(for: "name")
-    let formatted = SearchEngine.formatResults(
+    let formatted = CommandSearcher.formatResults(
       results,
       term: "name",
       toolName: "simple-command",
@@ -591,14 +591,14 @@ extension SearchEngineTests {
 
   func testFormatResults_GroupsByType() {
     let tree = CommandParser(ParentCommand.self).commandTree
-    let engine = SearchEngine(
+    let engine = CommandSearcher(
       rootNode: tree,
       commandStack: [ParentCommand.self],
       visibility: .default
     )
 
     let results = engine.search(for: "child")
-    let formatted = SearchEngine.formatResults(
+    let formatted = CommandSearcher.formatResults(
       results,
       term: "child",
       toolName: "parent-command",
@@ -619,14 +619,14 @@ extension SearchEngineTests {
     }
 
     let tree = CommandParser(TestCommand.self).commandTree
-    let engine = SearchEngine(
+    let engine = CommandSearcher(
       rootNode: tree,
       commandStack: [TestCommand.self],
       visibility: .default
     )
 
     let results = engine.search(for: "operations")
-    let formatted = SearchEngine.formatResults(
+    let formatted = CommandSearcher.formatResults(
       results,
       term: "operations",
       toolName: "test-command",
@@ -655,14 +655,14 @@ extension SearchEngineTests {
     }
 
     let tree = CommandParser(TestCommand.self).commandTree
-    let engine = SearchEngine(
+    let engine = CommandSearcher(
       rootNode: tree,
       commandStack: [TestCommand.self],
       visibility: .default
     )
 
     let results = engine.search(for: "screen width")
-    let formatted = SearchEngine.formatResults(
+    let formatted = CommandSearcher.formatResults(
       results,
       term: "screen width",
       toolName: "test-command",
@@ -696,14 +696,14 @@ extension SearchEngineTests {
     }
 
     let tree = CommandParser(TestCommand.self).commandTree
-    let engine = SearchEngine(
+    let engine = CommandSearcher(
       rootNode: tree,
       commandStack: [TestCommand.self],
       visibility: .default
     )
 
     let results = engine.search(for: "network requests")
-    let formatted = SearchEngine.formatResults(
+    let formatted = CommandSearcher.formatResults(
       results,
       term: "network requests",
       toolName: "test-command",
@@ -735,14 +735,14 @@ extension SearchEngineTests {
     }
 
     let tree = CommandParser(TestCommand.self).commandTree
-    let engine = SearchEngine(
+    let engine = CommandSearcher(
       rootNode: tree,
       commandStack: [TestCommand.self],
       visibility: .default
     )
 
     let results = engine.search(for: "screen width")
-    let formatted = SearchEngine.formatResults(
+    let formatted = CommandSearcher.formatResults(
       results,
       term: "screen width",
       toolName: "test-command",
@@ -773,14 +773,14 @@ extension SearchEngineTests {
     }
 
     let tree = CommandParser(TestCommand.self).commandTree
-    let engine = SearchEngine(
+    let engine = CommandSearcher(
       rootNode: tree,
       commandStack: [TestCommand.self],
       visibility: .default
     )
 
     let results = engine.search(for: "yaml")
-    let formatted = SearchEngine.formatResults(
+    let formatted = CommandSearcher.formatResults(
       results,
       term: "yaml",
       toolName: "test-command",
@@ -807,14 +807,14 @@ extension SearchEngineTests {
     }
 
     let tree = CommandParser(TestCommand.self).commandTree
-    let engine = SearchEngine(
+    let engine = CommandSearcher(
       rootNode: tree,
       commandStack: [TestCommand.self],
       visibility: .default
     )
 
     let results = engine.search(for: "app.log")
-    let formatted = SearchEngine.formatResults(
+    let formatted = CommandSearcher.formatResults(
       results,
       term: "app.log",
       toolName: "test-command",

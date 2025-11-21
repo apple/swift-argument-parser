@@ -114,7 +114,7 @@ struct SearchResult {
 }
 
 /// Engine for searching through command trees.
-struct SearchEngine {
+struct CommandSearcher {
   /// The starting point for the search (root or subcommand).
   var rootNode: Tree<ParsableCommand.Type>
 
