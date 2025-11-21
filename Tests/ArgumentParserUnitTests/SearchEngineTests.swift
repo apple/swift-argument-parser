@@ -471,10 +471,7 @@ extension SearchEngineTests {
   func testANSI_Highlight() {
     let text = "This is a test string"
     let highlighted = ANSICode.highlightMatches(in: text, matching: "test", enabled: true)
-
-    XCTAssertTrue(highlighted.contains(ANSICode.bold))
-    XCTAssertTrue(highlighted.contains(ANSICode.reset))
-    XCTAssertTrue(highlighted.contains("test"))
+    XCTAssertEqual(highlighted,"This is a "+ANSICode.bold+"test"+ANSICode.reset+" string")
   }
 
   func testANSI_HighlightDisabled() {
@@ -539,7 +536,8 @@ extension SearchEngineTests {
       [],
       term: "test",
       toolName: "mytool",
-      screenWidth: 80
+      screenWidth: 80,
+      useHighlighting: false
     )
 
     XCTAssertTrue(formatted.contains("No matches found"))
@@ -581,7 +579,8 @@ extension SearchEngineTests {
       results,
       term: "child",
       toolName: "parent-command",
-      screenWidth: 80
+      screenWidth: 80,
+      useHighlighting: false
     )
 
     // Should have COMMANDS section for command matches
@@ -607,7 +606,8 @@ extension SearchEngineTests {
       results,
       term: "operations",
       toolName: "test-command",
-      screenWidth: 80
+      screenWidth: 80,
+      useHighlighting: false
     )
 
     // Should find the command description match
@@ -640,7 +640,8 @@ extension SearchEngineTests {
       results,
       term: "screen width",
       toolName: "test-command",
-      screenWidth: 60  // Narrow width to force wrapping
+      screenWidth: 60,  // Narrow width to force wrapping
+      useHighlighting: false
     )
 
     // Should find the match
@@ -676,7 +677,8 @@ extension SearchEngineTests {
       results,
       term: "network requests",
       toolName: "test-command",
-      screenWidth: 80
+      screenWidth: 80,
+      useHighlighting: false
     )
 
     // Should find the match
@@ -712,7 +714,8 @@ extension SearchEngineTests {
       results,
       term: "screen width",
       toolName: "test-command",
-      screenWidth: 60  // Narrow width to force wrapping
+      screenWidth: 60,  // Narrow width to force wrapping
+      useHighlighting: false
     )
 
     // Should find match
@@ -748,7 +751,8 @@ extension SearchEngineTests {
       results,
       term: "yaml",
       toolName: "test-command",
-      screenWidth: 80
+      screenWidth: 80,
+      useHighlighting: false
     )
 
     // Should find the match
@@ -781,7 +785,8 @@ extension SearchEngineTests {
       results,
       term: "app.log",
       toolName: "test-command",
-      screenWidth: 80
+      screenWidth: 80,
+      useHighlighting: false
     )
 
     // Should find the match
