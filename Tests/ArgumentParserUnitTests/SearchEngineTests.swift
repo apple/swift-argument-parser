@@ -10,6 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 import XCTest
+
 @testable import ArgumentParser
 
 final class SearchEngineTests: XCTestCase {}
@@ -94,10 +95,11 @@ extension SearchEngineTests {
     XCTAssertTrue(results.allSatisfy { $0.isCommandMatch })
 
     // Both should be command name matches
-    XCTAssertTrue(results.allSatisfy {
-      if case .commandName = $0.matchType { return true }
-      return false
-    })
+    XCTAssertTrue(
+      results.allSatisfy {
+        if case .commandName = $0.matchType { return true }
+        return false
+      })
   }
 
   func testSearch_CommandAlias() {
@@ -236,10 +238,12 @@ extension SearchEngineTests {
 
   func testSearch_ArgumentDiscussion() {
     struct TestCommand: ParsableCommand {
-      @Option(help: ArgumentHelp(
-        "Short help",
-        discussion: "This is a much longer discussion that explains the configuration file format in detail."
-      ))
+      @Option(
+        help: ArgumentHelp(
+          "Short help",
+          discussion:
+            "This is a much longer discussion that explains the configuration file format in detail."
+        ))
       var config: String?
     }
 
@@ -260,7 +264,8 @@ extension SearchEngineTests {
     }
     XCTAssertGreaterThan(discussionMatches.count, 0)
     // Should match in discussion, not in the short help
-    XCTAssertTrue(results[0].contextSnippet.contains("configuration file format"))
+    XCTAssertTrue(
+      results[0].contextSnippet.contains("configuration file format"))
   }
 
   func testSearch_ArgumentDefaultValue() {
@@ -284,7 +289,9 @@ extension SearchEngineTests {
       if case .argumentValue = $0.matchType { return true }
       return false
     }
-    XCTAssertGreaterThan(valueMatches.count, 0, "Should find 'json' in default value or possible values")
+    XCTAssertGreaterThan(
+      valueMatches.count, 0,
+      "Should find 'json' in default value or possible values")
   }
 
   func testSearch_StringDefaultValue() {
@@ -305,7 +312,8 @@ extension SearchEngineTests {
     // Search for something that ONLY appears in the default value
     let results = engine.search(for: "myapp")
 
-    XCTAssertGreaterThanOrEqual(results.count, 1, "Should find match in default value")
+    XCTAssertGreaterThanOrEqual(
+      results.count, 1, "Should find match in default value")
 
     // Should find match as argumentValue
     let valueMatches = results.filter {
@@ -315,13 +323,17 @@ extension SearchEngineTests {
       }
       return false
     }
-    XCTAssertGreaterThan(valueMatches.count, 0, "Should find 'myapp' in the default value '/var/log/myapp'")
+    XCTAssertGreaterThan(
+      valueMatches.count, 0,
+      "Should find 'myapp' in the default value '/var/log/myapp'")
 
     // Verify the snippet indicates it's a default value
     let hasDefaultSnippet = results.contains { result in
       result.contextSnippet.contains("default:")
     }
-    XCTAssertTrue(hasDefaultSnippet, "Context snippet should indicate this is a default value")
+    XCTAssertTrue(
+      hasDefaultSnippet,
+      "Context snippet should indicate this is a default value")
   }
 
   func testSearch_PossibleValues_Explicit() {
@@ -336,13 +348,15 @@ extension SearchEngineTests {
     // Test each enum value
     for searchTerm in ["json", "xml", "yaml"] {
       let results = engine.search(for: searchTerm)
-      XCTAssertGreaterThanOrEqual(results.count, 1, "Should find '\(searchTerm)'")
+      XCTAssertGreaterThanOrEqual(
+        results.count, 1, "Should find '\(searchTerm)'")
 
       let valueMatches = results.filter {
         if case .argumentValue = $0.matchType { return true }
         return false
       }
-      XCTAssertGreaterThan(valueMatches.count, 0, "'\(searchTerm)' should match as a value")
+      XCTAssertGreaterThan(
+        valueMatches.count, 0, "'\(searchTerm)' should match as a value")
     }
   }
 }
@@ -454,8 +468,10 @@ extension SearchEngineTests {
     let commandMatches = results.filter { $0.isCommandMatch }
     let argumentMatches = results.filter { !$0.isCommandMatch }
 
-    XCTAssertEqual(commandMatches.count, 1, "Should have exactly one command match")
-    XCTAssertEqual(argumentMatches.count, 1, "Should have exactly one argument match")
+    XCTAssertEqual(
+      commandMatches.count, 1, "Should have exactly one command match")
+    XCTAssertEqual(
+      argumentMatches.count, 1, "Should have exactly one argument match")
 
     // The argument match should be for the name (higher priority than help)
     guard case .argumentName = argumentMatches.first?.matchType else {
@@ -470,13 +486,17 @@ extension SearchEngineTests {
 extension SearchEngineTests {
   func testANSI_Highlight() {
     let text = "This is a test string"
-    let highlighted = ANSICode.highlightMatches(in: text, matching: "test", enabled: true)
-    XCTAssertEqual(highlighted,"This is a "+ANSICode.bold+"test"+ANSICode.reset+" string")
+    let highlighted = ANSICode.highlightMatches(
+      in: text, matching: "test", enabled: true)
+    XCTAssertEqual(
+      highlighted,
+      "This is a " + ANSICode.bold + "test" + ANSICode.reset + " string")
   }
 
   func testANSI_HighlightDisabled() {
     let text = "This is a test string"
-    let highlighted = ANSICode.highlightMatches(in: text, matching: "test", enabled: false)
+    let highlighted = ANSICode.highlightMatches(
+      in: text, matching: "test", enabled: false)
 
     XCTAssertEqual(highlighted, text)
     XCTAssertFalse(highlighted.contains(ANSICode.bold))
@@ -484,7 +504,8 @@ extension SearchEngineTests {
 
   func testANSI_HighlightMultipleMatches() {
     let text = "test this test that test"
-    let highlighted = ANSICode.highlightMatches(in: text, matching: "test", enabled: true)
+    let highlighted = ANSICode.highlightMatches(
+      in: text, matching: "test", enabled: true)
 
     // Should highlight all three occurrences
     let boldCount = highlighted.components(separatedBy: ANSICode.bold).count - 1
@@ -493,7 +514,8 @@ extension SearchEngineTests {
 
   func testANSI_HighlightCaseInsensitive() {
     let text = "Test this TEST that TeSt"
-    let highlighted = ANSICode.highlightMatches(in: text, matching: "test", enabled: true)
+    let highlighted = ANSICode.highlightMatches(
+      in: text, matching: "test", enabled: true)
 
     // Should highlight all three occurrences regardless of case
     let boldCount = highlighted.components(separatedBy: ANSICode.bold).count - 1
@@ -507,7 +529,8 @@ extension SearchEngineTests {
   func testSnippet_CenteredOnMatch() {
     struct TestCommand: ParsableCommand {
       static let configuration = CommandConfiguration(
-        discussion: "This is a very long discussion that contains many words and the word needle appears somewhere in the middle of all this text."
+        discussion:
+          "This is a very long discussion that contains many words and the word needle appears somewhere in the middle of all this text."
       )
     }
 
@@ -590,7 +613,8 @@ extension SearchEngineTests {
   func testFormatResults_CommandDescriptionFormatting() {
     struct TestCommand: ParsableCommand {
       static let configuration = CommandConfiguration(
-        abstract: "This is a test command that performs various operations on data files."
+        abstract:
+          "This is a test command that performs various operations on data files."
       )
     }
 
@@ -618,13 +642,15 @@ extension SearchEngineTests {
     // Should contain the matched term
     XCTAssertTrue(formatted.contains("operations"))
     // Should have the context snippet with description text
-    XCTAssertTrue(formatted.contains("performs") || formatted.contains("data files"))
+    XCTAssertTrue(
+      formatted.contains("performs") || formatted.contains("data files"))
   }
 
   func testFormatResults_CommandDescriptionWrapping() {
     struct TestCommand: ParsableCommand {
       static let configuration = CommandConfiguration(
-        discussion: "This is a very long discussion that contains many words and should wrap when displayed in the search results because it exceeds the screen width limit that we set for formatting purposes."
+        discussion:
+          "This is a very long discussion that contains many words and should wrap when displayed in the search results because it exceeds the screen width limit that we set for formatting purposes."
       )
     }
 
@@ -653,15 +679,19 @@ extension SearchEngineTests {
     // The formatting adds 4 spaces base indent + wrapping indent
     let lines = formatted.split(separator: "\n")
     let hasIndentedLine = lines.contains { line in
-      line.starts(with: "      ") // 6 spaces for continuation lines
+      line.starts(with: "      ")  // 6 spaces for continuation lines
     }
-    XCTAssertTrue(hasIndentedLine, "Should have wrapped lines with proper indentation")
+    XCTAssertTrue(
+      hasIndentedLine, "Should have wrapped lines with proper indentation")
   }
 
   func testFormatResults_ArgumentDescriptionFormatting() {
     // Test the .argumentDescription case formatting
     struct TestCommand: ParsableCommand {
-      @Option(help: "This option controls the maximum retry attempts for network requests")
+      @Option(
+        help:
+          "This option controls the maximum retry attempts for network requests"
+      )
       var maxRetries: Int = 3
     }
 
@@ -695,10 +725,12 @@ extension SearchEngineTests {
   func testFormatResults_ArgumentDescriptionWrapping() {
     // Test that argumentDescription wrapping works with 6-space indent
     struct TestCommand: ParsableCommand {
-      @Option(help: ArgumentHelp(
-        "Short help",
-        discussion: "This is a very long discussion about an option that contains many words and should definitely wrap when displayed because it exceeds our screen width limit for testing purposes."
-      ))
+      @Option(
+        help: ArgumentHelp(
+          "Short help",
+          discussion:
+            "This is a very long discussion about an option that contains many words and should definitely wrap when displayed because it exceeds our screen width limit for testing purposes."
+        ))
       var config: String?
     }
 
@@ -727,9 +759,10 @@ extension SearchEngineTests {
     // Should have wrapped lines with proper indentation
     let lines = formatted.split(separator: "\n")
     let hasIndentedLine = lines.contains { line in
-      line.starts(with: "      ") // 6 spaces for continuation
+      line.starts(with: "      ")  // 6 spaces for continuation
     }
-    XCTAssertTrue(hasIndentedLine, "Argument description should wrap with 6-space indent")
+    XCTAssertTrue(
+      hasIndentedLine, "Argument description should wrap with 6-space indent")
   }
 
   func testFormatResults_ArgumentValueFormatting() {

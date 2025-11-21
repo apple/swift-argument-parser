@@ -12,7 +12,8 @@
 struct HelpCommand: ParsableCommand {
   static let configuration = CommandConfiguration(
     commandName: "help",
-    abstract: "Show subcommand help information. Use --search to find commands and options.",
+    abstract:
+      "Show subcommand help information. Use --search to find commands and options.",
     helpNames: [])
 
   /// Any subcommand names provided after the `help` subcommand.
@@ -75,7 +76,9 @@ struct HelpCommand: ParsableCommand {
     if toolName.isEmpty {
       toolName = tree.element._commandName
     }
-    if let root = commandStack.first, let superName = root.configuration._superCommandName {
+    if let root = commandStack.first,
+      let superName = root.configuration._superCommandName
+    {
       toolName = "\(superName) \(toolName)"
     }
 

@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2020 Apple Inc. and the Swift project authors
+// Copyright (c) 2025 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -37,7 +37,9 @@ enum ANSICode {
   ///   - term: The term to highlight.
   ///   - enabled: Whether to actually apply formatting.
   /// - Returns: The text with all matches highlighted.
-  static func highlightMatches(in text: String, matching term: String, enabled: Bool) -> String {
+  static func highlightMatches(
+    in text: String, matching term: String, enabled: Bool
+  ) -> String {
     guard enabled && !term.isEmpty else { return text }
 
     let lowercasedText = text.lowercased()
@@ -109,22 +111,6 @@ struct SearchResult {
       return false
     }
   }
-
-//  /// Returns the display label for this result.
-//  var displayLabel: String {
-//    switch matchType {
-//    case .commandName(let matched):
-//      return "name: \(matched)"
-//    case .commandDescription:
-//      return "description"
-//    case .argumentName(let name, _):
-//      return name
-//    case .argumentDescription(let name, _):
-//      return "\(name): description"
-//    case .argumentValue(let name, _):
-//      return "\(name): value"
-//    }
-//  }
 }
 
 /// Engine for searching through command trees.
@@ -149,14 +135,17 @@ struct SearchEngine {
     var results: [SearchResult] = []
 
     // Traverse the tree starting from rootNode
-    traverseTree(node: rootNode, currentPath: commandStack.map { $0._commandName }, term: lowercasedTerm, results: &results)
+    traverseTree(
+      node: rootNode, currentPath: commandStack.map { $0._commandName },
+      term: lowercasedTerm, results: &results)
 
     // Sort results: command matches first, then argument matches
     return results.sorted { lhs, rhs in
       if lhs.isCommandMatch != rhs.isCommandMatch {
         return lhs.isCommandMatch
       }
-      return lhs.commandPath.joined(separator: " ") < rhs.commandPath.joined(separator: " ")
+      return lhs.commandPath.joined(separator: " ")
+        < rhs.commandPath.joined(separator: " ")
     }
   }
 
@@ -182,7 +171,8 @@ struct SearchEngine {
     let commandName = command._commandName
     if commandName.lowercased().contains(term) {
       bestMatchType = .commandName(matchedText: commandName)
-      bestSnippet = configuration.abstract.isEmpty ? commandName : configuration.abstract
+      bestSnippet =
+        configuration.abstract.isEmpty ? commandName : configuration.abstract
       matchFound = true
     }
 
@@ -191,7 +181,8 @@ struct SearchEngine {
       for alias in configuration.aliases {
         if alias.lowercased().contains(term) {
           bestMatchType = .commandName(matchedText: alias)
-          bestSnippet = configuration.abstract.isEmpty ? alias : configuration.abstract
+          bestSnippet =
+            configuration.abstract.isEmpty ? alias : configuration.abstract
           matchFound = true
           break
         }
@@ -199,7 +190,9 @@ struct SearchEngine {
     }
 
     // Check 3: Search command abstract (if name/aliases didn't match)
-    if !matchFound && !configuration.abstract.isEmpty && configuration.abstract.lowercased().contains(term) {
+    if !matchFound && !configuration.abstract.isEmpty
+      && configuration.abstract.lowercased().contains(term)
+    {
       let snippet = extractSnippet(from: configuration.abstract, around: term)
       bestMatchType = .commandDescription(matchedText: snippet)
       bestSnippet = snippet
@@ -207,7 +200,9 @@ struct SearchEngine {
     }
 
     // Check 4: Search command discussion (if nothing else matched)
-    if !matchFound && !configuration.discussion.isEmpty && configuration.discussion.lowercased().contains(term) {
+    if !matchFound && !configuration.discussion.isEmpty
+      && configuration.discussion.lowercased().contains(term)
+    {
       let snippet = extractSnippet(from: configuration.discussion, around: term)
       bestMatchType = .commandDescription(matchedText: snippet)
       bestSnippet = snippet
@@ -216,15 +211,17 @@ struct SearchEngine {
 
     // Add result if we found a match
     if matchFound, let matchType = bestMatchType {
-      results.append(SearchResult(
-        commandPath: currentPath,
-        matchType: matchType,
-        contextSnippet: bestSnippet
-      ))
+      results.append(
+        SearchResult(
+          commandPath: currentPath,
+          matchType: matchType,
+          contextSnippet: bestSnippet
+        ))
     }
 
     // Search arguments
-    searchArguments(command: command, commandPath: currentPath, term: term, results: &results)
+    searchArguments(
+      command: command, commandPath: currentPath, term: term, results: &results)
 
     // Recursively search children
     for child in node.children {
@@ -249,7 +246,9 @@ struct SearchEngine {
 
     for arg in argSet {
       // Skip if not visible enough
-      guard arg.help.visibility.isAtLeastAsVisible(as: visibility) else { continue }
+      guard arg.help.visibility.isAtLeastAsVisible(as: visibility) else {
+        continue
+      }
 
       let names = arg.names
       let displayNames: String
@@ -269,7 +268,8 @@ struct SearchEngine {
       if names.isEmpty {
         // Positional argument - check if term matches value name
         if arg.valueName.lowercased().contains(term) {
-          bestMatchType = .argumentName(name: displayNames, matchedText: arg.valueName)
+          bestMatchType = .argumentName(
+            name: displayNames, matchedText: arg.valueName)
           bestSnippet = arg.help.abstract
           matchFound = true
         }
@@ -278,7 +278,8 @@ struct SearchEngine {
         for name in names {
           let nameString = name.synopsisString
           if nameString.lowercased().contains(term) {
-            bestMatchType = .argumentName(name: displayNames, matchedText: nameString)
+            bestMatchType = .argumentName(
+              name: displayNames, matchedText: nameString)
             bestSnippet = arg.help.abstract
             matchFound = true
             break
@@ -287,19 +288,24 @@ struct SearchEngine {
       }
 
       // Check 2: Search argument abstract (if name didn't match)
-      if !matchFound && !arg.help.abstract.isEmpty && arg.help.abstract.lowercased().contains(term) {
+      if !matchFound && !arg.help.abstract.isEmpty
+        && arg.help.abstract.lowercased().contains(term)
+      {
         let snippet = extractSnippet(from: arg.help.abstract, around: term)
-        bestMatchType = .argumentDescription(name: displayNames, matchedText: snippet)
+        bestMatchType = .argumentDescription(
+          name: displayNames, matchedText: snippet)
         bestSnippet = snippet
         matchFound = true
       }
 
       // Check 3: Search argument discussion (if nothing else matched)
       if !matchFound,
-         case .staticText(let discussionText) = arg.help.discussion,
-         !discussionText.isEmpty && discussionText.lowercased().contains(term) {
+        case .staticText(let discussionText) = arg.help.discussion,
+        !discussionText.isEmpty && discussionText.lowercased().contains(term)
+      {
         let snippet = extractSnippet(from: discussionText, around: term)
-        bestMatchType = .argumentDescription(name: displayNames, matchedText: snippet)
+        bestMatchType = .argumentDescription(
+          name: displayNames, matchedText: snippet)
         bestSnippet = snippet
         matchFound = true
       }
@@ -308,7 +314,8 @@ struct SearchEngine {
       if !matchFound {
         for value in arg.help.allValueStrings where !value.isEmpty {
           if value.lowercased().contains(term) {
-            bestMatchType = .argumentValue(name: displayNames, matchedText: value)
+            bestMatchType = .argumentValue(
+              name: displayNames, matchedText: value)
             bestSnippet = "possible value: \(value)"
             matchFound = true
             break
@@ -318,20 +325,23 @@ struct SearchEngine {
 
       // Check 5: Search default value (if nothing else matched)
       if !matchFound,
-         let defaultValue = arg.help.defaultValue,
-         !defaultValue.isEmpty && defaultValue.lowercased().contains(term) {
-        bestMatchType = .argumentValue(name: displayNames, matchedText: defaultValue)
+        let defaultValue = arg.help.defaultValue,
+        !defaultValue.isEmpty && defaultValue.lowercased().contains(term)
+      {
+        bestMatchType = .argumentValue(
+          name: displayNames, matchedText: defaultValue)
         bestSnippet = "default: \(defaultValue)"
         matchFound = true
       }
 
       // Add result if we found a match
       if matchFound, let matchType = bestMatchType {
-        results.append(SearchResult(
-          commandPath: commandPath,
-          matchType: matchType,
-          contextSnippet: bestSnippet
-        ))
+        results.append(
+          SearchResult(
+            commandPath: commandPath,
+            matchType: matchType,
+            contextSnippet: bestSnippet
+          ))
       }
     }
   }
@@ -342,7 +352,8 @@ struct SearchEngine {
   ///   - text: The full text containing the match.
   ///   - term: The search term (lowercased).
   /// - Returns: A snippet showing the match in context (max ~80 chars).
-  private func extractSnippet(from text: String, around term: String) -> String {
+  private func extractSnippet(from text: String, around term: String) -> String
+  {
     let maxSnippetLength = 80
     let lowercasedText = text.lowercased()
 
@@ -351,15 +362,22 @@ struct SearchEngine {
       return String(text.prefix(maxSnippetLength))
     }
 
-    let matchIndex = lowercasedText.distance(from: lowercasedText.startIndex, to: matchRange.lowerBound)
+    let matchIndex = lowercasedText.distance(
+      from: lowercasedText.startIndex, to: matchRange.lowerBound)
     let matchLength = term.count
 
     // Calculate context window
     let contextBefore = 20
     let contextAfter = maxSnippetLength - contextBefore - matchLength
 
-    let startIndex = text.index(text.startIndex, offsetBy: max(0, matchIndex - contextBefore), limitedBy: text.endIndex) ?? text.startIndex
-    let endIndex = text.index(matchRange.upperBound, offsetBy: contextAfter, limitedBy: text.endIndex) ?? text.endIndex
+    let startIndex =
+      text.index(
+        text.startIndex, offsetBy: max(0, matchIndex - contextBefore),
+        limitedBy: text.endIndex) ?? text.startIndex
+    let endIndex =
+      text.index(
+        matchRange.upperBound, offsetBy: contextAfter, limitedBy: text.endIndex)
+      ?? text.endIndex
 
     var snippet = String(text[startIndex..<endIndex])
 
@@ -395,12 +413,14 @@ struct SearchEngine {
     useHighlighting: Bool = Platform.isStdoutTerminal
   ) -> String {
     guard !results.isEmpty else {
-      return "No matches found for '\(term)'.\nTry '\(toolName) --help' for all options."
+      return
+        "No matches found for '\(term)'.\nTry '\(toolName) --help' for all options."
     }
 
     //let useHighlighting = useHighlighting ?? Platform.isStdoutTerminal
 
-    var output = "Found \(results.count) match\(results.count == 1 ? "" : "es") for '\(term)':\n"
+    var output =
+      "Found \(results.count) match\(results.count == 1 ? "" : "es") for '\(term)':\n"
 
     // Group by command vs argument matches
     let commandResults = results.filter { $0.isCommandMatch }
@@ -409,13 +429,17 @@ struct SearchEngine {
     // Display command matches
     if !commandResults.isEmpty {
       output += "\nCOMMANDS:\n"
-      output += formatCommandResults(commandResults, term: term, screenWidth: screenWidth, useHighlighting: useHighlighting)
+      output += formatCommandResults(
+        commandResults, term: term, screenWidth: screenWidth,
+        useHighlighting: useHighlighting)
     }
 
     // Display argument matches
     if !argumentResults.isEmpty {
       output += "\nOPTIONS:\n"
-      output += formatArgumentResults(argumentResults, term: term, screenWidth: screenWidth, useHighlighting: useHighlighting)
+      output += formatArgumentResults(
+        argumentResults, term: term, screenWidth: screenWidth,
+        useHighlighting: useHighlighting)
     }
 
     output += "\nUse '\(toolName) <command> --help' for detailed information."
@@ -438,20 +462,25 @@ struct SearchEngine {
       switch result.matchType {
       case .commandName(let matched):
         // For command name matches, show path with highlighted name and description
-        let highlightedPath = ANSICode.highlightMatches(in: pathString, matching: term, enabled: useHighlighting)
+        let highlightedPath = ANSICode.highlightMatches(
+          in: pathString, matching: term, enabled: useHighlighting)
         output += "  \(highlightedPath)\n"
 
         if !result.contextSnippet.isEmpty && result.contextSnippet != matched {
-          let highlightedSnippet = ANSICode.highlightMatches(in: result.contextSnippet, matching: term, enabled: useHighlighting)
-          let wrapped = highlightedSnippet.wrapped(to: screenWidth, wrappingIndent: 6)
+          let highlightedSnippet = ANSICode.highlightMatches(
+            in: result.contextSnippet, matching: term, enabled: useHighlighting)
+          let wrapped = highlightedSnippet.wrapped(
+            to: screenWidth, wrappingIndent: 6)
           output += "    \(wrapped.dropFirst(6))\n"
         }
 
       case .commandDescription:
         // For description matches, show path and the matching snippet with highlights
         output += "  \(pathString)\n"
-        let highlightedSnippet = ANSICode.highlightMatches(in: result.contextSnippet, matching: term, enabled: useHighlighting)
-        let wrapped = highlightedSnippet.wrapped(to: screenWidth, wrappingIndent: 6)
+        let highlightedSnippet = ANSICode.highlightMatches(
+          in: result.contextSnippet, matching: term, enabled: useHighlighting)
+        let wrapped = highlightedSnippet.wrapped(
+          to: screenWidth, wrappingIndent: 6)
         output += "    \(wrapped.dropFirst(6))\n"
 
       default:
@@ -486,18 +515,24 @@ struct SearchEngine {
       // Format the match with highlighting
       switch result.matchType {
       case .argumentName(let name, _):
-        let highlightedName = ANSICode.highlightMatches(in: name, matching: term, enabled: useHighlighting)
-        let highlightedSnippet = ANSICode.highlightMatches(in: result.contextSnippet, matching: term, enabled: useHighlighting)
-        let wrapped = highlightedSnippet.wrapped(to: screenWidth, wrappingIndent: 6)
+        let highlightedName = ANSICode.highlightMatches(
+          in: name, matching: term, enabled: useHighlighting)
+        let highlightedSnippet = ANSICode.highlightMatches(
+          in: result.contextSnippet, matching: term, enabled: useHighlighting)
+        let wrapped = highlightedSnippet.wrapped(
+          to: screenWidth, wrappingIndent: 6)
         output += "    \(highlightedName): \(wrapped.dropFirst(6))\n"
 
       case .argumentDescription(let name, _):
-        let highlightedSnippet = ANSICode.highlightMatches(in: result.contextSnippet, matching: term, enabled: useHighlighting)
-        let wrapped = highlightedSnippet.wrapped(to: screenWidth, wrappingIndent: 6)
+        let highlightedSnippet = ANSICode.highlightMatches(
+          in: result.contextSnippet, matching: term, enabled: useHighlighting)
+        let wrapped = highlightedSnippet.wrapped(
+          to: screenWidth, wrappingIndent: 6)
         output += "    \(name): \(wrapped.dropFirst(6))\n"
 
       case .argumentValue(let name, _):
-        let highlightedSnippet = ANSICode.highlightMatches(in: result.contextSnippet, matching: term, enabled: useHighlighting)
+        let highlightedSnippet = ANSICode.highlightMatches(
+          in: result.contextSnippet, matching: term, enabled: useHighlighting)
         output += "    \(name) (\(highlightedSnippet))\n"
 
       default:
