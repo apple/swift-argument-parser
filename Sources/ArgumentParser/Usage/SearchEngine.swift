@@ -30,16 +30,6 @@ enum ANSICode {
   /// Reset all formatting.
   static let reset = "\u{001B}[0m"
 
-  /// Highlight a string by making it bold.
-  ///
-  /// - Parameters:
-  ///   - text: The text to highlight.
-  ///   - enabled: Whether to actually apply formatting (false when not outputting to a terminal).
-  /// - Returns: The text with bold formatting if enabled, otherwise unchanged.
-  static func highlight(_ text: String, enabled: Bool) -> String {
-    enabled ? "\(bold)\(text)\(reset)" : text
-  }
-
   /// Highlight all occurrences of a search term in text (case-insensitive).
   ///
   /// - Parameters:
@@ -276,13 +266,23 @@ struct SearchEngine {
       var bestSnippet = ""
 
       // Check 1: Search argument names (highest priority)
-      for name in names {
-        let nameString = name.synopsisString
-        if nameString.lowercased().contains(term) {
-          bestMatchType = .argumentName(name: displayNames, matchedText: nameString)
+      if names.isEmpty {
+        // Positional argument - check if term matches value name
+        if arg.valueName.lowercased().contains(term) {
+          bestMatchType = .argumentName(name: displayNames, matchedText: arg.valueName)
           bestSnippet = arg.help.abstract
           matchFound = true
-          break
+        }
+      } else {
+        // Named arguments - check all names
+        for name in names {
+          let nameString = name.synopsisString
+          if nameString.lowercased().contains(term) {
+            bestMatchType = .argumentName(name: displayNames, matchedText: nameString)
+            bestSnippet = arg.help.abstract
+            matchFound = true
+            break
+          }
         }
       }
 
