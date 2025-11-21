@@ -459,6 +459,124 @@ struct LenientParser {
     }
   }
 
+  mutating func parseOptionalUnaryValue(
+    _ argument: ArgumentDefinition,
+    _ parsed: ParsedArgument,
+    _ originElement: InputOrigin.Element,
+    _ nullaryHandler: ArgumentDefinition.Update.Nullary,
+    _ unaryHandler: ArgumentDefinition.Update.Unary,
+    _ result: inout ParsedValues,
+    _ usedOrigins: inout InputOrigin
+  ) throws {
+    let origin = InputOrigin(elements: [originElement])
+
+    // Helper function to check if there's a terminator between the current option and potential values
+    func hasTerminatorBefore(_ targetOrigin: InputOrigin.Element) -> Bool {
+      guard case .argumentIndex(let currentIndex) = originElement,
+        case .argumentIndex(let targetIndex) = targetOrigin
+      else { return false }
+
+      // Check if there's a terminator between current position and target position
+      let terminatorIndex = inputArguments.elements.firstIndex { element in
+        element.isTerminator
+          && element.index.inputIndex > currentIndex.inputIndex
+          && element.index.inputIndex < targetIndex.inputIndex
+      }
+
+      return terminatorIndex != nil
+    }
+
+    // Try to find a value using the same logic as parseValue, but don't throw if missing
+    switch argument.parsingStrategy {
+    case .default:
+      // Try to get a value for this option
+      if let value = parsed.value {
+        // This was `--foo=bar` style:
+        try unaryHandler(origin, parsed.name, value, &result)
+        usedOrigins.formUnion(origin)
+      } else if argument.allowsJoinedValue,
+        let (origin2, value) = inputArguments.extractJoinedElement(
+          at: originElement)
+      {
+        // Found a joined argument
+        let origins = origin.inserting(origin2)
+        try unaryHandler(origins, parsed.name, String(value), &result)
+        usedOrigins.formUnion(origins)
+      } else if let (origin2, value) = inputArguments.popNextElementIfValue(
+        after: originElement),
+        !hasTerminatorBefore(origin2)
+      {
+        // Use `popNextElementIfValue(after:)` to handle cases where short option
+        // labels are combined - only consume if it's actually a value, not another flag
+        // and there's no terminator between the option and the value
+        let origins = origin.inserting(origin2)
+        try unaryHandler(origins, parsed.name, value, &result)
+        usedOrigins.formUnion(origins)
+      } else {
+        // No value found or terminator blocks access - use as flag
+        try nullaryHandler(origin, parsed.name, &result)
+        usedOrigins.formUnion(origin)
+      }
+
+    case .scanningForValue:
+      // Similar to default, but more aggressive about finding values
+      if let value = parsed.value {
+        try unaryHandler(origin, parsed.name, value, &result)
+        usedOrigins.formUnion(origin)
+      } else if argument.allowsJoinedValue,
+        let (origin2, value) = inputArguments.extractJoinedElement(
+          at: originElement)
+      {
+        let origins = origin.inserting(origin2)
+        try unaryHandler(origins, parsed.name, String(value), &result)
+        usedOrigins.formUnion(origins)
+      } else if let (origin2, value) = inputArguments.popNextValue(
+        after: originElement),
+        !hasTerminatorBefore(origin2)
+      {
+        // Only consume if there's no terminator between option and value
+        let origins = origin.inserting(origin2)
+        try unaryHandler(origins, parsed.name, value, &result)
+        usedOrigins.formUnion(origins)
+      } else {
+        // No value found or terminator blocks access - use as flag
+        try nullaryHandler(origin, parsed.name, &result)
+        usedOrigins.formUnion(origin)
+      }
+
+    case .unconditional:
+      // Use an attached value if it exists, otherwise try to consume next element
+      if let value = parsed.value {
+        try unaryHandler(origin, parsed.name, value, &result)
+        usedOrigins.formUnion(origin)
+      } else if argument.allowsJoinedValue,
+        let (origin2, value) = inputArguments.extractJoinedElement(
+          at: originElement)
+      {
+        let origins = origin.inserting(origin2)
+        try unaryHandler(origins, parsed.name, String(value), &result)
+        usedOrigins.formUnion(origins)
+      } else if let (origin2, value) = inputArguments.popNextElementAsValue(
+        after: originElement),
+        !hasTerminatorBefore(origin2)
+      {
+        // Only consume if there's no terminator between option and value
+        let origins = origin.inserting(origin2)
+        try unaryHandler(origins, parsed.name, value, &result)
+        usedOrigins.formUnion(origins)
+      } else {
+        // No value found or terminator blocks access - use as flag
+        try nullaryHandler(origin, parsed.name, &result)
+        usedOrigins.formUnion(origin)
+      }
+
+    case .upToNextOption, .allRemainingInput, .postTerminator, .allUnrecognized:
+      // For other parsing strategies, fall back to flag behavior for now
+      try nullaryHandler(origin, parsed.name, &result)
+      usedOrigins.formUnion(origin)
+    }
+  }
+
   mutating func parsePositionalValues(
     from unusedInput: SplitArguments,
     into result: inout ParsedValues
@@ -629,7 +747,7 @@ struct LenientParser {
 
         switch argument.update {
         case .nullary(let update):
-          // We don’t expect a value for this option.
+          // We don't expect a value for this option.
           if let value = parsed.value {
             throw ParserError.unexpectedValueForOption(
               origin, parsed.name, value)
@@ -639,6 +757,11 @@ struct LenientParser {
         case .unary(let update):
           try parseValue(
             argument, parsed, origin, update, &result, &usedOrigins)
+        case .optionalUnary(let nullaryHandler, let unaryHandler):
+          // Hybrid behavior: try to find a value, fall back to flag behavior
+          try parseOptionalUnaryValue(
+            argument, parsed, origin, nullaryHandler, unaryHandler,
+            &result, &usedOrigins)
         }
       case .terminator:
         // Ignore the terminator, it might get picked up as a positional value later.

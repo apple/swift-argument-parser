@@ -86,6 +86,8 @@ extension ArgumentDefinition {
         return "\(joinedSynopsisString) <\(valueName)>"
       case .nullary:
         return joinedSynopsisString
+      case .optionalUnary:
+        return "\(joinedSynopsisString) [<\(valueName)>]"
       }
     case .positional:
       return "<\(valueName)>"
@@ -106,6 +108,8 @@ extension ArgumentDefinition {
         return "\(name.synopsisString) <\(valueName)>"
       case .nullary:
         return name.synopsisString
+      case .optionalUnary:
+        return "\(name.synopsisString) [<\(valueName)>]"
       }
     case .positional:
       return "<\(valueName)>"
