@@ -23,6 +23,68 @@ import Foundation
 #endif
 #endif
 
+/// ANSI terminal formatting codes.
+enum ANSICode {
+  /// Start bold text.
+  static let bold = "\u{001B}[1m"
+  /// Reset all formatting.
+  static let reset = "\u{001B}[0m"
+
+  /// Highlight a string by making it bold.
+  ///
+  /// - Parameters:
+  ///   - text: The text to highlight.
+  ///   - enabled: Whether to actually apply formatting (false when not outputting to a terminal).
+  /// - Returns: The text with bold formatting if enabled, otherwise unchanged.
+  static func highlight(_ text: String, enabled: Bool) -> String {
+    enabled ? "\(bold)\(text)\(reset)" : text
+  }
+
+  /// Highlight all occurrences of a search term in text (case-insensitive).
+  ///
+  /// - Parameters:
+  ///   - text: The text to search within.
+  ///   - term: The term to highlight.
+  ///   - enabled: Whether to actually apply formatting.
+  /// - Returns: The text with all matches highlighted.
+  static func highlightMatches(in text: String, matching term: String, enabled: Bool) -> String {
+    guard enabled && !term.isEmpty else { return text }
+
+    let lowercasedText = text.lowercased()
+    let lowercasedTerm = term.lowercased()
+
+    var result = ""
+    var searchStartIndex = text.startIndex
+
+    while searchStartIndex < text.endIndex {
+      let searchRange = searchStartIndex..<text.endIndex
+      let lowercasedSearchRange = lowercasedText[searchRange]
+
+      if let matchRange = lowercasedSearchRange.range(of: lowercasedTerm) {
+        // Convert the match range from lowercased text to original text
+        let matchStart = matchRange.lowerBound
+        let matchEnd = matchRange.upperBound
+
+        // Add text before the match
+        result += text[searchStartIndex..<matchStart]
+
+        // Add the matched text with highlighting
+        let matchedText = text[matchStart..<matchEnd]
+        result += "\(bold)\(matchedText)\(reset)"
+
+        // Move past this match
+        searchStartIndex = matchEnd
+      } else {
+        // No more matches, add the rest
+        result += text[searchStartIndex...]
+        break
+      }
+    }
+
+    return result
+  }
+}
+
 /// A search result representing a match found in the command tree.
 struct SearchResult {
   /// The type of match found.
@@ -334,6 +396,9 @@ struct SearchEngine {
       return "No matches found for '\(term)'.\nTry '\(toolName) --help' for all options."
     }
 
+    // Check if we should use ANSI formatting
+    let useFormatting = Platform.isStdoutTerminal
+
     var output = "Found \(results.count) match\(results.count == 1 ? "" : "es") for '\(term)':\n"
 
     // Group by command vs argument matches
@@ -343,13 +408,13 @@ struct SearchEngine {
     // Display command matches
     if !commandResults.isEmpty {
       output += "\nCOMMANDS:\n"
-      output += formatCommandResults(commandResults, screenWidth: screenWidth)
+      output += formatCommandResults(commandResults, term: term, screenWidth: screenWidth, useFormatting: useFormatting)
     }
 
     // Display argument matches
     if !argumentResults.isEmpty {
       output += "\nOPTIONS:\n"
-      output += formatArgumentResults(argumentResults, screenWidth: screenWidth)
+      output += formatArgumentResults(argumentResults, term: term, screenWidth: screenWidth, useFormatting: useFormatting)
     }
 
     output += "\nUse '\(toolName) <command> --help' for detailed information."
@@ -358,7 +423,12 @@ struct SearchEngine {
   }
 
   /// Format command search results.
-  private static func formatCommandResults(_ results: [SearchResult], screenWidth: Int) -> String {
+  private static func formatCommandResults(
+    _ results: [SearchResult],
+    term: String,
+    screenWidth: Int,
+    useFormatting: Bool
+  ) -> String {
     var output = ""
 
     for result in results {
@@ -366,20 +436,21 @@ struct SearchEngine {
 
       switch result.matchType {
       case .commandName(let matched):
-        // For command name matches, show path and description inline if available
+        // For command name matches, show path with highlighted name and description
+        let highlightedPath = ANSICode.highlightMatches(in: pathString, matching: term, enabled: useFormatting)
+        output += "  \(highlightedPath)\n"
+
         if !result.contextSnippet.isEmpty && result.contextSnippet != matched {
-          output += "  \(pathString)\n"
-          let wrapped = result.contextSnippet.wrapped(to: screenWidth, wrappingIndent: 6)
+          let highlightedSnippet = ANSICode.highlightMatches(in: result.contextSnippet, matching: term, enabled: useFormatting)
+          let wrapped = highlightedSnippet.wrapped(to: screenWidth, wrappingIndent: 6)
           output += "    \(wrapped.dropFirst(6))\n"
-        } else {
-          // No description available, just show the path
-          output += "  \(pathString)\n"
         }
 
       case .commandDescription:
-        // For description matches, show path and the matching snippet
+        // For description matches, show path and the matching snippet with highlights
         output += "  \(pathString)\n"
-        let wrapped = result.contextSnippet.wrapped(to: screenWidth, wrappingIndent: 6)
+        let highlightedSnippet = ANSICode.highlightMatches(in: result.contextSnippet, matching: term, enabled: useFormatting)
+        let wrapped = highlightedSnippet.wrapped(to: screenWidth, wrappingIndent: 6)
         output += "    \(wrapped.dropFirst(6))\n"
 
       default:
@@ -393,7 +464,12 @@ struct SearchEngine {
   }
 
   /// Format argument search results.
-  private static func formatArgumentResults(_ results: [SearchResult], screenWidth: Int) -> String {
+  private static func formatArgumentResults(
+    _ results: [SearchResult],
+    term: String,
+    screenWidth: Int,
+    useFormatting: Bool
+  ) -> String {
     var output = ""
     var lastPath = ""
 
@@ -406,16 +482,23 @@ struct SearchEngine {
         lastPath = pathString
       }
 
-      // Format the match
+      // Format the match with highlighting
       switch result.matchType {
       case .argumentName(let name, _):
-        let wrapped = result.contextSnippet.wrapped(to: screenWidth, wrappingIndent: 6)
-        output += "    \(name): \(wrapped.dropFirst(6))\n"
+        let highlightedName = ANSICode.highlightMatches(in: name, matching: term, enabled: useFormatting)
+        let highlightedSnippet = ANSICode.highlightMatches(in: result.contextSnippet, matching: term, enabled: useFormatting)
+        let wrapped = highlightedSnippet.wrapped(to: screenWidth, wrappingIndent: 6)
+        output += "    \(highlightedName): \(wrapped.dropFirst(6))\n"
+
       case .argumentDescription(let name, _):
-        let wrapped = result.contextSnippet.wrapped(to: screenWidth, wrappingIndent: 6)
+        let highlightedSnippet = ANSICode.highlightMatches(in: result.contextSnippet, matching: term, enabled: useFormatting)
+        let wrapped = highlightedSnippet.wrapped(to: screenWidth, wrappingIndent: 6)
         output += "    \(name): \(wrapped.dropFirst(6))\n"
+
       case .argumentValue(let name, _):
-        output += "    \(name) (\(result.contextSnippet))\n"
+        let highlightedSnippet = ANSICode.highlightMatches(in: result.contextSnippet, matching: term, enabled: useFormatting)
+        output += "    \(name) (\(highlightedSnippet))\n"
+
       default:
         break
       }
