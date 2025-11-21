@@ -79,6 +79,11 @@ var package = Package(
       name: "color",
       dependencies: ["ArgumentParser"],
       path: "Examples/color"),
+    .executableTarget(
+      name: "default-as-flag",
+      dependencies: ["ArgumentParser"],
+      path: "Examples/default-as-flag"
+    ),
 
     // Tools
     .executableTarget(
