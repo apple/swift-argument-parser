@@ -110,21 +110,21 @@ struct SearchResult {
     }
   }
 
-  /// Returns the display label for this result.
-  var displayLabel: String {
-    switch matchType {
-    case .commandName(let matched):
-      return "name: \(matched)"
-    case .commandDescription:
-      return "description"
-    case .argumentName(let name, _):
-      return name
-    case .argumentDescription(let name, _):
-      return "\(name): description"
-    case .argumentValue(let name, _):
-      return "\(name): value"
-    }
-  }
+//  /// Returns the display label for this result.
+//  var displayLabel: String {
+//    switch matchType {
+//    case .commandName(let matched):
+//      return "name: \(matched)"
+//    case .commandDescription:
+//      return "description"
+//    case .argumentName(let name, _):
+//      return name
+//    case .argumentDescription(let name, _):
+//      return "\(name): description"
+//    case .argumentValue(let name, _):
+//      return "\(name): value"
+//    }
+//  }
 }
 
 /// Engine for searching through command trees.
