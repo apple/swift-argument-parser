@@ -175,51 +175,6 @@ extension String {
 
     return result
   }
-
-  func firstMatch(
-    of match: Self,
-    at startIndex: Self.Index
-  ) -> (start: Self.Index, end: Self.Index)? {
-    guard !match.isEmpty else { return nil }
-    guard match.count <= self.count else { return nil }
-
-    var startIndex = startIndex
-    while startIndex < self.endIndex {
-      // Check if theres a match.
-      if let endIndex = self.matches(match, at: startIndex) {
-        // Return the match.
-        return (startIndex, endIndex)
-      }
-
-      // Move to the next of index.
-      self.formIndex(after: &startIndex)
-    }
-
-    return nil
-  }
-
-  func matches(
-    _ match: Self,
-    at startIndex: Self.Index
-  ) -> Self.Index? {
-    var selfIndex = startIndex
-    var matchIndex = match.startIndex
-
-    while true {
-      // Only continue checking if there is more match to check
-      guard matchIndex < match.endIndex else { return selfIndex }
-
-      // Exit early if there is no more "self" to check.
-      guard selfIndex < self.endIndex else { return nil }
-
-      // Check match and self are the the same.
-      guard self[selfIndex] == match[matchIndex] else { return nil }
-
-      // Move to the next pair of indices.
-      self.formIndex(after: &selfIndex)
-      match.formIndex(after: &matchIndex)
-    }
-  }
 }
 
 extension CommandInfoV0 {
