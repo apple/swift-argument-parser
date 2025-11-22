@@ -23,6 +23,29 @@ import Foundation
 #endif
 #endif
 
+// MARK: - String Search Helpers
+
+extension String {
+  /// Find the range of a substring (case-insensitive).
+  fileprivate func rangeOfSubstring(_ substring: String) -> Range<String.Index>? {
+    #if canImport(FoundationEssentials)
+    // FoundationEssentials doesn't include String.range(of:)
+    // Use the existing firstMatch implementation from CompletionsGenerator.swift
+    let lowercased = self.lowercased()
+    let lowercasedSubstring = substring.lowercased()
+
+    guard let match = lowercased.firstMatch(of: lowercasedSubstring, at: lowercased.startIndex) else {
+      return nil
+    }
+
+    return match.start..<match.end
+    #else
+    // Use Foundation's range(of:) when available
+    return self.range(of: substring, options: .caseInsensitive)
+    #endif
+  }
+}
+
 /// ANSI terminal formatting codes.
 enum ANSICode {
   /// Start bold text.
@@ -52,7 +75,7 @@ enum ANSICode {
       let searchRange = searchStartIndex..<text.endIndex
       let lowercasedSearchRange = String(lowercasedText[searchRange])
 
-      if let matchRange = lowercasedSearchRange.range(of: lowercasedTerm) {
+      if let matchRange = lowercasedSearchRange.rangeOfSubstring(lowercasedTerm) {
         // Convert the match range from lowercased text to original text
         let matchStart = text.index(searchStartIndex, offsetBy: lowercasedSearchRange.distance(from: lowercasedSearchRange.startIndex, to: matchRange.lowerBound))
         let matchEnd = text.index(searchStartIndex, offsetBy: lowercasedSearchRange.distance(from: lowercasedSearchRange.startIndex, to: matchRange.upperBound))
@@ -357,7 +380,7 @@ struct CommandSearcher {
     let maxSnippetLength = 80
     let lowercasedText = text.lowercased()
 
-    guard let matchRange = lowercasedText.range(of: term) else {
+    guard let matchRange = lowercasedText.rangeOfSubstring(term) else {
       // Shouldn't happen, but fall back to truncated text
       return String(text.prefix(maxSnippetLength))
     }
