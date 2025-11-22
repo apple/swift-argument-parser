@@ -78,8 +78,9 @@ private struct CommandWithEnums: ParsableCommand {
 }
 
 // MARK: - Basic Search Tests
-
+// swift-format-ignore: AlwaysUseLowerCamelCase
 extension CommandSearcherTests {
+  // swift-format-ignore: AlwaysUseLowerCamelCase
   func testSearch_CommandName() {
     let tree = CommandParser(ParentCommand.self).commandTree
     let engine = CommandSearcher(
@@ -157,6 +158,7 @@ extension CommandSearcherTests {
 
 // MARK: - Argument Search Tests
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
 extension CommandSearcherTests {
   func testSearch_ArgumentName() {
     let tree = CommandParser(SimpleCommand.self).commandTree
@@ -363,6 +365,7 @@ extension CommandSearcherTests {
 
 // MARK: - Case Sensitivity Tests
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
 extension CommandSearcherTests {
   func testSearch_CaseInsensitive() {
     let tree = CommandParser(SimpleCommand.self).commandTree
@@ -384,6 +387,7 @@ extension CommandSearcherTests {
 
 // MARK: - Result Ordering Tests
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
 extension CommandSearcherTests {
   func testSearch_ResultOrdering() {
     let tree = CommandParser(ParentCommand.self).commandTree
@@ -410,6 +414,7 @@ extension CommandSearcherTests {
 
 // MARK: - Empty and No-Match Tests
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
 extension CommandSearcherTests {
   func testSearch_EmptyTerm() {
     let tree = CommandParser(SimpleCommand.self).commandTree
@@ -440,6 +445,7 @@ extension CommandSearcherTests {
 
 // MARK: - Priority Tests
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
 extension CommandSearcherTests {
   func testSearch_MatchPriority() {
     // When a term matches multiple attributes of the same item,
@@ -483,6 +489,7 @@ extension CommandSearcherTests {
 
 // MARK: - ANSI Highlighting Tests
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
 extension CommandSearcherTests {
   func testANSI_Highlight() {
     let text = "This is a test string"
@@ -525,6 +532,7 @@ extension CommandSearcherTests {
 
 // MARK: - Snippet Extraction Tests
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
 extension CommandSearcherTests {
   func testSnippet_CenteredOnMatch() {
     struct TestCommand: ParsableCommand {
@@ -553,6 +561,7 @@ extension CommandSearcherTests {
 
 // MARK: - Format Results Tests
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
 extension CommandSearcherTests {
   func testFormatResults_NoMatches() {
     let formatted = CommandSearcher.formatResults(
