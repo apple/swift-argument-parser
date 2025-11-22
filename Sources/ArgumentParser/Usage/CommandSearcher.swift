@@ -27,14 +27,18 @@ import Foundation
 
 extension String {
   /// Find the range of a substring (case-insensitive).
-  fileprivate func rangeOfSubstring(_ substring: String) -> Range<String.Index>? {
+  fileprivate func rangeOfSubstring(_ substring: String) -> Range<String.Index>?
+  {
     #if canImport(FoundationEssentials)
     // FoundationEssentials doesn't include String.range(of:)
     // Use the existing firstMatch implementation from CompletionsGenerator.swift
     let lowercased = self.lowercased()
     let lowercasedSubstring = substring.lowercased()
 
-    guard let match = lowercased.firstMatch(of: lowercasedSubstring, at: lowercased.startIndex) else {
+    guard
+      let match = lowercased.firstMatch(
+        of: lowercasedSubstring, at: lowercased.startIndex)
+    else {
       return nil
     }
 
@@ -75,10 +79,17 @@ enum ANSICode {
       let searchRange = searchStartIndex..<text.endIndex
       let lowercasedSearchRange = String(lowercasedText[searchRange])
 
-      if let matchRange = lowercasedSearchRange.rangeOfSubstring(lowercasedTerm) {
+      if let matchRange = lowercasedSearchRange.rangeOfSubstring(lowercasedTerm)
+      {
         // Convert the match range from lowercased text to original text
-        let matchStart = text.index(searchStartIndex, offsetBy: lowercasedSearchRange.distance(from: lowercasedSearchRange.startIndex, to: matchRange.lowerBound))
-        let matchEnd = text.index(searchStartIndex, offsetBy: lowercasedSearchRange.distance(from: lowercasedSearchRange.startIndex, to: matchRange.upperBound))
+        let matchStart = text.index(
+          searchStartIndex,
+          offsetBy: lowercasedSearchRange.distance(
+            from: lowercasedSearchRange.startIndex, to: matchRange.lowerBound))
+        let matchEnd = text.index(
+          searchStartIndex,
+          offsetBy: lowercasedSearchRange.distance(
+            from: lowercasedSearchRange.startIndex, to: matchRange.upperBound))
 
         // Add text before the match
         result += text[searchStartIndex..<matchStart]
@@ -413,9 +424,7 @@ struct CommandSearcher {
     }
 
     // Replace newlines with spaces for display
-    snippet = snippet.replacingOccurrences(of: "\n", with: " ")
-      .replacingOccurrences(of: "\\s+", with: " ", options: String.CompareOptions.regularExpression)
-
+    snippet = snippet.replacing("\n", with: " ")
     return snippet
   }
 

@@ -300,4 +300,31 @@ extension StringProtocol where SubSequence == Substring {
       match.formIndex(after: &matchIndex)
     }
   }
+
+}
+
+extension String {
+  func replacing(_ old: Self, with new: Self) -> Self {
+    guard !old.isEmpty else { return self }
+
+    var result = ""
+    var startIndex = self.startIndex
+
+    // Look for occurrences of the old string.
+    while let matchRange = self.firstMatch(of: old, at: startIndex) {
+      // Add the substring before the match.
+      result.append(contentsOf: self[startIndex..<matchRange.start])
+
+      // Add the replacement string.
+      result.append(contentsOf: new)
+
+      // Move past the matched portion.
+      startIndex = matchRange.end
+    }
+
+    // No more matches found, add the rest of the string.
+    result.append(contentsOf: self[startIndex..<self.endIndex])
+
+    return result
+  }
 }
