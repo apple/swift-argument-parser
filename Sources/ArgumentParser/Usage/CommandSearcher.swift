@@ -50,12 +50,12 @@ enum ANSICode {
 
     while searchStartIndex < text.endIndex {
       let searchRange = searchStartIndex..<text.endIndex
-      let lowercasedSearchRange = lowercasedText[searchRange]
+      let lowercasedSearchRange = String(lowercasedText[searchRange])
 
       if let matchRange = lowercasedSearchRange.range(of: lowercasedTerm) {
         // Convert the match range from lowercased text to original text
-        let matchStart = matchRange.lowerBound
-        let matchEnd = matchRange.upperBound
+        let matchStart = text.index(searchStartIndex, offsetBy: lowercasedSearchRange.distance(from: lowercasedSearchRange.startIndex, to: matchRange.lowerBound))
+        let matchEnd = text.index(searchStartIndex, offsetBy: lowercasedSearchRange.distance(from: lowercasedSearchRange.startIndex, to: matchRange.upperBound))
 
         // Add text before the match
         result += text[searchStartIndex..<matchStart]
@@ -391,7 +391,7 @@ struct CommandSearcher {
 
     // Replace newlines with spaces for display
     snippet = snippet.replacingOccurrences(of: "\n", with: " ")
-      .replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression)
+      .replacingOccurrences(of: "\\s+", with: " ", options: String.CompareOptions.regularExpression)
 
     return snippet
   }
