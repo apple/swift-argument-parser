@@ -316,9 +316,6 @@ extension ArgumentSet {
         guard let codingKey = child.label else { return nil }
 
         if let parsed = child.value as? ArgumentSetProvider {
-          guard parsed._visibility.isAtLeastAsVisible(as: visibility)
-          else { return nil }
-
           let key = InputKey(name: codingKey, parent: parent)
           return parsed.argumentSet(for: key)
         } else {
