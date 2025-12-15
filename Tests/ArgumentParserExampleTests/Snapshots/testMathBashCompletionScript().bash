@@ -233,8 +233,8 @@ _math_stats_stdev() {
 
 _math_stats_quantiles() {
     flags=(--version -h --help)
-    options=(--file --directory --shell --custom --custom-deprecated)
-    __math_offer_flags_options 4
+    options=(--file --one-of-four --custom-arg --custom-deprecated-arg --shell --custom --custom-deprecated)
+    __math_offer_flags_options 1
 
     # Offer option value completions
     case "${prev}" in
@@ -242,8 +242,16 @@ _math_stats_quantiles() {
         __math_add_completions -o plusdirs -fX '!*.@(txt|md)'
         return
         ;;
-    '--directory')
-        __math_add_completions -d
+    '--one-of-four')
+        __math_add_completions -W 'alphabet'$'\n''alligator'$'\n''branch'$'\n''braggart'
+        return
+        ;;
+    '--custom-arg')
+        __math_add_completions -W "$(__math_custom_complete ---completion stats quantiles -- --custom-arg "${COMP_CWORD}" "$(__math_cursor_index_in_current_word)")"
+        return
+        ;;
+    '--custom-deprecated-arg')
+        __math_add_completions -W "$(__math_custom_complete ---completion stats quantiles -- --custom-deprecated-arg)"
         return
         ;;
     '--shell')
@@ -256,22 +264,6 @@ _math_stats_quantiles() {
         ;;
     '--custom-deprecated')
         __math_add_completions -W "$(__math_custom_complete ---completion stats quantiles -- --custom-deprecated)"
-        return
-        ;;
-    esac
-
-    # Offer positional completions
-    case "${positional_number}" in
-    1)
-        __math_add_completions -W 'alphabet'$'\n''alligator'$'\n''branch'$'\n''braggart'
-        return
-        ;;
-    2)
-        __math_add_completions -W "$(__math_custom_complete ---completion stats quantiles -- positional@1 "${COMP_CWORD}" "$(__math_cursor_index_in_current_word)")"
-        return
-        ;;
-    3)
-        __math_add_completions -W "$(__math_custom_complete ---completion stats quantiles -- positional@2)"
         return
         ;;
     esac
