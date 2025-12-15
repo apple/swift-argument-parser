@@ -122,6 +122,17 @@ extension LosslessStringConvertible where Self: ExpressibleByArgument {
   }
 }
 
+extension LosslessStringConvertible
+where
+  Self: ExpressibleByArgument & RawRepresentable,
+  RawValue: ExpressibleByArgument
+{
+  // Ambiguity breaker
+  public init?(argument: String) {
+    self.init(argument)
+  }
+}
+
 extension Int: ExpressibleByArgument {}
 extension Int8: ExpressibleByArgument {}
 extension Int16: ExpressibleByArgument {}
