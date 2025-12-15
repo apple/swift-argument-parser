@@ -53,7 +53,7 @@ _math() {
             'add:Print the sum of the values.'
             'multiply:Print the product of the values.'
             'stats:Calculate descriptive statistics.'
-            'help:Show subcommand help information.'
+            'help:Show subcommand help information. Use --search to find commands and options.'
         )
         _describe -V subcommand subcommands
         ;;
@@ -176,6 +176,7 @@ _math_help() {
     local -i ret=1
     local -ar arg_specs=(
         '*:subcommands:'
+        '(-s --search)'{-s,--search}'[Search for commands and options matching the term.]:search:'
         '--version[Show the version.]'
     )
     _arguments -w -s -S : "${arg_specs[@]}" && ret=0

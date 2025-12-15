@@ -389,10 +389,12 @@ internal struct HelpGenerator {
         names.insert(superName, at: 0)
       }
       names.insert("help", at: 1)
+      let toolNameWithHelp = names.joined(separator: " ")
 
       helpSubcommandMessage = """
 
-          See '\(names.joined(separator: " ")) <subcommand>' for detailed help.
+          See '\(toolNameWithHelp) <subcommand>' for detailed help.
+          Use '\(toolNameWithHelp) --search <term>' to search commands and options.
         """
     }
 

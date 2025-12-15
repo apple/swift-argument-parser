@@ -35,6 +35,7 @@ add_library(ArgumentParser
   Parsing/ParserError.swift
   Parsing/SplitArguments.swift
 
+  Usage/CommandSearcher.swift
   Usage/DumpHelpGenerator.swift
   Usage/HelpCommand.swift
   Usage/HelpGenerator.swift
@@ -49,7 +50,7 @@ add_library(ArgumentParser
   Utilities/StringExtensions.swift
   Utilities/SwiftExtensions.swift
   Utilities/Tree.swift
-  
+
   Validators/CodingKeyValidator.swift
   Validators/NonsenseFlagsValidator.swift
   Validators/ParsableArgumentsValidation.swift
