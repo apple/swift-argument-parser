@@ -20,7 +20,7 @@ Add new items at the end of the relevant section under **Unreleased**.
 - Fixes ArgumentParser build failure for WASI (WebAssembly System Interface). ([#794])
 - Updates help text for readability in Repeat example and README. ([#787])
 - Provides an ambiguity breaker for some `ExpressibleByArgument` types. ([#841])
-- Shell completion script fixes. ([#801], [#811])
+- Shell completion script fixes. ([#801], [#808], [#811])
 
 ### Changes
 
@@ -1191,6 +1191,7 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [#801]: https://github.com/apple/swift-argument-parser/pull/801
 [#802]: https://github.com/apple/swift-argument-parser/pull/802
 [#804]: https://github.com/apple/swift-argument-parser/pull/804
+[#808]: https://github.com/apple/swift-argument-parser/pull/808
 [#811]: https://github.com/apple/swift-argument-parser/pull/811
 [#821]: https://github.com/apple/swift-argument-parser/pull/821
 [#841]: https://github.com/apple/swift-argument-parser/pull/841
