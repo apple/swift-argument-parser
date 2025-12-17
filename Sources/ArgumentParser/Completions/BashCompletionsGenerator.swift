@@ -48,15 +48,17 @@ extension CommandInfoV0 {
     #
     # required variables:
     #
-    # - flags: the flags that the current (sub)command can accept
-    # - options: the options that the current (sub)command can accept
+    # - repeating_flags: the repeating flags that the current (sub)command can accept
+    # - non_repeating_flags: the non-repeating flags that the current (sub)command can accept
+    # - repeating_options: the repeating options that the current (sub)command can accept
+    # - non_repeating_options: the non-repeating options that the current (sub)command can accept
     # - positional_number: value ignored
     # - unparsed_words: unparsed words from the current command line
     #
     # modified variables:
     #
-    # - flags: remove flags for this (sub)command that are already on the command line
-    # - options: remove options for this (sub)command that are already on the command line
+    # - non_repeating_flags: remove flags for this (sub)command that are already on the command line
+    # - non_repeating_options: remove options for this (sub)command that are already on the command line
     # - positional_number: set to the current positional number
     # - unparsed_words: remove all flags, options, and option values for this (sub)command
     \(offerFlagsOptionsFunctionName)() {
@@ -93,26 +95,26 @@ extension CommandInfoV0 {
                     # ${word} is a flag or an option
                     # If ${word} is an option, mark that the next word to be parsed is an option value
                     local option
-                    for option in "${options[@]}"; do
+                    for option in "${repeating_options[@]}" "${non_repeating_options[@]}"; do
                         [[ "${word}" = "${option}" ]] && is_parsing_option_value=true && break
                     done
 
-                    # Remove ${word} from ${flags} or ${options} so it isn't offered again
+                    # Remove ${word} from ${non_repeating_flags} or ${non_repeating_options} so it isn't offered again
                     local not_found=true
                     local -i index
-                    for index in "${!flags[@]}"; do
-                        if [[ "${flags[${index}]}" = "${word}" ]]; then
-                            unset "flags[${index}]"
-                            flags=("${flags[@]}")
+                    for index in "${!non_repeating_flags[@]}"; do
+                        if [[ "${non_repeating_flags[${index}]}" = "${word}" ]]; then
+                            unset "non_repeating_flags[${index}]"
+                            non_repeating_flags=("${non_repeating_flags[@]}")
                             not_found=false
                             break
                         fi
                     done
                     if "${not_found}"; then
-                        for index in "${!options[@]}"; do
-                            if [[ "${options[${index}]}" = "${word}" ]]; then
-                                unset "options[${index}]"
-                                options=("${options[@]}")
+                        for index in "${!non_repeating_flags[@]}"; do
+                            if [[ "${non_repeating_flags[${index}]}" = "${word}" ]]; then
+                                unset "non_repeating_flags[${index}]"
+                                non_repeating_flags=("${non_repeating_flags[@]}")
                                 break
                             fi
                         done
@@ -124,7 +126,7 @@ extension CommandInfoV0 {
             fi
 
             # ${word} is neither a flag, nor an option, nor an option value
-            if [[ "${positional_number}" -lt "${positional_count}" ]]; then
+            if [[ "${positional_number}" -lt "${positional_count}" || "${positional_count}" -lt 0 ]]; then
                 # ${word} is a positional
                 ((positional_number++))
                 unset "unparsed_words[${word_index}]"
@@ -147,7 +149,7 @@ extension CommandInfoV0 {
             && ! "${is_parsing_option_value}"\\
             && [[ ("${cur}" = -* && "${positional_number}" -ge 0) || "${positional_number}" -eq -1 ]]
         then
-            COMPREPLY+=($(compgen -W "${flags[*]} ${options[*]}" -- "${cur}"))
+            COMPREPLY+=($(compgen -W "${repeating_flags[*]} ${non_repeating_flags[*]} ${repeating_options[*]} ${non_repeating_options[*]}" -- "${cur}"))
         fi
     }
 
@@ -211,13 +213,20 @@ extension CommandInfoV0 {
 
     let positionalArguments = positionalArguments
 
-    let flagCompletions = flagCompletions
-    let optionCompletions = optionCompletions
-    if !flagCompletions.isEmpty || !optionCompletions.isEmpty {
+    let arguments = arguments ?? []
+
+    let flags = arguments.filter { $0.kind == .flag }
+    let options = arguments.filter { $0.kind == .option }
+    if !flags.flatMap(\.completionWords).isEmpty
+      || !options.flatMap(\.completionWords).isEmpty
+    {
       result += """
-            \(declareTopLevelArray)flags=(\(flagCompletions.joined(separator: " ")))
-            \(declareTopLevelArray)options=(\(optionCompletions.joined(separator: " ")))
-            \(offerFlagsOptionsFunctionName) \(positionalArguments.count)
+            \(declareTopLevelArray)repeating_flags=(\(flags.filter(\.isRepeating).flatMap(\.completionWords).joined(separator: " ")))
+            \(declareTopLevelArray)non_repeating_flags=(\(flags.filter { !$0.isRepeating }.flatMap(\.completionWords).joined(separator: " ")))
+            \(declareTopLevelArray)repeating_options=(\(options.filter(\.isRepeating).flatMap(\.completionWords).joined(separator: " ")))
+            \(declareTopLevelArray)non_repeating_options=(\(options.filter { !$0.isRepeating }.flatMap(\.completionWords).joined(separator: " ")))
+            \(offerFlagsOptionsFunctionName) \
+        \(positionalArguments.contains { $0.isRepeating } ? -1 : positionalArguments.count)
 
         """
     }
@@ -225,12 +234,12 @@ extension CommandInfoV0 {
     // Generate the case pattern-matching statements for option values.
     // If there aren't any, skip the case block altogether.
     let optionHandlers =
-      (arguments ?? []).compactMap { arg in
+      options.compactMap { arg in
         guard arg.kind != .flag else { return nil }
         let words = arg.completionWords
         guard !words.isEmpty else { return nil }
         return """
-              \(arg.completionWords.map { "'\($0.shellEscapeForSingleQuotedString())'" }.joined(separator: "|")))
+              \(words.map { "'\($0.shellEscapeForSingleQuotedString())'" }.joined(separator: "|")))
           \(valueCompletion(arg).indentingEachLine(by: 8))\
                   return
                   ;;
@@ -248,14 +257,23 @@ extension CommandInfoV0 {
         """
     }
 
+    var encounteredRepeatingPositional = false
     let positionalCases =
       zip(1..., positionalArguments)
       .compactMap { position, arg in
+        guard !encounteredRepeatingPositional else {
+          return nil as String?
+        }
+
+        if arg.isRepeating {
+          encounteredRepeatingPositional = true
+        }
+
         let completion = valueCompletion(arg)
         return completion.isEmpty
           ? nil
           : """
-              \(position))
+              \(encounteredRepeatingPositional ? "*" : position.description))
           \(completion.indentingEachLine(by: 8))\
                   return
                   ;;
@@ -310,30 +328,6 @@ extension CommandInfoV0 {
       """
   }
 
-  /// Returns flag completions.
-  private var flagCompletions: [String] {
-    (arguments ?? []).flatMap {
-      switch $0.kind {
-      case .flag:
-        return $0.completionWords
-      default:
-        return []
-      }
-    }
-  }
-
-  /// Returns option completions.
-  private var optionCompletions: [String] {
-    (arguments ?? []).flatMap {
-      switch $0.kind {
-      case .option:
-        return $0.completionWords
-      default:
-        return []
-      }
-    }
-  }
-
   /// Returns the completions that can follow the given argument's `--name`.
   private func valueCompletion(_ arg: ArgumentInfoV0) -> String {
     switch arg.completionKind {
@@ -375,7 +369,6 @@ extension CommandInfoV0 {
         """
 
     case .custom, .customAsync:
-      // Generate a call back into the command to retrieve a completions list
       return """
         \(addCompletionsFunctionName) -W\
          "$(\(customCompleteFunctionName) \(arg.commonCustomCompletionCall(command: self))\
@@ -385,7 +378,6 @@ extension CommandInfoV0 {
         """
 
     case .customDeprecated:
-      // Generate a call back into the command to retrieve a completions list
       return """
         \(addCompletionsFunctionName) -W\
          "$(\(customCompleteFunctionName) \(arg.commonCustomCompletionCall(command: self)))"
