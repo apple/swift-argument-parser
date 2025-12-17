@@ -8,7 +8,7 @@ Add new items at the end of the relevant section under **Unreleased**.
 
 ---
 
-## [1.7.0] - 2025-12-15
+## [1.7.0] - 2025-12-17
 
 ### Additions
 
@@ -990,7 +990,8 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 
 <!-- Link references for releases -->
 
-[Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.6.2...HEAD
+[Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.7.0...HEAD
+[1.7.0]: https://github.com/apple/swift-argument-parser/compare/1.6.2...1.7.0
 [1.6.2]: https://github.com/apple/swift-argument-parser/compare/1.6.1...1.6.2
 [1.6.1]: https://github.com/apple/swift-argument-parser/compare/1.6.0...1.6.1
 [1.6.0]: https://github.com/apple/swift-argument-parser/compare/1.5.1...1.6.0
