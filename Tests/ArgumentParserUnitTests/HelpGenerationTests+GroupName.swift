@@ -233,6 +233,43 @@ extension HelpGenerationTests {
         """)
   }
 
+  fileprivate struct NestedGroups: ParsableArguments {
+    @OptionGroup(visibility: .hidden)
+    var flagsAndOptions: FlagsAndOptions
+
+    @OptionGroup(visibility: .private)
+    var argsAndFlags: ArgsAndFlags
+  }
+
+  fileprivate struct NestedHiddenGroups: ParsableCommand {
+    @OptionGroup()
+    var nested: NestedGroups
+  }
+
+  func testNestedHiddenGroups() {
+    AssertHelp(
+      .default, for: NestedHiddenGroups.self,
+      equals: """
+        USAGE: nested-hidden-groups
+
+        OPTIONS:
+          -h, --help              Show help information.
+
+        """)
+
+    AssertHelp(
+      .hidden, for: NestedHiddenGroups.self,
+      equals: """
+        USAGE: nested-hidden-groups [--experimental] --prefix <prefix>
+
+        OPTIONS:
+          --experimental          example
+          --prefix <prefix>       example
+          -h, --help              Show help information.
+
+        """)
+  }
+
   fileprivate struct ParentWithGroups: ParsableCommand {
     static var configuration: CommandConfiguration {
       .init(subcommands: [ChildWithGroups.self])
