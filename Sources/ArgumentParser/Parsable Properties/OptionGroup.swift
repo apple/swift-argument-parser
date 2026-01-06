@@ -88,6 +88,9 @@ public struct OptionGroup<Value: ParsableArguments>: Decodable, ParsedWrapper {
             $0.help.parentTitle = title
           }
         }
+        args.content = args.content.map { arg in
+          arg.reducingHelpVisibility(to: visibility)
+        }
         return args
       })
     self._visibility = visibility
