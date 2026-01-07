@@ -15,7 +15,7 @@ internal import ArgumentParserToolInfo
 import ArgumentParserToolInfo
 #endif
 
-internal struct DumpHelpGenerator {
+internal struct DumpHelpGeneratorV0 {
   private var toolInfo: ToolInfoV0
 
   init(_ type: ParsableArguments.Type) {

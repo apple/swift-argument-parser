@@ -32,9 +32,8 @@ enum MessageInfo {
           ).rendered(screenWidth: columns))
         return
 
-      case .dumpHelpRequested:
-        self = .help(
-          text: DumpHelpGenerator(commandStack: e.commandStack).rendered())
+      case .dumpHelpRequested(let version):
+        self = .help(text: version.render(commandStack: e.commandStack))
         return
 
       case .versionRequested:
@@ -110,13 +109,13 @@ enum MessageInfo {
             text: HelpGenerator(
               commandStack: commandStack, visibility: .default
             ).rendered(screenWidth: columns))
-        case .dumpRequest(let command):
+        case .dumpRequest(let command, let version):
           if let command = command {
             commandStack = CommandParser(type.asCommand).commandStack(
               for: command)
           }
-          self = .help(
-            text: DumpHelpGenerator(commandStack: commandStack).rendered())
+
+          self = .help(text: version.render(commandStack: commandStack))
         case .message(let message):
           self = .help(text: message)
         }
