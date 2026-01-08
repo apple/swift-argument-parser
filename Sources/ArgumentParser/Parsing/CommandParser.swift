@@ -137,7 +137,7 @@ extension CommandParser {
 
     // Look for a version flag if any commands in the stack define a version
     if commandStack.contains(where: { !$0.configuration.version.isEmpty }) {
-      guard !split.contains(Name.long("version")) else {
+      guard !split.contains(anyOf: [Name.short("v"), Name.long("version")]) else {
         throw CommandError(
           commandStack: commandStack, parserError: .versionRequested)
       }
