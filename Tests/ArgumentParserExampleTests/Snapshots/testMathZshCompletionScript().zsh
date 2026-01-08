@@ -41,7 +41,7 @@ _math() {
 
     local -i ret=1
     local -ar arg_specs=(
-        '--version[Show the version.]'
+        '(-v --version)'{-v,--version}'[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
         '(-): :->command'
         '(-)*:: :->arg'
@@ -74,7 +74,7 @@ _math_add() {
     local -ar arg_specs=(
         '(--hex-output -x)'{--hex-output,-x}'[Use hexadecimal notation for the result.]'
         '*:values:'
-        '--version[Show the version.]'
+        '(-v --version)'{-v,--version}'[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
     )
     _arguments -w -s -S : "${arg_specs[@]}" && ret=0
@@ -87,7 +87,7 @@ _math_multiply() {
     local -ar arg_specs=(
         '(--hex-output -x)'{--hex-output,-x}'[Use hexadecimal notation for the result.]'
         '*:values:'
-        '--version[Show the version.]'
+        '(-v --version)'{-v,--version}'[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
     )
     _arguments -w -s -S : "${arg_specs[@]}" && ret=0
@@ -98,7 +98,7 @@ _math_multiply() {
 _math_stats() {
     local -i ret=1
     local -ar arg_specs=(
-        '--version[Show the version.]'
+        '(-v --version)'{-v,--version}'[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
         '(-): :->command'
         '(-)*:: :->arg'
@@ -131,7 +131,7 @@ _math_stats_average() {
     local -ar arg_specs=(
         '--kind[The kind of average to provide.]:kind:{__math_complete "${___kind[@]}"}'
         '*:values:'
-        '--version[Show the version.]'
+        '(-v --version)'{-v,--version}'[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
     )
     _arguments -w -s -S : "${arg_specs[@]}" && ret=0
@@ -143,7 +143,7 @@ _math_stats_stdev() {
     local -i ret=1
     local -ar arg_specs=(
         '*:values:'
-        '--version[Show the version.]'
+        '(-v --version)'{-v,--version}'[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
     )
     _arguments -w -s -S : "${arg_specs[@]}" && ret=0
@@ -164,7 +164,7 @@ _math_stats_quantiles() {
         '--shell:shell:{local -a list;list=(${(f)"$(head -100 '\''/usr/share/dict/words'\'' | tail -50)"});_describe -V "" list}'
         '--custom:custom:{__math_custom_complete ---completion stats quantiles -- --custom "${current_word_index}" "$(__math_cursor_index_in_current_word)"}'
         '--custom-deprecated:custom-deprecated:{__math_custom_complete ---completion stats quantiles -- --custom-deprecated}'
-        '--version[Show the version.]'
+        '(-v --version)'{-v,--version}'[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
     )
     _arguments -w -s -S : "${arg_specs[@]}" && ret=0
@@ -176,7 +176,7 @@ _math_help() {
     local -i ret=1
     local -ar arg_specs=(
         '*:subcommands:'
-        '--version[Show the version.]'
+        '(-v --version)'{-v,--version}'[Show the version.]'
     )
     _arguments -w -s -S : "${arg_specs[@]}" && ret=0
 
