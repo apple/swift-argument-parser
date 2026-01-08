@@ -150,6 +150,119 @@ final class ParsableArgumentsValidationTests: XCTestCase {
     }
   }
 
+  @available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
+  private struct AsyncCompletionOptionGroup: ParsableArguments {
+    @Sendable static func asyncCompletion(
+      _: [String],
+      _: Int,
+      _: String
+    ) async -> [String] { [] }
+
+    @Sendable static func syncCompletion(
+      _: [String],
+      _: Int,
+      _: String
+    ) -> [String] { [] }
+
+    @Option(
+      name: .customLong("opt"),
+      help: "O",
+      completion: .custom(asyncCompletion)
+    )
+    var option: Bool = false
+    @Argument(help: "A", completion: .custom(asyncCompletion))
+    var arg: String = ""
+  }
+
+  @available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
+  private struct TypeWithInvalidAsyncCompletions: ParsableCommand {
+    @Option(
+      name: .customLong("opt"),
+      help: "O",
+      completion: .custom(AsyncCompletionOptionGroup.asyncCompletion)
+    )
+    var option: Bool = false
+    @Argument(
+      help: "A",
+      completion: .custom(AsyncCompletionOptionGroup.asyncCompletion)
+    )
+    var arg: String = ""
+    @OptionGroup
+    var og: AsyncCompletionOptionGroup
+  }
+
+  @available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
+  func testAsyncCompletionsValidatorInvalidAsync() throws {
+    if let error = AsyncCompletionsValidator.validate(
+      TypeWithInvalidAsyncCompletions.self,
+      parent: InputKey(name: "foo", parent: nil)
+    ) as? AsyncCompletionsValidator.Error {
+      XCTAssertEqual(
+        error.invalidAsyncCompletions,
+        [
+          "TypeWithInvalidAsyncCompletions.option",
+          "TypeWithInvalidAsyncCompletions.arg",
+          "TypeWithInvalidAsyncCompletions.og.option",
+          "TypeWithInvalidAsyncCompletions.og.arg",
+        ]
+      )
+    } else {
+      XCTFail()
+    }
+  }
+
+  @available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
+  private struct TypeWithValidAsyncCompletions: AsyncParsableCommand {
+    @Option(
+      name: .customLong("opt"),
+      help: "O",
+      completion: .custom(AsyncCompletionOptionGroup.asyncCompletion)
+    )
+    var option: Bool = false
+    @Argument(
+      help: "A",
+      completion: .custom(AsyncCompletionOptionGroup.asyncCompletion)
+    )
+    var arg: String = ""
+    @OptionGroup
+    var og: AsyncCompletionOptionGroup
+  }
+
+  @available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
+  func testAsyncCompletionsValidatorValidAsync() throws {
+    XCTAssertNil(
+      AsyncCompletionsValidator.validate(
+        TypeWithValidAsyncCompletions.self,
+        parent: InputKey(name: "foo", parent: nil)
+      )
+    )
+  }
+
+  @available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
+  private struct TypeWithValidSyncCompletions: ParsableCommand {
+    @Option(
+      name: .customLong("opt"),
+      help: "O",
+      completion: .custom(AsyncCompletionOptionGroup.syncCompletion)
+    )
+    var option: Bool = false
+    @Argument(
+      help: "A",
+      completion: .custom(AsyncCompletionOptionGroup.syncCompletion)
+    )
+    var arg: String = ""
+  }
+
+  @available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
+  func testAsyncCompletionsValidatorValidSync() throws {
+    XCTAssertNil(
+      AsyncCompletionsValidator.validate(
+        TypeWithValidSyncCompletions.self,
+        parent: InputKey(name: "foo", parent: nil)
+      )
+    )
+  }
+
   private struct F: ParsableArguments {
     @Argument()
     var phrase: String
