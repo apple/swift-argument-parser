@@ -9,10 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if canImport(Dispatch)
-@preconcurrency private import class Dispatch.DispatchSemaphore
-#endif
-
 struct CommandError: Error {
   var commandStack: [ParsableCommand.Type]
   var parserError: ParserError
@@ -49,15 +45,15 @@ struct CommandParser {
   init(_ rootCommand: ParsableCommand.Type) {
     do {
       self.commandTree = try Tree(root: rootCommand)
-    } catch Tree<ParsableCommand.Type>.InitializationError.recursiveSubcommand(
-      let command)
+    } catch Tree<ParsableCommand.Type>.InitializationError
+      .recursiveSubcommand(let command)
     {
       configurationFailure(
         """
         The command \"\(command)\" can't have itself as its own subcommand.
         """.wrapped(to: 70))
-    } catch Tree<ParsableCommand.Type>
-      .InitializationError.aliasMatchingCommand(let command)
+    } catch Tree<ParsableCommand.Type>.InitializationError
+      .aliasMatchingCommand(let command)
     {
       configurationFailure(
         """
@@ -86,9 +82,9 @@ extension CommandParser {
   ///
   /// - Returns: A node for the matched subcommand if one was found;
   ///   otherwise, `nil`.
-  fileprivate func consumeNextCommand(split: inout SplitArguments) -> Tree<
-    ParsableCommand.Type
-  >? {
+  fileprivate func consumeNextCommand(
+    split: inout SplitArguments
+  ) -> Tree<ParsableCommand.Type>? {
     guard let (origin, element) = split.peekNext(),
       element.isValue,
       let value = split.originalInput(at: origin),
@@ -132,7 +128,8 @@ extension CommandParser {
     // Look for help flags
     guard
       !split.contains(
-        anyOf: self.commandStack.getHelpNames(visibility: .default))
+        anyOf: self.commandStack.getHelpNames(visibility: .default)
+      )
     else {
       throw HelpRequested(visibility: .default)
     }
@@ -140,7 +137,8 @@ extension CommandParser {
     // Look for help-hidden flags
     guard
       !split.contains(
-        anyOf: self.commandStack.getHelpNames(visibility: .hidden))
+        anyOf: self.commandStack.getHelpNames(visibility: .hidden)
+      )
     else {
       throw HelpRequested(visibility: .hidden)
     }
@@ -148,14 +146,18 @@ extension CommandParser {
     // Look for dump-help flag
     guard !split.contains(Name.long("experimental-dump-help")) else {
       throw CommandError(
-        commandStack: commandStack, parserError: .dumpHelpRequested)
+        commandStack: commandStack,
+        parserError: .dumpHelpRequested
+      )
     }
 
     // Look for a version flag if any commands in the stack define a version
     if commandStack.contains(where: { !$0.configuration.version.isEmpty }) {
       guard !split.contains(Name.long("version")) else {
         throw CommandError(
-          commandStack: commandStack, parserError: .versionRequested)
+          commandStack: commandStack,
+          parserError: .versionRequested
+        )
       }
     }
   }
@@ -164,9 +166,9 @@ extension CommandParser {
   ///
   /// If there are remaining arguments or if no commands have been parsed,
   /// this throws an error.
-  fileprivate func extractLastParsedValue(_ split: SplitArguments) throws
-    -> ParsableCommand
-  {
+  fileprivate func extractLastParsedValue(
+    _ split: SplitArguments
+  ) throws -> ParsableCommand {
     try checkForBuiltInFlags(split)
 
     // We should have used up all arguments at this point:
@@ -175,7 +177,9 @@ extension CommandParser {
       for element in split.elements {
         if case .option(let argument) = element.value {
           throw ParserError.unknownOption(
-            InputOrigin.Element.argumentIndex(element.index), argument.name)
+            InputOrigin.Element.argumentIndex(element.index),
+            argument.name
+          )
         }
       }
 
@@ -194,9 +198,9 @@ extension CommandParser {
 
   /// Extracts the current command from `split`, throwing if decoding isn't
   /// possible.
-  fileprivate mutating func parseCurrent(_ split: inout SplitArguments) throws
-    -> ParsableCommand
-  {
+  fileprivate mutating func parseCurrent(
+    _ split: inout SplitArguments
+  ) throws -> ParsableCommand {
     // Parse the arguments, ignoring anything unexpected
     var parser = LenientParser(currentNode.element, split)
     let values = try parser.parse()
@@ -210,11 +214,13 @@ extension CommandParser {
 
     // Decode the values from ParsedValues into the ParsableCommand:
     let decoder = ArgumentDecoder(
-      values: values, previouslyDecoded: decodedArguments)
+      values: values,
+      previouslyDecoded: decodedArguments
+    )
     var decodedResult: ParsableCommand
     do {
       decodedResult = try currentNode.element.init(from: decoder)
-    } catch let error {
+    } catch {
       // If decoding this command failed, see if they were asking for
       // help before propagating that parsing failure.
       try checkForBuiltInFlags(split)
@@ -232,7 +238,8 @@ extension CommandParser {
       }
     decodedArguments.append(contentsOf: newDecodedValues)
     decodedArguments.append(
-      DecodedArguments(type: currentNode.element, value: decodedResult))
+      DecodedArguments(type: currentNode.element, value: decodedResult)
+    )
 
     return decodedResult
   }
@@ -253,7 +260,8 @@ extension CommandParser {
         try checkForBuiltInFlags(split)
         throw CommandError(
           commandStack: commandStack,
-          parserError: ParserError.userValidationError(error))
+          parserError: ParserError.userValidationError(error)
+        )
       }
 
       // Look for next command in the argument list.
@@ -266,12 +274,12 @@ extension CommandParser {
       try checkForBuiltInFlags(split, requireSoloArgument: true)
 
       // No command was found, so fall back to the default subcommand.
-      if let defaultSubcommand = currentNode.element.configuration
-        .defaultSubcommand
+      if let defaultSubcommand =
+        currentNode.element.configuration.defaultSubcommand
       {
         guard
-          let subcommandNode = currentNode.firstChild(
-            equalTo: defaultSubcommand)
+          let subcommandNode =
+            currentNode.firstChild(equalTo: defaultSubcommand)
         else {
           throw ParserError.invalidState
         }
@@ -296,22 +304,79 @@ extension CommandParser {
     arguments: [String]
   ) throws(CommandError) -> ParsableCommand {
     do {
-      try handleCustomCompletion(arguments)
+      if let (argument, arguments) =
+        try parseCustomCompletion(from: arguments)
+      {
+        guard
+          let completions =
+            try customCompleteSync(argument, forArguments: arguments)
+        else {
+          throw ParserError.invalidState
+        }
+        try throwCompletionScriptCustomResponse(for: completions)
+      }
     } catch let error as ParserError {
       throw CommandError(
         commandStack: [commandTree.element],
-        parserError: error)
+        parserError: error
+      )
     } catch {
       fatalError("Internal error: \(error)")
     }
+    return try parseBesidesCustomCompletion(arguments: arguments)
+  }
 
+  /// Returns the fully-parsed matching command for `arguments`, or throws
+  /// an appropriate error.
+  ///
+  /// - Parameter arguments: The array of arguments to parse. This should not
+  ///   include the command name as the first argument.
+  ///
+  /// - Returns: The parsed command.
+  /// - Throws: A `CommandError` if an error is detected during parsing.
+  @available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
+  mutating func parse(
+    arguments: [String]
+  ) async throws(CommandError) -> ParsableCommand {
+    do {
+      if let (argument, arguments) = try parseCustomCompletion(from: arguments)
+      {
+        let completions: [String]
+        if let syncCompletions =
+          try customCompleteSync(argument, forArguments: arguments)
+        {
+          completions = syncCompletions
+        } else if case .customAsync(let complete) = argument.completion.kind {
+          let (arguments, index, prefix) =
+            try parseCustomCompletionArguments(from: arguments)
+          completions = await complete(arguments, index, prefix)
+        } else {
+          throw ParserError.invalidState
+        }
+        try throwCompletionScriptCustomResponse(for: completions)
+      }
+    } catch let error as ParserError {
+      throw CommandError(
+        commandStack: [commandTree.element],
+        parserError: error
+      )
+    } catch {
+      fatalError("Internal error: \(error)")
+    }
+    return try parseBesidesCustomCompletion(arguments: arguments)
+  }
+
+  private mutating func parseBesidesCustomCompletion(
+    arguments: [String]
+  ) throws(CommandError) -> ParsableCommand {
     var split: SplitArguments
     do {
       split = try SplitArguments(arguments: arguments)
     } catch {
-      let error = error as? ParserError ?? .invalidState
       throw CommandError(
-        commandStack: [commandTree.element], parserError: error)
+        commandStack: [commandTree.element],
+        parserError: error as? ParserError ?? .invalidState
+      )
     }
 
     do {
@@ -334,10 +399,13 @@ extension CommandParser {
     } catch let helpRequest as HelpRequested {
       return HelpCommand(
         commandStack: commandStack,
-        visibility: helpRequest.visibility)
+        visibility: helpRequest.visibility
+      )
     } catch {
       throw CommandError(
-        commandStack: commandStack, parserError: .invalidState)
+        commandStack: commandStack,
+        parserError: .invalidState
+      )
     }
   }
 }
@@ -353,9 +421,9 @@ struct AutodetectedGenerateCompletions: ParsableCommand {
 }
 
 extension CommandParser {
-  func checkForCompletionScriptRequest(_ split: inout SplitArguments)
-    throws(CommandError)
-  {
+  func checkForCompletionScriptRequest(
+    _ split: inout SplitArguments
+  ) throws(CommandError) {
     // Pseudo-commands don't support `--generate-completion-script` flag
     guard rootCommand.configuration._superCommandName == nil else {
       return
@@ -366,13 +434,15 @@ extension CommandParser {
 
     // First look for `--generate-completion-script <shell>`
     var completionsParser = CommandParser(GenerateCompletions.self)
-    if let result = try? completionsParser.parseCurrent(&split)
-      as? GenerateCompletions
+    if let result =
+      try? completionsParser.parseCurrent(&split) as? GenerateCompletions
     {
       throw CommandError(
         commandStack: commandStack,
         parserError: .completionScriptRequested(
-          shell: result.generateCompletionScript))
+          shell: result.generateCompletionScript
+        )
+      )
     }
 
     // Check for for `--generate-completion-script` without a value
@@ -383,11 +453,15 @@ extension CommandParser {
     {
       throw CommandError(
         commandStack: commandStack,
-        parserError: .completionScriptRequested(shell: nil))
+        parserError: .completionScriptRequested(shell: nil)
+      )
     }
   }
 
-  func handleCustomCompletion(_ arguments: [String]) throws {
+  func parseCustomCompletion(
+    from arguments: [String]
+  ) throws(ParserError) -> (argument: ArgumentDefinition, arguments: [String])?
+  {
     // Completion functions use a custom format:
     //
     // <command> ---completion [<subcommand> ...] -- <argument-name> <argument-index> <cursor-index> [<argument> ...]
@@ -399,8 +473,7 @@ extension CommandParser {
     //
     // The triple-dash prefix makes '---completion' invalid syntax for regular
     // arguments, so it's safe to use for this internal purpose.
-    guard arguments.first == "---completion"
-    else { return }
+    guard arguments.first == "---completion" else { return nil }
 
     var args = arguments.dropFirst()
     var current = commandTree
@@ -426,10 +499,10 @@ extension CommandParser {
     // Look up the specified argument, then retrieve & run its custom completion function
     switch parsedArgument.value {
     case .option(let parsed):
-      guard let matchedArgument = argset.first(matching: parsed) else {
+      guard let argument = argset.first(matching: parsed) else {
         throw ParserError.invalidState
       }
-      try customComplete(matchedArgument, forArguments: Array(args))
+      return (argument, Array(args))
 
     case .value(let value):
       // Legacy completion script generators use internal key paths to identify
@@ -440,19 +513,19 @@ extension CommandParser {
       if value.hasPrefix(toolInfoPrefix) {
         guard
           let index = Int(value.dropFirst(toolInfoPrefix.count)),
-          let matchedArgument = argset.positional(at: index)
+          let argument = argset.positional(at: index)
         else {
           throw ParserError.invalidState
         }
-        try customComplete(matchedArgument, forArguments: Array(args))
+        return (argument, Array(args))
       } else {
         guard
           let key = InputKey(fullPathString: value),
-          let matchedArgument = argset.firstPositional(withKey: key)
+          let argument = argset.firstPositional(withKey: key)
         else {
           throw ParserError.invalidState
         }
-        try customComplete(matchedArgument, forArguments: Array(args))
+        return (argument, Array(args))
       }
 
     case .terminator:
@@ -460,10 +533,10 @@ extension CommandParser {
     }
   }
 
-  private func customComplete(
+  private func customCompleteSync(
     _ argument: ArgumentDefinition,
     forArguments args: [String]
-  ) throws {
+  ) throws(ParserError) -> [String]? {
     if let completionShellName = Platform.Environment[.shellName] {
       let shell = CompletionShell(rawValue: completionShellName)
       CompletionShell._requesting.withLock { $0 = shell }
@@ -473,33 +546,27 @@ extension CommandParser {
       $0 = Platform.Environment[.shellVersion]
     }
 
-    let completions: [String]
     switch argument.completion.kind {
     case .custom(let complete):
-      let (args, completingArgumentIndex, completingPrefix) =
-        try parseCustomCompletionArguments(from: args)
-      completions = complete(
-        args,
-        completingArgumentIndex,
-        completingPrefix
-      )
-    case .customAsync(let complete):
-      #if canImport(Dispatch)
+      let (args, index, prefix) = try parseCustomCompletionArguments(from: args)
+      return complete(args, index, prefix)
+    case .customAsync:
       if #available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
       {
-        completions = try asyncCustomCompletions(from: args, complete: complete)
+        return nil
       } else {
         throw ParserError.invalidState
       }
-      #else
-      throw ParserError.invalidState
-      #endif
     case .customDeprecated(let complete):
-      completions = complete(args)
+      return complete(args)
     default:
       throw ParserError.invalidState
     }
+  }
 
+  private func throwCompletionScriptCustomResponse(
+    for completions: [String]
+  ) throws(ParserError) {
     // Parsing and retrieval successful! We don't want to continue with any
     // other parsing here, so after printing the result of the completion
     // function, exit with a success code.
@@ -512,11 +579,11 @@ extension CommandParser {
 
 private func parseCustomCompletionArguments(
   from args: [String]
-) throws -> ([String], Int, String) {
+) throws(ParserError) -> ([String], Int, String) {
   var args = args.dropFirst(0)
   guard
     let s = args.popFirst(),
-    let completingArgumentIndex = Int(s)
+    let index = Int(s)
   else {
     throw ParserError.invalidState
   }
@@ -528,54 +595,19 @@ private func parseCustomCompletionArguments(
     throw ParserError.invalidState
   }
 
-  let completingPrefix: String
+  let prefix: String
   if let completingArgument = args.last {
-    completingPrefix = String(
+    prefix = String(
       completingArgument.prefix(cursorIndexWithinCompletingArgument)
     )
   } else if cursorIndexWithinCompletingArgument == 0 {
-    completingPrefix = ""
+    prefix = ""
   } else {
     throw ParserError.invalidState
   }
 
-  return (Array(args), completingArgumentIndex, completingPrefix)
+  return (Array(args), index, prefix)
 }
-
-#if !canImport(Dispatch)
-@available(*, unavailable, message: "DispatchSemaphore is unavailable")
-@available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
-private func asyncCustomCompletions(
-  from args: [String],
-  complete: @escaping @Sendable ([String], Int, String) async -> [String]
-) throws -> [String] {
-  throw ParserError.invalidState
-}
-#else
-@available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
-private func asyncCustomCompletions(
-  from args: [String],
-  complete: @escaping @Sendable ([String], Int, String) async -> [String]
-) throws -> [String] {
-  let (args, completingArgumentIndex, completingPrefix) =
-    try parseCustomCompletionArguments(from: args)
-
-  let completionsBox = Mutex<[String]>([])
-  let semaphore = DispatchSemaphore(value: 0)
-
-  Task {
-    let completion = await complete(
-      args,
-      completingArgumentIndex,
-      completingPrefix)
-    completionsBox.withLock { $0 = completion }
-    semaphore.signal()
-  }
-
-  semaphore.wait()
-  return completionsBox.withLock { $0 }
-}
-#endif
 
 // MARK: Building Command Stacks
 

@@ -41,12 +41,7 @@ public struct CompletionKind {
     case directory
     case shellCommand(String)
     case custom(@Sendable ([String], Int, String) -> [String])
-    #if !canImport(Dispatch)
-    @available(*, unavailable, message: "DispatchSemaphore is unavailable")
     case customAsync(@Sendable ([String], Int, String) async -> [String])
-    #else
-    case customAsync(@Sendable ([String], Int, String) async -> [String])
-    #endif
     case customDeprecated(@Sendable ([String]) -> [String])
   }
 
@@ -186,22 +181,12 @@ public struct CompletionKind {
   ///
   /// The same as `custom(@Sendable @escaping ([String], Int, String) -> [String])`,
   /// except that the closure is asynchronous.
-  #if !canImport(Dispatch)
-  @available(*, unavailable, message: "DispatchSemaphore is unavailable")
-  @available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
-  public static func custom(
-    _ completion: @Sendable @escaping ([String], Int, String) async -> [String]
-  ) -> CompletionKind {
-    fatalError("DispatchSemaphore is unavailable")
-  }
-  #else
   @available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
   public static func custom(
     _ completion: @Sendable @escaping ([String], Int, String) async -> [String]
   ) -> CompletionKind {
     CompletionKind(kind: .customAsync(completion))
   }
-  #endif
 
   /// Deprecated; only kept for backwards compatibility.
   ///

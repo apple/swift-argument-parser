@@ -581,7 +581,7 @@ extension SplitArguments {
   }
 }
 
-func parseIndividualArg(_ arg: String, at position: Int) throws
+func parseIndividualArg(_ arg: String, at position: Int) throws(ParserError)
   -> [SplitArguments.Element]
 {
   let index = SplitArguments.Index(inputIndex: .init(rawValue: position))
@@ -673,7 +673,9 @@ extension ParsedArgument {
       longArgRemainder: remainder, makeName: { Name.long(String($0)) })
   }
 
-  fileprivate init(longArgWithSingleDashRemainder remainder: Substring) throws {
+  fileprivate init(
+    longArgWithSingleDashRemainder remainder: Substring
+  ) throws(ParserError) {
     try self.init(
       longArgRemainder: remainder,
       makeName: {
@@ -692,7 +694,7 @@ extension ParsedArgument {
 
   fileprivate init(
     longArgRemainder remainder: Substring, makeName: (Substring) -> Name
-  ) throws {
+  ) throws(ParserError) {
     if let equalIdx = remainder.firstIndex(of: "=") {
       let name = remainder[remainder.startIndex..<equalIdx]
       guard !name.isEmpty else {
