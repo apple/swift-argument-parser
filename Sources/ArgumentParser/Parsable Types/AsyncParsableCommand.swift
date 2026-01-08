@@ -25,6 +25,35 @@ public protocol AsyncParsableCommand: ParsableCommand {
 
 @available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
 extension AsyncParsableCommand {
+  /// Parses a new instance of this type from command-line arguments.
+  ///
+  /// - Parameter arguments: An array of arguments to use for parsing. If
+  ///   `arguments` is `nil`, this uses the program's command-line arguments.
+  /// - Returns: A new instance of this type.
+  /// - Throws: If parsing failed or arguments contains a help request.
+  public static func parse(
+    _ arguments: [String]? = nil
+  ) async throws -> Self {
+    // Parse the command and unwrap the result if necessary.
+    try parse(try await parseAsRoot(arguments))
+  }
+
+  /// Parses an instance of this type, or one of its subcommands, from
+  /// command-line arguments.
+  ///
+  /// - Parameter arguments: An array of arguments to use for parsing. If
+  ///   `arguments` is `nil`, this uses the program's command-line arguments.
+  /// - Returns: A new instance of this type, one of its subcommands, or a
+  ///   command type internal to the `ArgumentParser` library.
+  /// - Throws: If parsing fails.
+  public static func parseAsRoot(
+    _ arguments: [String]? = nil
+  ) async throws -> ParsableCommand {
+    var parser = CommandParser(self)
+    let arguments = arguments ?? Array(CommandLine._staticArguments.dropFirst())
+    return try await parser.parse(arguments: arguments).get()
+  }
+
   /// Executes this command, or one of its subcommands, with the given arguments.
   ///
   /// This method parses an instance of this type, one of its subcommands, or
@@ -36,7 +65,7 @@ extension AsyncParsableCommand {
   ///   `arguments` is `nil`, this uses the program's command-line arguments.
   public static func main(_ arguments: [String]?) async {
     do {
-      var command = try parseAsRoot(arguments)
+      var command = try await parseAsRoot(arguments)
       if var asyncCommand = command as? AsyncParsableCommand {
         try await asyncCommand.run()
       } else {
