@@ -89,8 +89,14 @@ extension ParsableArguments {
   public static func parse(
     _ arguments: [String]? = nil
   ) throws -> Self {
+    try parse(try self.asCommand.parseAsRoot(arguments))
+  }
+
+  public static func parse(
+    _ command: ParsableCommand
+  ) throws -> Self {
     // Parse the command and unwrap the result if necessary.
-    switch try self.asCommand.parseAsRoot(arguments) {
+    switch command {
     case let helpCommand as HelpCommand:
       throw ParserError.helpRequested(visibility: helpCommand.visibility)
     case let result as _WrappedParsableCommand<Self>:
