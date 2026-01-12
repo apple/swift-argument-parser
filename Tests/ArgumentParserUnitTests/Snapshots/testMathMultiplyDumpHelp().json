@@ -85,9 +85,6 @@
     "subcommands" : [
       {
         "abstract" : "Show subcommand help information.",
-        "aliases" : [
-
-        ],
         "arguments" : [
           {
             "isOptional" : true,

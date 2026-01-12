@@ -79,7 +79,7 @@ public struct CommandInfoV0: Codable, Hashable {
     self.shouldDisplay = shouldDisplay
 
     self.commandName = commandName
-    self.aliases = aliases
+    self.aliases = aliases?.nonEmpty
     self.abstract = abstract.nonEmpty
     self.discussion = discussion.nonEmpty
 

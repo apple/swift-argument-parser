@@ -1,9 +1,6 @@
 {
   "command" : {
     "abstract" : "Calculate descriptive statistics.",
-    "aliases" : [
-
-    ],
     "arguments" : [
       {
         "abstract" : "Show the version.",
@@ -152,9 +149,6 @@
       },
       {
         "abstract" : "Print the standard deviation of the values.",
-        "aliases" : [
-
-        ],
         "arguments" : [
           {
             "abstract" : "A group of floating-point values to operate on.",
@@ -217,9 +211,6 @@
       },
       {
         "abstract" : "Print the quantiles of the values (TBD).",
-        "aliases" : [
-
-        ],
         "arguments" : [
           {
             "completionKind" : {
@@ -516,9 +507,6 @@
       },
       {
         "abstract" : "Show subcommand help information.",
-        "aliases" : [
-
-        ],
         "arguments" : [
           {
             "isOptional" : true,
