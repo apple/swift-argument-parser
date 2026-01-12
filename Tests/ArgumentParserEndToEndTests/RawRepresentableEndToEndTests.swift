@@ -48,3 +48,16 @@ extension RawRepresentableEndToEndTests {
     XCTAssertThrowsError(try Bar.parse(["--identifier", "123.456"]))
   }
 }
+
+struct LogLevel: RawRepresentable, CustomStringConvertible {
+  var rawValue: String
+  var description: String { rawValue }
+}
+
+extension LogLevel: LosslessStringConvertible {
+  init(_ description: String) {
+    self.rawValue = description
+  }
+}
+
+extension LogLevel: ExpressibleByArgument {}

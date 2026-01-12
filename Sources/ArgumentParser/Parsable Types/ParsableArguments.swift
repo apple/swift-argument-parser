@@ -25,7 +25,15 @@ public protocol ParsableArguments: Decodable, _SendableMetatype {
   mutating func validate() throws
 
   /// The label to use for "Error: ..." messages from this type (experimental).
+  ///
+  /// Can be ignored if `_errorPrefix`'s is changed.
+  @available(*, deprecated, message: "Use _errorPrefix instead.")
   static var _errorLabel: String { get }
+
+  /// The prefix to use for "Error: ..." messages from this type (experimental).
+  ///
+  /// Defaults to `"\(_errorLabel): "`.
+  static var _errorPrefix: String { get }
 }
 
 /// A type that provides the `ParsableCommand` interface to a `ParsableArguments` type.
@@ -59,6 +67,13 @@ extension ParsableArguments {
 
   public static var _errorLabel: String {
     "Error"
+  }
+
+  /// The prefix to use for "Error: ..." messages from this type (experimental).
+  ///
+  /// Defaults to `"\(_errorLabel): "`.
+  public static var _errorPrefix: String {
+    "\(_errorLabel): "
   }
 }
 
@@ -301,9 +316,6 @@ extension ArgumentSet {
         guard let codingKey = child.label else { return nil }
 
         if let parsed = child.value as? ArgumentSetProvider {
-          guard parsed._visibility.isAtLeastAsVisible(as: visibility)
-          else { return nil }
-
           let key = InputKey(name: codingKey, parent: parent)
           return parsed.argumentSet(for: key)
         } else {
