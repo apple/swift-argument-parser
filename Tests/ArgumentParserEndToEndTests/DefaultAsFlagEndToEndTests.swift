@@ -213,4 +213,39 @@ extension DefaultAsFlagEndToEndTests {
       XCTAssertEqual(cmd.files, ["value1", "value2"])
     }
   }
+
+  // MARK: - Tests for parsing strategy compilation restrictions
+
+  func testDefaultAsFlagCompilationRestrictionsWork() throws {
+    // This test verifies that DefaultAsFlagParsingStrategy only allows compatible strategies
+    // and prevents .unconditional at compile time
+
+    struct CommandWithAllowedStrategies: ParsableCommand {
+      // These should compile successfully
+      @Option(defaultAsFlag: "next", parsing: .next)
+      var nextStrategy: String?
+
+      @Option(defaultAsFlag: "scanning", parsing: .scanningForValue)
+      var scanningStrategy: String?
+    }
+
+    // Verify that the allowed strategies work correctly
+    AssertParse(CommandWithAllowedStrategies.self, ["--next-strategy"]) { cmd in
+      XCTAssertEqual(cmd.nextStrategy, "next")
+      XCTAssertNil(cmd.scanningStrategy)
+    }
+
+    AssertParse(CommandWithAllowedStrategies.self, ["--scanning-strategy"]) {
+      cmd in
+      XCTAssertNil(cmd.nextStrategy)
+      XCTAssertEqual(cmd.scanningStrategy, "scanning")
+    }
+
+    AssertParse(
+      CommandWithAllowedStrategies.self, ["--next-strategy", "custom"]
+    ) { cmd in
+      XCTAssertEqual(cmd.nextStrategy, "custom")
+      XCTAssertNil(cmd.scanningStrategy)
+    }
+  }
 }

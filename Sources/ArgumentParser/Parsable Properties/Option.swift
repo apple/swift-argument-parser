@@ -161,7 +161,46 @@ public struct SingleValueParsingStrategy: Hashable {
   }
 }
 
+/// The strategy to use when parsing a single value from `@Option` arguments with `defaultAsFlag`.
+///
+/// This is a subset of `SingleValueParsingStrategy` that excludes strategies incompatible
+/// with default-as-flag behavior.
+public struct DefaultAsFlagParsingStrategy: Hashable {
+  internal var base: ArgumentDefinition.ParsingStrategy
+
+  /// Parse the input after the option and expect it to be a value.
+  ///
+  /// For inputs such as `--foo foo`, this would parse `foo` as the
+  /// value. However, the input `--foo --bar foo bar` would
+  /// result in an error. Even though two values are provided, they don't
+  /// succeed each option. Parsing would result in an error such as the following:
+  ///
+  ///     Error: Missing value for '--foo <foo>'
+  ///     Usage: command [--foo <foo>]
+  ///
+  /// When used with `defaultAsFlag`, if no value is found, the default flag value is used.
+  public static var next: DefaultAsFlagParsingStrategy {
+    self.init(base: .default)
+  }
+
+  /// Parse the next input, as long as that input can't be interpreted as
+  /// an option or flag.
+  ///
+  /// - Note: This will skip other options and _read ahead_ in the input
+  /// to find the next available value. This may be *unexpected* for users.
+  /// Use with caution.
+  ///
+  /// For example, if `--foo` takes a value, then the input `--foo --bar bar`
+  /// would be parsed such that the value `bar` is used for `--foo`.
+  ///
+  /// This is the **default behavior** for `defaultAsFlag` options.
+  public static var scanningForValue: DefaultAsFlagParsingStrategy {
+    self.init(base: .scanningForValue)
+  }
+}
+
 extension SingleValueParsingStrategy: Sendable {}
+extension DefaultAsFlagParsingStrategy: Sendable {}
 
 /// The strategy to use when parsing multiple values from `@Option` arguments into an
 /// array.
@@ -504,7 +543,7 @@ extension Option {
   }
 
   /// Creates an optional property that reads its value from a labeled option,
-  /// with a default value when the flag is provided without an argument.
+  /// with a default value when the flag is provided without a value.
   ///
   /// This initializer allows providing a `defaultAsFlag` value that is used
   /// when the flag is present but no value follows it:
@@ -518,7 +557,7 @@ extension Option {
   ///   - wrappedValue: A default value to use for this property, provided
   ///     implicitly by the compiler during property wrapper initialization.
   ///   - name: A specification for what names are allowed for this option.
-  ///   - defaultAsFlag: The value to use when the flag is provided without an argument.
+  ///   - defaultAsFlag: The value to use when the flag is provided without a value.
   ///   - parsingStrategy: The behavior to use when looking for this option's value.
   ///   - help: Information about how to use this option.
   ///   - completion: The type of command-line completion provided for this option.
@@ -526,7 +565,7 @@ extension Option {
     wrappedValue: _OptionalNilComparisonType,
     name: NameSpecification = .long,
     defaultAsFlag: T,
-    parsing parsingStrategy: SingleValueParsingStrategy = .scanningForValue,
+    parsing parsingStrategy: DefaultAsFlagParsingStrategy = .scanningForValue,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil
   ) where T: ExpressibleByArgument, Value == T? {
@@ -646,7 +685,7 @@ extension Option {
   }
 
   /// Creates an optional property that reads its value from a labeled option,
-  /// with a default value when the flag is provided without an argument.
+  /// with a default value when the flag is provided without a value.
   ///
   /// This initializer allows providing a `defaultAsFlag` value that is used
   /// when the flag is present but no value follows it:
@@ -658,14 +697,14 @@ extension Option {
   ///
   /// - Parameters:
   ///   - name: A specification for what names are allowed for this option.
-  ///   - defaultAsFlag: The value to use when the flag is provided without an argument.
+  ///   - defaultAsFlag: The value to use when the flag is provided without a value.
   ///   - parsingStrategy: The behavior to use when looking for this option's value.
   ///   - help: Information about how to use this option.
   ///   - completion: The type of command-line completion provided for this option.
   public init<T>(
     name: NameSpecification = .long,
     defaultAsFlag: T,
-    parsing parsingStrategy: SingleValueParsingStrategy = .scanningForValue,
+    parsing parsingStrategy: DefaultAsFlagParsingStrategy = .scanningForValue,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil
   ) where T: ExpressibleByArgument, Value == T? {
@@ -759,7 +798,7 @@ extension Option {
 
   /// Creates an optional property that reads its value from a labeled option,
   /// parsing with the given closure, with a default value when the flag is
-  /// provided without an argument.
+  /// provided without a value.
   ///
   /// This initializer allows providing a `defaultAsFlag` value that is used
   /// when the flag is present but no value follows it:
@@ -773,7 +812,7 @@ extension Option {
   ///   - wrappedValue: A default value to use for this property, provided
   ///     implicitly by the compiler during property wrapper initialization.
   ///   - name: A specification for what names are allowed for this option.
-  ///   - defaultAsFlag: The value to use when the flag is provided without an argument.
+  ///   - defaultAsFlag: The value to use when the flag is provided without a value.
   ///   - parsingStrategy: The behavior to use when looking for this option's value.
   ///   - help: Information about how to use this option.
   ///   - completion: The type of command-line completion provided for this option.
@@ -784,7 +823,7 @@ extension Option {
     wrappedValue: _OptionalNilComparisonType,
     name: NameSpecification = .long,
     defaultAsFlag: T,
-    parsing parsingStrategy: SingleValueParsingStrategy = .scanningForValue,
+    parsing parsingStrategy: DefaultAsFlagParsingStrategy = .scanningForValue,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
     transform: @Sendable @escaping (String) throws -> T
@@ -907,7 +946,7 @@ extension Option {
 
   /// Creates an optional property that reads its value from a labeled option,
   /// parsing with the given closure, with a default value when the flag is
-  /// provided without an argument.
+  /// provided without a value.
   ///
   /// This initializer allows providing a `defaultAsFlag` value that is used
   /// when the flag is present but no value follows it:
@@ -919,7 +958,7 @@ extension Option {
   ///
   /// - Parameters:
   ///   - name: A specification for what names are allowed for this option.
-  ///   - defaultAsFlag: The value to use when the flag is provided without an argument.
+  ///   - defaultAsFlag: The value to use when the flag is provided without a value.
   ///   - parsingStrategy: The behavior to use when looking for this option's value.
   ///   - help: Information about how to use this option.
   ///   - completion: The type of command-line completion provided for this option.
@@ -929,7 +968,7 @@ extension Option {
   public init<T>(
     name: NameSpecification = .long,
     defaultAsFlag: T,
-    parsing parsingStrategy: SingleValueParsingStrategy = .scanningForValue,
+    parsing parsingStrategy: DefaultAsFlagParsingStrategy = .scanningForValue,
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
     transform: @Sendable @escaping (String) throws -> T

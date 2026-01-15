@@ -290,6 +290,25 @@ struct LenientParser {
     }
   }
 
+  /// Helper function to check if there's a terminator between the current option and target origin.
+  private func hasTerminatorBetween(
+    _ originElement: InputOrigin.Element,
+    _ targetOrigin: InputOrigin.Element
+  ) -> Bool {
+    guard case .argumentIndex(let currentIndex) = originElement,
+      case .argumentIndex(let targetIndex) = targetOrigin
+    else { return false }
+
+    // Check if there's a terminator between current position and target position
+    let terminatorIndex = inputArguments.elements.firstIndex { element in
+      element.isTerminator
+        && element.index.inputIndex > currentIndex.inputIndex
+        && element.index.inputIndex < targetIndex.inputIndex
+    }
+
+    return terminatorIndex != nil
+  }
+
   mutating func parseValue(
     _ argument: ArgumentDefinition,
     _ parsed: ParsedArgument,
@@ -315,10 +334,11 @@ struct LenientParser {
         try update(origins, parsed.name, String(value), &result)
         usedOrigins.formUnion(origins)
       } else if let (origin2, value) = inputArguments.popNextElementIfValue(
-        after: originElement)
+        after: originElement),
+        !hasTerminatorBetween(originElement, origin2)
       {
         // Use `popNextElementIfValue(after:)` to handle cases where short option
-        // labels are combined
+        // labels are combined, but only if there's no terminator between them
         let origins = origin.inserting(origin2)
         try update(origins, parsed.name, value, &result)
         usedOrigins.formUnion(origins)
@@ -341,10 +361,11 @@ struct LenientParser {
         try update(origins, parsed.name, String(value), &result)
         usedOrigins.formUnion(origins)
       } else if let (origin2, value) = inputArguments.popNextValue(
-        after: originElement)
+        after: originElement),
+        !hasTerminatorBetween(originElement, origin2)
       {
         // Use `popNext(after:)` to handle cases where short option
-        // labels are combined
+        // labels are combined, but only if there's no terminator between them
         let origins = origin.inserting(origin2)
         try update(origins, parsed.name, value, &result)
         usedOrigins.formUnion(origins)
@@ -366,16 +387,16 @@ struct LenientParser {
         let origins = origin.inserting(origin2)
         try update(origins, parsed.name, String(value), &result)
         usedOrigins.formUnion(origins)
-      } else {
-        guard
-          let (origin2, value) = inputArguments.popNextElementAsValue(
-            after: originElement)
-        else {
-          throw errorForMissingValue(originElement, parsed)
-        }
+      } else if let (origin2, value) = inputArguments.popNextElementAsValue(
+        after: originElement),
+        !hasTerminatorBetween(originElement, origin2)
+      {
+        // Only consume if there's no terminator between option and value
         let origins = origin.inserting(origin2)
         try update(origins, parsed.name, value, &result)
         usedOrigins.formUnion(origins)
+      } else {
+        throw errorForMissingValue(originElement, parsed)
       }
 
     case .allRemainingInput:
@@ -468,112 +489,27 @@ struct LenientParser {
     _ result: inout ParsedValues,
     _ usedOrigins: inout InputOrigin
   ) throws {
-    let origin = InputOrigin(elements: [originElement])
-
-    // Helper function to check if there's a terminator between the current option and potential values
-    func hasTerminatorBefore(_ targetOrigin: InputOrigin.Element) -> Bool {
-      guard case .argumentIndex(let currentIndex) = originElement,
-        case .argumentIndex(let targetIndex) = targetOrigin
-      else { return false }
-
-      // Check if there's a terminator between current position and target position
-      let terminatorIndex = inputArguments.elements.firstIndex { element in
-        element.isTerminator
-          && element.index.inputIndex > currentIndex.inputIndex
-          && element.index.inputIndex < targetIndex.inputIndex
-      }
-
-      return terminatorIndex != nil
-    }
-
-    // Try to find a value using the same logic as parseValue, but don't throw if missing
-    switch argument.parsingStrategy {
-    case .default:
-      // Try to get a value for this option
-      if let value = parsed.value {
-        // This was `--foo=bar` style:
-        try unaryHandler(origin, parsed.name, value, &result)
-        usedOrigins.formUnion(origin)
-      } else if argument.allowsJoinedValue,
-        let (origin2, value) = inputArguments.extractJoinedElement(
-          at: originElement)
-      {
-        // Found a joined argument
-        let origins = origin.inserting(origin2)
-        try unaryHandler(origins, parsed.name, String(value), &result)
-        usedOrigins.formUnion(origins)
-      } else if let (origin2, value) = inputArguments.popNextElementIfValue(
-        after: originElement),
-        !hasTerminatorBefore(origin2)
-      {
-        // Use `popNextElementIfValue(after:)` to handle cases where short option
-        // labels are combined - only consume if it's actually a value, not another flag
-        // and there's no terminator between the option and the value
-        let origins = origin.inserting(origin2)
-        try unaryHandler(origins, parsed.name, value, &result)
-        usedOrigins.formUnion(origins)
-      } else {
-        // No value found or terminator blocks access - use as flag
+    do {
+      // Try to parse as a unary value first using the main parseValue logic
+      try parseValue(
+        argument,
+        parsed,
+        originElement,
+        unaryHandler,
+        &result,
+        &usedOrigins
+      )
+    } catch let error as ParserError {
+      switch error {
+      case .missingValueForOption, .missingValueOrUnknownCompositeOption:
+        // Fall back to flag behavior when no value is available
+        let origin = InputOrigin(elements: [originElement])
         try nullaryHandler(origin, parsed.name, &result)
         usedOrigins.formUnion(origin)
+      default:
+        // Re-throw other parser errors
+        throw error
       }
-
-    case .scanningForValue:
-      // Similar to default, but more aggressive about finding values
-      if let value = parsed.value {
-        try unaryHandler(origin, parsed.name, value, &result)
-        usedOrigins.formUnion(origin)
-      } else if argument.allowsJoinedValue,
-        let (origin2, value) = inputArguments.extractJoinedElement(
-          at: originElement)
-      {
-        let origins = origin.inserting(origin2)
-        try unaryHandler(origins, parsed.name, String(value), &result)
-        usedOrigins.formUnion(origins)
-      } else if let (origin2, value) = inputArguments.popNextValue(
-        after: originElement),
-        !hasTerminatorBefore(origin2)
-      {
-        // Only consume if there's no terminator between option and value
-        let origins = origin.inserting(origin2)
-        try unaryHandler(origins, parsed.name, value, &result)
-        usedOrigins.formUnion(origins)
-      } else {
-        // No value found or terminator blocks access - use as flag
-        try nullaryHandler(origin, parsed.name, &result)
-        usedOrigins.formUnion(origin)
-      }
-
-    case .unconditional:
-      // Use an attached value if it exists, otherwise try to consume next element
-      if let value = parsed.value {
-        try unaryHandler(origin, parsed.name, value, &result)
-        usedOrigins.formUnion(origin)
-      } else if argument.allowsJoinedValue,
-        let (origin2, value) = inputArguments.extractJoinedElement(
-          at: originElement)
-      {
-        let origins = origin.inserting(origin2)
-        try unaryHandler(origins, parsed.name, String(value), &result)
-        usedOrigins.formUnion(origins)
-      } else if let (origin2, value) = inputArguments.popNextElementAsValue(
-        after: originElement),
-        !hasTerminatorBefore(origin2)
-      {
-        // Only consume if there's no terminator between option and value
-        let origins = origin.inserting(origin2)
-        try unaryHandler(origins, parsed.name, value, &result)
-        usedOrigins.formUnion(origins)
-      } else {
-        // No value found or terminator blocks access - use as flag
-        try nullaryHandler(origin, parsed.name, &result)
-        usedOrigins.formUnion(origin)
-      }
-
-    case .upToNextOption, .allRemainingInput, .postTerminator, .allUnrecognized:
-      // For other parsing strategies, fall back to flag behavior for now
-      try nullaryHandler(origin, parsed.name, &result)
-      usedOrigins.formUnion(origin)
     }
   }
 
