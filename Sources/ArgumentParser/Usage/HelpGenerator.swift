@@ -232,7 +232,6 @@ internal struct HelpGenerator {
         allAndDefaultValues =
           "(values: \(allValueStrings.joined(separator: ", ")))"
       case (false, true):
-        // Check if this is a defaultAsFlag option (uses .optionalUnary update)
         switch arg.update {
         case .nullary, .unary:
           allAndDefaultValues = "(default: \(defaultValue))"
@@ -241,7 +240,6 @@ internal struct HelpGenerator {
         }
 
       case (true, true):
-        // Check if this is a defaultAsFlag option for the combined case too
         switch arg.update {
         case .nullary, .unary:
           allAndDefaultValues =

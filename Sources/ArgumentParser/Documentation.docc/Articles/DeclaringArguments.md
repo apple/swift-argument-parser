@@ -333,32 +333,26 @@ The `defaultAsFlag` parameter allows you to create options that can work both as
 
 ```swift
 struct Example: ParsableCommand {
-    @Option(defaultAsFlag: "default", help: "Set output format.")
-    var format: String?
-
-    @Option(defaultAsFlag: 8080, help: "Server port.")
-    var port: Int?
+    @Option(defaultAsFlag: "json", help: "Set the export format.")
+    var export: String?
 
     func run() {
-        print("Format: \(format ?? "none")")
-        print("Port: \(port ?? 3000)")
+        print("Export: \(format ?? "<don't export>")")
     }
 }
 ```
 
 **Command-line behavior:**
 ```
-% example                    # format = nil, port = nil
-% example --format           # format = "default", port = nil
-% example --format json      # format = "json", port = nil
-% example --port             # format = nil, port = 8080
-% example --port 9000        # format = nil, port = 9000
+% example                    # export = nil
+% example --export           # export = "json"
+% example --export yaml      # format = "yaml"
 ```
 
 The `defaultAsFlag` parameter creates a hybrid that supports both patterns:
-- **Flag behavior**: `--format` (sets format to "default")
-- **Option behavior**: `--format json` (sets format to "json")
-- **No usage**: format remains `nil`
+- **Flag behavior**: `--export` (sets format to "json")
+- **Option behavior**: `--export yaml` (sets format to "yaml")
+- **No usage**: `export` remains `nil`
 
 #### Type requirements
 
@@ -405,7 +399,7 @@ The parser determines whether a value follows the option:
 2. **No value available**: Use the `defaultAsFlag` value
 3. **Explicit value provided**: Parse and use that value
 
-This works with all parsing strategies (`.next`, `.scanningForValue`, `.unconditional`), though `.unconditional` defeats the purpose by always requiring a value.
+This works with parsing strategies `.next` and `.scanningForValue`.  The `.unconditional` parsing strategy defeats the purpose by always requiring a value.
 
 For complete examples and API reference, see the [`default-as-flag`](https://github.com/apple/swift-argument-parser/tree/main/Examples/default-as-flag) example.
 
