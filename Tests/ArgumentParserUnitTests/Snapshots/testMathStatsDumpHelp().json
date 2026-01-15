@@ -54,6 +54,9 @@
     "subcommands" : [
       {
         "abstract" : "Print the average of the values.",
+        "aliases" : [
+          "avg"
+        ],
         "arguments" : [
           {
             "abstract" : "The kind of average to provide.",

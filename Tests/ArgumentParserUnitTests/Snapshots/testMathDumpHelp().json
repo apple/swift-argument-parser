@@ -142,6 +142,9 @@
       },
       {
         "abstract" : "Print the product of the values.",
+        "aliases" : [
+          "mul"
+        ],
         "arguments" : [
           {
             "abstract" : "Use hexadecimal notation for the result.",
@@ -283,6 +286,9 @@
         "subcommands" : [
           {
             "abstract" : "Print the average of the values.",
+            "aliases" : [
+              "avg"
+            ],
             "arguments" : [
               {
                 "abstract" : "The kind of average to provide.",
