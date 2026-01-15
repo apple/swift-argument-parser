@@ -131,12 +131,12 @@ extension CommandInfoV0 {
           .joined(separator: "\n")
         )
                 )
-                _describe -V subcommand subcommands
+                _describe -V subcommand subcommands && ret=0
                 ;;
             arg)
                 case "${words[1]}" in
                 \(subcommands.map(\.commandName).joined(separator: "|")))
-                    "\(functionName)_${words[1]}"
+                    "\(functionName)_${words[1]}" && ret=0
                     ;;
                 esac
                 ;;

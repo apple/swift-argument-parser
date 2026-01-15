@@ -70,12 +70,12 @@ _base-test() {
             'escaped-command:'
             'help:Show subcommand help information.'
         )
-        _describe -V subcommand subcommands
+        _describe -V subcommand subcommands && ret=0
         ;;
     arg)
         case "${words[1]}" in
         sub-command|escaped-command|help)
-            "_base-test_${words[1]}"
+            "_base-test_${words[1]}" && ret=0
             ;;
         esac
         ;;
