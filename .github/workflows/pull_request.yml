@@ -25,6 +25,7 @@ jobs:
 
   tests:
     name: Test
+    needs: [soundness, validate_format_config]
     uses: swiftlang/github-workflows/.github/workflows/swift_package_test.yml@0.0.4
     with:
       windows_exclude_swift_versions: "[{\"swift_version\": \"5.9\"}]"
@@ -35,6 +36,7 @@ jobs:
 
   cmake-build:
     name: CMake Build
+    needs: [soundness, validate_format_config]
     runs-on: ubuntu-latest
     container:
       image: swift:6.0-jammy
