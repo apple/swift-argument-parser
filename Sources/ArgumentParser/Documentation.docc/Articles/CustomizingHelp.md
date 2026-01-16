@@ -93,7 +93,7 @@ enum Fruit: String, ExpressibleByArgument {
 struct FruitStore: ParsableCommand {
     @Argument(help: "The fruit to purchase")
     var fruit: Fruit
-  
+
     @Option(help: "The number of fruit to purchase")
     var quantity: Int = 1
 }
@@ -128,7 +128,7 @@ enum Fruit: String, CaseIterable, ExpressibleByArgument {
 struct FruitStore: ParsableCommand {
     @Argument(help: "The fruit to purchase")
     var fruit: Fruit
-  
+
     @Option(help: "The number of fruit to purchase")
     var quantity: Int = 1
 }
@@ -150,6 +150,53 @@ OPTIONS:
 
 For an ``ExpressibleByArgument`` and `CaseIterable` type with many cases, you may still want to implement ``ExpressibleByArgument/allValueStrings`` to avoid an overly long list of values appearing in the help screen. For these types it is recommended to include the most common possible values.
 
+#### Providing Descriptions for Enum Values
+
+When your argument or option uses an enum type, you can provide detailed descriptions for each enum value that will appear in the help screen. This is especially useful when the enum cases represent complex concepts that benefit from explanation.
+
+To provide descriptions for individual enum values, implement a custom `defaultValueDescription` property for each case. The ArgumentParser will automatically detect when descriptions differ from the enum's string representation and display them in an enumerated format.
+
+```swift
+enum OutputFormat: String, CaseIterable, ExpressibleByArgument {
+    case json
+    case yaml
+    case xml
+    case csv
+
+    var defaultValueDescription: String {
+        switch self {
+        case .json:
+            return "JavaScript Object Notation format"
+        case .yaml:
+            return "YAML Ain't Markup Language format"
+        case .xml:
+            return "eXtensible Markup Language format"
+        case .csv:
+            return "Comma-Separated Values format"
+        }
+    }
+}
+
+struct DataExporter: ParsableCommand {
+    @Option(help: "Select output format")
+    var format: OutputFormat = .json
+}
+```
+
+This produces help output with detailed descriptions for each enum value:
+
+```
+USAGE: data-exporter [--format <format>]
+
+OPTIONS:
+  --format <format>       Select output format (default: json)
+        json              - JavaScript Object Notation format
+        yaml              - YAML Ain't Markup Language format
+        xml               - eXtensible Markup Language format
+        csv               - Comma-Separated Values format
+  -h, --help              Show help information.
+```
+
 ### Controlling Argument Visibility
 
 You can specify the visibility of any argument, option, or flag.
@@ -164,7 +211,7 @@ struct Example: ParsableCommand {
 }
 ```
 
-The `--verbose` flag is only visible in the extended help screen. The `--use-legacy-format` stays hidden even in the extended help screen, due to its `.private` visibility. 
+The `--verbose` flag is only visible in the extended help screen. The `--use-legacy-format` stays hidden even in the extended help screen, due to its `.private` visibility.
 
 ```
 % example --help
@@ -220,7 +267,7 @@ OPTIONS:
 
 ### Grouping Arguments in the Help Screen
 
-When you provide a title in an `@OptionGroup` declaration, that type's  properties are grouped together under your title in the help screen. For example, this command bundles similar arguments together under a  "Build Options" title:
+When you provide a title in an `@OptionGroup` declaration, that type's properties are grouped together under your title in the help screen. For example, this command bundles similar arguments together under a "Build Options" title:
 
 ```swift
 struct BuildOptions: ParsableArguments {
