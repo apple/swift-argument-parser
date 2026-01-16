@@ -26,7 +26,7 @@ public protocol ParsableArguments: Decodable, _SendableMetatype {
 
   /// The label to use for "Error: ..." messages from this type (experimental).
   ///
-  /// Can be ignored if `_errorPrefix`'s is changed.
+  /// `_errorLabel` will be ignored if `_errorPrefix` is changed to ignore `_errorLabel`.
   @available(*, deprecated, message: "Use _errorPrefix instead.")
   static var _errorLabel: String { get }
 
