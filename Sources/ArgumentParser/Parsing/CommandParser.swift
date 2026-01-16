@@ -9,16 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if compiler(>=6.0)
-#if canImport(Dispatch)
-@preconcurrency private import class Dispatch.DispatchSemaphore
-#endif
-#else
-#if canImport(Dispatch)
-@preconcurrency import class Dispatch.DispatchSemaphore
-#endif
-#endif
-
 struct CommandError: Error {
   var commandStack: [ParsableCommand.Type]
   var parserError: ParserError
@@ -279,28 +269,90 @@ extension CommandParser {
     arguments: [String]
   ) -> Result<ParsableCommand, CommandError> {
     do {
-      try handleCustomCompletion(arguments)
+      if let (argument, arguments) =
+        try parseCustomCompletion(from: arguments)
+      {
+        guard
+          let completions =
+            try customCompleteSync(argument, forArguments: arguments)
+        else {
+          throw ParserError.invalidState
+        }
+        try throwCompletionScriptCustomResponse(for: completions)
+      }
     } catch let error as ParserError {
       return .failure(
         CommandError(
           commandStack: [commandTree.element],
-          parserError: error))
+          parserError: error
+        )
+      )
     } catch {
       fatalError("Internal error: \(error)")
     }
+    return parseBesidesCustomCompletion(arguments: arguments)
+  }
 
+  /// Returns the fully-parsed matching command for `arguments`, or an
+  /// appropriate error.
+  ///
+  /// - Parameter arguments: The array of arguments to parse. This should not
+  ///   include the command name as the first argument.
+  ///
+  /// - Returns: The parsed command or error.
+  @available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
+  mutating func parse(
+    arguments: [String]
+  ) async -> Result<ParsableCommand, CommandError> {
+    do {
+      if let (argument, arguments) =
+        try parseCustomCompletion(from: arguments)
+      {
+        let completions: [String]
+        if let syncCompletions =
+          try customCompleteSync(argument, forArguments: arguments)
+        {
+          completions = syncCompletions
+        } else if case .customAsync(let complete) = argument.completion.kind {
+          let (arguments, index, prefix) =
+            try parseCustomCompletionArguments(from: arguments)
+          completions = await complete(arguments, index, prefix)
+        } else {
+          throw ParserError.invalidState
+        }
+        try throwCompletionScriptCustomResponse(for: completions)
+      }
+    } catch let error as ParserError {
+      return .failure(
+        CommandError(
+          commandStack: [commandTree.element],
+          parserError: error
+        )
+      )
+    } catch {
+      fatalError("Internal error: \(error)")
+    }
+    return parseBesidesCustomCompletion(arguments: arguments)
+  }
+
+  private mutating func parseBesidesCustomCompletion(
+    arguments: [String]
+  ) -> Result<ParsableCommand, CommandError> {
     var split: SplitArguments
     do {
       split = try SplitArguments(arguments: arguments)
     } catch let error as ParserError {
       return .failure(
-        CommandError(commandStack: [commandTree.element], parserError: error))
+        CommandError(commandStack: [commandTree.element], parserError: error)
+      )
     } catch {
       return .failure(
         CommandError(
-          commandStack: [commandTree.element], parserError: .invalidState))
+          commandStack: [commandTree.element],
+          parserError: .invalidState
+        )
+      )
     }
-
     do {
       try checkForCompletionScriptRequest(&split)
       try descendingParse(&split)
@@ -374,7 +426,9 @@ extension CommandParser {
     }
   }
 
-  func handleCustomCompletion(_ arguments: [String]) throws {
+  func parseCustomCompletion(
+    from arguments: [String]
+  ) throws -> (argument: ArgumentDefinition, arguments: [String])? {
     // Completion functions use a custom format:
     //
     // <command> ---completion [<subcommand> ...] -- <argument-name> <argument-index> <cursor-index> [<argument> ...]
@@ -387,7 +441,7 @@ extension CommandParser {
     // The triple-dash prefix makes '---completion' invalid syntax for regular
     // arguments, so it's safe to use for this internal purpose.
     guard arguments.first == "---completion"
-    else { return }
+    else { return nil }
 
     var args = arguments.dropFirst()
     var current = commandTree
@@ -413,10 +467,10 @@ extension CommandParser {
     // Look up the specified argument, then retrieve & run its custom completion function
     switch parsedArgument.value {
     case .option(let parsed):
-      guard let matchedArgument = argset.first(matching: parsed) else {
+      guard let argument = argset.first(matching: parsed) else {
         throw ParserError.invalidState
       }
-      try customComplete(matchedArgument, forArguments: Array(args))
+      return (argument, Array(args))
 
     case .value(let value):
       // Legacy completion script generators use internal key paths to identify
@@ -427,19 +481,19 @@ extension CommandParser {
       if value.hasPrefix(toolInfoPrefix) {
         guard
           let index = Int(value.dropFirst(toolInfoPrefix.count)),
-          let matchedArgument = argset.positional(at: index)
+          let argument = argset.positional(at: index)
         else {
           throw ParserError.invalidState
         }
-        try customComplete(matchedArgument, forArguments: Array(args))
+        return (argument, Array(args))
       } else {
         guard
           let key = InputKey(fullPathString: value),
-          let matchedArgument = argset.firstPositional(withKey: key)
+          let argument = argset.firstPositional(withKey: key)
         else {
           throw ParserError.invalidState
         }
-        try customComplete(matchedArgument, forArguments: Array(args))
+        return (argument, Array(args))
       }
 
     case .terminator:
@@ -447,10 +501,10 @@ extension CommandParser {
     }
   }
 
-  private func customComplete(
+  private func customCompleteSync(
     _ argument: ArgumentDefinition,
     forArguments args: [String]
-  ) throws {
+  ) throws -> [String]? {
     if let completionShellName = Platform.Environment[.shellName] {
       let shell = CompletionShell(rawValue: completionShellName)
       CompletionShell._requesting.withLock { $0 = shell }
@@ -460,33 +514,27 @@ extension CommandParser {
       $0 = Platform.Environment[.shellVersion]
     }
 
-    let completions: [String]
     switch argument.completion.kind {
     case .custom(let complete):
-      let (args, completingArgumentIndex, completingPrefix) =
-        try parseCustomCompletionArguments(from: args)
-      completions = complete(
-        args,
-        completingArgumentIndex,
-        completingPrefix
-      )
-    case .customAsync(let complete):
-      #if canImport(Dispatch)
+      let (args, index, prefix) = try parseCustomCompletionArguments(from: args)
+      return complete(args, index, prefix)
+    case .customAsync:
       if #available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
       {
-        completions = try asyncCustomCompletions(from: args, complete: complete)
+        return nil
       } else {
         throw ParserError.invalidState
       }
-      #else
-      throw ParserError.invalidState
-      #endif
     case .customDeprecated(let complete):
-      completions = complete(args)
+      return complete(args)
     default:
       throw ParserError.invalidState
     }
+  }
 
+  private func throwCompletionScriptCustomResponse(
+    for completions: [String]
+  ) throws {
     // Parsing and retrieval successful! We don't want to continue with any
     // other parsing here, so after printing the result of the completion
     // function, exit with a success code.
@@ -503,7 +551,7 @@ private func parseCustomCompletionArguments(
   var args = args.dropFirst(0)
   guard
     let s = args.popFirst(),
-    let completingArgumentIndex = Int(s)
+    let index = Int(s)
   else {
     throw ParserError.invalidState
   }
@@ -515,49 +563,18 @@ private func parseCustomCompletionArguments(
     throw ParserError.invalidState
   }
 
-  let completingPrefix: String
+  let prefix: String
   if let completingArgument = args.last {
-    completingPrefix = String(
+    prefix = String(
       completingArgument.prefix(cursorIndexWithinCompletingArgument)
     )
   } else if cursorIndexWithinCompletingArgument == 0 {
-    completingPrefix = ""
+    prefix = ""
   } else {
     throw ParserError.invalidState
   }
 
-  return (Array(args), completingArgumentIndex, completingPrefix)
-}
-
-#if !canImport(Dispatch)
-@available(*, unavailable, message: "DispatchSemaphore is unavailable")
-#endif
-@available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
-private func asyncCustomCompletions(
-  from args: [String],
-  complete: @escaping @Sendable ([String], Int, String) async -> [String]
-) throws -> [String] {
-  #if !canImport(Dispatch)
-  throw ParserError.invalidState
-  #else
-  let (args, completingArgumentIndex, completingPrefix) =
-    try parseCustomCompletionArguments(from: args)
-
-  let completionsBox = Mutex<[String]>([])
-  let semaphore = DispatchSemaphore(value: 0)
-
-  Task {
-    let completion = await complete(
-      args,
-      completingArgumentIndex,
-      completingPrefix)
-    completionsBox.withLock { $0 = completion }
-    semaphore.signal()
-  }
-
-  semaphore.wait()
-  return completionsBox.withLock { $0 }
-  #endif
+  return (Array(args), index, prefix)
 }
 
 // MARK: Building Command Stacks
