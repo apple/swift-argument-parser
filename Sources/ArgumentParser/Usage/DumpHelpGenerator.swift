@@ -34,7 +34,7 @@ internal struct DumpHelpGenerator {
 extension BidirectionalCollection where Element == ParsableCommand.Type {
   /// Returns the ArgumentSet for the last command in this stack, including
   /// help and version flags, when appropriate.
-  fileprivate func allArguments() -> ArgumentSet {
+  internal func allArguments() -> ArgumentSet {
     guard
       var arguments = self.last.map({
         ArgumentSet($0, visibility: .private, parent: nil)
