@@ -161,7 +161,7 @@ _math() {
     local -a unparsed_words=("${COMP_WORDS[@]:1:${COMP_CWORD}}")
 
     local -a repeating_flags=()
-    local -a non_repeating_flags=(--version -h --help)
+    local -a non_repeating_flags=(-v --version -h --help)
     local -a repeating_options=()
     local -a non_repeating_options=()
     __math_offer_flags_options 0
@@ -184,7 +184,7 @@ _math() {
 
 _math_add() {
     repeating_flags=()
-    non_repeating_flags=(--hex-output -x --version -h --help)
+    non_repeating_flags=(--hex-output -x -v --version -h --help)
     repeating_options=()
     non_repeating_options=()
     __math_offer_flags_options -1
@@ -192,7 +192,7 @@ _math_add() {
 
 _math_multiply() {
     repeating_flags=()
-    non_repeating_flags=(--hex-output -x --version -h --help)
+    non_repeating_flags=(--hex-output -x -v --version -h --help)
     repeating_options=()
     non_repeating_options=()
     __math_offer_flags_options -1
@@ -200,7 +200,7 @@ _math_multiply() {
 
 _math_stats() {
     repeating_flags=()
-    non_repeating_flags=(--version -h --help)
+    non_repeating_flags=(-v --version -h --help)
     repeating_options=()
     non_repeating_options=()
     __math_offer_flags_options 0
@@ -223,7 +223,7 @@ _math_stats() {
 
 _math_stats_average() {
     repeating_flags=()
-    non_repeating_flags=(--version -h --help)
+    non_repeating_flags=(-v --version -h --help)
     repeating_options=()
     non_repeating_options=(--kind)
     __math_offer_flags_options -1
@@ -239,7 +239,7 @@ _math_stats_average() {
 
 _math_stats_stdev() {
     repeating_flags=()
-    non_repeating_flags=(--version -h --help)
+    non_repeating_flags=(-v --version -h --help)
     repeating_options=()
     non_repeating_options=()
     __math_offer_flags_options -1
@@ -247,7 +247,7 @@ _math_stats_stdev() {
 
 _math_stats_quantiles() {
     repeating_flags=()
-    non_repeating_flags=(--version -h --help)
+    non_repeating_flags=(-v --version -h --help)
     repeating_options=()
     non_repeating_options=(--file --directory --shell --custom --custom-deprecated)
     __math_offer_flags_options -1
@@ -295,7 +295,7 @@ _math_stats_quantiles() {
 
 _math_help() {
     repeating_flags=()
-    non_repeating_flags=(--version)
+    non_repeating_flags=(-v --version)
     repeating_options=()
     non_repeating_options=()
     __math_offer_flags_options -1

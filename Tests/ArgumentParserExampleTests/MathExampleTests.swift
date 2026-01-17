@@ -32,7 +32,7 @@ final class MathExampleTests: XCTestCase {
       USAGE: math <subcommand>
 
       OPTIONS:
-        --version               Show the version.
+        -v, --version           Show the version.
         -h, --help              Show help information.
 
       SUBCOMMANDS:
@@ -60,7 +60,7 @@ final class MathExampleTests: XCTestCase {
 
       OPTIONS:
         -x, --hex-output        Use hexadecimal notation for the result.
-        --version               Show the version.
+        -v, --version           Show the version.
         -h, --help              Show help information.
 
 
@@ -89,7 +89,7 @@ final class MathExampleTests: XCTestCase {
       OPTIONS:
         --kind <kind>           The kind of average to provide. (values: mean,
                                 median, mode; default: mean)
-        --version               Show the version.
+        -v, --version           Show the version.
         -h, --help              Show help information.
 
 
@@ -121,7 +121,7 @@ final class MathExampleTests: XCTestCase {
         --shell <shell>
         --custom <custom>
         --custom-deprecated <custom-deprecated>
-        --version               Show the version.
+        -v, --version           Show the version.
         -h, --help              Show help information.
 
 
@@ -155,6 +155,9 @@ final class MathExampleTests: XCTestCase {
   func testMath_Versions() throws {
     try AssertExecuteCommand(
       command: "math --version",
+      expected: "1.0.0\n")
+    try AssertExecuteCommand(
+      command: "math -v",
       expected: "1.0.0\n")
     try AssertExecuteCommand(
       command: "math stats --version",

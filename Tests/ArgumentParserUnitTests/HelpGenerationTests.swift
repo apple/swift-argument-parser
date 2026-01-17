@@ -386,7 +386,7 @@ extension HelpGenerationTests {
         USAGE: i
 
         OPTIONS:
-          --version               Show the version.
+          -v, --version           Show the version.
           -h, --help              Show help information.
 
         """)

@@ -465,7 +465,7 @@ extension BidirectionalCollection where Element == ParsableCommand.Type {
     guard contains(where: { !$0.configuration.version.isEmpty })
     else { return nil }
     return ArgumentDefinition(
-      kind: .named([.long("version")]),
+      kind: .named([.short("v"), .long("version")]),
       help: .init(
         allValueStrings: [],
         options: [.isOptional],

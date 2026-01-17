@@ -9,6 +9,10 @@
         "kind" : "flag",
         "names" : [
           {
+            "kind" : "short",
+            "name" : "v"
+          },
+          {
             "kind" : "long",
             "name" : "version"
           }
@@ -89,6 +93,10 @@
             "isRepeating" : false,
             "kind" : "flag",
             "names" : [
+              {
+                "kind" : "short",
+                "name" : "v"
+              },
               {
                 "kind" : "long",
                 "name" : "version"
@@ -177,6 +185,10 @@
             "kind" : "flag",
             "names" : [
               {
+                "kind" : "short",
+                "name" : "v"
+              },
+              {
                 "kind" : "long",
                 "name" : "version"
               }
@@ -228,6 +240,10 @@
             "isRepeating" : false,
             "kind" : "flag",
             "names" : [
+              {
+                "kind" : "short",
+                "name" : "v"
+              },
               {
                 "kind" : "long",
                 "name" : "version"
@@ -324,6 +340,10 @@
                 "kind" : "flag",
                 "names" : [
                   {
+                    "kind" : "short",
+                    "name" : "v"
+                  },
+                  {
                     "kind" : "long",
                     "name" : "version"
                   }
@@ -385,6 +405,10 @@
                 "isRepeating" : false,
                 "kind" : "flag",
                 "names" : [
+                  {
+                    "kind" : "short",
+                    "name" : "v"
+                  },
                   {
                     "kind" : "long",
                     "name" : "version"
@@ -682,6 +706,10 @@
                 "kind" : "flag",
                 "names" : [
                   {
+                    "kind" : "short",
+                    "name" : "v"
+                  },
+                  {
                     "kind" : "long",
                     "name" : "version"
                   }
@@ -773,6 +801,10 @@
             "isRepeating" : false,
             "kind" : "flag",
             "names" : [
+              {
+                "kind" : "short",
+                "name" : "v"
+              },
               {
                 "kind" : "long",
                 "name" : "version"
