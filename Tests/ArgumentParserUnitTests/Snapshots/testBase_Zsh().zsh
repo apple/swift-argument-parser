@@ -116,4 +116,8 @@ _base-test_help() {
     return "${ret}"
 }
 
-_base-test
+if [[ "${funcstack[1]}" = _base-test ]]; then
+    _base-test "${@}"
+else
+    compdef _base-test base-test
+fi

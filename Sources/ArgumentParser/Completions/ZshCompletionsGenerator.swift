@@ -53,7 +53,11 @@ extension CommandInfoV0 {
     }
 
     \(completionFunctions)\
-    \(completionFunctionName)
+    if [[ "${funcstack[1]}" = \(completionFunctionName) ]]; then
+        \(completionFunctionName) "${@}"
+    else
+        compdef \(completionFunctionName) \(commandName)
+    fi
     """
   }
 

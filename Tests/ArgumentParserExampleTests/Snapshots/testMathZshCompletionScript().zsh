@@ -183,4 +183,8 @@ _math_help() {
     return "${ret}"
 }
 
-_math
+if [[ "${funcstack[1]}" = _math ]]; then
+    _math "${@}"
+else
+    compdef _math math
+fi
