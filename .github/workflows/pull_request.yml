@@ -61,3 +61,11 @@ jobs:
     uses: swiftlang/github-workflows/.github/workflows/soundness.yml@0.0.5
     with:
       shell_check_enabled: false  # bug: https://github.com/apple/swift-argument-parser/issues/703
+
+  required:
+    name: Required
+    runs-on: ubuntu-latest
+    needs: [tests, soundness, validate_format_config, cmake-build]
+    steps:
+      - name: Success
+        run: echo "All required jobs succeeded."
