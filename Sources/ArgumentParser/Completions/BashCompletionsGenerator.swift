@@ -188,7 +188,9 @@ extension CommandInfoV0 {
     let declareTopLevelArray: String
     if (superCommands ?? []).isEmpty {
       result += """
-            trap "$(shopt -p);$(shopt -po)" RETURN
+            local state
+            state="$(shopt -p;shopt -po)"
+            trap "${state//$'\\n'/;}" RETURN
             shopt -s extglob
             set +o history +o posix
 
