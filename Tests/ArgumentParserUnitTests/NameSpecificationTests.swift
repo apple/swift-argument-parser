@@ -23,6 +23,10 @@ extension NameSpecificationTests {
 
     XCTAssertEqual(
       FlagInversion.prefixedNo.enableDisableNamePair(
+        for: key, name: .long
+      ).1, [.long("no-index")])
+    XCTAssertEqual(
+      FlagInversion.prefixedNo.enableDisableNamePair(
         for: key, name: .customLong("foo")
       ).1, [.long("no-foo")])
     XCTAssertEqual(
@@ -37,6 +41,12 @@ extension NameSpecificationTests {
       FlagInversion.prefixedNo.enableDisableNamePair(
         for: key, name: .customLong("fooBarBaz")
       ).1, [.long("noFooBarBaz")])
+
+    // Short names don't work in combination
+    XCTAssertEqual(
+      FlagInversion.prefixedNo.enableDisableNamePair(
+        for: key, name: .short
+      ).1, [])
   }
 
   func testFlagNames_withEnableDisablePrefix() {
@@ -83,6 +93,12 @@ extension NameSpecificationTests {
       FlagInversion.prefixedEnableDisable.enableDisableNamePair(
         for: key, name: .customLong("fooBarBaz")
       ).1, [.long("disableFooBarBaz")])
+
+    // Short names don't work in combination
+    XCTAssertEqual(
+      FlagInversion.prefixedEnableDisable.enableDisableNamePair(
+        for: key, name: .short
+      ).1, [])
   }
 }
 
@@ -109,6 +125,19 @@ private func Assert<N>(
       names.contains(expected), "Missing name '\(expected)'.", file: file,
       line: line)
   }
+}
+
+// swift-format-ignore: AlwaysUseLowerCamelCase
+private func AssertInvalid(
+  nameSpecification: NameSpecification,
+  file: StaticString = #filePath,
+  line: UInt = #line
+) {
+  XCTAssert(
+    nameSpecification.elements.contains(where: {
+      if case .invalidLiteral = $0.base { return true } else { return false }
+    }), "Expected invalid name.",
+    file: file, line: line)
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
@@ -143,5 +172,77 @@ extension NameSpecificationTests {
     Assert(
       nameSpecification: .customLong("baz", withSingleDash: true), key: "foo",
       makeNames: [.longWithSingleDash("baz")])
+  }
+
+  func testMakeNames_shortLiteral() {
+    Assert(nameSpecification: "-x", key: "foo", makeNames: [.short("x")])
+    Assert(nameSpecification: ["-x"], key: "foo", makeNames: [.short("x")])
+  }
+
+  func testMakeNames_longLiteral() {
+    Assert(nameSpecification: "--foo", key: "foo", makeNames: [.long("foo")])
+    Assert(nameSpecification: ["--foo"], key: "foo", makeNames: [.long("foo")])
+    Assert(
+      nameSpecification: "--foo-bar-baz", key: "foo",
+      makeNames: [.long("foo-bar-baz")])
+    Assert(
+      nameSpecification: "--fooBarBAZ", key: "foo",
+      makeNames: [.long("fooBarBAZ")])
+  }
+
+  func testMakeNames_longWithSingleDashLiteral() {
+    Assert(
+      nameSpecification: "-foo", key: "foo",
+      makeNames: [.longWithSingleDash("foo")])
+    Assert(
+      nameSpecification: ["-foo"], key: "foo",
+      makeNames: [.longWithSingleDash("foo")])
+    Assert(
+      nameSpecification: "-foo-bar-baz", key: "foo",
+      makeNames: [.longWithSingleDash("foo-bar-baz")])
+    Assert(
+      nameSpecification: "-fooBarBAZ", key: "foo",
+      makeNames: [.longWithSingleDash("fooBarBAZ")])
+  }
+
+  func testMakeNames_combinedLiteral() {
+    Assert(
+      nameSpecification: "-x -y --zilch", key: "foo",
+      makeNames: [.short("x"), .short("y"), .long("zilch")])
+    Assert(
+      nameSpecification: "     -x       -y       ", key: "foo",
+      makeNames: [.short("x"), .short("y")])
+    Assert(
+      nameSpecification: ["-x", "-y", "--zilch"], key: "foo",
+      makeNames: [.short("x"), .short("y"), .long("zilch")])
+  }
+
+  func testMakeNames_literalFailures() {
+    // Empty string
+    AssertInvalid(nameSpecification: "")
+    // No dash prefix
+    AssertInvalid(nameSpecification: "x")
+    // Dash prefix only
+    AssertInvalid(nameSpecification: "-")
+    AssertInvalid(nameSpecification: "--")
+    AssertInvalid(nameSpecification: "---")
+    // Triple dash
+    AssertInvalid(nameSpecification: "---x")
+    // Invalid characters
+    AssertInvalid(nameSpecification: "--café")
+    AssertInvalid(nameSpecification: "--c!f!")
+
+    // Repeating as elements
+    AssertInvalid(nameSpecification: [""])
+    AssertInvalid(nameSpecification: ["x"])
+    AssertInvalid(nameSpecification: ["-"])
+    AssertInvalid(nameSpecification: ["--"])
+    AssertInvalid(nameSpecification: ["---"])
+    AssertInvalid(nameSpecification: ["---x"])
+    AssertInvalid(nameSpecification: ["--café"])
+
+    // Spaces in _elements_, not the top level literal
+    AssertInvalid(nameSpecification: ["-x -y -z"])
+    AssertInvalid(nameSpecification: ["-x", "-y", " -z"])
   }
 }
