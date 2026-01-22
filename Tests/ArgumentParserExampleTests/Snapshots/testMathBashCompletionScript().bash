@@ -145,7 +145,9 @@ __math_custom_complete() {
 }
 
 _math() {
-    trap "$(shopt -p);$(shopt -po)" RETURN
+    local state
+    state="$(shopt -p;shopt -po)"
+    trap "${state//$'\n'/;}" RETURN
     shopt -s extglob
     set +o history +o posix
 
