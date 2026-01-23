@@ -58,6 +58,6 @@ jobs:
 
   soundness:
     name: Soundness
-    uses: swiftlang/github-workflows/.github/workflows/soundness.yml@0.0.5
+    uses: swiftlang/github-workflows/.github/workflows/soundness.yml@0.0.6
     with:
       shell_check_enabled: false  # bug: https://github.com/apple/swift-argument-parser/issues/703
