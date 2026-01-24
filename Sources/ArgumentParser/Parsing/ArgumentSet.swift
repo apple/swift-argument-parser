@@ -290,25 +290,6 @@ struct LenientParser {
     }
   }
 
-  /// Helper function to check if there's a terminator between the current option and target origin.
-  private func hasTerminatorBetween(
-    _ originElement: InputOrigin.Element,
-    _ targetOrigin: InputOrigin.Element
-  ) -> Bool {
-    guard case .argumentIndex(let currentIndex) = originElement,
-      case .argumentIndex(let targetIndex) = targetOrigin
-    else { return false }
-
-    // Check if there's a terminator between current position and target position
-    let terminatorIndex = inputArguments.elements.firstIndex { element in
-      element.isTerminator
-        && element.index.inputIndex > currentIndex.inputIndex
-        && element.index.inputIndex < targetIndex.inputIndex
-    }
-
-    return terminatorIndex != nil
-  }
-
   mutating func parseValue(
     _ argument: ArgumentDefinition,
     _ parsed: ParsedArgument,
@@ -334,11 +315,10 @@ struct LenientParser {
         try update(origins, parsed.name, String(value), &result)
         usedOrigins.formUnion(origins)
       } else if let (origin2, value) = inputArguments.popNextElementIfValue(
-        after: originElement),
-        !hasTerminatorBetween(originElement, origin2)
+        after: originElement)
       {
         // Use `popNextElementIfValue(after:)` to handle cases where short option
-        // labels are combined, but only if there's no terminator between them
+        // labels are combined
         let origins = origin.inserting(origin2)
         try update(origins, parsed.name, value, &result)
         usedOrigins.formUnion(origins)
@@ -361,11 +341,10 @@ struct LenientParser {
         try update(origins, parsed.name, String(value), &result)
         usedOrigins.formUnion(origins)
       } else if let (origin2, value) = inputArguments.popNextValue(
-        after: originElement),
-        !hasTerminatorBetween(originElement, origin2)
+        after: originElement)
       {
         // Use `popNext(after:)` to handle cases where short option
-        // labels are combined, but only if there's no terminator between them
+        // labels are combined
         let origins = origin.inserting(origin2)
         try update(origins, parsed.name, value, &result)
         usedOrigins.formUnion(origins)
@@ -388,8 +367,7 @@ struct LenientParser {
         try update(origins, parsed.name, String(value), &result)
         usedOrigins.formUnion(origins)
       } else if let (origin2, value) = inputArguments.popNextElementAsValue(
-        after: originElement),
-        !hasTerminatorBetween(originElement, origin2)
+        after: originElement)
       {
         // Only consume if there's no terminator between option and value
         let origins = origin.inserting(origin2)
