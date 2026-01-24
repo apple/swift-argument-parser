@@ -232,10 +232,22 @@ internal struct HelpGenerator {
         allAndDefaultValues =
           "(values: \(allValueStrings.joined(separator: ", ")))"
       case (false, true):
-        allAndDefaultValues = "(default: \(defaultValue))"
+        switch arg.update {
+        case .nullary, .unary:
+          allAndDefaultValues = "(default: \(defaultValue))"
+        case .optionalUnary:
+          allAndDefaultValues = "(default as flag: \(defaultValue))"
+        }
+
       case (true, true):
-        allAndDefaultValues =
-          "(values: \(allValueStrings.joined(separator: ", ")); default: \(defaultValue))"
+        switch arg.update {
+        case .nullary, .unary:
+          allAndDefaultValues =
+            "(values: \(allValueStrings.joined(separator: ", ")); default: \(defaultValue))"
+        case .optionalUnary:
+          allAndDefaultValues =
+            "(values: \(allValueStrings.joined(separator: ", ")); default as flag: \(defaultValue))"
+        }
       }
 
       if arg.help.isComposite {

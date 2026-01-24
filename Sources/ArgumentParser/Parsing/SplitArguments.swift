@@ -336,6 +336,7 @@ extension SplitArguments {
   /// value for `-f`, or `--foo name` where `name` is the value for `--foo`.
   /// If `--foo` expects a value, an input of `--foo --bar name` will return
   /// `nil`, since the option `--bar` comes before the value `name`.
+  /// Also returns `nil` if there's a terminator between the origin and the target value.
   mutating func popNextElementIfValue(after origin: InputOrigin.Element) -> (
     InputOrigin.Element, String
   )? {
@@ -353,14 +354,41 @@ extension SplitArguments {
     guard case .value(let value) = elements[elementIndex].value
     else { return nil }
 
-    defer { remove(at: elementIndex) }
     let matchedArgumentIndex = elements[elementIndex].index
-    return (.argumentIndex(matchedArgumentIndex), value)
+    let targetOrigin = InputOrigin.Element.argumentIndex(matchedArgumentIndex)
+
+    // Check if there's a terminator between the origin and target
+    if hasTerminatorBetween(origin, targetOrigin) {
+      return nil
+    }
+
+    defer { remove(at: elementIndex) }
+    return (targetOrigin, value)
+  }
+
+  /// Helper function to check if there's a terminator between two origins.
+  private func hasTerminatorBetween(
+    _ originElement: InputOrigin.Element,
+    _ targetOrigin: InputOrigin.Element
+  ) -> Bool {
+    guard case .argumentIndex(let currentIndex) = originElement,
+      case .argumentIndex(let targetIndex) = targetOrigin
+    else { return false }
+
+    // Check if there's a terminator between current position and target position
+    let terminatorIndex = elements.firstIndex { element in
+      element.isTerminator
+        && element.index.inputIndex > currentIndex.inputIndex
+        && element.index.inputIndex < targetIndex.inputIndex
+    }
+
+    return terminatorIndex != nil
   }
 
   /// Pops the next `.value` after the given index.
   ///
   /// This is used to get the next value in `-f -b name` where `name` is the value of `-f`.
+  /// Also returns `nil` if there's a terminator between the origin and the target value.
   mutating func popNextValue(
     after origin: InputOrigin.Element
   ) -> (InputOrigin.Element, String)? {
@@ -368,11 +396,19 @@ extension SplitArguments {
     guard let resultIndex = elements[start...].firstIndex(where: { $0.isValue })
     else { return nil }
 
+    let targetOrigin = InputOrigin.Element.argumentIndex(
+      elements[resultIndex].index)
+
+    // Check if there's a terminator between the origin and target
+    if hasTerminatorBetween(origin, targetOrigin) {
+      return nil
+    }
+
     defer { remove(at: resultIndex) }
     // swift-format-ignore: NeverForceUnwrap
     // This is safe because we know `resultIndex` is refers to a value
     return (
-      .argumentIndex(elements[resultIndex].index),
+      targetOrigin,
       elements[resultIndex].value.valueString!
     )
   }
@@ -384,6 +420,7 @@ extension SplitArguments {
   ///
   /// For an input such as `--a --b foo`, if passed the origin of `--a`,
   /// this will first pop the value `--b`, then the value `foo`.
+  /// Also returns `nil` if there's a terminator between the origin and the target element.
   mutating func popNextElementAsValue(after origin: InputOrigin.Element) -> (
     InputOrigin.Element, String
   )? {
@@ -395,11 +432,19 @@ extension SplitArguments {
         $0.index.subIndex == .complete
       })?.index
     else { return nil }
+
+    let targetOrigin = InputOrigin.Element.argumentIndex(nextIndex)
+
+    // Check if there's a terminator between the origin and target
+    if hasTerminatorBetween(origin, targetOrigin) {
+      return nil
+    }
+
     // Remove all elements with this `InputIndex`:
     remove(at: nextIndex)
     // Return the original input
     return (
-      .argumentIndex(nextIndex), originalInput[nextIndex.inputIndex.rawValue]
+      targetOrigin, originalInput[nextIndex.inputIndex.rawValue]
     )
   }
 
