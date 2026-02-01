@@ -454,6 +454,105 @@ extension Option {
   }
 }
 
+// MARK: - @Option T Initializers (name-aware transform)
+extension Option {
+  /// Creates a property with a default value that reads its value from a
+  /// labeled option, parsing with a closure that receives the matched option
+  /// name along with the value string.
+  ///
+  /// This initializer is useful when a single `@Option` property has multiple
+  /// names and the transform needs to know which name was used. For example:
+  ///
+  /// ```swift
+  /// @Option(
+  ///     name: [.customLong("resize"), .customLong("crop")],
+  ///     transformIncludingName: { name, value in
+  ///         switch name {
+  ///         case "resize": return .resize(value)
+  ///         case "crop":   return .crop(value)
+  ///         default: fatalError()
+  ///         }
+  ///     }
+  /// ) var operations: [Operation] = []
+  /// ```
+  ///
+  /// - Parameters:
+  ///   - wrappedValue: The default value to use for this property, provided
+  ///     implicitly by the compiler during property wrapper initialization.
+  ///   - name: A specification for what names are allowed for this option.
+  ///   - parsingStrategy: The behavior to use when looking for this option's
+  ///     value.
+  ///   - help: Information about how to use this option.
+  ///   - completion: The type of command-line completion provided for this
+  ///     option.
+  ///   - transformIncludingName: A closure that receives the matched option
+  ///     name (without leading dashes) and the value string, and returns this
+  ///     property's type or throws an error.
+  @preconcurrency
+  public init(
+    wrappedValue: Value,
+    name: NameSpecification = .long,
+    parsing parsingStrategy: SingleValueParsingStrategy = .next,
+    help: ArgumentHelp? = nil,
+    completion: CompletionKind? = nil,
+    transformIncludingName: @Sendable @escaping (_ optionName: String, _ value: String) throws -> Value
+  ) {
+    self.init(
+      _parsedValue: .init { key in
+        let arg = ArgumentDefinition(
+          container: Bare<Value>.self,
+          key: key,
+          kind: .name(key: key, specification: name),
+          help: help,
+          parsingStrategy: parsingStrategy.base,
+          transformIncludingName: transformIncludingName,
+          initial: wrappedValue,
+          completion: completion)
+
+        return ArgumentSet(arg)
+      })
+  }
+
+  /// Creates a required property that reads its value from a labeled option,
+  /// parsing with a closure that receives the matched option name along with
+  /// the value string.
+  ///
+  /// - Parameters:
+  ///   - name: A specification for what names are allowed for this option.
+  ///   - parsingStrategy: The behavior to use when looking for this option's
+  ///     value.
+  ///   - help: Information about how to use this option.
+  ///   - completion: The type of command-line completion provided for this
+  ///     option.
+  ///   - transformIncludingName: A closure that receives the matched option
+  ///     name (without leading dashes) and the value string, and returns this
+  ///     property's type or throws an error.
+  @preconcurrency
+  @_disfavoredOverload
+  public init(
+    name: NameSpecification = .long,
+    parsing parsingStrategy: SingleValueParsingStrategy = .next,
+    help: ArgumentHelp? = nil,
+    completion: CompletionKind? = nil,
+    transformIncludingName: @Sendable @escaping (_ optionName: String, _ value: String) throws -> Value
+  ) {
+    self.init(
+      _parsedValue: .init { key in
+        let arg = ArgumentDefinition(
+          container: Bare<Value>.self,
+          key: key,
+          kind: .name(key: key, specification: name),
+          help: help,
+          parsingStrategy: parsingStrategy.base,
+          transformIncludingName: transformIncludingName,
+          initial: nil,
+          completion: completion)
+
+        return ArgumentSet(arg)
+      })
+  }
+}
+
 // MARK: - @Option Optional<T: ExpressibleByArgument> Initializers
 extension Option {
   /// Creates an optional property that reads its value from a labeled option,
@@ -904,6 +1003,187 @@ extension Option {
           help: help,
           parsingStrategy: parsingStrategy.base,
           transform: transform,
+          initial: nil,
+          completion: completion)
+
+        return ArgumentSet(arg)
+      })
+  }
+}
+
+// MARK: - @Option Optional<T> Initializers (name-aware transform)
+extension Option {
+  /// Creates an optional property that reads its value from a labeled option,
+  /// parsing with a closure that receives the matched option name, with an
+  /// explicit `nil` default.
+  ///
+  /// - Parameters:
+  ///   - wrappedValue: A default value to use for this property, provided
+  ///     implicitly by the compiler during property wrapper initialization.
+  ///   - name: A specification for what names are allowed for this option.
+  ///   - parsingStrategy: The behavior to use when looking for this option's
+  ///     value.
+  ///   - help: Information about how to use this option.
+  ///   - completion: The type of command-line completion provided for this
+  ///     option.
+  ///   - transformIncludingName: A closure that receives the matched option
+  ///     name (without leading dashes) and the value string, and returns this
+  ///     property's type or throws an error.
+  @preconcurrency
+  public init<T>(
+    wrappedValue: _OptionalNilComparisonType,
+    name: NameSpecification = .long,
+    parsing parsingStrategy: SingleValueParsingStrategy = .next,
+    help: ArgumentHelp? = nil,
+    completion: CompletionKind? = nil,
+    transformIncludingName: @Sendable @escaping (_ optionName: String, _ value: String) throws -> T
+  ) where Value == T? {
+    self.init(
+      _parsedValue: .init { key in
+        let arg = ArgumentDefinition(
+          container: Optional<T>.self,
+          key: key,
+          kind: .name(key: key, specification: name),
+          help: help,
+          parsingStrategy: parsingStrategy.base,
+          transformIncludingName: transformIncludingName,
+          initial: nil,
+          completion: completion)
+
+        return ArgumentSet(arg)
+      })
+  }
+
+  /// Creates an optional property that reads its value from a labeled option,
+  /// parsing with a closure that receives the matched option name.
+  ///
+  /// - Parameters:
+  ///   - name: A specification for what names are allowed for this option.
+  ///   - parsingStrategy: The behavior to use when looking for this option's
+  ///     value.
+  ///   - help: Information about how to use this option.
+  ///   - completion: The type of command-line completion provided for this
+  ///     option.
+  ///   - transformIncludingName: A closure that receives the matched option
+  ///     name (without leading dashes) and the value string, and returns this
+  ///     property's type or throws an error.
+  @preconcurrency
+  public init<T>(
+    name: NameSpecification = .long,
+    parsing parsingStrategy: SingleValueParsingStrategy = .next,
+    help: ArgumentHelp? = nil,
+    completion: CompletionKind? = nil,
+    transformIncludingName: @Sendable @escaping (_ optionName: String, _ value: String) throws -> T
+  ) where Value == T? {
+    self.init(
+      _parsedValue: .init { key in
+        let arg = ArgumentDefinition(
+          container: Optional<T>.self,
+          key: key,
+          kind: .name(key: key, specification: name),
+          help: help,
+          parsingStrategy: parsingStrategy.base,
+          transformIncludingName: transformIncludingName,
+          initial: nil,
+          completion: completion)
+
+        return ArgumentSet(arg)
+      })
+  }
+}
+
+// MARK: - @Option Array<T> Initializers (name-aware transform)
+extension Option {
+  /// Creates an array property that reads its values from zero or more labeled
+  /// options, parsing each element with a closure that receives the matched
+  /// option name along with the value string.
+  ///
+  /// This is particularly useful when multiple option names map to a single
+  /// array property and the relative ordering of different options matters:
+  ///
+  /// ```swift
+  /// @Option(
+  ///     name: [.customLong("resize"), .customLong("crop")],
+  ///     transformIncludingName: { name, value in
+  ///         switch name {
+  ///         case "resize": return .resize(value)
+  ///         case "crop":   return .crop(value)
+  ///         default: fatalError()
+  ///         }
+  ///     }
+  /// ) var operations: [Operation] = []
+  /// ```
+  ///
+  /// - Parameters:
+  ///   - wrappedValue: A default value to use for this property, provided
+  ///     implicitly by the compiler during property wrapper initialization.
+  ///     If this initial value is non-empty, elements passed from the command
+  ///     line are appended to the original contents.
+  ///   - name: A specification for what names are allowed for this option.
+  ///   - parsingStrategy: The behavior to use when parsing the elements for
+  ///     this option.
+  ///   - help: Information about how to use this option.
+  ///   - completion: The type of command-line completion provided for this
+  ///     option.
+  ///   - transformIncludingName: A closure that receives the matched option
+  ///     name (without leading dashes) and the value string, and returns the
+  ///     element type or throws an error.
+  @preconcurrency
+  public init<T>(
+    wrappedValue: [T],
+    name: NameSpecification = .long,
+    parsing parsingStrategy: ArrayParsingStrategy = .singleValue,
+    help: ArgumentHelp? = nil,
+    completion: CompletionKind? = nil,
+    transformIncludingName: @Sendable @escaping (_ optionName: String, _ value: String) throws -> T
+  ) where Value == [T] {
+    self.init(
+      _parsedValue: .init { key in
+        let arg = ArgumentDefinition(
+          container: Array<T>.self,
+          key: key,
+          kind: .name(key: key, specification: name),
+          help: help,
+          parsingStrategy: parsingStrategy.base,
+          transformIncludingName: transformIncludingName,
+          initial: wrappedValue,
+          completion: completion)
+
+        return ArgumentSet(arg)
+      })
+  }
+
+  /// Creates a required array property that reads its values from zero or more
+  /// labeled options, parsing each element with a closure that receives the
+  /// matched option name along with the value string.
+  ///
+  /// - Parameters:
+  ///   - name: A specification for what names are allowed for this option.
+  ///   - parsingStrategy: The behavior to use when parsing the elements for
+  ///     this option.
+  ///   - help: Information about how to use this option.
+  ///   - completion: The type of command-line completion provided for this
+  ///     option.
+  ///   - transformIncludingName: A closure that receives the matched option
+  ///     name (without leading dashes) and the value string, and returns the
+  ///     element type or throws an error.
+  @preconcurrency
+  public init<T>(
+    name: NameSpecification = .long,
+    parsing parsingStrategy: ArrayParsingStrategy = .singleValue,
+    help: ArgumentHelp? = nil,
+    completion: CompletionKind? = nil,
+    transformIncludingName: @Sendable @escaping (_ optionName: String, _ value: String) throws -> T
+  ) where Value == [T] {
+    self.init(
+      _parsedValue: .init { key in
+        let arg = ArgumentDefinition(
+          container: Array<T>.self,
+          key: key,
+          kind: .name(key: key, specification: name),
+          help: help,
+          parsingStrategy: parsingStrategy.base,
+          transformIncludingName: transformIncludingName,
           initial: nil,
           completion: completion)
 
