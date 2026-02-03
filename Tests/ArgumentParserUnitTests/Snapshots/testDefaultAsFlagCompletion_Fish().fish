@@ -58,7 +58,7 @@ function __defaultasflag-test_parse_subcommand -S -a positional_count
         set positional_index (math $positional_index + 1)
 
         for non_repeating_flag_or_option in $non_repeating_flags_or_options
-            if set -ql _flag_$non_repeating_flag_or_option
+            if set -ql "_flag_$(string replace -a - _ -- $non_repeating_flag_or_option)"
                 set non_repeating_flags_or_options_absent 1
                 break
             end
