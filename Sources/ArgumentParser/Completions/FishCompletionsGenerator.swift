@@ -45,7 +45,6 @@ extension CommandInfoV0 {
 
     function \(parseTokensFunctionName) -S
         set -l unparsed_tokens (\(tokensFunctionName) -pc)
-        set -l present_flags_and_options
 
         switch $unparsed_tokens[1]
     \(commandCases)

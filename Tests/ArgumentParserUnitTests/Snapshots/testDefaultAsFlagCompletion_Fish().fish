@@ -23,7 +23,6 @@ end
 
 function __defaultasflag-test_parse_tokens -S
     set -l unparsed_tokens (__defaultasflag-test_tokens -pc)
-    set -l present_flags_and_options
 
     switch $unparsed_tokens[1]
     case 'defaultasflag-test'
