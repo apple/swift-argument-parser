@@ -63,6 +63,8 @@ extension CommandInfoV0 {
     function \(parseSubcommandFunctionName) -S -a positional_count
         argparse -s r -- $argv
         set -l option_specs $argv[2..]
+        set -l is_repeating_positional $_flag_r
+        set -el _flag_r
 
         set -a commands $unparsed_tokens[1]
         set -e unparsed_tokens[1]
@@ -81,7 +83,7 @@ extension CommandInfoV0 {
                 end
             end
 
-            if test (count $unparsed_tokens) -eq 0 -o \\( -z "$_flag_r" -a "$positional_index" -gt "$positional_count" \\)
+            if test (count $unparsed_tokens) -eq 0 -o \\( -z "$is_repeating_positional" -a "$positional_index" -gt "$positional_count" \\)
                 break
             end
             set -e unparsed_tokens[1]
