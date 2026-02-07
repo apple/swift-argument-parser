@@ -9,7 +9,7 @@ function __base-test_should_offer_completions_for_flags_or_options -a expected_c
 end
 
 function __base-test_should_offer_completions_for_positional -a expected_commands expected_positional_index positional_index_comparison
-    if test -z $positional_index_comparison
+    if test -z "$positional_index_comparison"
         set positional_index_comparison -eq
     end
 
@@ -88,7 +88,7 @@ function __base-test_custom_completion
     set -x SAP_SHELL_VERSION $FISH_VERSION
 
     set -l tokens (__base-test_tokens -p)
-    if test -z (__base-test_tokens -t)
+    if test -z "$(__base-test_tokens -t)"
         set -l index (count (__base-test_tokens -pc))
         set tokens $tokens[..$index] \'\' $tokens[(math $index + 1)..]
     end

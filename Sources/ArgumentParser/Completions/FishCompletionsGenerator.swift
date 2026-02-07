@@ -31,7 +31,7 @@ extension CommandInfoV0 {
     end
 
     function \(shouldOfferCompletionsForPositionalFunctionName) -a expected_commands expected_positional_index positional_index_comparison
-        if test -z $positional_index_comparison
+        if test -z "$positional_index_comparison"
             set positional_index_comparison -eq
         end
 
@@ -101,7 +101,7 @@ extension CommandInfoV0 {
         set -x \(Platform.Environment.Key.shellVersion.rawValue) $FISH_VERSION
 
         set -l tokens (\(tokensFunctionName) -p)
-        if test -z (\(tokensFunctionName) -t)
+        if test -z "$(\(tokensFunctionName) -t)"
             set -l index (count (\(tokensFunctionName) -pc))
             set tokens $tokens[..$index] \\'\\' $tokens[(math $index + 1)..]
         end
