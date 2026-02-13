@@ -330,3 +330,43 @@ extension DefaultSubcommandEndToEndTests {
     ) { _ in }
   }
 }
+
+extension DefaultSubcommandEndToEndTests {
+  struct NestedDefaultSubcommandHelp: ParsableCommand {
+    static let configuration = CommandConfiguration(
+      subcommands: [Default.self, Nested.self],
+      defaultSubcommand: Default.self
+    )
+
+    struct Default: ParsableCommand {}
+
+    struct Nested: ParsableCommand {
+      static let configuration = CommandConfiguration(
+        commandName: "nested",
+        subcommands: [NestedDefault.self, NestedOther.self],
+        defaultSubcommand: NestedDefault.self
+      )
+    }
+
+    struct NestedDefault: ParsableCommand {}
+    struct NestedOther: ParsableCommand {}
+  }
+
+  // Test fix for https://github.com/apple/swift-argument-parser/issues/865
+  func testHelpWithNestedDefaultSubcommand() throws {
+    AssertParseCommand(
+      NestedDefaultSubcommandHelp.self, HelpCommand.self, ["--help"]
+    ) { command in
+      XCTAssert(command.commandStack.count == 1)
+      XCTAssert(type(of: command.commandStack[0]) == NestedDefaultSubcommandHelp.Type.self)
+    }
+
+    AssertParseCommand(
+      NestedDefaultSubcommandHelp.self, HelpCommand.self, ["nested", "--help"]
+    ) { command in
+      XCTAssert(command.commandStack.count == 2)
+      XCTAssert(type(of: command.commandStack[0]) == NestedDefaultSubcommandHelp.Type.self)
+      XCTAssert(type(of: command.commandStack[1]) == NestedDefaultSubcommandHelp.Nested.Type.self)
+    }
+  }
+}
