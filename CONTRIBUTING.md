@@ -5,6 +5,6 @@ license](https://swift.org/LICENSE.txt).
 
 ---
 
-Before submitting the pull request, please make sure you have tested your
+Before submitting a pull request, please make sure you have tested your
 changes and that they follow the Swift project [guidelines for contributing
 code](https://swift.org/contributing/#contributing-code).
