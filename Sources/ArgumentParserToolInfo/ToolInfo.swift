@@ -180,7 +180,6 @@ public struct ArgumentInfoV0: Codable, Hashable {
     /// Generate completions using the given async three-parameter closure.
     case customAsync
     /// Generate completions using the given one-parameter closure.
-    @available(*, deprecated, message: "Use custom instead.")
     case customDeprecated
   }
 
