@@ -38,7 +38,12 @@ struct CommandParser {
   }
 
   var commandStack: [ParsableCommand.Type] {
-    let result = decodedArguments.compactMap { $0.commandType }
+    // Filter to only include types that exist in the command tree.
+    // This prevents @OptionGroup types that happen to conform to
+    // ParsableCommand from being included in the command stack (#578).
+    let result = decodedArguments
+      .compactMap { $0.commandType }
+      .filter { !commandTree.path(to: $0).isEmpty }
     if currentNode.element == result.last {
       return result
     } else {
