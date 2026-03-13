@@ -1534,5 +1534,3 @@ extension HelpGenerationTests {
         """)
   }
 }
-
-
