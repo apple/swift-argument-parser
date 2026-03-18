@@ -10,9 +10,16 @@
 //===----------------------------------------------------------------------===//
 
 #if canImport(os)
+#if compiler(>=6.0)
 internal import os
 #if canImport(C.os.lock)
 internal import C.os.lock
+#endif
+#else
+import os
+#if canImport(C.os.lock)
+import C.os.lock
+#endif
 #endif
 #elseif canImport(Bionic)
 @preconcurrency import Bionic
