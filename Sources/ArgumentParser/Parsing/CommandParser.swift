@@ -537,15 +537,19 @@ private func parseCustomCompletionArguments(
 
 #if !canImport(Dispatch)
 @available(*, unavailable, message: "DispatchSemaphore is unavailable")
-#endif
 @available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
 private func asyncCustomCompletions(
   from args: [String],
   complete: @escaping @Sendable ([String], Int, String) async -> [String]
 ) throws -> [String] {
-  #if !canImport(Dispatch)
   throw ParserError.invalidState
-  #else
+}
+#else
+@available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
+private func asyncCustomCompletions(
+  from args: [String],
+  complete: @escaping @Sendable ([String], Int, String) async -> [String]
+) throws -> [String] {
   let (args, completingArgumentIndex, completingPrefix) =
     try parseCustomCompletionArguments(from: args)
 
@@ -563,8 +567,8 @@ private func asyncCustomCompletions(
 
   semaphore.wait()
   return completionsBox.withLock { $0 }
-  #endif
 }
+#endif
 
 // MARK: Building Command Stacks
 
