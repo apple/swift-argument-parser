@@ -136,6 +136,10 @@ package.targets.append(contentsOf: [
     name: "changelog-authors",
     dependencies: ["ArgumentParser"],
     path: "Tools/changelog-authors"),
+  .executableTarget(
+    name: "update-pr",
+    dependencies: ["ArgumentParser"],
+    path: "Tools/update-pr"),
 ])
 #endif
 
