@@ -399,7 +399,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
       case second
       case other
       case forth
-      case fith
+      case fifth
 
       static func name(for value: ExampleEnum) -> NameSpecification {
         .short
@@ -416,7 +416,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
       case second
       case other
       case forth
-      case fith
+      case fifth
     }
 
     @Flag
@@ -449,7 +449,7 @@ final class ParsableArgumentsValidationTests: XCTestCase {
       case second
       case other
       case forth
-      case fith
+      case fifth
     }
 
     @Flag
