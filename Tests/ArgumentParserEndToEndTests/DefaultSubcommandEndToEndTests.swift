@@ -358,15 +358,21 @@ extension DefaultSubcommandEndToEndTests {
       NestedDefaultSubcommandHelp.self, HelpCommand.self, ["--help"]
     ) { command in
       XCTAssert(command.commandStack.count == 1)
-      XCTAssert(type(of: command.commandStack[0]) == NestedDefaultSubcommandHelp.Type.self)
+      XCTAssert(
+        type(of: command.commandStack[0])
+          == NestedDefaultSubcommandHelp.Type.self)
     }
 
     AssertParseCommand(
       NestedDefaultSubcommandHelp.self, HelpCommand.self, ["nested", "--help"]
     ) { command in
       XCTAssert(command.commandStack.count == 2)
-      XCTAssert(type(of: command.commandStack[0]) == NestedDefaultSubcommandHelp.Type.self)
-      XCTAssert(type(of: command.commandStack[1]) == NestedDefaultSubcommandHelp.Nested.Type.self)
+      XCTAssert(
+        type(of: command.commandStack[0])
+          == NestedDefaultSubcommandHelp.Type.self)
+      XCTAssert(
+        type(of: command.commandStack[1])
+          == NestedDefaultSubcommandHelp.Nested.Type.self)
     }
   }
 }

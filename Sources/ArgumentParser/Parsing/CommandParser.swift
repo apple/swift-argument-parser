@@ -126,7 +126,8 @@ extension CommandParser {
 
       // Require that all remaining parsed arguments came from the same input
       // argument.
-      let originIndex = split.elements[split.elements.startIndex].index.inputIndex
+      let originIndex = split.elements[split.elements.startIndex].index
+        .inputIndex
       for element in split.elements {
         guard element.index.inputIndex == originIndex else {
           return
