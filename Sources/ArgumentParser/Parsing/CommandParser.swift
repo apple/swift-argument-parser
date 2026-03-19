@@ -38,7 +38,13 @@ struct CommandParser {
   }
 
   var commandStack: [ParsableCommand.Type] {
-    let result = decodedArguments.compactMap { $0.commandType }
+    // Filter to only include types that exist in the command tree.
+    // This prevents @OptionGroup types that happen to conform to
+    // ParsableCommand from being included in the command stack (#578).
+    let result =
+      decodedArguments
+      .compactMap { $0.commandType }
+      .filter { !commandTree.path(to: $0).isEmpty }
     if currentNode.element == result.last {
       return result
     } else {
@@ -546,15 +552,19 @@ private func parseCustomCompletionArguments(
 
 #if !canImport(Dispatch)
 @available(*, unavailable, message: "DispatchSemaphore is unavailable")
-#endif
 @available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
 private func asyncCustomCompletions(
   from args: [String],
   complete: @escaping @Sendable ([String], Int, String) async -> [String]
 ) throws -> [String] {
-  #if !canImport(Dispatch)
   throw ParserError.invalidState
-  #else
+}
+#else
+@available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
+private func asyncCustomCompletions(
+  from args: [String],
+  complete: @escaping @Sendable ([String], Int, String) async -> [String]
+) throws -> [String] {
   let (args, completingArgumentIndex, completingPrefix) =
     try parseCustomCompletionArguments(from: args)
 
@@ -572,8 +582,8 @@ private func asyncCustomCompletions(
 
   semaphore.wait()
   return completionsBox.withLock { $0 }
-  #endif
 }
+#endif
 
 // MARK: Building Command Stacks
 
