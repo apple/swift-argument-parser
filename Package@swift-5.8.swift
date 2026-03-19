@@ -146,9 +146,7 @@ for target in package.targets {
     // https://github.com/swiftlang/swift-evolution/blob/main/proposals/0444-member-import-visibility.md
     settings.append(.enableUpcomingFeature("MemberImportVisibility"))
     target.swiftSettings = settings
-  case .macro, .plugin, .system, .binary:
+  default:
     break  // not applicable
-  @unknown default:
-    break  // we don't know what to do here, do nothing
   }
 }
