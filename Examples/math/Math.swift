@@ -204,6 +204,10 @@ extension Math.Statistics {
     )
     var customArg: String?
 
+    @available(
+      *, deprecated,
+      message: "Deprecated use of custom completion for @Argument"
+    )
     @Argument(
       completion: .custom { _ in ["alabaster", "breakfast", "crunch", "crash"] }
     )
@@ -236,6 +240,9 @@ extension Math.Statistics {
     @Option(completion: .custom(customCompletion))
     var custom: String?
 
+    @available(
+      *, deprecated, message: "Deprecated use of custom completion for @Option"
+    )
     @Option(completion: .custom(customDeprecatedCompletion))
     var customDeprecated: String?
 
