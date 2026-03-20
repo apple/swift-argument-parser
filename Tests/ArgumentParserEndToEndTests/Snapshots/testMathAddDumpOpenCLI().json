@@ -1,0 +1,306 @@
+{
+  "arguments" : [
+    {
+      "description" : "A group of integers to operate on.",
+      "name" : "values"
+    }
+  ],
+  "commands" : [
+    {
+      "arguments" : [
+        {
+          "description" : "A group of integers to operate on.",
+          "name" : "values"
+        }
+      ],
+      "description" : "Print the sum of the values.",
+      "name" : "add",
+      "options" : [
+        {
+          "aliases" : [
+            "-x"
+          ],
+          "description" : "Use hexadecimal notation for the result.",
+          "name" : "--hex-output",
+          "recursive" : false
+        },
+        {
+          "description" : "Show the version.",
+          "name" : "--version",
+          "recursive" : false
+        },
+        {
+          "aliases" : [
+            "--help"
+          ],
+          "description" : "Show help information.",
+          "name" : "-h",
+          "recursive" : false
+        }
+      ]
+    },
+    {
+      "aliases" : [
+        "mul"
+      ],
+      "arguments" : [
+        {
+          "description" : "A group of integers to operate on.",
+          "name" : "values"
+        }
+      ],
+      "description" : "Print the product of the values.",
+      "name" : "multiply",
+      "options" : [
+        {
+          "aliases" : [
+            "-x"
+          ],
+          "description" : "Use hexadecimal notation for the result.",
+          "name" : "--hex-output",
+          "recursive" : false
+        },
+        {
+          "description" : "Show the version.",
+          "name" : "--version",
+          "recursive" : false
+        },
+        {
+          "aliases" : [
+            "--help"
+          ],
+          "description" : "Show help information.",
+          "name" : "-h",
+          "recursive" : false
+        }
+      ]
+    },
+    {
+      "commands" : [
+        {
+          "aliases" : [
+            "avg"
+          ],
+          "arguments" : [
+            {
+              "description" : "A group of floating-point values to operate on.",
+              "name" : "values"
+            }
+          ],
+          "description" : "Print the average of the values.",
+          "name" : "average",
+          "options" : [
+            {
+              "arguments" : [
+                {
+                  "description" : "The kind of average to provide.",
+                  "name" : "kind",
+                  "swiftArgumentParserDefaultValue" : "mean"
+                }
+              ],
+              "description" : "The kind of average to provide.",
+              "name" : "--kind",
+              "recursive" : false,
+              "swiftArgumentParserDefaultValue" : "mean"
+            },
+            {
+              "description" : "Show the version.",
+              "name" : "--version",
+              "recursive" : false
+            },
+            {
+              "aliases" : [
+                "--help"
+              ],
+              "description" : "Show help information.",
+              "name" : "-h",
+              "recursive" : false
+            }
+          ]
+        },
+        {
+          "arguments" : [
+            {
+              "description" : "A group of floating-point values to operate on.",
+              "name" : "values"
+            }
+          ],
+          "description" : "Print the standard deviation of the values.",
+          "name" : "stdev",
+          "options" : [
+            {
+              "description" : "Show the version.",
+              "name" : "--version",
+              "recursive" : false
+            },
+            {
+              "aliases" : [
+                "--help"
+              ],
+              "description" : "Show help information.",
+              "name" : "-h",
+              "recursive" : false
+            }
+          ]
+        },
+        {
+          "arguments" : [
+            {
+              "name" : "one-of-four"
+            },
+            {
+              "name" : "custom-arg"
+            },
+            {
+              "name" : "custom-deprecated-arg"
+            },
+            {
+              "description" : "A group of floating-point values to operate on.",
+              "name" : "values"
+            }
+          ],
+          "description" : "Print the quantiles of the values (TBD).",
+          "name" : "quantiles",
+          "options" : [
+            {
+              "hidden" : true,
+              "name" : "--test-success-exit-code",
+              "recursive" : false
+            },
+            {
+              "hidden" : true,
+              "name" : "--test-failure-exit-code",
+              "recursive" : false
+            },
+            {
+              "hidden" : true,
+              "name" : "--test-validation-exit-code",
+              "recursive" : false
+            },
+            {
+              "arguments" : [
+                {
+                  "name" : "test-custom-exit-code"
+                }
+              ],
+              "hidden" : true,
+              "name" : "--test-custom-exit-code",
+              "recursive" : false
+            },
+            {
+              "arguments" : [
+                {
+                  "name" : "file"
+                }
+              ],
+              "name" : "--file",
+              "recursive" : false,
+              "swiftArgumentParserFile" : {
+                "extensions" : [
+                  "txt",
+                  "md"
+                ]
+              }
+            },
+            {
+              "arguments" : [
+                {
+                  "name" : "directory"
+                }
+              ],
+              "name" : "--directory",
+              "recursive" : false,
+              "swiftArgumentParserDirectory" : true
+            },
+            {
+              "arguments" : [
+                {
+                  "name" : "shell"
+                }
+              ],
+              "name" : "--shell",
+              "recursive" : false
+            },
+            {
+              "arguments" : [
+                {
+                  "name" : "custom"
+                }
+              ],
+              "name" : "--custom",
+              "recursive" : false
+            },
+            {
+              "arguments" : [
+                {
+                  "name" : "custom-deprecated"
+                }
+              ],
+              "name" : "--custom-deprecated",
+              "recursive" : false
+            },
+            {
+              "description" : "Show the version.",
+              "name" : "--version",
+              "recursive" : false
+            },
+            {
+              "aliases" : [
+                "--help"
+              ],
+              "description" : "Show help information.",
+              "name" : "-h",
+              "recursive" : false
+            }
+          ]
+        }
+      ],
+      "description" : "Calculate descriptive statistics.",
+      "name" : "stats",
+      "options" : [
+        {
+          "description" : "Show the version.",
+          "name" : "--version",
+          "recursive" : false
+        },
+        {
+          "aliases" : [
+            "--help"
+          ],
+          "description" : "Show help information.",
+          "name" : "-h",
+          "recursive" : false
+        }
+      ]
+    }
+  ],
+  "info" : {
+    "summary" : "A utility for performing maths.",
+    "title" : "math",
+    "version" : "1.0.0"
+  },
+  "opencli" : "0.1",
+  "options" : [
+    {
+      "aliases" : [
+        "-x"
+      ],
+      "description" : "Use hexadecimal notation for the result.",
+      "name" : "--hex-output",
+      "recursive" : false
+    },
+    {
+      "description" : "Show the version.",
+      "name" : "--version",
+      "recursive" : false
+    },
+    {
+      "aliases" : [
+        "--help"
+      ],
+      "description" : "Show help information.",
+      "name" : "-h",
+      "recursive" : false
+    }
+  ]
+}

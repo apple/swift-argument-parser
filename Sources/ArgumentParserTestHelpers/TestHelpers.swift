@@ -10,6 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 import ArgumentParser
+import ArgumentParserOpenCLI
 import ArgumentParserToolInfo
 import XCTest
 
@@ -619,6 +620,63 @@ extension XCTest {
   ) throws {
     let actual = try AssertExecuteCommand(
       command: command + " --experimental-dump-help",
+      expected: nil,
+      file: file,
+      line: line)
+    try self.assertSnapshot(
+      actual: actual,
+      extension: "json",
+      record: record,
+      test: test,
+      file: file,
+      line: line)
+  }
+
+  public func assertDumpOpenCLI<T: ParsableArguments>(
+    type: T.Type,
+    record: Bool = false,
+    test: StaticString = #function,
+    file: StaticString = #filePath,
+    line: UInt = #line
+  ) throws {
+    let actual: String
+    do {
+      _ = try T.parse(["--help-dump-opencli-v0.1"])
+      XCTFail(
+        "Expected parsing to fail with OpenCLI dump request", file: file,
+        line: line)
+      return
+    } catch {
+      actual = T.fullMessage(for: error)
+    }
+
+    let expected = try self.assertSnapshot(
+      actual: actual,
+      extension: "json",
+      record: record,
+      test: test,
+      file: file,
+      line: line)
+
+    guard let expected else { return }
+
+    try AssertJSONEqualFromString(
+      actual: actual,
+      expected: expected,
+      for: OpenCLIv0_1.self,
+      file: file,
+      line: line)
+  }
+
+  public func assertDumpOpenCLI(
+    command: String,
+    record: Bool = false,
+    test: StaticString = #function,
+    file: StaticString = #filePath,
+    line: UInt = #line
+  ) throws {
+    let actual = try AssertExecuteCommand(
+      command: command + " --help-dump-opencli-v0.1",
       expected: nil,
       file: file,
       line: line)

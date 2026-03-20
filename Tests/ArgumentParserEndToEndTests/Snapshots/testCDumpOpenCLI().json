@@ -1,0 +1,76 @@
+{
+  "info" : {
+    "title" : "c",
+    "version" : "1.0.0"
+  },
+  "opencli" : "0.1",
+  "options" : [
+    {
+      "arguments" : [
+        {
+          "description" : "A color to select.",
+          "name" : "color",
+          "required" : true
+        }
+      ],
+      "description" : "A color to select.",
+      "name" : "--color",
+      "recursive" : false,
+      "required" : true
+    },
+    {
+      "arguments" : [
+        {
+          "description" : "Another color to select!",
+          "name" : "default-color",
+          "swiftArgumentParserDefaultValue" : "red"
+        }
+      ],
+      "description" : "Another color to select!",
+      "name" : "--default-color",
+      "recursive" : false,
+      "swiftArgumentParserDefaultValue" : "red"
+    },
+    {
+      "arguments" : [
+        {
+          "description" : "An optional color.",
+          "name" : "opt"
+        }
+      ],
+      "description" : "An optional color.",
+      "name" : "--opt",
+      "recursive" : false
+    },
+    {
+      "arguments" : [
+        {
+          "name" : "extra",
+          "required" : true
+        }
+      ],
+      "name" : "--extra",
+      "recursive" : false,
+      "required" : true
+    },
+    {
+      "arguments" : [
+        {
+          "name" : "discussion",
+          "required" : true
+        }
+      ],
+      "name" : "--discussion",
+      "recursive" : false,
+      "required" : true
+    },
+    {
+      "aliases" : [
+        "--help"
+      ],
+      "description" : "Show help information.",
+      "name" : "-h",
+      "recursive" : false
+    }
+  ]
+}
