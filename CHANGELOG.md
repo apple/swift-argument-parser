@@ -29,7 +29,6 @@ The 1.7.0 release includes contributions from [bkhouri], [bob-wilson], [jglogan]
 [kphrx], [louisunlimited], [natecook1000], [rauhul], [rgoldberg], [salmanmkc],
 [stackotter], and [William-Laverty]. Thank you!
 
-
 ## [1.7.0] - 2025-12-17
 
 ### Additions
@@ -1012,7 +1011,8 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 
 <!-- Link references for releases -->
 
-[Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.7.0...HEAD
+[Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.7.1...HEAD
+[1.7.1]: https://github.com/apple/swift-argument-parser/compare/1.7.0...1.7.1
 [1.7.0]: https://github.com/apple/swift-argument-parser/compare/1.6.2...1.7.0
 [1.6.2]: https://github.com/apple/swift-argument-parser/compare/1.6.1...1.6.2
 [1.6.1]: https://github.com/apple/swift-argument-parser/compare/1.6.0...1.6.1
