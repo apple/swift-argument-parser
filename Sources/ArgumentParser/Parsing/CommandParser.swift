@@ -110,14 +110,30 @@ extension CommandParser {
   /// - Parameters:
   ///   - split: The remaining arguments to examine.
   ///   - requireSoloArgument: `true` if the built-in flag must be the only
-  ///     one remaining for this to catch it.
+  ///     input argument remaining for this to catch it.
   ///
   /// - Throws: If a built-in flag is found.
   func checkForBuiltInFlags(
     _ split: SplitArguments,
     requireSoloArgument: Bool = false
   ) throws {
-    guard !requireSoloArgument || split.originalInput.count == 1 else { return }
+    if requireSoloArgument {
+      // If we require exactly one input argument, then we require at least one
+      // parsed argument. But we also allow more than one parsed argument
+      // because certain arguments (such `-help`) get parsed as multiple
+      // arguments (in this case [-help, -h, -e, -l, -p]).
+      guard split.count >= 1 else { return }
+
+      // Require that all remaining parsed arguments came from the same input
+      // argument.
+      let originIndex = split.elements[split.elements.startIndex].index
+        .inputIndex
+      for element in split.elements {
+        guard element.index.inputIndex == originIndex else {
+          return
+        }
+      }
+    }
 
     // Look for help flags
     guard
