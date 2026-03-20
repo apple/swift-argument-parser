@@ -9,11 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if compiler(>=6.0)
 internal import ArgumentParserToolInfo
-#else
-import ArgumentParserToolInfo
-#endif
 
 extension ToolInfoV0 {
   var fishCompletionScript: String {

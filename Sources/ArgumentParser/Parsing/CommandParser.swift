@@ -9,14 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if compiler(>=6.0)
 #if canImport(Dispatch)
 @preconcurrency private import class Dispatch.DispatchSemaphore
-#endif
-#else
-#if canImport(Dispatch)
-@preconcurrency import class Dispatch.DispatchSemaphore
-#endif
 #endif
 
 struct CommandError: Error {

@@ -9,18 +9,10 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if compiler(>=6.0)
 #if canImport(FoundationEssentials)
 internal import FoundationEssentials
 #else
 internal import Foundation
-#endif
-#else
-#if canImport(FoundationEssentials)
-import FoundationEssentials
-#else
-import Foundation
-#endif
 #endif
 
 extension Error {
