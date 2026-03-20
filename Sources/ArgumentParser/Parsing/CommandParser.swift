@@ -38,7 +38,13 @@ struct CommandParser {
   }
 
   var commandStack: [ParsableCommand.Type] {
-    let result = decodedArguments.compactMap { $0.commandType }
+    // Filter to only include types that exist in the command tree.
+    // This prevents @OptionGroup types that happen to conform to
+    // ParsableCommand from being included in the command stack (#578).
+    let result =
+      decodedArguments
+      .compactMap { $0.commandType }
+      .filter { !commandTree.path(to: $0).isEmpty }
     if currentNode.element == result.last {
       return result
     } else {
@@ -104,14 +110,30 @@ extension CommandParser {
   /// - Parameters:
   ///   - split: The remaining arguments to examine.
   ///   - requireSoloArgument: `true` if the built-in flag must be the only
-  ///     one remaining for this to catch it.
+  ///     input argument remaining for this to catch it.
   ///
   /// - Throws: If a built-in flag is found.
   func checkForBuiltInFlags(
     _ split: SplitArguments,
     requireSoloArgument: Bool = false
   ) throws {
-    guard !requireSoloArgument || split.originalInput.count == 1 else { return }
+    if requireSoloArgument {
+      // If we require exactly one input argument, then we require at least one
+      // parsed argument. But we also allow more than one parsed argument
+      // because certain arguments (such `-help`) get parsed as multiple
+      // arguments (in this case [-help, -h, -e, -l, -p]).
+      guard split.count >= 1 else { return }
+
+      // Require that all remaining parsed arguments came from the same input
+      // argument.
+      let originIndex = split.elements[split.elements.startIndex].index
+        .inputIndex
+      for element in split.elements {
+        guard element.index.inputIndex == originIndex else {
+          return
+        }
+      }
+    }
 
     // Look for help flags
     guard
@@ -531,15 +553,19 @@ private func parseCustomCompletionArguments(
 
 #if !canImport(Dispatch)
 @available(*, unavailable, message: "DispatchSemaphore is unavailable")
-#endif
 @available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
 private func asyncCustomCompletions(
   from args: [String],
   complete: @escaping @Sendable ([String], Int, String) async -> [String]
 ) throws -> [String] {
-  #if !canImport(Dispatch)
   throw ParserError.invalidState
-  #else
+}
+#else
+@available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
+private func asyncCustomCompletions(
+  from args: [String],
+  complete: @escaping @Sendable ([String], Int, String) async -> [String]
+) throws -> [String] {
   let (args, completingArgumentIndex, completingPrefix) =
     try parseCustomCompletionArguments(from: args)
 
@@ -557,8 +583,8 @@ private func asyncCustomCompletions(
 
   semaphore.wait()
   return completionsBox.withLock { $0 }
-  #endif
 }
+#endif
 
 // MARK: Building Command Stacks
 
