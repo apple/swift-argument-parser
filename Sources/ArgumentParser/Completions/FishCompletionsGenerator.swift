@@ -24,16 +24,36 @@ extension ToolInfoV0 {
 extension CommandInfoV0 {
   fileprivate var fishCompletionScript: String {
     """
-    function \(shouldOfferCompletionsForFunctionName) -a expected_commands -a expected_positional_index
-        set -l unparsed_tokens (\(tokensFunctionName) -pc)
+    function \(shouldOfferCompletionsForFlagsOrOptionsFunctionName) -a expected_commands
+        set -l non_repeating_flags_or_options $argv[2..]
+
+        set -l non_repeating_flags_or_options_absent 0
         set -l positional_index 0
         set -l commands
+        \(parseTokensFunctionName)
+        test "$commands" = "$expected_commands"; and return $non_repeating_flags_or_options_absent
+    end
+
+    function \(shouldOfferCompletionsForPositionalFunctionName) -a expected_commands expected_positional_index positional_index_comparison
+        if test -z $positional_index_comparison
+            set positional_index_comparison -eq
+        end
+
+        set -l non_repeating_flags_or_options
+        set -l non_repeating_flags_or_options_absent 0
+        set -l positional_index 0
+        set -l commands
+        \(parseTokensFunctionName)
+        test "$commands" = "$expected_commands" -a \\( "$positional_index" "$positional_index_comparison" "$expected_positional_index" \\)
+    end
+
+    function \(parseTokensFunctionName) -S
+        set -l unparsed_tokens (\(tokensFunctionName) -pc)
+        set -l present_flags_and_options
 
         switch $unparsed_tokens[1]
     \(commandCases)
         end
-
-        test "$commands" = "$expected_commands" -a \\( -z "$expected_positional_index" -o "$expected_positional_index" -eq "$positional_index" \\)
     end
 
     function \(tokensFunctionName)
@@ -44,9 +64,8 @@ extension CommandInfoV0 {
         end
     end
 
-    function \(parseSubcommandFunctionName) -S
+    function \(parseSubcommandFunctionName) -S -a positional_count
         argparse -s r -- $argv
-        set -l positional_count $argv[1]
         set -l option_specs $argv[2..]
 
         set -a commands $unparsed_tokens[1]
@@ -58,8 +77,16 @@ extension CommandInfoV0 {
             argparse -sn "$commands" $option_specs -- $unparsed_tokens 2> /dev/null
             set unparsed_tokens $argv
             set positional_index (math $positional_index + 1)
+
+            for non_repeating_flag_or_option in $non_repeating_flags_or_options
+                if set -ql _flag_$non_repeating_flag_or_option
+                    set non_repeating_flags_or_options_absent 1
+                    break
+                end
+            end
+
             if test (count $unparsed_tokens) -eq 0 -o \\( -z "$_flag_r" -a "$positional_index" -gt "$positional_count" \\)
-                return 0
+                break
             end
             set -e unparsed_tokens[1]
         end
@@ -113,31 +140,41 @@ extension CommandInfoV0 {
   }
 
   private var completions: [String] {
-    let prefix = """
-      complete -c '\(initialCommand)'\
-       -n '\(shouldOfferCompletionsForFunctionName)\
-       "\(commandContext.joined(separator: separator))"
-      """
+    let prefix = "complete -c '\(initialCommand)' -n '"
 
     let subcommands = (subcommands ?? []).filter(\.shouldDisplay)
 
     var positionalIndex = 0
 
+    var repeatingPositionalComparison = ""
     let argumentCompletions =
       completableArguments
-      .map { arg in
-        """
-        \(prefix)\(
-          arg.kind == .positional
-          ? """
-          \({
-            positionalIndex += 1
-            return " \(positionalIndex)"
-          }())
+      .compactMap { arg in
+        if arg.kind == .positional {
+          guard repeatingPositionalComparison.isEmpty else {
+            return nil as String?
+          }
+
+          if arg.isRepeating {
+            repeatingPositionalComparison = " -ge"
+          }
+        }
+
+        return """
+          \(prefix)\(
+            arg.kind == .positional
+            ? """
+            \(shouldOfferCompletionsForPositionalFunctionName) "\(commandContext.joined(separator: separator))" \({
+              positionalIndex += 1
+              return "\(positionalIndex)\(repeatingPositionalComparison)"
+            }())
+            """
+            : """
+              \(shouldOfferCompletionsForFlagsOrOptionsFunctionName) "\(commandContext.joined(separator: separator))"\
+              \((arg.isRepeating ? [] : arg.names ?? []).map { " \($0.name)" }.sorted().joined())
+              """
+          )' \(argumentSegments(arg).joined(separator: separator))
           """
-          : ""
-        )' \(argumentSegments(arg).joined(separator: separator))
-        """
       }
 
     positionalIndex += 1
@@ -145,7 +182,10 @@ extension CommandInfoV0 {
     return
       argumentCompletions
       + subcommands.map {
-        "\(prefix) \(positionalIndex)' -fa '\($0.commandName)' -d '\($0.abstract?.fishEscapeForSingleQuotedString() ?? "")'"
+        """
+        \(prefix)\(shouldOfferCompletionsForPositionalFunctionName) "\(commandContext.joined(separator: separator))"\
+         \(positionalIndex)' -fa '\($0.commandName)' -d '\($0.abstract?.fishEscapeForSingleQuotedString() ?? "")'
+        """
       }
       + subcommands.flatMap(\.completions)
   }
@@ -247,8 +287,16 @@ extension CommandInfoV0 {
       """
   }
 
-  private var shouldOfferCompletionsForFunctionName: String {
-    "\(completionFunctionPrefix)_should_offer_completions_for"
+  private var shouldOfferCompletionsForFlagsOrOptionsFunctionName: String {
+    "\(completionFunctionPrefix)_should_offer_completions_for_flags_or_options"
+  }
+
+  private var shouldOfferCompletionsForPositionalFunctionName: String {
+    "\(completionFunctionPrefix)_should_offer_completions_for_positional"
+  }
+
+  private var parseTokensFunctionName: String {
+    "\(completionFunctionPrefix)_parse_tokens"
   }
 
   private var tokensFunctionName: String {
@@ -289,7 +337,7 @@ extension ArgumentInfoV0 {
   private func optionSpecRequiresValue(_ optionSpec: String) -> String {
     switch kind {
     case .option:
-      return "\(optionSpec)="
+      return "\(optionSpec)=\(isRepeating ? "+" : "")"
     default:
       return optionSpec
     }
