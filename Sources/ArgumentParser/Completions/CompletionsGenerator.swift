@@ -9,11 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if compiler(>=6.0)
 internal import ArgumentParserToolInfo
-#else
-import ArgumentParserToolInfo
-#endif
 
 /// A shell for which the parser can generate a completion script.
 public struct CompletionShell: RawRepresentable, Hashable, CaseIterable,

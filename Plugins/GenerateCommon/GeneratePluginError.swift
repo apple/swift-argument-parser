@@ -16,8 +16,8 @@ enum GeneratePluginError: Error {
   case unknownBuildConfiguration(String)
   case buildFailed(String)
   case createOutputDirectoryFailed(Error)
-  case subprocessFailedNonZeroExit(Path, Int32)
-  case subprocessFailedError(Path, Error)
+  case subprocessFailedNonZeroExit(URL, Int32)
+  case subprocessFailedError(URL, Error)
 }
 
 extension GeneratePluginError: CustomStringConvertible {
@@ -33,12 +33,12 @@ extension GeneratePluginError: CustomStringConvertible {
         """
     case .subprocessFailedNonZeroExit(let tool, let exitCode):
       return """
-        '\(tool.lastComponent)' invocation failed with a nonzero exit \
+        '\(tool.lastPathComponent)' invocation failed with a nonzero exit \
         code: '\(exitCode)'.
         """
     case .subprocessFailedError(let tool, let error):
       return """
-        '\(tool.lastComponent)' invocation failed: \
+        '\(tool.lastPathComponent)' invocation failed: \
         '\(error.localizedDescription)'
         """
     }

@@ -25,7 +25,7 @@ extension GeneratePlugin {
   ) async throws {
     // Locate generation tool.
     let generationTool = Self.executableName
-    let generationToolFile = try context.tool(named: generationTool).path
+    let generationToolFile = try context.tool(named: generationTool).url
 
     // Create an extractor to extract plugin-only arguments from the `arguments`
     // array.
@@ -79,20 +79,23 @@ extension GeneratePlugin {
       guard product.targets.count == 1 else { continue }
       let target = product.targets[0]
 
+      // Skip non swift source targets.
+      guard let target = target as? SwiftSourceModuleTarget else { continue }
+
       // Get the artifacts name.
-      let executableName = builtArtifact.path.lastComponent
+      let executableName = builtArtifact.url.lastPathComponent
       print("Generating \(Self.artifactName) for \(executableName)...")
 
       // Create output directory.
-      let outputDirectory = target.directory
-        .appending("\(target.name).docc")
+      let outputDirectory = target.directoryURL
+        .appendingPathComponent("\(target.name).docc")
       try outputDirectory.createOutputDirectory()
 
       // Create generation tool arguments.
       var generationToolArguments = [
-        builtArtifact.path.string,
+        builtArtifact.url.path(percentEncoded: false),
         "--output-directory",
-        outputDirectory.string,
+        outputDirectory.path(percentEncoded: false),
       ]
       generationToolArguments.append(
         contentsOf: extractor.remainingArguments)
