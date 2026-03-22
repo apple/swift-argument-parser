@@ -34,11 +34,11 @@ extension ArgumentExtractor {
   }
 }
 
-extension Path {
+extension URL {
   func createOutputDirectory() throws {
     do {
       try FileManager.default.createDirectory(
-        atPath: self.string,
+        at: self,
         withIntermediateDirectories: true)
     } catch {
       throw GeneratePluginError.createOutputDirectoryFailed(error)
@@ -48,7 +48,7 @@ extension Path {
   func exec(arguments: [String]) throws {
     do {
       let process = Process()
-      process.executableURL = URL(fileURLWithPath: self.string)
+      process.executableURL = self
       process.arguments = arguments
       try process.run()
       process.waitUntilExit()
@@ -70,7 +70,7 @@ extension PackageManager.BuildResult.BuiltArtifact {
     context
       .package
       .products
-      .first { $0.name == self.path.lastComponent }
+      .first { $0.name == self.url.lastPathComponent }
   }
 }
 
