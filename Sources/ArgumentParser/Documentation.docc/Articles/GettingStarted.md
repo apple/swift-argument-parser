@@ -15,13 +15,13 @@ and then include `"ArgumentParser"` as a dependency for our executable target.
 Our "Package.swift" file ends up looking like this:
 
 ```swift
-// swift-tools-version:5.7
+// swift-tools-version:6.0
 import PackageDescription
 
 let package = Package(
     name: "Count",
     dependencies: [
-        .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.3.0"),
+        .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.7.0"),
     ],
     targets: [
         .executableTarget(
