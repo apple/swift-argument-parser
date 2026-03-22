@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2021 Apple Inc. and the Swift project authors
+// Copyright (c) 2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -12,7 +12,7 @@
 import Foundation
 import PackagePlugin
 
-enum GenerateManualPluginError: Error {
+enum GeneratePluginError: Error {
   case unknownBuildConfiguration(String)
   case buildFailed(String)
   case createOutputDirectoryFailed(Error)
@@ -20,7 +20,7 @@ enum GenerateManualPluginError: Error {
   case subprocessFailedError(Path, Error)
 }
 
-extension GenerateManualPluginError: CustomStringConvertible {
+extension GeneratePluginError: CustomStringConvertible {
   var description: String {
     switch self {
     case .unknownBuildConfiguration(let configuration):
@@ -33,8 +33,8 @@ extension GenerateManualPluginError: CustomStringConvertible {
         """
     case .subprocessFailedNonZeroExit(let tool, let exitCode):
       return """
-        '\(tool.lastComponent)' invocation failed with a nonzero exit code: \
-        '\(exitCode)'.
+        '\(tool.lastComponent)' invocation failed with a nonzero exit \
+        code: '\(exitCode)'.
         """
     case .subprocessFailedError(let tool, let error):
       return """
@@ -45,6 +45,6 @@ extension GenerateManualPluginError: CustomStringConvertible {
   }
 }
 
-extension GenerateManualPluginError: LocalizedError {
+extension GeneratePluginError: LocalizedError {
   var errorDescription: String? { self.description }
 }
