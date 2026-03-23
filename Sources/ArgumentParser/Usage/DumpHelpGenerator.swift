@@ -142,6 +142,8 @@ extension ArgumentInfoV0.KindV0 {
         self = .flag
       case .unary:
         self = .option
+      case .optionalUnary:
+        self = .option
       }
     case .positional:
       self = .positional
