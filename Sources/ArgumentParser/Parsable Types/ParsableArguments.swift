@@ -26,7 +26,7 @@ public protocol ParsableArguments: Decodable, _SendableMetatype {
 
   /// The label to use for "Error: ..." messages from this type (experimental).
   ///
-  /// Can be ignored if `_errorPrefix`'s is changed.
+  /// `_errorLabel` will be ignored if `_errorPrefix` is changed to ignore `_errorLabel`.
   @available(*, deprecated, message: "Use _errorPrefix instead.")
   static var _errorLabel: String { get }
 
@@ -89,8 +89,14 @@ extension ParsableArguments {
   public static func parse(
     _ arguments: [String]? = nil
   ) throws -> Self {
+    try parse(try self.asCommand.parseAsRoot(arguments))
+  }
+
+  public static func parse(
+    _ command: ParsableCommand
+  ) throws -> Self {
     // Parse the command and unwrap the result if necessary.
-    switch try self.asCommand.parseAsRoot(arguments) {
+    switch command {
     case let helpCommand as HelpCommand:
       throw ParserError.helpRequested(visibility: helpCommand.visibility)
     case let result as _WrappedParsableCommand<Self>:
