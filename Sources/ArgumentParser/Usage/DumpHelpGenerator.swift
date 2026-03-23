@@ -9,11 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if compiler(>=6.0)
 internal import ArgumentParserToolInfo
-#else
-import ArgumentParserToolInfo
-#endif
 
 internal struct DumpHelpGenerator {
   private var toolInfo: ToolInfoV0

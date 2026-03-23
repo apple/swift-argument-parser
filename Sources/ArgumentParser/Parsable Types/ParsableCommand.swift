@@ -65,7 +65,7 @@ extension ParsableCommand {
   ) throws -> ParsableCommand {
     var parser = CommandParser(self)
     let arguments = arguments ?? Array(CommandLine._staticArguments.dropFirst())
-    return try parser.parse(arguments: arguments).get()
+    return try parser.parse(arguments: arguments)
   }
 
   /// Returns the text of the help screen for the given subcommand of this

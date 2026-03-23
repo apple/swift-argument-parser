@@ -9,14 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if compiler(>=6.0)
 #if canImport(Dispatch)
 @preconcurrency private import class Dispatch.DispatchSemaphore
-#endif
-#else
-#if canImport(Dispatch)
-@preconcurrency import class Dispatch.DispatchSemaphore
-#endif
 #endif
 
 struct CommandError: Error {
@@ -290,23 +284,23 @@ extension CommandParser {
     }
   }
 
-  /// Returns the fully-parsed matching command for `arguments`, or an
-  /// appropriate error.
+  /// Returns the fully-parsed matching command for `arguments`, or throws
+  /// an appropriate error.
   ///
   /// - Parameter arguments: The array of arguments to parse. This should not
   ///   include the command name as the first argument.
   ///
-  /// - Returns: The parsed command or error.
+  /// - Returns: The parsed command.
+  /// - Throws: A `CommandError` if an error is detected during parsing.
   mutating func parse(
     arguments: [String]
-  ) -> Result<ParsableCommand, CommandError> {
+  ) throws(CommandError) -> ParsableCommand {
     do {
       try handleCustomCompletion(arguments)
     } catch let error as ParserError {
-      return .failure(
-        CommandError(
-          commandStack: [commandTree.element],
-          parserError: error))
+      throw CommandError(
+        commandStack: [commandTree.element],
+        parserError: error)
     } catch {
       fatalError("Internal error: \(error)")
     }
@@ -314,13 +308,10 @@ extension CommandParser {
     var split: SplitArguments
     do {
       split = try SplitArguments(arguments: arguments)
-    } catch let error as ParserError {
-      return .failure(
-        CommandError(commandStack: [commandTree.element], parserError: error))
     } catch {
-      return .failure(
-        CommandError(
-          commandStack: [commandTree.element], parserError: .invalidState))
+      let error = error as? ParserError ?? .invalidState
+      throw CommandError(
+        commandStack: [commandTree.element], parserError: error)
     }
 
     do {
@@ -332,23 +323,21 @@ extension CommandParser {
       // the tree from the parser to build its stack of commands.
       if var helpResult = result as? HelpCommand {
         try helpResult.buildCommandStack(with: self)
-        return .success(helpResult)
+        return helpResult
       }
-      return .success(result)
+      return result
     } catch let error as CommandError {
-      return .failure(error)
+      throw error
     } catch let error as ParserError {
       let error = arguments.isEmpty ? ParserError.noArguments(error) : error
-      return .failure(
-        CommandError(commandStack: commandStack, parserError: error))
+      throw CommandError(commandStack: commandStack, parserError: error)
     } catch let helpRequest as HelpRequested {
-      return .success(
-        HelpCommand(
-          commandStack: commandStack,
-          visibility: helpRequest.visibility))
+      return HelpCommand(
+        commandStack: commandStack,
+        visibility: helpRequest.visibility)
     } catch {
-      return .failure(
-        CommandError(commandStack: commandStack, parserError: .invalidState))
+      throw CommandError(
+        commandStack: commandStack, parserError: .invalidState)
     }
   }
 }
@@ -364,7 +353,9 @@ struct AutodetectedGenerateCompletions: ParsableCommand {
 }
 
 extension CommandParser {
-  func checkForCompletionScriptRequest(_ split: inout SplitArguments) throws {
+  func checkForCompletionScriptRequest(_ split: inout SplitArguments)
+    throws(CommandError)
+  {
     // Pseudo-commands don't support `--generate-completion-script` flag
     guard rootCommand.configuration._superCommandName == nil else {
       return

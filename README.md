@@ -124,7 +124,7 @@ let package = Package(
     // name, platforms, products, etc.
     dependencies: [
         // other dependencies
-        .package(url: "https://github.com/apple/swift-argument-parser", from: "1.3.0"),
+        .package(url: "https://github.com/apple/swift-argument-parser", from: "1.7.0"),
     ],
     targets: [
         .executableTarget(name: "<command-line-tool>", dependencies: [
@@ -145,4 +145,5 @@ swift-argument-parser | Minimum Swift Version
 `0.0.1 ..< 0.2.0`     | 5.1
 `0.2.0 ..< 1.1.0`     | 5.2
 `1.1.0 ..< 1.3.0`     | 5.5
-`1.3.0 ...`           | 5.7
+`1.3.0 ..< 1.7.1`     | 5.7
+`1.8.0 ...`           | 6.0
