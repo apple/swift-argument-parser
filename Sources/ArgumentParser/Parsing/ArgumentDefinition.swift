@@ -296,6 +296,36 @@ extension ArgumentDefinition {
       completion: completion)
   }
 
+  init<Container>(
+    container: Container.Type,
+    key: InputKey,
+    kind: ArgumentDefinition.Kind,
+    help: ArgumentHelp?,
+    parsingStrategy: ParsingStrategy,
+    transform: @escaping (_ name: String, _ valueString: String) throws -> Container.Contained,
+    initial: Container.Initial?,
+    completion: CompletionKind?
+  ) where Container: ArgumentDefinitionContainer {
+    self.init(
+      container: Container.self,
+      key: key,
+      kind: kind,
+      allValueStrings: [],
+      help: help,
+      defaultValueDescription: nil,
+      parsingStrategy: parsingStrategy,
+      parser: { (key, origin, name, valueString) -> Container.Contained in
+        do {
+          return try transform(name?.valueString ?? "", valueString)
+        } catch {
+          throw ParserError.unableToParseValue(
+            origin, name, valueString, forKey: key, originalError: error)
+        }
+      },
+      initial: initial,
+      completion: completion)
+  }
+
   private init<Container>(
     container: Container.Type,
     key: InputKey,
