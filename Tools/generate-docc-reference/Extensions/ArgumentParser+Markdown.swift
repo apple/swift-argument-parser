@@ -77,7 +77,8 @@ extension CommandInfoV0 {
       result += "\(discussion)\n\n"
     }
 
-    result += self.argumentListMarkdown(path: path, markdownStyle: markdownStyle)
+    result += self.argumentListMarkdown(
+      path: path, markdownStyle: markdownStyle)
 
     for subcommand in self.subcommands ?? [] {
       result +=
