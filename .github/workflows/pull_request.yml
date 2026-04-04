@@ -26,7 +26,7 @@ jobs:
   tests:
     name: Test
     needs: [soundness, validate_format_config]
-    uses: swiftlang/github-workflows/.github/workflows/swift_package_test.yml@0.0.8
+    uses: swiftlang/github-workflows/.github/workflows/swift_package_test.yml@0.0.9
     with:
       linux_swift_versions: "[ \"6.0\", \"6.1\", \"6.2\", \"nightly-main\", \"nightly-6.3\"]"
       windows_exclude_swift_versions: "[{\"swift_version\": \"5.9\"}]"
