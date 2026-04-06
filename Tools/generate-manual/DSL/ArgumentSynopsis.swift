@@ -1,4 +1,4 @@
-//===----------------------------------------------------------*- swift -*-===//
+//===----------------------------------------------------------------------===//
 //
 // This source file is part of the Swift Argument Parser open source project
 //
@@ -16,10 +16,12 @@ struct ArgumentSynopsis: MDocComponent {
   var argument: ArgumentInfoV0
 
   var body: MDocComponent {
-    if argument.isOptional {
-      MDocMacro.OptionalCommandLineComponent(arguments: [synopsis])
-    } else {
-      synopsis
+    if argument.shouldDisplay {
+      if argument.isOptional {
+        MDocMacro.OptionalCommandLineComponent(arguments: [synopsis])
+      } else {
+        synopsis
+      }
     }
   }
 
@@ -29,11 +31,13 @@ struct ArgumentSynopsis: MDocComponent {
     case .positional:
       return argument.manualPageDescription
     case .option:
+      // swift-format-ignore: NeverForceUnwrap
       // preferredName cannot be nil
       let name = argument.preferredName!
       return MDocMacro.CommandOption(options: [name.manualPage])
         .withUnsafeChildren(nodes: [argument.manualPageValueName])
     case .flag:
+      // swift-format-ignore: NeverForceUnwrap
       // preferredName cannot be nil
       let name = argument.preferredName!
       return MDocMacro.CommandOption(options: [name.manualPage])

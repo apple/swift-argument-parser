@@ -1,4 +1,4 @@
-//===----------------------------------------------------------*- swift -*-===//
+//===----------------------------------------------------------------------===//
 //
 // This source file is part of the Swift Argument Parser open source project
 //
@@ -31,7 +31,7 @@ public struct ArgumentVisibility: Hashable {
   public static let `private` = Self(base: .private)
 }
 
-extension ArgumentVisibility: Sendable { }
+extension ArgumentVisibility: Sendable {}
 
 extension ArgumentVisibility.Representation {
   /// A raw Integer value that represents each visibility level.
@@ -56,5 +56,29 @@ extension ArgumentVisibility {
   /// - Returns: true if `self` is at least as visible as the supplied argument.
   internal func isAtLeastAsVisible(as other: Self) -> Bool {
     self.base._comparableLevel >= other.base._comparableLevel
+  }
+
+  /// Reduce the visibility to a specified level if it is more restricted than the current value.
+  internal mutating func reduce(to: ArgumentVisibility) {
+    switch to.base {
+    case .default:
+      break  // No effect
+    case .hidden:
+      if case .default = self.base {
+        self.base = .hidden
+      }
+    case .private:
+      self.base = .private
+    }
+  }
+}
+
+extension ArgumentDefinition {
+  internal func reducingHelpVisibility(to visibility: ArgumentVisibility)
+    -> Self
+  {
+    var result = self
+    result.help.visibility.reduce(to: visibility)
+    return result
   }
 }

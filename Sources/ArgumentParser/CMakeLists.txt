@@ -5,6 +5,7 @@ add_library(ArgumentParser
   Completions/ZshCompletionsGenerator.swift
 
   "Parsable Properties/Argument.swift"
+  "Parsable Properties/ArgumentDiscussion.swift"
   "Parsable Properties/ArgumentHelp.swift"
   "Parsable Properties/ArgumentVisibility.swift"
   "Parsable Properties/CompletionKind.swift"
@@ -20,7 +21,6 @@ add_library(ArgumentParser
   "Parsable Types/EnumerableFlag.swift"
   "Parsable Types/ExpressibleByArgument.swift"
   "Parsable Types/ParsableArguments.swift"
-  "Parsable Types/ParsableArgumentsValidation.swift"
   "Parsable Types/ParsableCommand.swift"
 
   Parsing/ArgumentDecoder.swift
@@ -42,18 +42,30 @@ add_library(ArgumentParser
   Usage/UsageGenerator.swift
 
   Utilities/CollectionExtensions.swift
+  Utilities/Mutex.swift
+  Utilities/Foundation.swift
   Utilities/Platform.swift
   Utilities/SequenceExtensions.swift
   Utilities/StringExtensions.swift
-  Utilities/Tree.swift)
+  Utilities/SwiftExtensions.swift
+  Utilities/Tree.swift
+  
+  Validators/CodingKeyValidator.swift
+  Validators/NonsenseFlagsValidator.swift
+  Validators/ParsableArgumentsValidation.swift
+  Validators/PositionalArgumentsValidator.swift
+  Validators/UniqueNamesValidator.swift)
 # NOTE: workaround for CMake not setting up include flags yet
 set_target_properties(ArgumentParser PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_Swift_MODULE_DIRECTORY})
 target_compile_options(ArgumentParser PRIVATE
   $<$<BOOL:${BUILD_TESTING}>:-enable-testing>)
 target_link_libraries(ArgumentParser PRIVATE
-  $<$<NOT:$<PLATFORM_ID:Darwin>>:Foundation>
   ArgumentParserToolInfo)
+if(Foundation_FOUND)
+  target_link_libraries(ArgumentParser PRIVATE
+    Foundation)
+endif()
 
 
 _install_target(ArgumentParser)

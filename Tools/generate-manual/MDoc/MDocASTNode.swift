@@ -1,4 +1,4 @@
-//===----------------------------------------------------------*- swift -*-===//
+//===----------------------------------------------------------------------===//
 //
 // This source file is part of the Swift Argument Parser open source project
 //
@@ -10,7 +10,9 @@
 //===----------------------------------------------------------------------===//
 
 /// `MDocASTNode` represents a single abstract syntax tree node in an `mdoc`
-/// document. `mdoc` is a semantic markup language for formatting manual pages.
+/// document.
+///
+/// `mdoc` is a semantic markup language for formatting manual pages.
 ///
 /// See: https://mandoc.bsd.lv/man/mdoc.7.html for more information.
 public protocol MDocASTNode {

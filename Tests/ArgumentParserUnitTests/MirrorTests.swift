@@ -1,4 +1,4 @@
-//===----------------------------------------------------------*- swift -*-===//
+//===----------------------------------------------------------------------===//
 //
 // This source file is part of the Swift Argument Parser open source project
 //
@@ -10,6 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 import XCTest
+
 @testable import ArgumentParser
 
 final class MirrorTests: XCTestCase {}
@@ -37,7 +38,7 @@ extension MirrorTests {
     }
     func performTest(foo: String?, baz: String!) {
       let fooChild = Foo(foo: foo, bar: "foobar", baz: baz)
-      Mirror(reflecting: fooChild).children.forEach { child in
+      for child in Mirror(reflecting: fooChild).children {
         switch child.label {
         case "foo":
           checkChildValue(child, expectedString: foo)
@@ -50,7 +51,7 @@ extension MirrorTests {
         }
       }
     }
-    
+
     performTest(foo: "foo", baz: "baz")
     performTest(foo: "foo", baz: nil)
     performTest(foo: nil, baz: "baz")

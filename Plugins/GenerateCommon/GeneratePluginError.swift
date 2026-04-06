@@ -1,8 +1,8 @@
-//===----------------------------------------------------------*- swift -*-===//
+//===----------------------------------------------------------------------===//
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2021 Apple Inc. and the Swift project authors
+// Copyright (c) 2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -12,15 +12,15 @@
 import Foundation
 import PackagePlugin
 
-enum GenerateManualPluginError: Error {
+enum GeneratePluginError: Error {
   case unknownBuildConfiguration(String)
   case buildFailed(String)
   case createOutputDirectoryFailed(Error)
-  case subprocessFailedNonZeroExit(Path, Int32)
-  case subprocessFailedError(Path, Error)
+  case subprocessFailedNonZeroExit(URL, Int32)
+  case subprocessFailedError(URL, Error)
 }
 
-extension GenerateManualPluginError: CustomStringConvertible {
+extension GeneratePluginError: CustomStringConvertible {
   var description: String {
     switch self {
     case .unknownBuildConfiguration(let configuration):
@@ -33,18 +33,18 @@ extension GenerateManualPluginError: CustomStringConvertible {
         """
     case .subprocessFailedNonZeroExit(let tool, let exitCode):
       return """
-        '\(tool.lastComponent)' invocation failed with a nonzero exit code: \
-        '\(exitCode)'.
+        '\(tool.lastPathComponent)' invocation failed with a nonzero exit \
+        code: '\(exitCode)'.
         """
     case .subprocessFailedError(let tool, let error):
       return """
-        '\(tool.lastComponent)' invocation failed: \
+        '\(tool.lastPathComponent)' invocation failed: \
         '\(error.localizedDescription)'
         """
     }
   }
 }
 
-extension GenerateManualPluginError: LocalizedError {
+extension GeneratePluginError: LocalizedError {
   var errorDescription: String? { self.description }
 }

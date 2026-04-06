@@ -1,4 +1,4 @@
-//===----------------------------------------------------------*- swift -*-===//
+//===----------------------------------------------------------------------===//
 //
 // This source file is part of the Swift Argument Parser open source project
 //
@@ -9,169 +9,255 @@
 //
 //===----------------------------------------------------------------------===//
 
-struct ZshCompletionsGenerator {
-  /// Generates a Zsh completion script for the given command.
-  static func generateCompletionScript(_ type: ParsableCommand.Type) -> String {
-    let initialFunctionName = [type].completionFunctionName()
+internal import ArgumentParserToolInfo
 
-    return """
-    #compdef \(type._commandName)
-    local context state state_descr line
-    _\(type._commandName.zshEscapingCommandName())_commandname=$words[1]
-    typeset -A opt_args
+extension ToolInfoV0 {
+  var zshCompletionScript: String {
+    command.zshCompletionScript
+  }
+}
 
-    \(generateCompletionFunction([type]))
-    _custom_completion() {
-        local completions=("${(@f)$($*)}")
-        _describe '' completions
+extension CommandInfoV0 {
+  fileprivate var zshCompletionScript: String {
+    // swift-format-ignore: NeverForceUnwrap
+    // Preconditions:
+    // - first must be non-empty for a zsh completion script to be of use.
+    // - first is guaranteed non-empty in the one place where this computed var is used.
+    """
+    #compdef \(commandName)
+
+    \(completeFunctionName)() {
+        local -ar non_empty_completions=("${@:#(|:*)}")
+        local -ar empty_completions=("${(M)@:#(|:*)}")
+        _describe -V '' non_empty_completions -- empty_completions -P $'\\'\\''
     }
 
-    \(initialFunctionName)
+    \(customCompleteFunctionName)() {
+        local -a completions
+        completions=("${(@f)"$("${command_name}" "${@}" "${command_line[@]}")"}")
+        if [[ "${#completions[@]}" -gt 1 ]]; then
+            \(completeFunctionName) "${completions[@]:0:-1}"
+        fi
+    }
+
+    \(cursorIndexInCurrentWordFunctionName)() {
+        if [[ -z "${QIPREFIX}${IPREFIX}${PREFIX}" ]]; then
+            printf 0
+        else
+            printf %s "${#${(z)LBUFFER}[-1]}"
+        fi
+    }
+
+    \(completionFunctions)\
+    if [[ "${funcstack[1]}" = \(completionFunctionName) ]]; then
+        \(completionFunctionName) "${@}"
+    else
+        compdef \(completionFunctionName) \(commandName)
+    fi
     """
   }
-  
-  static func generateCompletionFunction(_ commands: [ParsableCommand.Type]) -> String {
-    let type = commands.last!
-    let functionName = commands.completionFunctionName()
-    let isRootCommand = commands.count == 1
-    
-    var args = generateCompletionArguments(commands)    
-    var subcommands = type.configuration.subcommands
-      .filter { $0.configuration.shouldDisplay }
-    var subcommandHandler = ""
-    if !subcommands.isEmpty {
-      args.append("'(-): :->command'")
-      args.append("'(-)*:: :->arg'")
-      
-      if isRootCommand {
-        subcommands.append(HelpCommand.self)
+
+  private var completionFunctions: String {
+    let functionName = completionFunctionName
+
+    var repeatingPositionalIndicator = ""
+    let argumentSpecsAndSetupScripts = (arguments ?? []).compactMap { arg in
+      guard arg.shouldDisplay else {
+        return nil as (argumentSpec: String, setupScript: String?)?
       }
 
-      let subcommandModes = subcommands.map {
-        """
-        '\($0._commandName):\($0.configuration.abstract.zshEscaped())'
-        """
-        .indentingEachLine(by: 12)
+      let line: String
+      let names = arg.names ?? []
+      switch names.count {
+      case 0:
+        guard repeatingPositionalIndicator.isEmpty else {
+          return nil
+        }
+
+        if arg.isRepeating {
+          repeatingPositionalIndicator = "*"
+        }
+        line = repeatingPositionalIndicator
+      case 1:
+        // swift-format-ignore: NeverForceUnwrap
+        // Preconditions: names has exactly one element.
+        line = """
+          \(arg.isRepeatingOption ? "*" : "")\(names.first!.commonCompletionSynopsisString().zshEscapeForSingleQuotedOptionSpec())\(arg.completionAbstract)
+          """
+      default:
+        let synopses = names.map {
+          $0.commonCompletionSynopsisString()
+            .zshEscapeForSingleQuotedOptionSpec()
+        }
+        line = """
+          \(arg.isRepeatingOption ? "*" : "(\(synopses.joined(separator: " ")))")'\
+          {\(synopses.joined(separator: ","))}\
+          '\(arg.completionAbstract)
+          """
       }
-      let subcommandArgs = subcommands.map {
-        """
-        (\($0._commandName))
-            \(functionName)_\($0._commandName)
-            ;;
-        """
-        .indentingEachLine(by: 12)
+
+      switch arg.kind {
+      case .option, .positional:
+        let (argumentAction, setupScript) = argumentActionAndSetupScript(arg)
+        return (
+          "'\(line):\(arg.valueName?.zshEscapeForSingleQuotedOptionSpec() ?? ""):\(argumentAction)'",
+          setupScript
+        )
+      case .flag:
+        return ("'\(line)'", nil)
       }
-      
+    }
+    var argumentSpecs = argumentSpecsAndSetupScripts.map(\.argumentSpec)
+    let setupScripts = argumentSpecsAndSetupScripts.compactMap(\.setupScript)
+
+    let subcommands = (subcommands ?? []).filter(\.shouldDisplay)
+
+    let subcommandHandler: String
+    if subcommands.isEmpty {
+      subcommandHandler = ""
+    } else {
+      argumentSpecs.append("'(-): :->command'")
+      argumentSpecs.append("'(-)*:: :->arg'")
+
       subcommandHandler = """
-        case $state in
-            (command)
-                local subcommands
-                subcommands=(
-        \(subcommandModes.joined(separator: "\n"))
+            case "${state}" in
+            command)
+                local -ar subcommands=(
+        \(
+          subcommands.map { """
+                        '\($0.commandName.zshEscapeForSingleQuotedDescribeCompletion()):\($0.abstract?.shellEscapeForSingleQuotedString() ?? "")'
+            """
+          }
+          .joined(separator: "\n")
+        )
                 )
-                _describe "subcommand" subcommands
+                _describe -V subcommand subcommands && ret=0
                 ;;
-            (arg)
-                case ${words[1]} in
-        \(subcommandArgs.joined(separator: "\n"))
+            arg)
+                case "${words[1]}" in
+                \(subcommands.map(\.commandName).joined(separator: "|")))
+                    "\(functionName)_${words[1]}" && ret=0
+                    ;;
                 esac
                 ;;
-        esac
-        
+            esac
+
         """
-        .indentingEachLine(by: 4)
     }
-    
-    let functionText = """
+
+    return """
       \(functionName)() {
-          integer ret=1
-          local -a args
-          args+=(
-      \(args.joined(separator: "\n").indentingEachLine(by: 8))
+      \((superCommands ?? []).isEmpty
+        ? """
+              emulate -RL zsh -G
+              setopt extendedglob nullglob numericglobsort
+              unsetopt aliases banghist
+
+              local -xr \(Platform.Environment.Key.shellName.rawValue)=zsh
+              local -x \(Platform.Environment.Key.shellVersion.rawValue)
+              \(Platform.Environment.Key.shellVersion.rawValue)="$(builtin emulate zsh -c 'printf %s "${ZSH_VERSION}"')"
+              local -r \(Platform.Environment.Key.shellVersion.rawValue)
+
+              local context state state_descr line
+              local -A opt_args
+
+              local -r command_name="${words[1]}"
+              local -ar command_line=("${words[@]}")
+              local -ir current_word_index="$((CURRENT - 1))"
+
+
+          """
+        : ""
+      )\
+          local -i ret=1
+      \(setupScripts.map { "\($0)\n" }.joined().indentingEachLine(by: 4))\
+          local -ar arg_specs=(
+      \(argumentSpecs.joined(separator: "\n").indentingEachLine(by: 8))
           )
-          _arguments -w -s -S $args[@] && ret=0
+          _arguments -w -s -S : "${arg_specs[@]}" && ret=0
       \(subcommandHandler)
-          return ret
+          return "${ret}"
       }
-      
-      
+
+      \(subcommands.map(\.completionFunctions).joined())
       """
-    
-    return functionText +
-      subcommands
-        .map { generateCompletionFunction(commands + [$0]) }
-        .joined()
   }
 
-  static func generateCompletionArguments(_ commands: [ParsableCommand.Type]) -> [String] {
-    commands
-      .argumentsForHelp(visibility: .default)
-      .compactMap { $0.zshCompletionString(commands) }
+  /// Returns the zsh "action" for an argument completion string.
+  private func argumentActionAndSetupScript(
+    _ arg: ArgumentInfoV0
+  ) -> (argumentAction: String, setupScript: String?) {
+    switch arg.completionKind {
+    case .none:
+      return ("", nil)
+
+    case .file(let extensions):
+      return
+        extensions.isEmpty
+        ? ("_files", nil)
+        : (
+          "_files -g '\\''\(extensions.map { "*.\($0.shellEscapeForSingleQuotedString())" }.joined(separator: " "))'\\''",
+          nil
+        )
+
+    case .directory:
+      return ("_files -/", nil)
+
+    case .list(let list):
+      let variableName = variableName(arg)
+      return (
+        "{\(completeFunctionName) \"${\(variableName)[@]}\"}",
+        "local -ar \(variableName)=(\(list.map { "'\($0.shellEscapeForSingleQuotedString())'" }.joined(separator: " ")))"
+      )
+
+    case .shellCommand(let command):
+      return (
+        "{local -a list;list=(${(f)\"$(\(command.shellEscapeForSingleQuotedString()))\"});_describe -V \"\" list}",
+        nil
+      )
+
+    case .custom, .customAsync:
+      return (
+        "{\(customCompleteFunctionName) \(arg.commonCustomCompletionCall(command: self)) \"${current_word_index}\" \"$(\(cursorIndexInCurrentWordFunctionName))\"}",
+        nil
+      )
+
+    case .customDeprecated:
+      return (
+        "{\(customCompleteFunctionName) \(arg.commonCustomCompletionCall(command: self))}",
+        nil
+      )
+    }
+  }
+
+  private func variableName(_ arg: ArgumentInfoV0) -> String {
+    guard let argName = arg.preferredName else {
+      return "_\(arg.valueName?.shellEscapeForVariableName() ?? "")"
+    }
+    return
+      "\(argName.kind == .long ? "___" : "__")\(argName.name.shellEscapeForVariableName())"
+  }
+
+  private var completeFunctionName: String {
+    "\(completionFunctionPrefix)_complete"
+  }
+
+  private var customCompleteFunctionName: String {
+    "\(completionFunctionPrefix)_custom_complete"
+  }
+
+  private var cursorIndexInCurrentWordFunctionName: String {
+    "\(completionFunctionPrefix)_cursor_index_in_current_word"
   }
 }
 
-extension String {
-  fileprivate func zshEscapingSingleQuotes() -> String {
-    self.replacingOccurrences(of: "'", with: #"'"'"'"#)
-  }
-
-  fileprivate func zshEscapingMetacharacters() -> String {
-    self.replacingOccurrences(of: #"[\\\[\]]"#, with: #"\\$0"#, options: .regularExpression)
-  }
-
-  fileprivate func zshEscaped() -> String {
-    self.zshEscapingSingleQuotes().zshEscapingMetacharacters()
-  }
-  
-  fileprivate func zshEscapingCommandName() -> String {
-    self.replacingOccurrences(of: "-", with: "_")
-  }
-}
-
-extension ArgumentDefinition {
-  var zshCompletionAbstract: String {
-    guard !help.abstract.isEmpty else { return "" }
-    return "[\(help.abstract.zshEscaped())]"
-  }
-  
-  func zshCompletionString(_ commands: [ParsableCommand.Type]) -> String? {
-    guard help.visibility.base == .default else { return nil }
-    
-    let inputs: String
-    switch update {
-    case .unary:
-      inputs = ":\(valueName):\(zshActionString(commands))"
-    case .nullary:
-      inputs = ""
-    }
-
-    let line: String
-    switch names.count {
-    case 0:
-      line = ""
-    case 1:
-      let star = isRepeatableOption ? "*" : ""
-      line = """
-      \(star)\(names[0].synopsisString)\(zshCompletionAbstract)
-      """
-    default:
-      let synopses = names.map { $0.synopsisString }
-      let suppression = isRepeatableOption ? "*" : "(\(synopses.joined(separator: " ")))"
-      line = """
-      \(suppression)'\
-      {\(synopses.joined(separator: ","))}\
-      '\(zshCompletionAbstract)
-      """
-    }
-    
-    return "'\(line)\(inputs)'"
-  }
-
-  /// - returns: `true` if I'm an option and can be tab-completed multiple times in one command line. For example, `ssh` allows the `-L` option to be given multiple times, to establish multiple port forwardings.
-  private var isRepeatableOption: Bool {
+extension ArgumentInfoV0 {
+  /// - returns: `true` if `self` is a flag or an option and can be tab-completed multiple times in one command line.
+  ///   For example, `ssh` allows the `-L` option to be given multiple times, to establish multiple port forwardings.
+  fileprivate var isRepeatingOption: Bool {
     guard
-      case .named(_) = kind,
-      help.options.contains(.isRepeating)
+      [.flag, .option].contains(kind),
+      isRepeating
     else { return false }
 
     switch parsingStrategy {
@@ -180,32 +266,25 @@ extension ArgumentDefinition {
     }
   }
 
-  /// Returns the zsh "action" for an argument completion string.
-  func zshActionString(_ commands: [ParsableCommand.Type]) -> String {
-    switch completion.kind {
-    case .default:
-      return ""
-      
-    case .file(let extensions):
-      let pattern = extensions.isEmpty
-        ? ""
-        : " -g '\(extensions.map { "*." + $0 }.joined(separator: " "))'"
-      return "_files\(pattern.zshEscaped())"
-      
-    case .directory:
-      return "_files -/"
-      
-    case .list(let list):
-      return "(" + list.joined(separator: " ") + ")"
-      
-    case .shellCommand(let command):
-      return "{local -a list; list=(${(f)\"$(\(command))\"}); _describe '''' list}"
-
-    case .custom:
-      // Generate a call back into the command to retrieve a completions list
-      let commandName = commands.first!._commandName.zshEscapingCommandName()
-      return "{_custom_completion $_\(commandName)_commandname \(customCompletionCall(commands)) $words}"
-    }
+  fileprivate var completionAbstract: String {
+    guard let abstract, !abstract.isEmpty else { return "" }
+    return "[\(abstract.zshEscapeForSingleQuotedOptionSpec())]"
   }
 }
 
+extension String {
+  fileprivate func zshEscapeForSingleQuotedDescribeCompletion() -> String {
+    self
+      .replacing("\\", with: "\\\\")
+      .replacing(":", with: "\\:")
+      .shellEscapeForSingleQuotedString()
+  }
+  fileprivate func zshEscapeForSingleQuotedOptionSpec() -> String {
+    self
+      .replacing("\\", with: "\\\\")
+      .replacing(":", with: "\\:")
+      .replacing("[", with: "\\[")
+      .replacing("]", with: "\\]")
+      .shellEscapeForSingleQuotedString()
+  }
+}

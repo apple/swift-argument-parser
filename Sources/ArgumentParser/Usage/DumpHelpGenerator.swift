@@ -1,4 +1,4 @@
-//===----------------------------------------------------------*- swift -*-===//
+//===----------------------------------------------------------------------===//
 //
 // This source file is part of the Swift Argument Parser open source project
 //
@@ -9,16 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if swift(>=5.11)
 internal import ArgumentParserToolInfo
-internal import class Foundation.JSONEncoder
-#elseif swift(>=5.10)
-import ArgumentParserToolInfo
-import class Foundation.JSONEncoder
-#else
-@_implementationOnly import ArgumentParserToolInfo
-@_implementationOnly import class Foundation.JSONEncoder
-#endif
 
 internal struct DumpHelpGenerator {
   private var toolInfo: ToolInfoV0
@@ -32,21 +23,18 @@ internal struct DumpHelpGenerator {
   }
 
   func rendered() -> String {
-    let encoder = JSONEncoder()
-    encoder.outputFormatting = .prettyPrinted
-    if #available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *) {
-      encoder.outputFormatting.insert(.sortedKeys)
-    }
-    guard let encoded = try? encoder.encode(self.toolInfo) else { return "" }
-    return String(data: encoded, encoding: .utf8) ?? ""
+    JSONEncoder.encode(self.toolInfo)
   }
 }
 
-fileprivate extension BidirectionalCollection where Element == ParsableCommand.Type {
+extension BidirectionalCollection where Element == ParsableCommand.Type {
   /// Returns the ArgumentSet for the last command in this stack, including
   /// help and version flags, when appropriate.
-  func allArguments() -> ArgumentSet {
-    guard var arguments = self.last.map({ ArgumentSet($0, visibility: .private, parent: nil) })
+  fileprivate func allArguments() -> ArgumentSet {
+    guard
+      var arguments = self.last.map({
+        ArgumentSet($0, visibility: .private, parent: nil)
+      })
     else { return ArgumentSet() }
     self.versionArgumentDefinition().map { arguments.append($0) }
     self.helpArgumentDefinition().map { arguments.append($0) }
@@ -54,46 +42,20 @@ fileprivate extension BidirectionalCollection where Element == ParsableCommand.T
   }
 }
 
-fileprivate extension ArgumentSet {
-  func mergingCompositeArguments() -> ArgumentSet {
-    var arguments = ArgumentSet()
-    var slice = self[...]
-    while var argument = slice.popFirst() {
-      if argument.help.isComposite {
-        // If this argument is composite, we have a group of arguments to
-        // merge together.
-        let groupEnd = slice
-          .firstIndex { $0.help.keys != argument.help.keys }
-          ?? slice.endIndex
-        let group = [argument] + slice[..<groupEnd]
-        slice = slice[groupEnd...]
-
-        switch argument.kind {
-        case .named:
-          argument.kind = .named(group.flatMap(\.names))
-        case .positional, .default:
-          break
-        }
-
-        argument.help.valueName = group.map(\.valueName).first { !$0.isEmpty } ?? ""
-        argument.help.defaultValue = group.compactMap(\.help.defaultValue).first
-        argument.help.abstract = group.map(\.help.abstract).first { !$0.isEmpty } ?? ""
-        argument.help.discussion = group.map(\.help.discussion).first { !$0.isEmpty } ?? ""
-      }
-      arguments.append(argument)
-    }
-    return arguments
-  }
-}
-
-fileprivate extension ToolInfoV0 {
+extension ToolInfoV0 {
   init(commandStack: [ParsableCommand.Type]) {
     self.init(command: CommandInfoV0(commandStack: commandStack))
+    // FIXME: This is a hack to inject the help command into the tool info
+    // instead we should try to lift this into the parseable command tree
+    self.command.subcommands =
+      (self.command.subcommands ?? []) + [
+        CommandInfoV0(commandStack: commandStack + [HelpCommand.self])
+      ]
   }
 }
 
-fileprivate extension CommandInfoV0 {
-  init(commandStack: [ParsableCommand.Type]) {
+extension CommandInfoV0 {
+  fileprivate init(commandStack: [ParsableCommand.Type]) {
     guard let command = commandStack.last else {
       preconditionFailure("commandStack must not be empty")
     }
@@ -112,14 +74,16 @@ fileprivate extension CommandInfoV0 {
         commandStack.append(subcommand)
         return CommandInfoV0(commandStack: commandStack)
       }
-    let arguments = commandStack
+    let arguments =
+      commandStack
       .allArguments()
-      .mergingCompositeArguments()
       .compactMap(ArgumentInfoV0.init)
 
     self = CommandInfoV0(
       superCommands: superCommands,
+      shouldDisplay: command.configuration.shouldDisplay,
       commandName: command._commandName,
+      aliases: command.configuration.aliases,
       abstract: command.configuration.abstract,
       discussion: command.configuration.discussion,
       defaultSubcommand: defaultSubcommand,
@@ -128,33 +92,57 @@ fileprivate extension CommandInfoV0 {
   }
 }
 
-fileprivate extension ArgumentInfoV0 {
-  init?(argument: ArgumentDefinition) {
-    guard let kind = ArgumentInfoV0.KindV0(argument: argument) else { return nil }
+extension ArgumentInfoV0 {
+  fileprivate init?(argument: ArgumentDefinition) {
+    guard let kind = ArgumentInfoV0.KindV0(argument: argument) else {
+      return nil
+    }
+
+    let discussion: String?
+    let allValueDescriptions: [String: String]?
+    switch argument.help.discussion {
+    case .none:
+      discussion = nil
+      allValueDescriptions = nil
+    case .staticText(let _discussion):
+      discussion = _discussion
+      allValueDescriptions = nil
+    case .enumerated(let _discussion, let options):
+      discussion = _discussion
+      allValueDescriptions = options.allValueDescriptions
+    }
+
     self.init(
       kind: kind,
       shouldDisplay: argument.help.visibility.base == .default,
       sectionTitle: argument.help.parentTitle.nonEmpty,
       isOptional: argument.help.options.contains(.isOptional),
       isRepeating: argument.help.options.contains(.isRepeating),
+      parsingStrategy: ArgumentInfoV0.ParsingStrategyV0(argument: argument),
       names: argument.names.map(ArgumentInfoV0.NameInfoV0.init),
-      preferredName: argument.names.preferredName.map(ArgumentInfoV0.NameInfoV0.init),
+      preferredName: argument.names.preferredName.map(
+        ArgumentInfoV0.NameInfoV0.init),
       valueName: argument.valueName,
       defaultValue: argument.help.defaultValue,
-      allValues: argument.help.allValueStrings,
+      allValueStrings: argument.help.allValueStrings,
+      allValueDescriptions: allValueDescriptions,
+      completionKind: ArgumentInfoV0.CompletionKindV0(
+        completion: argument.completion),
       abstract: argument.help.abstract,
-      discussion: argument.help.discussion)
+      discussion: discussion)
   }
 }
 
-fileprivate extension ArgumentInfoV0.KindV0 {
-  init?(argument: ArgumentDefinition) {
+extension ArgumentInfoV0.KindV0 {
+  fileprivate init?(argument: ArgumentDefinition) {
     switch argument.kind {
     case .named:
       switch argument.update {
       case .nullary:
         self = .flag
       case .unary:
+        self = .option
+      case .optionalUnary:
         self = .option
       }
     case .positional:
@@ -165,15 +153,59 @@ fileprivate extension ArgumentInfoV0.KindV0 {
   }
 }
 
-fileprivate extension ArgumentInfoV0.NameInfoV0 {
-  init(name: Name) {
+extension ArgumentInfoV0.ParsingStrategyV0 {
+  fileprivate init(argument: ArgumentDefinition) {
+    switch argument.parsingStrategy {
+    case .`default`:
+      self = .default
+    case .scanningForValue:
+      self = .scanningForValue
+    case .unconditional:
+      self = .unconditional
+    case .upToNextOption:
+      self = .upToNextOption
+    case .allRemainingInput:
+      self = .allRemainingInput
+    case .postTerminator:
+      self = .postTerminator
+    case .allUnrecognized:
+      self = .allUnrecognized
+    }
+  }
+}
+
+extension ArgumentInfoV0.NameInfoV0 {
+  fileprivate init(name: Name) {
     switch name {
-    case let .long(n):
+    case .long(let n):
       self.init(kind: .long, name: n)
-    case let .short(n, _):
+    case .short(let n, _):
       self.init(kind: .short, name: String(n))
-    case let .longWithSingleDash(n):
+    case .longWithSingleDash(let n):
       self.init(kind: .longWithSingleDash, name: n)
+    }
+  }
+}
+
+extension ArgumentInfoV0.CompletionKindV0 {
+  fileprivate init?(completion: CompletionKind) {
+    switch completion.kind {
+    case .`default`:
+      return nil
+    case .list(let values):
+      self = .list(values: values)
+    case .file(let extensions):
+      self = .file(extensions: extensions)
+    case .directory:
+      self = .directory
+    case .shellCommand(let command):
+      self = .shellCommand(command: command)
+    case .custom(_):
+      self = .custom
+    case .customAsync(_):
+      self = .customAsync
+    case .customDeprecated(_):
+      self = .customDeprecated
     }
   }
 }

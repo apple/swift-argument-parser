@@ -1,4 +1,4 @@
-//===----------------------------------------------------------*- swift -*-===//
+//===----------------------------------------------------------------------===//
 //
 // This source file is part of the Swift Argument Parser open source project
 //
@@ -9,9 +9,9 @@
 //
 //===----------------------------------------------------------------------===//
 
-fileprivate extension Collection {
+extension Collection {
   /// - returns: A non-empty collection or `nil`.
-  var nonEmpty: Self? { isEmpty ? nil : self }
+  fileprivate var nonEmpty: Self? { isEmpty ? nil : self }
 }
 
 /// Header used to validate serialization version of an encoded ToolInfo struct.
@@ -44,9 +44,13 @@ public struct ToolInfoV0: Codable, Hashable {
 public struct CommandInfoV0: Codable, Hashable {
   /// Super commands and tools.
   public var superCommands: [String]?
+  /// Command should appear in help displays.
+  public var shouldDisplay: Bool = true
 
   /// Name used to invoke the command.
   public var commandName: String
+  /// List of command aliases.
+  public var aliases: [String]?
   /// Short description of the command's functionality.
   public var abstract: String?
   /// Extended description of the command's functionality.
@@ -62,7 +66,9 @@ public struct CommandInfoV0: Codable, Hashable {
 
   public init(
     superCommands: [String],
+    shouldDisplay: Bool,
     commandName: String,
+    aliases: [String]?,
     abstract: String,
     discussion: String,
     defaultSubcommand: String?,
@@ -70,14 +76,37 @@ public struct CommandInfoV0: Codable, Hashable {
     arguments: [ArgumentInfoV0]
   ) {
     self.superCommands = superCommands.nonEmpty
+    self.shouldDisplay = shouldDisplay
 
     self.commandName = commandName
+    self.aliases = aliases?.nonEmpty
     self.abstract = abstract.nonEmpty
     self.discussion = discussion.nonEmpty
 
     self.defaultSubcommand = defaultSubcommand?.nonEmpty
     self.subcommands = subcommands.nonEmpty
     self.arguments = arguments.nonEmpty
+  }
+
+  public init(from decoder: any Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    self.superCommands = try container.decodeIfPresent(
+      [String].self, forKey: .superCommands)
+    self.commandName = try container.decode(String.self, forKey: .commandName)
+    self.aliases = try container.decodeIfPresent(
+      [String].self, forKey: .aliases)
+    self.abstract = try container.decodeIfPresent(
+      String.self, forKey: .abstract)
+    self.discussion = try container.decodeIfPresent(
+      String.self, forKey: .discussion)
+    self.shouldDisplay =
+      try container.decodeIfPresent(Bool.self, forKey: .shouldDisplay) ?? true
+    self.defaultSubcommand = try container.decodeIfPresent(
+      String.self, forKey: .defaultSubcommand)
+    self.subcommands = try container.decodeIfPresent(
+      [CommandInfoV0].self, forKey: .subcommands)
+    self.arguments = try container.decodeIfPresent(
+      [ArgumentInfoV0].self, forKey: .arguments)
   }
 }
 
@@ -117,6 +146,44 @@ public struct ArgumentInfoV0: Codable, Hashable {
     case flag
   }
 
+  public enum ParsingStrategyV0: String, Codable, Hashable {
+    /// Expect the next `SplitArguments.Element` to be a value and parse it.
+    /// Will fail if the next input is an option.
+    case `default`
+    /// Parse the next `SplitArguments.Element.value`
+    case scanningForValue
+    /// Parse the next `SplitArguments.Element` as a value, regardless of its type.
+    case unconditional
+    /// Parse multiple `SplitArguments.Element.value` up to the next non-`.value`
+    case upToNextOption
+    /// Parse all remaining `SplitArguments.Element` as values, regardless of its type.
+    case allRemainingInput
+    /// Collect all the elements after the terminator, preventing them from
+    /// appearing in any other position.
+    case postTerminator
+    /// Collect all unused inputs once recognized arguments/options/flags have
+    /// been parsed.
+    case allUnrecognized
+  }
+
+  public enum CompletionKindV0: Codable, Hashable {
+    /// Use the specified list of completion strings.
+    case list(values: [String])
+    /// Complete file names with the specified extensions.
+    case file(extensions: [String])
+    /// Complete directory names that match the specified pattern.
+    case directory
+    /// Call the given shell command to generate completions.
+    case shellCommand(command: String)
+    /// Generate completions using the given three-parameter closure.
+    case custom
+    /// Generate completions using the given async three-parameter closure.
+    case customAsync
+    /// Generate completions using the given one-parameter closure.
+    @available(*, deprecated, message: "Use custom instead.")
+    case customDeprecated
+  }
+
   /// Kind of argument the ArgumentInfo describes.
   public var kind: KindV0
 
@@ -124,11 +191,14 @@ public struct ArgumentInfoV0: Codable, Hashable {
   public var shouldDisplay: Bool
   /// Custom name of argument's section.
   public var sectionTitle: String?
-  
+
   /// Argument can be omitted.
   public var isOptional: Bool
   /// Argument can be specified multiple times.
   public var isRepeating: Bool
+
+  /// Parsing strategy of the ArgumentInfo.
+  public var parsingStrategy: ParsingStrategyV0
 
   /// All names of the argument.
   public var names: [NameInfoV0]?
@@ -141,6 +211,8 @@ public struct ArgumentInfoV0: Codable, Hashable {
   public var defaultValue: String?
   // NOTE: this property will not be renamed to 'allValueStrings' to avoid
   // breaking compatibility with the current serialized format.
+  //
+  // This property is effectively deprecated.
   /// List of all valid values.
   public var allValues: [String]?
   /// List of all valid values.
@@ -148,6 +220,13 @@ public struct ArgumentInfoV0: Codable, Hashable {
     get { self.allValues }
     set { self.allValues = newValue }
   }
+  /// Mapping of valid values to descriptions of the value.
+  public var allValueDescriptions: [String: String]?
+
+  /// The type of completion to use for an argument or an option value.
+  ///
+  /// `nil` if the tool uses the default completion kind.
+  public var completionKind: CompletionKindV0?
 
   /// Short description of the argument's functionality.
   public var abstract: String?
@@ -160,11 +239,14 @@ public struct ArgumentInfoV0: Codable, Hashable {
     sectionTitle: String?,
     isOptional: Bool,
     isRepeating: Bool,
+    parsingStrategy: ParsingStrategyV0,
     names: [NameInfoV0]?,
     preferredName: NameInfoV0?,
     valueName: String?,
     defaultValue: String?,
-    allValues: [String]?,
+    allValueStrings: [String]?,
+    allValueDescriptions: [String: String]?,
+    completionKind: CompletionKindV0?,
     abstract: String?,
     discussion: String?
   ) {
@@ -172,19 +254,23 @@ public struct ArgumentInfoV0: Codable, Hashable {
 
     self.shouldDisplay = shouldDisplay
     self.sectionTitle = sectionTitle
-    
+
     self.isOptional = isOptional
     self.isRepeating = isRepeating
+
+    self.parsingStrategy = parsingStrategy
 
     self.names = names?.nonEmpty
     self.preferredName = preferredName
 
     self.valueName = valueName?.nonEmpty
     self.defaultValue = defaultValue?.nonEmpty
-    self.allValueStrings = allValues?.nonEmpty
+    self.allValueStrings = allValueStrings?.nonEmpty
+    self.allValueDescriptions = allValueDescriptions?.nonEmpty
+
+    self.completionKind = completionKind
 
     self.abstract = abstract?.nonEmpty
     self.discussion = discussion?.nonEmpty
   }
 }
-

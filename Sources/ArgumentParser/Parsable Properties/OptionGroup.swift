@@ -1,4 +1,4 @@
-//===----------------------------------------------------------*- swift -*-===//
+//===----------------------------------------------------------------------===//
 //
 // This source file is part of the Swift Argument Parser open source project
 //
@@ -17,7 +17,7 @@
 /// ```swift
 /// struct GlobalOptions: ParsableArguments {
 ///     @Flag(name: .shortAndLong)
-///     var verbose: Bool
+///     var verbose: Bool = false
 ///
 ///     @Argument var values: [Int]
 /// }
@@ -38,7 +38,7 @@ public struct OptionGroup<Value: ParsableArguments>: Decodable, ParsedWrapper {
   // FIXME: Adding this property works around the crasher described in
   // https://github.com/apple/swift-argument-parser/issues/338
   internal var _dummy: Bool = false
-  
+
   /// The title to use in the help screen for this option group.
   public var title: String = ""
 
@@ -46,7 +46,7 @@ public struct OptionGroup<Value: ParsableArguments>: Decodable, ParsedWrapper {
     self._parsedValue = _parsedValue
     self._visibility = .default
   }
-  
+
   public init(from _decoder: Decoder) throws {
     if let d = _decoder as? SingleValueDecoder,
       let value = try? d.previousValue(Value.self)
@@ -58,7 +58,7 @@ public struct OptionGroup<Value: ParsableArguments>: Decodable, ParsedWrapper {
         d.saveValue(wrappedValue)
       }
     }
-    
+
     do {
       try wrappedValue.validate()
     } catch {
@@ -79,15 +79,20 @@ public struct OptionGroup<Value: ParsableArguments>: Decodable, ParsedWrapper {
     title: String = "",
     visibility: ArgumentVisibility = .default
   ) {
-    self.init(_parsedValue: .init { parentKey in
-      var args = ArgumentSet(Value.self, visibility: .private, parent: parentKey)
-      if !title.isEmpty {
-        args.content.withEach {
-          $0.help.parentTitle = title
+    self.init(
+      _parsedValue: .init { parentKey in
+        var args = ArgumentSet(
+          Value.self, visibility: .private, parent: parentKey)
+        if !title.isEmpty {
+          args.content.withEach {
+            $0.help.parentTitle = title
+          }
         }
-      }
-      return args
-    })
+        args.content = args.content.map { arg in
+          arg.reducingHelpVisibility(to: visibility)
+        }
+        return args
+      })
     self._visibility = visibility
     self.title = title
   }
@@ -99,7 +104,7 @@ public struct OptionGroup<Value: ParsableArguments>: Decodable, ParsedWrapper {
       case .value(let v):
         return v
       case .definition:
-        fatalError(directlyInitializedError)
+        configurationFailure(directlyInitializedError)
       }
     }
     set {
@@ -127,7 +132,7 @@ extension OptionGroup {
   public init(_hiddenFromHelp: Bool) {
     self.init(visibility: .hidden)
   }
-  
+
   /// Creates a property that represents another parsable type.
   @available(*, deprecated, renamed: "init(visibility:)")
   @_disfavoredOverload

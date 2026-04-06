@@ -57,7 +57,7 @@ howdy
 hey
 ```
 
-## Handling Post-Validation Errors
+### Handling Post-Validation Errors
 
 The ``ValidationError`` type is a special `ArgumentParser` error — a validation error's message is always accompanied by an appropriate usage string. You can throw other errors, from either the `validate()` or `run()` method to indicate that something has gone wrong that isn't validation-specific. Errors that conform to `CustomStringConvertible` or `LocalizedError` provide the best experience for users.
 
@@ -103,7 +103,7 @@ struct Example: ParsableCommand {
 }
 ```
 
-## Handling Transform Errors
+### Handling Transform Errors
 
 During argument and option parsing, you can use a closure to transform the command line strings to custom types. If this transformation fails, you can throw a `ValidationError`; its `message` property will be displayed to the user.
 

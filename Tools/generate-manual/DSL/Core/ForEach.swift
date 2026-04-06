@@ -1,4 +1,4 @@
-//===----------------------------------------------------------*- swift -*-===//
+//===----------------------------------------------------------------------===//
 //
 // This source file is part of the Swift Argument Parser open source project
 //
@@ -13,7 +13,10 @@ struct ForEach<C>: MDocComponent where C: Collection {
   var items: C
   var builder: (C.Element, C.Index) -> MDocComponent
 
-  init(_ items: C, @MDocBuilder builder: @escaping (C.Element, C.Index) -> MDocComponent) {
+  init(
+    _ items: C,
+    @MDocBuilder builder: @escaping (C.Element, C.Index) -> MDocComponent
+  ) {
     self.items = items
     self.builder = builder
   }
@@ -21,7 +24,7 @@ struct ForEach<C>: MDocComponent where C: Collection {
   var body: MDocComponent {
     guard !items.isEmpty else { return Empty() }
     var currentIndex = items.startIndex
-    var components = [MDocComponent]()
+    var components: [MDocComponent] = []
     while currentIndex < items.endIndex {
       let item = items[currentIndex]
       components.append(builder(item, currentIndex))

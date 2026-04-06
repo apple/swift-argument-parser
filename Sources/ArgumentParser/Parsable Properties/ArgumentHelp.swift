@@ -1,4 +1,4 @@
-//===----------------------------------------------------------*- swift -*-===//
+//===----------------------------------------------------------------------===//
 //
 // This source file is part of the Swift Argument Parser open source project
 //
@@ -13,17 +13,17 @@
 public struct ArgumentHelp {
   /// A short description of the argument.
   public var abstract: String = ""
-  
+
   /// An expanded description of the argument, in plain text form.
-  public var discussion: String = ""
-  
+  public var discussion: String?
+
   /// An alternative name to use for the argument's value when showing usage
   /// information.
   ///
   /// - Note: This property is ignored when generating help for flags, since
   ///   flags don't include a value.
   public var valueName: String?
-  
+
   /// A visibility level indicating whether this argument should be shown in
   /// the extended help display.
   public var visibility: ArgumentVisibility = .default
@@ -33,21 +33,28 @@ public struct ArgumentHelp {
   @available(*, deprecated, message: "Use visibility level instead.")
   public var shouldDisplay: Bool {
     get {
-      return visibility.base == .default
+      visibility.base == .default
     }
     set {
       visibility = newValue ? .default : .hidden
     }
   }
-  
+
+  /// A property of meta type `any ExpressibleByArgument.Type` that serves to retain
+  /// information about any arguments that have enumerable values and their descriptions.
+  public var argumentType: (any ExpressibleByArgument.Type)?
+
   /// Creates a new help instance.
-  @available(*, deprecated, message: "Use init(_:discussion:valueName:visibility:) instead.")
+  @available(
+    *, deprecated,
+    message: "Use init(_:discussion:valueName:visibility:) instead."
+  )
   public init(
     _ abstract: String = "",
-    discussion: String = "",
+    discussion: String? = nil,
     valueName: String? = nil,
-    shouldDisplay: Bool)
-  {
+    shouldDisplay: Bool
+  ) {
     self.abstract = abstract
     self.discussion = discussion
     self.valueName = valueName
@@ -57,14 +64,16 @@ public struct ArgumentHelp {
   /// Creates a new help instance.
   public init(
     _ abstract: String = "",
-    discussion: String = "",
+    discussion: String? = nil,
     valueName: String? = nil,
-    visibility: ArgumentVisibility = .default)
-  {
+    visibility: ArgumentVisibility = .default,
+    argumentType: (any ExpressibleByArgument.Type)? = nil
+  ) {
     self.abstract = abstract
     self.discussion = discussion
     self.valueName = valueName
     self.visibility = visibility
+    self.argumentType = argumentType
   }
 
   /// A `Help` instance that shows an argument only in the extended help display.
@@ -78,7 +87,7 @@ public struct ArgumentHelp {
   }
 }
 
-extension ArgumentHelp: Sendable { }
+extension ArgumentHelp: Sendable {}
 
 extension ArgumentHelp: ExpressibleByStringInterpolation {
   public init(stringLiteral value: String) {

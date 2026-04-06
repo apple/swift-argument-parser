@@ -1,4 +1,4 @@
-//===----------------------------------------------------------*- swift -*-===//
+//===----------------------------------------------------------------------===//
 //
 // This source file is part of the Swift Argument Parser open source project
 //
@@ -23,12 +23,12 @@ struct Commit: Codable {
 struct Author: Codable {
   var login: String
   var htmlURL: String
-  
+
   enum CodingKeys: String, CodingKey {
     case login
     case htmlURL = "html_url"
   }
-  
+
   var inlineLink: String {
     "[\(login)]"
   }

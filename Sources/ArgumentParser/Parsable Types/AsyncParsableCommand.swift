@@ -1,4 +1,4 @@
-//===----------------------------------------------------------*- swift -*-===//
+//===----------------------------------------------------------------------===//
 //
 // This source file is part of the Swift Argument Parser open source project
 //
@@ -68,7 +68,8 @@ extension AsyncParsableCommand {
 /// See the ``AsyncParsableCommand`` documentation for usage information.
 @available(
   swift, deprecated: 5.6,
-  message: "Use @main directly on your root `AsyncParsableCommand` type.")
+  message: "Use @main directly on your root `AsyncParsableCommand` type."
+)
 public protocol AsyncMainProtocol {
   associatedtype Command: ParsableCommand
 }

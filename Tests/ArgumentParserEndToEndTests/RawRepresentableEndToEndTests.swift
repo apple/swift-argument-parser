@@ -1,4 +1,4 @@
-//===----------------------------------------------------------*- swift -*-===//
+//===----------------------------------------------------------------------===//
 //
 // This source file is part of the Swift Argument Parser open source project
 //
@@ -9,36 +9,38 @@
 //
 //===----------------------------------------------------------------------===//
 
-import XCTest
-import ArgumentParserTestHelpers
 import ArgumentParser
+import ArgumentParserTestHelpers
+import XCTest
 
-final class RawRepresentableEndToEndTests: XCTestCase {
-}
+final class RawRepresentableEndToEndTests: XCTestCase {}
 
 // MARK: -
 
-fileprivate struct Bar: ParsableArguments {
+private struct Bar: ParsableArguments {
   struct Identifier: RawRepresentable, Equatable, ExpressibleByArgument {
     var rawValue: Int
   }
-  
+
   @Option() var identifier: Identifier
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension RawRepresentableEndToEndTests {
   func testParsing_SingleOption() throws {
     AssertParse(Bar.self, ["--identifier", "123"]) { bar in
       XCTAssertEqual(bar.identifier, Bar.Identifier(rawValue: 123))
     }
   }
-  
+
   func testParsing_SingleOptionMultipleTimes() throws {
-    AssertParse(Bar.self, ["--identifier", "123", "--identifier", "456"]) { bar in
+    AssertParse(Bar.self, ["--identifier", "123", "--identifier", "456"]) {
+      bar in
       XCTAssertEqual(bar.identifier, Bar.Identifier(rawValue: 456))
     }
   }
-  
+
   func testParsing_SingleOption_Fails() throws {
     XCTAssertThrowsError(try Bar.parse([]))
     XCTAssertThrowsError(try Bar.parse(["--identifier"]))
@@ -46,3 +48,16 @@ extension RawRepresentableEndToEndTests {
     XCTAssertThrowsError(try Bar.parse(["--identifier", "123.456"]))
   }
 }
+
+struct LogLevel: RawRepresentable, CustomStringConvertible {
+  var rawValue: String
+  var description: String { rawValue }
+}
+
+extension LogLevel: LosslessStringConvertible {
+  init(_ description: String) {
+    self.rawValue = description
+  }
+}
+
+extension LogLevel: ExpressibleByArgument {}

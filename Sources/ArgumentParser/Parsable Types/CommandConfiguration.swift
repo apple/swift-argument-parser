@@ -1,4 +1,4 @@
-//===----------------------------------------------------------*- swift -*-===//
+//===----------------------------------------------------------------------===//
 //
 // This source file is part of the Swift Argument Parser open source project
 //
@@ -17,16 +17,16 @@ public struct CommandConfiguration: Sendable {
   /// the command type to hyphen-separated lowercase words.
   public var commandName: String?
 
-  /// The name of this command's "super-command". (experimental)
+  /// The name of this command's "super-command" (experimental).
   ///
   /// Use this when a command is part of a group of commands that are installed
   /// with a common dash-prefix, like `git`'s and `swift`'s constellation of
   /// independent commands.
   public var _superCommandName: String?
-  
+
   /// A one-line description of this command.
   public var abstract: String
-  
+
   /// A customized usage string to be shown in the help display and error
   /// messages.
   ///
@@ -37,22 +37,26 @@ public struct CommandConfiguration: Sendable {
 
   /// A longer description of this command, to be shown in the extended help
   /// display.
+  ///
+  /// Can include specific abstracts about the argument's possible values (e.g.
+  /// for a custom `EnumerableOptionValue` type), or can describe
+  /// a static block of text that extends the description of the argument.
   public var discussion: String
-  
+
   /// Version information for this command.
   public var version: String
 
   /// A Boolean value indicating whether this command should be shown in
   /// the extended help display.
   public var shouldDisplay: Bool
-  
+
   /// An array of the types that define subcommands for this command.
   ///
   /// This property "flattens" the grouping structure of the subcommands.
   /// Use 'ungroupedSubcommands' to access 'groupedSubcommands' to retain the grouping structure.
   public var subcommands: [ParsableCommand.Type] {
     get {
-      return ungroupedSubcommands + groupedSubcommands.flatMap { $0.subcommands }
+      ungroupedSubcommands + groupedSubcommands.flatMap { $0.subcommands }
     }
 
     set {
@@ -70,7 +74,7 @@ public struct CommandConfiguration: Sendable {
 
   /// The default command type to run if no subcommand is given.
   public var defaultSubcommand: ParsableCommand.Type?
-  
+
   /// Flag names to be used for help.
   public var helpNames: NameSpecification?
 
@@ -137,8 +141,8 @@ public struct CommandConfiguration: Sendable {
     self.aliases = aliases
   }
 
-  /// Creates the configuration for a command with a "super-command".
-  /// (experimental)
+  /// Creates the configuration for a command with a "super-command"
+  /// (experimental).
   public init(
     commandName: String? = nil,
     _superCommandName: String,
@@ -169,7 +173,10 @@ public struct CommandConfiguration: Sendable {
 }
 
 extension CommandConfiguration {
-  @available(*, deprecated, message: "Use the memberwise initializer with the aliases parameter.")
+  @available(
+    *, deprecated,
+    message: "Use the memberwise initializer with the aliases parameter."
+  )
   public init(
     commandName _commandName: String?,
     abstract: String,
@@ -194,7 +201,11 @@ extension CommandConfiguration {
       aliases: [])
   }
 
-  @available(*, deprecated, message: "Use the memberwise initializer with the usage and aliases parameters.")
+  @available(
+    *, deprecated,
+    message:
+      "Use the memberwise initializer with the usage and aliases parameters."
+  )
   public init(
     commandName _commandName: String?,
     abstract: String,

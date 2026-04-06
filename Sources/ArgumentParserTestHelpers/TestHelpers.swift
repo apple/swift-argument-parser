@@ -1,4 +1,4 @@
-//===----------------------------------------------------------*- swift -*-===//
+//===----------------------------------------------------------------------===//
 //
 // This source file is part of the Swift Argument Parser open source project
 //
@@ -26,9 +26,8 @@ extension CollectionDifference.Change {
 }
 
 @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
-extension CollectionDifference.Change: Swift.Comparable 
-  where ChangeElement: Equatable
-{
+extension CollectionDifference.Change: Swift.Comparable
+where ChangeElement: Equatable {
   public static func < (lhs: Self, rhs: Self) -> Bool {
     guard lhs.offset == rhs.offset else {
       return lhs.offset < rhs.offset
@@ -49,19 +48,21 @@ public protocol TestableParsableArguments: ParsableArguments {
   var didValidateExpectation: XCTestExpectation { get }
 }
 
-public extension TestableParsableArguments {
-  mutating func validate() throws {
+extension TestableParsableArguments {
+  public mutating func validate() throws {
     didValidateExpectation.fulfill()
   }
 }
 
 // extensions to the ParsableCommand protocol to facilitate XCTestExpectation support
-public protocol TestableParsableCommand: ParsableCommand, TestableParsableArguments {
+public protocol TestableParsableCommand: ParsableCommand,
+  TestableParsableArguments
+{
   var didRunExpectation: XCTestExpectation { get }
 }
 
-public extension TestableParsableCommand {
-  mutating func run() throws {
+extension TestableParsableCommand {
+  public mutating func run() throws {
     didRunExpectation.fulfill()
   }
 }
@@ -74,12 +75,13 @@ extension XCTestExpectation {
   }
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
 public func AssertResultFailure<T, U: Error>(
   _ expression: @autoclosure () -> Result<T, U>,
   _ message: @autoclosure () -> String = "",
   file: StaticString = #filePath,
-  line: UInt = #line)
-{
+  line: UInt = #line
+) {
   switch expression() {
   case .success:
     let msg = message()
@@ -89,7 +91,11 @@ public func AssertResultFailure<T, U: Error>(
   }
 }
 
-public func AssertErrorMessage<A>(_ type: A.Type, _ arguments: [String], _ errorMessage: String, file: StaticString = #filePath, line: UInt = #line) where A: ParsableArguments {
+// swift-format-ignore: AlwaysUseLowerCamelCase
+public func AssertErrorMessage<A>(
+  _ type: A.Type, _ arguments: [String], _ errorMessage: String,
+  file: StaticString = #filePath, line: UInt = #line
+) where A: ParsableArguments {
   do {
     _ = try A.parse(arguments)
     XCTFail("Parsing should have failed.", file: file, line: line)
@@ -99,17 +105,26 @@ public func AssertErrorMessage<A>(_ type: A.Type, _ arguments: [String], _ error
   }
 }
 
-public func AssertFullErrorMessage<A>(_ type: A.Type, _ arguments: [String], _ errorMessage: String, file: StaticString = #filePath, line: UInt = #line) where A: ParsableArguments {
+// swift-format-ignore: AlwaysUseLowerCamelCase
+public func AssertFullErrorMessage<A>(
+  _ type: A.Type, _ arguments: [String], _ errorMessage: String,
+  file: StaticString = #filePath, line: UInt = #line
+) where A: ParsableArguments {
   do {
     _ = try A.parse(arguments)
     XCTFail("Parsing should have failed.", file: (file), line: line)
   } catch {
     // We expect to hit this path, i.e. getting an error:
-    XCTAssertEqual(A.fullMessage(for: error), errorMessage, file: (file), line: line)
+    XCTAssertEqual(
+      A.fullMessage(for: error), errorMessage, file: (file), line: line)
   }
 }
 
-public func AssertParse<A>(_ type: A.Type, _ arguments: [String], file: StaticString = #filePath, line: UInt = #line, closure: (A) throws -> Void) where A: ParsableArguments {
+// swift-format-ignore: AlwaysUseLowerCamelCase
+public func AssertParse<A>(
+  _ type: A.Type, _ arguments: [String], file: StaticString = #filePath,
+  line: UInt = #line, closure: (A) throws -> Void
+) where A: ParsableArguments {
   do {
     let parsed = try type.parse(arguments)
     try closure(parsed)
@@ -119,11 +134,17 @@ public func AssertParse<A>(_ type: A.Type, _ arguments: [String], file: StaticSt
   }
 }
 
-public func AssertParseCommand<A: ParsableCommand>(_ rootCommand: ParsableCommand.Type, _ type: A.Type, _ arguments: [String], file: StaticString = #filePath, line: UInt = #line, closure: (A) throws -> Void) {
+// swift-format-ignore: AlwaysUseLowerCamelCase
+public func AssertParseCommand<A: ParsableCommand>(
+  _ rootCommand: ParsableCommand.Type, _ type: A.Type, _ arguments: [String],
+  file: StaticString = #filePath, line: UInt = #line,
+  closure: (A) throws -> Void
+) {
   do {
     let command = try rootCommand.parseAsRoot(arguments)
     guard let aCommand = command as? A else {
-      XCTFail("Command is of unexpected type: \(command)", file: (file), line: line)
+      XCTFail(
+        "Command is of unexpected type: \(command)", file: (file), line: line)
       return
     }
     try closure(aCommand)
@@ -133,12 +154,43 @@ public func AssertParseCommand<A: ParsableCommand>(_ rootCommand: ParsableComman
   }
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+public func AssertParseCommandErrorMessage<A: ParsableCommand>(
+  _ rootCommand: ParsableCommand.Type, _ type: A.Type, _ arguments: [String],
+  _ errorMessage: String,
+  file: StaticString = #filePath, line: UInt = #line
+) {
+  do {
+    let command = try rootCommand.parseAsRoot(arguments)
+    guard (command as? A) != nil else {
+      XCTFail(
+        "Command is of unexpected type: \(command)", file: (file), line: line)
+      return
+    }
+    XCTFail("Parsing as root should have failed.", file: file, line: line)
+  } catch {
+    let message = rootCommand.message(for: error)
+    XCTAssertEqual(message, errorMessage, file: file, line: line)
+  }
+}
+
+// swift-format-ignore: AlwaysUseLowerCamelCase
 public func AssertEqualStrings(
   actual: String,
   expected: String,
   file: StaticString = #filePath,
   line: UInt = #line
 ) {
+  // Normalize line endings to '\n'.
+  let actual =
+    actual
+    .replacingOccurrences(of: "\r\n", with: "\n")
+    .replacingOccurrences(of: "\r", with: "\n")
+  let expected =
+    expected
+    .replacingOccurrences(of: "\r\n", with: "\n")
+    .replacingOccurrences(of: "\r", with: "\n")
+
   // If the input strings are not equal, create a simple diff for debugging...
   guard actual != expected else {
     // Otherwise they are equal, early exit.
@@ -156,8 +208,8 @@ public func AssertEqualStrings(
 
     var result = ""
 
-    var insertions = [Int: String]()
-    var removals = [Int: String]()
+    var insertions: [Int: String] = [:]
+    var removals: [Int: String] = [:]
 
     for change in difference {
       switch change {
@@ -202,6 +254,7 @@ public func AssertEqualStrings(
     line: line)
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
 public func AssertHelp<T: ParsableArguments>(
   _ visibility: ArgumentVisibility,
   for _: T.Type,
@@ -233,13 +286,16 @@ public func AssertHelp<T: ParsableArguments>(
     XCTFail(file: file, line: line)
   } catch {
     let helpString = T.fullMessage(for: error, columns: columns)
-    AssertEqualStrings(actual: helpString, expected: expected, file: file, line: line)
+    AssertEqualStrings(
+      actual: helpString, expected: expected, file: file, line: line)
   }
 
   let helpString = T.helpMessage(includeHidden: includeHidden, columns: columns)
-  AssertEqualStrings(actual: helpString, expected: expected, file: file, line: line)
+  AssertEqualStrings(
+    actual: helpString, expected: expected, file: file, line: line)
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
 public func AssertHelp<T: ParsableCommand, U: ParsableCommand>(
   _ visibility: ArgumentVisibility,
   for _: T.Type,
@@ -266,35 +322,8 @@ public func AssertHelp<T: ParsableCommand, U: ParsableCommand>(
 
   let helpString = U.helpMessage(
     for: T.self, includeHidden: includeHidden, columns: columns)
-  AssertEqualStrings(actual: helpString, expected: expected, file: file, line: line)
-}
-
-public func AssertDump<T: ParsableArguments>(
-  for _: T.Type, equals expected: String,
-  file: StaticString = #filePath, line: UInt = #line
-) throws {
-  do {
-    _ = try T.parse(["--experimental-dump-help"])
-    XCTFail(file: file, line: line)
-  } catch {
-    let dumpString = T.fullMessage(for: error)
-    try AssertJSONEqualFromString(actual: dumpString, expected: expected, for: ToolInfoV0.self, file: file, line: line)
-  }
-
-  try AssertJSONEqualFromString(actual: T._dumpHelp(), expected: expected, for: ToolInfoV0.self, file: file, line: line)
-}
-
-public func AssertJSONEqualFromString<T: Codable & Equatable>(actual: String, expected: String, for type: T.Type, file: StaticString = #filePath, line: UInt = #line) throws {
-  if #available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *) {
-    AssertEqualStrings(actual: actual, expected: expected, file: file, line: line)
-  }
-
-  let actualJSONData = try XCTUnwrap(actual.data(using: .utf8), file: file, line: line)
-  let actualDumpJSON = try XCTUnwrap(JSONDecoder().decode(type, from: actualJSONData), file: file, line: line)
-
-  let expectedJSONData = try XCTUnwrap(expected.data(using: .utf8), file: file, line: line)
-  let expectedDumpJSON = try XCTUnwrap(JSONDecoder().decode(type, from: expectedJSONData), file: file, line: line)
-  XCTAssertEqual(actualDumpJSON, expectedDumpJSON)
+  AssertEqualStrings(
+    actual: helpString, expected: expected, file: file, line: line)
 }
 
 extension XCTest {
@@ -304,27 +333,37 @@ extension XCTest {
       ? bundleURL.deletingLastPathComponent()
       : bundleURL
   }
-  
+
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  @discardableResult
   public func AssertExecuteCommand(
     command: String,
     expected: String? = nil,
     exitCode: ExitCode = .success,
-    file: StaticString = #filePath, line: UInt = #line) throws
-  {
+    file: StaticString = #filePath,
+    line: UInt = #line,
+    environment: [String: String] = [:]
+  ) throws -> String {
     try AssertExecuteCommand(
       command: command.split(separator: " ").map(String.init),
       expected: expected,
       exitCode: exitCode,
       file: file,
-      line: line)
+      line: line,
+      environment: environment
+    )
   }
 
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  @discardableResult
   public func AssertExecuteCommand(
     command: [String],
     expected: String? = nil,
     exitCode: ExitCode = .success,
-    file: StaticString = #filePath, line: UInt = #line) throws
-  {
+    file: StaticString = #filePath,
+    line: UInt = #line,
+    environment: [String: String] = [:]
+  ) throws -> String {
     #if os(Windows)
     throw XCTSkip("Unsupported on this platform")
     #endif
@@ -333,41 +372,43 @@ extension XCTest {
     let commandName = String(command.first!)
     let commandURL = debugURL.appendingPathComponent(commandName)
     guard (try? commandURL.checkResourceIsReachable()) ?? false else {
-      XCTFail("No executable at '\(commandURL.standardizedFileURL.path)'.",
-              file: file, line: line)
-      return
+      XCTFail(
+        "No executable at '\(commandURL.standardizedFileURL.path)'.",
+        file: file, line: line)
+      return ""
     }
-    
+
     #if !canImport(Darwin) || os(macOS)
     let process = Process()
-    if #available(macOS 10.13, *) {
-      process.executableURL = commandURL
-    } else {
-      process.launchPath = commandURL.path
-    }
+    process.executableURL = commandURL
     process.arguments = arguments
-    
+
     let output = Pipe()
     process.standardOutput = output
     let error = Pipe()
     process.standardError = error
-    
-    if #available(macOS 10.13, *) {
-      guard (try? process.run()) != nil else {
-        XCTFail("Couldn't run command process.", file: file, line: line)
-        return
+
+    if !environment.isEmpty {
+      if let existingEnvironment = process.environment {
+        process.environment =
+          existingEnvironment.merging(environment) { (_, new) in new }
+      } else {
+        process.environment = environment
       }
-    } else {
-      process.launch()
+    }
+
+    guard (try? process.run()) != nil else {
+      XCTFail("Couldn't run command process.", file: file, line: line)
+      return ""
     }
     process.waitUntilExit()
-    
+
     let outputData = output.fileHandleForReading.readDataToEndOfFile()
-    let outputActual = String(data: outputData, encoding: .utf8)!.trimmingCharacters(in: .whitespacesAndNewlines)
-        
+    let outputActual = String(data: outputData, encoding: .utf8)!
+
     let errorData = error.fileHandleForReading.readDataToEndOfFile()
-    let errorActual = String(data: errorData, encoding: .utf8)!.trimmingCharacters(in: .whitespacesAndNewlines)
-    
+    let errorActual = String(data: errorData, encoding: .utf8)!
+
     if let expected = expected {
       AssertEqualStrings(
         actual: errorActual + outputActual,
@@ -376,69 +417,88 @@ extension XCTest {
         line: line)
     }
 
-    XCTAssertEqual(process.terminationStatus, exitCode.rawValue, file: file, line: line)
+    XCTAssertEqual(
+      process.terminationStatus, exitCode.rawValue, file: file, line: line)
     #else
     throw XCTSkip("Not supported on this platform")
     #endif
+    return outputActual
   }
 
-  public func AssertJSONOutputEqual(
-    command: String,
-    expected: String,
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  public func AssertJSONEqualFromString<T: Codable & Equatable>(
+    actual: String, expected: String, for type: T.Type,
+    file: StaticString = #filePath, line: UInt = #line
+  ) throws {
+    AssertEqualStrings(
+      actual: actual,
+      expected: expected,
+      file: file,
+      line: line)
+
+    let actualJSONData = try XCTUnwrap(
+      actual.data(using: .utf8), file: file, line: line)
+    let actualDumpJSON = try XCTUnwrap(
+      JSONDecoder().decode(type, from: actualJSONData), file: file, line: line)
+
+    let expectedJSONData = try XCTUnwrap(
+      expected.data(using: .utf8), file: file, line: line)
+    let expectedDumpJSON = try XCTUnwrap(
+      JSONDecoder().decode(type, from: expectedJSONData), file: file, line: line
+    )
+    XCTAssertEqual(actualDumpJSON, expectedDumpJSON)
+  }
+}
+
+// MARK: - Snapshot testing
+extension XCTest {
+  @discardableResult
+  public func assertSnapshot(
+    actual: String,
+    extension: String,
+    record: Bool = false,
+    test: StaticString = #function,
     file: StaticString = #filePath,
     line: UInt = #line
-  ) throws {
-    #if os(Windows)
-    throw XCTSkip("Unsupported on this platform")
-    #endif
+  ) throws -> String? {
+    let snapshotDirectoryURL = URL(fileURLWithPath: "\(file)")
+      .deletingLastPathComponent()
+      .appendingPathComponent("Snapshots")
+    let snapshotFileURL =
+      snapshotDirectoryURL
+      .appendingPathComponent("\(test).\(`extension`)")
 
-    let splitCommand = command.split(separator: " ")
-    let arguments = splitCommand.dropFirst().map(String.init)
+    let snapshotExists = FileManager.default.fileExists(
+      atPath: snapshotFileURL.path)
+    let recordEnvironment =
+      ProcessInfo.processInfo.environment["RECORD_SNAPSHOTS"] != nil
 
-    let commandName = String(splitCommand.first!)
-    let commandURL = debugURL.appendingPathComponent(commandName)
-    guard (try? commandURL.checkResourceIsReachable()) ?? false else {
-      XCTFail("No executable at '\(commandURL.standardizedFileURL.path)'.",
-              file: file, line: line)
-      return
-    }
-
-    #if !canImport(Darwin) || os(macOS)
-    let process = Process()
-    if #available(macOS 10.13, *) {
-      process.executableURL = commandURL
+    if record || recordEnvironment || !snapshotExists {
+      let recordedValue = actual
+      try FileManager.default.createDirectory(
+        at: snapshotDirectoryURL,
+        withIntermediateDirectories: true,
+        attributes: nil)
+      try recordedValue.write(
+        to: snapshotFileURL, atomically: true, encoding: .utf8)
+      XCTFail("Recorded new baseline", file: file, line: line)
+      return nil
     } else {
-      process.launchPath = commandURL.path
+      let expected = try String(contentsOf: snapshotFileURL, encoding: .utf8)
+      AssertEqualStrings(
+        actual: actual,
+        expected: expected,
+        file: file,
+        line: line)
+      return expected
     }
-    process.arguments = arguments
-
-    let output = Pipe()
-    process.standardOutput = output
-    let error = Pipe()
-    process.standardError = error
-
-    if #available(macOS 10.13, *) {
-      guard (try? process.run()) != nil else {
-        XCTFail("Couldn't run command process.", file: file, line: line)
-        return
-      }
-    } else {
-      process.launch()
-    }
-    process.waitUntilExit()
-
-    let outputString = try XCTUnwrap(String(data: output.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8))
-    XCTAssertTrue(error.fileHandleForReading.readDataToEndOfFile().isEmpty, "Error occurred with `--experimental-dump-help`")
-    try AssertJSONEqualFromString(actual: outputString, expected: expected, for: ToolInfoV0.self, file: file, line: line)
-    #else
-    throw XCTSkip("Not supported on this platform")
-    #endif
   }
 
-  public func AssertGenerateManual(
+  public func assertGenerateManual(
     multiPage: Bool,
     command: String,
-    expected: String,
+    record: Bool = false,
+    test: StaticString = #function,
     file: StaticString = #filePath,
     line: UInt = #line
   ) throws {
@@ -459,10 +519,114 @@ extension XCTest {
     if multiPage {
       command.append("--multi-page")
     }
-    try AssertExecuteCommand(
+    let actual = try AssertExecuteCommand(
       command: command,
+      file: file,
+      line: line)
+
+    try self.assertSnapshot(
+      actual: actual,
+      extension: "mdoc",
+      record: record,
+      test: test,
+      file: file,
+      line: line)
+  }
+
+  public func assertGeneratedReference(
+    command: String,
+    doccFlavored: Bool,
+    record: Bool = false,
+    test: StaticString = #function,
+    file: StaticString = #filePath,
+    line: UInt = #line
+  ) throws {
+    #if os(Windows)
+    throw XCTSkip("Unsupported on this platform")
+    #endif
+
+    let commandURL = debugURL.appendingPathComponent(command)
+    let command: [String]
+    if doccFlavored {
+      command = [
+        "generate-docc-reference", commandURL.path,
+        "--output-directory", "-",
+        "--style", "docc",
+      ]
+    } else {
+      command = [
+        "generate-docc-reference", commandURL.path,
+        "--output-directory", "-",
+      ]
+    }
+    let actual = try AssertExecuteCommand(
+      command: command,
+      file: file,
+      line: line)
+
+    try self.assertSnapshot(
+      actual: actual,
+      extension: "md",
+      record: record,
+      test: test,
+      file: file,
+      line: line)
+  }
+
+  public func assertDumpHelp<T: ParsableArguments>(
+    type: T.Type,
+    record: Bool = false,
+    test: StaticString = #function,
+    file: StaticString = #filePath,
+    line: UInt = #line
+  ) throws {
+    let actual: String
+    do {
+      _ = try T.parse(["--experimental-dump-help"])
+      XCTFail(file: file, line: line)
+      return
+    } catch {
+      actual = T.fullMessage(for: error)
+    }
+
+    let apiOutput = T._dumpHelp()
+    AssertEqualStrings(actual: actual, expected: apiOutput)
+
+    let expected = try self.assertSnapshot(
+      actual: actual,
+      extension: "json",
+      record: record,
+      test: test,
+      file: file,
+      line: line)
+
+    guard let expected else { return }
+
+    try AssertJSONEqualFromString(
+      actual: actual,
       expected: expected,
-      exitCode: .success,
+      for: ToolInfoV0.self,
+      file: file,
+      line: line)
+  }
+
+  public func assertDumpHelp(
+    command: String,
+    record: Bool = false,
+    test: StaticString = #function,
+    file: StaticString = #filePath,
+    line: UInt = #line
+  ) throws {
+    let actual = try AssertExecuteCommand(
+      command: command + " --experimental-dump-help",
+      expected: nil,
+      file: file,
+      line: line)
+    try self.assertSnapshot(
+      actual: actual,
+      extension: "json",
+      record: record,
+      test: test,
       file: file,
       line: line)
   }

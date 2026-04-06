@@ -1,4 +1,4 @@
-//===----------------------------------------------------------*- swift -*-===//
+//===----------------------------------------------------------------------===//
 //
 // This source file is part of the Swift Argument Parser open source project
 //
@@ -12,14 +12,14 @@
 import ArgumentParser
 
 extension Package {
-  /// Describe the current package
+  /// Describe the current package.
   struct Describe: ParsableCommand {
     @OptionGroup()
     var options: Options
-    
+
     @Option(help: "Output format")
     var type: OutputType
-    
+
     enum OutputType: String, ExpressibleByArgument, Decodable {
       case json
       case text

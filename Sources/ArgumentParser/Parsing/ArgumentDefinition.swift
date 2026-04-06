@@ -1,4 +1,4 @@
-//===----------------------------------------------------------*- swift -*-===//
+//===----------------------------------------------------------------------===//
 //
 // This source file is part of the Swift Argument Parser open source project
 //
@@ -14,29 +14,34 @@ struct ArgumentDefinition {
   /// argument's value.
   enum Update {
     typealias Nullary = (InputOrigin, Name?, inout ParsedValues) throws -> Void
-    typealias Unary = (InputOrigin, Name?, String, inout ParsedValues) throws -> Void
-    
+    typealias Unary = (InputOrigin, Name?, String, inout ParsedValues) throws ->
+      Void
+
     /// An argument that gets its value solely from its presence.
     case nullary(Nullary)
-    
+
     /// An argument that takes a string as its value.
     case unary(Unary)
+
+    /// An argument that can work as both a flag (nullary) and option (unary).
+    /// When no value follows, uses nullaryHandler. When a value is available, uses unaryHandler.
+    case optionalUnary(nullaryHandler: Nullary, unaryHandler: Unary)
   }
-  
+
   typealias Initial = (InputOrigin, inout ParsedValues) throws -> Void
-  
+
   enum Kind {
     /// An option or flag, with a name and an optional value.
     case named([Name])
-    
+
     /// A positional argument.
     case positional
-    
+
     /// A pseudo-argument that takes its value from a property's default value
     /// instead of from command-line arguments.
     case `default`
   }
-  
+
   struct Help {
     struct Options: OptionSet {
       var rawValue: UInt
@@ -51,7 +56,7 @@ struct ArgumentDefinition {
     var allValueStrings: [String]
     var isComposite: Bool
     var abstract: String
-    var discussion: String
+    var discussion: ArgumentDiscussion?
     var valueName: String
     var visibility: ArgumentVisibility
     var parentTitle: String
@@ -70,13 +75,13 @@ struct ArgumentDefinition {
       self.allValueStrings = allValueStrings
       self.isComposite = isComposite
       self.abstract = help?.abstract ?? ""
-      self.discussion = help?.discussion ?? ""
+      self.discussion = .init(help?.discussion, help?.argumentType)
       self.valueName = help?.valueName ?? ""
       self.visibility = help?.visibility ?? .default
       self.parentTitle = ""
     }
   }
-  
+
   /// This folds the public `ArrayParsingStrategy` and `SingleValueParsingStrategy`
   /// into a single enum.
   enum ParsingStrategy {
@@ -98,21 +103,21 @@ struct ArgumentDefinition {
     /// been parsed.
     case allUnrecognized
   }
-  
+
   var kind: Kind
   var help: Help
   var completion: CompletionKind
   var parsingStrategy: ParsingStrategy
   var update: Update
   var initial: Initial
-  
+
   var names: [Name] {
     switch kind {
     case .named(let n): return n
     case .positional, .default: return []
     }
   }
-  
+
   var valueName: String {
     help.valueName.mapEmpty {
       names.preferredName?.valueString
@@ -132,7 +137,10 @@ struct ArgumentDefinition {
     if case (.positional, .nullary) = (kind, update) {
       preconditionFailure("Can't create a nullary positional argument.")
     }
-    
+    if case (.positional, .optionalUnary) = (kind, update) {
+      preconditionFailure("Can't create an optionalUnary positional argument.")
+    }
+
     self.kind = kind
     self.help = help
     self.completion = completion
@@ -146,14 +154,22 @@ extension ArgumentDefinition: CustomDebugStringConvertible {
   var debugDescription: String {
     switch (kind, update) {
     case (.named(let names), .nullary):
-      return names
+      return
+        names
         .map { $0.synopsisString }
         .joined(separator: ",")
     case (.named(let names), .unary):
-      return names
+      return
+        names
         .map { $0.synopsisString }
         .joined(separator: ",")
         + " <\(valueName)>"
+    case (.named(let names), .optionalUnary):
+      return
+        names
+        .map { $0.synopsisString }
+        .joined(separator: ",")
+        + " [<\(valueName)>]"  // Optional value syntax
     case (.positional, _):
       return "<\(valueName)>"
     case (.default, _):
@@ -168,7 +184,7 @@ extension ArgumentDefinition {
     result.help.options.insert(.isOptional)
     return result
   }
-  
+
   var nonOptional: ArgumentDefinition {
     var result = self
     result.help.options.remove(.isOptional)
@@ -183,31 +199,35 @@ extension ArgumentDefinition {
     }
     return false
   }
-  
+
   var isRepeatingPositional: Bool {
     isPositional && help.options.contains(.isRepeating)
   }
 
   var isNullary: Bool {
-    if case .nullary = update {
+    switch update {
+    case .nullary:
       return true
-    } else {
+    case .optionalUnary:
+      return true  // Can behave as nullary
+    case .unary:
       return false
     }
   }
-  
+
   var allowsJoinedValue: Bool {
     names.contains(where: { $0.allowsJoined })
   }
 }
 
 extension ArgumentDefinition.Kind {
-  static func name(key: InputKey, specification: NameSpecification) -> ArgumentDefinition.Kind {
+  static func name(key: InputKey, specification: NameSpecification)
+    -> ArgumentDefinition.Kind
+  {
     let names = specification.makeNames(key)
     return ArgumentDefinition.Kind.named(names)
   }
 }
-
 
 // MARK: - Common @Argument, @Option, Unparsed Initializer Path
 extension ArgumentDefinition {
@@ -300,7 +320,9 @@ extension ArgumentDefinition {
     help: ArgumentHelp?,
     defaultValueDescription: String?,
     parsingStrategy: ParsingStrategy,
-    parser: @escaping (InputKey, InputOrigin, Name?, String) throws -> Container.Contained,
+    parser:
+      @escaping (InputKey, InputOrigin, Name?, String) throws ->
+      Container.Contained,
     initial: Container.Initial?,
     completion: CompletionKind?
   ) where Container: ArgumentDefinitionContainer {
@@ -308,7 +330,8 @@ extension ArgumentDefinition {
       kind: kind,
       help: .init(
         allValueStrings: allValueStrings,
-        options: Container.helpOptions.union(initial != nil ? [.isOptional] : []),
+        options: Container.helpOptions.union(
+          initial != nil ? [.isOptional] : []),
         help: help,
         defaultValue: defaultValueDescription,
         key: key,
@@ -350,11 +373,12 @@ protocol ArgumentDefinitionContainer {
 }
 
 protocol ArgumentDefinitionContainerExpressibleByArgument:
-  ArgumentDefinitionContainer where Contained: ExpressibleByArgument {
+  ArgumentDefinitionContainer
+where Contained: ExpressibleByArgument {
   static func defaultValueDescription(_ initial: Initial?) -> String?
 }
 
-enum Bare<T> { }
+enum Bare<T> {}
 
 extension Bare: ArgumentDefinitionContainer {
   typealias Contained = T
@@ -376,6 +400,11 @@ extension Bare: ArgumentDefinitionContainerExpressibleByArgument
 where Contained: ExpressibleByArgument {
   static func defaultValueDescription(_ initial: T?) -> String? {
     guard let initial = initial else { return nil }
+
+    if let initial = initial as? (any CaseIterable & RawRepresentable) {
+      return String(describing: initial.rawValue)
+    }
+
     return initial.defaultValueDescription
   }
 }
@@ -400,13 +429,16 @@ extension Optional: ArgumentDefinitionContainerExpressibleByArgument
 where Contained: ExpressibleByArgument {
   static func defaultValueDescription(_ initial: Initial?) -> String? {
     guard let initial = initial else { return nil }
+    if let initial = initial as? (any CaseIterable & RawRepresentable) {
+      return String(describing: initial.rawValue)
+    }
     return initial.defaultValueDescription
   }
 }
 
 extension Array: ArgumentDefinitionContainer {
   typealias Contained = Element
-  typealias Initial = Array<Element>
+  typealias Initial = [Element]
 
   static var helpOptions: ArgumentDefinition.Help.Options { [.isRepeating] }
 
@@ -426,12 +458,17 @@ extension Array: ArgumentDefinitionContainer {
 
 extension Array: ArgumentDefinitionContainerExpressibleByArgument
 where Element: ExpressibleByArgument {
-  static func defaultValueDescription(_ initial: Array<Element>?) -> String? {
+  static func defaultValueDescription(_ initial: [Element]?) -> String? {
     guard let initial = initial else { return nil }
     guard !initial.isEmpty else { return nil }
     return initial
       .lazy
-      .map { $0.defaultValueDescription }
+      .map { element in
+        if let element = element as? (any CaseIterable & RawRepresentable) {
+          return String(describing: element.rawValue)
+        }
+        return element.defaultValueDescription
+      }
       .joined(separator: ", ")
   }
 }

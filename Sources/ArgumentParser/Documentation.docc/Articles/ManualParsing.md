@@ -6,7 +6,7 @@ Provide your own array of command-line inputs or work directly with parsed comma
 
 For most programs, denoting the root command type as `@main` is all that's necessary. As the program's entry point, that type parses the command-line arguments to find the correct command from your tree of nested subcommands, instantiates and validates the result, and executes the chosen command. For more control, however, you can perform each of those steps manually.
 
-## Parsing Arguments
+### Parsing Arguments
 
 For simple Swift scripts, and for those who prefer a straight-down-the-left-edge-of-the-screen scripting style, you can define a single ``ParsableArguments`` type to parse explicitly from the command-line arguments.
 
@@ -47,7 +47,7 @@ let chosen = options.elements
 print(chosen.joined(separator: "\n"))
 ```
 
-## Parsing Commands
+### Parsing Commands
 
 Manually parsing commands is a little more complex than parsing a simple `ParsableArguments` type. The result of parsing from a tree of subcommands may be of a different type than the root of the tree, so the static ``ParsableCommand/parseAsRoot(_:)`` method returns a type-erased ``ParsableCommand``.
 
@@ -80,7 +80,7 @@ You chose to do something else.
 1050
 ```
 
-## Providing Command-Line Input
+### Providing Command-Line Input
 
 All of the parsing methods — `parse()`, `parseOrExit()`, and `parseAsRoot()` — can optionally take an array of command-line inputs as an argument. You can use this capability to test your commands, to perform pre-parse filtering of the command-line arguments, or to manually execute commands from within the same or another target.
 

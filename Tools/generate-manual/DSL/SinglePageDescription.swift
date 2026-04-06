@@ -1,4 +1,4 @@
-//===----------------------------------------------------------*- swift -*-===//
+//===----------------------------------------------------------------------===//
 //
 // This source file is part of the Swift Argument Parser open source project
 //
@@ -32,29 +32,42 @@ struct SinglePageDescription: MDocComponent {
       MDocMacro.ParagraphBreak()
     }
 
-    if let discussion = command.discussion {
+    let discussion = DiscussionText(
+      discussion: command.discussion,
+      allValueStrings: nil,
+      allValueDescriptions: nil)
+
+    if let discussion = discussion {
       discussion
     }
 
     List {
       for argument in command.arguments ?? [] {
-        MDocMacro.ListItem(title: argument.manualPageDescription)
+        if argument.shouldDisplay {
+          MDocMacro.ListItem(title: argument.manualPageDescription)
 
-        if let abstract = argument.abstract {
-          abstract
-        }
+          let discussion = DiscussionText(
+            discussion: argument.discussion,
+            allValueStrings: argument.allValueStrings,
+            allValueDescriptions: argument.allValueDescriptions)
 
-        if argument.abstract != nil, argument.discussion != nil {
-          MDocMacro.ParagraphBreak()
-        }
+          if let abstract = argument.abstract {
+            abstract
+          }
 
-        if let discussion = argument.discussion {
-          discussion
+          if argument.abstract != nil, discussion != nil {
+            MDocMacro.ParagraphBreak()
+          }
+
+          if let discussion = discussion {
+            discussion
+          }
         }
       }
 
       for subcommand in command.subcommands ?? [] {
-        MDocMacro.ListItem(title: MDocMacro.Emphasis(arguments: [subcommand.commandName]))
+        MDocMacro.ListItem(
+          title: MDocMacro.Emphasis(arguments: [subcommand.commandName]))
         SinglePageDescription(command: subcommand, root: false).core
       }
     }

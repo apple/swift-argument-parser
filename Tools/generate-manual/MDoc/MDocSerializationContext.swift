@@ -1,4 +1,4 @@
-//===----------------------------------------------------------*- swift -*-===//
+//===----------------------------------------------------------------------===//
 //
 // This source file is part of the Swift Argument Parser open source project
 //
@@ -13,5 +13,5 @@
 public struct MDocSerializationContext {
   var macroLine: Bool = false
 
-  public init() { }
+  public init() {}
 }

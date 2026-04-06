@@ -1,4 +1,4 @@
-//===----------------------------------------------------------*- swift -*-===//
+//===----------------------------------------------------------------------===//
 //
 // This source file is part of the Swift Argument Parser open source project
 //
@@ -12,10 +12,12 @@
 // MARK: Helpers
 
 extension Sequence {
-  func uniqued<T: Hashable>(by transform: (Element) throws -> T) rethrows -> [Element] {
+  func uniqued<T: Hashable>(by transform: (Element) throws -> T) rethrows
+    -> [Element]
+  {
     var seen: Set<T> = []
     var result: [Element] = []
-    
+
     for element in self {
       if try seen.insert(transform(element)).inserted {
         result.append(element)

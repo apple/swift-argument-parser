@@ -1,4 +1,4 @@
-//===----------------------------------------------------------*- swift -*-===//
+//===----------------------------------------------------------------------===//
 //
 // This source file is part of the Swift Argument Parser open source project
 //
@@ -10,6 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 import XCTest
+
 @testable import ArgumentParser
 
 final class StringSnakeCaseTests: XCTestCase {}
@@ -21,14 +22,17 @@ extension StringSnakeCaseTests {
       ("myURL", "my_url"),
       ("singleCharacterAtEndX", "single_character_at_end_x"),
       ("thisIsAnXMLProperty", "this_is_an_xml_property"),
-      ("single", "single"), // no underscore
-      ("", ""), // don't die on empty string
-      ("a", "a"), // single character
-      ("aA", "a_a"), // two characters
-      ("version4Thing", "version4_thing"), // numerics
-      ("partCAPS", "part_caps"), // only insert underscore before first all caps
-      ("partCAPSLowerAGAIN", "part_caps_lower_again"), // switch back and forth caps.
-      ("manyWordsInThisThing", "many_words_in_this_thing"), // simple lowercase + underscore + more
+      ("single", "single"),  // no underscore
+      ("", ""),  // don't die on empty string
+      ("a", "a"),  // single character
+      ("aA", "a_a"),  // two characters
+      ("version4Thing", "version4_thing"),  // numerics
+      // only insert underscore before first all caps
+      ("partCAPS", "part_caps"),
+      // switch back and forth caps.
+      ("partCAPSLowerAGAIN", "part_caps_lower_again"),
+      // simple lowercase + underscore + more
+      ("manyWordsInThisThing", "many_words_in_this_thing"),
       ("asdfĆqer", "asdf_ćqer"),
       ("already_snake_case", "already_snake_case"),
       ("dataPoint22", "data_point22"),
@@ -44,33 +48,37 @@ extension StringSnakeCaseTests {
       ("_test_", "_test_"),
       ("__test", "__test"),
       ("test__", "test__"),
-      ("m͉̟̹y̦̳G͍͚͎̳r̤͉̤͕ͅea̲͕t͇̥̼͖U͇̝̠R͙̻̥͓̣L̥̖͎͓̪̫ͅR̩͖̩eq͈͓u̞e̱s̙t̤̺ͅ", "m͉̟̹y̦̳_g͍͚͎̳r̤͉̤͕ͅea̲͕t͇̥̼͖_u͇̝̠r͙̻̥͓̣l̥̖͎͓̪̫ͅ_r̩͖̩eq͈͓u̞e̱s̙t̤̺ͅ"), // because Itai wanted to test this
-      ("🐧🐟", "🐧🐟"), // fishy emoji example?
+      // because Itai wanted to test this
+      ("m͉̟̹y̦̳G͍͚͎̳r̤͉̤͕ͅea̲͕t͇̥̼͖U͇̝̠R͙̻̥͓̣L̥̖͎͓̪̫ͅR̩͖̩eq͈͓u̞e̱s̙t̤̺ͅ", "m͉̟̹y̦̳_g͍͚͎̳r̤͉̤͕ͅea̲͕t͇̥̼͖_u͇̝̠r͙̻̥͓̣l̥̖͎͓̪̫ͅ_r̩͖̩eq͈͓u̞e̱s̙t̤̺ͅ"),
+      ("🐧🐟", "🐧🐟"),  // fishy emoji example?
       ("URLSession", "url_session"),
       ("RADAR", "radar"),
       ("Sample", "sample"),
       ("_Sample", "_sample"),
-      ("_IAmAnAPPDeveloper", "_i_am_an_app_developer")
+      ("_IAmAnAPPDeveloper", "_i_am_an_app_developer"),
     ]
     for test in toSnakeCaseTests {
       XCTAssertEqual(test.0.convertedToSnakeCase(), test.1)
     }
   }
-  
+
   func testStringSnakeCaseWithSeparator() {
     let toSnakeCaseTests = [
       ("simpleOneTwo", "simple-one-two"),
       ("myURL", "my-url"),
       ("singleCharacterAtEndX", "single-character-at-end-x"),
       ("thisIsAnXMLProperty", "this-is-an-xml-property"),
-      ("single", "single"), // no underscore
-      ("", ""), // don't die on empty string
-      ("a", "a"), // single character
-      ("aA", "a-a"), // two characters
-      ("version4Thing", "version4-thing"), // numerics
-      ("partCAPS", "part-caps"), // only insert underscore before first all caps
-      ("partCAPSLowerAGAIN", "part-caps-lower-again"), // switch back and forth caps.
-      ("manyWordsInThisThing", "many-words-in-this-thing"), // simple lowercase + underscore + more
+      ("single", "single"),  // no underscore
+      ("", ""),  // don't die on empty string
+      ("a", "a"),  // single character
+      ("aA", "a-a"),  // two characters
+      ("version4Thing", "version4-thing"),  // numerics
+      // only insert underscore before first all caps
+      ("partCAPS", "part-caps"),
+      // switch back and forth caps.
+      ("partCAPSLowerAGAIN", "part-caps-lower-again"),
+      // simple lowercase + underscore + more
+      ("manyWordsInThisThing", "many-words-in-this-thing"),
       ("asdfĆqer", "asdf-ćqer"),
       ("already_snake_case", "already_snake_case"),
       ("dataPoint22", "data-point22"),
@@ -86,13 +94,14 @@ extension StringSnakeCaseTests {
       ("_test_", "_test_"),
       ("__test", "__test"),
       ("test__", "test__"),
-      ("m͉̟̹y̦̳G͍͚͎̳r̤͉̤͕ͅea̲͕t͇̥̼͖U͇̝̠R͙̻̥͓̣L̥̖͎͓̪̫ͅR̩͖̩eq͈͓u̞e̱s̙t̤̺ͅ", "m͉̟̹y̦̳-g͍͚͎̳r̤͉̤͕ͅea̲͕t͇̥̼͖-u͇̝̠r͙̻̥͓̣l̥̖͎͓̪̫ͅ-r̩͖̩eq͈͓u̞e̱s̙t̤̺ͅ"), // because Itai wanted to test this
-      ("🐧🐟", "🐧🐟"), // fishy emoji example?
+      // because Itai wanted to test this
+      ("m͉̟̹y̦̳G͍͚͎̳r̤͉̤͕ͅea̲͕t͇̥̼͖U͇̝̠R͙̻̥͓̣L̥̖͎͓̪̫ͅR̩͖̩eq͈͓u̞e̱s̙t̤̺ͅ", "m͉̟̹y̦̳-g͍͚͎̳r̤͉̤͕ͅea̲͕t͇̥̼͖-u͇̝̠r͙̻̥͓̣l̥̖͎͓̪̫ͅ-r̩͖̩eq͈͓u̞e̱s̙t̤̺ͅ"),
+      ("🐧🐟", "🐧🐟"),  // fishy emoji example?
       ("URLSession", "url-session"),
       ("RADAR", "radar"),
       ("Sample", "sample"),
       ("_Sample", "_-sample"),
-      ("_IAmAnAPPDeveloper", "_-i-am-an-app-developer")
+      ("_IAmAnAPPDeveloper", "_-i-am-an-app-developer"),
     ]
     for test in toSnakeCaseTests {
       XCTAssertEqual(test.0.convertedToSnakeCase(separator: "-"), test.1)

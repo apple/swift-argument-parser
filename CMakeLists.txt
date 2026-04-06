@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.19)
 
+# Due to a bug in CMake, we need to enable the C language before we can use
+# GNUInstallDirs.
 project(swift-argument-parser
-  LANGUAGES Swift)
+  LANGUAGES C Swift)
 
 option(BUILD_EXAMPLES "Build Example Programs" TRUE)
 option(BUILD_SHARED_LIBS "Build shared libraries by default" YES)
@@ -15,11 +17,17 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_Swift_MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/swift)
 
 include(CTest)
+
+include(GNUInstallDirs)
 include(SwiftSupport)
 
-find_package(dispatch CONFIG)
-find_package(Foundation CONFIG)
-find_package(XCTest CONFIG)
+if(NOT APPLE)
+  find_package(dispatch CONFIG)
+  find_package(Foundation CONFIG)
+  if(BUILD_TESTING)
+    find_package(XCTest CONFIG)
+  endif()
+endif()
 
 add_subdirectory(Sources)
 if(BUILD_EXAMPLES)

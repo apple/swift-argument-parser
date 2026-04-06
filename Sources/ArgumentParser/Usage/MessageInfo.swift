@@ -1,4 +1,4 @@
-//===----------------------------------------------------------*- swift -*-===//
+//===----------------------------------------------------------------------===//
 //
 // This source file is part of the Swift Argument Parser open source project
 //
@@ -9,26 +9,15 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if swift(>=5.11)
-internal import protocol Foundation.LocalizedError
-internal import class Foundation.NSError
-#elseif swift(>=5.10)
-import protocol Foundation.LocalizedError
-import class Foundation.NSError
-#else
-@_implementationOnly import protocol Foundation.LocalizedError
-@_implementationOnly import class Foundation.NSError
-#endif
-
 enum MessageInfo {
   case help(text: String)
   case validation(message: String, usage: String, help: String)
   case other(message: String, exitCode: ExitCode)
-  
+
   init(error: Error, type: ParsableArguments.Type, columns: Int? = nil) {
     var commandStack: [ParsableCommand.Type]
     var parserError: ParserError? = nil
-    
+
     switch error {
     case let e as CommandError:
       commandStack = e.commandStack
@@ -37,24 +26,30 @@ enum MessageInfo {
       // Exit early on built-in requests
       switch e.parserError {
       case .helpRequested(let visibility):
-        self = .help(text: HelpGenerator(commandStack: e.commandStack, visibility: visibility).rendered(screenWidth: columns))
+        self = .help(
+          text: HelpGenerator(
+            commandStack: e.commandStack, visibility: visibility
+          ).rendered(screenWidth: columns))
         return
 
       case .dumpHelpRequested:
-        self = .help(text: DumpHelpGenerator(commandStack: e.commandStack).rendered())
+        self = .help(
+          text: DumpHelpGenerator(commandStack: e.commandStack).rendered())
         return
 
       case .versionRequested:
-        let versionString = commandStack
+        let versionString =
+          commandStack
           .map { $0.configuration.version }
           .last(where: { !$0.isEmpty })
           ?? "Unspecified version"
         self = .help(text: versionString)
         return
-        
+
       case .completionScriptRequested(let shell):
         do {
-          let completionsGenerator = try CompletionsGenerator(command: type.asCommand, shellName: shell)
+          let completionsGenerator = try CompletionsGenerator(
+            command: type.asCommand, shellName: shell)
           self = .help(text: completionsGenerator.generateCompletionScript())
           return
         } catch {
@@ -65,14 +60,16 @@ enum MessageInfo {
       case .completionScriptCustomResponse(let output):
         self = .help(text: output)
         return
-        
+
       default:
         break
       }
-      
+
     case let e as ParserError:
       // Send ParserErrors back through the CommandError path
-      self.init(error: CommandError(commandStack: [type.asCommand], parserError: e), type: type, columns: columns)
+      self.init(
+        error: CommandError(commandStack: [type.asCommand], parserError: e),
+        type: type, columns: columns)
       return
 
     default:
@@ -81,20 +78,23 @@ enum MessageInfo {
       // to be handled appropriately below
       parserError = .userValidationError(error)
     }
-    
-    var usage = HelpGenerator(commandStack: commandStack, visibility: .default).usageMessage()
-    
-    let commandNames = commandStack.map { $0._commandName }.joined(separator: " ")
+
+    var usage = HelpGenerator(commandStack: commandStack, visibility: .default)
+      .usageMessage()
+
+    let commandNames = commandStack.map { $0._commandName }.joined(
+      separator: " ")
     if let helpName = commandStack.getPrimaryHelpName() {
       if !usage.isEmpty {
         usage += "\n"
       }
-      usage += "  See '\(commandNames) \(helpName.synopsisString)' for more information."
+      usage +=
+        "  See '\(commandNames) \(helpName.synopsisString)' for more information."
     }
-    
+
     // Parsing errors and user-thrown validation errors have the usage
     // string attached. Other errors just get the error message.
-    
+
     if case .userValidationError(let error) = parserError {
       switch error {
       case let error as ValidationError:
@@ -103,34 +103,41 @@ enum MessageInfo {
         switch error.base {
         case .helpRequest(let command):
           if let command = command {
-            commandStack = CommandParser(type.asCommand).commandStack(for: command)
+            commandStack = CommandParser(type.asCommand).commandStack(
+              for: command)
           }
-          self = .help(text: HelpGenerator(commandStack: commandStack, visibility: .default).rendered(screenWidth: columns))
+          self = .help(
+            text: HelpGenerator(
+              commandStack: commandStack, visibility: .default
+            ).rendered(screenWidth: columns))
         case .dumpRequest(let command):
           if let command = command {
-            commandStack = CommandParser(type.asCommand).commandStack(for: command)
+            commandStack = CommandParser(type.asCommand).commandStack(
+              for: command)
           }
-          self = .help(text: DumpHelpGenerator(commandStack: commandStack).rendered())
+          self = .help(
+            text: DumpHelpGenerator(commandStack: commandStack).rendered())
         case .message(let message):
           self = .help(text: message)
         }
       case let exitCode as ExitCode:
         self = .other(message: "", exitCode: exitCode)
-      case let error as LocalizedError where error.errorDescription != nil:
-        self = .other(message: error.errorDescription!, exitCode: .failure)
       default:
-        if Swift.type(of: error) is NSError.Type {
-          self = .other(message: error.localizedDescription, exitCode: .failure)
-        } else {
-          self = .other(message: String(describing: error), exitCode: .failure)
-        }
+        self = .other(message: error.describe(), exitCode: .failure)
       }
     } else if let parserError = parserError {
       let usage: String = {
         guard case ParserError.noArguments = parserError else { return usage }
-        return "\n" + HelpGenerator(commandStack: [type.asCommand], visibility: .default).rendered(screenWidth: columns)
+        return "\n"
+          + HelpGenerator(commandStack: [type.asCommand], visibility: .default)
+          .rendered(screenWidth: columns)
       }()
-      let argumentSet = ArgumentSet(commandStack.last!, visibility: .default, parent: nil)
+      // swift-format-ignore: NeverForceUnwrap
+      // FIXME: refactor to avoid force unwrap
+      // this requires a lot of non-local reasoning to understand why the force
+      // unwrap is safe
+      let argumentSet = ArgumentSet(
+        commandStack.last!, visibility: .default, parent: nil)
       let message = argumentSet.errorDescription(error: parserError) ?? ""
       let helpAbstract = argumentSet.helpDescription(error: parserError) ?? ""
       self = .validation(message: message, usage: usage, help: helpAbstract)
@@ -138,31 +145,32 @@ enum MessageInfo {
       self = .other(message: String(describing: error), exitCode: .failure)
     }
   }
-  
+
   var message: String {
     switch self {
-    case .help(text: let text):
+    case .help(let text):
       return text
-    case .validation(message: let message, usage: _, help: _):
+    case .validation(let message, usage: _, help: _):
       return message
     case .other(let message, _):
       return message
     }
   }
-  
+
   func fullText(for args: ParsableArguments.Type) -> String {
     switch self {
-    case .help(text: let text):
+    case .help(let text):
       return text
-    case .validation(message: let message, usage: let usage, help: let help):
+    case .validation(let message, let usage, let help):
       let helpMessage = help.isEmpty ? "" : "Help:  \(help)\n"
-      let errorMessage = message.isEmpty ? "" : "\(args._errorLabel): \(message)\n"
+      let errorMessage =
+        message.isEmpty ? "" : "\(args._errorPrefix)\(message)\n"
       return errorMessage + helpMessage + usage
     case .other(let message, _):
-      return message.isEmpty ? "" : "\(args._errorLabel): \(message)"
+      return message.isEmpty ? "" : "\(args._errorPrefix)\(message)"
     }
   }
-  
+
   var shouldExitCleanly: Bool {
     switch self {
     case .help: return true

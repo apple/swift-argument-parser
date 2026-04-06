@@ -1,4 +1,4 @@
-//===----------------------------------------------------------*- swift -*-===//
+//===----------------------------------------------------------------------===//
 //
 // This source file is part of the Swift Argument Parser open source project
 //
@@ -9,18 +9,19 @@
 //
 //===----------------------------------------------------------------------===//
 
-import XCTest
-import ArgumentParser
 import ArgumentParserTestHelpers
+import XCTest
+
+@testable import ArgumentParser
 
 final class Tests: XCTestCase {
   override func setUp() {
-    #if !os(Windows) && !os(WASI)
-    unsetenv("COLUMNS")
-    #endif
+    Platform.Environment[.columns] = nil
   }
 }
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
 extension Tests {
   func testParsing() throws {
     AssertParseCommand(Package.self, Package.Clean.self, ["clean"]) { clean in
@@ -44,13 +45,19 @@ extension Tests {
       XCTAssertEqual(options.swiftCompilerFlags, [])
     }
   }
-  
+
   func testParsingWithGlobalOption_1() {
-    AssertParseCommand(Package.self, Package.GenerateXcodeProject.self, ["generate-xcodeproj", "--watch", "--output", "Foo", "--enable-automatic-resolution"]) { generate in
+    AssertParseCommand(
+      Package.self, Package.GenerateXcodeProject.self,
+      [
+        "generate-xcodeproj", "--watch", "--output", "Foo",
+        "--enable-automatic-resolution",
+      ]
+    ) { generate in
       XCTAssertEqual(generate.output, "Foo")
       XCTAssertFalse(generate.enableCodeCoverage)
       XCTAssertTrue(generate.watch)
-      
+
       let options = generate.options
       // Default global option
       XCTAssertEqual(options.configuration, .debug)
@@ -58,13 +65,19 @@ extension Tests {
       XCTAssertEqual(options.automaticResolution, true)
     }
   }
-  
+
   func testParsingWithGlobalOption_2() {
-    AssertParseCommand(Package.self, Package.GenerateXcodeProject.self, ["generate-xcodeproj", "--watch", "--output", "Foo", "--enable-automatic-resolution", "-Xcc", "-Ddebug"]) { generate in
+    AssertParseCommand(
+      Package.self, Package.GenerateXcodeProject.self,
+      [
+        "generate-xcodeproj", "--watch", "--output", "Foo",
+        "--enable-automatic-resolution", "-Xcc", "-Ddebug",
+      ]
+    ) { generate in
       XCTAssertEqual(generate.output, "Foo")
       XCTAssertFalse(generate.enableCodeCoverage)
       XCTAssertTrue(generate.watch)
-      
+
       let options = generate.options
       // Default global option
       XCTAssertEqual(options.configuration, .debug)
@@ -73,13 +86,19 @@ extension Tests {
       XCTAssertEqual(options.cCompilerFlags, ["-Ddebug"])
     }
   }
-  
+
   func testParsingWithGlobalOption_3() {
-    AssertParseCommand(Package.self, Package.GenerateXcodeProject.self, ["generate-xcodeproj", "--watch", "--output=Foo", "--enable-automatic-resolution", "-Xcc=-Ddebug"]) { generate in
+    AssertParseCommand(
+      Package.self, Package.GenerateXcodeProject.self,
+      [
+        "generate-xcodeproj", "--watch", "--output=Foo",
+        "--enable-automatic-resolution", "-Xcc=-Ddebug",
+      ]
+    ) { generate in
       XCTAssertEqual(generate.output, "Foo")
       XCTAssertFalse(generate.enableCodeCoverage)
       XCTAssertTrue(generate.watch)
-      
+
       let options = generate.options
       // Default global option
       XCTAssertEqual(options.configuration, .debug)

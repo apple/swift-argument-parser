@@ -81,7 +81,7 @@ struct Lucky: ParsableCommand {
 ```
 
 ```
-% lucky 
+% lucky
 Your lucky numbers are:
 7 14 21
 % lucky 1 2 3
@@ -89,7 +89,7 @@ Your lucky numbers are:
 1 2 3
 ```
 
-## Customizing option and flag names
+### Customizing option and flag names
 
 By default, options and flags derive the name that you use on the command line from the name of the property, such as `--count` and `--index`. Camel-case names are converted to lowercase with hyphen-separated words, like `--strip-whitespace`.
 
@@ -132,7 +132,7 @@ struct Example: ParsableCommand {
 **Note:** You can also pass `withSingleDash: true` to `.customLong` to create a single-dash flag or option, such as `-verbose`. Use this name specification only when necessary, such as when migrating a legacy command-line interface. Using long names with a single-dash prefix can lead to ambiguity with combined short names: it may not be obvious whether `-file` is a single option or the combination of the four short options `-f`, `-i`, `-l`, and `-e`.
 
 
-## Parsing custom types
+### Parsing custom types
 
 Arguments and options can be parsed from any type that conforms to the ``ExpressibleByArgument`` protocol. Standard library integer and floating-point types, strings, and Booleans all conform to `ExpressibleByArgument`.
 
@@ -201,7 +201,7 @@ struct Example: ParsableCommand {
 
 Throw an error from the `transform` function to indicate that the user provided an invalid value for that type. See <doc:Validation> for more about customizing `transform` function errors.
 
-## Using flag inversions, enumerations, and counts
+### Using flag inversions, enumerations, and counts
 
 Flags are most frequently used for `Bool` properties. You can generate a `true`/`false` pair of flags by specifying a flag inversion:
 
@@ -288,7 +288,7 @@ Verbosity level: 4
 ```
 
 
-## Specifying default values
+### Specifying default values
 
 You can specify default values for almost all supported argument, option, and flag types using normal property initialization syntax:
 
@@ -327,7 +327,84 @@ If a default is not specified, the user must provide a value for that argument/o
 You must also always specify a default of `false` for a non-optional `Bool` flag, as in the example above. This makes the behavior consistent with both normal Swift properties (which either must be explicitly initialized or optional to initialize a `struct`/`class` containing them) and the other property types.
 
 
-## Specifying a parsing strategy
+### Creating hybrid flag/option behavior with defaultAsFlag
+
+The `defaultAsFlag` parameter allows you to create options that can work both as flags (without values) and as options (with values). This provides flexible command-line interfaces where users can choose between concise flag usage or explicit value specification.
+
+```swift
+struct Example: ParsableCommand {
+    @Option(defaultAsFlag: "json", help: "Set the export format.")
+    var export: String?
+
+    func run() {
+        print("Export: \(format ?? "<don't export>")")
+    }
+}
+```
+
+**Command-line behavior:**
+```
+% example                    # export = nil
+% example --export           # export = "json"
+% example --export yaml      # format = "yaml"
+```
+
+The `defaultAsFlag` parameter creates a hybrid that supports both patterns:
+- **Flag behavior**: `--export` (sets format to "json")
+- **Option behavior**: `--export yaml` (sets format to "yaml")
+- **No usage**: `export` remains `nil`
+
+#### Type requirements
+
+- The property **must** be optional (`T?`)
+- The `defaultAsFlag` value must be of the unwrapped type (`T`)
+- All standard `ExpressibleByArgument` types are supported (String, Int, Bool, Double, etc.)
+
+#### Advanced usage
+
+You can combine `defaultAsFlag` with transform functions:
+
+```swift
+@Option(
+    defaultAsFlag: "info",
+    help: "Set log level.",
+    transform: { $0.uppercased() }
+)
+var logLevel: String?
+```
+
+**Behavior:**
+```
+% app --log-level        # logLevel = "INFO" (transformed default)
+% app --log-level debug  # logLevel = "DEBUG" (transformed input)
+```
+
+#### Help display
+
+DefaultAsFlag options show special help formatting to distinguish them from regular defaults:
+
+```
+OPTIONS:
+  --format [<format>]     Set output format. (default as flag: json)
+  --port [<port>]         Server port. (default as flag: 8080)
+```
+
+Note the `(default as flag: ...)` text instead of regular `(default: ...)`, and the optional value syntax `[<value>]` instead of required `<value>`.
+
+#### Value detection
+
+The parser determines whether a value follows the option:
+
+1. **Next argument is a value** if it doesn't start with `-` and isn't another known option
+2. **No value available**: Use the `defaultAsFlag` value
+3. **Explicit value provided**: Parse and use that value
+
+This works with parsing strategies `.next` and `.scanningForValue`.  The `.unconditional` parsing strategy defeats the purpose by always requiring a value.
+
+For complete examples and API reference, see the [`default-as-flag`](https://github.com/apple/swift-argument-parser/tree/main/Examples/default-as-flag) example.
+
+
+### Specifying a parsing strategy
 
 When parsing a list of command-line inputs, `ArgumentParser` distinguishes between dash-prefixed keys and un-prefixed values. When looking for the value for a key, only an un-prefixed value will be selected by default.
 
@@ -358,7 +435,7 @@ Usage: example [--verbose] --name <name> [<file>]
 
 Parsing options as arrays is similar — only adjacent key-value pairs are recognized by default.
 
-### Alternative single-value parsing strategies
+#### Alternative single-value parsing strategies
 
 You can change this behavior by providing a different parsing strategy in the `@Option` initializer. **Be careful when selecting any of the alternative parsing strategies** — they may lead your command-line tool to have unexpected behavior for users!
 
@@ -376,7 +453,7 @@ The `.scanningForValue` strategy, on the other hand, looks ahead in the list of 
 Verbose: true, name: Tomás, file: none
 ```
 
-### Alternative array parsing strategies
+#### Alternative array parsing strategies
 
 The default strategy for parsing options as arrays is to read each value from a key-value pair. For example, this command expects zero or more input file names:
 
@@ -427,7 +504,7 @@ Verbose: true, files: ["file1.swift", "file2.swift"]
 Verbose: false, files: ["file1.swift", "file2.swift", "--verbose"]
 ```
 
-### Alternative positional argument parsing strategies
+#### Alternative positional argument parsing strategies
 
 The default strategy for parsing arrays of positional arguments is to ignore  all dash-prefixed command-line inputs. For example, this command accepts a `--verbose` flag and a list of file names as positional arguments:
 
@@ -469,7 +546,7 @@ Verbose: true, files: ["file1.swift", "file2.swift", "--other"]
 Verbose: false, files: ["--", "--verbose", "file1.swift", "file2.swift", "--other"]
 ```
 
-### Ignoring unknown arguments
+#### Ignoring unknown arguments
 
 Different versions of a CLI tool may have full or partial sets of supported flags and options.
 
@@ -479,7 +556,7 @@ When appropriate, you can process supported arguments and ignore unknown ones by
 ```swift
 struct Example: ParsableCommand {
     @Flag var verbose = false
-    
+
     @Argument(parsing: .allUnrecognized)
     var unknowns: [String] = []
 

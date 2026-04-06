@@ -1,4 +1,4 @@
-//===----------------------------------------------------------*- swift -*-===//
+//===----------------------------------------------------------------------===//
 //
 // This source file is part of the Swift Argument Parser open source project
 //
@@ -12,20 +12,22 @@
 import ArgumentParser
 import ArgumentParserToolInfo
 
-fileprivate extension Character {
-  static let emailStart: Character = "<"
-  static let emailEnd: Character = ">"
+extension Character {
+  fileprivate static let emailStart: Character = "<"
+  fileprivate static let emailEnd: Character = ">"
 }
 
-fileprivate extension Substring {
-  mutating func collecting(until terminator: (Element) throws -> Bool) rethrows -> String {
+extension Substring {
+  fileprivate mutating func collecting(
+    until terminator: (Element) throws -> Bool
+  ) rethrows -> String {
     let terminatorIndex = try firstIndex(where: terminator) ?? endIndex
     let collected = String(self[..<terminatorIndex])
     self = self[terminatorIndex...]
     return collected
   }
 
-  mutating func next() {
+  fileprivate mutating func next() {
     if !isEmpty { removeFirst() }
   }
 }
