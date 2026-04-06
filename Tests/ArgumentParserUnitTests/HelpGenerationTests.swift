@@ -216,7 +216,7 @@ extension HelpGenerationTests {
     AssertHelp(
       .default, for: D.self,
       equals: """
-        USAGE: d [<occupation>] [--name <name>] [--age <age>] [--logging <logging>] [--lucky <numbers> ...] [--optional] [--required] [--degree <degree>] [--directory <directory>] [--manual <manual>] [--unspecial <unspecial>] [--special <special>]
+        USAGE: d [<occupation>] [--name <name>] [--age <age>] [--logging <logging>] [--lucky <numbers> ...] [--optional] [--required] [--degree <degree>] [--directory <directory>] [--manual <manual>] [--unspecial <0|1>] [--special <Apple|Banana>]
 
         ARGUMENTS:
           <occupation>            Your occupation. (default: --)
@@ -1083,7 +1083,7 @@ extension HelpGenerationTests {
     AssertHelp(
       .default, for: CustomOption.self,
       equals: """
-        USAGE: custom-option --opt <opt>
+        USAGE: custom-option --opt <blue|red|yellow>
 
         OPTIONS:
           --opt <opt>             An option with enumerable values.
@@ -1107,7 +1107,7 @@ extension HelpGenerationTests {
       for: CustomOptionAsListWithSingleDefaultValue.self,
       columns: 100,
       equals: """
-        USAGE: custom-option-as-list-with-single-default-value [--opt <opt> ...]
+        USAGE: custom-option-as-list-with-single-default-value [--opt <blue|red|yellow> ...]
 
         OPTIONS:
           --opt <opt>             An option with enumerable values. (default: red)
@@ -1131,7 +1131,7 @@ extension HelpGenerationTests {
       for: CustomOptionAsListWithMultipleDefaultValue.self,
       columns: 100,
       equals: """
-        USAGE: custom-option-as-list-with-multiple-default-value [--opt <opt> ...]
+        USAGE: custom-option-as-list-with-multiple-default-value [--opt <blue|red|yellow> ...]
 
         OPTIONS:
           --opt <opt>             An option with multiple enumerable values. (default: red, blue)
@@ -1156,7 +1156,7 @@ extension HelpGenerationTests {
       for: CustomOptionAsListWithEmptyArrayAsDefault.self,
       columns: 100,
       equals: """
-        USAGE: custom-option-as-list-with-empty-array-as-default [--opt <opt> ...]
+        USAGE: custom-option-as-list-with-empty-array-as-default [--opt <blue|red|yellow> ...]
 
         OPTIONS:
           --opt <opt>             An option with default value set to empty array.
@@ -1178,7 +1178,7 @@ extension HelpGenerationTests {
     AssertHelp(
       .default, for: CustomOptionWithDefault.self,
       equals: """
-        USAGE: custom-option-with-default [--opt <opt>]
+        USAGE: custom-option-with-default [--opt <blue|red|yellow>]
 
         OPTIONS:
           --opt <opt>             An option with enumerable values and a custom
@@ -1199,7 +1199,7 @@ extension HelpGenerationTests {
     AssertHelp(
       .default, for: Optional.self,
       equals: """
-        USAGE: optional [--optional <optional>]
+        USAGE: optional [--optional <blue|red|yellow>]
 
         OPTIONS:
           --optional <optional>   Optional option type.
@@ -1220,7 +1220,7 @@ extension HelpGenerationTests {
     AssertHelp(
       .default, for: NoAbstract.self,
       equals: """
-        USAGE: no-abstract --a <a> [--b <b>]
+        USAGE: no-abstract --a <blue|red|yellow> [--b <blue|red|yellow>]
 
         OPTIONS:
           --a <a>
@@ -1263,7 +1263,7 @@ extension HelpGenerationTests {
     AssertHelp(
       .default, for: Preamble.self,
       equals: """
-        USAGE: preamble --a <a> [--b <b>]
+        USAGE: preamble --a <blue|red|yellow> [--b <blue|red|yellow>]
 
         OPTIONS:
           --a <a>
@@ -1303,7 +1303,7 @@ extension HelpGenerationTests {
     AssertHelp(
       .default, for: HelpTextComparison.self,
       equals: """
-        USAGE: help-text-comparison --enumerable <enumerable> --values <values>
+        USAGE: help-text-comparison --enumerable <blue|red|yellow> --values <1|2|3>
 
         OPTIONS:
           --enumerable <enumerable>
