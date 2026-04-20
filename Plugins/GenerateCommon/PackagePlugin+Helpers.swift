@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2025 Apple Inc. and the Swift project authors
+// Copyright (c) 2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -26,9 +26,7 @@ extension ArgumentExtractor {
       case "release":
         return .release
       default:
-        throw
-          GenerateDoccReferencePluginError
-          .unknownBuildConfiguration(configurationString)
+        throw GeneratePluginError.unknownBuildConfiguration(configurationString)
       }
     case .none:
       return .release
@@ -36,21 +34,21 @@ extension ArgumentExtractor {
   }
 }
 
-extension Path {
+extension URL {
   func createOutputDirectory() throws {
     do {
       try FileManager.default.createDirectory(
-        atPath: self.string,
+        at: self,
         withIntermediateDirectories: true)
     } catch {
-      throw GenerateDoccReferencePluginError.createOutputDirectoryFailed(error)
+      throw GeneratePluginError.createOutputDirectoryFailed(error)
     }
   }
 
   func exec(arguments: [String]) throws {
     do {
       let process = Process()
-      process.executableURL = URL(fileURLWithPath: self.string)
+      process.executableURL = self
       process.arguments = arguments
       try process.run()
       process.waitUntilExit()
@@ -58,11 +56,11 @@ extension Path {
         process.terminationReason == .exit,
         process.terminationStatus == 0
       else {
-        throw GenerateDoccReferencePluginError.subprocessFailedNonZeroExit(
+        throw GeneratePluginError.subprocessFailedNonZeroExit(
           self, process.terminationStatus)
       }
     } catch {
-      throw GenerateDoccReferencePluginError.subprocessFailedError(self, error)
+      throw GeneratePluginError.subprocessFailedError(self, error)
     }
   }
 }
@@ -72,7 +70,7 @@ extension PackageManager.BuildResult.BuiltArtifact {
     context
       .package
       .products
-      .first { $0.name == self.path.lastComponent }
+      .first { $0.name == self.url.lastPathComponent }
   }
 }
 

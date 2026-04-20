@@ -22,6 +22,10 @@ struct ArgumentDefinition {
 
     /// An argument that takes a string as its value.
     case unary(Unary)
+
+    /// An argument that can work as both a flag (nullary) and option (unary).
+    /// When no value follows, uses nullaryHandler. When a value is available, uses unaryHandler.
+    case optionalUnary(nullaryHandler: Nullary, unaryHandler: Unary)
   }
 
   typealias Initial = (InputOrigin, inout ParsedValues) throws -> Void
@@ -133,6 +137,9 @@ struct ArgumentDefinition {
     if case (.positional, .nullary) = (kind, update) {
       preconditionFailure("Can't create a nullary positional argument.")
     }
+    if case (.positional, .optionalUnary) = (kind, update) {
+      preconditionFailure("Can't create an optionalUnary positional argument.")
+    }
 
     self.kind = kind
     self.help = help
@@ -157,6 +164,12 @@ extension ArgumentDefinition: CustomDebugStringConvertible {
         .map { $0.synopsisString }
         .joined(separator: ",")
         + " <\(valueName)>"
+    case (.named(let names), .optionalUnary):
+      return
+        names
+        .map { $0.synopsisString }
+        .joined(separator: ",")
+        + " [<\(valueName)>]"  // Optional value syntax
     case (.positional, _):
       return "<\(valueName)>"
     case (.default, _):
@@ -192,9 +205,12 @@ extension ArgumentDefinition {
   }
 
   var isNullary: Bool {
-    if case .nullary = update {
+    switch update {
+    case .nullary:
       return true
-    } else {
+    case .optionalUnary:
+      return true  // Can behave as nullary
+    case .unary:
       return false
     }
   }

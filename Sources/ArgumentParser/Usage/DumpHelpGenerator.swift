@@ -9,11 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if compiler(>=6.0)
 internal import ArgumentParserToolInfo
-#else
-import ArgumentParserToolInfo
-#endif
 
 internal struct DumpHelpGenerator {
   private var toolInfo: ToolInfoV0
@@ -87,6 +83,7 @@ extension CommandInfoV0 {
       superCommands: superCommands,
       shouldDisplay: command.configuration.shouldDisplay,
       commandName: command._commandName,
+      aliases: command.configuration.aliases,
       abstract: command.configuration.abstract,
       discussion: command.configuration.discussion,
       defaultSubcommand: defaultSubcommand,
@@ -144,6 +141,8 @@ extension ArgumentInfoV0.KindV0 {
       case .nullary:
         self = .flag
       case .unary:
+        self = .option
+      case .optionalUnary:
         self = .option
       }
     case .positional:

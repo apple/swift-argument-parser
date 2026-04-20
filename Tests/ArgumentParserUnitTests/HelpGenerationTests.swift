@@ -1492,4 +1492,45 @@ extension HelpGenerationTests {
         """)
     #endif
   }
+
+  // MARK: - Option group usage string regression (#578)
+
+  private struct OptionGroupOptions: ParsableCommand {
+    @Option
+    var num: Int = 0
+  }
+
+  private struct OptionGroupCommand: ParsableCommand {
+    static let configuration = CommandConfiguration(commandName: "test")
+
+    @OptionGroup
+    var options: OptionGroupOptions
+
+    @Argument
+    var arg: String = ""
+  }
+
+  func testOptionGroupUsageDoesNotIncludeGroupName() throws {
+    // The usage string from --help should not prepend the OptionGroup
+    // type name when all arguments are optional (#578).
+    let result = try OptionGroupCommand.parseAsRoot(["--help"])
+    guard let helpCommand = result as? HelpCommand else {
+      XCTFail("Expected HelpCommand, got \(type(of: result))")
+      return
+    }
+    let helpText = helpCommand.generateHelp(screenWidth: 80)
+    AssertEqualStrings(
+      actual: helpText,
+      expected: """
+        USAGE: test [--num <num>] [<arg>]
+
+        ARGUMENTS:
+          <arg>
+
+        OPTIONS:
+          --num <num>             (default: 0)
+          -h, --help              Show help information.
+
+        """)
+  }
 }

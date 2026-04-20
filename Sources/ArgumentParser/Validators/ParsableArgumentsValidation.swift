@@ -16,7 +16,16 @@ extension ParsableArguments {
       CodingKeyValidator.self,
       UniqueNamesValidator.self,
       NonsenseFlagsValidator.self,
+      {
+        if #available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6,
+        *) {
+          AsyncCompletionsValidator.self
+        } else {
+          nil
+        }
+      }(),
     ]
+    .compactMap { $0 }
     let errors = validators.compactMap { validator in
       validator.validate(self, parent: parent)
     }

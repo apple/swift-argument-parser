@@ -1,60 +1,62 @@
 {
   "command" : {
-    "abstract" : "Print the product of the values.",
-    "aliases" : [
-      "mul"
-    ],
+    "abstract" : "A command with defaultAsFlag options using transforms for testing dump help.",
     "arguments" : [
       {
-        "abstract" : "Use hexadecimal notation for the result.",
+        "defaultValue" : "\/default\/output",
+        "isOptional" : true,
+        "isRepeating" : false,
+        "kind" : "option",
+        "names" : [
+          {
+            "kind" : "long",
+            "name" : "output-dir"
+          }
+        ],
+        "parsingStrategy" : "scanningForValue",
+        "preferredName" : {
+          "kind" : "long",
+          "name" : "output-dir"
+        },
+        "shouldDisplay" : true,
+        "valueName" : "output-dir"
+      },
+      {
+        "defaultValue" : "INFO",
+        "isOptional" : true,
+        "isRepeating" : false,
+        "kind" : "option",
+        "names" : [
+          {
+            "kind" : "long",
+            "name" : "level"
+          }
+        ],
+        "parsingStrategy" : "scanningForValue",
+        "preferredName" : {
+          "kind" : "long",
+          "name" : "level"
+        },
+        "shouldDisplay" : true,
+        "valueName" : "level"
+      },
+      {
         "isOptional" : true,
         "isRepeating" : false,
         "kind" : "flag",
         "names" : [
           {
             "kind" : "long",
-            "name" : "hex-output"
-          },
-          {
-            "kind" : "short",
-            "name" : "x"
+            "name" : "debug"
           }
         ],
         "parsingStrategy" : "default",
         "preferredName" : {
           "kind" : "long",
-          "name" : "hex-output"
+          "name" : "debug"
         },
         "shouldDisplay" : true,
-        "valueName" : "hex-output"
-      },
-      {
-        "abstract" : "A group of integers to operate on.",
-        "isOptional" : true,
-        "isRepeating" : true,
-        "kind" : "positional",
-        "parsingStrategy" : "default",
-        "shouldDisplay" : true,
-        "valueName" : "values"
-      },
-      {
-        "abstract" : "Show the version.",
-        "isOptional" : true,
-        "isRepeating" : false,
-        "kind" : "flag",
-        "names" : [
-          {
-            "kind" : "long",
-            "name" : "version"
-          }
-        ],
-        "parsingStrategy" : "default",
-        "preferredName" : {
-          "kind" : "long",
-          "name" : "version"
-        },
-        "shouldDisplay" : true,
-        "valueName" : "version"
+        "valueName" : "debug"
       },
       {
         "abstract" : "Show help information.",
@@ -80,7 +82,7 @@
         "valueName" : "help"
       }
     ],
-    "commandName" : "multiply",
+    "commandName" : "default-as-flag-with-transform-command",
     "shouldDisplay" : true,
     "subcommands" : [
       {
@@ -119,37 +121,14 @@
             },
             "shouldDisplay" : false,
             "valueName" : "help"
-          },
-          {
-            "abstract" : "Show the version.",
-            "isOptional" : true,
-            "isRepeating" : false,
-            "kind" : "flag",
-            "names" : [
-              {
-                "kind" : "long",
-                "name" : "version"
-              }
-            ],
-            "parsingStrategy" : "default",
-            "preferredName" : {
-              "kind" : "long",
-              "name" : "version"
-            },
-            "shouldDisplay" : true,
-            "valueName" : "version"
           }
         ],
         "commandName" : "help",
         "shouldDisplay" : true,
         "superCommands" : [
-          "math",
-          "multiply"
+          "default-as-flag-with-transform-command"
         ]
       }
-    ],
-    "superCommands" : [
-      "math"
     ]
   },
   "serializationVersion" : 0

@@ -9,11 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if compiler(>=6.0)
 internal import ArgumentParserToolInfo
-#else
-import ArgumentParserToolInfo
-#endif
 
 extension ToolInfoV0 {
   var zshCompletionScript: String {
@@ -53,7 +49,11 @@ extension CommandInfoV0 {
     }
 
     \(completionFunctions)\
-    \(completionFunctionName)
+    if [[ "${funcstack[1]}" = \(completionFunctionName) ]]; then
+        \(completionFunctionName) "${@}"
+    else
+        compdef \(completionFunctionName) \(commandName)
+    fi
     """
   }
 
@@ -131,12 +131,12 @@ extension CommandInfoV0 {
           .joined(separator: "\n")
         )
                 )
-                _describe -V subcommand subcommands
+                _describe -V subcommand subcommands && ret=0
                 ;;
             arg)
                 case "${words[1]}" in
                 \(subcommands.map(\.commandName).joined(separator: "|")))
-                    "\(functionName)_${words[1]}"
+                    "\(functionName)_${words[1]}" && ret=0
                     ;;
                 esac
                 ;;
