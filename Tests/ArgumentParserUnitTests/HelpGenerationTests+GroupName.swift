@@ -314,6 +314,7 @@ extension HelpGenerationTests {
           child-with-groups
 
           See 'parent-with-groups help <subcommand>' for detailed help.
+          Use 'parent-with-groups help --search <term>' to search commands and options.
         """)
 
     AssertHelp(
@@ -337,6 +338,7 @@ extension HelpGenerationTests {
           child-with-groups
 
           See 'parent-with-groups help <subcommand>' for detailed help.
+          Use 'parent-with-groups help --search <term>' to search commands and options.
         """)
 
     AssertHelp(

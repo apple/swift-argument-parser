@@ -299,8 +299,15 @@ _math_help() {
     repeating_flags=()
     non_repeating_flags=(--version)
     repeating_options=()
-    non_repeating_options=()
+    non_repeating_options=(-s --search)
     __math_offer_flags_options -1
+
+    # Offer option value completions
+    case "${prev}" in
+    '-s'|'--search')
+        return
+        ;;
+    esac
 }
 
 complete -o filenames -F _math math

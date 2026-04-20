@@ -41,6 +41,7 @@ final class MathExampleTests: XCTestCase {
         stats                   Calculate descriptive statistics.
 
         See 'math help <subcommand>' for detailed help.
+        Use 'math help --search <term>' to search commands and options.
 
       """
 
