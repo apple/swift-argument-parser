@@ -235,6 +235,14 @@ extension ArgumentSet {
   ) -> ArgumentDefinition? {
     first(where: { $0.help.keys.contains(key) })
   }
+
+  func positional(
+    at index: Int
+  ) -> ArgumentDefinition? {
+    let positionals = content.filter { $0.isPositional }
+    guard positionals.count > index else { return nil }
+    return positionals[index]
+  }
 }
 
 /// A parser for a given input and set of arguments defined by the given
@@ -340,6 +348,19 @@ struct LenientParser {
         let origins = origin.inserting(origin2)
         try update(origins, parsed.name, value, &result)
         usedOrigins.formUnion(origins)
+      } else if let (_, element) = inputArguments.peekNext(),
+        !element.isTerminator,
+        case .option(let nextParsed) = element.value,
+        argumentSet.first(matching: nextParsed) == nil,
+        nextParsed.value != nil,
+        let (actualOrigin, value) = inputArguments.popNextElementAsValue(
+          after: originElement)
+      {
+        // For default-as-flag options with scanningForValue, try consuming option-like
+        // strings as values only if they are unrecognized options with explicit values (e.g., "--somearg=value")
+        let origins = origin.inserting(actualOrigin)
+        try update(origins, parsed.name, value, &result)
+        usedOrigins.formUnion(origins)
       } else {
         throw errorForMissingValue(originElement, parsed)
       }
@@ -358,16 +379,15 @@ struct LenientParser {
         let origins = origin.inserting(origin2)
         try update(origins, parsed.name, String(value), &result)
         usedOrigins.formUnion(origins)
-      } else {
-        guard
-          let (origin2, value) = inputArguments.popNextElementAsValue(
-            after: originElement)
-        else {
-          throw errorForMissingValue(originElement, parsed)
-        }
+      } else if let (origin2, value) = inputArguments.popNextElementAsValue(
+        after: originElement)
+      {
+        // Only consume if there's no terminator between option and value
         let origins = origin.inserting(origin2)
         try update(origins, parsed.name, value, &result)
         usedOrigins.formUnion(origins)
+      } else {
+        throw errorForMissingValue(originElement, parsed)
       }
 
     case .allRemainingInput:
@@ -448,6 +468,61 @@ struct LenientParser {
     case .postTerminator, .allUnrecognized:
       // These parsing kinds are for arguments only.
       throw ParserError.invalidState
+    }
+  }
+
+  mutating func parseOptionalUnaryValue(
+    _ argument: ArgumentDefinition,
+    _ parsed: ParsedArgument,
+    _ originElement: InputOrigin.Element,
+    _ nullaryHandler: ArgumentDefinition.Update.Nullary,
+    _ unaryHandler: ArgumentDefinition.Update.Unary,
+    _ result: inout ParsedValues,
+    _ usedOrigins: inout InputOrigin
+  ) throws {
+    // For default-as-flag options with .scanningForValue, check if the next element
+    // is a recognized option and fall back to flag behavior if so
+    if case .scanningForValue = argument.parsingStrategy,
+      let (_, element) = inputArguments.peekNext(),
+      !element.isTerminator,
+      case .option(let nextParsed) = element.value,
+      argumentSet.first(matching: nextParsed) != nil
+    {
+      // Fall back to flag behavior when the next element is a recognized option
+      let origin = InputOrigin(elements: [originElement])
+      try nullaryHandler(origin, parsed.name, &result)
+      usedOrigins.formUnion(origin)
+      return
+    }
+
+    do {
+      // Try to parse as a unary value first using the main parseValue logic
+      try parseValue(
+        argument,
+        parsed,
+        originElement,
+        unaryHandler,
+        &result,
+        &usedOrigins
+      )
+    } catch let error as ParserError {
+      switch error {
+      case .missingValueForOption, .missingValueOrUnknownCompositeOption:
+        // Fall back to flag behavior when no value is available
+        let origin = InputOrigin(elements: [originElement])
+        try nullaryHandler(origin, parsed.name, &result)
+        usedOrigins.formUnion(origin)
+      case .unknownOption, .unableToParseValue:
+        // Fall back to flag behavior when parseValue fails to find a suitable value
+        // This handles cases where potential values like "--somearg=value" are rejected
+        // because they look like unknown options, or when transform functions fail
+        let origin: InputOrigin = InputOrigin(elements: [originElement])
+        try nullaryHandler(origin, parsed.name, &result)
+        usedOrigins.formUnion(origin)
+      default:
+        // Re-throw other parser errors
+        throw error
+      }
     }
   }
 
@@ -621,7 +696,7 @@ struct LenientParser {
 
         switch argument.update {
         case .nullary(let update):
-          // We don’t expect a value for this option.
+          // We don't expect a value for this option.
           if let value = parsed.value {
             throw ParserError.unexpectedValueForOption(
               origin, parsed.name, value)
@@ -631,6 +706,12 @@ struct LenientParser {
         case .unary(let update):
           try parseValue(
             argument, parsed, origin, update, &result, &usedOrigins)
+        case .optionalUnary(let nullaryHandler, let unaryHandler):
+          // Hybrid behavior: try to find a value, fall back to flag behavior
+          // For default-as-flag options, we need special handling in scanningForValue
+          try parseOptionalUnaryValue(
+            argument, parsed, origin, nullaryHandler, unaryHandler,
+            &result, &usedOrigins)
         }
       case .terminator:
         // Ignore the terminator, it might get picked up as a positional value later.

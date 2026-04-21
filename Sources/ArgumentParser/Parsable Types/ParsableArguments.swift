@@ -13,7 +13,7 @@
 ///
 /// When you implement a `ParsableArguments` type, all properties must be declared with
 /// one of the four property wrappers provided by the `ArgumentParser` library.
-public protocol ParsableArguments: Decodable {
+public protocol ParsableArguments: Decodable, _SendableMetatype {
   /// Creates an instance of this parsable type using the definitions
   /// given by each property's wrapper.
   init()
@@ -25,7 +25,15 @@ public protocol ParsableArguments: Decodable {
   mutating func validate() throws
 
   /// The label to use for "Error: ..." messages from this type (experimental).
+  ///
+  /// `_errorLabel` will be ignored if `_errorPrefix` is changed to ignore `_errorLabel`.
+  @available(*, deprecated, message: "Use _errorPrefix instead.")
   static var _errorLabel: String { get }
+
+  /// The prefix to use for "Error: ..." messages from this type (experimental).
+  ///
+  /// Defaults to `"\(_errorLabel): "`.
+  static var _errorPrefix: String { get }
 }
 
 /// A type that provides the `ParsableCommand` interface to a `ParsableArguments` type.
@@ -35,13 +43,14 @@ struct _WrappedParsableCommand<P: ParsableArguments>: ParsableCommand {
 
     // If the type is named something like "TransformOptions", we only want
     // to use "transform" as the command name.
-    if let optionsRange = name.range(of: "_options"),
-      optionsRange.upperBound == name.endIndex
-    {
-      return String(name[..<optionsRange.lowerBound])
-    } else {
+    guard
+      let matchRange = name.firstMatch(of: "_options", at: name.startIndex),
+      matchRange.end == name.endIndex
+    else {
       return name
     }
+
+    return String(name[..<matchRange.start])
   }
 
   @OptionGroup var options: P
@@ -59,6 +68,13 @@ extension ParsableArguments {
   public static var _errorLabel: String {
     "Error"
   }
+
+  /// The prefix to use for "Error: ..." messages from this type (experimental).
+  ///
+  /// Defaults to `"\(_errorLabel): "`.
+  public static var _errorPrefix: String {
+    "\(_errorLabel): "
+  }
 }
 
 // MARK: - API
@@ -73,8 +89,14 @@ extension ParsableArguments {
   public static func parse(
     _ arguments: [String]? = nil
   ) throws -> Self {
+    try parse(try self.asCommand.parseAsRoot(arguments))
+  }
+
+  internal static func parse(
+    _ command: ParsableCommand
+  ) throws -> Self {
     // Parse the command and unwrap the result if necessary.
-    switch try self.asCommand.parseAsRoot(arguments) {
+    switch command {
     case let helpCommand as HelpCommand:
       throw ParserError.helpRequested(visibility: helpCommand.visibility)
     case let result as _WrappedParsableCommand<Self>:
@@ -300,9 +322,6 @@ extension ArgumentSet {
         guard let codingKey = child.label else { return nil }
 
         if let parsed = child.value as? ArgumentSetProvider {
-          guard parsed._visibility.isAtLeastAsVisible(as: visibility)
-          else { return nil }
-
           let key = InputKey(name: codingKey, parent: parent)
           return parsed.argumentSet(for: key)
         } else {

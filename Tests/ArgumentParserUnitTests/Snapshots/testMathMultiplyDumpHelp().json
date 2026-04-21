@@ -1,6 +1,9 @@
 {
   "command" : {
     "abstract" : "Print the product of the values.",
+    "aliases" : [
+      "mul"
+    ],
     "arguments" : [
       {
         "abstract" : "Use hexadecimal notation for the result.",
@@ -17,6 +20,7 @@
             "name" : "x"
           }
         ],
+        "parsingStrategy" : "default",
         "preferredName" : {
           "kind" : "long",
           "name" : "hex-output"
@@ -29,6 +33,7 @@
         "isOptional" : true,
         "isRepeating" : true,
         "kind" : "positional",
+        "parsingStrategy" : "default",
         "shouldDisplay" : true,
         "valueName" : "values"
       },
@@ -43,6 +48,7 @@
             "name" : "version"
           }
         ],
+        "parsingStrategy" : "default",
         "preferredName" : {
           "kind" : "long",
           "name" : "version"
@@ -65,6 +71,7 @@
             "name" : "help"
           }
         ],
+        "parsingStrategy" : "default",
         "preferredName" : {
           "kind" : "long",
           "name" : "help"
@@ -83,6 +90,7 @@
             "isOptional" : true,
             "isRepeating" : true,
             "kind" : "positional",
+            "parsingStrategy" : "default",
             "shouldDisplay" : true,
             "valueName" : "subcommands"
           },
@@ -104,12 +112,32 @@
                 "name" : "help"
               }
             ],
+            "parsingStrategy" : "default",
             "preferredName" : {
               "kind" : "long",
               "name" : "help"
             },
             "shouldDisplay" : false,
             "valueName" : "help"
+          },
+          {
+            "abstract" : "Show the version.",
+            "isOptional" : true,
+            "isRepeating" : false,
+            "kind" : "flag",
+            "names" : [
+              {
+                "kind" : "long",
+                "name" : "version"
+              }
+            ],
+            "parsingStrategy" : "default",
+            "preferredName" : {
+              "kind" : "long",
+              "name" : "version"
+            },
+            "shouldDisplay" : true,
+            "valueName" : "version"
           }
         ],
         "commandName" : "help",

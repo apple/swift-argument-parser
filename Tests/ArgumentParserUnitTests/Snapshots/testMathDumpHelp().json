@@ -13,6 +13,7 @@
             "name" : "version"
           }
         ],
+        "parsingStrategy" : "default",
         "preferredName" : {
           "kind" : "long",
           "name" : "version"
@@ -35,6 +36,7 @@
             "name" : "help"
           }
         ],
+        "parsingStrategy" : "default",
         "preferredName" : {
           "kind" : "long",
           "name" : "help"
@@ -64,6 +66,7 @@
                 "name" : "x"
               }
             ],
+            "parsingStrategy" : "default",
             "preferredName" : {
               "kind" : "long",
               "name" : "hex-output"
@@ -76,6 +79,7 @@
             "isOptional" : true,
             "isRepeating" : true,
             "kind" : "positional",
+            "parsingStrategy" : "default",
             "shouldDisplay" : true,
             "valueName" : "values"
           },
@@ -90,6 +94,7 @@
                 "name" : "version"
               }
             ],
+            "parsingStrategy" : "default",
             "preferredName" : {
               "kind" : "long",
               "name" : "version"
@@ -112,6 +117,7 @@
                 "name" : "help"
               }
             ],
+            "parsingStrategy" : "default",
             "preferredName" : {
               "kind" : "long",
               "name" : "help"
@@ -128,6 +134,9 @@
       },
       {
         "abstract" : "Print the product of the values.",
+        "aliases" : [
+          "mul"
+        ],
         "arguments" : [
           {
             "abstract" : "Use hexadecimal notation for the result.",
@@ -144,6 +153,7 @@
                 "name" : "x"
               }
             ],
+            "parsingStrategy" : "default",
             "preferredName" : {
               "kind" : "long",
               "name" : "hex-output"
@@ -156,6 +166,7 @@
             "isOptional" : true,
             "isRepeating" : true,
             "kind" : "positional",
+            "parsingStrategy" : "default",
             "shouldDisplay" : true,
             "valueName" : "values"
           },
@@ -170,6 +181,7 @@
                 "name" : "version"
               }
             ],
+            "parsingStrategy" : "default",
             "preferredName" : {
               "kind" : "long",
               "name" : "version"
@@ -192,6 +204,7 @@
                 "name" : "help"
               }
             ],
+            "parsingStrategy" : "default",
             "preferredName" : {
               "kind" : "long",
               "name" : "help"
@@ -220,6 +233,7 @@
                 "name" : "version"
               }
             ],
+            "parsingStrategy" : "default",
             "preferredName" : {
               "kind" : "long",
               "name" : "version"
@@ -242,6 +256,7 @@
                 "name" : "help"
               }
             ],
+            "parsingStrategy" : "default",
             "preferredName" : {
               "kind" : "long",
               "name" : "help"
@@ -255,6 +270,9 @@
         "subcommands" : [
           {
             "abstract" : "Print the average of the values.",
+            "aliases" : [
+              "avg"
+            ],
             "arguments" : [
               {
                 "abstract" : "The kind of average to provide.",
@@ -282,6 +300,7 @@
                     "name" : "kind"
                   }
                 ],
+                "parsingStrategy" : "default",
                 "preferredName" : {
                   "kind" : "long",
                   "name" : "kind"
@@ -294,6 +313,7 @@
                 "isOptional" : true,
                 "isRepeating" : true,
                 "kind" : "positional",
+                "parsingStrategy" : "default",
                 "shouldDisplay" : true,
                 "valueName" : "values"
               },
@@ -308,6 +328,7 @@
                     "name" : "version"
                   }
                 ],
+                "parsingStrategy" : "default",
                 "preferredName" : {
                   "kind" : "long",
                   "name" : "version"
@@ -330,6 +351,7 @@
                     "name" : "help"
                   }
                 ],
+                "parsingStrategy" : "default",
                 "preferredName" : {
                   "kind" : "long",
                   "name" : "help"
@@ -353,6 +375,7 @@
                 "isOptional" : true,
                 "isRepeating" : true,
                 "kind" : "positional",
+                "parsingStrategy" : "default",
                 "shouldDisplay" : true,
                 "valueName" : "values"
               },
@@ -367,6 +390,7 @@
                     "name" : "version"
                   }
                 ],
+                "parsingStrategy" : "default",
                 "preferredName" : {
                   "kind" : "long",
                   "name" : "version"
@@ -389,6 +413,7 @@
                     "name" : "help"
                   }
                 ],
+                "parsingStrategy" : "default",
                 "preferredName" : {
                   "kind" : "long",
                   "name" : "help"
@@ -421,6 +446,7 @@
                 "isOptional" : true,
                 "isRepeating" : false,
                 "kind" : "positional",
+                "parsingStrategy" : "default",
                 "shouldDisplay" : true,
                 "valueName" : "one-of-four"
               },
@@ -433,6 +459,7 @@
                 "isOptional" : true,
                 "isRepeating" : false,
                 "kind" : "positional",
+                "parsingStrategy" : "default",
                 "shouldDisplay" : true,
                 "valueName" : "custom-arg"
               },
@@ -445,6 +472,7 @@
                 "isOptional" : true,
                 "isRepeating" : false,
                 "kind" : "positional",
+                "parsingStrategy" : "default",
                 "shouldDisplay" : true,
                 "valueName" : "custom-deprecated-arg"
               },
@@ -453,6 +481,7 @@
                 "isOptional" : true,
                 "isRepeating" : true,
                 "kind" : "positional",
+                "parsingStrategy" : "default",
                 "shouldDisplay" : true,
                 "valueName" : "values"
               },
@@ -466,6 +495,7 @@
                     "name" : "test-success-exit-code"
                   }
                 ],
+                "parsingStrategy" : "default",
                 "preferredName" : {
                   "kind" : "long",
                   "name" : "test-success-exit-code"
@@ -483,6 +513,7 @@
                     "name" : "test-failure-exit-code"
                   }
                 ],
+                "parsingStrategy" : "default",
                 "preferredName" : {
                   "kind" : "long",
                   "name" : "test-failure-exit-code"
@@ -500,6 +531,7 @@
                     "name" : "test-validation-exit-code"
                   }
                 ],
+                "parsingStrategy" : "default",
                 "preferredName" : {
                   "kind" : "long",
                   "name" : "test-validation-exit-code"
@@ -517,6 +549,7 @@
                     "name" : "test-custom-exit-code"
                   }
                 ],
+                "parsingStrategy" : "default",
                 "preferredName" : {
                   "kind" : "long",
                   "name" : "test-custom-exit-code"
@@ -542,6 +575,7 @@
                     "name" : "file"
                   }
                 ],
+                "parsingStrategy" : "default",
                 "preferredName" : {
                   "kind" : "long",
                   "name" : "file"
@@ -564,6 +598,7 @@
                     "name" : "directory"
                   }
                 ],
+                "parsingStrategy" : "default",
                 "preferredName" : {
                   "kind" : "long",
                   "name" : "directory"
@@ -574,7 +609,7 @@
               {
                 "completionKind" : {
                   "shellCommand" : {
-                    "command" : "head -100 \/usr\/share\/dict\/words | tail -50"
+                    "command" : "head -100 '\/usr\/share\/dict\/words' | tail -50"
                   }
                 },
                 "isOptional" : true,
@@ -586,6 +621,7 @@
                     "name" : "shell"
                   }
                 ],
+                "parsingStrategy" : "default",
                 "preferredName" : {
                   "kind" : "long",
                   "name" : "shell"
@@ -608,6 +644,7 @@
                     "name" : "custom"
                   }
                 ],
+                "parsingStrategy" : "default",
                 "preferredName" : {
                   "kind" : "long",
                   "name" : "custom"
@@ -630,6 +667,7 @@
                     "name" : "custom-deprecated"
                   }
                 ],
+                "parsingStrategy" : "default",
                 "preferredName" : {
                   "kind" : "long",
                   "name" : "custom-deprecated"
@@ -648,6 +686,7 @@
                     "name" : "version"
                   }
                 ],
+                "parsingStrategy" : "default",
                 "preferredName" : {
                   "kind" : "long",
                   "name" : "version"
@@ -670,6 +709,7 @@
                     "name" : "help"
                   }
                 ],
+                "parsingStrategy" : "default",
                 "preferredName" : {
                   "kind" : "long",
                   "name" : "help"
@@ -697,6 +737,7 @@
             "isOptional" : true,
             "isRepeating" : true,
             "kind" : "positional",
+            "parsingStrategy" : "default",
             "shouldDisplay" : true,
             "valueName" : "subcommands"
           },
@@ -718,12 +759,32 @@
                 "name" : "help"
               }
             ],
+            "parsingStrategy" : "default",
             "preferredName" : {
               "kind" : "long",
               "name" : "help"
             },
             "shouldDisplay" : false,
             "valueName" : "help"
+          },
+          {
+            "abstract" : "Show the version.",
+            "isOptional" : true,
+            "isRepeating" : false,
+            "kind" : "flag",
+            "names" : [
+              {
+                "kind" : "long",
+                "name" : "version"
+              }
+            ],
+            "parsingStrategy" : "default",
+            "preferredName" : {
+              "kind" : "long",
+              "name" : "version"
+            },
+            "shouldDisplay" : true,
+            "valueName" : "version"
           }
         ],
         "commandName" : "help",

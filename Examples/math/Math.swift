@@ -204,6 +204,10 @@ extension Math.Statistics {
     )
     var customArg: String?
 
+    @available(
+      *, deprecated,
+      message: "Deprecated use of custom completion for @Argument"
+    )
     @Argument(
       completion: .custom { _ in ["alabaster", "breakfast", "crunch", "crash"] }
     )
@@ -229,13 +233,16 @@ extension Math.Statistics {
     var directory: String?
 
     @Option(
-      completion: .shellCommand("head -100 /usr/share/dict/words | tail -50")
+      completion: .shellCommand("head -100 '/usr/share/dict/words' | tail -50")
     )
     var shell: String?
 
     @Option(completion: .custom(customCompletion))
     var custom: String?
 
+    @available(
+      *, deprecated, message: "Deprecated use of custom completion for @Option"
+    )
     @Option(completion: .custom(customDeprecatedCompletion))
     var customDeprecated: String?
 
@@ -259,7 +266,7 @@ extension Math.Statistics {
   }
 }
 
-func customCompletion(_ s: [String], _: Int, _: Int) -> [String] {
+func customCompletion(_ s: [String], _: Int, _: String) -> [String] {
   (s.last ?? "").starts(with: "a")
     ? ["aardvark", "aaaaalbert"]
     : ["hello", "helicopter", "heliotrope"]

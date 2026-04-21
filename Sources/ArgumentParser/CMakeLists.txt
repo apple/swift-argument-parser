@@ -43,11 +43,14 @@ add_library(ArgumentParser
 
   Utilities/CollectionExtensions.swift
   Utilities/Mutex.swift
+  Utilities/Foundation.swift
   Utilities/Platform.swift
   Utilities/SequenceExtensions.swift
   Utilities/StringExtensions.swift
+  Utilities/SwiftExtensions.swift
   Utilities/Tree.swift
-  
+
+  Validators/AsyncCompletionsValidator.swift
   Validators/CodingKeyValidator.swift
   Validators/NonsenseFlagsValidator.swift
   Validators/ParsableArgumentsValidation.swift
@@ -59,8 +62,11 @@ set_target_properties(ArgumentParser PROPERTIES
 target_compile_options(ArgumentParser PRIVATE
   $<$<BOOL:${BUILD_TESTING}>:-enable-testing>)
 target_link_libraries(ArgumentParser PRIVATE
-  $<$<NOT:$<PLATFORM_ID:Darwin>>:Foundation>
   ArgumentParserToolInfo)
+if(Foundation_FOUND)
+  target_link_libraries(ArgumentParser PRIVATE
+    Foundation)
+endif()
 
 
 _install_target(ArgumentParser)

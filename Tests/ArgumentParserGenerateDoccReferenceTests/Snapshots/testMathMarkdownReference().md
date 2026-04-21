@@ -156,7 +156,10 @@ math stats stdev [<values>...] [--version] [--help]
 Print the quantiles of the values (TBD).
 
 ```
-math stats quantiles [<one-of-four>] [<custom-arg>] [<custom-deprecated-arg>] [<values>...]     [--file=<file>] [--directory=<directory>] [--shell=<shell>] [--custom=<custom>] [--custom-deprecated=<custom-deprecated>] [--version] [--help]
+math stats quantiles [<one-of-four>] [<custom-arg>] [<custom-deprecated-arg>]
+  [<values>...] [--file=<file>] [--directory=<directory>] [--shell=<shell>]
+  [--custom=<custom>] [--custom-deprecated=<custom-deprecated>] [--version]
+  [--help]
 ```
 
 **one-of-four:**
@@ -207,10 +210,15 @@ math stats quantiles [<one-of-four>] [<custom-arg>] [<custom-deprecated-arg>] [<
 Show subcommand help information.
 
 ```
-math help [<subcommands>...] 
+math help [<subcommands>...] [--version]
 ```
 
 **subcommands:**
+
+
+**--version:**
+
+*Show the version.*
 
 
 

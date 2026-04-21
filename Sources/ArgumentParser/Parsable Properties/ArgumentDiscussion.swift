@@ -77,9 +77,29 @@
 ///    -h, --help           Show help information
 /// ```
 ///
-/// In any case where the argument type is not `EnumerableOptionValue`, the
-/// default implementation will use the `.staticText` case and will print a
-/// block of discussion text.
+/// Arrays of enumerable types are also supported and will display the same
+/// enumerated format:
+///
+/// ```swift
+/// @Option var colors: [Color] = [.red, .blue]
+/// ```
+///
+/// The printed usage would look like the following:
+///
+/// ```
+/// USAGE: example [--colors <colors> ...]
+///
+/// OPTIONS:
+///    --colors <colors>        (default: red, blue)
+///          red           - A red color.
+///          blue          - A blue color.
+///          yellow        - A yellow color.
+///    -h, --help           Show help information
+/// ```
+///
+/// In any case where the argument type is not `EnumerableOptionValue` or an
+/// array of `EnumerableOptionValue`, the default implementation will use the
+/// `.staticText` case and will print a block of discussion text.
 enum ArgumentDiscussion {
   case staticText(String)
   case enumerated(preamble: String? = nil, any ExpressibleByArgument.Type)

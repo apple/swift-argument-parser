@@ -9,8 +9,12 @@
 //
 //===----------------------------------------------------------------------===//
 
+internal import ArgumentParserToolInfo
+
 /// A shell for which the parser can generate a completion script.
-public struct CompletionShell: RawRepresentable, Hashable, CaseIterable {
+public struct CompletionShell: RawRepresentable, Hashable, CaseIterable,
+  Sendable
+{
   public var rawValue: String
 
   /// Creates a new instance from the given string.
@@ -79,20 +83,6 @@ public struct CompletionShell: RawRepresentable, Hashable, CaseIterable {
     Self._requestingVersion.withLock { $0 }
   }
 
-  /// The name of the environment variable whose value is the name of the shell
-  /// for which completions are being requested from a custom completion
-  /// handler.
-  ///
-  /// The environment variable is set in generated completion scripts.
-  static let shellEnvironmentVariableName = "SAP_SHELL"
-
-  /// The name of the environment variable whose value is the version of the
-  /// shell for which completions are being requested from a custom completion
-  /// handler.
-  ///
-  /// The environment variable is set in generated completion scripts.
-  static let shellVersionEnvironmentVariableName = "SAP_SHELL_VERSION"
-
   func format(completions: [String]) -> String {
     var completions = completions
     if self == .zsh {
@@ -134,72 +124,14 @@ struct CompletionsGenerator {
     CompletionShell._requesting.withLock { $0 = shell }
     switch shell {
     case .zsh:
-      return [command].zshCompletionScript
+      return ToolInfoV0(commandStack: [command]).zshCompletionScript
     case .bash:
-      return [command].bashCompletionScript
+      return ToolInfoV0(commandStack: [command]).bashCompletionScript
     case .fish:
-      return [command].fishCompletionScript
+      return ToolInfoV0(commandStack: [command]).fishCompletionScript
     default:
       fatalError("Invalid CompletionShell: \(shell)")
     }
-  }
-}
-
-extension ArgumentDefinition {
-  /// Returns a string with the arguments for the callback to generate custom completions for
-  /// this argument.
-  func customCompletionCall(_ commands: [ParsableCommand.Type]) -> String {
-    let subcommandNames =
-      commands.dropFirst().map { "\($0._commandName) " }.joined()
-    let argumentName =
-      names.preferredName?.synopsisString
-      ?? self.help.keys.first?.fullPathString
-      ?? "---"
-    return "---completion \(subcommandNames)-- \(argumentName)"
-  }
-}
-
-extension ParsableCommand {
-  fileprivate static var compositeCommandName: [String] {
-    if let superCommandName = configuration._superCommandName {
-      return [superCommandName]
-        + _commandName.split(separator: " ").map(String.init)
-    } else {
-      return _commandName.split(separator: " ").map(String.init)
-    }
-  }
-}
-
-extension [ParsableCommand.Type] {
-  var positionalArguments: [ArgumentDefinition] {
-    guard let command = last else {
-      return []
-    }
-    return ArgumentSet(command, visibility: .default, parent: nil)
-      .filter(\.isPositional)
-  }
-
-  /// Include default 'help' subcommand in nonempty subcommand list if & only if
-  /// no help subcommand already exists.
-  mutating func addHelpSubcommandIfMissing() {
-    if !isEmpty && !contains(where: { $0._commandName == "help" }) {
-      append(HelpCommand.self)
-    }
-  }
-}
-
-extension Sequence where Element == ParsableCommand.Type {
-  func completionFunctionName() -> String {
-    "_"
-      + self.flatMap { $0.compositeCommandName }
-      .uniquingAdjacentElements()
-      .joined(separator: "_")
-  }
-
-  var shellVariableNamePrefix: String {
-    flatMap { $0.compositeCommandName }
-      .joined(separator: "_")
-      .shellEscapeForVariableName()
   }
 }
 
@@ -207,11 +139,136 @@ extension String {
   func shellEscapeForSingleQuotedString(iterationCount: UInt64 = 1) -> Self {
     iterationCount == 0
       ? self
-      : replacingOccurrences(of: "'", with: "'\\''")
+      : self
+        .replacing("'", with: "'\\''")
         .shellEscapeForSingleQuotedString(iterationCount: iterationCount - 1)
   }
 
   func shellEscapeForVariableName() -> Self {
-    replacingOccurrences(of: "-", with: "_")
+    self.replacing("-", with: "_")
+  }
+
+  func replacing(_ old: Self, with new: Self) -> Self {
+    guard !old.isEmpty else { return self }
+
+    var result = ""
+    var startIndex = self.startIndex
+
+    // Look for occurrences of the old string.
+    while let matchRange = self.firstMatch(of: old, at: startIndex) {
+      // Add the substring before the match.
+      result.append(contentsOf: self[startIndex..<matchRange.start])
+
+      // Add the replacement string.
+      result.append(contentsOf: new)
+
+      // Move past the matched portion.
+      startIndex = matchRange.end
+    }
+
+    // No more matches found, add the rest of the string.
+    result.append(contentsOf: self[startIndex..<self.endIndex])
+
+    return result
+  }
+
+  func firstMatch(
+    of match: Self,
+    at startIndex: Self.Index
+  ) -> (start: Self.Index, end: Self.Index)? {
+    guard !match.isEmpty else { return nil }
+    guard match.count <= self.count else { return nil }
+
+    var startIndex = startIndex
+    while startIndex < self.endIndex {
+      // Check if theres a match.
+      if let endIndex = self.matches(match, at: startIndex) {
+        // Return the match.
+        return (startIndex, endIndex)
+      }
+
+      // Move to the next of index.
+      self.formIndex(after: &startIndex)
+    }
+
+    return nil
+  }
+
+  func matches(
+    _ match: Self,
+    at startIndex: Self.Index
+  ) -> Self.Index? {
+    var selfIndex = startIndex
+    var matchIndex = match.startIndex
+
+    while true {
+      // Only continue checking if there is more match to check
+      guard matchIndex < match.endIndex else { return selfIndex }
+
+      // Exit early if there is no more "self" to check.
+      guard selfIndex < self.endIndex else { return nil }
+
+      // Check match and self are the the same.
+      guard self[selfIndex] == match[matchIndex] else { return nil }
+
+      // Move to the next pair of indices.
+      self.formIndex(after: &selfIndex)
+      match.formIndex(after: &matchIndex)
+    }
+  }
+}
+
+extension CommandInfoV0 {
+  var commandContext: [String] {
+    (superCommands ?? []) + [commandName]
+  }
+
+  var initialCommand: String {
+    superCommands?.first ?? commandName
+  }
+
+  var positionalArguments: [ArgumentInfoV0] {
+    (arguments ?? []).filter { $0.kind == .positional }
+  }
+
+  var completionFunctionName: String {
+    "_" + commandContext.joined(separator: "_")
+  }
+
+  var completionFunctionPrefix: String {
+    "__\(initialCommand)"
+  }
+}
+
+extension ArgumentInfoV0 {
+  /// Returns a string with the arguments for the callback to generate custom
+  /// completions for this argument.
+  func commonCustomCompletionCall(command: CommandInfoV0) -> String {
+    let subcommandNames =
+      command.commandContext.dropFirst().map { "\($0) " }.joined()
+
+    let argumentName: String
+    switch kind {
+    case .positional:
+      if let index = command.positionalArguments.firstIndex(of: self) {
+        argumentName = "positional@\(index)"
+      } else {
+        argumentName = "---"
+      }
+    default:
+      argumentName = preferredName?.commonCompletionSynopsisString() ?? "---"
+    }
+    return "---completion \(subcommandNames)-- \(argumentName)"
+  }
+}
+
+extension ArgumentInfoV0.NameInfoV0 {
+  func commonCompletionSynopsisString() -> String {
+    switch kind {
+    case .long:
+      return "--\(name)"
+    case .short, .longWithSingleDash:
+      return "-\(name)"
+    }
   }
 }

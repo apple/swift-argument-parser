@@ -32,6 +32,87 @@ import Darwin
 
 enum Platform {}
 
+// MARK: Environment
+
+extension Platform {
+  enum Environment {
+    struct Key {
+      static let shell = Self(rawValue: "SHELL")
+      static let columns = Self(rawValue: "COLUMNS")
+      static let lines = Self(rawValue: "LINES")
+
+      /// The name of the environment variable whose value is the name of the shell
+      /// for which completions are being requested from a custom completion
+      /// handler.
+      ///
+      /// The environment variable is set in generated completion scripts.
+      static let shellName = Self(rawValue: "SAP_SHELL")
+
+      /// The name of the environment variable whose value is the version of the
+      /// shell for which completions are being requested from a custom completion
+      /// handler.
+      ///
+      /// The environment variable is set in generated completion scripts.
+      static let shellVersion = Self(rawValue: "SAP_SHELL_VERSION")
+
+      var rawValue: String
+    }
+
+    @_disfavoredOverload
+    static subscript(_ key: Key) -> String? {
+      get {
+        #if !os(Windows) && !os(WASI)
+        guard let cString = getenv(key.rawValue) else { return nil }
+        return String(cString: cString)
+        #else
+        return nil
+        #endif
+      }
+      set {
+        #if !os(Windows) && !os(WASI)
+        if let newValue = newValue {
+          setenv(key.rawValue, newValue, 1)
+        } else {
+          unsetenv(key.rawValue)
+        }
+        #endif
+      }
+    }
+
+    static subscript<Value>(_ key: Key, as _: Value.Type) -> Value?
+    where Value: LosslessStringConvertible
+    {
+      get {
+        guard let stringValue = self[key] else { return nil }
+        return Value(stringValue)
+      }
+      set {
+        if let newValue = newValue {
+          self[key] = newValue.description
+        } else {
+          self[key] = nil
+        }
+      }
+    }
+
+    static subscript<Value>(_ key: Key, as _: Value.Type) -> Value?
+    where Value: RawRepresentable, Value.RawValue == String
+    {
+      get {
+        guard let stringValue = self[key] else { return nil }
+        return Value(rawValue: stringValue)
+      }
+      set {
+        if let newValue = newValue {
+          self[key] = newValue.rawValue
+        } else {
+          self[key] = nil
+        }
+      }
+    }
+  }
+}
+
 // MARK: Shell
 
 extension Platform {
@@ -42,8 +123,8 @@ extension Platform {
     return nil
     #else
     // FIXME: This retrieves the user's preferred shell, not necessarily the one currently in use.
-    guard let shellVar = getenv("SHELL") else { return nil }
-    let shellParts = String(cString: shellVar).split(separator: "/")
+    guard let shellVar = Environment[.shell] else { return nil }
+    let shellParts = shellVar.split(separator: "/")
     return shellParts.last.map(String.init)
     #endif
   }
@@ -167,15 +248,11 @@ extension Platform {
     var height: Int? = nil
 
     #if !os(Windows) && !os(WASI)
-    if let colsCStr = getenv("COLUMNS"),
-      let colsVal = Int(String(cString: colsCStr))
-    {
-      width = colsVal
+    if let columns = Platform.Environment[.columns, as: Int.self] {
+      width = columns
     }
-    if let linesCStr = getenv("LINES"),
-      let linesVal = Int(String(cString: linesCStr))
-    {
-      height = linesVal
+    if let lines = Platform.Environment[.lines, as: Int.self] {
+      height = lines
     }
     #endif
 

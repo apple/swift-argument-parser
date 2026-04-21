@@ -38,6 +38,7 @@ enum ParserError: Error {
   case missingSubcommand
   case userValidationError(Error)
   case noArguments(Error)
+  case notParentCommand(String)
 }
 
 /// These are errors used internally to the parsing, and will not be exposed to the help generation.

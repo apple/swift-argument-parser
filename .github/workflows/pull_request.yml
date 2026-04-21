@@ -1,5 +1,8 @@
 name: Pull request
 
+permissions:
+  contents: read
+
 on:
   pull_request:
     types: [opened, reopened, synchronize]
@@ -10,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install apt dependencies
         run: sudo apt-get -qq update && sudo apt-get -qq -y install curl
@@ -22,19 +25,25 @@ jobs:
 
   tests:
     name: Test
-    uses: swiftlang/github-workflows/.github/workflows/swift_package_test.yml@main
+    needs: [soundness, validate_format_config]
+    uses: swiftlang/github-workflows/.github/workflows/swift_package_test.yml@0.0.11
     with:
+      linux_swift_versions: "[ \"6.0\", \"6.1\", \"6.2\", \"nightly-main\", \"nightly-6.3\"]"
       windows_exclude_swift_versions: "[{\"swift_version\": \"5.9\"}]"
       enable_macos_checks: true
+      macos_exclude_xcode_versions: "[{\"xcode_version\": \"16.0\"}, {\"xcode_version\": \"16.1\"}, {\"xcode_version\": \"16.2\"}]"
+      enable_wasm_sdk_build: true
+      wasm_sdk_build_command: swift build --target ArgumentParser
 
   cmake-build:
     name: CMake Build
+    needs: [soundness, validate_format_config]
     runs-on: ubuntu-latest
     container:
       image: swift:6.0-jammy
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Install apt dependencies
         run: apt-get -qq update && apt-get -qq -y install curl ninja-build
       - name: Install CMake 3.30.2
@@ -52,6 +61,14 @@ jobs:
 
   soundness:
     name: Soundness
-    uses: swiftlang/github-workflows/.github/workflows/soundness.yml@main
+    uses: swiftlang/github-workflows/.github/workflows/soundness.yml@0.0.11
     with:
       shell_check_enabled: false  # bug: https://github.com/apple/swift-argument-parser/issues/703
+
+  required:
+    name: Required
+    runs-on: ubuntu-latest
+    needs: [tests, soundness, validate_format_config, cmake-build]
+    steps:
+      - name: Success
+        run: echo "All required jobs succeeded."

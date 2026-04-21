@@ -148,6 +148,8 @@ extension HelpGenerationTests {
   enum OptionFlags: String, EnumerableFlag { case optional, required }
   enum Degree {
     case bachelor, graduate, doctorate
+
+    @Sendable
     static func degreeTransform(_ string: String) throws -> Degree {
       switch string {
       case "bachelor":
@@ -1093,6 +1095,80 @@ extension HelpGenerationTests {
         """)
   }
 
+  struct CustomOptionAsListWithSingleDefaultValue: ParsableCommand {
+    @Option(
+      help: "An option with enumerable values.")
+    var opt: [OptionValues] = [.red]
+  }
+
+  func testEnumerableOptionAsListWithSingleDefault() {
+    AssertHelp(
+      .default,
+      for: CustomOptionAsListWithSingleDefaultValue.self,
+      columns: 100,
+      equals: """
+        USAGE: custom-option-as-list-with-single-default-value [--opt <opt> ...]
+
+        OPTIONS:
+          --opt <opt>             An option with enumerable values. (default: red)
+                blue              - The color of the sky.
+                red               - The color of a rose.
+                yellow            - The color of the sun.
+          -h, --help              Show help information.
+
+        """)
+  }
+
+  struct CustomOptionAsListWithMultipleDefaultValue: ParsableCommand {
+    @Option(
+      help: "An option with multiple enumerable values.")
+    var opt: [OptionValues] = [.red, .blue]
+  }
+
+  func testEnumerableOptionAsListWithMultipleDefault() {
+    AssertHelp(
+      .default,
+      for: CustomOptionAsListWithMultipleDefaultValue.self,
+      columns: 100,
+      equals: """
+        USAGE: custom-option-as-list-with-multiple-default-value [--opt <opt> ...]
+
+        OPTIONS:
+          --opt <opt>             An option with multiple enumerable values. (default: red, blue)
+                blue              - The color of the sky.
+                red               - The color of a rose.
+                yellow            - The color of the sun.
+          -h, --help              Show help information.
+
+        """)
+
+  }
+
+  struct CustomOptionAsListWithEmptyArrayAsDefault: ParsableCommand {
+    @Option(
+      help: "An option with default value set to empty array.")
+    var opt: [OptionValues] = []
+  }
+
+  func testEnumerableOptionAsListWithEmptyArrayAsDefault() {
+    AssertHelp(
+      .default,
+      for: CustomOptionAsListWithEmptyArrayAsDefault.self,
+      columns: 100,
+      equals: """
+        USAGE: custom-option-as-list-with-empty-array-as-default [--opt <opt> ...]
+
+        OPTIONS:
+          --opt <opt>             An option with default value set to empty array.
+                blue              - The color of the sky.
+                red               - The color of a rose.
+                yellow            - The color of the sun.
+          -h, --help              Show help information.
+
+        """)
+
+  }
+
   struct CustomOptionWithDefault: ParsableCommand {
     @Option(help: "An option with enumerable values and a custom default.")
     var opt: OptionValues = .red
@@ -1370,8 +1446,8 @@ extension HelpGenerationTests {
 
   func testColumnsEnvironmentOverride() throws {
     #if !(os(Windows) || os(WASI))
-    defer { unsetenv("COLUMNS") }
-    unsetenv("COLUMNS")
+    defer { Platform.Environment[.columns] = nil }
+    Platform.Environment[.columns] = nil
     AssertHelp(
       .default, for: WideHelp.self, columns: nil,
       equals: """
@@ -1385,7 +1461,7 @@ extension HelpGenerationTests {
 
         """)
 
-    setenv("COLUMNS", "60", 1)
+    Platform.Environment[.columns, as: Int.self] = 60
     AssertHelp(
       .default, for: WideHelp.self, columns: nil,
       equals: """
@@ -1400,7 +1476,7 @@ extension HelpGenerationTests {
 
         """)
 
-    setenv("COLUMNS", "79", 1)
+    Platform.Environment[.columns, as: Int.self] = 79
     AssertHelp(
       .default, for: WideHelp.self, columns: nil,
       equals: """
@@ -1415,5 +1491,46 @@ extension HelpGenerationTests {
 
         """)
     #endif
+  }
+
+  // MARK: - Option group usage string regression (#578)
+
+  private struct OptionGroupOptions: ParsableCommand {
+    @Option
+    var num: Int = 0
+  }
+
+  private struct OptionGroupCommand: ParsableCommand {
+    static let configuration = CommandConfiguration(commandName: "test")
+
+    @OptionGroup
+    var options: OptionGroupOptions
+
+    @Argument
+    var arg: String = ""
+  }
+
+  func testOptionGroupUsageDoesNotIncludeGroupName() throws {
+    // The usage string from --help should not prepend the OptionGroup
+    // type name when all arguments are optional (#578).
+    let result = try OptionGroupCommand.parseAsRoot(["--help"])
+    guard let helpCommand = result as? HelpCommand else {
+      XCTFail("Expected HelpCommand, got \(type(of: result))")
+      return
+    }
+    let helpText = helpCommand.generateHelp(screenWidth: 80)
+    AssertEqualStrings(
+      actual: helpText,
+      expected: """
+        USAGE: test [--num <num>] [<arg>]
+
+        ARGUMENTS:
+          <arg>
+
+        OPTIONS:
+          --num <num>             (default: 0)
+          -h, --help              Show help information.
+
+        """)
   }
 }

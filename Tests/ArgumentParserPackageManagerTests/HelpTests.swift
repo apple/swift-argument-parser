@@ -16,9 +16,7 @@ import XCTest
 
 final class HelpTests: XCTestCase {
   override func setUp() {
-    #if !os(Windows) && !os(WASI)
-    unsetenv("COLUMNS")
-    #endif
+    Platform.Environment[.columns] = nil
   }
 }
 
@@ -55,7 +53,7 @@ func getErrorText<T: ParsableCommand>(
 extension HelpTests {
   func testGlobalHelp() throws {
     XCTAssertEqual(
-      getErrorText(Package.self, ["help"]).trimmingLines(),
+      getErrorText(Package.self, ["help"]),
       """
       USAGE: package <subcommand>
 
@@ -69,12 +67,12 @@ extension HelpTests {
         generate-xcodeproj
 
         See 'package help <subcommand>' for detailed help.
-      """.trimmingLines())
+      """)
   }
 
   func testGlobalHelp_messageForCleanExit_helpRequest() throws {
     XCTAssertEqual(
-      Package.message(for: CleanExit.helpRequest()).trimmingLines(),
+      Package.message(for: CleanExit.helpRequest()),
       """
       USAGE: package <subcommand>
 
@@ -88,22 +86,21 @@ extension HelpTests {
         generate-xcodeproj
 
         See 'package help <subcommand>' for detailed help.
-      """.trimmingLines()
+      """
     )
   }
 
   func testGlobalHelp_messageForCleanExit_message() throws {
     let expectedMessage = "Failure"
     XCTAssertEqual(
-      Package.message(for: CleanExit.message(expectedMessage)).trimmingLines(),
+      Package.message(for: CleanExit.message(expectedMessage)),
       expectedMessage
     )
   }
 
   func testConfigHelp() throws {
     XCTAssertEqual(
-      getErrorText(Package.self, ["help", "config"], screenWidth: 80)
-        .trimmingLines(),
+      getErrorText(Package.self, ["help", "config"], screenWidth: 80),
       """
       USAGE: package config <subcommand>
 
@@ -116,14 +113,14 @@ extension HelpTests {
         unset-mirror
 
         See 'package help config <subcommand>' for detailed help.
-      """.trimmingLines())
+      """)
   }
 
   func testGetMirrorHelp() throws {
     XCTAssertEqual(
       getErrorText(
         Package.self, ["help", "config", "get-mirror"], screenWidth: 80
-      ).trimmingLines(),
+      ),
       """
       USAGE: package config get-mirror [<options>] --package-url <package-url>
 
@@ -169,7 +166,7 @@ extension HelpTests {
                                 The package dependency URL
         -h, --help              Show help information.
 
-      """.trimmingLines())
+      """)
   }
 }
 
@@ -189,16 +186,16 @@ struct Simple: ParsableArguments {
       --min <min>
       -h, --help              Show help information.
 
-    """.trimmingLines()
+    """
 }
 
 extension HelpTests {
   func testSimpleHelp() throws {
     XCTAssertEqual(
-      getErrorText(Simple.self, ["--help"]).trimmingLines(),
+      getErrorText(Simple.self, ["--help"]),
       Simple.helpText)
     XCTAssertEqual(
-      getErrorText(Simple.self, ["-h"]).trimmingLines(),
+      getErrorText(Simple.self, ["-h"]),
       Simple.helpText)
   }
 }
@@ -250,7 +247,7 @@ extension HelpTests {
       """)
 
     XCTAssertEqual(
-      NoHelp.message(for: CleanExit.helpRequest()).trimmingLines(),
+      NoHelp.message(for: CleanExit.helpRequest()),
       """
       USAGE: no-help --count <count>
 

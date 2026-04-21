@@ -27,6 +27,10 @@ private func candidates(prefix: String) -> [String] {
   }
 }
 
+private func candidatesAsync(prefix: String) async -> [String] {
+  candidates(prefix: prefix)
+}
+
 final class CompletionScriptTests: XCTestCase {}
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
@@ -44,7 +48,12 @@ extension CompletionScriptTests {
     }
   }
 
-  enum Kind: String, ExpressibleByArgument, EnumerableFlag {
+  enum Kind:
+    String,
+    ExpressibleByArgument,
+    EnumerableFlag,
+    CustomStringConvertible
+  {
     case one, two
     case three = "custom-three"
   }
@@ -88,7 +97,12 @@ extension CompletionScriptTests {
     }
 
     struct EscapedCommand: ParsableCommand {
-      @Option(help: #"Escaped chars: '[]\."#)
+      @Option(
+        name: .customLong("o:n[e"),
+        help: ArgumentHelp(
+          #"Escaped chars: '[]\."#, valueName: "path[:options]"
+        )
+      )
       var one: String
 
       @Argument(completion: .custom { _, _, _ in candidates(prefix: "i") })
@@ -165,18 +179,30 @@ extension CompletionScriptTests {
     }
   }
 
+  struct CustomAsync: AsyncParsableCommand {
+    @Argument(
+      completion: .custom { _, _, _ in await candidatesAsync(prefix: "j") }
+    )
+    var five: String
+  }
+
   func assertCustomCompletion(
     _ arg: String,
     shell: CompletionShell,
     prefix: String = "",
     file: StaticString = #filePath,
-    line: UInt = #line
-  ) throws {
+    line: UInt = #line,
+    command: any ParsableCommand.Type = Custom.self
+  ) async throws {
     #if !os(Windows) && !os(WASI)
     do {
-      setenv(CompletionShell.shellEnvironmentVariableName, shell.rawValue, 1)
-      defer { unsetenv(CompletionShell.shellEnvironmentVariableName) }
-      _ = try Custom.parse(["---completion", "--", arg, "0", "0"])
+      Platform.Environment[.shellName, as: CompletionShell.self] = shell
+      defer { Platform.Environment[.shellName] = nil }
+      if let command = command as? AsyncParsableCommand.Type {
+        _ = try await command.parse(["---completion", "--", arg, "0", "0"])
+      } else {
+        _ = try command.parse(["---completion", "--", arg, "0", "0"])
+      }
       XCTFail("Didn't error as expected", file: file, line: line)
     } catch let error as CommandError {
       guard case .completionScriptCustomResponse(let output) = error.parserError
@@ -200,35 +226,57 @@ extension CompletionScriptTests {
     shell: CompletionShell,
     file: StaticString = #filePath,
     line: UInt = #line
-  ) throws {
+  ) async throws {
     #if !os(Windows) && !os(WASI)
-    try assertCustomCompletion(
+    try await assertCustomCompletion(
       "-o", shell: shell, prefix: "e", file: file, line: line)
-    try assertCustomCompletion(
+    try await assertCustomCompletion(
       "--one", shell: shell, prefix: "e", file: file, line: line)
-    try assertCustomCompletion(
+    try await assertCustomCompletion(
       "two", shell: shell, prefix: "f", file: file, line: line)
-    try assertCustomCompletion(
+    try await assertCustomCompletion(
       "-z", shell: shell, prefix: "g", file: file, line: line)
-    try assertCustomCompletion(
+    try await assertCustomCompletion(
       "nested.four", shell: shell, prefix: "h", file: file, line: line)
+    try await assertCustomCompletion(
+      "five", shell: shell, prefix: "j", file: file, line: line,
+      command: CustomAsync.self
+    )
 
-    XCTAssertThrowsError(
-      try assertCustomCompletion("--bad", shell: shell, file: file, line: line))
-    XCTAssertThrowsError(
-      try assertCustomCompletion("four", shell: shell, file: file, line: line))
+    do {
+      try await assertCustomCompletion(
+        "--bad",
+        shell: shell,
+        file: file,
+        line: line
+      )
+      XCTFail("Didn't error as expected", file: file, line: line)
+    } catch {
+      // Expected
+    }
+    do {
+      try await assertCustomCompletion(
+        "four",
+        shell: shell,
+        file: file,
+        line: line
+      )
+      XCTFail("Didn't error as expected", file: file, line: line)
+    } catch {
+      // Expected
+    }
     #endif
   }
 
-  func testBashCustomCompletions() throws {
-    try assertCustomCompletions(shell: .bash)
+  func testBashCustomCompletions() async throws {
+    try await assertCustomCompletions(shell: .bash)
   }
 
-  func testFishCustomCompletions() throws {
-    try assertCustomCompletions(shell: .fish)
+  func testFishCustomCompletions() async throws {
+    try await assertCustomCompletions(shell: .fish)
   }
 
-  func testZshCustomCompletions() throws {
-    try assertCustomCompletions(shell: .zsh)
+  func testZshCustomCompletions() async throws {
+    try await assertCustomCompletions(shell: .zsh)
   }
 }

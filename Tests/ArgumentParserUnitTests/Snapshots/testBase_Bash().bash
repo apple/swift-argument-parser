@@ -1,6 +1,6 @@
 #!/bin/bash
 
-__base_test_cursor_index_in_current_word() {
+__base-test_cursor_index_in_current_word() {
     local remaining="${COMP_LINE}"
 
     local word
@@ -22,18 +22,20 @@ __base_test_cursor_index_in_current_word() {
 #
 # required variables:
 #
-# - flags: the flags that the current (sub)command can accept
-# - options: the options that the current (sub)command can accept
+# - repeating_flags: the repeating flags that the current (sub)command can accept
+# - non_repeating_flags: the non-repeating flags that the current (sub)command can accept
+# - repeating_options: the repeating options that the current (sub)command can accept
+# - non_repeating_options: the non-repeating options that the current (sub)command can accept
 # - positional_number: value ignored
 # - unparsed_words: unparsed words from the current command line
 #
 # modified variables:
 #
-# - flags: remove flags for this (sub)command that are already on the command line
-# - options: remove options for this (sub)command that are already on the command line
+# - non_repeating_flags: remove flags for this (sub)command that are already on the command line
+# - non_repeating_options: remove options for this (sub)command that are already on the command line
 # - positional_number: set to the current positional number
 # - unparsed_words: remove all flags, options, and option values for this (sub)command
-__base_test_offer_flags_options() {
+__base-test_offer_flags_options() {
     local -ir positional_count="${1}"
     positional_number=0
 
@@ -67,26 +69,26 @@ __base_test_offer_flags_options() {
                 # ${word} is a flag or an option
                 # If ${word} is an option, mark that the next word to be parsed is an option value
                 local option
-                for option in "${options[@]}"; do
+                for option in "${repeating_options[@]}" "${non_repeating_options[@]}"; do
                     [[ "${word}" = "${option}" ]] && is_parsing_option_value=true && break
                 done
 
-                # Remove ${word} from ${flags} or ${options} so it isn't offered again
+                # Remove ${word} from ${non_repeating_flags} or ${non_repeating_options} so it isn't offered again
                 local not_found=true
                 local -i index
-                for index in "${!flags[@]}"; do
-                    if [[ "${flags[${index}]}" = "${word}" ]]; then
-                        unset "flags[${index}]"
-                        flags=("${flags[@]}")
+                for index in "${!non_repeating_flags[@]}"; do
+                    if [[ "${non_repeating_flags[${index}]}" = "${word}" ]]; then
+                        unset "non_repeating_flags[${index}]"
+                        non_repeating_flags=("${non_repeating_flags[@]}")
                         not_found=false
                         break
                     fi
                 done
                 if "${not_found}"; then
-                    for index in "${!options[@]}"; do
-                        if [[ "${options[${index}]}" = "${word}" ]]; then
-                            unset "options[${index}]"
-                            options=("${options[@]}")
+                    for index in "${!non_repeating_flags[@]}"; do
+                        if [[ "${non_repeating_flags[${index}]}" = "${word}" ]]; then
+                            unset "non_repeating_flags[${index}]"
+                            non_repeating_flags=("${non_repeating_flags[@]}")
                             break
                         fi
                     done
@@ -98,7 +100,7 @@ __base_test_offer_flags_options() {
         fi
 
         # ${word} is neither a flag, nor an option, nor an option value
-        if [[ "${positional_number}" -lt "${positional_count}" ]]; then
+        if [[ "${positional_number}" -lt "${positional_count}" || "${positional_count}" -lt 0 ]]; then
             # ${word} is a positional
             ((positional_number++))
             unset "unparsed_words[${word_index}]"
@@ -121,18 +123,18 @@ __base_test_offer_flags_options() {
         && ! "${is_parsing_option_value}"\
         && [[ ("${cur}" = -* && "${positional_number}" -ge 0) || "${positional_number}" -eq -1 ]]
     then
-        COMPREPLY+=($(compgen -W "${flags[*]} ${options[*]}" -- "${cur}"))
+        COMPREPLY+=($(compgen -W "${repeating_flags[*]} ${non_repeating_flags[*]} ${repeating_options[*]} ${non_repeating_options[*]}" -- "${cur}"))
     fi
 }
 
-__base_test_add_completions() {
+__base-test_add_completions() {
     local completion
     while IFS='' read -r completion; do
         COMPREPLY+=("${completion}")
     done < <(IFS=$'\n' compgen "${@}" -- "${cur}")
 }
 
-__base_test_custom_complete() {
+__base-test_custom_complete() {
     if [[ -n "${cur}" || -z ${COMP_WORDS[${COMP_CWORD}]} || "${COMP_LINE:${COMP_POINT}:1}" != ' ' ]]; then
         local -ar words=("${COMP_WORDS[@]}")
     else
@@ -142,8 +144,10 @@ __base_test_custom_complete() {
     "${COMP_WORDS[0]}" "${@}" "${words[@]}"
 }
 
-_base_test() {
-    trap "$(shopt -p);$(shopt -po)" RETURN
+_base-test() {
+    local state
+    state="$(shopt -p;shopt -po)"
+    trap "${state//$'\n'/;}" RETURN
     shopt -s extglob
     set +o history +o posix
 
@@ -158,39 +162,41 @@ _base_test() {
     local -i positional_number
     local -a unparsed_words=("${COMP_WORDS[@]:1:${COMP_CWORD}}")
 
-    local -a flags=(--one --two --three --kind-counter -h --help)
-    local -a options=(--name --kind --other-kind --path1 --path2 --path3 --rep1 -r --rep2)
-    __base_test_offer_flags_options 2
+    local -a repeating_flags=(--kind-counter)
+    local -a non_repeating_flags=(--one --two --custom-three -h --help)
+    local -a repeating_options=(--rep1 -r --rep2)
+    local -a non_repeating_options=(--name --kind --other-kind --path1 --path2 --path3)
+    __base-test_offer_flags_options 2
 
     # Offer option value completions
     case "${prev}" in
-    --name)
+    '--name')
         return
         ;;
-    --kind)
-        __base_test_add_completions -W 'one'$'\n''two'$'\n''custom-three'
+    '--kind')
+        __base-test_add_completions -W 'one'$'\n''two'$'\n''custom-three'
         return
         ;;
-    --other-kind)
-        __base_test_add_completions -W 'b1_bash'$'\n''b2_bash'$'\n''b3_bash'
+    '--other-kind')
+        __base-test_add_completions -W 'b1_bash'$'\n''b2_bash'$'\n''b3_bash'
         return
         ;;
-    --path1)
-        __base_test_add_completions -f
+    '--path1')
+        __base-test_add_completions -f
         return
         ;;
-    --path2)
-        __base_test_add_completions -f
+    '--path2')
+        __base-test_add_completions -f
         return
         ;;
-    --path3)
-        __base_test_add_completions -W 'c1_bash'$'\n''c2_bash'$'\n''c3_bash'
+    '--path3')
+        __base-test_add_completions -W 'c1_bash'$'\n''c2_bash'$'\n''c3_bash'
         return
         ;;
-    --rep1)
+    '--rep1')
         return
         ;;
-    -r|--rep2)
+    '-r'|'--rep2')
         return
         ;;
     esac
@@ -198,11 +204,11 @@ _base_test() {
     # Offer positional completions
     case "${positional_number}" in
     1)
-        __base_test_add_completions -W "$(__base_test_custom_complete ---completion -- argument "${COMP_CWORD}" "$(__base_test_cursor_index_in_current_word)")"
+        __base-test_add_completions -W "$(__base-test_custom_complete ---completion -- positional@0 "${COMP_CWORD}" "$(__base-test_cursor_index_in_current_word)")"
         return
         ;;
     2)
-        __base_test_add_completions -W "$(__base_test_custom_complete ---completion -- nested.nestedArgument "${COMP_CWORD}" "$(__base_test_cursor_index_in_current_word)")"
+        __base-test_add_completions -W "$(__base-test_custom_complete ---completion -- positional@1 "${COMP_CWORD}" "$(__base-test_cursor_index_in_current_word)")"
         return
         ;;
     esac
@@ -214,7 +220,7 @@ _base_test() {
     case "${subcommand}" in
     sub-command|escaped-command|help)
         # Offer subcommand argument completions
-        "_base_test_${subcommand}"
+        "_base-test_${subcommand}"
         ;;
     *)
         # Offer subcommand completions
@@ -223,20 +229,24 @@ _base_test() {
     esac
 }
 
-_base_test_sub_command() {
-    flags=(-h --help)
-    options=()
-    __base_test_offer_flags_options 0
+_base-test_sub-command() {
+    repeating_flags=()
+    non_repeating_flags=(-h --help)
+    repeating_options=()
+    non_repeating_options=()
+    __base-test_offer_flags_options 0
 }
 
-_base_test_escaped_command() {
-    flags=(-h --help)
-    options=(--one)
-    __base_test_offer_flags_options 1
+_base-test_escaped-command() {
+    repeating_flags=()
+    non_repeating_flags=(-h --help)
+    repeating_options=()
+    non_repeating_options=(--o:n[e)
+    __base-test_offer_flags_options 1
 
     # Offer option value completions
     case "${prev}" in
-    --one)
+    '--o:n[e')
         return
         ;;
     esac
@@ -244,14 +254,14 @@ _base_test_escaped_command() {
     # Offer positional completions
     case "${positional_number}" in
     1)
-        __base_test_add_completions -W "$(__base_test_custom_complete ---completion escaped-command -- two "${COMP_CWORD}" "$(__base_test_cursor_index_in_current_word)")"
+        __base-test_add_completions -W "$(__base-test_custom_complete ---completion escaped-command -- positional@0 "${COMP_CWORD}" "$(__base-test_cursor_index_in_current_word)")"
         return
         ;;
     esac
 }
 
-_base_test_help() {
+_base-test_help() {
     :
 }
 
-complete -o filenames -F _base_test base-test
+complete -o filenames -F _base-test base-test

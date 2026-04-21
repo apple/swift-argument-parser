@@ -10,7 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 /// A type that can be expressed as a command-line argument.
-public protocol ExpressibleByArgument {
+public protocol ExpressibleByArgument: _SendableMetatype {
   /// Creates a new instance of this type from a command-line-specified
   /// argument.
   init?(argument: String)
@@ -117,6 +117,17 @@ where Self: ExpressibleByArgument, RawValue: ExpressibleByArgument {
 // MARK: LosslessStringConvertible
 
 extension LosslessStringConvertible where Self: ExpressibleByArgument {
+  public init?(argument: String) {
+    self.init(argument)
+  }
+}
+
+extension LosslessStringConvertible
+where
+  Self: ExpressibleByArgument & RawRepresentable,
+  RawValue: ExpressibleByArgument
+{
+  // Ambiguity breaker
   public init?(argument: String) {
     self.init(argument)
   }

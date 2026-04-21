@@ -25,6 +25,7 @@
             "name" : "enumerated-option"
           }
         ],
+        "parsingStrategy" : "default",
         "preferredName" : {
           "kind" : "long",
           "name" : "enumerated-option"
@@ -57,6 +58,7 @@
             "name" : "enumerated-option-with-default-value"
           }
         ],
+        "parsingStrategy" : "default",
         "preferredName" : {
           "kind" : "long",
           "name" : "enumerated-option-with-default-value"
@@ -74,6 +76,7 @@
             "name" : "no-help-option"
           }
         ],
+        "parsingStrategy" : "default",
         "preferredName" : {
           "kind" : "long",
           "name" : "no-help-option"
@@ -92,6 +95,7 @@
             "name" : "int-option"
           }
         ],
+        "parsingStrategy" : "default",
         "preferredName" : {
           "kind" : "long",
           "name" : "int-option"
@@ -111,6 +115,7 @@
             "name" : "int-option-with-default-value"
           }
         ],
+        "parsingStrategy" : "default",
         "preferredName" : {
           "kind" : "long",
           "name" : "int-option-with-default-value"
@@ -122,6 +127,7 @@
         "isOptional" : false,
         "isRepeating" : false,
         "kind" : "positional",
+        "parsingStrategy" : "default",
         "shouldDisplay" : true,
         "valueName" : "arg"
       },
@@ -130,6 +136,7 @@
         "isOptional" : false,
         "isRepeating" : false,
         "kind" : "positional",
+        "parsingStrategy" : "default",
         "shouldDisplay" : true,
         "valueName" : "arg-with-help"
       },
@@ -139,6 +146,7 @@
         "isOptional" : true,
         "isRepeating" : false,
         "kind" : "positional",
+        "parsingStrategy" : "default",
         "shouldDisplay" : true,
         "valueName" : "arg-with-default-value"
       },
@@ -157,6 +165,7 @@
             "name" : "help"
           }
         ],
+        "parsingStrategy" : "default",
         "preferredName" : {
           "kind" : "long",
           "name" : "help"
@@ -175,6 +184,7 @@
             "isOptional" : true,
             "isRepeating" : true,
             "kind" : "positional",
+            "parsingStrategy" : "default",
             "shouldDisplay" : true,
             "valueName" : "subcommands"
           },
@@ -196,6 +206,7 @@
                 "name" : "help"
               }
             ],
+            "parsingStrategy" : "default",
             "preferredName" : {
               "kind" : "long",
               "name" : "help"
