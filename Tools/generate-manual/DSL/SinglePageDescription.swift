@@ -67,7 +67,8 @@ struct SinglePageDescription: MDocComponent {
 
       for subcommand in command.subcommands ?? [] {
         MDocMacro.ListItem(
-          title: MDocMacro.Emphasis(arguments: [subcommand.commandName]))
+          title: MDocMacro.Emphasis(
+            arguments: [subcommand.manualPageSubcommandLabel]))
         SinglePageDescription(command: subcommand, root: false).core
       }
     }
