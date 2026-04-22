@@ -264,7 +264,7 @@ extension Flag where Value == Bool? {
       "An optional 'Bool?' @Flag requires an 'inversion:' parameter, such as '.prefixedNo' or '.prefixedEnableDisable'."
   )
   public init(
-    name: NameSpecification = .long,
+    name _name: NameSpecification = .long,
     help: ArgumentHelp? = nil
   ) {
     fatalError("unavailable")
