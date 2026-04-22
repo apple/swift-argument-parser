@@ -354,6 +354,7 @@ extension HelpGenerationTests {
           another-command
 
           See 'h help <subcommand>' for detailed help.
+          Use 'h help --search <term>' to search commands and options.
         """)
 
     AssertHelp(
@@ -485,6 +486,7 @@ extension HelpGenerationTests {
           m (default)
 
           See 'n help <subcommand>' for detailed help.
+          Use 'n help --search <term>' to search commands and options.
         """)
   }
 
@@ -602,6 +604,7 @@ extension HelpGenerationTests {
           n
 
           See 'subgroupings help <subcommand>' for detailed help.
+          Use 'subgroupings help --search <term>' to search commands and options.
         """)
   }
 
@@ -639,6 +642,7 @@ extension HelpGenerationTests {
           n
 
           See 'subgroupings help <subcommand>' for detailed help.
+          Use 'subgroupings help --search <term>' to search commands and options.
         """)
   }
 }
@@ -926,6 +930,7 @@ extension HelpGenerationTests {
           example-subcommand
 
           See 'non-custom-usage help <subcommand>' for detailed help.
+          Use 'non-custom-usage help --search <term>' to search commands and options.
         """)
 
     AssertEqualStrings(
