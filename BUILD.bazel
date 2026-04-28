@@ -1,0 +1,25 @@
+load("@rules_swift//swift:swift.bzl", "swift_library")
+
+package(default_visibility = ["//:__subpackages__"])
+
+swift_library(
+    name = "ArgumentParserToolInfo",
+    srcs = glob(["Sources/ArgumentParserToolInfo/**/*.swift"]),
+    module_name = "ArgumentParserToolInfo",
+)
+
+swift_library(
+    name = "ArgumentParser",
+    srcs = glob(["Sources/ArgumentParser/**/*.swift"]),
+    module_name = "ArgumentParser",
+    visibility = ["//visibility:public"],
+    deps = [":ArgumentParserToolInfo"],
+)
+
+swift_library(
+    name = "ArgumentParserTestHelpers",
+    testonly = True,
+    srcs = glob(["Sources/ArgumentParserTestHelpers/**/*.swift"]),
+    module_name = "ArgumentParserTestHelpers",
+    deps = [":ArgumentParser"],
+)
