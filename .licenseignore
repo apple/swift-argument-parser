@@ -27,3 +27,5 @@ Package.resolved
 **/Package.resolved
 .unacceptablelanguageignore
 **/Snapshots/*
+.bazelversion
+*.bazel

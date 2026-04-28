@@ -1,0 +1,142 @@
+load("@bazel_skylib//rules:copy_file.bzl", "copy_file")
+load("@rules_swift//swift:swift.bzl", "swift_test")
+
+[
+    copy_file(
+        name = name + ".copy",
+        src = target,
+        out = name,
+        allow_symlink = True,
+    )
+    for name, target in [
+        ("generate-docc-reference", "//Tools:generate-docc-reference"),
+        ("generate-manual", "//Tools:generate-manual"),
+        ("color", "//Examples:color"),
+        ("count-lines", "//Examples:count-lines"),
+        ("default-as-flag", "//Examples:default-as-flag"),
+        ("math", "//Examples:math"),
+        ("repeat", "//Examples:repeat"),
+        ("roll", "//Examples:roll"),
+    ]
+]
+
+genrule(
+    name = "generate_module_accessor",
+    outs = ["module_accessor.swift"],
+    cmd = """cat > $@ <<'EOF'
+import Foundation
+
+public extension Bundle {
+    static let module: Bundle = {
+        let testSrcDir = ProcessInfo.processInfo.environment["TEST_SRCDIR"]!
+        let url = URL(fileURLWithPath: testSrcDir)
+            .appendingPathComponent("_main/Tests/ArgumentParserExampleTests")
+        return Bundle(url: url)!
+    }()
+}
+EOF
+""",
+)
+
+swift_test(
+    name = "EndToEndTests",
+    srcs = glob(["ArgumentParserEndToEndTests/**/*.swift"]),
+    deps = [
+        "//:ArgumentParser",
+        "//:ArgumentParserTestHelpers",
+    ],
+)
+
+swift_test(
+    name = "ExampleTests",
+    srcs = glob(["ArgumentParserExampleTests/**/*.swift"]) + [":generate_module_accessor"],
+    data = glob([
+        "ArgumentParserExampleTests/**/*.zsh",
+        "ArgumentParserExampleTests/**/*.bash",
+        "ArgumentParserExampleTests/**/*.fish",
+        "ArgumentParserExampleTests/**/*.txt",
+    ]) + [
+        ":math",
+        ":repeat",
+        ":roll",
+    ] + select({
+        "@platforms//os:macos": [":count-lines"],
+        "//conditions:default": [],
+    }),
+    deps = [
+        "//:ArgumentParser",
+        "//:ArgumentParserTestHelpers",
+    ],
+)
+
+swift_test(
+    name = "GenerateDoccReferenceTests",
+    srcs = glob(["ArgumentParserGenerateDoccReferenceTests/**/*.swift"]),
+    data = glob(["ArgumentParserGenerateDoccReferenceTests/**/*.md"]) + [
+        ":color",
+        ":generate-docc-reference",
+        ":math",
+        ":repeat",
+        ":roll",
+    ] + select({
+        "@platforms//os:macos": [":count-lines"],
+        "//conditions:default": [],
+    }),
+    deps = [
+        "//:ArgumentParser",
+        "//:ArgumentParserTestHelpers",
+    ],
+)
+
+swift_test(
+    name = "GenerateManualTests",
+    srcs = glob(["ArgumentParserGenerateManualTests/**/*.swift"]),
+    data = glob(["ArgumentParserGenerateManualTests/**/*.mdoc"]) + [
+        ":color",
+        ":default-as-flag",
+        ":generate-manual",
+        ":math",
+        ":repeat",
+        ":roll",
+    ] + select({
+        "@platforms//os:macos": [":count-lines"],
+        "//conditions:default": [],
+    }),
+    deps = [
+        "//:ArgumentParser",
+        "//:ArgumentParserTestHelpers",
+    ],
+)
+
+swift_test(
+    name = "PackageManagerTests",
+    srcs = glob(["ArgumentParserPackageManagerTests/**/*.swift"]),
+    deps = [
+        "//:ArgumentParser",
+        "//:ArgumentParserTestHelpers",
+    ],
+)
+
+swift_test(
+    name = "ToolInfoTests",
+    srcs = glob(["ArgumentParserToolInfoTests/**/*.swift"]),
+    data = glob(["ArgumentParserToolInfoTests/**/*.json"]),
+    deps = [
+        "//:ArgumentParserToolInfo",
+    ],
+)
+
+swift_test(
+    name = "UnitTests",
+    srcs = glob(["ArgumentParserUnitTests/**/*.swift"]),
+    data = glob([
+        "ArgumentParserUnitTests/**/*.json",
+        "ArgumentParserUnitTests/**/*.bash",
+        "ArgumentParserUnitTests/**/*.fish",
+        "ArgumentParserUnitTests/**/*.zsh",
+    ]),
+    deps = [
+        "//:ArgumentParser",
+        "//:ArgumentParserTestHelpers",
+    ],
+)
