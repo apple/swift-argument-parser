@@ -35,13 +35,18 @@ Use this option to override the default value of a six-sided die.
 
 ## roll.help
 
-Show subcommand help information.
+Show subcommand help information. Use --search to find commands and options.
 
 ```
-roll help [<subcommands>...]
+roll help [<subcommands>...] [--search=<search>]
 ```
 
 **subcommands:**
+
+
+**--search=\<search\>:**
+
+*Search for commands and options matching the term.*
 
 
 

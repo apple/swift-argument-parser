@@ -211,7 +211,18 @@ _defaultasflag-test() {
 }
 
 _defaultasflag-test_help() {
-    :
+    repeating_flags=()
+    non_repeating_flags=()
+    repeating_options=()
+    non_repeating_options=(-s --search)
+    __defaultasflag-test_offer_flags_options -1
+
+    # Offer option value completions
+    case "${prev}" in
+    '-s'|'--search')
+        return
+        ;;
+    esac
 }
 
 complete -o filenames -F _defaultasflag-test defaultasflag-test
