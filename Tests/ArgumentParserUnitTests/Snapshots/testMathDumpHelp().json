@@ -46,6 +46,7 @@
       }
     ],
     "commandName" : "math",
+    "extendedDiscussion" : "Examples:\n  math add 10 15 20\n  math multiply --hex-output 16 32\n  math stats average --kind median 5 8 12",
     "shouldDisplay" : true,
     "subcommands" : [
       {
