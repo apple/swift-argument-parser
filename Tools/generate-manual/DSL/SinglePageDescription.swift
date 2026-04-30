@@ -72,5 +72,10 @@ struct SinglePageDescription: MDocComponent {
         SinglePageDescription(command: subcommand, root: false).core
       }
     }
+
+    if let extendedDiscussion = command.extendedDiscussion {
+      MDocMacro.ParagraphBreak()
+      extendedDiscussion
+    }
   }
 }

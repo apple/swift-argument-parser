@@ -100,6 +100,10 @@ extension CommandInfoV0 {
       }
     }
 
+    if let extendedDiscussion = self.extendedDiscussion {
+      result += "\(extendedDiscussion)\n\n"
+    }
+
     for subcommand in self.subcommands ?? [] {
       result +=
         subcommand.toMarkdown(

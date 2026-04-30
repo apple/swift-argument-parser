@@ -42,6 +42,10 @@ final class DumpHelpGenerationTests: XCTestCase {
   func testMathStatsDumpHelp() throws {
     try assertDumpHelp(command: "math stats")
   }
+
+  func testExtendedDiscussionDumpHelp() throws {
+    try assertDumpHelp(type: ExtendedDiscussionCommand.self)
+  }
 }
 
 extension DumpHelpGenerationTests {
@@ -127,5 +131,15 @@ extension DumpHelpGenerationTests {
 
     @Option(help: .init(discussion: "A discussion."))
     var discussion: String
+  }
+
+  struct ExtendedDiscussionCommand: ParsableCommand {
+    static let configuration = CommandConfiguration(
+      abstract: "A command with extended discussion.",
+      discussion: "Top-level discussion.",
+      extendedDiscussion: "Additional info after the options.")
+
+    @Option(help: "A name.")
+    var name: String
   }
 }

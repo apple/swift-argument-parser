@@ -1533,4 +1533,171 @@ extension HelpGenerationTests {
 
         """)
   }
+
+  // MARK: - Extended Discussion
+
+  struct ExtDiscussion: ParsableCommand {
+    static let configuration = CommandConfiguration(
+      abstract: "A test command.",
+      discussion: "Some discussion.",
+      extendedDiscussion: "This is extended info shown after the options.")
+
+    @Option(help: "A name.")
+    var name: String
+  }
+
+  func testHelpWithExtendedDiscussion() {
+    AssertHelp(
+      .default, for: ExtDiscussion.self,
+      equals: """
+        OVERVIEW: A test command.
+
+        Some discussion.
+
+        USAGE: ext-discussion --name <name>
+
+        OPTIONS:
+          --name <name>           A name.
+          -h, --help              Show help information.
+
+        This is extended info shown after the options.
+        """)
+  }
+
+  struct ExtDiscussionOnly: ParsableCommand {
+    static let configuration = CommandConfiguration(
+      extendedDiscussion: "Only extended text, no abstract or discussion.")
+
+    @Flag(help: "Verbose output.")
+    var verbose = false
+  }
+
+  func testHelpWithExtendedDiscussionOnly() {
+    AssertHelp(
+      .default, for: ExtDiscussionOnly.self,
+      equals: """
+        USAGE: ext-discussion-only [--verbose]
+
+        OPTIONS:
+          --verbose               Verbose output.
+          -h, --help              Show help information.
+
+        Only extended text, no abstract or discussion.
+        """)
+  }
+
+  struct ExtDiscussionWithSubcommands: ParsableCommand {
+    static let configuration = CommandConfiguration(
+      abstract: "A root command.",
+      extendedDiscussion: "Extended notes after subcommands.",
+      subcommands: [Sub.self])
+
+    struct Sub: ParsableCommand {
+      static let configuration = CommandConfiguration(
+        abstract: "A subcommand.",
+        extendedDiscussion: "Sub-level extended discussion.")
+    }
+  }
+
+  func testHelpWithExtendedDiscussionAndSubcommands() {
+    AssertHelp(
+      .default, for: ExtDiscussionWithSubcommands.self,
+      equals: """
+        OVERVIEW: A root command.
+
+        USAGE: ext-discussion-with-subcommands <subcommand>
+
+        OPTIONS:
+          -h, --help              Show help information.
+
+        SUBCOMMANDS:
+          sub                     A subcommand.
+
+          See 'ext-discussion-with-subcommands help <subcommand>' for detailed help.
+
+        Extended notes after subcommands.
+        """)
+  }
+
+  func testHelpWithExtendedDiscussionOnSubcommand() {
+    AssertHelp(
+      .default, for: ExtDiscussionWithSubcommands.Sub.self,
+      root: ExtDiscussionWithSubcommands.self,
+      equals: """
+        OVERVIEW: A subcommand.
+
+        USAGE: ext-discussion-with-subcommands sub
+
+        OPTIONS:
+          -h, --help              Show help information.
+
+        Sub-level extended discussion.
+        """)
+  }
+
+  func testHelpWithExtendedDiscussionHidden() {
+    AssertHelp(
+      .hidden, for: ExtDiscussion.self,
+      equals: """
+        OVERVIEW: A test command.
+
+        Some discussion.
+
+        USAGE: ext-discussion --name <name>
+
+        OPTIONS:
+          --name <name>           A name.
+          -h, --help              Show help information.
+
+        This is extended info shown after the options.
+        """)
+  }
+
+  struct ExtDiscussionWrapping: ParsableCommand {
+    static let configuration = CommandConfiguration(
+      extendedDiscussion: """
+        This is a long extended discussion that should wrap when rendered \
+        at eighty columns because it exceeds the screen width significantly.
+        """)
+  }
+
+  func testHelpWithExtendedDiscussionWrapping() {
+    AssertHelp(
+      .default, for: ExtDiscussionWrapping.self,
+      columns: 80,
+      equals: """
+        USAGE: ext-discussion-wrapping
+
+        OPTIONS:
+          -h, --help              Show help information.
+
+        This is a long extended discussion that should wrap when rendered at eighty
+        columns because it exceeds the screen width significantly.
+        """)
+  }
+
+  struct ExtDiscussionMultiParagraph: ParsableCommand {
+    static let configuration = CommandConfiguration(
+      extendedDiscussion: """
+        First paragraph with details.
+
+        Second paragraph with more info.
+        """)
+  }
+
+  func testHelpWithExtendedDiscussionMultiParagraph() {
+    AssertHelp(
+      .default, for: ExtDiscussionMultiParagraph.self,
+      columns: 80,
+      equals: """
+        USAGE: ext-discussion-multi-paragraph
+
+        OPTIONS:
+          -h, --help              Show help information.
+
+        First paragraph with details.
+
+        Second paragraph with more info.
+        """)
+  }
 }

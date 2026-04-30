@@ -152,6 +152,7 @@ internal struct HelpGenerator {
   var abstract: String
   var usage: String
   var sections: [Section]
+  var extendedDiscussion: String
 
   init(commandStack: [ParsableCommand.Type], visibility: ArgumentVisibility) {
     guard let root = commandStack.first, let currentCommand = commandStack.last
@@ -191,6 +192,7 @@ internal struct HelpGenerator {
 
     self.sections = HelpGenerator.generateSections(
       commandStack: commandStack, visibility: visibility)
+    self.extendedDiscussion = currentCommand.configuration.extendedDiscussion
   }
 
   init(_ type: ParsableArguments.Type, visibility: ArgumentVisibility) {
@@ -408,6 +410,17 @@ internal struct HelpGenerator {
         """
     }
 
+    let renderedExtendedDiscussion: String
+    if extendedDiscussion.isEmpty {
+      renderedExtendedDiscussion = ""
+    } else if helpSubcommandMessage.isEmpty {
+      renderedExtendedDiscussion =
+        "\n" + extendedDiscussion.wrapped(to: screenWidth)
+    } else {
+      renderedExtendedDiscussion =
+        "\n\n" + extendedDiscussion.wrapped(to: screenWidth)
+    }
+
     let renderedUsage =
       usage.isEmpty
       ? ""
@@ -416,7 +429,7 @@ internal struct HelpGenerator {
     return """
       \(renderedAbstract)\
       \(renderedUsage)\
-      \(renderedSections)\(helpSubcommandMessage)
+      \(renderedSections)\(helpSubcommandMessage)\(renderedExtendedDiscussion)
       """
   }
 }
