@@ -56,6 +56,9 @@ public struct CommandInfoV0: Codable, Hashable {
   /// Extended description of the command's functionality.
   public var discussion: String?
 
+  /// Additional information shown at the end of help, after the argument list.
+  public var extendedDiscussion: String?
+
   /// Optional name of the subcommand invoked when the command is invoked with
   /// no arguments.
   public var defaultSubcommand: String?
@@ -71,6 +74,7 @@ public struct CommandInfoV0: Codable, Hashable {
     aliases: [String]?,
     abstract: String,
     discussion: String,
+    extendedDiscussion: String,
     defaultSubcommand: String?,
     subcommands: [CommandInfoV0],
     arguments: [ArgumentInfoV0]
@@ -82,6 +86,7 @@ public struct CommandInfoV0: Codable, Hashable {
     self.aliases = aliases?.nonEmpty
     self.abstract = abstract.nonEmpty
     self.discussion = discussion.nonEmpty
+    self.extendedDiscussion = extendedDiscussion.nonEmpty
 
     self.defaultSubcommand = defaultSubcommand?.nonEmpty
     self.subcommands = subcommands.nonEmpty
@@ -99,6 +104,8 @@ public struct CommandInfoV0: Codable, Hashable {
       String.self, forKey: .abstract)
     self.discussion = try container.decodeIfPresent(
       String.self, forKey: .discussion)
+    self.extendedDiscussion = try container.decodeIfPresent(
+      String.self, forKey: .extendedDiscussion)
     self.shouldDisplay =
       try container.decodeIfPresent(Bool.self, forKey: .shouldDisplay) ?? true
     self.defaultSubcommand = try container.decodeIfPresent(

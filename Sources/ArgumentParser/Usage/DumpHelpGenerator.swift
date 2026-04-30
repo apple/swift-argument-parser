@@ -86,6 +86,7 @@ extension CommandInfoV0 {
       aliases: command.configuration.aliases,
       abstract: command.configuration.abstract,
       discussion: command.configuration.discussion,
+      extendedDiscussion: command.configuration.extendedDiscussion,
       defaultSubcommand: defaultSubcommand,
       subcommands: subcommands,
       arguments: arguments)
