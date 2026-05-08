@@ -216,10 +216,22 @@ extension NameSpecificationTests {
       nameSpecification: ["-x", "-y", "--zilch"], key: "foo",
       makeNames: [.short("x"), .short("y"), .long("zilch")])
   }
+  
+  func testMakeNames_interpolations() {
+    let x = "x"
+    Assert(nameSpecification: ["-\(x)"], key: "foo", makeNames: [.short("x")])
+    Assert(nameSpecification: ["--\(x)"], key: "foo", makeNames: [.long("x")])
+    Assert(nameSpecification: ["-\(x)\(x)\(x)"], key: "foo", makeNames: [.longWithSingleDash("xxx")])
+    Assert(nameSpecification: "-\(x)", key: "foo", makeNames: [.short("x")])
+    Assert(nameSpecification: "--\(x)", key: "foo", makeNames: [.long("x")])
+    Assert(nameSpecification: "-\(x)\(x)\(x)", key: "foo", makeNames: [.longWithSingleDash("xxx")])
+  }
 
   func testMakeNames_literalFailures() {
-    // Empty string
+    // Empty string and whitespace-only
     AssertInvalid(nameSpecification: "")
+    AssertInvalid(nameSpecification: " ")
+    AssertInvalid(nameSpecification: "   ")
     // No dash prefix
     AssertInvalid(nameSpecification: "x")
     // Dash prefix only

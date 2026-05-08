@@ -151,7 +151,8 @@ extension NameSpecification:
   ExpressibleByStringLiteral, ExpressibleByStringInterpolation
 {
   public init(stringLiteral string: String) {
-    guard !string.isEmpty else {
+    let parts = string.split(separator: " ")
+    guard !parts.isEmpty else {
       self = [
         .invalidLiteral(
           literal: string,
@@ -160,7 +161,7 @@ extension NameSpecification:
       return
     }
 
-    self.elements = string.split(separator: " ").map {
+    self.elements = parts.map {
       Element(stringLiteral: String($0))
     }
   }
