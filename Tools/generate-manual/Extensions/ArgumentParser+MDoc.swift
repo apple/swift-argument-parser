@@ -31,6 +31,11 @@ extension CommandInfoV0 {
     let parts = (superCommands ?? []) + [commandName]
     return parts.joined(separator: " ")
   }
+
+  var manualPageSubcommandLabel: String {
+    guard let aliases = aliases, !aliases.isEmpty else { return commandName }
+    return ([commandName] + aliases).joined(separator: ", ")
+  }
 }
 
 extension ArgumentInfoV0 {
