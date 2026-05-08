@@ -281,8 +281,10 @@ extension FlagInversion {
           let modifiedElement = NameSpecification.Element.customLong(
             modifiedName, withSingleDash: withSingleDash)
           return modifiedElement.name(for: key)
-        case .invalidLiteral:
-          fatalError("Invalid literals are diagnosed previously")
+        case .invalidLiteral(let literal, let message):
+          configurationFailure(
+            "Invalid literal name '\(literal)' for property '\(key.name)': \(message)"
+              .wrapped(to: 70))
         }
       }
     }
