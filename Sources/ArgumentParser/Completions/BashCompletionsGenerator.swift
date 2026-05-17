@@ -263,15 +263,21 @@ extension CommandInfoV0 {
           return nil as String?
         }
 
+        let positionPattern = arg.isRepeating ? "*" : position.description
+
         if arg.isRepeating {
           encounteredRepeatingPositional = true
+        }
+
+        guard arg.shouldDisplay else {
+          return nil
         }
 
         let completion = valueCompletion(arg)
         return completion.isEmpty
           ? nil
           : """
-              \(encounteredRepeatingPositional ? "*" : position.description))
+              \(positionPattern))
           \(completion.indentingEachLine(by: 8))\
                   return
                   ;;
