@@ -171,14 +171,14 @@ extension CompletionScriptTests {
     var privateOption: String?
 
     @Argument(
-      help: ArgumentHelp("Hidden argument.", visibility: .hidden),
-      completion: .list(["hidden-argument-value"]))
-    var hiddenArgument: String?
-
-    @Argument(
       help: ArgumentHelp("Private argument.", visibility: .private),
       completion: .list(["private-argument-value"]))
     var privateArgument: String?
+
+    @Argument(
+      help: ArgumentHelp("Hidden argument.", visibility: .hidden),
+      completion: .list(["hidden-argument-value"]))
+    var hiddenArgument: String?
   }
 
   func testHiddenAndPrivateVisibility_Bash() throws {
@@ -201,25 +201,46 @@ extension CompletionScriptTests {
     let script = try CompletionsGenerator(command: Visibility.self, shell: shell)
       .generateCompletionScript()
 
-    let (expectedNames, unexpectedNames): ([String], [String]) =
+    let (expectedNames, unexpectedNames, expectedHiddenArgument): (
+      [String],
+      [String],
+      String
+    ) =
       switch shell {
-      case .bash, .zsh:
+      case .bash:
         (
           ["--hidden-flag", "--hidden-option"],
-          ["--private-flag", "--private-option"]
+          ["--private-flag", "--private-option"],
+          """
+              2)
+                  __visibility_add_completions -W 'hidden-argument-value'
+          """
+        )
+      case .zsh:
+        (
+          ["--hidden-flag", "--hidden-option"],
+          ["--private-flag", "--private-option"],
+          """
+                  '::'
+                  ':hidden-argument:{__visibility_complete "${_hidden_argument[@]}"}'
+          """
         )
       case .fish:
         (
           ["-l 'hidden-flag'", "-l 'hidden-option'"],
-          ["-l 'private-flag'", "-l 'private-option'"]
+          ["-l 'private-flag'", "-l 'private-option'"],
+          """
+          __visibility_should_offer_completions_for_positional "visibility" 2' -fka 'hidden-argument-value'
+          """
         )
       default:
-        ([], [])
+        ([], [], "")
       }
 
     for expected in [
       "hidden-option-value",
       "hidden-argument-value",
+      expectedHiddenArgument,
     ] + expectedNames {
       XCTAssertTrue(
         script.contains(expected),

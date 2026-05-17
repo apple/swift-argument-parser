@@ -62,7 +62,7 @@ extension CommandInfoV0 {
 
     var repeatingPositionalIndicator = ""
     let argumentSpecsAndSetupScripts = (arguments ?? []).compactMap { arg in
-      guard arg.shouldDisplay else {
+      guard arg.shouldDisplay || arg.kind == .positional else {
         return nil as (argumentSpec: String, setupScript: String?)?
       }
 
@@ -78,6 +78,9 @@ extension CommandInfoV0 {
           repeatingPositionalIndicator = "*"
         }
         line = repeatingPositionalIndicator
+        guard arg.shouldDisplay else {
+          return ("'\(line)::'", nil)
+        }
       case 1:
         // swift-format-ignore: NeverForceUnwrap
         // Preconditions: names has exactly one element.
