@@ -29,7 +29,7 @@ jobs:
     uses: swiftlang/github-workflows/.github/workflows/swift_package_test.yml@0.0.11
     with:
       linux_swift_versions: "[ \"6.0\", \"6.1\", \"6.2\", \"nightly-main\", \"nightly-6.3\"]"
-      windows_exclude_swift_versions: "[{\"swift_version\": \"5.9\"}, {\"swift_version\": \"nightly-main\"}]"
+      windows_exclude_swift_versions: "[{\"swift_version\": \"5.9\"}]"
       enable_macos_checks: true
       macos_exclude_xcode_versions: "[{\"xcode_version\": \"16.0\"}, {\"xcode_version\": \"16.1\"}, {\"xcode_version\": \"16.2\"}]"
       enable_wasm_sdk_build: true
