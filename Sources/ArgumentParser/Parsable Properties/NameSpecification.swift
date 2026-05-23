@@ -11,6 +11,25 @@
 
 /// A specification for how to represent a property as a command-line argument
 /// label.
+///
+/// You can specify the names for an option or flag by using either string literal
+/// syntax or using one or more of the `NameSpecification` members. For
+/// example, to specify that the `verbose` property should have the names
+/// `-v` and `--verbose`, all of the following declarations are equivalent:
+///
+/// ```
+/// @Flag(name: "-v --verbose")
+/// var verbose = false
+///
+/// @Flag(name: .shortAndLong)
+/// var verbose = false
+///
+/// @Flag(name: [.short, .long])
+/// var verbose = false
+///
+/// @Flag(name: ["-v", .long])
+/// var verbose = false
+/// ```
 public struct NameSpecification: ExpressibleByArrayLiteral {
   /// An individual property name translation.
   public struct Element: Hashable, Sendable {
