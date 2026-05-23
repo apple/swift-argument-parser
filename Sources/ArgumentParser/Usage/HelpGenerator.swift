@@ -444,7 +444,7 @@ extension NameSpecification {
         case .long(let helpName):
           return .long("\(helpName)-\(visibility.base)")
         case .longWithSingleDash(let helpName):
-          return .longWithSingleDash("\(helpName)-\(visibility)")
+          return .longWithSingleDash("\(helpName)-\(visibility.base)")  // Fix: use .base for consistency with .long case
         case .short:
           // Cannot create a non-default help flag from a short name.
           return nil
