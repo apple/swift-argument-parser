@@ -131,7 +131,8 @@ __base-test_add_completions() {
     local completion
     while IFS='' read -r completion; do
         COMPREPLY+=("${completion}")
-    done < <(IFS=$'\n' compgen "${@}" -- "${cur}")
+    done < <(IFS=$'
+' compgen "${@}" -- "${cur}")
 }
 
 __base-test_custom_complete() {
@@ -147,7 +148,8 @@ __base-test_custom_complete() {
 _base-test() {
     local state
     state="$(shopt -p;shopt -po)"
-    trap "${state//$'\n'/;}" RETURN
+    trap "${state//$'
+'/;}" RETURN
     shopt -s extglob
     set +o history +o posix
 
@@ -163,7 +165,7 @@ _base-test() {
     local -a unparsed_words=("${COMP_WORDS[@]:1:${COMP_CWORD}}")
 
     local -a repeating_flags=(--kind-counter)
-    local -a non_repeating_flags=(--one --two --custom-three -h --help)
+    local -a non_repeating_flags=(--verbose --one --two --custom-three -h --help)
     local -a repeating_options=(--rep1 -r --rep2)
     local -a non_repeating_options=(--name --kind --other-kind --path1 --path2 --path3)
     __base-test_offer_flags_options 2
@@ -174,11 +176,15 @@ _base-test() {
         return
         ;;
     '--kind')
-        __base-test_add_completions -W 'one'$'\n''two'$'\n''custom-three'
+        __base-test_add_completions -W 'one'$'
+''two'$'
+''custom-three'
         return
         ;;
     '--other-kind')
-        __base-test_add_completions -W 'b1_bash'$'\n''b2_bash'$'\n''b3_bash'
+        __base-test_add_completions -W 'b1_bash'$'
+''b2_bash'$'
+''b3_bash'
         return
         ;;
     '--path1')
@@ -190,7 +196,9 @@ _base-test() {
         return
         ;;
     '--path3')
-        __base-test_add_completions -W 'c1_bash'$'\n''c2_bash'$'\n''c3_bash'
+        __base-test_add_completions -W 'c1_bash'$'
+''c2_bash'$'
+''c3_bash'
         return
         ;;
     '--rep1')

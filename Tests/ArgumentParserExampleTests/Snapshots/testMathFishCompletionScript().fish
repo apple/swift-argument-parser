@@ -41,7 +41,7 @@ function __math_parse_tokens -S
             case 'stdev'
                 __math_parse_subcommand -r 1 'version' 'h/help'
             case 'quantiles'
-                __math_parse_subcommand -r 4 'file=' 'directory=' 'shell=' 'custom=' 'custom-deprecated=' 'version' 'h/help'
+                __math_parse_subcommand -r 4 'test-success-exit-code' 'test-failure-exit-code' 'test-validation-exit-code' 'test-custom-exit-code=' 'file=' 'directory=' 'shell=' 'custom=' 'custom-deprecated=' 'version' 'h/help'
             end
         case 'help'
             __math_parse_subcommand -r 1 'version'
@@ -89,7 +89,8 @@ function __math_complete_directories
     set -l token (commandline -t)
     string match -- '*/' $token
     set -l subdirs $token*/
-    printf '%s\n' $subdirs
+    printf '%s
+' $subdirs
 end
 
 function __math_custom_completion
@@ -130,7 +131,13 @@ complete -c 'math' -n '__math_should_offer_completions_for_flags_or_options "mat
 complete -c 'math' -n '__math_should_offer_completions_for_positional "math stats quantiles" 1' -fka 'alphabet alligator branch braggart'
 complete -c 'math' -n '__math_should_offer_completions_for_positional "math stats quantiles" 2' -fka '(__math_custom_completion ---completion stats quantiles -- positional@1 (count (__math_tokens -pc)) (__math_tokens -tC))'
 complete -c 'math' -n '__math_should_offer_completions_for_positional "math stats quantiles" 3' -fka '(__math_custom_completion ---completion stats quantiles -- positional@2)'
-complete -c 'math' -n '__math_should_offer_completions_for_flags_or_options "math stats quantiles" file' -l 'file' -rfa '(set -l exts \'txt\' \'md\';for p in (string match -e -- \'*/\' (commandline -t);or printf \n)*.{$exts};printf %s\n $p;end;__fish_complete_directories (commandline -t) \'\')'
+complete -c 'math' -n '__math_should_offer_completions_for_flags_or_options "math stats quantiles" test-success-exit-code' -l 'test-success-exit-code'
+complete -c 'math' -n '__math_should_offer_completions_for_flags_or_options "math stats quantiles" test-failure-exit-code' -l 'test-failure-exit-code'
+complete -c 'math' -n '__math_should_offer_completions_for_flags_or_options "math stats quantiles" test-validation-exit-code' -l 'test-validation-exit-code'
+complete -c 'math' -n '__math_should_offer_completions_for_flags_or_options "math stats quantiles" test-custom-exit-code' -l 'test-custom-exit-code' -rfka ''
+complete -c 'math' -n '__math_should_offer_completions_for_flags_or_options "math stats quantiles" file' -l 'file' -rfa '(set -l exts \'txt\' \'md\';for p in (string match -e -- \'*/\' (commandline -t);or printf 
+)*.{$exts};printf %s
+ $p;end;__fish_complete_directories (commandline -t) \'\')'
 complete -c 'math' -n '__math_should_offer_completions_for_flags_or_options "math stats quantiles" directory' -l 'directory' -rfa '(__math_complete_directories)'
 complete -c 'math' -n '__math_should_offer_completions_for_flags_or_options "math stats quantiles" shell' -l 'shell' -rfka '(head -100 \'/usr/share/dict/words\' | tail -50)'
 complete -c 'math' -n '__math_should_offer_completions_for_flags_or_options "math stats quantiles" custom' -l 'custom' -rfka '(__math_custom_completion ---completion stats quantiles -- --custom (count (__math_tokens -pc)) (__math_tokens -tC))'

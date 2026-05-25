@@ -50,6 +50,7 @@ _base-test() {
         '--path1:path1:_files'
         '--path2:path2:_files'
         '--path3:path3:{__base-test_complete "${___path3[@]}"}'
+        '--verbose'
         '--one'
         '--two'
         '--custom-three'
@@ -97,7 +98,7 @@ _base-test_sub-command() {
 _base-test_escaped-command() {
     local -i ret=1
     local -ar arg_specs=(
-        '--o\:n\[e[Escaped chars\: '\''\[\]\\.]:path\[\:options\]:'
+        '--o\:n\[e[Escaped chars\: '\''\[\]\.]:path\[\:options\]:'
         ':two:{__base-test_custom_complete ---completion escaped-command -- positional@0 "${current_word_index}" "$(__base-test_cursor_index_in_current_word)"}'
         '(-h --help)'{-h,--help}'[Show help information.]'
     )

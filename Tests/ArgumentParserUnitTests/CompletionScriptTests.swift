@@ -280,3 +280,93 @@ extension CompletionScriptTests {
     try await assertCustomCompletions(shell: .zsh)
   }
 }
+
+// MARK: - Hidden and private visibility tests
+
+extension CompletionScriptTests {
+  /// A command with arguments at each visibility level to verify that
+  /// completion scripts include hidden arguments but exclude private ones.
+  struct Visibility: ParsableCommand {
+    static let configuration = CommandConfiguration(
+      commandName: "visibility-test")
+
+    @Flag(help: ArgumentHelp("A default flag.", visibility: .default))
+    var defaultFlag = false
+
+    @Flag(help: ArgumentHelp("A hidden flag.", visibility: .hidden))
+    var hiddenFlag = false
+
+    @Flag(help: ArgumentHelp("A private flag.", visibility: .private))
+    var privateFlag = false
+
+    @Option(
+      help: ArgumentHelp("A hidden option.", visibility: .hidden),
+      completion: .list(["hidden-a", "hidden-b"]))
+    var hiddenOption: String?
+
+    @Option(
+      help: ArgumentHelp("A private option.", visibility: .private),
+      completion: .list(["private-a", "private-b"]))
+    var privateOption: String?
+  }
+
+  func testHiddenAndPrivateBash() throws {
+    let script = try CompletionsGenerator(
+      command: Visibility.self, shell: .bash
+    )
+    .generateCompletionScript()
+    // Hidden args should appear in completions.
+    XCTAssert(
+      script.contains("--hidden-flag"),
+      "Expected --hidden-flag in bash completion")
+    XCTAssert(
+      script.contains("--hidden-option"),
+      "Expected --hidden-option in bash completion")
+    // Private args must not appear.
+    XCTAssertFalse(
+      script.contains("--private-flag"),
+      "Expected --private-flag absent from bash completion")
+    XCTAssertFalse(
+      script.contains("--private-option"),
+      "Expected --private-option absent from bash completion")
+  }
+
+  func testHiddenAndPrivateFish() throws {
+    let script = try CompletionsGenerator(
+      command: Visibility.self, shell: .fish
+    )
+    .generateCompletionScript()
+    // Hidden args should appear in completions.
+    XCTAssert(
+      script.contains("hidden-flag"), "Expected hidden-flag in fish completion")
+    XCTAssert(
+      script.contains("hidden-option"),
+      "Expected hidden-option in fish completion")
+    // Private args must not appear.
+    XCTAssertFalse(
+      script.contains("private-flag"),
+      "Expected private-flag absent from fish completion")
+    XCTAssertFalse(
+      script.contains("private-option"),
+      "Expected private-option absent from fish completion")
+  }
+
+  func testHiddenAndPrivateZsh() throws {
+    let script = try CompletionsGenerator(command: Visibility.self, shell: .zsh)
+      .generateCompletionScript()
+    // Hidden args should appear in completions.
+    XCTAssert(
+      script.contains("--hidden-flag"),
+      "Expected --hidden-flag in zsh completion")
+    XCTAssert(
+      script.contains("--hidden-option"),
+      "Expected --hidden-option in zsh completion")
+    // Private args must not appear.
+    XCTAssertFalse(
+      script.contains("--private-flag"),
+      "Expected --private-flag absent from zsh completion")
+    XCTAssertFalse(
+      script.contains("--private-option"),
+      "Expected --private-option absent from zsh completion")
+  }
+}

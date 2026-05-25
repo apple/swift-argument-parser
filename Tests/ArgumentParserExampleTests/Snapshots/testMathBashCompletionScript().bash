@@ -131,7 +131,8 @@ __math_add_completions() {
     local completion
     while IFS='' read -r completion; do
         COMPREPLY+=("${completion}")
-    done < <(IFS=$'\n' compgen "${@}" -- "${cur}")
+    done < <(IFS=$'
+' compgen "${@}" -- "${cur}")
 }
 
 __math_custom_complete() {
@@ -147,7 +148,8 @@ __math_custom_complete() {
 _math() {
     local state
     state="$(shopt -p;shopt -po)"
-    trap "${state//$'\n'/;}" RETURN
+    trap "${state//$'
+'/;}" RETURN
     shopt -s extglob
     set +o history +o posix
 
@@ -233,7 +235,9 @@ _math_stats_average() {
     # Offer option value completions
     case "${prev}" in
     '--kind')
-        __math_add_completions -W 'mean'$'\n''median'$'\n''mode'
+        __math_add_completions -W 'mean'$'
+''median'$'
+''mode'
         return
         ;;
     esac
@@ -249,13 +253,16 @@ _math_stats_stdev() {
 
 _math_stats_quantiles() {
     repeating_flags=()
-    non_repeating_flags=(--version -h --help)
+    non_repeating_flags=(--test-success-exit-code --test-failure-exit-code --test-validation-exit-code --version -h --help)
     repeating_options=()
-    non_repeating_options=(--file --directory --shell --custom --custom-deprecated)
+    non_repeating_options=(--test-custom-exit-code --file --directory --shell --custom --custom-deprecated)
     __math_offer_flags_options -1
 
     # Offer option value completions
     case "${prev}" in
+    '--test-custom-exit-code')
+        return
+        ;;
     '--file')
         __math_add_completions -o plusdirs -fX '!*.@(txt|md)'
         return
@@ -281,7 +288,10 @@ _math_stats_quantiles() {
     # Offer positional completions
     case "${positional_number}" in
     1)
-        __math_add_completions -W 'alphabet'$'\n''alligator'$'\n''branch'$'\n''braggart'
+        __math_add_completions -W 'alphabet'$'
+''alligator'$'
+''branch'$'
+''braggart'
         return
         ;;
     2)
