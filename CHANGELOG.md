@@ -25,7 +25,7 @@ Add new items at the end of the relevant section under **Unreleased**.
 - Command aliases now appear in generated man-pages for both single-page and multi-page output. ([#891])
 - Declaring `@Flag var x: Bool?` without an `inversion:` parameter now produces a useful diagnostic message. ([#892])
 
-The 1.8.0 release includes contributions from [bkhouri], [natecook1000], [nkimon00], [rauhul], and [rgoldberg]. Thank you!
+The 1.8.0 release includes contributions from [bkhouri], [natecook1000], [qflen], [rauhul], and [rgoldberg]. Thank you!
 
 ---
 
@@ -1349,9 +1349,9 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [mtj0928]: https://github.com/apple/swift-argument-parser/commits?author=mtj0928
 [natecook1000]: https://github.com/apple/swift-argument-parser/commits?author=natecook1000
 [NicFontana]: https://github.com/apple/swift-argument-parser/commits?author=NicFontana
-[nkimon00]: https://github.com/apple/swift-argument-parser/commits?author=nkimon00
 [owenv]: https://github.com/apple/swift-argument-parser/commits?author=owenv
 [pegasuze]: https://github.com/apple/swift-argument-parser/commits?author=pegasuze
+[qflen]: https://github.com/apple/swift-argument-parser/commits?author=qflen
 [randomeizer]: https://github.com/apple/swift-argument-parser/commits?author=randomeizer
 [rauhul]: https://github.com/apple/swift-argument-parser/commits?author=rauhul
 [revolter]: https://github.com/apple/swift-argument-parser/commits?author=revolter
