@@ -303,6 +303,23 @@ extension CommandParser {
   mutating func parse(
     arguments: [String]
   ) throws(CommandError) -> ParsableCommand {
+    #if DEBUG
+    if self.rootCommand is AsyncParsableCommand.Type,
+      let error =
+        AsyncCompletionsValidator
+        .validate(self.rootCommand, parent: nil, forcedSyncParse: true)
+    {
+      configurationFailure(
+        """
+        This command uses asynchronous custom completion functions,
+        but is invoked using a synchronous call to `parse` or 
+        `parseAsRoot`. To fix this issue, call the asynchronous
+        versions of these functions: `asyncParse` or `asyncParseAsRoot`,
+        respectively.
+        """)
+    }
+    #endif
+
     do {
       if let (argument, arguments) =
         try parseCustomCompletion(from: arguments)

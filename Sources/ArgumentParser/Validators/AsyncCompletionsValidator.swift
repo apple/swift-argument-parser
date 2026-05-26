@@ -36,10 +36,22 @@ struct AsyncCompletionsValidator: ParsableArgumentsValidator {
   static func validate(_ type: ParsableArguments.Type, parent: InputKey?)
     -> ParsableArgumentsValidatorError?
   {
+    validate(type, parent: parent, forcedSyncParse: false)
+  }
+
+  static func validate(
+    _ type: ParsableArguments.Type,
+    parent: InputKey?,
+    forcedSyncParse: Bool
+  )
+    -> ParsableArgumentsValidatorError?
+  {
     guard
       type is ParsableCommand.Type,
-      !(type is AsyncParsableCommand.Type)
-    else { return nil }
+      !(type is AsyncParsableCommand.Type) || forcedSyncParse
+    else {
+      return nil
+    }
 
     let invalidAsyncCompletions = type.invalidAsyncCompletions(
       parent: parent,
