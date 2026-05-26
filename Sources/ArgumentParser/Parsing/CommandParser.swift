@@ -304,7 +304,8 @@ extension CommandParser {
     arguments: [String]
   ) throws(CommandError) -> ParsableCommand {
     #if DEBUG
-    if self.rootCommand is AsyncParsableCommand.Type,
+    if #available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *),
+      self.rootCommand is AsyncParsableCommand.Type,
       let error =
         AsyncCompletionsValidator
         .validate(self.rootCommand, parent: nil, forcedSyncParse: true)
