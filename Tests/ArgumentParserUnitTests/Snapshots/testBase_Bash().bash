@@ -131,8 +131,7 @@ __base-test_add_completions() {
     local completion
     while IFS='' read -r completion; do
         COMPREPLY+=("${completion}")
-    done < <(IFS=$'
-' compgen "${@}" -- "${cur}")
+    done < <(IFS=$'\n' compgen "${@}" -- "${cur}")
 }
 
 __base-test_custom_complete() {
@@ -148,8 +147,7 @@ __base-test_custom_complete() {
 _base-test() {
     local state
     state="$(shopt -p;shopt -po)"
-    trap "${state//$'
-'/;}" RETURN
+    trap "${state//$'\n'/;}" RETURN
     shopt -s extglob
     set +o history +o posix
 
@@ -176,15 +174,11 @@ _base-test() {
         return
         ;;
     '--kind')
-        __base-test_add_completions -W 'one'$'
-''two'$'
-''custom-three'
+        __base-test_add_completions -W 'one'$'\n''two'$'\n''custom-three'
         return
         ;;
     '--other-kind')
-        __base-test_add_completions -W 'b1_bash'$'
-''b2_bash'$'
-''b3_bash'
+        __base-test_add_completions -W 'b1_bash'$'\n''b2_bash'$'\n''b3_bash'
         return
         ;;
     '--path1')
@@ -196,9 +190,7 @@ _base-test() {
         return
         ;;
     '--path3')
-        __base-test_add_completions -W 'c1_bash'$'
-''c2_bash'$'
-''c3_bash'
+        __base-test_add_completions -W 'c1_bash'$'\n''c2_bash'$'\n''c3_bash'
         return
         ;;
     '--rep1')

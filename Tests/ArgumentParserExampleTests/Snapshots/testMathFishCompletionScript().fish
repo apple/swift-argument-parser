@@ -89,8 +89,7 @@ function __math_complete_directories
     set -l token (commandline -t)
     string match -- '*/' $token
     set -l subdirs $token*/
-    printf '%s
-' $subdirs
+    printf '%s\n' $subdirs
 end
 
 function __math_custom_completion
@@ -135,9 +134,7 @@ complete -c 'math' -n '__math_should_offer_completions_for_flags_or_options "mat
 complete -c 'math' -n '__math_should_offer_completions_for_flags_or_options "math stats quantiles" test-failure-exit-code' -l 'test-failure-exit-code'
 complete -c 'math' -n '__math_should_offer_completions_for_flags_or_options "math stats quantiles" test-validation-exit-code' -l 'test-validation-exit-code'
 complete -c 'math' -n '__math_should_offer_completions_for_flags_or_options "math stats quantiles" test-custom-exit-code' -l 'test-custom-exit-code' -rfka ''
-complete -c 'math' -n '__math_should_offer_completions_for_flags_or_options "math stats quantiles" file' -l 'file' -rfa '(set -l exts \'txt\' \'md\';for p in (string match -e -- \'*/\' (commandline -t);or printf 
-)*.{$exts};printf %s
- $p;end;__fish_complete_directories (commandline -t) \'\')'
+complete -c 'math' -n '__math_should_offer_completions_for_flags_or_options "math stats quantiles" file' -l 'file' -rfa '(set -l exts \'txt\' \'md\';for p in (string match -e -- \'*/\' (commandline -t);or printf \n)*.{$exts};printf %s\n $p;end;__fish_complete_directories (commandline -t) \'\')'
 complete -c 'math' -n '__math_should_offer_completions_for_flags_or_options "math stats quantiles" directory' -l 'directory' -rfa '(__math_complete_directories)'
 complete -c 'math' -n '__math_should_offer_completions_for_flags_or_options "math stats quantiles" shell' -l 'shell' -rfka '(head -100 \'/usr/share/dict/words\' | tail -50)'
 complete -c 'math' -n '__math_should_offer_completions_for_flags_or_options "math stats quantiles" custom' -l 'custom' -rfka '(__math_custom_completion ---completion stats quantiles -- --custom (count (__math_tokens -pc)) (__math_tokens -tC))'

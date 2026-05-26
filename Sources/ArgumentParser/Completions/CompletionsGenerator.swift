@@ -143,7 +143,7 @@ extension String {
     iterationCount == 0
       ? self
       : self
-        .replacing("'", with: "'\''")
+        .replacing("'", with: "'\\''")
         .shellEscapeForSingleQuotedString(iterationCount: iterationCount - 1)
   }
 
