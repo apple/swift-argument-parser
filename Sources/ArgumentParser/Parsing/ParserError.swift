@@ -39,6 +39,13 @@ enum ParserError: Error {
   case userValidationError(Error)
   case noArguments(Error)
   case notParentCommand(String)
+
+  // Response file errors
+  case responseFileNotFound(String)
+  case responseFileReadError(String, Error)
+  case responseFileMalformedContent(String, String)
+  case responseFileRecursiveInclude(String)
+  case responseFileMaxNestingDepthExceeded(Int)
 }
 
 /// These are errors used internally to the parsing, and will not be exposed to the help generation.

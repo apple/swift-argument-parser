@@ -87,7 +87,7 @@ extension CommandParser {
   ) -> Tree<ParsableCommand.Type>? {
     guard let (origin, element) = split.peekNext(),
       element.isValue,
-      let value = split.originalInput(at: origin),
+      case .value(let value) = element.value,
       let subcommandNode = currentNode.firstChild(withName: value)
     else { return nil }
     _ = split.popNextValue()
@@ -315,9 +315,9 @@ extension CommandParser {
         """
         This command uses asynchronous custom completion functions,
         but is invoked using a synchronous call to `parse` or
-        `parseAsRoot`. 
+        `parseAsRoot`.
 
-        To fix this issue, call the asynchronous versions of these 
+        To fix this issue, call the asynchronous versions of these
         functions: `asyncParse` or `asyncParseAsRoot`, respectively.
         """)
     }
