@@ -8,6 +8,13 @@ Add new items at the end of the relevant section under **Unreleased**.
 
 ---
 
+## [1.8.1] - 2026-05-27
+
+### Fixes
+
+- Reverts a source compatibility regression in the 1.8.0 release, where existing calls to `ParsableCommand.parse()` and `.parseAsRoot()` were pre-empted by new `async` versions. The new asynchronous entry points are now named `asyncParse()` and `asyncParseAsRoot()`, respectively. Clients that have already updated their code with the `await` keyword can resolve the new warning by calling the new APIs or by removing the keyword. ([#908])
+- Resolves an issue with the `generate-manual` plugin that selected the wrong destination for the generated manual. ([#910])
+
 ## [1.8.0] - 2026-05-25
 
 ### Additions
@@ -1032,7 +1039,8 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 
 <!-- Link references for releases -->
 
-[Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.8.0...HEAD
+[Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.8.1...HEAD
+[1.8.1]: https://github.com/apple/swift-argument-parser/compare/1.8.0...1.8.1
 [1.8.0]: https://github.com/apple/swift-argument-parser/compare/1.7.1...1.8.0
 [1.7.1]: https://github.com/apple/swift-argument-parser/compare/1.7.0...1.7.1
 [1.7.0]: https://github.com/apple/swift-argument-parser/compare/1.6.2...1.7.0
@@ -1265,6 +1273,8 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [#883]: https://github.com/apple/swift-argument-parser/pull/883
 [#891]: https://github.com/apple/swift-argument-parser/pull/891
 [#892]: https://github.com/apple/swift-argument-parser/pull/892
+[#908]: https://github.com/apple/swift-argument-parser/pull/908
+[#910]: https://github.com/apple/swift-argument-parser/pull/910
 
 <!-- Link references for contributors -->
 
