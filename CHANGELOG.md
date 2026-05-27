@@ -14,7 +14,7 @@ Add new items at the end of the relevant section under **Unreleased**.
 
 - `NameSpecification` and its elements now conform to `ExpressibleByStringLiteral`, allowing simplified option and flag name declarations. For example, `[.customLong("hex-output"), .customShort("x")]` can now be written as `"--hex-output -x"`. ([#745])
 - New `@Option` initializers accept a `defaultAsFlag:` parameter, creating options that work both as a bare flag (`--format`) and as an option with a value (`--format json`). ([#830])
-- Custom completion closures for `AsyncParsableCommand` types now support `async`/`await`. ([#855])
+- Custom completion closures for `AsyncParsableCommand` types are now implemented via `async`/`await` instead of via `DispatchSemaphore`. ([#855])
 
 ### Changes
 
