@@ -232,6 +232,18 @@ extension ErrorMessageGenerator {
       }
     case .notParentCommand(let parent):
       return "Command '\(parent)' is not a parent of the current command."
+
+    // Response file error cases
+    case .responseFileNotFound(let path):
+      return "Response file not found: \(path)"
+    case .responseFileReadError(let path, let error):
+      return "Failed to read response file '\(path)': \(error.describe())"
+    case .responseFileMalformedContent(let path, let message):
+      return "Malformed content in response file '\(path)': \(message)"
+    case .responseFileRecursiveInclude(let path):
+      return "Recursive response file inclusion detected: \(path)"
+    case .responseFileMaxNestingDepthExceeded(let depth):
+      return "Maximum nesting depth (\(depth)) exceeded for response files"
     }
   }
 

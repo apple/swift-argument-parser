@@ -688,10 +688,31 @@ extension SplitArguments {
   ///
   /// - Throws: If parsing fails.
   init(arguments: [String]) throws {
-    self.init(originalInput: arguments)
+    // Expand response files first
+    let expandedArguments: [String]
+    do {
+      var expander = ResponseFileExpander()
+      expandedArguments = try expander.expandArguments(arguments)
+    } catch let error as ResponseFileExpander.ResponseFileError {
+      // Convert ResponseFileExpander errors to ParserError
+      switch error {
+      case .fileNotFound(let path):
+        throw ParserError.responseFileNotFound(path)
+      case .readError(let path, let underlyingError):
+        throw ParserError.responseFileReadError(path, underlyingError)
+      case .malformedContent(let path, let message):
+        throw ParserError.responseFileMalformedContent(path, message)
+      case .recursiveInclude(let path):
+        throw ParserError.responseFileRecursiveInclude(path)
+      case .maxNestingDepthExceeded(let depth):
+        throw ParserError.responseFileMaxNestingDepthExceeded(depth)
+      }
+    }
+
+    self.init(originalInput: expandedArguments)
 
     var position = 0
-    var args = arguments[...]
+    var args = expandedArguments[...]
     argLoop: while let arg = args.popFirst() {
       defer {
         position += 1
