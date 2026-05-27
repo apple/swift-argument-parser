@@ -306,17 +306,19 @@ extension CommandParser {
     #if DEBUG
     if #available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *),
       self.rootCommand is AsyncParsableCommand.Type,
-      let error =
-        AsyncCompletionsValidator
-        .validate(self.rootCommand, parent: nil, forcedSyncParse: true)
+      self.rootCommand.asyncCompletions(
+        parent: nil,
+        propertyPath: String(describing: self.rootCommand)
+      ).isEmpty == false
     {
       configurationFailure(
         """
         This command uses asynchronous custom completion functions,
-        but is invoked using a synchronous call to `parse` or 
-        `parseAsRoot`. To fix this issue, call the asynchronous
-        versions of these functions: `asyncParse` or `asyncParseAsRoot`,
-        respectively.
+        but is invoked using a synchronous call to `parse` or
+        `parseAsRoot`. 
+
+        To fix this issue, call the asynchronous versions of these 
+        functions: `asyncParse` or `asyncParseAsRoot`, respectively.
         """)
     }
     #endif
