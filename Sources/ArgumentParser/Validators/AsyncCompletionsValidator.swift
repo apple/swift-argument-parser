@@ -36,12 +36,12 @@ struct AsyncCompletionsValidator: ParsableArgumentsValidator {
   static func validate(_ type: ParsableArguments.Type, parent: InputKey?)
     -> ParsableArgumentsValidatorError?
   {
-    guard
-      type is ParsableCommand.Type,
-      !(type is AsyncParsableCommand.Type)
-    else { return nil }
+    guard type is ParsableCommand.Type, !(type is AsyncParsableCommand.Type)
+    else {
+      return nil
+    }
 
-    let invalidAsyncCompletions = type.invalidAsyncCompletions(
+    let invalidAsyncCompletions = type.asyncCompletions(
       parent: parent,
       propertyPath: String(describing: type)
     )
@@ -61,7 +61,8 @@ extension OptionGroup: AnyOptionGroup {
 }
 
 extension ParsableArguments {
-  static func invalidAsyncCompletions(
+  /// Returns a recursively-built list of properties with async custom completions.
+  static func asyncCompletions(
     parent: InputKey?,
     propertyPath: String
   ) -> [String] {
@@ -72,7 +73,7 @@ extension ParsableArguments {
           .map { $0.hasPrefix("_") ? String($0.dropFirst()) : $0 }
           .flatMap { label in
             (type(of: child.value) as? AnyOptionGroup.Type)?
-              .wrappedType.invalidAsyncCompletions(
+              .wrappedType.asyncCompletions(
                 parent: InputKey(name: label, parent: parent),
                 propertyPath: "\(propertyPath).\(label)"
               )

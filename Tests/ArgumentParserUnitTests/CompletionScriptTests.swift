@@ -199,7 +199,7 @@ extension CompletionScriptTests {
       Platform.Environment[.shellName, as: CompletionShell.self] = shell
       defer { Platform.Environment[.shellName] = nil }
       if let command = command as? AsyncParsableCommand.Type {
-        _ = try await command.parse(["---completion", "--", arg, "0", "0"])
+        _ = try await command.asyncParse(["---completion", "--", arg, "0", "0"])
       } else {
         _ = try command.parse(["---completion", "--", arg, "0", "0"])
       }
