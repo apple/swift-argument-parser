@@ -31,10 +31,10 @@ extension AsyncParsableCommand {
   ///   `arguments` is `nil`, this uses the program's command-line arguments.
   /// - Returns: A new instance of this type.
   /// - Throws: If parsing failed or arguments contains a help request.
-  public static func parse(
+  public static func asyncParse(
     _ arguments: [String]? = nil
   ) async throws -> Self {
-    try parse(try await parseAsRoot(arguments))
+    try parse(try await asyncParseAsRoot(arguments))
   }
 
   /// Parses an instance of this type, or one of its subcommands, from
@@ -45,7 +45,7 @@ extension AsyncParsableCommand {
   /// - Returns: A new instance of this type, one of its subcommands, or a
   ///   command type internal to the `ArgumentParser` library.
   /// - Throws: If parsing fails.
-  public static func parseAsRoot(
+  public static func asyncParseAsRoot(
     _ arguments: [String]? = nil
   ) async throws -> ParsableCommand {
     var parser = CommandParser(self)
@@ -64,7 +64,7 @@ extension AsyncParsableCommand {
   ///   `arguments` is `nil`, this uses the program's command-line arguments.
   public static func main(_ arguments: [String]?) async {
     do {
-      var command = try await parseAsRoot(arguments)
+      var command = try await asyncParseAsRoot(arguments)
       if var asyncCommand = command as? AsyncParsableCommand {
         try await asyncCommand.run()
       } else {

@@ -8,6 +8,34 @@ Add new items at the end of the relevant section under **Unreleased**.
 
 ---
 
+## [1.8.1] - 2026-05-27
+
+### Fixes
+
+- Reverts a source compatibility regression in the 1.8.0 release, where existing calls to `ParsableCommand.parse()` and `.parseAsRoot()` were pre-empted by new `async` versions. The new asynchronous entry points are now named `asyncParse()` and `asyncParseAsRoot()`, respectively. Clients that have already updated their code with the `await` keyword can resolve the new warning by calling the new APIs or by removing the keyword. ([#908])
+- Resolves an issue with the `generate-manual` plugin that selected the wrong destination for the generated manual. ([#910])
+
+## [1.8.0] - 2026-05-25
+
+### Additions
+
+- `NameSpecification` and its elements now conform to `ExpressibleByStringLiteral`, allowing simplified option and flag name declarations. For example, `[.customLong("hex-output"), .customShort("x")]` can now be written as `"--hex-output -x"`. ([#745])
+- New `@Option` initializers accept a `defaultAsFlag:` parameter, creating options that work both as a bare flag (`--format`) and as an option with a value (`--format json`). ([#830])
+- Custom completion closures for `AsyncParsableCommand` types are now implemented via `async`/`await` instead of via `DispatchSemaphore`. ([#855])
+
+### Changes
+
+- The minimum Swift version for `swift-argument-parser` has been updated to Swift 6. Users of older Swift versions can continue using version 1.7.1 of the library. ([#882])
+
+### Fixes
+
+- Command aliases now appear in generated man-pages for both single-page and multi-page output. ([#891])
+- Declaring `@Flag var x: Bool?` without an `inversion:` parameter now produces a useful diagnostic message. ([#892])
+
+The 1.8.0 release includes contributions from [bkhouri], [natecook1000], [qflen], [rauhul], and [rgoldberg]. Thank you!
+
+---
+
 ## [1.7.1] - 2026-03-20
 
 ### Changes
@@ -1011,7 +1039,9 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 
 <!-- Link references for releases -->
 
-[Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.7.1...HEAD
+[Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.8.1...HEAD
+[1.8.1]: https://github.com/apple/swift-argument-parser/compare/1.8.0...1.8.1
+[1.8.0]: https://github.com/apple/swift-argument-parser/compare/1.7.1...1.8.0
 [1.7.1]: https://github.com/apple/swift-argument-parser/compare/1.7.0...1.7.1
 [1.7.0]: https://github.com/apple/swift-argument-parser/compare/1.6.2...1.7.0
 [1.6.2]: https://github.com/apple/swift-argument-parser/compare/1.6.1...1.6.2
@@ -1192,6 +1222,7 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [#741]: https://github.com/apple/swift-argument-parser/pull/741
 [#743]: https://github.com/apple/swift-argument-parser/pull/743
 [#744]: https://github.com/apple/swift-argument-parser/pull/744
+[#745]: https://github.com/apple/swift-argument-parser/pull/745
 [#746]: https://github.com/apple/swift-argument-parser/pull/746
 [#747]: https://github.com/apple/swift-argument-parser/pull/747
 [#754]: https://github.com/apple/swift-argument-parser/pull/754
@@ -1219,12 +1250,14 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [#813]: https://github.com/apple/swift-argument-parser/pull/813
 [#821]: https://github.com/apple/swift-argument-parser/pull/821
 [#825]: https://github.com/apple/swift-argument-parser/pull/825
+[#830]: https://github.com/apple/swift-argument-parser/pull/830
 [#838]: https://github.com/apple/swift-argument-parser/pull/838
 [#839]: https://github.com/apple/swift-argument-parser/pull/839
 [#841]: https://github.com/apple/swift-argument-parser/pull/841
 [#843]: https://github.com/apple/swift-argument-parser/pull/843
 [#844]: https://github.com/apple/swift-argument-parser/pull/844
 [#853]: https://github.com/apple/swift-argument-parser/pull/853
+[#855]: https://github.com/apple/swift-argument-parser/pull/855
 [#856]: https://github.com/apple/swift-argument-parser/pull/856
 [#857]: https://github.com/apple/swift-argument-parser/pull/857
 [#859]: https://github.com/apple/swift-argument-parser/pull/859
@@ -1236,6 +1269,12 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [#876]: https://github.com/apple/swift-argument-parser/pull/876
 [#877]: https://github.com/apple/swift-argument-parser/pull/877
 [#879]: https://github.com/apple/swift-argument-parser/pull/879
+[#882]: https://github.com/apple/swift-argument-parser/pull/882
+[#883]: https://github.com/apple/swift-argument-parser/pull/883
+[#891]: https://github.com/apple/swift-argument-parser/pull/891
+[#892]: https://github.com/apple/swift-argument-parser/pull/892
+[#908]: https://github.com/apple/swift-argument-parser/pull/908
+[#910]: https://github.com/apple/swift-argument-parser/pull/910
 
 <!-- Link references for contributors -->
 
@@ -1322,6 +1361,7 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [NicFontana]: https://github.com/apple/swift-argument-parser/commits?author=NicFontana
 [owenv]: https://github.com/apple/swift-argument-parser/commits?author=owenv
 [pegasuze]: https://github.com/apple/swift-argument-parser/commits?author=pegasuze
+[qflen]: https://github.com/apple/swift-argument-parser/commits?author=qflen
 [randomeizer]: https://github.com/apple/swift-argument-parser/commits?author=randomeizer
 [rauhul]: https://github.com/apple/swift-argument-parser/commits?author=rauhul
 [revolter]: https://github.com/apple/swift-argument-parser/commits?author=revolter
