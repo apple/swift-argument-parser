@@ -1,0 +1,28 @@
+load("@rules_swift//swift:swift.bzl", "swift_binary")
+
+package(default_visibility = ["//:__subpackages__"])
+
+swift_binary(
+    name = "changelog-authors",
+    srcs = glob(["changelog-authors/**/*.swift"]),
+    target_compatible_with = ["@platforms//os:macos"],
+    deps = ["//:ArgumentParser"],
+)
+
+swift_binary(
+    name = "generate-docc-reference",
+    srcs = glob(["generate-docc-reference/**/*.swift"]),
+    deps = [
+        "//:ArgumentParser",
+        "//:ArgumentParserToolInfo",
+    ],
+)
+
+swift_binary(
+    name = "generate-manual",
+    srcs = glob(["generate-manual/**/*.swift"]),
+    deps = [
+        "//:ArgumentParser",
+        "//:ArgumentParserToolInfo",
+    ],
+)
