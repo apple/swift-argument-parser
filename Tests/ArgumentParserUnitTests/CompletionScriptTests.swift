@@ -152,6 +152,114 @@ extension CompletionScriptTests {
     let script3 = Base.completionScript(for: .fish)
     try assertSnapshot(actual: script3, extension: "fish")
   }
+
+  struct Visibility: ParsableCommand {
+    @Flag(help: ArgumentHelp("Hidden flag.", visibility: .hidden))
+    var hiddenFlag = false
+
+    @Flag(help: ArgumentHelp("Private flag.", visibility: .private))
+    var privateFlag = false
+
+    @Option(
+      help: ArgumentHelp("Hidden option.", visibility: .hidden),
+      completion: .list(["hidden-option-value"]))
+    var hiddenOption: String?
+
+    @Option(
+      help: ArgumentHelp("Private option.", visibility: .private),
+      completion: .list(["private-option-value"]))
+    var privateOption: String?
+
+    @Argument(
+      help: ArgumentHelp("Private argument.", visibility: .private),
+      completion: .list(["private-argument-value"]))
+    var privateArgument: String?
+
+    @Argument(
+      help: ArgumentHelp("Hidden argument.", visibility: .hidden),
+      completion: .list(["hidden-argument-value"]))
+    var hiddenArgument: String?
+  }
+
+  func testHiddenAndPrivateVisibility_Bash() throws {
+    try assertHiddenAndPrivateVisibility(in: .bash)
+  }
+
+  func testHiddenAndPrivateVisibility_Fish() throws {
+    try assertHiddenAndPrivateVisibility(in: .fish)
+  }
+
+  func testHiddenAndPrivateVisibility_Zsh() throws {
+    try assertHiddenAndPrivateVisibility(in: .zsh)
+  }
+
+  private func assertHiddenAndPrivateVisibility(
+    in shell: CompletionShell,
+    file: StaticString = #filePath,
+    line: UInt = #line
+  ) throws {
+    let script = try CompletionsGenerator(command: Visibility.self, shell: shell)
+      .generateCompletionScript()
+
+    let (expectedNames, unexpectedNames, expectedHiddenArgument): (
+      [String],
+      [String],
+      String
+    ) =
+      switch shell {
+      case .bash:
+        (
+          ["--hidden-flag", "--hidden-option"],
+          ["--private-flag", "--private-option"],
+          """
+              2)
+                  __visibility_add_completions -W 'hidden-argument-value'
+          """
+        )
+      case .zsh:
+        (
+          ["--hidden-flag", "--hidden-option"],
+          ["--private-flag", "--private-option"],
+          """
+                  '::'
+                  ':hidden-argument:{__visibility_complete "${_hidden_argument[@]}"}'
+          """
+        )
+      case .fish:
+        (
+          ["-l 'hidden-flag'", "-l 'hidden-option'"],
+          ["-l 'private-flag'", "-l 'private-option'"],
+          """
+          __visibility_should_offer_completions_for_positional "visibility" 2' -fka 'hidden-argument-value'
+          """
+        )
+      default:
+        ([], [], "")
+      }
+
+    for expected in [
+      "hidden-option-value",
+      "hidden-argument-value",
+      expectedHiddenArgument,
+    ] + expectedNames {
+      XCTAssertTrue(
+        script.contains(expected),
+        "\(shell.rawValue) completion script is missing \(expected)",
+        file: file,
+        line: line)
+    }
+
+    for unexpected in [
+      "private-option-value",
+      "private-argument-value",
+    ] + unexpectedNames {
+      XCTAssertFalse(
+        script.contains(unexpected),
+        "\(shell.rawValue) completion script includes \(unexpected)",
+        file: file,
+        line: line)
+    }
+  }
 }
 
 extension CompletionScriptTests {

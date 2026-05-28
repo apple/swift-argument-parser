@@ -143,8 +143,9 @@ extension CommandInfoV0 {
     var positionalIndex = 0
 
     var repeatingPositionalComparison = ""
+    let completableArguments = self.completableArguments
     let argumentCompletions =
-      completableArguments
+      (arguments ?? [])
       .compactMap { arg in
         if arg.kind == .positional {
           guard repeatingPositionalComparison.isEmpty else {
@@ -154,16 +155,22 @@ extension CommandInfoV0 {
           if arg.isRepeating {
             repeatingPositionalComparison = " -ge"
           }
+
+          positionalIndex += 1
+          guard arg.shouldDisplay else {
+            return nil
+          }
+        }
+
+        guard completableArguments.contains(arg) else {
+          return nil
         }
 
         return """
           \(prefix)\(
             arg.kind == .positional
             ? """
-            \(shouldOfferCompletionsForPositionalFunctionName) "\(commandContext.joined(separator: separator))" \({
-              positionalIndex += 1
-              return "\(positionalIndex)\(repeatingPositionalComparison)"
-            }())
+            \(shouldOfferCompletionsForPositionalFunctionName) "\(commandContext.joined(separator: separator))" \(positionalIndex)\(repeatingPositionalComparison)
             """
             : """
               \(shouldOfferCompletionsForFlagsOrOptionsFunctionName) "\(commandContext.joined(separator: separator))"\
