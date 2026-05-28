@@ -59,6 +59,41 @@ hello!
 ...
 ```
 
+### Adding Extended Discussion
+
+Use the `extendedDiscussion` parameter to provide additional information that
+appears at the end of the help screen, after the list of arguments, options,
+and subcommands. This keeps the quick-reference argument list near the top of
+the help output.
+
+```swift
+struct Repeat: ParsableCommand {
+    static let configuration = CommandConfiguration(
+        abstract: "Repeats your input phrase.",
+        extendedDiscussion: """
+            Use CTRL-C to stop repeating when no count is given.
+            """)
+
+    // ...
+}
+```
+
+```
+% repeat --help
+OVERVIEW: Repeats your input phrase.
+
+USAGE: repeat [--count <count>] <phrase>
+
+ARGUMENTS:
+  <phrase>                The phrase to repeat.
+
+OPTIONS:
+  --count <count>         How many times to repeat.
+  -h, --help              Show help information.
+
+Use CTRL-C to stop repeating when no count is given.
+```
+
 ### Modifying the Help Flag Names
 
 Users can see the help screen for a command by passing either the `-h` or the `--help` flag, by default. If you need to use one of those flags for another purpose, you can provide alternative names when configuring a root command.
