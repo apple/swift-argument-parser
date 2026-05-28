@@ -22,7 +22,6 @@ extension CommandInfoV0 {
     """
     function \(shouldOfferCompletionsForFlagsOrOptionsFunctionName) -a expected_commands
         set -l non_repeating_flags_or_options $argv[2..]
-
         set -l non_repeating_flags_or_options_absent 0
         set -l positional_index 0
         set -l commands
@@ -45,7 +44,6 @@ extension CommandInfoV0 {
 
     function \(parseTokensFunctionName) -S
         set -l unparsed_tokens (\(tokensFunctionName) -pc)
-
         switch $unparsed_tokens[1]
     \(commandCases)
         end
@@ -71,17 +69,13 @@ extension CommandInfoV0 {
             argparse -sn "$commands" $option_specs -- $unparsed_tokens 2> /dev/null
             set unparsed_tokens $argv
             set positional_index (math $positional_index + 1)
-
             for non_repeating_flag_or_option in $non_repeating_flags_or_options
                 if set -ql "_flag_$(string replace -a - _ -- $non_repeating_flag_or_option)"
                     set non_repeating_flags_or_options_absent 1
                     break
                 end
             end
-
-            if test (count $unparsed_tokens) -eq 0 -o \\( -z "$is_repeating_positional" -a "$positional_index" -gt "$positional_count" \\)
-                break
-            end
+            test (count $unparsed_tokens) -eq 0 -o \\( -z "$is_repeating_positional" -a "$positional_index" -gt "$positional_count" \\) && break
         end
     end
 
@@ -89,13 +83,12 @@ extension CommandInfoV0 {
         set -l token (commandline -t)
         string match -- '*/' $token
         set -l subdirs $token*/
-        printf '%s\\n' $subdirs
+        printf %s\\n $subdirs
     end
 
     function \(customCompletionFunctionName)
         set -x \(Platform.Environment.Key.shellName.rawValue) fish
         set -x \(Platform.Environment.Key.shellVersion.rawValue) $FISH_VERSION
-
         set -l tokens (\(tokensFunctionName) -p)
         if test -z "$(\(tokensFunctionName) -t)"
             set -l index (count (\(tokensFunctionName) -pc))
@@ -134,22 +127,19 @@ extension CommandInfoV0 {
 
   private var completions: [String] {
     let prefix = "complete -c '\(initialCommand)' -n '"
-
     let subcommands = (subcommands ?? []).filter(\.shouldDisplay)
-
     var positionalIndex = 0
-
-    var repeatingPositionalComparison = ""
+    var positionalComparison = ""
     let argumentCompletions =
       completableArguments
       .compactMap { arg in
         if arg.kind == .positional {
-          guard repeatingPositionalComparison.isEmpty else {
+          guard positionalComparison.isEmpty else {
             return nil as String?
           }
 
           if arg.isRepeating {
-            repeatingPositionalComparison = " -ge"
+            positionalComparison = " -ge"
           }
         }
 
@@ -159,7 +149,7 @@ extension CommandInfoV0 {
             ? """
             \(shouldOfferCompletionsForPositionalFunctionName) "\(commandContext.joined(separator: separator))" \({
               positionalIndex += 1
-              return "\(positionalIndex)\(repeatingPositionalComparison)"
+              return "\(positionalIndex)\(positionalComparison)"
             }())
             """
             : """
@@ -184,22 +174,14 @@ extension CommandInfoV0 {
   }
 
   private var completableArguments: [ArgumentInfoV0] {
-    (arguments ?? []).compactMap { arg in
-      switch arg.completionKind {
-      case .none where arg.names?.isEmpty ?? true:
-        return nil
-      default:
-        return
-          arg.shouldDisplay
-          ? arg
-          : nil
-      }
+    (arguments ?? []).filter { arg in
+      arg.shouldDisplay
+        && (arg.completionKind != nil || arg.names?.isEmpty == false)
     }
   }
 
   private func argumentSegments(_ arg: ArgumentInfoV0) -> [String] {
     var results: [String] = []
-
     if let names = arg.names, !names.isEmpty {
       results += names.map(\.asCompleteArgument)
       if let abstract = arg.abstract, !abstract.isEmpty {
@@ -208,36 +190,31 @@ extension CommandInfoV0 {
         ]
       }
     }
-
     let r = arg.kind == .positional ? "" : "r"
-
-    switch arg.completionKind {
-    case .none:
-      switch arg.kind {
-      case .positional,
-        .option:
-        results += ["-\(r)fka ''"]
-      default:
-        break
-      }
-      break
-    case .list(let list):
-      results += ["-\(r)fka '\(list.joined(separator: separator))'"]
-    case .file(let extensions):
-      switch extensions.count {
-      case 0:
-        results += ["-\(r)F"]
-      case 1:
-        results += [
+    let completions =
+      switch arg.completionKind {
+      case .none:
+        switch arg.kind {
+        case .positional,
+          .option:
+          "-\(r)fka ''"
+        default:
+          String?.none
+        }
+      case .list(let list):
+        "-\(r)fka '\(list.joined(separator: separator))'"
+      case .file(let extensions):
+        switch extensions.count {
+        case 0:
+          "-\(r)F"
+        case 1:
           """
           -\(r)fa '(\
           for p in (string match -e -- \\'*/\\' (commandline -t);or printf \\n)*.\\'\(extensions.map { $0.fishEscapeForSingleQuotedString(iterationCount: 2) }.joined())\\';printf %s\\n $p;end;\
           __fish_complete_directories (commandline -t) \\'\\'\
           )'
           """
-        ]
-      default:
-        results += [
+        default:
           """
           -\(r)fa '(\
           set -l exts \(extensions.map { "\\'\($0.fishEscapeForSingleQuotedString(iterationCount: 2))\\'" }.joined(separator: separator));\
@@ -245,31 +222,22 @@ extension CommandInfoV0 {
           __fish_complete_directories (commandline -t) \\'\\'\
           )'
           """
-        ]
-      }
-    case .directory:
-      results += ["-\(r)fa '(\(completeDirectoriesFunctionName))'"]
-    case .shellCommand(let shellCommand):
-      results += [
+        }
+      case .directory:
+        "-\(r)fa '(\(completeDirectoriesFunctionName))'"
+      case .shellCommand(let shellCommand):
         "-\(r)fka '(\(shellCommand.fishEscapeForSingleQuotedString()))'"
-      ]
-    case .custom, .customAsync:
-      results += [
+      case .custom, .customAsync:
         """
         -\(r)fka '(\
         \(customCompletionFunctionName) \(arg.commonCustomCompletionCall(command: self)) \
         (count (\(tokensFunctionName) -pc)) (\(tokensFunctionName) -tC)\
         )'
         """
-      ]
-    case .customDeprecated:
-      results += [
-        """
-        -\(r)fka '(\(customCompletionFunctionName) \(arg.commonCustomCompletionCall(command: self)))'
-        """
-      ]
-    }
-
+      case .customDeprecated:
+        "-\(r)fka '(\(customCompletionFunctionName) \(arg.commonCustomCompletionCall(command: self)))'"
+      }
+    completions.map { results.append($0) }
     return results
   }
 
@@ -311,16 +279,11 @@ extension CommandInfoV0 {
 
 extension ArgumentInfoV0 {
   fileprivate var optionSpec: String? {
-    guard let shortName = name(.short) else {
-      guard let longName = name(.long) else {
-        return nil
-      }
-      return optionSpecRequiresValue(longName)
+    name(.short).map { shortName in
+      name(.long).map { optionSpecRequiresValue("\(shortName)/\($0)") }
+        ?? optionSpecRequiresValue(shortName)
     }
-    guard let longName = name(.long) else {
-      return optionSpecRequiresValue(shortName)
-    }
-    return optionSpecRequiresValue("\(shortName)/\(longName)")
+      ?? name(.long).map(optionSpecRequiresValue(_:))
   }
 
   private func name(_ nameKind: NameInfoV0.KindV0) -> String? {
@@ -328,12 +291,7 @@ extension ArgumentInfoV0 {
   }
 
   private func optionSpecRequiresValue(_ optionSpec: String) -> String {
-    switch kind {
-    case .option:
-      return "\(optionSpec)=\(isRepeating ? "+" : "")"
-    default:
-      return optionSpec
-    }
+    kind == .option ? "\(optionSpec)=\(isRepeating ? "+" : "")" : optionSpec
   }
 }
 
@@ -356,11 +314,10 @@ extension String {
   ) -> Self {
     iterationCount == 0
       ? self
-      : self
-        .replacing("\\", with: "\\\\")
+      : replacing("\\", with: "\\\\")
         .replacing("'", with: "\\'")
         .fishEscapeForSingleQuotedString(iterationCount: iterationCount - 1)
   }
 }
 
-private var separator: String { " " }
+private let separator = " "
