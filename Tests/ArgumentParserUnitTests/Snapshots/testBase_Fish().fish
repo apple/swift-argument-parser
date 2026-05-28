@@ -1,6 +1,5 @@
 function __base-test_should_offer_completions_for_flags_or_options -a expected_commands
     set -l non_repeating_flags_or_options $argv[2..]
-
     set -l non_repeating_flags_or_options_absent 0
     set -l positional_index 0
     set -l commands
@@ -23,7 +22,6 @@ end
 
 function __base-test_parse_tokens -S
     set -l unparsed_tokens (__base-test_tokens -pc)
-
     switch $unparsed_tokens[1]
     case 'base-test'
         __base-test_parse_subcommand 2 'name=' 'kind=' 'other-kind=' 'path1=' 'path2=' 'path3=' 'one' 'two' 'custom-three' 'kind-counter' 'rep1=+' 'r/rep2=+' 'h/help'
@@ -58,17 +56,13 @@ function __base-test_parse_subcommand -S -a positional_count
         argparse -sn "$commands" $option_specs -- $unparsed_tokens 2> /dev/null
         set unparsed_tokens $argv
         set positional_index (math $positional_index + 1)
-
         for non_repeating_flag_or_option in $non_repeating_flags_or_options
             if set -ql "_flag_$(string replace -a - _ -- $non_repeating_flag_or_option)"
                 set non_repeating_flags_or_options_absent 1
                 break
             end
         end
-
-        if test (count $unparsed_tokens) -eq 0 -o \( -z "$is_repeating_positional" -a "$positional_index" -gt "$positional_count" \)
-            break
-        end
+        test (count $unparsed_tokens) -eq 0 -o \( -z "$is_repeating_positional" -a "$positional_index" -gt "$positional_count" \) && break
     end
 end
 
@@ -76,13 +70,12 @@ function __base-test_complete_directories
     set -l token (commandline -t)
     string match -- '*/' $token
     set -l subdirs $token*/
-    printf '%s\n' $subdirs
+    printf %s\n $subdirs
 end
 
 function __base-test_custom_completion
     set -x SAP_SHELL fish
     set -x SAP_SHELL_VERSION $FISH_VERSION
-
     set -l tokens (__base-test_tokens -p)
     if test -z "$(__base-test_tokens -t)"
         set -l index (count (__base-test_tokens -pc))
