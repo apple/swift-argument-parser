@@ -29,11 +29,7 @@ extension CommandInfoV0 {
         test "$commands" = "$expected_commands"; and return $non_repeating_flags_or_options_absent
     end
 
-    function \(shouldOfferCompletionsForPositionalFunctionName) -a expected_commands expected_positional_index positional_index_comparison
-        if test -z "$positional_index_comparison"
-            set positional_index_comparison -eq
-        end
-
+    function \(shouldOfferCompletionsForPositionalFunctionName) -a expected_commands positional_index_comparison expected_positional_index
         set -l non_repeating_flags_or_options
         set -l non_repeating_flags_or_options_absent 0
         set -l positional_index 0
@@ -129,17 +125,17 @@ extension CommandInfoV0 {
     let prefix = "complete -c '\(initialCommand)' -n '"
     let subcommands = (subcommands ?? []).filter(\.shouldDisplay)
     var positionalIndex = 0
-    var positionalComparison = ""
+    var positionalComparison = "-eq"
     let argumentCompletions =
       completableArguments
       .compactMap { arg in
         if arg.kind == .positional {
-          guard positionalComparison.isEmpty else {
+          guard positionalComparison == "-eq" else {
             return nil as String?
           }
 
           if arg.isRepeating {
-            positionalComparison = " -ge"
+            positionalComparison = "-ge"
           }
         }
 
@@ -149,7 +145,7 @@ extension CommandInfoV0 {
             ? """
             \(shouldOfferCompletionsForPositionalFunctionName) "\(commandContext.joined(separator: separator))" \({
               positionalIndex += 1
-              return "\(positionalIndex)\(positionalComparison)"
+              return "\(positionalComparison) \(positionalIndex)"
             }())
             """
             : """
@@ -167,7 +163,7 @@ extension CommandInfoV0 {
       + subcommands.map {
         """
         \(prefix)\(shouldOfferCompletionsForPositionalFunctionName) "\(commandContext.joined(separator: separator))"\
-         \(positionalIndex)' -fa '\($0.commandName)' -d '\($0.abstract?.fishEscapeForSingleQuotedString() ?? "")'
+         -eq \(positionalIndex)' -fa '\($0.commandName)' -d '\($0.abstract?.fishEscapeForSingleQuotedString() ?? "")'
         """
       }
       + subcommands.flatMap(\.completions)
