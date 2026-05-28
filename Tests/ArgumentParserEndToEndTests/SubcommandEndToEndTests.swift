@@ -92,6 +92,7 @@ extension SubcommandEndToEndTests {
           b
 
           See 'foo help <subcommand>' for detailed help.
+          Use 'foo help --search <term>' to search commands and options.
         """)
     AssertEqualStrings(
       actual: helpA,
