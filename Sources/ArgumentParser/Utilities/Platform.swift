@@ -73,7 +73,7 @@ extension Platform {
   /// The code for exit with a validation failure.
   static var exitCodeValidationFailure: Int32 {
     #if os(Windows)
-    return ERROR_BAD_ARGUMENTS
+    return Int32(ERROR_BAD_ARGUMENTS)
     #elseif os(WASI)
     return EXIT_FAILURE
     #else
