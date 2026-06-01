@@ -43,19 +43,28 @@ extension BidirectionalCollection where Element == ParsableCommand.Type {
 }
 
 extension ToolInfoV0 {
-  init(commandStack: [ParsableCommand.Type]) {
-    self.init(command: CommandInfoV0(commandStack: commandStack))
+  init(
+    commandStack: [ParsableCommand.Type], includeHiddenArguments: Bool = false
+  ) {
+    self.init(
+      command: CommandInfoV0(
+        commandStack: commandStack,
+        includeHiddenArguments: includeHiddenArguments))
     // FIXME: This is a hack to inject the help command into the tool info
     // instead we should try to lift this into the parseable command tree
     self.command.subcommands =
       (self.command.subcommands ?? []) + [
-        CommandInfoV0(commandStack: commandStack + [HelpCommand.self])
+        CommandInfoV0(
+          commandStack: commandStack + [HelpCommand.self],
+          includeHiddenArguments: includeHiddenArguments)
       ]
   }
 }
 
 extension CommandInfoV0 {
-  fileprivate init(commandStack: [ParsableCommand.Type]) {
+  fileprivate init(
+    commandStack: [ParsableCommand.Type], includeHiddenArguments: Bool
+  ) {
     guard let command = commandStack.last else {
       preconditionFailure("commandStack must not be empty")
     }
@@ -72,12 +81,17 @@ extension CommandInfoV0 {
       .map { subcommand -> CommandInfoV0 in
         var commandStack = commandStack
         commandStack.append(subcommand)
-        return CommandInfoV0(commandStack: commandStack)
+        return CommandInfoV0(
+          commandStack: commandStack,
+          includeHiddenArguments: includeHiddenArguments)
       }
     let arguments =
       commandStack
       .allArguments()
-      .compactMap(ArgumentInfoV0.init)
+      .compactMap {
+        ArgumentInfoV0(
+          argument: $0, includeHiddenArguments: includeHiddenArguments)
+      }
 
     self = CommandInfoV0(
       superCommands: superCommands,
@@ -93,7 +107,8 @@ extension CommandInfoV0 {
 }
 
 extension ArgumentInfoV0 {
-  fileprivate init?(argument: ArgumentDefinition) {
+  fileprivate init?(argument: ArgumentDefinition, includeHiddenArguments: Bool)
+  {
     guard let kind = ArgumentInfoV0.KindV0(argument: argument) else {
       return nil
     }
@@ -112,9 +127,15 @@ extension ArgumentInfoV0 {
       allValueDescriptions = options.allValueDescriptions
     }
 
+    // When building for completions (includeHiddenArguments == true), mark
+    // hidden arguments as displayable so completion scripts include them.
+    // Private arguments remain non-displayable in both cases.
+    let shouldDisplay = argument.help.visibility.isAtLeastAsVisible(
+      as: includeHiddenArguments ? .hidden : .default)
+
     self.init(
       kind: kind,
-      shouldDisplay: argument.help.visibility.base == .default,
+      shouldDisplay: shouldDisplay,
       sectionTitle: argument.help.parentTitle.nonEmpty,
       isOptional: argument.help.options.contains(.isOptional),
       isRepeating: argument.help.options.contains(.isRepeating),
