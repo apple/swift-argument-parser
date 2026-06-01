@@ -44,7 +44,7 @@ function __math_parse_tokens -S
                 __math_parse_subcommand -r 4 'file=' 'directory=' 'shell=' 'custom=' 'custom-deprecated=' 'version' 'h/help'
             end
         case 'help'
-            __math_parse_subcommand -r 1 'version'
+            __math_parse_subcommand -r 1 's/search=' 'version'
         end
     end
 end
@@ -110,7 +110,7 @@ complete -c 'math' -n '__math_should_offer_completions_for_flags_or_options "mat
 complete -c 'math' -n '__math_should_offer_completions_for_positional "math" 1' -fa 'add' -d 'Print the sum of the values.'
 complete -c 'math' -n '__math_should_offer_completions_for_positional "math" 1' -fa 'multiply' -d 'Print the product of the values.'
 complete -c 'math' -n '__math_should_offer_completions_for_positional "math" 1' -fa 'stats' -d 'Calculate descriptive statistics.'
-complete -c 'math' -n '__math_should_offer_completions_for_positional "math" 1' -fa 'help' -d 'Show subcommand help information.'
+complete -c 'math' -n '__math_should_offer_completions_for_positional "math" 1' -fa 'help' -d 'Show subcommand help information. Use --search to find commands and options.'
 complete -c 'math' -n '__math_should_offer_completions_for_flags_or_options "math add" hex-output x' -l 'hex-output' -s 'x' -d 'Use hexadecimal notation for the result.'
 complete -c 'math' -n '__math_should_offer_completions_for_flags_or_options "math add" version' -l 'version' -d 'Show the version.'
 complete -c 'math' -n '__math_should_offer_completions_for_flags_or_options "math add" h help' -s 'h' -l 'help' -d 'Show help information.'
@@ -137,4 +137,5 @@ complete -c 'math' -n '__math_should_offer_completions_for_flags_or_options "mat
 complete -c 'math' -n '__math_should_offer_completions_for_flags_or_options "math stats quantiles" custom-deprecated' -l 'custom-deprecated' -rfka '(__math_custom_completion ---completion stats quantiles -- --custom-deprecated)'
 complete -c 'math' -n '__math_should_offer_completions_for_flags_or_options "math stats quantiles" version' -l 'version' -d 'Show the version.'
 complete -c 'math' -n '__math_should_offer_completions_for_flags_or_options "math stats quantiles" h help' -s 'h' -l 'help' -d 'Show help information.'
+complete -c 'math' -n '__math_should_offer_completions_for_flags_or_options "math help" s search' -s 's' -l 'search' -d 'Search for commands and options matching the term.' -rfka ''
 complete -c 'math' -n '__math_should_offer_completions_for_flags_or_options "math help" version' -l 'version' -d 'Show the version.'

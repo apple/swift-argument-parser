@@ -48,13 +48,16 @@ and
 .Os
 .Sh NAME
 .Nm "roll help"
-.Nd "Show subcommand help information."
+.Nd "Show subcommand help information. Use --search to find commands and options."
 .Sh SYNOPSIS
 .Nm
 .Op Ar subcommands...
+.Op Fl -search Ar search
 .Sh DESCRIPTION
 .Bl -tag -width 6n
 .It Ar subcommands...
+.It Fl s , -search Ar search
+Search for commands and options matching the term.
 .El
 .Sh AUTHORS
 The

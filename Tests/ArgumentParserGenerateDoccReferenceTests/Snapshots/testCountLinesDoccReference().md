@@ -29,13 +29,18 @@ count-lines [<input-file>] [--prefix=<prefix>] [--verbose]
 
 ## count-lines.help
 
-Show subcommand help information.
+Show subcommand help information. Use --search to find commands and options.
 
 ```
-count-lines help [<subcommands>...]
+count-lines help [<subcommands>...] [--search=<search>]
 ```
 
 - term **subcommands**:
+
+
+- term **--search=\<search\>**:
+
+*Search for commands and options matching the term.*
 
 
 
