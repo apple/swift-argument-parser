@@ -8,6 +8,17 @@ Add new items at the end of the relevant section under **Unreleased**.
 
 ---
 
+## [1.8.2] - 2026-06-04
+
+### Fixes
+
+- Fixes `fish` completion scripts for certain flag and option names. ([#911])
+- Resolves a build warning by making an implicit `Int32` cast explicit on Windows. ([#913])
+
+The 1.8.2 release includes contributions from [compnerd] and [rgoldberg]. Thank you!
+
+---
+
 ## [1.8.1] - 2026-05-27
 
 ### Fixes
@@ -1039,7 +1050,8 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 
 <!-- Link references for releases -->
 
-[Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.8.1...HEAD
+[Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.8.2...HEAD
+[1.8.2]: https://github.com/apple/swift-argument-parser/compare/1.8.1...1.8.2
 [1.8.1]: https://github.com/apple/swift-argument-parser/compare/1.8.0...1.8.1
 [1.8.0]: https://github.com/apple/swift-argument-parser/compare/1.7.1...1.8.0
 [1.7.1]: https://github.com/apple/swift-argument-parser/compare/1.7.0...1.7.1
@@ -1275,6 +1287,8 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [#892]: https://github.com/apple/swift-argument-parser/pull/892
 [#908]: https://github.com/apple/swift-argument-parser/pull/908
 [#910]: https://github.com/apple/swift-argument-parser/pull/910
+[#911]: https://github.com/apple/swift-argument-parser/pull/911
+[#913]: https://github.com/apple/swift-argument-parser/pull/913
 
 <!-- Link references for contributors -->
 
