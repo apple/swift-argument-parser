@@ -47,6 +47,12 @@ The 1.8.0 release includes contributions from [bkhouri], [natecook1000], [qflen]
 
 ---
 
+## [1.7.2] - 2026-07-08
+
+### Fixes
+
+- Resolves a build warning by making an implicit `Int32` cast explicit on Windows. ([#913])
+
 ## [1.7.1] - 2026-03-20
 
 ### Changes
@@ -1054,6 +1060,7 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [1.8.2]: https://github.com/apple/swift-argument-parser/compare/1.8.1...1.8.2
 [1.8.1]: https://github.com/apple/swift-argument-parser/compare/1.8.0...1.8.1
 [1.8.0]: https://github.com/apple/swift-argument-parser/compare/1.7.1...1.8.0
+[1.7.2]: https://github.com/apple/swift-argument-parser/compare/1.7.1...1.7.2
 [1.7.1]: https://github.com/apple/swift-argument-parser/compare/1.7.0...1.7.1
 [1.7.0]: https://github.com/apple/swift-argument-parser/compare/1.6.2...1.7.0
 [1.6.2]: https://github.com/apple/swift-argument-parser/compare/1.6.1...1.6.2
