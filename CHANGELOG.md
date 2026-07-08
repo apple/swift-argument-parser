@@ -6,7 +6,15 @@ Add new items at the end of the relevant section under **Unreleased**.
 
 ## [Unreleased]
 
+
 ---
+
+
+## [1.7.2] - 2026-07-08
+
+### Fixes
+
+- Resolves a build warning by making an implicit `Int32` cast explicit on Windows. ([#913])
 
 ## [1.7.1] - 2026-03-20
 
@@ -1011,7 +1019,8 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 
 <!-- Link references for releases -->
 
-[Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.7.1...HEAD
+[Unreleased]: https://github.com/apple/swift-argument-parser/compare/1.7.2...HEAD
+[1.7.2]: https://github.com/apple/swift-argument-parser/compare/1.7.1...1.7.2
 [1.7.1]: https://github.com/apple/swift-argument-parser/compare/1.7.0...1.7.1
 [1.7.0]: https://github.com/apple/swift-argument-parser/compare/1.6.2...1.7.0
 [1.6.2]: https://github.com/apple/swift-argument-parser/compare/1.6.1...1.6.2
