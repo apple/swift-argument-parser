@@ -11,6 +11,7 @@
 
 import ArgumentParser
 import ArgumentParserTestHelpers
+import Testing
 import XCTest
 
 final class DefaultAsFlagEndToEndTests: XCTestCase {}

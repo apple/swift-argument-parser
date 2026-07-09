@@ -26,6 +26,7 @@ if(NOT APPLE)
   find_package(Foundation CONFIG)
   if(BUILD_TESTING)
     find_package(XCTest CONFIG)
+    find_package(Testing CONFIG)
   endif()
 endif()
 

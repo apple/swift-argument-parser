@@ -11,6 +11,7 @@
 
 import ArgumentParserTestHelpers
 import ArgumentParserToolInfo
+import Testing
 import XCTest
 
 @testable import ArgumentParser
@@ -132,7 +133,7 @@ extension DefaultSubcommandEndToEndTests {
     }
   }
 
-  func testNotMyParent() throws {
+  func testNotMyParent() {
     AssertParseCommandErrorMessage(
       MyCommand.self, BadParent.self, ["--verbose", "bad-parent"],
       "Command 'Other' is not a parent of the current command.")
