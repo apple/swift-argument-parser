@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2025 Apple Inc. and the Swift project authors
+// Copyright (c) 2025-2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -12,13 +12,10 @@
 import ArgumentParser
 import ArgumentParserTestHelpers
 import Testing
-import XCTest
 
-final class DefaultAsFlagEndToEndTests: XCTestCase {}
+@Suite struct DefaultAsFlagEndToEndTests {
 
-// MARK: - Test Cases
-
-extension DefaultAsFlagEndToEndTests {
+  // MARK: - Test Cases
 
   // Test struct for defaultAsFlag without transform - explicit nil
   private struct CommandWithDefaultAsFlagWithoutTransformExplicitNil:
@@ -56,95 +53,95 @@ extension DefaultAsFlagEndToEndTests {
     var showBinPath: String?
   }
 
-  func testDefaultAsFlagWithExplicitNil() throws {
+  @Test func defaultAsFlagWithExplicitNil() throws {
     // When no argument is provided, should be nil
-    AssertParse(CommandWithDefaultAsFlagWithoutTransformExplicitNil.self, []) {
+    expectParse(CommandWithDefaultAsFlagWithoutTransformExplicitNil.self, []) {
       cmd in
-      XCTAssertNil(cmd.showBinPath)
+      #expect(cmd.showBinPath == nil)
     }
 
     // When flag is provided without value, should use defaultAsFlag
-    AssertParse(
+    expectParse(
       CommandWithDefaultAsFlagWithoutTransformExplicitNil.self, ["--bin-path"]
     ) { cmd in
-      XCTAssertEqual(cmd.showBinPath, "/default/path")
+      #expect(cmd.showBinPath == "/default/path")
     }
 
     // When flag is provided with value, should use provided value
-    AssertParse(
+    expectParse(
       CommandWithDefaultAsFlagWithoutTransformExplicitNil.self,
       ["--bin-path", "/custom/path"]
     ) { cmd in
-      XCTAssertEqual(cmd.showBinPath, "/custom/path")
+      #expect(cmd.showBinPath == "/custom/path")
     }
   }
 
-  func testDefaultAsFlagWithoutExplicitDefault() throws {
+  @Test func defaultAsFlagWithoutExplicitDefault() throws {
     // When no argument is provided, should be nil
-    AssertParse(CommandWithDefaultAsFlagWithoutTransformNoExplicitNil.self, [])
+    expectParse(CommandWithDefaultAsFlagWithoutTransformNoExplicitNil.self, [])
     { cmd in
-      XCTAssertNil(cmd.showBinPath)
+      #expect(cmd.showBinPath == nil)
     }
 
     // When flag is provided without value, should use defaultAsFlag
-    AssertParse(
+    expectParse(
       CommandWithDefaultAsFlagWithoutTransformNoExplicitNil.self, ["--bin-path"]
     ) { cmd in
-      XCTAssertEqual(cmd.showBinPath, "/default/path")
+      #expect(cmd.showBinPath == "/default/path")
     }
 
     // When flag is provided with value, should use provided value
-    AssertParse(
+    expectParse(
       CommandWithDefaultAsFlagWithoutTransformNoExplicitNil.self,
       ["--bin-path", "/custom/path"]
     ) { cmd in
-      XCTAssertEqual(cmd.showBinPath, "/custom/path")
+      #expect(cmd.showBinPath == "/custom/path")
     }
   }
 
-  func testDefaultAsFlagWithTransformWithExplicitNil() throws {
+  @Test func defaultAsFlagWithTransformWithExplicitNil() throws {
     // When no argument is provided, should be nil
-    AssertParse(CommandWithDefaultAsFlagWithTransformExplicitNil.self, []) {
+    expectParse(CommandWithDefaultAsFlagWithTransformExplicitNil.self, []) {
       cmd in
-      XCTAssertNil(cmd.showBinPath)
+      #expect(cmd.showBinPath == nil)
     }
 
     // When flag is provided without value, should use defaultAsFlag
-    AssertParse(
+    expectParse(
       CommandWithDefaultAsFlagWithTransformExplicitNil.self, ["--bin-path"]
     ) { cmd in
-      XCTAssertEqual(cmd.showBinPath, "/default/path")
+      #expect(cmd.showBinPath == "/default/path")
     }
 
     // When flag is provided with value, should use provided value with transform
-    AssertParse(
+    expectParse(
       CommandWithDefaultAsFlagWithTransformExplicitNil.self,
       ["--bin-path", "/custom/path"]
     ) { cmd in
-      XCTAssertEqual(cmd.showBinPath, "/CUSTOM/PATH")
+      #expect(cmd.showBinPath == "/CUSTOM/PATH")
     }
   }
 
-  func testDefaultAsFlagWithTransformWithoutExplicitDefault() throws {
+  @Test func defaultAsFlagWithTransformWithoutExplicitDefault() throws {
     // When no argument is provided, should be nil
-    AssertParse(CommandWithDefaultAsFlagWithTransformNoExplicitNil.self, []) {
+    expectParse(CommandWithDefaultAsFlagWithTransformNoExplicitNil.self, []) {
       cmd in
-      XCTAssertNil(cmd.showBinPath)
+      #expect(cmd.showBinPath == nil)
     }
 
     // When flag is provided without value, should use defaultAsFlag
-    AssertParse(
+    expectParse(
       CommandWithDefaultAsFlagWithTransformNoExplicitNil.self, ["--bin-path"]
     ) { cmd in
-      XCTAssertEqual(cmd.showBinPath, "/default/path")
+      #expect(cmd.showBinPath == "/default/path")
     }
 
     // When flag is provided with value, should use provided value with transform
-    AssertParse(
+    expectParse(
       CommandWithDefaultAsFlagWithTransformNoExplicitNil.self,
       ["--bin-path", "/custom/path"]
     ) { cmd in
-      XCTAssertEqual(cmd.showBinPath, "/CUSTOM/PATH")
+      #expect(cmd.showBinPath == "/CUSTOM/PATH")
     }
   }
 
@@ -158,102 +155,106 @@ extension DefaultAsFlagEndToEndTests {
     var files: [String] = []
   }
 
-  func testDefaultAsFlagWithTerminatorFlagBeforeTerminator() throws {
+  @Test func defaultAsFlagWithTerminatorFlagBeforeTerminator() throws {
     // --option -- value
     // Should use defaultAsFlag value, "value" becomes positional argument
-    AssertParse(
+    expectParse(
       CommandWithDefaultAsFlagAndArguments.self, ["--option", "--", "value"]
     ) { cmd in
-      XCTAssertEqual(cmd.option, "default")
-      XCTAssertEqual(cmd.files, ["value"])
+      #expect(cmd.option == "default")
+      #expect(cmd.files == ["value"])
     }
   }
 
-  func testDefaultAsFlagWithTerminatorValueBeforeTerminator() throws {
+  @Test func defaultAsFlagWithTerminatorValueBeforeTerminator() throws {
     // --option custom -- other
     // Should use "custom" as option value, "other" becomes positional argument
-    AssertParse(
+    expectParse(
       CommandWithDefaultAsFlagAndArguments.self,
       ["--option", "custom", "--", "other"]
     ) { cmd in
-      XCTAssertEqual(cmd.option, "custom")
-      XCTAssertEqual(cmd.files, ["other"])
+      #expect(cmd.option == "custom")
+      #expect(cmd.files == ["other"])
     }
   }
 
   func implTestDefaultAsFlagWithTerminatorValueBeforeTerminator(
     optionValue: String,
-    file: StaticString = #file,
-    line: UInt = #line
+    sourceLocation: SourceLocation = #_sourceLocation
   ) throws {
     // --option custom -- other
     // Should use "custom" as option value, "other" becomes positional argument
-    AssertParse(
+    expectParse(
       CommandWithDefaultAsFlagAndArguments.self,
-      ["--option", optionValue, "--", "other"]
+      ["--option", optionValue, "--", "other"],
+      sourceLocation: sourceLocation
     ) { cmd in
-      XCTAssertEqual(cmd.option, optionValue, file: file, line: line)
-      XCTAssertEqual(cmd.files, ["other"], file: file, line: line)
+      #expect(cmd.option == optionValue, sourceLocation: sourceLocation)
+      #expect(cmd.files == ["other"], sourceLocation: sourceLocation)
     }
   }
-  func testDefaultAsFlagWithValueWithTerminatorValueBeforeTerminator() throws {
+
+  @Test func defaultAsFlagWithValueWithTerminatorValueBeforeTerminator() throws
+  {
     try implTestDefaultAsFlagWithTerminatorValueBeforeTerminator(
       optionValue: "custom")
   }
 
-  func
-    testDefaultAsFlagWithCompleteValueAndWithTerminatorValueBeforeTerminator()
+  @Test
+  func defaultAsFlagWithCompleteValueAndWithTerminatorValueBeforeTerminator()
     throws
   {
     try implTestDefaultAsFlagWithTerminatorValueBeforeTerminator(
       optionValue: "--somearg=value")
   }
 
+  @Test
   func
-    testDefaultAsFlagWithCompleteValueAndWithTerminatorValueInQuotesBeforeTerminator()
+    defaultAsFlagWithCompleteValueAndWithTerminatorValueInQuotesBeforeTerminator()
     throws
   {
     try implTestDefaultAsFlagWithTerminatorValueBeforeTerminator(
       optionValue: "--somearg=\"value\"")
   }
 
-  func testDefaultAsFlagWithTerminatorOptionAfterTerminator() throws {
+  @Test func defaultAsFlagWithTerminatorOptionAfterTerminator() throws {
     // -- --option
     // Should treat "--option" as positional argument, option should be nil
-    AssertParse(CommandWithDefaultAsFlagAndArguments.self, ["--", "--option"]) {
+    expectParse(CommandWithDefaultAsFlagAndArguments.self, ["--", "--option"]) {
       cmd in
-      XCTAssertNil(cmd.option)
-      XCTAssertEqual(cmd.files, ["--option"])
+      #expect(cmd.option == nil)
+      #expect(cmd.files == ["--option"])
     }
   }
 
-  func testDefaultAsFlagWithTerminatorComplexScenario() throws {
+  @Test func defaultAsFlagWithTerminatorComplexScenario() throws {
     // --option -- --another-option value
     // Should use defaultAsFlag, everything after -- is positional
-    AssertParse(
+    expectParse(
       CommandWithDefaultAsFlagAndArguments.self,
       ["--option", "--", "--another-option", "value"]
     ) { cmd in
-      XCTAssertEqual(cmd.option, "default")
-      XCTAssertEqual(cmd.files, ["--another-option", "value"])
+      #expect(cmd.option == "default")
+      #expect(cmd.files == ["--another-option", "value"])
     }
   }
 
-  func testDefaultAsFlagWithTerminatorValueAfterTerminatorNotConsumed() throws {
+  @Test func defaultAsFlagWithTerminatorValueAfterTerminatorNotConsumed() throws
+  {
     // --option -- value1 value2
     // Should use defaultAsFlag, both values become positional arguments
-    AssertParse(
+    expectParse(
       CommandWithDefaultAsFlagAndArguments.self,
       ["--option", "--", "value1", "value2"]
     ) { cmd in
-      XCTAssertEqual(cmd.option, "default")
-      XCTAssertEqual(cmd.files, ["value1", "value2"])
+      #expect(cmd.option == "default")
+      #expect(cmd.files == ["value1", "value2"])
     }
   }
 
   // MARK: - Tests for parsing strategy compilation restrictions
 
-  func testDefaultAsFlagCompilationRestrictionsWork() throws {
+  @Test func defaultAsFlagCompilationRestrictionsWork() throws {
     // This test verifies that DefaultAsFlagParsingStrategy only allows compatible strategies
     // and prevents .unconditional at compile time
 
@@ -267,49 +268,49 @@ extension DefaultAsFlagEndToEndTests {
     }
 
     // Verify that the allowed strategies work correctly
-    AssertParse(CommandWithAllowedStrategies.self, ["--next-strategy"]) { cmd in
-      XCTAssertEqual(cmd.nextStrategy, "next")
-      XCTAssertNil(cmd.scanningStrategy)
+    expectParse(CommandWithAllowedStrategies.self, ["--next-strategy"]) { cmd in
+      #expect(cmd.nextStrategy == "next")
+      #expect(cmd.scanningStrategy == nil)
     }
 
-    AssertParse(CommandWithAllowedStrategies.self, ["--scanning-strategy"]) {
+    expectParse(CommandWithAllowedStrategies.self, ["--scanning-strategy"]) {
       cmd in
-      XCTAssertNil(cmd.nextStrategy)
-      XCTAssertEqual(cmd.scanningStrategy, "scanning")
+      #expect(cmd.nextStrategy == nil)
+      #expect(cmd.scanningStrategy == "scanning")
     }
 
-    AssertParse(
+    expectParse(
       CommandWithAllowedStrategies.self, ["--next-strategy", "custom"]
     ) { cmd in
-      XCTAssertEqual(cmd.nextStrategy, "custom")
-      XCTAssertNil(cmd.scanningStrategy)
+      #expect(cmd.nextStrategy == "custom")
+      #expect(cmd.scanningStrategy == nil)
     }
 
-    AssertParse(
+    expectParse(
       CommandWithAllowedStrategies.self,
       ["--scanning-strategy", "--next-strategy", "next-custom"]
     ) { cmd in
-      XCTAssertEqual(cmd.nextStrategy, "next-custom")
-      XCTAssertEqual(cmd.scanningStrategy, "scanning")
+      #expect(cmd.nextStrategy == "next-custom")
+      #expect(cmd.scanningStrategy == "scanning")
     }
 
-    AssertParse(
+    expectParse(
       CommandWithAllowedStrategies.self,
       ["--next-strategy", "next-custom", "--scanning-strategy"]
     ) { cmd in
-      XCTAssertEqual(cmd.nextStrategy, "next-custom")
-      XCTAssertEqual(cmd.scanningStrategy, "scanning")
+      #expect(cmd.nextStrategy == "next-custom")
+      #expect(cmd.scanningStrategy == "scanning")
     }
 
-    AssertParse(
+    expectParse(
       CommandWithAllowedStrategies.self,
       [
         "--scanning-strategy", "scanning-custom", "--next-strategy",
         "next-custom",
       ]
     ) { cmd in
-      XCTAssertEqual(cmd.nextStrategy, "next-custom")
-      XCTAssertEqual(cmd.scanningStrategy, "scanning-custom")
+      #expect(cmd.nextStrategy == "next-custom")
+      #expect(cmd.scanningStrategy == "scanning-custom")
     }
 
   }
