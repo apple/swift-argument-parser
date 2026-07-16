@@ -42,6 +42,11 @@ final class MathExampleTests: XCTestCase {
 
         See 'math help <subcommand>' for detailed help.
 
+      Examples:
+        math add 10 15 20
+        math multiply --hex-output 16 32
+        math stats average --kind median 5 8 12
+
       """
 
     try AssertExecuteCommand(command: "math -h", expected: helpText)

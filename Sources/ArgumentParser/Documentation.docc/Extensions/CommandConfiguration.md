@@ -4,12 +4,13 @@
 
 ### Creating a Configuration
 
-- ``init(commandName:abstract:usage:discussion:version:shouldDisplay:subcommands:groupedSubcommands:defaultSubcommand:helpNames:aliases:)``
+- ``init(commandName:abstract:usage:discussion:extendedDiscussion:version:shouldDisplay:subcommands:groupedSubcommands:defaultSubcommand:helpNames:aliases:)``
 
 ### Customizing the Help Screen
 
 - ``abstract``
 - ``discussion``
+- ``extendedDiscussion``
 - ``usage``
 - ``helpNames``
 
