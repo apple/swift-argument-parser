@@ -328,14 +328,13 @@ public func AssertEqualStrings(
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-public func AssertHelp<T: ParsableArguments>(
+public func requireHelp<T: ParsableArguments>(
   _ visibility: ArgumentVisibility,
   for _: T.Type,
   columns: Int? = 80,
   equals expected: String,
-  file: StaticString = #filePath,
-  line: UInt = #line
-) {
+  sourceLocation: SourceLocation = #_sourceLocation
+) throws {
   let flag: String
   let includeHidden: Bool
 
@@ -347,37 +346,53 @@ public func AssertHelp<T: ParsableArguments>(
     flag = "--help-hidden"
     includeHidden = true
   case .private:
-    XCTFail("Should not be called.", file: file, line: line)
+    Issue.record("Should not be called.", sourceLocation: sourceLocation)
     return
   default:
-    XCTFail("Unrecognized visibility.", file: file, line: line)
+    Issue.record("Uxnrecognized visibility.", sourceLocation: sourceLocation)
     return
   }
 
+  #if compiler(>=6.1)
+  let error = try #require(throws: (any Error).self) {
+    _ = try T.parse([flag])
+  }
+  #else
+  let error: any Error
   do {
     _ = try T.parse([flag])
-    XCTFail(file: file, line: line)
-  } catch {
-    let helpString = T.fullMessage(for: error, columns: columns)
-    AssertEqualStrings(
-      actual: helpString, expected: expected, file: file, line: line)
+    Issue.record(
+      "Expected T.parse to throw an error.",
+      sourceLocation: sourceLocation)
+    return
+  } catch let caught {
+    error = caught
   }
+  #endif
+  let errorFullMessage = T.fullMessage(for: error, columns: columns)
+  AssertEqualStrings(
+    actual: errorFullMessage,
+    expected: expected,
+    sourceLocation: sourceLocation
+  )
 
   let helpString = T.helpMessage(includeHidden: includeHidden, columns: columns)
   AssertEqualStrings(
-    actual: helpString, expected: expected, file: file, line: line)
+    actual: helpString,
+    expected: expected,
+    sourceLocation: sourceLocation
+  )
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-public func AssertHelp<T: ParsableCommand, U: ParsableCommand>(
+public func requireHelp<T: ParsableCommand, U: ParsableCommand>(
   _ visibility: ArgumentVisibility,
   for _: T.Type,
   root _: U.Type,
   columns: Int? = 80,
   equals expected: String,
-  file: StaticString = #filePath,
-  line: UInt = #line
-) {
+  sourceLocation: SourceLocation = #_sourceLocation
+) throws {
   let includeHidden: Bool
 
   switch visibility {
@@ -386,17 +401,17 @@ public func AssertHelp<T: ParsableCommand, U: ParsableCommand>(
   case .hidden:
     includeHidden = true
   case .private:
-    XCTFail("Should not be called.", file: file, line: line)
+    Issue.record("Should not be called.", sourceLocation: sourceLocation)
     return
   default:
-    XCTFail("Unrecognized visibility.", file: file, line: line)
+    Issue.record("Uxnrecognized visibility.", sourceLocation: sourceLocation)
     return
   }
 
   let helpString = U.helpMessage(
     for: T.self, includeHidden: includeHidden, columns: columns)
   AssertEqualStrings(
-    actual: helpString, expected: expected, file: file, line: line)
+    actual: helpString, expected: expected, sourceLocation: sourceLocation)
 }
 
 extension XCTest {

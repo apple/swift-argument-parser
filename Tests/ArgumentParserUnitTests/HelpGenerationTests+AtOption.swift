@@ -10,7 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 import ArgumentParserTestHelpers
-import XCTest
+import Testing
 
 @testable import ArgumentParser
 
@@ -65,8 +65,8 @@ extension HelpGenerationTests {
     }
   }
 
-  func testAtOptionTransform_BareNoDefault() {
-    AssertHelp(
+  @Test func atOptionTransform_BareNoDefault() async throws {
+    try requireHelp(
       .default, for: AtOptionTransform.BareNoDefault.self,
       equals: """
         USAGE: bare-no-default --arg0 <arg0>
@@ -78,8 +78,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtOptionTransform_BareDefault() {
-    AssertHelp(
+  @Test func atOptionTransform_BareDefault() async throws {
+    try requireHelp(
       .default, for: AtOptionTransform.BareDefault.self,
       equals: """
         USAGE: bare-default [--arg0 <arg0>]
@@ -91,8 +91,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtOptionTransform_OptionalNoDefault() {
-    AssertHelp(
+  @Test func atOptionTransform_OptionalNoDefault() async throws {
+    try requireHelp(
       .default, for: AtOptionTransform.OptionalNoDefault.self,
       equals: """
         USAGE: optional-no-default [--arg0 <arg0>]
@@ -104,8 +104,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtOptionTransform_OptionalDefaultNil() {
-    AssertHelp(
+  @Test func atOptionTransform_OptionalDefaultNil() async throws {
+    try requireHelp(
       .default, for: AtOptionTransform.OptionalDefaultNil.self,
       equals: """
         USAGE: optional-default-nil [--arg0 <arg0>]
@@ -117,8 +117,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtOptionTransform_OptionalDefault() {
-    AssertHelp(
+  @Test func atOptionTransform_OptionalDefault() async throws {
+    try requireHelp(
       .default, for: AtOptionTransform.OptionalDefault.self,
       equals: """
         USAGE: optional-default [--arg0 <arg0>]
@@ -130,8 +130,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtOptionTransform_ArrayNoDefault() {
-    AssertHelp(
+  @Test func atOptionTransform_ArrayNoDefault() async throws {
+    try requireHelp(
       .default, for: AtOptionTransform.ArrayNoDefault.self,
       equals: """
         USAGE: array-no-default --arg0 <arg0> ...
@@ -143,8 +143,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtOptionTransform_ArrayDefaultEmpty() {
-    AssertHelp(
+  @Test func atOptionTransform_ArrayDefaultEmpty() async throws {
+    try requireHelp(
       .default, for: AtOptionTransform.ArrayDefaultEmpty.self,
       equals: """
         USAGE: array-default-empty [--arg0 <arg0> ...]
@@ -156,8 +156,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtOptionTransform_ArrayDefault() {
-    AssertHelp(
+  @Test func atOptionTransform_ArrayDefault() async throws {
+    try requireHelp(
       .default, for: AtOptionTransform.ArrayDefault.self,
       equals: """
         USAGE: array-default [--arg0 <arg0> ...]
@@ -224,8 +224,8 @@ extension HelpGenerationTests {
     }
   }
 
-  func testAtOptionEBA_BareNoDefault() {
-    AssertHelp(
+  @Test func atOptionEBA_BareNoDefault() async throws {
+    try requireHelp(
       .default, for: AtOptionEBA.BareNoDefault.self,
       equals: """
         USAGE: bare-no-default --arg0 <arg0>
@@ -237,8 +237,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtOptionEBA_BareDefault() {
-    AssertHelp(
+  @Test func atOptionEBA_BareDefault() async throws {
+    try requireHelp(
       .default, for: AtOptionEBA.BareDefault.self,
       equals: """
         USAGE: bare-default [--arg0 <arg0>]
@@ -250,8 +250,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtOptionEBA_OptionalNoDefault() {
-    AssertHelp(
+  @Test func atOptionEBA_OptionalNoDefault() async throws {
+    try requireHelp(
       .default, for: AtOptionEBA.OptionalNoDefault.self,
       equals: """
         USAGE: optional-no-default [--arg0 <arg0>]
@@ -263,8 +263,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtOptionEBA_OptionalDefaultNil() {
-    AssertHelp(
+  @Test func atOptionEBA_OptionalDefaultNil() async throws {
+    try requireHelp(
       .default, for: AtOptionEBA.OptionalDefaultNil.self,
       equals: """
         USAGE: optional-default-nil [--arg0 <arg0>]
@@ -276,8 +276,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtOptionEBA_ArrayNoDefault() {
-    AssertHelp(
+  @Test func atOptionEBA_ArrayNoDefault() async throws {
+    try requireHelp(
       .default, for: AtOptionEBA.ArrayNoDefault.self,
       equals: """
         USAGE: array-no-default --arg0 <arg0> ...
@@ -289,8 +289,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtOptionEBA_ArrayDefaultEmpty() {
-    AssertHelp(
+  @Test func atOptionEBA_ArrayDefaultEmpty() async throws {
+    try requireHelp(
       .default, for: AtOptionEBA.ArrayDefaultEmpty.self,
       equals: """
         USAGE: array-default-empty [--arg0 <arg0> ...]
@@ -302,8 +302,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtOptionEBA_ArrayDefault() {
-    AssertHelp(
+  @Test func atOptionEBA_ArrayDefault() async throws {
+    try requireHelp(
       .default, for: AtOptionEBA.ArrayDefault.self,
       equals: """
         USAGE: array-default [--arg0 <arg0> ...]
@@ -369,8 +369,8 @@ extension HelpGenerationTests {
     }
   }
 
-  func testAtOptionEBATransform_BareNoDefault() {
-    AssertHelp(
+  @Test func atOptionEBATransform_BareNoDefault() async throws {
+    try requireHelp(
       .default, for: AtOptionEBATransform.BareNoDefault.self,
       equals: """
         USAGE: bare-no-default --arg0 <arg0>
@@ -382,8 +382,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtOptionEBATransform_BareDefault() {
-    AssertHelp(
+  @Test func atOptionEBATransform_BareDefault() async throws {
+    try requireHelp(
       .default, for: AtOptionEBATransform.BareDefault.self,
       equals: """
         USAGE: bare-default [--arg0 <arg0>]
@@ -395,8 +395,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtOptionEBATransform_OptionalNoDefault() {
-    AssertHelp(
+  @Test func atOptionEBATransform_OptionalNoDefault() async throws {
+    try requireHelp(
       .default, for: AtOptionEBATransform.OptionalNoDefault.self,
       equals: """
         USAGE: optional-no-default [--arg0 <arg0>]
@@ -408,8 +408,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtOptionEBATransform_OptionalDefaultNil() {
-    AssertHelp(
+  @Test func atOptionEBATransform_OptionalDefaultNil() async throws {
+    try requireHelp(
       .default, for: AtOptionEBATransform.OptionalDefaultNil.self,
       equals: """
         USAGE: optional-default-nil [--arg0 <arg0>]
@@ -421,8 +421,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtOptionEBATransform_OptionalDefault() {
-    AssertHelp(
+  @Test func atOptionEBATransform_OptionalDefault() async throws {
+    try requireHelp(
       .default, for: AtOptionEBATransform.OptionalDefault.self,
       equals: """
         USAGE: optional-default [--arg0 <arg0>]
@@ -434,8 +434,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtOptionEBATransform_ArrayNoDefault() {
-    AssertHelp(
+  @Test func atOptionEBATransform_ArrayNoDefault() async throws {
+    try requireHelp(
       .default, for: AtOptionEBATransform.ArrayNoDefault.self,
       equals: """
         USAGE: array-no-default --arg0 <arg0> ...
@@ -447,8 +447,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtOptionEBATransform_ArrayDefaultEmpty() {
-    AssertHelp(
+  @Test func atOptionEBATransform_ArrayDefaultEmpty() async throws {
+    try requireHelp(
       .default, for: AtOptionEBATransform.ArrayDefaultEmpty.self,
       equals: """
         USAGE: array-default-empty [--arg0 <arg0> ...]
@@ -460,8 +460,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtOptionEBATransform_ArrayDefault() {
-    AssertHelp(
+  @Test func atOptionEBATransform_ArrayDefault() async throws {
+    try requireHelp(
       .default, for: AtOptionEBATransform.ArrayDefault.self,
       equals: """
         USAGE: array-default [--arg0 <arg0> ...]
