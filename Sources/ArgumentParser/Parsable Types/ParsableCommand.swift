@@ -22,6 +22,30 @@ public protocol ParsableCommand: ParsableArguments {
   /// can pass through the wrapped type's name.
   static var _commandName: String { get }
 
+  /// The character used to introduce a response file argument for this
+  /// command.
+  ///
+  /// A command-line argument whose first character matches this prefix is
+  /// treated as a reference to a file whose contents should be expanded
+  /// in place. The default is `nil`, meaning response file expansion is
+  /// disabled.
+  ///
+  /// Override this property on a root command to opt in to response file
+  /// expansion with the given character (for example, `"@"` matches the
+  /// widely used convention `mycommand @args.txt`). The root command's
+  /// prefix determines the prefix used for the entire invocation,
+  /// including subcommand parsing.
+  ///
+  ///     struct MyTool: ParsableCommand {
+  ///       static var responseFilePrefix: Character? { "+" }
+  ///       // ...
+  ///     }
+  ///
+  /// With the above configuration, `mytool +args.txt` expands `args.txt`
+  /// as a response file, while `mytool @foo` is treated as a literal
+  /// argument.
+  static var responseFilePrefix: Character? { get }
+
   /// The behavior or functionality of this command.
   ///
   /// Implement this method in your `ParsableCommand`-conforming type with the
@@ -43,6 +67,8 @@ extension ParsableCommand {
   public static var configuration: CommandConfiguration {
     CommandConfiguration()
   }
+
+  public static var responseFilePrefix: Character? { nil }
 
   public mutating func run() throws {
     throw CleanExit.helpRequest(self)

@@ -180,6 +180,25 @@ struct SplitArguments {
   /// The original array of arguments that was used to generate this instance.
   var originalInput: [String]
 
+  /// Per-`InputIndex` response-file include chain for every post-expansion argument.
+  ///
+  /// Argv-origin args carry a single-step chain `[.argv(N)]`; args
+  /// expanded from a response file carry a chain ordered
+  /// innermost-first (the file the argument literally lives in is at
+  /// index 0; the last entry is always `.argv(_)`).
+  ///
+  /// Sparse — entries are populated by `init(arguments:)` when chains are
+  /// available, and are absent when `SplitArguments` is constructed via
+  /// `init(originalInput:)` directly.
+  var responseFileChains: [InputIndex: [InputOrigin.ResponseFileStep]] = [:]
+
+  /// `true` if, and only if, the original input array passed to
+  /// `init(arguments:)` contained at least one response-file reference.
+  ///
+  /// `ErrorMessageGenerator` consults this when deciding whether to
+  /// append the `at … included from …` location block to a message.
+  var hasResponseFile: Bool = false
+
   /// The unused arguments represented by this instance.
   var elements: ArraySlice<Element> {
     _elements[firstUnused...]
@@ -281,6 +300,34 @@ extension SplitArguments {
       return nil
     }
     return originalInput[index.inputIndex.rawValue]
+  }
+
+  /// Returns the response-file include chain for the argument at the
+  /// given `origin`, or `nil` if `origin` does not refer to an argument
+  /// position (e.g., `.defaultValue`) or no chain was recorded for it.
+  ///
+  /// The chain is ordered innermost-first: `chain[0]` is the file/argv
+  /// the argument literally lives in; the last entry is always
+  /// `.argv(_)`.
+  func responseFileChain(at origin: InputOrigin.Element)
+    -> [InputOrigin.ResponseFileStep]?
+  {
+    guard case .argumentIndex(let index) = origin else { return nil }
+    return responseFileChains[index.inputIndex]
+  }
+
+  /// Snapshot of the parts of `SplitArguments` that the error formatter
+  /// needs in order to render the source location block.
+  var formattingContext: InputOrigin.FormattingContext {
+    var byRaw: [Int: [InputOrigin.ResponseFileStep]] = [:]
+    byRaw.reserveCapacity(responseFileChains.count)
+    for (key, value) in responseFileChains {
+      byRaw[key.rawValue] = value
+    }
+    return .init(
+      hasResponseFile: hasResponseFile,
+      responseFileChains: byRaw,
+      originalInput: originalInput)
   }
 
   /// Returns the position in `elements` of the given input origin.
@@ -684,29 +731,82 @@ func parseIndividualArg(_ arg: String, at position: Int) throws(ParserError)
 extension SplitArguments {
   /// Parses the given input into an array of `Element`.
   ///
-  /// - Parameter arguments: The input from the command line.
+  /// - Parameters:
+  ///     - arguments: The input from the command line.
+  ///     - responseFilePrefix: A leading character representing a response
+  ///       file argument, or `nil` to disable response file expansion.
   ///
   /// - Throws: If parsing fails.
-  init(arguments: [String]) throws {
-    self.init(originalInput: arguments)
+  init(
+    arguments: [String],
+    responseFilePrefix: Character?
+  ) throws {
+    // Expand response files first
+    let expanded: ResponseFileExpander.ExpansionResult
+    if let responseFilePrefix {
+      do {
+        var expander = ResponseFileExpander(prefix: responseFilePrefix)
+        expanded = try expander.expandArguments(arguments)
+      } catch let error as ResponseFileExpander.ResponseFileError {
+        // Convert ResponseFileExpander errors to ParserError
+        switch error {
+        case .fileNotFound(let url):
+          throw ParserError.responseFileNotFound(url)
+        case .readError(let url, let underlyingError):
+          throw ParserError.responseFileReadError(url, underlyingError)
+        case .malformedContent(let url, let message):
+          throw ParserError.responseFileMalformedContent(url, message)
+        case .recursiveInclude(let url):
+          throw ParserError.responseFileRecursiveInclude(url)
+        case .maxNestingDepthExceeded(let depth):
+          throw ParserError.responseFileMaxNestingDepthExceeded(depth)
+        }
+      }
+    } else {
+      expanded = (
+        arguments.enumerated().map { index, value in
+          .init(value: value, chain: [.argv(index: index)])
+        },
+        false
+      )
+    }
+
+    let expandedValues = expanded.arguments.map { $0.value }
+    self.init(originalInput: expandedValues)
+    self.hasResponseFile = expanded.hasResponseFile
+
+    // Populate the chain lookup table keyed by post-expansion InputIndex.
+    for (idx, expandedArg) in expanded.arguments.enumerated() {
+      self.responseFileChains[InputIndex(rawValue: idx)] = expandedArg.chain
+    }
 
     var position = 0
-    var args = arguments[...]
-    argLoop: while let arg = args.popFirst() {
+    var expandedArgs = expanded.arguments[...]
+    argLoop: while let expArg = expandedArgs.popFirst() {
       defer {
         position += 1
       }
 
-      let parsedElements = try parseIndividualArg(arg, at: position)
+      let parsedElements: [Element]
+      if expArg.wasQuoted {
+        // A quoted token from a response file is always a literal
+        // value: quoting is how callers escape a token that would
+        // otherwise be interpreted (as an option, as `--`, or as an
+        // `@file` reference).
+        let index = Index(inputIndex: InputIndex(rawValue: position))
+        parsedElements = [.value(expArg.value, index: index)]
+      } else {
+        parsedElements = try parseIndividualArg(expArg.value, at: position)
+      }
       _elements.append(contentsOf: parsedElements)
       if parsedElements.first?.isTerminator ?? false {
         break
       }
     }
 
-    for arg in args {
+    for expArg in expandedArgs {
       let i = Index(inputIndex: InputIndex(rawValue: position))
-      _elements.append(.value(arg, index: i))
+      _elements.append(.value(expArg.value, index: i))
       position += 1
     }
   }
