@@ -10,7 +10,7 @@ Begin by declaring a type that defines
 the information that you need to collect from the command line.
 Decorate each stored property with one of `ArgumentParser`'s property wrappers,
 declare conformance to ``ParsableCommand``,
-and implement your command's logic in its `run()` method. 
+and implement your command's logic in its `run()` method.
 For `async` renditions of `run`, declare ``AsyncParsableCommand`` conformance instead.
 
 ```swift
@@ -33,7 +33,7 @@ struct Repeat: ParsableCommand {
 }
 ```
 
-When a user executes your command, 
+When a user executes your command,
 the `ArgumentParser` library parses the command-line arguments,
 instantiates your command type,
 and then either calls your `run()` method or exits with a useful message.
@@ -58,6 +58,7 @@ and then either calls your `run()` method or exits with a useful message.
 ### Arguments, Options, and Flags
 
 - <doc:DeclaringArguments>
+- <doc:ResponseFiles>
 - ``Argument``
 - ``Option``
 - ``Flag``
