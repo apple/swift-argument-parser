@@ -9,32 +9,45 @@
 //
 //===----------------------------------------------------------------------===//
 
-import XCTest
+import Testing
 
 @testable import ArgumentParser
+@Suite
+struct InputOriginTests{
 
-final class InputOriginTests: XCTestCase {}
-
-extension InputOriginTests {
-  func testIsDefaultValue() {
-    func assert(elements: [InputOrigin.Element], expectedIsDefaultValue: Bool) {
+  @Test(
+    arguments: [
+      (
+        elements: [
+          InputOrigin.Element.defaultValue,
+        ],
+        expectedValue: true
+      ),
+      (
+        elements: [
+        ],
+        expectedValue: false
+      ),
+      (
+        elements: [
+          .argumentIndex(SplitArguments.Index(inputIndex: 1))
+        ],
+        expectedValue: false
+      ),
+      (
+        elements: [
+          .defaultValue,
+          .argumentIndex(SplitArguments.Index(inputIndex: 1))
+        ],
+        expectedValue: false
+      )
+    ]
+  ) func isDefaultValue(elements: [InputOrigin.Element], expectedValue: Bool) {
       let inputOrigin = InputOrigin(elements: elements)
-      if expectedIsDefaultValue {
-        XCTAssertTrue(inputOrigin.isDefaultValue)
-      } else {
-        XCTAssertFalse(inputOrigin.isDefaultValue)
-      }
-    }
 
-    assert(elements: [], expectedIsDefaultValue: false)
-    assert(elements: [.defaultValue], expectedIsDefaultValue: true)
-    assert(
-      elements: [.argumentIndex(SplitArguments.Index(inputIndex: 1))],
-      expectedIsDefaultValue: false)
-    assert(
-      elements: [
-        .defaultValue, .argumentIndex(SplitArguments.Index(inputIndex: 1)),
-      ],
-      expectedIsDefaultValue: false)
+      #expect(
+        inputOrigin.isDefaultValue == expectedValue,
+        "Actual is not as expected"
+      )
   }
 }
