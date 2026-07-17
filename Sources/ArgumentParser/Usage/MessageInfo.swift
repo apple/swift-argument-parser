@@ -17,11 +17,13 @@ enum MessageInfo {
   init(error: Error, type: ParsableArguments.Type, columns: Int? = nil) {
     var commandStack: [ParsableCommand.Type]
     var parserError: ParserError? = nil
+    var formattingContext: InputOrigin.FormattingContext? = nil
 
     switch error {
     case let e as CommandError:
       commandStack = e.commandStack
       parserError = e.parserError
+      formattingContext = e.formattingContext
 
       // Exit early on built-in requests
       switch e.parserError {
@@ -138,7 +140,11 @@ enum MessageInfo {
       // unwrap is safe
       let argumentSet = ArgumentSet(
         commandStack.last!, visibility: .default, parent: nil)
-      let message = argumentSet.errorDescription(error: parserError) ?? ""
+      let message =
+        argumentSet.errorDescription(
+          error: parserError,
+          formattingContext: formattingContext)
+        ?? ""
       let helpAbstract = argumentSet.helpDescription(error: parserError) ?? ""
       self = .validation(message: message, usage: usage, help: helpAbstract)
     } else {

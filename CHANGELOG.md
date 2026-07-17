@@ -9,6 +9,8 @@ Add new items at the end of the relevant section under **Unreleased**.
 ### Additions
 
 - `CommandConfiguration` now accepts a `helpBanner`, a string printed verbatim above the overview on a command's help screen and inherited by its subcommands unless they provide their own banner or the empty string.
+- Commands can now opt in to response-file expansion by overriding the `ParsableCommand.responseFilePrefix` static property with the character that should introduce a response-file reference (for example, `static var responseFilePrefix: Character? { "@" }`). The property defaults to `nil`, meaning response-file expansion is disabled unless the root command opts in.
+- Commands can now opt in to response-file expansion by overriding the `ParsableCommand.responseFilePrefix` static property with the character that should introduce a response-file reference (for example, `static var responseFilePrefix: Character? { "@" }`). The property defaults to `nil`, meaning response-file expansion is disabled unless the root command opts in.
 
 ---
 

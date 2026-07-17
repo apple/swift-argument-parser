@@ -33,6 +33,7 @@ add_library(ArgumentParser
   Parsing/Parsed.swift
   Parsing/ParsedValues.swift
   Parsing/ParserError.swift
+  Parsing/ResponseFileExpander.swift
   Parsing/SplitArguments.swift
 
   Usage/DumpHelpGenerator.swift

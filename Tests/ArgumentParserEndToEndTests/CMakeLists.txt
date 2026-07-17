@@ -13,9 +13,12 @@ add_library(EndToEndTests
   RawRepresentableEndToEndTests.swift
   RepeatingEndToEndTests.swift
   RepeatingEndToEndTests+ParsingStrategy.swift
+  ResponseFileEndToEndTests.swift
   ShortNameEndToEndTests.swift
   SimpleEndToEndTests.swift
   SingleValueParsingStrategyTests.swift
+  SourceLocationEndToEndTestSupport.swift
+  SourceLocationErrorEndToEndTests.swift
   SubcommandEndToEndTests.swift
   ValidationEndToEndTests.swift)
 target_link_libraries(EndToEndTests PUBLIC

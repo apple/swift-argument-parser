@@ -12,6 +12,11 @@
 struct CommandError: Error {
   var commandStack: [ParsableCommand.Type]
   var parserError: ParserError
+  /// Snapshot of the parser input metadata for source-location rendering.
+  ///
+  /// `nil` when the error was raised before `SplitArguments` was built
+  /// (e.g., a response-file read failure during expansion).
+  var formattingContext: InputOrigin.FormattingContext? = nil
 }
 
 struct HelpRequested: Error {
@@ -22,6 +27,10 @@ struct CommandParser {
   let commandTree: Tree<ParsableCommand.Type>
   var currentNode: Tree<ParsableCommand.Type>
   var decodedArguments: [DecodedArguments] = []
+
+  var responseFilePrefix: Character? {
+    self.currentNode.element.responseFilePrefix
+  }
 
   var rootCommand: ParsableCommand.Type {
     commandTree.element
@@ -87,7 +96,7 @@ extension CommandParser {
   ) -> Tree<ParsableCommand.Type>? {
     guard let (origin, element) = split.peekNext(),
       element.isValue,
-      let value = split.originalInput(at: origin),
+      case .value(let value) = element.value,
       let subcommandNode = currentNode.firstChild(withName: value)
     else { return nil }
     _ = split.popNextValue()
@@ -315,9 +324,9 @@ extension CommandParser {
         """
         This command uses asynchronous custom completion functions,
         but is invoked using a synchronous call to `parse` or
-        `parseAsRoot`. 
+        `parseAsRoot`.
 
-        To fix this issue, call the asynchronous versions of these 
+        To fix this issue, call the asynchronous versions of these
         functions: `asyncParse` or `asyncParseAsRoot`, respectively.
         """)
     }
@@ -391,7 +400,8 @@ extension CommandParser {
   ) throws(CommandError) -> ParsableCommand {
     var split: SplitArguments
     do {
-      split = try SplitArguments(arguments: arguments)
+      split = try SplitArguments(
+        arguments: arguments, responseFilePrefix: self.responseFilePrefix)
     } catch {
       throw CommandError(
         commandStack: [commandTree.element],
@@ -399,6 +409,7 @@ extension CommandParser {
       )
     }
 
+    let formattingContext = split.formattingContext
     do {
       try checkForCompletionScriptRequest(&split)
       try descendingParse(&split)
@@ -411,11 +422,17 @@ extension CommandParser {
         return helpResult
       }
       return result
-    } catch let error as CommandError {
+    } catch var error as CommandError {
+      if error.formattingContext == nil {
+        error.formattingContext = formattingContext
+      }
       throw error
     } catch let error as ParserError {
       let error = arguments.isEmpty ? ParserError.noArguments(error) : error
-      throw CommandError(commandStack: commandStack, parserError: error)
+      throw CommandError(
+        commandStack: commandStack,
+        parserError: error,
+        formattingContext: formattingContext)
     } catch let helpRequest as HelpRequested {
       return HelpCommand(
         commandStack: commandStack,
@@ -424,7 +441,8 @@ extension CommandParser {
     } catch {
       throw CommandError(
         commandStack: commandStack,
-        parserError: .invalidState
+        parserError: .invalidState,
+        formattingContext: formattingContext
       )
     }
   }

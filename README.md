@@ -68,6 +68,32 @@ OPTIONS:
   -h, --help              Show help for this command.
 ```
 
+## Response Files
+
+Swift Argument Parser can expand response files, letting you store command-line arguments in text files. This is especially useful for commands with many arguments or for reusable configurations. Opt in on your root command by overriding the `responseFilePrefix` static property with the character that should introduce a response-file reference (commonly `@`):
+
+```swift
+struct Repeat: ParsableCommand {
+    static var responseFilePrefix: Character? { "@" }
+    // ...
+}
+```
+
+```bash
+# Store arguments in a file
+$ echo "--count 5 --include-counter hello" > args.txt
+
+# Use the response file with @filename syntax
+$ repeat @args.txt
+1: hello
+2: hello
+3: hello
+4: hello
+5: hello
+```
+
+Response files support multiple formats, comments, quoted arguments, and can even reference other response files. See the [Response Files documentation](https://swiftpackageindex.com/apple/swift-argument-parser/documentation/argumentparser/responsefiles) for complete details.
+
 ## Documentation
 
 For guides, articles, and API documentation see the
