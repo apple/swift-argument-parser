@@ -40,6 +40,7 @@ add_library(ArgumentParser
   Usage/HelpCommand.swift
   Usage/HelpGenerator.swift
   Usage/MessageInfo.swift
+  Usage/SourceLocationDumpGenerator.swift
   Usage/UsageGenerator.swift
 
   Utilities/CollectionExtensions.swift
