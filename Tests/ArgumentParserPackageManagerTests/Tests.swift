@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2020 Apple Inc. and the Swift project authors
+// Copyright (c) 2020-2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -11,101 +11,99 @@
 
 import ArgumentParserTestHelpers
 import Testing
-import XCTest
 
 @testable import ArgumentParser
 
-final class Tests: XCTestCase {
-  override func setUp() {
+@Suite struct Tests {
+  init() {
     Platform.Environment[.columns] = nil
   }
 }
 
-// swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension Tests {
-  func testParsing() throws {
-    AssertParseCommand(Package.self, Package.Clean.self, ["clean"]) { clean in
+  @Test func parsing() throws {
+    expectParseCommand(Package.self, Package.Clean.self, ["clean"]) { clean in
       let options = clean.options
-      XCTAssertEqual(options.buildPath, "./.build")
-      XCTAssertEqual(options.configuration, .debug)
-      XCTAssertEqual(options.automaticResolution, true)
-      XCTAssertEqual(options.indexStore, true)
-      XCTAssertEqual(options.packageManifestCaching, true)
-      XCTAssertEqual(options.prefetching, true)
-      XCTAssertEqual(options.sandbox, true)
-      XCTAssertEqual(options.pubgrubResolver, false)
-      XCTAssertEqual(options.staticSwiftStdlib, false)
-      XCTAssertEqual(options.packagePath, ".")
-      XCTAssertEqual(options.sanitize, false)
-      XCTAssertEqual(options.skipUpdate, false)
-      XCTAssertEqual(options.verbose, false)
-      XCTAssertEqual(options.cCompilerFlags, [])
-      XCTAssertEqual(options.cxxCompilerFlags, [])
-      XCTAssertEqual(options.linkerFlags, [])
-      XCTAssertEqual(options.swiftCompilerFlags, [])
+      #expect(options.buildPath == "./.build")
+      #expect(options.configuration == .debug)
+      #expect(options.automaticResolution == true)
+      #expect(options.indexStore == true)
+      #expect(options.packageManifestCaching == true)
+      #expect(options.prefetching == true)
+      #expect(options.sandbox == true)
+      #expect(options.pubgrubResolver == false)
+      #expect(options.staticSwiftStdlib == false)
+      #expect(options.packagePath == ".")
+      #expect(options.sanitize == false)
+      #expect(options.skipUpdate == false)
+      #expect(options.verbose == false)
+      #expect(options.cCompilerFlags == [])
+      #expect(options.cxxCompilerFlags == [])
+      #expect(options.linkerFlags == [])
+      #expect(options.swiftCompilerFlags == [])
     }
   }
 
-  func testParsingWithGlobalOption_1() {
-    AssertParseCommand(
+  @Test func parsingWithGlobalOption_1() {
+    expectParseCommand(
       Package.self, Package.GenerateXcodeProject.self,
       [
         "generate-xcodeproj", "--watch", "--output", "Foo",
         "--enable-automatic-resolution",
       ]
     ) { generate in
-      XCTAssertEqual(generate.output, "Foo")
-      XCTAssertFalse(generate.enableCodeCoverage)
-      XCTAssertTrue(generate.watch)
+      #expect(generate.output == "Foo")
+      #expect(!generate.enableCodeCoverage)
+      #expect(generate.watch)
 
       let options = generate.options
       // Default global option
-      XCTAssertEqual(options.configuration, .debug)
+      #expect(options.configuration == .debug)
       // Customized global option
-      XCTAssertEqual(options.automaticResolution, true)
+      #expect(options.automaticResolution == true)
     }
   }
 
-  func testParsingWithGlobalOption_2() {
-    AssertParseCommand(
+  @Test func parsingWithGlobalOption_2() {
+    expectParseCommand(
       Package.self, Package.GenerateXcodeProject.self,
       [
         "generate-xcodeproj", "--watch", "--output", "Foo",
         "--enable-automatic-resolution", "-Xcc", "-Ddebug",
       ]
     ) { generate in
-      XCTAssertEqual(generate.output, "Foo")
-      XCTAssertFalse(generate.enableCodeCoverage)
-      XCTAssertTrue(generate.watch)
+      #expect(generate.output == "Foo")
+      #expect(!generate.enableCodeCoverage)
+      #expect(generate.watch)
 
       let options = generate.options
       // Default global option
-      XCTAssertEqual(options.configuration, .debug)
+      #expect(options.configuration == .debug)
       // Customized global option
-      XCTAssertEqual(options.automaticResolution, true)
-      XCTAssertEqual(options.cCompilerFlags, ["-Ddebug"])
+      #expect(options.automaticResolution == true)
+      #expect(options.cCompilerFlags == ["-Ddebug"])
     }
   }
 
-  func testParsingWithGlobalOption_3() {
-    AssertParseCommand(
+  @Test func parsingWithGlobalOption_3() {
+    expectParseCommand(
       Package.self, Package.GenerateXcodeProject.self,
       [
         "generate-xcodeproj", "--watch", "--output=Foo",
         "--enable-automatic-resolution", "-Xcc=-Ddebug",
       ]
     ) { generate in
-      XCTAssertEqual(generate.output, "Foo")
-      XCTAssertFalse(generate.enableCodeCoverage)
-      XCTAssertTrue(generate.watch)
+      #expect(generate.output == "Foo")
+      #expect(!generate.enableCodeCoverage)
+      #expect(generate.watch)
 
       let options = generate.options
       // Default global option
-      XCTAssertEqual(options.configuration, .debug)
+      #expect(options.configuration == .debug)
       // Customized global option
-      XCTAssertEqual(options.automaticResolution, true)
-      XCTAssertEqual(options.cCompilerFlags, ["-Ddebug"])
+      #expect(options.automaticResolution == true)
+      #expect(options.cCompilerFlags == ["-Ddebug"])
     }
   }
 }

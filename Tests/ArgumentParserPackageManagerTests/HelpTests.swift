@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2020 Apple Inc. and the Swift project authors
+// Copyright (c) 2020-2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -11,22 +11,22 @@
 
 import ArgumentParserTestHelpers
 import Testing
-import XCTest
 
 @testable import ArgumentParser
 
-final class HelpTests: XCTestCase {
-  override func setUp() {
+@Suite struct HelpTests {
+  init() {
     Platform.Environment[.columns] = nil
   }
 }
 
-func getErrorText<T: ParsableArguments>(_: T.Type, _ arguments: [String])
-  -> String
-{
+func getErrorText<T: ParsableArguments>(
+  _: T.Type, _ arguments: [String],
+  sourceLocation: SourceLocation = #_sourceLocation
+) -> String {
   do {
     _ = try T.parse(arguments)
-    XCTFail("Didn't generate a help error")
+    Issue.record("Didn't generate a help error", sourceLocation: sourceLocation)
     return ""
   } catch {
     return T.message(for: error)
@@ -34,14 +34,16 @@ func getErrorText<T: ParsableArguments>(_: T.Type, _ arguments: [String])
 }
 
 func getErrorText<T: ParsableCommand>(
-  _: T.Type, _ arguments: [String], screenWidth: Int
+  _: T.Type, _ arguments: [String], screenWidth: Int,
+  sourceLocation: SourceLocation = #_sourceLocation
 ) -> String {
   do {
     let command = try T.parseAsRoot(arguments)
     if let helpCommand = command as? HelpCommand {
       return helpCommand.generateHelp(screenWidth: screenWidth)
     } else {
-      XCTFail("Didn't generate a help error")
+      Issue.record(
+        "Didn't generate a help error", sourceLocation: sourceLocation)
       return ""
     }
   } catch {
@@ -49,125 +51,120 @@ func getErrorText<T: ParsableCommand>(
   }
 }
 
-// swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension HelpTests {
-  func testGlobalHelp() throws {
-    XCTAssertEqual(
-      getErrorText(Package.self, ["help"]),
-      """
-      USAGE: package <subcommand>
+  @Test func globalHelp() throws {
+    #expect(
+      getErrorText(Package.self, ["help"]) == """
+        USAGE: package <subcommand>
 
-      OPTIONS:
-        -h, --help              Show help information.
+        OPTIONS:
+          -h, --help              Show help information.
 
-      SUBCOMMANDS:
-        clean
-        config
-        describe
-        generate-xcodeproj
+        SUBCOMMANDS:
+          clean
+          config
+          describe
+          generate-xcodeproj
 
-        See 'package help <subcommand>' for detailed help.
-      """)
+          See 'package help <subcommand>' for detailed help.
+        """)
   }
 
-  func testGlobalHelp_messageForCleanExit_helpRequest() throws {
-    XCTAssertEqual(
-      Package.message(for: CleanExit.helpRequest()),
-      """
-      USAGE: package <subcommand>
+  @Test func globalHelp_messageForCleanExit_helpRequest() throws {
+    #expect(
+      Package.message(for: CleanExit.helpRequest()) == """
+        USAGE: package <subcommand>
 
-      OPTIONS:
-        -h, --help              Show help information.
+        OPTIONS:
+          -h, --help              Show help information.
 
-      SUBCOMMANDS:
-        clean
-        config
-        describe
-        generate-xcodeproj
+        SUBCOMMANDS:
+          clean
+          config
+          describe
+          generate-xcodeproj
 
-        See 'package help <subcommand>' for detailed help.
-      """
+          See 'package help <subcommand>' for detailed help.
+        """
     )
   }
 
-  func testGlobalHelp_messageForCleanExit_message() throws {
+  @Test func globalHelp_messageForCleanExit_message() throws {
     let expectedMessage = "Failure"
-    XCTAssertEqual(
-      Package.message(for: CleanExit.message(expectedMessage)),
-      expectedMessage
+    #expect(
+      Package.message(for: CleanExit.message(expectedMessage))
+        == expectedMessage
     )
   }
 
-  func testConfigHelp() throws {
-    XCTAssertEqual(
-      getErrorText(Package.self, ["help", "config"], screenWidth: 80),
-      """
-      USAGE: package config <subcommand>
+  @Test func configHelp() throws {
+    #expect(
+      getErrorText(Package.self, ["help", "config"], screenWidth: 80) == """
+        USAGE: package config <subcommand>
 
-      OPTIONS:
-        -h, --help              Show help information.
+        OPTIONS:
+          -h, --help              Show help information.
 
-      SUBCOMMANDS:
-        get-mirror
-        set-mirror
-        unset-mirror
+        SUBCOMMANDS:
+          get-mirror
+          set-mirror
+          unset-mirror
 
-        See 'package help config <subcommand>' for detailed help.
-      """)
+          See 'package help config <subcommand>' for detailed help.
+        """)
   }
 
-  func testGetMirrorHelp() throws {
-    XCTAssertEqual(
+  @Test func getMirrorHelp() throws {
+    #expect(
       getErrorText(
         Package.self, ["help", "config", "get-mirror"], screenWidth: 80
-      ),
-      """
-      USAGE: package config get-mirror [<options>] --package-url <package-url>
+      ) == """
+        USAGE: package config get-mirror [<options>] --package-url <package-url>
 
-      OPTIONS:
-        --build-path <build-path>
-                                Specify build/cache directory (default: ./.build)
-        -c, --configuration <configuration>
-                                Build with configuration (default: debug)
-        --enable-automatic-resolution/--disable-automatic-resolution
-                                Use automatic resolution if Package.resolved file is
-                                out-of-date (default: --enable-automatic-resolution)
-        --enable-index-store/--disable-index-store
-                                Use indexing-while-building feature (default:
-                                --enable-index-store)
-        --enable-package-manifest-caching/--disable-package-manifest-caching
-                                Cache Package.swift manifests (default:
-                                --enable-package-manifest-caching)
-        --enable-prefetching/--disable-prefetching
-                                (default: --enable-prefetching)
-        --enable-sandbox/--disable-sandbox
-                                Use sandbox when executing subprocesses (default:
-                                --enable-sandbox)
-        --enable-pubgrub-resolver/--disable-pubgrub-resolver
-                                [Experimental] Enable the new Pubgrub dependency
-                                resolver (default: --disable-pubgrub-resolver)
-        --static-swift-stdlib/--no-static-swift-stdlib
-                                Link Swift stdlib statically (default:
-                                --no-static-swift-stdlib)
-        --package-path <package-path>
-                                Change working directory before any other operation
-                                (default: .)
-        --sanitize              Turn on runtime checks for erroneous behavior
-        --skip-update           Skip updating dependencies from their remote during a
-                                resolution
-        -v, --verbose           Increase verbosity of informational output
-        -Xcc <c-compiler-flag>  Pass flag through to all C compiler invocations
-        -Xcxx <cxx-compiler-flag>
-                                Pass flag through to all C++ compiler invocations
-        -Xlinker <linker-flag>  Pass flag through to all linker invocations
-        -Xswiftc <swift-compiler-flag>
-                                Pass flag through to all Swift compiler invocations
-        --package-url <package-url>
-                                The package dependency URL
-        -h, --help              Show help information.
+        OPTIONS:
+          --build-path <build-path>
+                                  Specify build/cache directory (default: ./.build)
+          -c, --configuration <configuration>
+                                  Build with configuration (default: debug)
+          --enable-automatic-resolution/--disable-automatic-resolution
+                                  Use automatic resolution if Package.resolved file is
+                                  out-of-date (default: --enable-automatic-resolution)
+          --enable-index-store/--disable-index-store
+                                  Use indexing-while-building feature (default:
+                                  --enable-index-store)
+          --enable-package-manifest-caching/--disable-package-manifest-caching
+                                  Cache Package.swift manifests (default:
+                                  --enable-package-manifest-caching)
+          --enable-prefetching/--disable-prefetching
+                                  (default: --enable-prefetching)
+          --enable-sandbox/--disable-sandbox
+                                  Use sandbox when executing subprocesses (default:
+                                  --enable-sandbox)
+          --enable-pubgrub-resolver/--disable-pubgrub-resolver
+                                  [Experimental] Enable the new Pubgrub dependency
+                                  resolver (default: --disable-pubgrub-resolver)
+          --static-swift-stdlib/--no-static-swift-stdlib
+                                  Link Swift stdlib statically (default:
+                                  --no-static-swift-stdlib)
+          --package-path <package-path>
+                                  Change working directory before any other operation
+                                  (default: .)
+          --sanitize              Turn on runtime checks for erroneous behavior
+          --skip-update           Skip updating dependencies from their remote during a
+                                  resolution
+          -v, --verbose           Increase verbosity of informational output
+          -Xcc <c-compiler-flag>  Pass flag through to all C compiler invocations
+          -Xcxx <cxx-compiler-flag>
+                                  Pass flag through to all C++ compiler invocations
+          -Xlinker <linker-flag>  Pass flag through to all linker invocations
+          -Xswiftc <swift-compiler-flag>
+                                  Pass flag through to all Swift compiler invocations
+          --package-url <package-url>
+                                  The package dependency URL
+          -h, --help              Show help information.
 
-      """)
+        """)
   }
 }
 
@@ -191,13 +188,9 @@ struct Simple: ParsableArguments {
 }
 
 extension HelpTests {
-  func testSimpleHelp() throws {
-    XCTAssertEqual(
-      getErrorText(Simple.self, ["--help"]),
-      Simple.helpText)
-    XCTAssertEqual(
-      getErrorText(Simple.self, ["-h"]),
-      Simple.helpText)
+  @Test func simpleHelp() throws {
+    #expect(getErrorText(Simple.self, ["--help"]) == Simple.helpText)
+    #expect(getErrorText(Simple.self, ["-h"]) == Simple.helpText)
   }
 }
 
@@ -208,13 +201,13 @@ struct CustomHelp: ParsableCommand {
 }
 
 extension HelpTests {
-  func testCustomHelpNames() {
+  @Test func customHelpNames() {
     let helpNames = [CustomHelp.self].getHelpNames(visibility: .default)
-    XCTAssertEqual(helpNames, [.short("?"), .long("show-help")])
+    #expect(helpNames == [.short("?"), .long("show-help")])
     let helpHiddenNames = [CustomHelp.self].getHelpNames(visibility: .hidden)
-    XCTAssertEqual(helpHiddenNames, [.long("show-help-hidden")])
+    #expect(helpHiddenNames == [.long("show-help-hidden")])
 
-    AssertFullErrorMessage(
+    expectFullErrorMessage(
       CustomHelp.self, ["--error"],
       """
       Error: Unknown option '--error'
@@ -233,13 +226,13 @@ struct NoHelp: ParsableCommand {
 }
 
 extension HelpTests {
-  func testNoHelpNames() {
+  @Test func noHelpNames() {
     let helpNames = [NoHelp.self].getHelpNames(visibility: .default)
-    XCTAssertEqual(helpNames, [])
+    #expect(helpNames == [])
     let helpHiddenNames = [NoHelp.self].getHelpNames(visibility: .hidden)
-    XCTAssertEqual(helpHiddenNames, [])
+    #expect(helpHiddenNames == [])
 
-    AssertFullErrorMessage(
+    expectFullErrorMessage(
       NoHelp.self, ["--error"],
       """
       Error: Missing expected argument '--count <count>'
@@ -247,15 +240,14 @@ extension HelpTests {
       Usage: no-help --count <count>
       """)
 
-    XCTAssertEqual(
-      NoHelp.message(for: CleanExit.helpRequest()),
-      """
-      USAGE: no-help --count <count>
+    #expect(
+      NoHelp.message(for: CleanExit.helpRequest()) == """
+        USAGE: no-help --count <count>
 
-      OPTIONS:
-        --count <count>         How many florps?
+        OPTIONS:
+          --count <count>         How many florps?
 
-      """)
+        """)
   }
 }
 
@@ -280,28 +272,28 @@ struct SubCommandCustomHelp: ParsableCommand {
 }
 
 extension HelpTests {
-  func testSubCommandInheritHelpNames() {
+  @Test func subCommandInheritHelpNames() {
     let names = [
       SubCommandCustomHelp.self,
       SubCommandCustomHelp.InheritHelp.self,
     ].getHelpNames(visibility: .default)
-    XCTAssertEqual(names, [.short("p"), .long("parent-help")])
+    #expect(names == [.short("p"), .long("parent-help")])
   }
 
-  func testSubCommandCustomHelpNames() {
+  @Test func subCommandCustomHelpNames() {
     let names = [
       SubCommandCustomHelp.self,
       SubCommandCustomHelp.ModifiedHelp.self,
     ].getHelpNames(visibility: .default)
-    XCTAssertEqual(names, [.short("s"), .long("subcommand-help")])
+    #expect(names == [.short("s"), .long("subcommand-help")])
   }
 
-  func testInheritImmediateParentHelpNames() {
+  @Test func inheritImmediateParentHelpNames() {
     let names = [
       SubCommandCustomHelp.self,
       SubCommandCustomHelp.ModifiedHelp.self,
       SubCommandCustomHelp.ModifiedHelp.InheritImmediateParentdHelp.self,
     ].getHelpNames(visibility: .default)
-    XCTAssertEqual(names, [.short("s"), .long("subcommand-help")])
+    #expect(names == [.short("s"), .long("subcommand-help")])
   }
 }
