@@ -10,6 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 import ArgumentParserTestHelpers
+import Testing
 import XCTest
 
 @testable import ArgumentParser
