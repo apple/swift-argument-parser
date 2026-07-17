@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2020 Apple Inc. and the Swift project authors
+// Copyright (c) 2020-2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -11,11 +11,17 @@
 
 import ArgumentParserTestHelpers
 import Testing
-import XCTest
 
 @testable import ArgumentParser
 
-final class ErrorMessageTests: XCTestCase {}
+struct ErrorCase: Sendable, CustomTestStringConvertible {
+  let id: String
+  let arguments: [String]
+  let expected: String
+  var testDescription: String { id }
+}
+
+@Suite struct ErrorMessageTests {}
 
 // MARK: -
 
@@ -24,63 +30,54 @@ private struct Bar: ParsableArguments {
   @Option(name: [.short, .long]) var format: String
 }
 
-// swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension ErrorMessageTests {
-  func testMissing_1() {
-    AssertErrorMessage(
-      Bar.self, [], "Missing expected argument '--name <name>'")
-  }
+  static let barCases: [ErrorCase] = [
+    ErrorCase(
+      id: "missing --name",
+      arguments: [],
+      expected: "Missing expected argument '--name <name>'"),
+    ErrorCase(
+      id: "missing --format",
+      arguments: ["--name", "a"],
+      expected: "Missing expected argument '--format <format>'"),
+    ErrorCase(
+      id: "unknown long option --verbose",
+      arguments: ["--name", "a", "--format", "b", "--verbose"],
+      expected: "Unknown option '--verbose'"),
+    ErrorCase(
+      id: "unknown short option -q",
+      arguments: ["--name", "a", "--format", "b", "-q"],
+      expected: "Unknown option '-q'"),
+    ErrorCase(
+      id: "unknown single-dash long option -bar",
+      arguments: ["--name", "a", "--format", "b", "-bar"],
+      expected: "Unknown option '-bar'"),
+    ErrorCase(
+      id: "unknown short in combined -foz",
+      arguments: ["--name", "a", "-foz", "b"],
+      expected: "Unknown option '-o'"),
+    ErrorCase(
+      id: "missing value for --format",
+      arguments: ["--name", "a", "--format"],
+      expected: "Missing value for '--format <format>'"),
+    ErrorCase(
+      id: "missing value for -f",
+      arguments: ["--name", "a", "-f"],
+      expected: "Missing value for '-f <format>'"),
+    ErrorCase(
+      id: "one unexpected argument",
+      arguments: ["--name", "a", "--format", "f", "b"],
+      expected: "Unexpected argument 'b'"),
+    ErrorCase(
+      id: "two unexpected arguments",
+      arguments: ["--name", "a", "--format", "f", "b", "baz"],
+      expected: "2 unexpected arguments: 'b', 'baz'"),
+  ]
 
-  func testMissing_2() {
-    AssertErrorMessage(
-      Bar.self, ["--name", "a"], "Missing expected argument '--format <format>'"
-    )
-  }
-
-  func testUnknownOption_1() {
-    AssertErrorMessage(
-      Bar.self, ["--name", "a", "--format", "b", "--verbose"],
-      "Unknown option '--verbose'")
-  }
-
-  func testUnknownOption_2() {
-    AssertErrorMessage(
-      Bar.self, ["--name", "a", "--format", "b", "-q"], "Unknown option '-q'")
-  }
-
-  func testUnknownOption_3() {
-    AssertErrorMessage(
-      Bar.self, ["--name", "a", "--format", "b", "-bar"],
-      "Unknown option '-bar'")
-  }
-
-  func testUnknownOption_4() {
-    AssertErrorMessage(
-      Bar.self, ["--name", "a", "-foz", "b"], "Unknown option '-o'")
-  }
-
-  func testMissingValue_1() {
-    AssertErrorMessage(
-      Bar.self, ["--name", "a", "--format"],
-      "Missing value for '--format <format>'")
-  }
-
-  func testMissingValue_2() {
-    AssertErrorMessage(
-      Bar.self, ["--name", "a", "-f"], "Missing value for '-f <format>'")
-  }
-
-  func testUnusedValue_1() {
-    AssertErrorMessage(
-      Bar.self, ["--name", "a", "--format", "f", "b"], "Unexpected argument 'b'"
-    )
-  }
-
-  func testUnusedValue_2() {
-    AssertErrorMessage(
-      Bar.self, ["--name", "a", "--format", "f", "b", "baz"],
-      "2 unexpected arguments: 'b', 'baz'")
+  @Test(arguments: barCases)
+  func bar(_ c: ErrorCase) {
+    expectErrorMessage(Bar.self, c.arguments, c.expected)
   }
 }
 
@@ -131,44 +128,61 @@ private struct EnumWithIntRawValue: ParsableArguments {
 }
 
 extension ErrorMessageTests {
-  func testWrongEnumValue() {
-    AssertErrorMessage(
-      Foo.self, ["--format", "png"],
-      "The value 'png' is invalid for '--format <format>'. Please provide one of 'text', 'json' or 'csv'."
-    )
-    AssertErrorMessage(
-      Foo.self, ["-f", "png"],
-      "The value 'png' is invalid for '-f <format>'. Please provide one of 'text', 'json' or 'csv'."
-    )
-    AssertErrorMessage(
-      Foo.self, ["-f", "text", "--name", "loki"],
-      """
-      The value 'loki' is invalid for '--name <name>'. Please provide one of the following:
-        - bruce
-        - clint
-        - hulk
-        - natasha
-        - steve
-        - thor
-        - tony
-      """)
-    AssertErrorMessage(
-      Foo.self, ["-f", "text", "-n", "loki"],
-      """
-      The value 'loki' is invalid for '-n <name>'. Please provide one of the following:
-        - bruce
-        - clint
-        - hulk
-        - natasha
-        - steve
-        - thor
-        - tony
-      """)
-    AssertErrorMessage(
+  static let fooCases: [ErrorCase] = [
+    ErrorCase(
+      id: "invalid enum value for --format",
+      arguments: ["--format", "png"],
+      expected:
+        "The value 'png' is invalid for '--format <format>'. Please provide one of 'text', 'json' or 'csv'."
+    ),
+    ErrorCase(
+      id: "invalid enum value for -f",
+      arguments: ["-f", "png"],
+      expected:
+        "The value 'png' is invalid for '-f <format>'. Please provide one of 'text', 'json' or 'csv'."
+    ),
+    ErrorCase(
+      id: "invalid enum value for --name (many cases)",
+      arguments: ["-f", "text", "--name", "loki"],
+      expected: """
+        The value 'loki' is invalid for '--name <name>'. Please provide one of the following:
+          - bruce
+          - clint
+          - hulk
+          - natasha
+          - steve
+          - thor
+          - tony
+        """),
+    ErrorCase(
+      id: "invalid enum value for -n (many cases)",
+      arguments: ["-f", "text", "-n", "loki"],
+      expected: """
+        The value 'loki' is invalid for '-n <name>'. Please provide one of the following:
+          - bruce
+          - clint
+          - hulk
+          - natasha
+          - steve
+          - thor
+          - tony
+        """),
+  ]
+
+  @Test(arguments: fooCases)
+  func foo(_ c: ErrorCase) {
+    expectErrorMessage(Foo.self, c.arguments, c.expected)
+  }
+
+  @Test func enumWithFewCasesArrayArgument() {
+    expectErrorMessage(
       EnumWithFewCasesArrayArgument.self, ["png"],
       "The value 'png' is invalid for '<formats>'. Please provide one of 'text', 'json' or 'csv'."
     )
-    AssertErrorMessage(
+  }
+
+  @Test func enumWithManyCasesArrayArgument() {
+    expectErrorMessage(
       EnumWithManyCasesArrayArgument.self, ["loki"],
       """
       The value 'loki' is invalid for '<names>'. Please provide one of the following:
@@ -180,8 +194,10 @@ extension ErrorMessageTests {
         - thor
         - tony
       """)
+  }
 
-    AssertErrorMessage(
+  @Test func enumWithIntRawValue() {
+    expectErrorMessage(
       EnumWithIntRawValue.self, ["--counter", "one"],
       """
       The value 'one' is invalid for '--counter <counter>'. \
@@ -196,8 +212,8 @@ private struct Baz: ParsableArguments {
 }
 
 extension ErrorMessageTests {
-  func testUnexpectedValue() {
-    AssertErrorMessage(
+  @Test func unexpectedValue() {
+    expectErrorMessage(
       Baz.self, ["--verbose=foo"],
       "The option '--verbose' does not take any value, but 'foo' was specified."
     )
@@ -213,19 +229,24 @@ private struct Qux: ParsableArguments {
 }
 
 extension ErrorMessageTests {
-  func testMissingArgument() {
-    AssertErrorMessage(
-      Qux.self, ["--number-two", "2"],
-      "Missing expected argument '<first-number>'")
-  }
+  static let quxCases: [ErrorCase] = [
+    ErrorCase(
+      id: "missing <first-number>",
+      arguments: ["--number-two", "2"],
+      expected: "Missing expected argument '<first-number>'"),
+    ErrorCase(
+      id: "invalid <first-number>",
+      arguments: ["--number-two", "2", "a"],
+      expected: "The value 'a' is invalid for '<first-number>'"),
+    ErrorCase(
+      id: "invalid --number-two",
+      arguments: ["--number-two", "a", "1"],
+      expected: "The value 'a' is invalid for '--number-two <number-two>'"),
+  ]
 
-  func testInvalidNumber() {
-    AssertErrorMessage(
-      Qux.self, ["--number-two", "2", "a"],
-      "The value 'a' is invalid for '<first-number>'")
-    AssertErrorMessage(
-      Qux.self, ["--number-two", "a", "1"],
-      "The value 'a' is invalid for '--number-two <number-two>'")
+  @Test(arguments: quxCases)
+  func qux(_ c: ErrorCase) {
+    expectErrorMessage(Qux.self, c.arguments, c.expected)
   }
 }
 
@@ -234,30 +255,38 @@ private struct Qwz: ParsableArguments {
   @Option(name: [.customLong("title", withSingleDash: true)]) var title: String?
 }
 
-// swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension ErrorMessageTests {
-  func testMispelledArgument_1() {
-    AssertErrorMessage(
-      Qwz.self, ["--nme"], "Unknown option '--nme'. Did you mean '--name'?")
-    AssertErrorMessage(
-      Qwz.self, ["-name"], "Unknown option '-name'. Did you mean '--name'?")
-  }
+  static let qwzCases: [ErrorCase] = [
+    ErrorCase(
+      id: "--nme suggests --name",
+      arguments: ["--nme"],
+      expected: "Unknown option '--nme'. Did you mean '--name'?"),
+    ErrorCase(
+      id: "-name suggests --name",
+      arguments: ["-name"],
+      expected: "Unknown option '-name'. Did you mean '--name'?"),
+    ErrorCase(
+      id: "-ttle suggests -title",
+      arguments: ["-ttle"],
+      expected: "Unknown option '-ttle'. Did you mean '-title'?"),
+    ErrorCase(
+      id: "--title suggests -title",
+      arguments: ["--title"],
+      expected: "Unknown option '--title'. Did you mean '-title'?"),
+    ErrorCase(
+      id: "--not-similar has no suggestion",
+      arguments: ["--not-similar"],
+      expected: "Unknown option '--not-similar'"),
+    ErrorCase(
+      id: "-x has no suggestion",
+      arguments: ["-x"],
+      expected: "Unknown option '-x'"),
+  ]
 
-  func testMispelledArgument_2() {
-    AssertErrorMessage(
-      Qwz.self, ["-ttle"], "Unknown option '-ttle'. Did you mean '-title'?")
-    AssertErrorMessage(
-      Qwz.self, ["--title"], "Unknown option '--title'. Did you mean '-title'?")
-  }
-
-  func testMispelledArgument_3() {
-    AssertErrorMessage(
-      Qwz.self, ["--not-similar"], "Unknown option '--not-similar'")
-  }
-
-  func testMispelledArgument_4() {
-    AssertErrorMessage(Qwz.self, ["-x"], "Unknown option '-x'")
+  @Test(arguments: qwzCases)
+  func qwz(_ c: ErrorCase) {
+    expectErrorMessage(Qwz.self, c.arguments, c.expected)
   }
 }
 
@@ -290,26 +319,40 @@ private struct OptOptions: ParsableArguments {
 }
 
 extension ErrorMessageTests {
-  func testDuplicateFlags() {
-    AssertErrorMessage(
-      Options.self, ["--list", "--bool", "-s"],
-      "Value to be set with flag \'-s\' had already been set with flag \'--list\'"
-    )
-    AssertErrorMessage(
-      Options.self, ["-cbl"],
-      "Value to be set with flag \'l\' in \'-cbl\' had already been set with flag \'c\' in \'-cbl\'"
-    )
-    AssertErrorMessage(
-      Options.self, ["-bc", "--stats", "-l"],
-      "Value to be set with flag \'--stats\' had already been set with flag \'c\' in \'-bc\'"
-    )
+  static let optionsCases: [ErrorCase] = [
+    ErrorCase(
+      id: "-s conflicts with --list",
+      arguments: ["--list", "--bool", "-s"],
+      expected:
+        "Value to be set with flag \'-s\' had already been set with flag \'--list\'"
+    ),
+    ErrorCase(
+      id: "combined -cbl: l conflicts with c",
+      arguments: ["-cbl"],
+      expected:
+        "Value to be set with flag \'l\' in \'-cbl\' had already been set with flag \'c\' in \'-cbl\'"
+    ),
+    ErrorCase(
+      id: "--stats conflicts with c in -bc",
+      arguments: ["-bc", "--stats", "-l"],
+      expected:
+        "Value to be set with flag \'--stats\' had already been set with flag \'c\' in \'-bc\'"
+    ),
+    ErrorCase(
+      id: "--bool conflicts with --no-bool",
+      arguments: ["--no-bool", "--bool"],
+      expected:
+        "Value to be set with flag \'--bool\' had already been set with flag \'--no-bool\'"
+    ),
+  ]
 
-    AssertErrorMessage(
-      Options.self, ["--no-bool", "--bool"],
-      "Value to be set with flag \'--bool\' had already been set with flag \'--no-bool\'"
-    )
+  @Test(arguments: optionsCases)
+  func options(_ c: ErrorCase) {
+    expectErrorMessage(Options.self, c.arguments, c.expected)
+  }
 
-    AssertErrorMessage(
+  @Test func optOptionsCombinedShort() {
+    expectErrorMessage(
       OptOptions.self, ["-cbl"],
       "Value to be set with flag \'l\' in \'-cbl\' had already been set with flag \'c\' in \'-cbl\'"
     )
@@ -326,21 +369,32 @@ private struct EmptyArray: ParsableArguments {
 }
 
 extension ErrorMessageTests {
-  func testEmptyArrayOption() {
-    AssertErrorMessage(
-      EmptyArray.self, ["--array"], "Missing value for '--array <array>'")
+  static let emptyArrayCases: [ErrorCase] = [
+    ErrorCase(
+      id: "--array alone",
+      arguments: ["--array"],
+      expected: "Missing value for '--array <array>'"),
+    ErrorCase(
+      id: "--array followed by --verbose",
+      arguments: ["--array", "--verbose"],
+      expected: "Missing value for '--array <array>'"),
+    ErrorCase(
+      id: "-verbose followed by --array",
+      arguments: ["-verbose", "--array"],
+      expected: "Missing value for '--array <array>'"),
+    ErrorCase(
+      id: "--array followed by -v",
+      arguments: ["--array", "-v"],
+      expected: "Missing value for '--array <array>'"),
+    ErrorCase(
+      id: "-v followed by --array",
+      arguments: ["-v", "--array"],
+      expected: "Missing value for '--array <array>'"),
+  ]
 
-    AssertErrorMessage(
-      EmptyArray.self, ["--array", "--verbose"],
-      "Missing value for '--array <array>'")
-    AssertErrorMessage(
-      EmptyArray.self, ["-verbose", "--array"],
-      "Missing value for '--array <array>'")
-
-    AssertErrorMessage(
-      EmptyArray.self, ["--array", "-v"], "Missing value for '--array <array>'")
-    AssertErrorMessage(
-      EmptyArray.self, ["-v", "--array"], "Missing value for '--array <array>'")
+  @Test(arguments: emptyArrayCases)
+  func emptyArray(_ c: ErrorCase) {
+    expectErrorMessage(EmptyArray.self, c.arguments, c.expected)
   }
 }
 
@@ -352,8 +406,8 @@ private struct Repeat: ParsableArguments {
 }
 
 extension ErrorMessageTests {
-  func testBadOptionBeforeArgument() {
-    AssertErrorMessage(
+  @Test func badOptionBeforeArgument() {
+    expectErrorMessage(
       Repeat.self,
       ["--cont", "5", "Hello"],
       "Unknown option '--cont'. Did you mean '--count'?")
