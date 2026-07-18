@@ -33,6 +33,7 @@ extension Error {
   }
 }
 
+#if ArgumentParserFoundation
 enum JSONEncoder {
   static func encode<T: Encodable>(_ value: T) -> String {
     #if canImport(FoundationEssentials)
@@ -46,3 +47,4 @@ enum JSONEncoder {
     return String(data: encoded, encoding: .utf8) ?? ""
   }
 }
+#endif
