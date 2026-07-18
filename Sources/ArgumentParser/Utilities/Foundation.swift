@@ -9,10 +9,12 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if ArgumentParserFoundation
 #if canImport(FoundationEssentials)
 internal import FoundationEssentials
 #else
 internal import Foundation
+#endif
 #endif
 
 extension Error {
