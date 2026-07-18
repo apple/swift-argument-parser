@@ -17,6 +17,7 @@ internal import Foundation
 
 extension Error {
   func describe() -> String {
+    #if ArgumentParserFoundation
     if let description = (self as? LocalizedError)?.errorDescription {
       return description
     } else {
@@ -30,6 +31,9 @@ extension Error {
       }
       #endif
     }
+    #else
+    return String(describing: self)
+    #endif
   }
 }
 
