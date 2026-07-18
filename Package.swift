@@ -25,6 +25,10 @@ var package = Package(
       name: "GenerateManual",
       targets: ["GenerateManual"]),
   ],
+  traits: [
+    "ArgumentParserFoundation",
+    .default(enabledTraits: ["ArgumentParserFoundation"])
+  ],
   dependencies: [],
   targets: [
     // Core Library
