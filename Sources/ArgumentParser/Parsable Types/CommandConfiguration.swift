@@ -39,7 +39,7 @@ public struct CommandConfiguration: Sendable {
   /// display.
   ///
   /// Can include specific abstracts about the argument's possible values (e.g.
-  /// for a custom `EnumerableOptionValue` type), or can describe
+  /// for a custom `ExpressibleByArgument` type), or can describe
   /// a static block of text that extends the description of the argument.
   public var discussion: String
 
