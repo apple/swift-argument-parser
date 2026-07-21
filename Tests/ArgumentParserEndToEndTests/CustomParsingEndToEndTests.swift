@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2020 Apple Inc. and the Swift project authors
+// Copyright (c) 2020-2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -12,9 +12,12 @@
 import ArgumentParser
 import ArgumentParserTestHelpers
 import Testing
-import XCTest
 
-final class ParsingEndToEndTests: XCTestCase {}
+@Suite struct ParsingEndToEndTests {
+  @Suite struct Basics {}
+  @Suite struct Defaults {}
+  @Suite struct Arrays {}
+}
 
 struct Name {
   var rawValue: String
@@ -64,26 +67,31 @@ private struct Foo: ParsableCommand {
   var second: Subgroup
 }
 
-// swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
-extension ParsingEndToEndTests {
-  func testParsing() throws {
-    AssertParse(Foo.self, ["--first", "1", "2"]) { foo in
-      XCTAssertEqual(foo.first, .first(1))
-      XCTAssertEqual(foo.second, .second(2))
+extension ParsingEndToEndTests.Basics {
+  @Test func parsing() throws {
+    expectParse(Foo.self, ["--first", "1", "2"]) { foo in
+      #expect(foo.first == .first(1))
+      #expect(foo.second == .second(2))
     }
   }
 
-  func testParsing_Fails() throws {
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  @Test func parsing_Fails() throws {
     // Failure inside custom parser
-    XCTAssertThrowsError(try Foo.parse(["--first", "1", "bad"]))
-    XCTAssertThrowsError(try Foo.parse(["--first", "bad", "2"]))
-    XCTAssertThrowsError(try Foo.parse(["--first", "bad", "bad"]))
+    #expect(throws: (any Error).self) {
+      try Foo.parse(["--first", "1", "bad"])
+    }
+    #expect(throws: (any Error).self) {
+      try Foo.parse(["--first", "bad", "2"])
+    }
+    #expect(throws: (any Error).self) {
+      try Foo.parse(["--first", "bad", "bad"])
+    }
 
     // Missing argument failures
-    XCTAssertThrowsError(try Foo.parse(["--first", "1"]))
-    XCTAssertThrowsError(try Foo.parse(["5"]))
-    XCTAssertThrowsError(try Foo.parse([]))
+    #expect(throws: (any Error).self) { try Foo.parse(["--first", "1"]) }
+    #expect(throws: (any Error).self) { try Foo.parse(["5"]) }
+    #expect(throws: (any Error).self) { try Foo.parse([]) }
   }
 }
 
@@ -91,40 +99,47 @@ extension ParsingEndToEndTests {
 
 private struct Bar: ParsableCommand {
   @Option(transform: { try Name(rawValue: $0) })
+  // swift-format-ignore: NeverUseForceTry
   var firstName: Name = try! Name(rawValue: "none")
 
   @Argument(transform: { try Name(rawValue: $0) })
   var lastName: Name?
 }
 
-// swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
-extension ParsingEndToEndTests {
-  func testParsing_Defaults() throws {
-    AssertParse(Bar.self, ["--first-name", "A", "B"]) { bar in
-      XCTAssertEqual(bar.firstName.rawValue, "A")
-      XCTAssertEqual(bar.lastName?.rawValue, "B")
+extension ParsingEndToEndTests.Defaults {
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  @Test func parsing_Defaults() throws {
+    expectParse(Bar.self, ["--first-name", "A", "B"]) { bar in
+      #expect(bar.firstName.rawValue == "A")
+      let barLastName = try #require(bar.lastName)
+      #expect(barLastName.rawValue == "B")
     }
 
-    AssertParse(Bar.self, ["B"]) { bar in
-      XCTAssertEqual(bar.firstName.rawValue, "none")
-      XCTAssertEqual(bar.lastName?.rawValue, "B")
+    expectParse(Bar.self, ["B"]) { bar in
+      #expect(bar.firstName.rawValue == "none")
+      let barLastName = try #require(bar.lastName)
+      #expect(barLastName.rawValue == "B")
     }
 
-    AssertParse(Bar.self, ["--first-name", "A"]) { bar in
-      XCTAssertEqual(bar.firstName.rawValue, "A")
-      XCTAssertNil(bar.lastName)
+    expectParse(Bar.self, ["--first-name", "A"]) { bar in
+      #expect(bar.firstName.rawValue == "A")
+      #expect(bar.lastName == nil)
     }
 
-    AssertParse(Bar.self, []) { bar in
-      XCTAssertEqual(bar.firstName.rawValue, "none")
-      XCTAssertNil(bar.lastName)
+    expectParse(Bar.self, []) { bar in
+      #expect(bar.firstName.rawValue == "none")
+      #expect(bar.lastName == nil)
     }
   }
 
-  func testParsing_Defaults_Fails() throws {
-    XCTAssertThrowsError(try Bar.parse(["--first-name", "bad"]))
-    XCTAssertThrowsError(try Bar.parse(["bad"]))
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  @Test func parsing_Defaults_Fails() throws {
+    #expect(throws: (any Error).self) {
+      try Bar.parse(["--first-name", "bad"])
+    }
+    #expect(throws: (any Error).self) {
+      try Bar.parse(["bad"])
+    }
   }
 }
 
@@ -138,45 +153,47 @@ private struct Qux: ParsableCommand {
   var lastName: [Name] = []
 }
 
-// swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
-extension ParsingEndToEndTests {
-  func testParsing_Array() throws {
-    AssertParse(Qux.self, ["--first-name", "A", "B"]) { qux in
-      XCTAssertEqual(qux.firstName.rawValues, ["A"])
-      XCTAssertEqual(qux.lastName.rawValues, ["B"])
+extension ParsingEndToEndTests.Arrays {
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  @Test func parsing_Array() throws {
+    expectParse(Qux.self, ["--first-name", "A", "B"]) { qux in
+      #expect(qux.firstName.rawValues == ["A"])
+      #expect(qux.lastName.rawValues == ["B"])
     }
 
-    AssertParse(Qux.self, ["--first-name", "A", "--first-name", "B", "C", "D"])
+    expectParse(Qux.self, ["--first-name", "A", "--first-name", "B", "C", "D"])
     { qux in
-      XCTAssertEqual(qux.firstName.rawValues, ["A", "B"])
-      XCTAssertEqual(qux.lastName.rawValues, ["C", "D"])
+      #expect(qux.firstName.rawValues == ["A", "B"])
+      #expect(qux.lastName.rawValues == ["C", "D"])
     }
 
-    AssertParse(Qux.self, ["--first-name", "A", "--first-name", "B"]) { qux in
-      XCTAssertEqual(qux.firstName.rawValues, ["A", "B"])
-      XCTAssertEqual(qux.lastName.rawValues, [])
+    expectParse(Qux.self, ["--first-name", "A", "--first-name", "B"]) { qux in
+      #expect(qux.firstName.rawValues == ["A", "B"])
+      #expect(qux.lastName.rawValues == [])
     }
 
-    AssertParse(Qux.self, ["C", "D"]) { qux in
-      XCTAssertEqual(qux.firstName.rawValues, [])
-      XCTAssertEqual(qux.lastName.rawValues, ["C", "D"])
+    expectParse(Qux.self, ["C", "D"]) { qux in
+      #expect(qux.firstName.rawValues == [])
+      #expect(qux.lastName.rawValues == ["C", "D"])
     }
 
-    AssertParse(Qux.self, []) { qux in
-      XCTAssertEqual(qux.firstName.rawValues, [])
-      XCTAssertEqual(qux.lastName.rawValues, [])
+    expectParse(Qux.self, []) { qux in
+      #expect(qux.firstName.rawValues == [])
+      #expect(qux.lastName.rawValues == [])
     }
   }
 
-  func testParsing_Array_Fails() {
-    XCTAssertThrowsError(
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  @Test func parsing_Array_Fails() {
+    #expect(throws: (any Error).self) {
       try Qux.parse(["--first-name", "A", "--first-name", "B", "C", "D", "bad"])
-    )
-    XCTAssertThrowsError(
+    }
+    #expect(throws: (any Error).self) {
       try Qux.parse([
         "--first-name", "A", "--first-name", "B", "--first-name", "bad", "C",
         "D",
-      ]))
+      ])
+    }
   }
 }
