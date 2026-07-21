@@ -11,16 +11,16 @@
 
 /// A structure that contains an extended description of the argument.
 ///
-/// For `EnumerableOptionValue` types, the `.enumerated` case encapsulates the
+/// For `ExpressibleByArgument` types, the `.enumerated` case encapsulates the
 /// necessary information to list each of the possible values and their
 /// descriptions. Optionally, users can add a discussion preamble that will be
 /// appended to the beginning of the value list section.
 ///
-/// For example, the following `EnumerableOptionValue` type defined in a command
+/// For example, the following `ExpressibleByArgument` type defined in a command
 /// could contain an additional discussion block defined in its `ArgumentHelp`:
 ///
 /// ```swift
-/// enum Color: String, EnumerableOptionValue {
+/// enum Color: String, ExpressibleByArgument {
 ///   case red
 ///   case blue
 ///   case yellow
@@ -29,7 +29,7 @@
 ///     switch self {
 ///        case .red:
 ///         return "A red color."
-///        case. blue:
+///        case .blue:
 ///         return "A blue color."
 ///        case .yellow:
 ///         return "A yellow color."
@@ -97,8 +97,8 @@
 ///    -h, --help           Show help information
 /// ```
 ///
-/// In any case where the argument type is not `EnumerableOptionValue` or an
-/// array of `EnumerableOptionValue`, the default implementation will use the
+/// In any case where the argument type is not `ExpressibleByArgument` or an
+/// array of `ExpressibleByArgument`, the default implementation will use the
 /// `.staticText` case and will print a block of discussion text.
 enum ArgumentDiscussion {
   case staticText(String)
