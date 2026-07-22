@@ -288,11 +288,9 @@ extension ResponseFileEndToEndTests {
 
 // Response files must preserve empty string arguments produced by quoted
 // empty tokens (`""` or `''`) when they land in an `@Argument` collection.
-// Silently dropping them would diverge from how `gcc` and other tools
-// expand response files, and would make it impossible to pass an empty
+// Silently dropping them would make it impossible to pass an empty
 // positional value through a response file. See the discussion on
-// apple/swift-argument-parser#909, which references the analogous LLVM
-// fix in llvm/llvm-project#187566.
+// apple/swift-argument-parser#909.
 extension ResponseFileEndToEndTests {
   @Test func doubleQuotedEmptyPositionalPreservedOnOwnLine() async throws {
     try await withTemporaryFile(
@@ -685,7 +683,8 @@ extension ResponseFileEndToEndTests {
         """#
     ) { responseFile in
       expectParse(PositionalCommand.self, ["@\(responseFile)"]) { command in
-        #expect(command.files == ["double quoted", "single quoted", "unquoted"])
+        #expect(
+          command.files == ["double quoted", "single quoted", "unquoted"])
       }
     }
   }
@@ -714,10 +713,10 @@ extension ResponseFileEndToEndTests {
 
   // MARK: Juxtaposed quoted segments
 
-  // In gcc / LLVM response-file syntax, adjacent quoted segments with no
-  // whitespace between them concatenate into a single token. `""` and
-  // `''` next to other segments contribute nothing except forcing the
-  // resulting token to exist (and to be quoted).
+  // Adjacent quoted segments with no whitespace between them concatenate
+  // into a single token. An empty quoted segment (`""` or `''`) next to
+  // other segments contributes nothing to the string content, but still
+  // forces the resulting token to exist (and to be marked as quoted).
 
   @Test func juxtaposedEmptyDoubleQuotesOnOwnLine() async throws {
     // `""""` is two empty double-quoted segments juxtaposed — still one
@@ -752,7 +751,6 @@ extension ResponseFileEndToEndTests {
   @Test func multipleJuxtaposedEmptyQuoteRunsOnSameLine() async throws {
     // Each whitespace-separated group of juxtaposed empty quotes is one
     // empty positional argument; three groups → three empty arguments.
-    // Mirrors the LLVM `TokenizeGNUCommandLineEmptyQuotes` case.
     try await withTemporaryFile(
       "positional_juxta_empty_multi.txt",
       content: #"""
@@ -808,11 +806,12 @@ extension ResponseFileEndToEndTests {
     }
   }
 
-  @Test func complexJuxtaposedSegmentsMatchLLVM() async throws {
-    // Direct port of the LLVM
-    // `TokenizeGNUCommandLineJuxtaposedQuotedSegments` first case.
+  @Test func complexJuxtaposedSegmentsWithinAndBetweenTokens() async throws {
+    // A single line combining empty and non-empty juxtaposed segments of
+    // both quote styles: each whitespace-separated group forms one
+    // token, with adjacent segments concatenated.
     try await withTemporaryFile(
-      "positional_juxta_llvm.txt",
+      "positional_juxta_complex.txt",
       content: #"""
         a""a ""b c"" d''d ''e f''
         """#
@@ -824,11 +823,10 @@ extension ResponseFileEndToEndTests {
   }
 
   @Test func juxtaposedMixedQuoteStyles() async throws {
-    // Direct port of the LLVM
-    // `TokenizeGNUCommandLineJuxtaposedQuotedSegments` second case:
-    // a single token composed of double-then-single-then-double
+    // A single token composed of double-then-single-then-double
     // segments must produce a single string that preserves the inner
-    // quote characters that were themselves quoted by the *other* style.
+    // quote characters that were themselves quoted by the *other*
+    // style.
     try await withTemporaryFile(
       "positional_juxta_mixed.txt",
       content: #"""
@@ -844,9 +842,9 @@ extension ResponseFileEndToEndTests {
   // MARK: Line-level whitespace
 
   @Test func leadingAndTrailingWhitespaceOnLineIsIgnored() async throws {
-    // Mirrors LLVM's `TokenizeGNUCommandLineWhitespace`: extra whitespace
-    // at the start/end of a line, and the runs of spaces between
-    // arguments, must not produce spurious empty arguments.
+    // Extra whitespace at the start/end of a line, and the runs of
+    // spaces between arguments, must not produce spurious empty
+    // arguments.
     try await withTemporaryFile(
       "positional_ws.txt",
       content: #"""
@@ -859,17 +857,15 @@ extension ResponseFileEndToEndTests {
     }
   }
 
-  // MARK: Unterminated quotes (gcc/LLVM behavior)
+  // MARK: Unterminated quotes
 
-  // Following gcc's and LLVM's `TokenizeGNUCommandLine`, a quote that
-  // is opened but never closed is implicitly terminated at end-of-line.
-  // The trailing content becomes a single argument, with everything up
-  // to the closing whitespace or EOF included verbatim.
+  // A quote that is opened but never closed absorbs input until end of
+  // file. Any content between the opening quote and EOF (including
+  // newlines) becomes part of the resulting token.
 
   @Test func unterminatedSingleQuoteAloneProducesEmptyArg() async throws {
-    // `a b '` → three arguments, the last of which is an empty string
-    // (the opening `'` with no content). Mirrors LLVM
-    // `TokenizeGNUCommandLineUnterminatedQuotes` first case.
+    // `a b '` at EOF → three arguments, the last of which is an empty
+    // string (the opening `'` with no content).
     try await withTemporaryFile(
       "positional_unterm_empty.txt",
       content: #"""
@@ -885,10 +881,9 @@ extension ResponseFileEndToEndTests {
   @Test func unterminatedSingleQuoteWithContentProducesLiteralTail()
     async throws
   {
-    // `a b 'c d` → `["a","b","c d"]`. The opening `'` starts a quoted
-    // segment that runs to end-of-line, absorbing the intervening
-    // whitespace as literal content. Mirrors LLVM
-    // `TokenizeGNUCommandLineUnterminatedQuotes` second case.
+    // `a b 'c d` at EOF → `["a","b","c d"]`. The opening `'` starts a
+    // quoted segment that runs to EOF, absorbing the intervening
+    // whitespace as literal content.
     try await withTemporaryFile(
       "positional_unterm_content.txt",
       content: #"""
@@ -916,9 +911,12 @@ extension ResponseFileEndToEndTests {
     }
   }
 
-  @Test func unterminatedQuoteAcrossOtherLinesIsPerLine() async throws {
-    // Termination happens at end-of-line — the second line is a fresh
-    // context, so its `'` starts and ends its own token.
+  @Test func unterminatedQuoteAbsorbsSubsequentLines() async throws {
+    // With whole-file tokenization, an unterminated quote keeps
+    // absorbing input past the newline — the intervening newline is
+    // literal content inside the still-open quoted segment, and the
+    // next line's opening `'` closes the segment. That means what
+    // looks like three tokens across two lines is actually just two.
     try await withTemporaryFile(
       "positional_unterm_multi.txt",
       content: #"""
@@ -927,7 +925,98 @@ extension ResponseFileEndToEndTests {
         """#
     ) { responseFile in
       expectParse(PositionalCommand.self, ["@\(responseFile)"]) { command in
-        #expect(command.files == ["first", "unterminated", "second closed"])
+        #expect(
+          command.files == [
+            "first",
+            "unterminated\nsecond",
+            "closed",
+          ])
+      }
+    }
+  }
+
+  // MARK: Literal newlines inside quoted strings
+
+  // A newline character that appears *inside* a quoted segment must be
+  // preserved as part of that token instead of terminating it. This
+  // requires a whole-file tokenizer (rather than a naive line-based one)
+  // so that quote state carries across the newline.
+
+  @Test func literalNewlineInsideSingleQuotesSpansLines() async throws {
+    // `a 'b\nc' d` (with `\n` being a real newline byte) →
+    // `["a", "b\nc", "d"]`.
+    try await withTemporaryFile(
+      "positional_newline_single.txt",
+      content: "a 'b\nc' d\n"
+    ) { responseFile in
+      expectParse(PositionalCommand.self, ["@\(responseFile)"]) { command in
+        #expect(command.files == ["a", "b\nc", "d"])
+      }
+    }
+  }
+
+  @Test func literalNewlineInsideDoubleQuotesSpansLines() async throws {
+    try await withTemporaryFile(
+      "positional_newline_double.txt",
+      content: "a \"b\nc\" d\n"
+    ) { responseFile in
+      expectParse(PositionalCommand.self, ["@\(responseFile)"]) { command in
+        #expect(command.files == ["a", "b\nc", "d"])
+      }
+    }
+  }
+
+  @Test func quotedTokenSpansManyLines() async throws {
+    // A token whose opening quote appears on one line and closing quote
+    // appears several lines later must land in `files` as a single
+    // multi-line string.
+    let content = "\"first line\nsecond line\nthird line\" tail\n"
+    try await withTemporaryFile(
+      "positional_multiline_token.txt",
+      content: content
+    ) { responseFile in
+      expectParse(PositionalCommand.self, ["@\(responseFile)"]) { command in
+        #expect(
+          command.files == [
+            "first line\nsecond line\nthird line",
+            "tail",
+          ])
+      }
+    }
+  }
+
+  @Test func multipleTokensSurroundingMultilineQuotedToken() async throws {
+    // Tokens before and after a multi-line quoted token are still
+    // parsed normally, and the multi-line token is exactly one
+    // positional value.
+    let content = "head \"line1\nline2\" tail\n"
+    try await withTemporaryFile(
+      "positional_multiline_surrounded.txt",
+      content: content
+    ) { responseFile in
+      expectParse(PositionalCommand.self, ["@\(responseFile)"]) { command in
+        #expect(command.files == ["head", "line1\nline2", "tail"])
+      }
+    }
+  }
+
+  @Test func hashInsideMultilineQuoteIsLiteral() async throws {
+    // `#` inside a quoted token — even when it's the first character of
+    // a line inside the token — is a literal, not the start of a
+    // comment. Guards against a naive "start-of-line `#` is a comment"
+    // check that could break multi-line quotes.
+    let content = "before \"start\n# not a comment\nend\" after\n"
+    try await withTemporaryFile(
+      "positional_hash_in_multiline.txt",
+      content: content
+    ) { responseFile in
+      expectParse(PositionalCommand.self, ["@\(responseFile)"]) { command in
+        #expect(
+          command.files == [
+            "before",
+            "start\n# not a comment\nend",
+            "after",
+          ])
       }
     }
   }
