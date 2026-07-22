@@ -6,6 +6,11 @@ Add new items at the end of the relevant section under **Unreleased**.
 
 ## [Unreleased]
 
+### Additions
+
+- Added source-location tracking for arguments expanded from response files. When at least one response-file reference is present in the input, parser error messages now include a multi-line `at <file>:<line>` / `included from <file>:<line>` block that pinpoints the offending argument and its full include chain. For pure command-line invocations, error messages are unchanged.
+- Commands can now opt in to response-file expansion by overriding the `ParsableCommand.responseFilePrefix` static property with the character that should introduce a response-file reference (for example, `static var responseFilePrefix: Character? { "@" }`). The property defaults to `nil`, meaning response-file expansion is disabled unless the root command opts in.
+
 ---
 
 ## [1.8.2] - 2026-06-04

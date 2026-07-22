@@ -6,6 +6,7 @@ add_library(UnitTests
   HelpGenerationTests+AtOption.swift
   HelpGenerationTests+GroupName.swift
   NameSpecificationTests.swift
+  ResponseFileExpanderTests.swift
   SplitArgumentTests.swift
   StringSnakeCaseTests.swift
   StringWrappingTests.swift
