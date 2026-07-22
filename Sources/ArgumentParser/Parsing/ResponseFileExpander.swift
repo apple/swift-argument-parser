@@ -152,81 +152,53 @@ internal struct ResponseFileExpander {
     fileURL: URL,
     parentChain: [InputOrigin.ResponseFileStep] = []
   ) throws -> [ExpandedArgument] {
-    var result: [ExpandedArgument] = []
-    let lines = content.components(separatedBy: .newlines)
     let filePath = fileURL.path
 
-    for (lineNumber, line) in lines.enumerated() {
-      let trimmedLine = line.trimmingCharacters(in: .whitespaces)
+    // Whole-file tokenization: quote state carries across newlines, so
+    // a token that opens on one line and closes on a later line lands
+    // as a single value with the intervening newlines preserved.
+    let tokens = tokenizeContent(content)
 
-      // Skip empty lines and comments
-      if trimmedLine.isEmpty || trimmedLine.hasPrefix("#") {
-        continue
-      }
+    var result: [ExpandedArgument] = []
+    for token in tokens {
+      let tokenChain: [InputOrigin.ResponseFileStep] =
+        [.file(path: filePath, line: token.line)] + parentChain
+      let arg = token.value
 
-      // Strip end-of-line comments
-      let lineWithoutComments = stripComment(trimmedLine)
-      if lineWithoutComments.trimmingCharacters(in: .whitespaces).isEmpty {
-        continue
-      }
-
-      let lineChain: [InputOrigin.ResponseFileStep] =
-        [.file(path: filePath, line: lineNumber + 1)] + parentChain
-
-      // Parse arguments from the line
-      do {
-        let lineArgs = try parseArgumentsFromLine(
-          lineWithoutComments, from: fileURL)
-
-        // Recursively expand any nested response files. Quoted tokens
-        // are always taken as literal values — quoting is the escape
-        // mechanism for values that happen to start with `@`.
-        for parsed in lineArgs {
-          let arg = parsed.value
-          if parsed.wasQuoted {
-            result.append(
-              .init(value: arg, chain: lineChain, wasQuoted: true))
-          } else if arg.hasPrefix("\(self.prefix)\(self.prefix)") {
-            // Handle literal prefix escaping (e.g. `@@file` becomes
-            // `@file`, or with a custom prefix `++file` becomes `+file`).
-            result.append(
-              .init(value: String(arg.dropFirst(1)), chain: lineChain))
-          } else if isResponseFileArgument(arg) {
-            // Recursive response file expansion
-            guard let fileName = extractResponseFileName(arg) else {
-              result.append(.init(value: arg, chain: lineChain))
-              continue
-            }
-
-            let resolvedURL = resolveFileURL(fileName, relativeTo: fileURL)
-
-            // Check for recursion
-            if processingStack.contains(resolvedURL) {
-              throw ResponseFileError.recursiveInclude(resolvedURL)
-            }
-
-            // Check nesting depth
-            if processingStack.count >= maxNestingDepth {
-              throw ResponseFileError.maxNestingDepthExceeded(maxNestingDepth)
-            }
-
-            processingStack.append(resolvedURL)
-            defer { processingStack.removeLast() }
-
-            let nested = try expandResponseFile(
-              at: resolvedURL, parentChain: lineChain)
-            result.append(contentsOf: nested)
-          } else {
-            result.append(.init(value: arg, chain: lineChain))
-          }
+      if token.wasQuoted {
+        // Quoted tokens are always literal — quoting is the escape
+        // mechanism for values that happen to start with the response
+        // file prefix.
+        result.append(
+          .init(value: arg, chain: tokenChain, wasQuoted: true))
+      } else if arg.hasPrefix("\(self.prefix)\(self.prefix)") {
+        // Literal prefix escape: `@@file` -> `@file`, `++file` -> `+file`.
+        result.append(
+          .init(value: String(arg.dropFirst(1)), chain: tokenChain))
+      } else if isResponseFileArgument(arg) {
+        guard let fileName = extractResponseFileName(arg) else {
+          result.append(.init(value: arg, chain: tokenChain))
+          continue
         }
-      } catch let error as ResponseFileError {
-        // Re-throw ResponseFileError types (recursion, nesting depth) as-is
-        throw error
-      } catch {
-        // Only wrap other parsing errors as malformed content
-        throw ResponseFileError.malformedContent(
-          fileURL, "Line \(lineNumber + 1): \(error.localizedDescription)")
+
+        let resolvedURL = resolveFileURL(fileName, relativeTo: fileURL)
+
+        if processingStack.contains(resolvedURL) {
+          throw ResponseFileError.recursiveInclude(resolvedURL)
+        }
+
+        if processingStack.count >= maxNestingDepth {
+          throw ResponseFileError.maxNestingDepthExceeded(maxNestingDepth)
+        }
+
+        processingStack.append(resolvedURL)
+        defer { processingStack.removeLast() }
+
+        let nested = try expandResponseFile(
+          at: resolvedURL, parentChain: tokenChain)
+        result.append(contentsOf: nested)
+      } else {
+        result.append(.init(value: arg, chain: tokenChain))
       }
     }
 
@@ -394,21 +366,24 @@ extension ResponseFileExpander {
     #endif
   }
 
-  /// One token produced by `parseArgumentsFromLine`.
+  /// One token produced by `tokenizeContent`.
   ///
   /// `wasQuoted` records whether the raw token contained any quoted
   /// portion. Quoted tokens are passed through verbatim as literal
   /// values — the response-file prefix (`@`) is not interpreted for
   /// them, so `"@name"` and `'@name'` do NOT trigger a nested lookup.
-  fileprivate struct ParsedLineArgument {
+  ///
+  /// `line` is the 1-indexed line number where the token started, used
+  /// for building the include chain and for error messages.
+  fileprivate struct TokenizedArgument {
     var value: String
     var wasQuoted: Bool
+    var line: Int
   }
 
-  /// Parses arguments from a single line, handling quotes and spaces.
+  /// Tokenizes the entire content of a response file in a single pass.
   ///
-  /// This is a single-pass GNU-style tokenizer, modelled on the
-  /// `TokenizeGNUCommandLine` implementation used by LLVM and gcc:
+  /// Behaviors implemented:
   ///
   /// - Double-quoted segments allow C-style backslash escapes
   ///   (`\n`, `\t`, `\r`, `\\`, `\"`); any other escape sequence is
@@ -417,33 +392,38 @@ extension ResponseFileExpander {
   ///   interpreted, including backslashes.
   /// - Adjacent quoted or unquoted segments with no whitespace between
   ///   them concatenate into a single token, so `"foo""bar"`, `a""a`,
-  ///   and `''''` all behave as gcc would.
+  ///   and `''''` all form a single token.
   /// - An empty quoted segment (`""` or `''`) still produces an empty
   ///   token, which lets callers pass an empty string through a
   ///   response file.
-  ///
-  /// - Parameters:
-  ///   - line: The line to parse
-  ///   - fileURL: The response file the line was read from, used for
-  ///     error reporting.
-  /// - Returns: Array of parsed arguments, each tagged with whether
-  ///   any portion of the raw token was quoted.
-  /// - Throws: ResponseFileError if parsing fails (e.g. unclosed quote).
-  fileprivate func parseArgumentsFromLine(_ line: String, from fileURL: URL)
-    throws -> [ParsedLineArgument]
-  {
-    var arguments: [ParsedLineArgument] = []
+  /// - An unterminated quote is implicitly closed at end-of-file; the
+  ///   accumulated content becomes the final token.
+  /// - A `#` outside of any quoted segment starts a comment that runs
+  ///   to the next newline.
+  /// - A newline **outside** a quoted segment separates tokens; a
+  ///   newline **inside** a quoted segment is preserved as a literal
+  ///   part of the token's value.
+  fileprivate func tokenizeContent(_ content: String) -> [TokenizedArgument] {
+    var result: [TokenizedArgument] = []
     var currentArg = ""
     var currentWasQuoted = false
-    // Distinguishes "we have a token in progress" from "currentArg is
-    // an empty string only because the token itself is empty (from
-    // e.g. `""`)". Without this we could not tell the two cases apart.
     var hasContent = false
+    var currentTokenLine = 1
+    var lineNumber = 1
     var inDoubleQuotes = false
     var inSingleQuotes = false
     var escaped = false
+    var inLineComment = false
 
-    for char in line {
+    for char in content {
+      if inLineComment {
+        if char == "\n" {
+          inLineComment = false
+          lineNumber += 1
+        }
+        continue
+      }
+
       if escaped {
         // Only reachable inside double quotes. Process a C-style escape
         // sequence and consume both the backslash and this character.
@@ -464,10 +444,15 @@ extension ResponseFileExpander {
           currentArg.append("\\")
           currentArg.append(char)
         }
-        hasContent = true
+        if !hasContent {
+          currentTokenLine = lineNumber
+          hasContent = true
+        }
         escaped = false
         continue
       }
+
+      let inQuotes = inDoubleQuotes || inSingleQuotes
 
       switch char {
       case "\\":
@@ -475,56 +460,119 @@ extension ResponseFileExpander {
           escaped = true
         } else {
           // Outside double quotes (including inside single quotes),
-          // backslash is a literal character. This matches gcc and
-          // LLVM's `TokenizeGNUCommandLine`.
+          // backslash is a literal character.
+          if !hasContent {
+            currentTokenLine = lineNumber
+            hasContent = true
+          }
           currentArg.append(char)
-          hasContent = true
         }
       case "\"":
         if inSingleQuotes {
+          if !hasContent {
+            currentTokenLine = lineNumber
+            hasContent = true
+          }
           currentArg.append(char)
-          hasContent = true
         } else {
+          if !hasContent {
+            currentTokenLine = lineNumber
+            hasContent = true
+          }
           inDoubleQuotes.toggle()
           currentWasQuoted = true
-          hasContent = true
         }
       case "'":
         if inDoubleQuotes {
+          if !hasContent {
+            currentTokenLine = lineNumber
+            hasContent = true
+          }
           currentArg.append(char)
-          hasContent = true
         } else {
+          if !hasContent {
+            currentTokenLine = lineNumber
+            hasContent = true
+          }
           inSingleQuotes.toggle()
           currentWasQuoted = true
-          hasContent = true
         }
-      case " ", "\t":
-        if inDoubleQuotes || inSingleQuotes {
+      case "#":
+        if inQuotes {
+          if !hasContent {
+            currentTokenLine = lineNumber
+            hasContent = true
+          }
           currentArg.append(char)
-          hasContent = true
+        } else {
+          if hasContent {
+            result.append(
+              .init(
+                value: currentArg,
+                wasQuoted: currentWasQuoted,
+                line: currentTokenLine))
+            currentArg = ""
+            currentWasQuoted = false
+            hasContent = false
+          }
+          inLineComment = true
+        }
+      case "\n":
+        if inQuotes {
+          if !hasContent {
+            currentTokenLine = lineNumber
+            hasContent = true
+          }
+          currentArg.append(char)
         } else if hasContent {
-          arguments.append(
-            .init(value: currentArg, wasQuoted: currentWasQuoted))
+          result.append(
+            .init(
+              value: currentArg,
+              wasQuoted: currentWasQuoted,
+              line: currentTokenLine))
+          currentArg = ""
+          currentWasQuoted = false
+          hasContent = false
+        }
+        lineNumber += 1
+      case " ", "\t":
+        if inQuotes {
+          if !hasContent {
+            currentTokenLine = lineNumber
+            hasContent = true
+          }
+          currentArg.append(char)
+        } else if hasContent {
+          result.append(
+            .init(
+              value: currentArg,
+              wasQuoted: currentWasQuoted,
+              line: currentTokenLine))
           currentArg = ""
           currentWasQuoted = false
           hasContent = false
         }
       default:
+        if !hasContent {
+          currentTokenLine = lineNumber
+          hasContent = true
+        }
         currentArg.append(char)
-        hasContent = true
       }
     }
 
-    // An unterminated quote is implicitly closed at end-of-line,
-    // matching gcc / LLVM `TokenizeGNUCommandLine`. Whatever was
-    // accumulated between the opening quote and EOL becomes the final
-    // token — including the case where nothing at all was accumulated
-    // (a bare `'` or `"` at end-of-line produces one empty argument).
+    // An unterminated quote is implicitly closed at end-of-file.
+    // Whatever was accumulated becomes the final token — including the
+    // case where nothing was accumulated (a bare `'` or `"` at EOF
+    // still produces one empty argument).
     if hasContent {
-      arguments.append(
-        .init(value: currentArg, wasQuoted: currentWasQuoted))
+      result.append(
+        .init(
+          value: currentArg,
+          wasQuoted: currentWasQuoted,
+          line: currentTokenLine))
     }
 
-    return arguments
+    return result
   }
 }

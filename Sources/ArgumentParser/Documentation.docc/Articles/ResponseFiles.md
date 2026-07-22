@@ -177,14 +177,14 @@ tokens):
 
 #### Common mistakes
 
-- **Unclosed quotes** are implicitly closed at end-of-line (matching the
-  gcc/LLVM tokenizer), so the token that follows the opening quote
-  absorbs the rest of the line verbatim. Watch out for this: a stray `"`
-  or `'` in the middle of a line will silently gobble everything up to
-  the next newline into one argument.
+- **Unclosed quotes** are implicitly closed at end-of-file: whatever
+  content follows the opening quote — including any intervening
+  newlines — becomes part of a single token. Watch out for this: a
+  stray `"` or `'` will silently gobble everything up to the end of the
+  file (or the matching quote) into one argument.
 - **Mismatched quotes** (opening with `"` and closing with `'`, or vice
   versa) behave the same way — the second quote is treated as literal
-  content, and the token terminates at end-of-line.
+  content inside the still-open segment.
 - **Escaping in the wrong style** — writing `'a\nb'` produces the literal
   four characters `a\nb`, not `a<newline>b`. Use double quotes if you want
   the newline.
