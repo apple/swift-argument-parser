@@ -21,9 +21,11 @@ extension ResponseFileExpander {
   }
 
   /// Test helper: tokenize `input` as a single response-file line and
-  /// return the first token's value. Preserves the ergonomics of the
-  /// removed `parseQuotedArgument` for the quote-focused tests below,
-  /// while routing through the actual production entry point.
+  /// return the first token's value.
+  ///
+  /// Preserves the ergonomics of the removed `parseQuotedArgument` for the
+  /// quote-focused tests below, while routing through the actual production
+  /// entry point.
   fileprivate mutating func firstToken(
     _ input: String, from fileURL: URL
   ) throws -> String {
@@ -438,10 +440,11 @@ extension ResponseFileExpanderTests {
     }
   }
 
-  @Test func unclosedQuotesTerminateAtEndOfLine() throws {
-    // Matches gcc / LLVM's `TokenizeGNUCommandLine`: an unterminated
-    // quote is implicitly closed at end-of-line, so the content after
-    // the opening quote becomes a single token verbatim.
+  @Test func unclosedQuotesTerminateAtEndOfFile() throws {
+    // Once a token opens a quoted segment, it keeps consuming input —
+    // including intervening newlines and any subsequent characters —
+    // until it either encounters a matching quote or reaches EOF, at
+    // which point the accumulated content becomes a single token.
     let content = #"""
       --input "unclosed quote
       --output 'another unclosed
@@ -454,8 +457,8 @@ extension ResponseFileExpanderTests {
     #expect(
       result.map { $0.value }
         == [
-          "--input", "unclosed quote",
-          "--output", "another unclosed",
+          "--input",
+          "unclosed quote\n--output 'another unclosed",
         ])
   }
 }
