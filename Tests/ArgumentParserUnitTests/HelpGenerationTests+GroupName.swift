@@ -418,14 +418,19 @@ extension HelpGenerationTests {
   }
 
   func testNamedNestedGroups() {
+    // A title on an outer `@OptionGroup` must not override the titles of
+    // groups nested inside it: `--verbose`/`--oversharing` keep their inner
+    // "Flags Group" title, while the untitled members fall back to "Nested".
     AssertHelp(
       .default, for: GroupsWithNamedGroups.self,
       equals: """
         USAGE: groups-with-named-groups [--verbose] [--oversharing] [<name>] [--existing-user]
 
-        NESTED:
+        FLAGS GROUP:
           --verbose               example
           --oversharing           example
+
+        NESTED:
           <name>                  example
           --existing-user         example
 

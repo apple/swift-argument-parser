@@ -85,7 +85,12 @@ public struct OptionGroup<Value: ParsableArguments>: Decodable, ParsedWrapper {
           Value.self, visibility: .private, parent: parentKey)
         if !title.isEmpty {
           args.content.withEach {
-            $0.help.parentTitle = title
+            // Only apply this group's title to members that aren't already
+            // grouped by a nested `@OptionGroup`, so nested titles are
+            // preserved instead of being overwritten by the outer group.
+            if $0.help.parentTitle.isEmpty {
+              $0.help.parentTitle = title
+            }
           }
         }
         args.content = args.content.map { arg in
