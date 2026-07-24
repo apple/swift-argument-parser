@@ -20,6 +20,10 @@ enum ParserError: Error {
   case helpRequested(visibility: ArgumentVisibility)
   case versionRequested
   case dumpHelpRequested
+  /// The dump of the parsed arguments' source locations is requested.
+  /// The associated `String` is the fully-rendered dump text (text or JSON
+  /// per the requested format) ready to be displayed to the user.
+  case dumpArgumentsSourceLocationRequested(String)
 
   case completionScriptRequested(shell: String?)
   case completionScriptCustomResponse(String)

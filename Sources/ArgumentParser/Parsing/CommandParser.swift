@@ -247,7 +247,10 @@ extension CommandParser {
       }
     decodedArguments.append(contentsOf: newDecodedValues)
     decodedArguments.append(
-      DecodedArguments(type: currentNode.element, value: decodedResult)
+      DecodedArguments(
+        type: currentNode.element,
+        value: decodedResult,
+        parsedValues: values)
     )
 
     return decodedResult
@@ -413,7 +416,29 @@ extension CommandParser {
     do {
       try checkForCompletionScriptRequest(&split)
       try descendingParse(&split)
+
+      // Detect & consume the dump-source-location option from any
+      // unconsumed split entries so it does not trigger an unknown-option
+      // error in `extractLastParsedValue`. If parsing fails for any
+      // *other* reason (e.g., an unknown `--bogus`), that failure takes
+      // precedence — we still throw the dump only on the success path.
+      let dumpFormat = consumeDumpSourceLocationOption(from: &split)
+
       let result = try extractLastParsedValue(split)
+
+      if let format = dumpFormat {
+        let text = SourceLocationDumpGenerator(
+          commandStack: commandStack,
+          decodedArguments: decodedArguments,
+          formattingContext: formattingContext,
+          format: format
+        ).rendered()
+        throw CommandError(
+          commandStack: commandStack,
+          parserError: .dumpArgumentsSourceLocationRequested(text),
+          formattingContext: formattingContext
+        )
+      }
 
       // HelpCommand is a valid result, but needs extra information about
       // the tree from the parser to build its stack of commands.
@@ -679,6 +704,48 @@ extension CommandParser {
     return path.isEmpty
       ? [commandTree.element]
       : path
+  }
+}
+
+// MARK: - Source-Location Dump Option
+
+extension CommandParser {
+  /// The long name of the experimental dump-source-location option.
+  fileprivate static let dumpSourceLocationOptionName =
+    Name.long("experimental-dump-arguments-source-location")
+
+  /// Scans `split` for the dump-source-location option, removes any
+  /// matching elements, and returns the requested output format.
+  ///
+  /// Returns `nil` if the option is not present. Throws if the option
+  /// appears with an unrecognized value (e.g., `=yaml`).
+  fileprivate func consumeDumpSourceLocationOption(
+    from split: inout SplitArguments
+  ) -> SourceLocationDumpFormat? {
+    var format: SourceLocationDumpFormat?
+    var matches: [SplitArguments.Index] = []
+
+    for element in split.elements {
+      switch element.value {
+      case .option(.name(Self.dumpSourceLocationOptionName)):
+        format = .text
+        matches.append(element.index)
+      case .option(
+        .nameWithValue(Self.dumpSourceLocationOptionName, let value)
+      ):
+        format = SourceLocationDumpFormat(rawValue: value) ?? .text
+        matches.append(element.index)
+      default:
+        continue
+      }
+    }
+
+    // Remove matches in reverse so earlier indices remain valid.
+    for index in matches.reversed() {
+      split.remove(at: index)
+    }
+
+    return format
   }
 }
 

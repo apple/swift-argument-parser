@@ -17,6 +17,13 @@
 struct DecodedArguments {
   var type: ParsableArguments.Type
   var value: ParsableArguments
+  /// The parsed values used to decode `value`.
+  ///
+  /// Populated when this entry was decoded directly by
+  /// `CommandParser.parseCurrent`; `nil` for entries that surfaced
+  /// indirectly (e.g., `@OptionGroup` members previously decoded by the
+  /// same `ArgumentDecoder`).
+  var parsedValues: ParsedValues? = nil
 
   var commandType: ParsableCommand.Type? {
     type as? ParsableCommand.Type

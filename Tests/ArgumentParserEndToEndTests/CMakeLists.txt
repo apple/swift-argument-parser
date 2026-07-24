@@ -17,6 +17,7 @@ add_library(EndToEndTests
   ShortNameEndToEndTests.swift
   SimpleEndToEndTests.swift
   SingleValueParsingStrategyTests.swift
+  SourceLocationDumpEndToEndTests.swift
   SourceLocationEndToEndTestSupport.swift
   SourceLocationErrorEndToEndTests.swift
   SubcommandEndToEndTests.swift
