@@ -540,11 +540,25 @@ Usage: example [--verbose] [<files> ...]
   See 'example --help' for more information.
 ```
 
-Any input after the `--` terminator is automatically treated as positional input, so users can provide dash-prefixed values that way even with the default configuration:
+##### Separating options from positional arguments
+
+Use the `--` terminator when a positional value starts with a dash and could
+otherwise be interpreted as an option or flag. The parser stops recognizing
+options and flags after `--` and treats every remaining input as positional.
+The terminator itself isn't included in the parsed values:
 
 ```
 % example --verbose -- file1.swift file2.swift --other
 Verbose: true, files: ["file1.swift", "file2.swift", "--other"]
+```
+
+This convention also lets users pass a value that has the same spelling as a
+declared option or flag. In the following example, `--verbose` is stored in
+`files` instead of setting the `verbose` property:
+
+```
+% example -- --verbose file1.swift
+Verbose: false, files: ["--verbose", "file1.swift"]
 ```
 
 The `.unconditionalRemaining` parsing strategy uses whatever input is left after parsing known options and flags, even if that input is dash-prefixed, including the terminator itself. If `files` were defined as `@Argument(parsing: .unconditionalRemaining) var files: [String]`, then the resulting array would also include strings that look like options:
