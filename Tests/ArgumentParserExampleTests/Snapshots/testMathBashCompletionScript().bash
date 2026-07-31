@@ -85,10 +85,10 @@ __math_offer_flags_options() {
                     fi
                 done
                 if "${not_found}"; then
-                    for index in "${!non_repeating_flags[@]}"; do
-                        if [[ "${non_repeating_flags[${index}]}" = "${word}" ]]; then
-                            unset "non_repeating_flags[${index}]"
-                            non_repeating_flags=("${non_repeating_flags[@]}")
+                    for index in "${!non_repeating_options[@]}"; do
+                        if [[ "${non_repeating_options[${index}]}" = "${word}" ]]; then
+                            unset "non_repeating_options[${index}]"
+                            non_repeating_options=("${non_repeating_options[@]}")
                             break
                         fi
                     done
