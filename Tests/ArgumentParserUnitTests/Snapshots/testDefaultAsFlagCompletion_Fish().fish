@@ -29,7 +29,18 @@ function __defaultasflag-test_parse_tokens -S
 end
 
 function __defaultasflag-test_tokens
-    if test (string split -m 1 -f 1 -- . "$FISH_VERSION") -gt 3
+    set -l fish_version (string split -- . "$FISH_VERSION")
+    if test "$fish_version[1]" -gt 4
+        commandline $argv | read --tokenize-raw --list tokens
+        printf '%s\n' $tokens
+    else if test "$fish_version[1]" -eq 4; and test "$fish_version[2]" -ge 1
+        if test "$argv" = -tC
+            commandline $argv
+        else
+            commandline $argv | read --tokenize-raw --list tokens
+            printf '%s\n' $tokens
+        end
+    else if test "$fish_version[1]" -gt 3
         commandline --tokens-raw $argv
     else
         commandline -o $argv
