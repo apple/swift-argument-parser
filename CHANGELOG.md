@@ -6,6 +6,10 @@ Add new items at the end of the relevant section under **Unreleased**.
 
 ## [Unreleased]
 
+### Additions
+
+- `CommandConfiguration` now accepts a `helpBanner`, a string printed verbatim above the overview on a command's help screen and inherited by its subcommands unless they provide their own banner or the empty string.
+
 ---
 
 ## [1.8.2] - 2026-06-04

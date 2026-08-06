@@ -43,6 +43,15 @@ public struct CommandConfiguration: Sendable {
   /// a static block of text that extends the description of the argument.
   public var discussion: String
 
+  /// A banner shown at the top of the help display for this command and,
+  /// unless overridden, all of its subcommands.
+  ///
+  /// If `helpBanner` is `nil`, the banner is inherited from the nearest
+  /// ancestor command that specifies one. To suppress an inherited banner, set
+  /// `helpBanner` to the empty string. Unlike `abstract` and `discussion`, a
+  /// banner is printed verbatim and is never wrapped to the terminal width.
+  public var helpBanner: String?
+
   /// Version information for this command.
   public var version: String
 
@@ -97,6 +106,11 @@ public struct CommandConfiguration: Sendable {
   ///     automatically generating a usage description. Passing an empty string
   ///     hides the usage string altogether.
   ///   - discussion: A longer description of the command.
+  ///   - helpBanner: A banner shown at the top of the help display for this
+  ///     command and, unless overridden, all of its subcommands. When
+  ///     `helpBanner` is `nil`, the banner is inherited from the nearest
+  ///     ancestor command that specifies one. Pass the empty string to
+  ///     suppress an inherited banner.
   ///   - version: The version number for this command. When you provide a
   ///     non-empty string, the argument parser prints it if the user provides
   ///     a `--version` flag.
@@ -120,6 +134,7 @@ public struct CommandConfiguration: Sendable {
     abstract: String = "",
     usage: String? = nil,
     discussion: String = "",
+    helpBanner: String? = nil,
     version: String = "",
     shouldDisplay: Bool = true,
     subcommands ungroupedSubcommands: [ParsableCommand.Type] = [],
@@ -132,6 +147,7 @@ public struct CommandConfiguration: Sendable {
     self.abstract = abstract
     self.usage = usage
     self.discussion = discussion
+    self.helpBanner = helpBanner
     self.version = version
     self.shouldDisplay = shouldDisplay
     self.ungroupedSubcommands = ungroupedSubcommands
@@ -149,6 +165,7 @@ public struct CommandConfiguration: Sendable {
     abstract: String = "",
     usage: String? = nil,
     discussion: String = "",
+    helpBanner: String? = nil,
     version: String = "",
     shouldDisplay: Bool = true,
     subcommands ungroupedSubcommands: [ParsableCommand.Type] = [],
@@ -162,6 +179,7 @@ public struct CommandConfiguration: Sendable {
     self.abstract = abstract
     self.usage = usage
     self.discussion = discussion
+    self.helpBanner = helpBanner
     self.version = version
     self.shouldDisplay = shouldDisplay
     self.ungroupedSubcommands = ungroupedSubcommands
