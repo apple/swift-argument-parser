@@ -10,7 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 import ArgumentParserTestHelpers
-import XCTest
+import Testing
 
 @testable import ArgumentParser
 
@@ -75,8 +75,8 @@ extension HelpGenerationTests {
     var argsAndFlags: ArgsAndFlags
   }
 
-  func testAllVisible() {
-    AssertHelp(
+  @Test func allVisible() async throws {
+    try requireHelp(
       .default, for: AllVisible.self,
       equals: """
         USAGE: all-visible [--verbose] [--oversharing] [--name <name>] --age <age> [--experimental] --prefix <prefix> [<name>] [--existing-user]
@@ -100,7 +100,7 @@ extension HelpGenerationTests {
 
         """)
 
-    AssertHelp(
+    try requireHelp(
       .hidden, for: AllVisible.self,
       equals: """
         USAGE: all-visible [--verbose] [--oversharing] [--name <name>] --age <age> [--experimental] --prefix <prefix> [<name>] <title> [--existing-user]
@@ -140,8 +140,8 @@ extension HelpGenerationTests {
     var argsAndFlags: ArgsAndFlags
   }
 
-  func testCombined() {
-    AssertHelp(
+  @Test func combined() async throws {
+    try requireHelp(
       .default, for: Combined.self,
       equals: """
         USAGE: combined [--verbose] [--oversharing] [--name <name>] --age <age> [--experimental] --prefix <prefix> [<name>] [--existing-user]
@@ -163,7 +163,7 @@ extension HelpGenerationTests {
 
         """)
 
-    AssertHelp(
+    try requireHelp(
       .hidden, for: Combined.self,
       equals: """
         USAGE: combined [--verbose] [--oversharing] [--name <name>] --age <age> [--experimental] --prefix <prefix> [<name>] <title> [--existing-user]
@@ -201,8 +201,8 @@ extension HelpGenerationTests {
     var argsAndFlags: ArgsAndFlags
   }
 
-  func testHiddenGroups() {
-    AssertHelp(
+  @Test func hiddenGroups() async throws {
+    try requireHelp(
       .default, for: HiddenGroups.self,
       equals: """
         USAGE: hidden-groups
@@ -212,7 +212,7 @@ extension HelpGenerationTests {
 
         """)
 
-    AssertHelp(
+    try requireHelp(
       .hidden, for: HiddenGroups.self,
       equals: """
         USAGE: hidden-groups [--verbose] [--oversharing] [--name <name>] --age <age> [--experimental] --prefix <prefix>
@@ -246,8 +246,8 @@ extension HelpGenerationTests {
     var nested: NestedGroups
   }
 
-  func testNestedHiddenGroups() {
-    AssertHelp(
+  @Test func nestedHiddenGroups() async throws {
+    try requireHelp(
       .default, for: NestedHiddenGroups.self,
       equals: """
         USAGE: nested-hidden-groups
@@ -257,7 +257,7 @@ extension HelpGenerationTests {
 
         """)
 
-    AssertHelp(
+    try requireHelp(
       .hidden, for: NestedHiddenGroups.self,
       equals: """
         USAGE: nested-hidden-groups [--experimental] --prefix <prefix>
@@ -293,8 +293,8 @@ extension HelpGenerationTests {
     }
   }
 
-  func testParentChild() {
-    AssertHelp(
+  @Test func parentChild() async throws {
+    try requireHelp(
       .default, for: ParentWithGroups.self,
       equals: """
         USAGE: parent-with-groups [--verbose] [--oversharing] [<name>] [--existing-user] <subcommand>
@@ -316,7 +316,7 @@ extension HelpGenerationTests {
           See 'parent-with-groups help <subcommand>' for detailed help.
         """)
 
-    AssertHelp(
+    try requireHelp(
       .hidden, for: ParentWithGroups.self,
       equals: """
         USAGE: parent-with-groups [--verbose] [--oversharing] [<name>] <title> [--existing-user] <subcommand>
@@ -339,7 +339,7 @@ extension HelpGenerationTests {
           See 'parent-with-groups help <subcommand>' for detailed help.
         """)
 
-    AssertHelp(
+    try requireHelp(
       .default, for: ParentWithGroups.ChildWithGroups.self,
       root: ParentWithGroups.self,
       equals: """
@@ -362,7 +362,7 @@ extension HelpGenerationTests {
 
         """)
 
-    AssertHelp(
+    try requireHelp(
       .hidden, for: ParentWithGroups.ChildWithGroups.self,
       root: ParentWithGroups.self,
       equals: """
@@ -392,8 +392,8 @@ extension HelpGenerationTests {
     var extras: ContainsOptionGroup
   }
 
-  func testUnnamedNestedGroups() {
-    AssertHelp(
+  @Test func unnamedNestedGroups() async throws {
+    try requireHelp(
       .default, for: GroupsWithUnnamedGroups.self,
       equals: """
         USAGE: groups-with-unnamed-groups [--verbose] [--oversharing] [<name>] [--existing-user]
@@ -417,8 +417,8 @@ extension HelpGenerationTests {
     var extras: ContainsOptionGroup
   }
 
-  func testNamedNestedGroups() {
-    AssertHelp(
+  @Test func namedNestedGroups() async throws {
+    try requireHelp(
       .default, for: GroupsWithNamedGroups.self,
       equals: """
         USAGE: groups-with-named-groups [--verbose] [--oversharing] [<name>] [--existing-user]

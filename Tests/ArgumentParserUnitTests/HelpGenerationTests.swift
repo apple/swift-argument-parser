@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2020 Apple Inc. and the Swift project authors
+// Copyright (c) 2020-2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -10,12 +10,13 @@
 //===----------------------------------------------------------------------===//
 
 import ArgumentParserTestHelpers
+import Foundation
 import Testing
 import XCTest
 
 @testable import ArgumentParser
 
-final class HelpGenerationTests: XCTestCase {
+@Suite struct HelpGenerationTests {
 }
 
 extension Foundation.URL: ArgumentParser.ExpressibleByArgument {
@@ -39,8 +40,8 @@ extension HelpGenerationTests {
     @Option(help: "Your title") var title: String?
   }
 
-  func testHelp() {
-    AssertHelp(
+  @Test func help() async throws {
+    try requireHelp(
       .default, for: A.self,
       equals: """
         USAGE: a --name <name> [--title <title>]
@@ -64,8 +65,8 @@ extension HelpGenerationTests {
       true
   }
 
-  func testHelpWithHidden() {
-    AssertHelp(
+  @Test func helpWithHidden() async throws {
+    try requireHelp(
       .default, for: B.self,
       equals: """
         USAGE: b --name <name> [--title <title>]
@@ -77,7 +78,7 @@ extension HelpGenerationTests {
 
         """)
 
-    AssertHelp(
+    try requireHelp(
       .hidden, for: B.self,
       equals: """
         USAGE: b --name <name> [--title <title>] [<hidden-name>] [--hidden-title <hidden-title>] [--hidden-flag] [--hidden-inverted-flag] [--no-hidden-inverted-flag]
@@ -105,8 +106,8 @@ extension HelpGenerationTests {
     var name: String
   }
 
-  func testHelpWithDiscussion() {
-    AssertHelp(
+  @Test func helpWithDiscussion() async throws {
+    try requireHelp(
       .default, for: C.self,
       equals: """
         USAGE: c --name <name>
@@ -130,8 +131,8 @@ extension HelpGenerationTests {
     var five: String = ""
   }
 
-  func testHelpWithDefaultValueButNoDiscussion() {
-    AssertHelp(
+  @Test func helpWithDefaultValueButNoDiscussion() async throws {
+    try requireHelp(
       .default, for: Issue27.self,
       equals: """
         USAGE: issue27 [--two <two>] --three <three> [--four <four>] [--five <five>]
@@ -213,8 +214,8 @@ extension HelpGenerationTests {
     var special: SpecializedSynthesized = .apple
   }
 
-  func testHelpWithDefaultValues() {
-    AssertHelp(
+  @Test func helpWithDefaultValues() async throws {
+    try requireHelp(
       .default, for: D.self,
       equals: """
         USAGE: d [<occupation>] [--name <name>] [--age <age>] [--logging <logging>] [--lucky <numbers> ...] [--optional] [--required] [--degree <degree>] [--directory <directory>] [--manual <manual>] [--unspecial <unspecial>] [--special <special>]
@@ -270,8 +271,8 @@ extension HelpGenerationTests {
     var flag: Bool = false
   }
 
-  func testHelpWithMutuallyExclusiveFlags() {
-    AssertHelp(
+  @Test func helpWithMutuallyExclusiveFlags() async throws {
+    try requireHelp(
       .default, for: E.self,
       equals: """
         USAGE: e --stats --count --list
@@ -283,7 +284,7 @@ extension HelpGenerationTests {
 
         """)
 
-    AssertHelp(
+    try requireHelp(
       .default, for: F.self,
       equals: """
         USAGE: f [-s] [-c] [-l]
@@ -294,7 +295,7 @@ extension HelpGenerationTests {
 
         """)
 
-    AssertHelp(
+    try requireHelp(
       .default, for: G.self,
       equals: """
         USAGE: g [--flag] [--no-flag]
@@ -338,8 +339,8 @@ extension HelpGenerationTests {
     ])
   }
 
-  func testHelpWithSubcommands() {
-    AssertHelp(
+  @Test func helpWithSubcommands() async throws {
+    try requireHelp(
       .default, for: H.self,
       equals: """
         USAGE: h <subcommand>
@@ -357,7 +358,7 @@ extension HelpGenerationTests {
           See 'h help <subcommand>' for detailed help.
         """)
 
-    AssertHelp(
+    try requireHelp(
       .default, for: H.AnotherCommand.self, root: H.self,
       equals: """
         USAGE: h another-command [--some-option-with-very-long-name <some-option-with-very-long-name>] [--option <option>] [<argument-with-very-long-name-and-help>] [<argument-with-very-long-name>] [<argument>]
@@ -380,8 +381,8 @@ extension HelpGenerationTests {
     static let configuration = CommandConfiguration(version: "1.0.0")
   }
 
-  func testHelpWithVersion() {
-    AssertHelp(
+  @Test func helpWithVersion() async throws {
+    try requireHelp(
       .default, for: I.self,
       equals: """
         USAGE: i
@@ -398,10 +399,10 @@ extension HelpGenerationTests {
     static let configuration = CommandConfiguration(discussion: "test")
   }
 
-  func testOverviewButNoAbstractSpacing() {
+  @Test func overviewButNoAbstractSpacing() async throws {
     let renderedHelp = HelpGenerator(J.self, visibility: .default)
       .rendered()
-    AssertEqualStrings(
+    expectEqualStrings(
       actual: renderedHelp,
       expected: """
         OVERVIEW: \n\
@@ -426,8 +427,8 @@ extension HelpGenerationTests {
     }
   }
 
-  func testHelpWithNoValueForArray() {
-    AssertHelp(
+  @Test func helpWithNoValueForArray() async throws {
+    try requireHelp(
       .default, for: K.self,
       equals: """
         USAGE: k [<paths> ...]
@@ -452,8 +453,8 @@ extension HelpGenerationTests {
     var time: String?
   }
 
-  func testHelpWithMultipleCustomNames() {
-    AssertHelp(
+  @Test func helpWithMultipleCustomNames() async throws {
+    try requireHelp(
       .default, for: L.self,
       equals: """
         USAGE: l [--remote <remote>]
@@ -473,8 +474,8 @@ extension HelpGenerationTests {
       subcommands: [M.self], defaultSubcommand: M.self)
   }
 
-  func testHelpWithDefaultCommand() {
-    AssertHelp(
+  @Test func helpWithDefaultCommand() async throws {
+    try requireHelp(
       .default, for: N.self,
       equals: """
         USAGE: n <subcommand>
@@ -509,8 +510,8 @@ extension HelpGenerationTests {
     var remainder: [O] = [.large]
   }
 
-  func testHelpWithDefaultValueForArray() {
-    AssertHelp(
+  @Test func helpWithDefaultValueForArray() async throws {
+    try requireHelp(
       .default, for: P.self,
       equals: """
         USAGE: p [-o <o> ...] [<remainder> ...]
@@ -553,8 +554,8 @@ extension HelpGenerationTests {
     public init() {}
   }
 
-  func testHelpExcludingSuperCommand() throws {
-    AssertHelp(
+  @Test func helpExcludingSuperCommand() async throws {
+    try requireHelp(
       .default, for: Bar.self, root: Foo.self,
       equals: """
         OVERVIEW: Perform bar operations
@@ -583,8 +584,8 @@ extension HelpGenerationTests {
     )
   }
 
-  func testHelpSubcommandGroups() throws {
-    AssertHelp(
+  @Test func helpSubcommandGroups() async throws {
+    try requireHelp(
       .default, for: WithSubgroups.self,
       equals: """
         USAGE: subgroupings <subcommand>
@@ -622,8 +623,8 @@ extension HelpGenerationTests {
     )
   }
 
-  func testHelpOnlySubcommandGroups() throws {
-    AssertHelp(
+  @Test func helpOnlySubcommandGroups() async throws {
+    try requireHelp(
       .default, for: OnlySubgroups.self,
       equals: """
         USAGE: subgroupings <subcommand>
@@ -724,23 +725,25 @@ extension HelpGenerationTests {
   }
 
   @available(*, deprecated)
-  func testHidingOptionGroup() throws {
-    AssertHelp(
+  @Test func hidingOptionGroup() async throws {
+    try requireHelp(
       .default, for: HideOptionGroupLegacyDriver.self, equals: helpMessage)
-    AssertHelp(.default, for: HideOptionGroupDriver.self, equals: helpMessage)
-    AssertHelp(
+    try requireHelp(
+      .default, for: HideOptionGroupDriver.self, equals: helpMessage)
+    try requireHelp(
       .default, for: PrivateOptionGroupDriver.self, equals: helpMessage)
   }
 
   @available(*, deprecated)
-  func testHelpHiddenShowsDefaultAndHidden() throws {
-    AssertHelp(
+  @Test func helpHiddenShowsDefaultAndHidden() async throws {
+    try requireHelp(
       .hidden, for: HideOptionGroupLegacyDriver.self, equals: helpHiddenMessage)
-    AssertHelp(
+    try requireHelp(
       .hidden, for: HideOptionGroupDriver.self, equals: helpHiddenMessage)
 
     // Note: Private option groups are not visible at `.hidden` help level.
-    AssertHelp(.hidden, for: PrivateOptionGroupDriver.self, equals: helpMessage)
+    try requireHelp(
+      .hidden, for: PrivateOptionGroupDriver.self, equals: helpMessage)
   }
 }
 
@@ -770,34 +773,34 @@ extension HelpGenerationTests {
     @Option var specializedSynthesizedOption: SpecializedSynthesized
   }
 
-  func testAllValueStrings() throws {
-    XCTAssertEqual(AllValues.Manual.allValueStrings, ["bar"])
-    XCTAssertEqual(
-      AllValues.UnspecializedSynthesized.allValueStrings, ["0", "1"])
-    XCTAssertEqual(
-      AllValues.SpecializedSynthesized.allValueStrings, ["Apple", "Banana"])
+  @Test func allValueStrings() async throws {
+    #expect(AllValues.Manual.allValueStrings == ["bar"])
+    #expect(
+      AllValues.UnspecializedSynthesized.allValueStrings == ["0", "1"])
+    #expect(
+      AllValues.SpecializedSynthesized.allValueStrings == ["Apple", "Banana"])
   }
 
-  func testAllValues() {
+  @Test func allValues() async throws {
     let opts = ArgumentSet(AllValues.self, visibility: .private, parent: nil)
-    XCTAssertEqual(
-      AllValues.Manual.allValueStrings, opts[0].help.allValueStrings)
-    XCTAssertEqual(
-      AllValues.Manual.allValueStrings, opts[1].help.allValueStrings)
+    #expect(
+      AllValues.Manual.allValueStrings == opts[0].help.allValueStrings)
+    #expect(
+      AllValues.Manual.allValueStrings == opts[1].help.allValueStrings)
 
-    XCTAssertEqual(
-      AllValues.UnspecializedSynthesized.allValueStrings,
-      opts[2].help.allValueStrings)
-    XCTAssertEqual(
-      AllValues.UnspecializedSynthesized.allValueStrings,
-      opts[3].help.allValueStrings)
+    #expect(
+      AllValues.UnspecializedSynthesized.allValueStrings
+        == opts[2].help.allValueStrings)
+    #expect(
+      AllValues.UnspecializedSynthesized.allValueStrings
+        == opts[3].help.allValueStrings)
 
-    XCTAssertEqual(
-      AllValues.SpecializedSynthesized.allValueStrings,
-      opts[4].help.allValueStrings)
-    XCTAssertEqual(
-      AllValues.SpecializedSynthesized.allValueStrings,
-      opts[5].help.allValueStrings)
+    #expect(
+      AllValues.SpecializedSynthesized.allValueStrings
+        == opts[4].help.allValueStrings)
+    #expect(
+      AllValues.SpecializedSynthesized.allValueStrings
+        == opts[5].help.allValueStrings)
   }
 
   struct Q: ParsableArguments {
@@ -811,8 +814,8 @@ extension HelpGenerationTests {
       Bool = true
   }
 
-  func testHelpWithPrivate() {
-    AssertHelp(
+  @Test func helpWithPrivate() async throws {
+    try requireHelp(
       .default, for: Q.self,
       equals: """
         USAGE: q --name <name> [--title <title>]
@@ -848,8 +851,8 @@ extension HelpGenerationTests {
     }
   }
 
-  func testIssue278() {
-    AssertHelp(
+  @Test func issue278() async throws {
+    try requireHelp(
       .default, for: ParserBug.Sub.self, root: ParserBug.self,
       equals: """
         USAGE: parserBug sub [--example] [<argument>]
@@ -865,7 +868,6 @@ extension HelpGenerationTests {
   }
 }
 
-// swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension HelpGenerationTests {
   struct NonCustomUsage: ParsableCommand {
@@ -910,8 +912,9 @@ extension HelpGenerationTests {
     @Flag var verboseMode = false
   }
 
-  func test_usageCustomization_helpMessage() {
-    AssertEqualStrings(
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  @Test func test_usageCustomization_helpMessage() async throws {
+    expectEqualStrings(
       actual: NonCustomUsage.helpMessage(columns: 80),
       expected: """
         USAGE: non-custom-usage <file> [--verbose-mode] <subcommand>
@@ -929,7 +932,7 @@ extension HelpGenerationTests {
           See 'non-custom-usage help <subcommand>' for detailed help.
         """)
 
-    AssertEqualStrings(
+    expectEqualStrings(
       actual: NonCustomUsage.helpMessage(
         for: NonCustomUsage.ExampleSubcommand.self, columns: 80),
       expected: """
@@ -943,7 +946,7 @@ extension HelpGenerationTests {
 
         """)
 
-    AssertEqualStrings(
+    expectEqualStrings(
       actual: CustomUsageShort.helpMessage(columns: 80),
       expected: """
         USAGE: example [--verbose] <file-name>
@@ -957,7 +960,7 @@ extension HelpGenerationTests {
 
         """)
 
-    AssertEqualStrings(
+    expectEqualStrings(
       actual: CustomUsageLong.helpMessage(columns: 80),
       expected: """
         USAGE: example <file-name>
@@ -973,7 +976,7 @@ extension HelpGenerationTests {
 
         """)
 
-    AssertEqualStrings(
+    expectEqualStrings(
       actual: CustomUsageHidden.helpMessage(columns: 80),
       expected: """
         ARGUMENTS:
@@ -986,8 +989,9 @@ extension HelpGenerationTests {
         """)
   }
 
-  func test_usageCustomization_fullMessage() {
-    AssertEqualStrings(
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  @Test func test_usageCustomization_fullMessage() async throws {
+    expectEqualStrings(
       actual: NonCustomUsage.fullMessage(for: ValidationError("Test")),
       expected: """
         Error: Test
@@ -995,7 +999,7 @@ extension HelpGenerationTests {
           See 'non-custom-usage --help' for more information.
         """)
 
-    AssertEqualStrings(
+    expectEqualStrings(
       actual: CustomUsageShort.fullMessage(for: ValidationError("Test")),
       expected: """
         Error: Test
@@ -1003,7 +1007,7 @@ extension HelpGenerationTests {
           See 'custom-usage-short --help' for more information.
         """)
 
-    AssertEqualStrings(
+    expectEqualStrings(
       actual: CustomUsageLong.fullMessage(for: ValidationError("Test")),
       expected: """
         Error: Test
@@ -1013,7 +1017,7 @@ extension HelpGenerationTests {
           See 'custom-usage-long --help' for more information.
         """)
 
-    AssertEqualStrings(
+    expectEqualStrings(
       actual: CustomUsageHidden.fullMessage(for: ValidationError("Test")),
       expected: """
         Error: Test
@@ -1021,27 +1025,28 @@ extension HelpGenerationTests {
         """)
   }
 
-  func test_usageCustomization_usageString() {
-    AssertEqualStrings(
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  @Test func test_usageCustomization_usageString() async throws {
+    expectEqualStrings(
       actual: NonCustomUsage.usageString(),
       expected: """
         non-custom-usage <file> [--verbose-mode] <subcommand>
         """)
 
-    AssertEqualStrings(
+    expectEqualStrings(
       actual: NonCustomUsage.usageString(
         for: NonCustomUsage.ExampleSubcommand.self),
       expected: """
         non-custom-usage example-subcommand <output>
         """)
 
-    AssertEqualStrings(
+    expectEqualStrings(
       actual: CustomUsageShort.usageString(),
       expected: """
         example [--verbose] <file-name>
         """)
 
-    AssertEqualStrings(
+    expectEqualStrings(
       actual: CustomUsageLong.usageString(),
       expected: """
         example <file-name>
@@ -1049,14 +1054,13 @@ extension HelpGenerationTests {
         example --help
         """)
 
-    AssertEqualStrings(
+    expectEqualStrings(
       actual: CustomUsageHidden.usageString(),
       expected: """
         """)
   }
 }
 
-// swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension HelpGenerationTests {
   enum OptionValues: String, CaseIterable, ExpressibleByArgument {
@@ -1080,8 +1084,8 @@ extension HelpGenerationTests {
     @Option(help: "An option with enumerable values.") var opt: OptionValues
   }
 
-  func testEnumerableOptionValuesWithoutDefault() {
-    AssertHelp(
+  @Test func enumerableOptionValuesWithoutDefault() async throws {
+    try requireHelp(
       .default, for: CustomOption.self,
       equals: """
         USAGE: custom-option --opt <opt>
@@ -1102,8 +1106,8 @@ extension HelpGenerationTests {
     var opt: [OptionValues] = [.red]
   }
 
-  func testEnumerableOptionAsListWithSingleDefault() {
-    AssertHelp(
+  @Test func enumerableOptionAsListWithSingleDefault() async throws {
+    try requireHelp(
       .default,
       for: CustomOptionAsListWithSingleDefaultValue.self,
       columns: 100,
@@ -1126,8 +1130,8 @@ extension HelpGenerationTests {
     var opt: [OptionValues] = [.red, .blue]
   }
 
-  func testEnumerableOptionAsListWithMultipleDefault() {
-    AssertHelp(
+  @Test func enumerableOptionAsListWithMultipleDefault() async throws {
+    try requireHelp(
       .default,
       for: CustomOptionAsListWithMultipleDefaultValue.self,
       columns: 100,
@@ -1151,8 +1155,8 @@ extension HelpGenerationTests {
     var opt: [OptionValues] = []
   }
 
-  func testEnumerableOptionAsListWithEmptyArrayAsDefault() {
-    AssertHelp(
+  @Test func enumerableOptionAsListWithEmptyArrayAsDefault() async throws {
+    try requireHelp(
       .default,
       for: CustomOptionAsListWithEmptyArrayAsDefault.self,
       columns: 100,
@@ -1175,8 +1179,8 @@ extension HelpGenerationTests {
     var opt: OptionValues = .red
   }
 
-  func testEnumerableOptionValuesWithDefault() {
-    AssertHelp(
+  @Test func enumerableOptionValuesWithDefault() async throws {
+    try requireHelp(
       .default, for: CustomOptionWithDefault.self,
       equals: """
         USAGE: custom-option-with-default [--opt <opt>]
@@ -1196,8 +1200,8 @@ extension HelpGenerationTests {
     @Option(help: "Optional option type.") var optional: OptionValues?
   }
 
-  func testOptionalEnumerableOptionValue() {
-    AssertHelp(
+  @Test func optionalEnumerableOptionValue() async throws {
+    try requireHelp(
       .default, for: Optional.self,
       equals: """
         USAGE: optional [--optional <optional>]
@@ -1217,8 +1221,9 @@ extension HelpGenerationTests {
     @Option var b: OptionValues = .red
   }
 
-  func testEnumerableOptionValue_NoAbstract() {
-    AssertHelp(
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  @Test func enumerableOptionValue_NoAbstract() async throws {
+    try requireHelp(
       .default, for: NoAbstract.self,
       equals: """
         USAGE: no-abstract --a <a> [--b <b>]
@@ -1260,8 +1265,8 @@ extension HelpGenerationTests {
     var b: OptionValues?
   }
 
-  func testEnumerableValuesWithPreamble() {
-    AssertHelp(
+  @Test func enumerableValuesWithPreamble() async throws {
+    try requireHelp(
       .default, for: Preamble.self,
       equals: """
         USAGE: preamble --a <a> [--b <b>]
@@ -1300,8 +1305,8 @@ extension HelpGenerationTests {
     var values: OptionWithoutEnumerationHelpText
   }
 
-  func testOptionHelpTextWithAndWithoutEnumeratedDescriptions() {
-    AssertHelp(
+  @Test func optionHelpTextWithAndWithoutEnumeratedDescriptions() async throws {
+    try requireHelp(
       .default, for: HelpTextComparison.self,
       equals: """
         USAGE: help-text-comparison --enumerable <enumerable> --values <values>
@@ -1336,8 +1341,8 @@ extension HelpGenerationTests {
     @Option(help: "An option with no values.") var empty: Empty
   }
 
-  func testEmptyOptionValues() {
-    AssertHelp(
+  @Test func emptyOptionValues() async throws {
+    try requireHelp(
       .default, for: EmptyCommand.self,
       equals: """
         USAGE: empty-command --empty <empty>
@@ -1380,8 +1385,8 @@ extension HelpGenerationTests {
     var argument: Cases
   }
 
-  func testLongOptionLabelAndDescriptionHelp() {
-    AssertHelp(
+  @Test func longOptionLabelAndDescriptionHelp() async throws {
+    try requireHelp(
       .default, for: LongLabelHelp.self,
       equals: """
         USAGE: long-label-help --argument <argument>
@@ -1414,8 +1419,10 @@ extension HelpGenerationTests {
     var argument: Cases
   }
 
-  func testLongOptionLabelAndDescriptionHelpWithOptionDescription() {
-    AssertHelp(
+  @Test func longOptionLabelAndDescriptionHelpWithOptionDescription()
+    async throws
+  {
+    try requireHelp(
       .default, for: LongLabelHelpWithOptionDescription.self,
       equals: """
         USAGE: long-label-help-with-option-description --argument <argument>
@@ -1445,11 +1452,11 @@ extension HelpGenerationTests {
     var argument: String?
   }
 
-  func testColumnsEnvironmentOverride() throws {
+  @Test func columnsEnvironmentOverride() async throws {
     #if !(os(Windows) || os(WASI))
     defer { Platform.Environment[.columns] = nil }
     Platform.Environment[.columns] = nil
-    AssertHelp(
+    try requireHelp(
       .default, for: WideHelp.self, columns: nil,
       equals: """
         USAGE: wide-help [<argument>]
@@ -1463,7 +1470,7 @@ extension HelpGenerationTests {
         """)
 
     Platform.Environment[.columns, as: Int.self] = 60
-    AssertHelp(
+    try requireHelp(
       .default, for: WideHelp.self, columns: nil,
       equals: """
         USAGE: wide-help [<argument>]
@@ -1478,7 +1485,7 @@ extension HelpGenerationTests {
         """)
 
     Platform.Environment[.columns, as: Int.self] = 79
-    AssertHelp(
+    try requireHelp(
       .default, for: WideHelp.self, columns: nil,
       equals: """
         USAGE: wide-help [<argument>]
@@ -1511,16 +1518,16 @@ extension HelpGenerationTests {
     var arg: String = ""
   }
 
-  func testOptionGroupUsageDoesNotIncludeGroupName() throws {
+  @Test func optionGroupUsageDoesNotIncludeGroupName() async throws {
     // The usage string from --help should not prepend the OptionGroup
     // type name when all arguments are optional (#578).
     let result = try OptionGroupCommand.parseAsRoot(["--help"])
     guard let helpCommand = result as? HelpCommand else {
-      XCTFail("Expected HelpCommand, got \(type(of: result))")
+      Issue.record("Expected HelpCommand, got \(type(of: result))")
       return
     }
     let helpText = helpCommand.generateHelp(screenWidth: 80)
-    AssertEqualStrings(
+    expectEqualStrings(
       actual: helpText,
       expected: """
         USAGE: test [--num <num>] [<arg>]

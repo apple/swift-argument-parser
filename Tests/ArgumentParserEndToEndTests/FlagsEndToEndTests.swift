@@ -279,9 +279,12 @@ extension FlagsEndToEndTests {
       XCTAssertEqual(options.shape, nil)
     }
   }
+}
 
-  func testParsingCaseIterable_Help() throws {
-    AssertHelp(
+@Suite
+struct FlagsEndToEndTestsSWT {
+  @Test func testParsingCaseIterable_Help() async throws {
+    try requireHelp(
       .default, for: Baz.self,
       equals: """
         USAGE: baz --pink --purple --silver [--small] [--medium] [--large] [--extra-large] [--humongous] [--round] [--square] [--oblong]
@@ -298,7 +301,10 @@ extension FlagsEndToEndTests {
 
         """)
   }
+}
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
+extension FlagsEndToEndTests {
   func testParsingCaseIterable_Fails() throws {
     // Missing color
     XCTAssertThrowsError(try Baz.parse([]))
