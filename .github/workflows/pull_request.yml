@@ -65,6 +65,7 @@ jobs:
     with:
       shell_check_enabled: false  # bug: https://github.com/apple/swift-argument-parser/issues/703
       api_breakage_check_enabled: false  # re-enable after https://github.com/apple/swift-argument-parser/pull/908
+      format_check_container_image: swiftlang/swift:nightly-6.4.x-noble  # request swiftlang/swift-format#1243 in a release
 
   required:
     name: Required
