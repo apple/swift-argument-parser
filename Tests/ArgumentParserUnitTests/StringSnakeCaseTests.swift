@@ -2,22 +2,21 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2020 Apple Inc. and the Swift project authors
+// Copyright (c) 2020-2025 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
 //
 //===----------------------------------------------------------------------===//
 
-import XCTest
+import Testing
 
 @testable import ArgumentParser
 
-final class StringSnakeCaseTests: XCTestCase {}
-
-extension StringSnakeCaseTests {
-  func testStringSnakeCase() {
-    let toSnakeCaseTests = [
+@Suite
+struct StringSnakeCaseTests {
+  @Test(
+    arguments: [
       ("simpleOneTwo", "simple_one_two"),
       ("myURL", "my_url"),
       ("singleCharacterAtEndX", "single_character_at_end_x"),
@@ -57,13 +56,13 @@ extension StringSnakeCaseTests {
       ("_Sample", "_sample"),
       ("_IAmAnAPPDeveloper", "_i_am_an_app_developer"),
     ]
-    for test in toSnakeCaseTests {
-      XCTAssertEqual(test.0.convertedToSnakeCase(), test.1)
-    }
+  )
+  func stringSnakeCase(value: String, expected: String) {
+    #expect(value.convertedToSnakeCase() == expected)
   }
 
-  func testStringSnakeCaseWithSeparator() {
-    let toSnakeCaseTests = [
+  @Test(
+    arguments: [
       ("simpleOneTwo", "simple-one-two"),
       ("myURL", "my-url"),
       ("singleCharacterAtEndX", "single-character-at-end-x"),
@@ -103,8 +102,8 @@ extension StringSnakeCaseTests {
       ("_Sample", "_-sample"),
       ("_IAmAnAPPDeveloper", "_-i-am-an-app-developer"),
     ]
-    for test in toSnakeCaseTests {
-      XCTAssertEqual(test.0.convertedToSnakeCase(separator: "-"), test.1)
-    }
+  )
+  func stringSnakeCaseWithSeparator(value: String, expected: String) {
+    #expect(value.convertedToSnakeCase(separator: "-") == expected)
   }
 }
