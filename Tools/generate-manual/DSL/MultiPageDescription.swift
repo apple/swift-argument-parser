@@ -50,6 +50,11 @@ struct MultiPageDescription: MDocComponent {
           }
         }
       }
+
+      if let extendedDiscussion = command.extendedDiscussion {
+        MDocMacro.ParagraphBreak()
+        extendedDiscussion
+      }
     }
   }
 }

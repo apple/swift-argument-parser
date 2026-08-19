@@ -43,6 +43,14 @@ public struct CommandConfiguration: Sendable {
   /// a static block of text that extends the description of the argument.
   public var discussion: String
 
+  /// Additional information to be shown at the end of the help display,
+  /// after the list of arguments, options, and subcommands.
+  ///
+  /// Use `extendedDiscussion` for information that supplements the quick
+  /// reference provided by the argument list, such as usage examples,
+  /// additional details, or notes about the command's behavior.
+  public var extendedDiscussion: String
+
   /// Version information for this command.
   public var version: String
 
@@ -97,6 +105,8 @@ public struct CommandConfiguration: Sendable {
   ///     automatically generating a usage description. Passing an empty string
   ///     hides the usage string altogether.
   ///   - discussion: A longer description of the command.
+  ///   - extendedDiscussion: Additional information shown at the end of the
+  ///     help display, after the argument, option, and subcommand lists.
   ///   - version: The version number for this command. When you provide a
   ///     non-empty string, the argument parser prints it if the user provides
   ///     a `--version` flag.
@@ -120,6 +130,7 @@ public struct CommandConfiguration: Sendable {
     abstract: String = "",
     usage: String? = nil,
     discussion: String = "",
+    extendedDiscussion: String = "",
     version: String = "",
     shouldDisplay: Bool = true,
     subcommands ungroupedSubcommands: [ParsableCommand.Type] = [],
@@ -132,6 +143,7 @@ public struct CommandConfiguration: Sendable {
     self.abstract = abstract
     self.usage = usage
     self.discussion = discussion
+    self.extendedDiscussion = extendedDiscussion
     self.version = version
     self.shouldDisplay = shouldDisplay
     self.ungroupedSubcommands = ungroupedSubcommands
@@ -149,6 +161,7 @@ public struct CommandConfiguration: Sendable {
     abstract: String = "",
     usage: String? = nil,
     discussion: String = "",
+    extendedDiscussion: String = "",
     version: String = "",
     shouldDisplay: Bool = true,
     subcommands ungroupedSubcommands: [ParsableCommand.Type] = [],
@@ -162,6 +175,7 @@ public struct CommandConfiguration: Sendable {
     self.abstract = abstract
     self.usage = usage
     self.discussion = discussion
+    self.extendedDiscussion = extendedDiscussion
     self.version = version
     self.shouldDisplay = shouldDisplay
     self.ungroupedSubcommands = ungroupedSubcommands
@@ -173,6 +187,74 @@ public struct CommandConfiguration: Sendable {
 }
 
 extension CommandConfiguration {
+  @available(
+    *, deprecated,
+    message:
+      "Use the memberwise initializer with the extendedDiscussion parameter."
+  )
+  public init(
+    commandName: String? = nil,
+    abstract: String = "",
+    usage: String? = nil,
+    discussion: String = "",
+    version: String = "",
+    shouldDisplay: Bool = true,
+    subcommands: [ParsableCommand.Type] = [],
+    groupedSubcommands: [CommandGroup] = [],
+    defaultSubcommand: ParsableCommand.Type? = nil,
+    helpNames: NameSpecification? = nil,
+    aliases: [String] = []
+  ) {
+    self.init(
+      commandName: commandName,
+      abstract: abstract,
+      usage: usage,
+      discussion: discussion,
+      extendedDiscussion: "",
+      version: version,
+      shouldDisplay: shouldDisplay,
+      subcommands: subcommands,
+      groupedSubcommands: groupedSubcommands,
+      defaultSubcommand: defaultSubcommand,
+      helpNames: helpNames,
+      aliases: aliases)
+  }
+
+  @available(
+    *, deprecated,
+    message:
+      "Use the memberwise initializer with the extendedDiscussion parameter."
+  )
+  public init(
+    commandName: String? = nil,
+    _superCommandName: String,
+    abstract: String = "",
+    usage: String? = nil,
+    discussion: String = "",
+    version: String = "",
+    shouldDisplay: Bool = true,
+    subcommands: [ParsableCommand.Type] = [],
+    groupedSubcommands: [CommandGroup] = [],
+    defaultSubcommand: ParsableCommand.Type? = nil,
+    helpNames: NameSpecification? = nil,
+    aliases: [String] = []
+  ) {
+    self.init(
+      commandName: commandName,
+      _superCommandName: _superCommandName,
+      abstract: abstract,
+      usage: usage,
+      discussion: discussion,
+      extendedDiscussion: "",
+      version: version,
+      shouldDisplay: shouldDisplay,
+      subcommands: subcommands,
+      groupedSubcommands: groupedSubcommands,
+      defaultSubcommand: defaultSubcommand,
+      helpNames: helpNames,
+      aliases: aliases)
+  }
+
   @available(
     *, deprecated,
     message: "Use the memberwise initializer with the aliases parameter."
@@ -193,6 +275,7 @@ extension CommandConfiguration {
       abstract: abstract,
       usage: usage,
       discussion: discussion,
+      extendedDiscussion: "",
       version: version,
       shouldDisplay: shouldDisplay,
       subcommands: subcommands,
@@ -221,6 +304,7 @@ extension CommandConfiguration {
       abstract: abstract,
       usage: "",
       discussion: discussion,
+      extendedDiscussion: "",
       version: version,
       shouldDisplay: shouldDisplay,
       subcommands: subcommands,

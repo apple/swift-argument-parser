@@ -19,6 +19,15 @@ struct Math: ParsableCommand {
     // Optional abstracts and discussions are used for help output.
     abstract: "A utility for performing maths.",
 
+    // Extended discussion appears at the bottom of the help screen,
+    // after the list of subcommands.
+    extendedDiscussion: """
+      Examples:
+        math add 10 15 20
+        math multiply --hex-output 16 32
+        math stats average --kind median 5 8 12
+      """,
+
     // Commands can define a version for automatic '--version' support.
     version: "1.0.0",
 

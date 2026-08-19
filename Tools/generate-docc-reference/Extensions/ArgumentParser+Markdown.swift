@@ -106,6 +106,10 @@ extension CommandInfoV0 {
           path + [self.commandName], markdownStyle: markdownStyle) + "\n\n"
     }
 
+    if let extendedDiscussion = self.extendedDiscussion {
+      result += "\(extendedDiscussion)\n\n"
+    }
+
     return result
   }
 
