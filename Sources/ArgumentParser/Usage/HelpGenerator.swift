@@ -151,6 +151,7 @@ internal struct HelpGenerator {
   var commandStack: [ParsableCommand.Type]
   var abstract: String
   var usage: String
+  var helpBanner: String
   var sections: [Section]
 
   init(commandStack: [ParsableCommand.Type], visibility: ArgumentVisibility) {
@@ -180,6 +181,8 @@ internal struct HelpGenerator {
       }
       self.usage = usage
     }
+
+    self.helpBanner = commandStack.getHelpBanner() ?? ""
 
     self.abstract = currentCommand.configuration.abstract
     if !currentCommand.configuration.discussion.isEmpty {
@@ -387,6 +390,8 @@ internal struct HelpGenerator {
       .map { $0.rendered(screenWidth: screenWidth) }
       .filter { !$0.isEmpty }
       .joined(separator: "\n")
+    // Rendered verbatim: wrapping would break multi-line banners and ASCII art.
+    let renderedBanner = helpBanner.isEmpty ? "" : helpBanner + "\n\n"
     let renderedAbstract =
       abstract.isEmpty
       ? ""
@@ -414,6 +419,7 @@ internal struct HelpGenerator {
       : "USAGE: \(usage.hangingIndentingEachLine(by: 7))\n\n"
 
     return """
+      \(renderedBanner)\
       \(renderedAbstract)\
       \(renderedUsage)\
       \(renderedSections)\(helpSubcommandMessage)
@@ -471,6 +477,14 @@ extension BidirectionalCollection where Element == ParsableCommand.Type {
 
   func getPrimaryHelpName() -> Name? {
     getHelpNames(visibility: .default).preferredName
+  }
+
+  /// Returns the help banner for the top-most command in the command stack
+  /// with a custom help banner.
+  ///
+  /// If the command stack contains no custom help banner, returns `nil`.
+  func getHelpBanner() -> String? {
+    self.lazy.reversed().compactMap { $0.configuration.helpBanner }.first
   }
 
   func versionArgumentDefinition() -> ArgumentDefinition? {
