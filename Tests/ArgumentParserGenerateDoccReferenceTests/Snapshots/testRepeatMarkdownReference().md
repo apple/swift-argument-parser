@@ -28,13 +28,18 @@ repeat [--count=<count>] [--include-counter] <phrase> [--help]
 
 ## repeat.help
 
-Show subcommand help information.
+Show subcommand help information. Use --search to find commands and options.
 
 ```
-repeat help [<subcommands>...]
+repeat help [<subcommands>...] [--search=<search>]
 ```
 
 **subcommands:**
+
+
+**--search=\<search\>:**
+
+*Search for commands and options matching the term.*
 
 
 

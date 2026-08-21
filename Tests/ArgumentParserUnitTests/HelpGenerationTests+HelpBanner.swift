@@ -74,6 +74,7 @@ extension HelpGenerationTests {
           suppresses              Suppresses the banner.
 
           See 'root help <subcommand>' for detailed help.
+          Use 'root help --search <term>' to search commands and options.
         """)
   }
 
@@ -110,6 +111,7 @@ extension HelpGenerationTests {
           nested                  Inherits the banner from its nearest ancestor.
 
           See 'root help overrides <subcommand>' for detailed help.
+          Use 'root help overrides --search <term>' to search commands and options.
         """)
   }
 

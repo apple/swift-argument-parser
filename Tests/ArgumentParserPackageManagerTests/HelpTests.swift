@@ -68,6 +68,7 @@ extension HelpTests {
           generate-xcodeproj
 
           See 'package help <subcommand>' for detailed help.
+          Use 'package help --search <term>' to search commands and options.
         """)
   }
 
@@ -86,6 +87,7 @@ extension HelpTests {
           generate-xcodeproj
 
           See 'package help <subcommand>' for detailed help.
+          Use 'package help --search <term>' to search commands and options.
         """
     )
   }
@@ -112,6 +114,7 @@ extension HelpTests {
           unset-mirror
 
           See 'package help config <subcommand>' for detailed help.
+          Use 'package help config --search <term>' to search commands and options.
         """)
   }
 

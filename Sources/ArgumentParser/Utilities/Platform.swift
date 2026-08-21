@@ -330,4 +330,19 @@ extension Platform {
   static var terminalWidth: Int {
     self.terminalSize().width
   }
+
+  /// Check if stdout is connected to a terminal (TTY).
+  ///
+  /// Returns `true` if stdout is a terminal, `false` if it's redirected to a file or pipe.
+  static var isStdoutTerminal: Bool {
+    #if os(WASI)
+    return false
+    #elseif os(Windows)
+    // On Windows, check if we can get console info
+    var csbi = CONSOLE_SCREEN_BUFFER_INFO()
+    return GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi)
+    #else
+    return isatty(STDOUT_FILENO) != 0
+    #endif
+  }
 }

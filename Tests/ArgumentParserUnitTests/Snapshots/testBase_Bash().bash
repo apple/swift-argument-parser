@@ -261,7 +261,18 @@ _base-test_escaped-command() {
 }
 
 _base-test_help() {
-    :
+    repeating_flags=()
+    non_repeating_flags=()
+    repeating_options=()
+    non_repeating_options=(-s --search)
+    __base-test_offer_flags_options -1
+
+    # Offer option value completions
+    case "${prev}" in
+    '-s'|'--search')
+        return
+        ;;
+    esac
 }
 
 complete -o filenames -F _base-test base-test

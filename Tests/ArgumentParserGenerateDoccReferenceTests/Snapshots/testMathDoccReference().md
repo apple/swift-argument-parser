@@ -211,13 +211,18 @@ math stats quantiles [<one-of-four>] [<custom-arg>]
 
 ## math.help
 
-Show subcommand help information.
+Show subcommand help information. Use --search to find commands and options.
 
 ```
-math help [<subcommands>...] [--version]
+math help [<subcommands>...] [--search=<search>] [--version]
 ```
 
 - term **subcommands**:
+
+
+- term **--search=\<search\>**:
+
+*Search for commands and options matching the term.*
 
 
 - term **--version**:

@@ -25,13 +25,18 @@ This is optional.
 
 ## color.help
 
-Show subcommand help information.
+Show subcommand help information. Use --search to find commands and options.
 
 ```
-color help [<subcommands>...]
+color help [<subcommands>...] [--search=<search>]
 ```
 
 **subcommands:**
+
+
+**--search=\<search\>:**
+
+*Search for commands and options matching the term.*
 
 
 

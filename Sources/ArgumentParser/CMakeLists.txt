@@ -35,6 +35,7 @@ add_library(ArgumentParser
   Parsing/ParserError.swift
   Parsing/SplitArguments.swift
 
+  Usage/CommandSearcher.swift
   Usage/DumpHelpGenerator.swift
   Usage/HelpCommand.swift
   Usage/HelpGenerator.swift
