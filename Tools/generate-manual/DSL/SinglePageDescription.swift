@@ -15,6 +15,15 @@ import ArgumentParserToolInfo
 struct SinglePageDescription: MDocComponent {
   var command: CommandInfoV0
   var root: Bool
+  /// Arguments which an enclosing command's section already documents.
+  ///
+  /// A single page manual nests each subcommand's arguments within its super
+  /// command's list. Repeating an argument that an ancestor already describes
+  /// verbatim (most notably the synthesized `--version` and `--help` flags)
+  /// only adds noise, so such arguments are documented once, by the outermost
+  /// command which declares them. Multi page manuals are unaffected because
+  /// each command gets a self contained page.
+  var inheritedArguments: Set<ArgumentInfoV0> = []
 
   var body: MDocComponent {
     Section(title: "description") {
@@ -43,7 +52,7 @@ struct SinglePageDescription: MDocComponent {
 
     List {
       for argument in command.arguments ?? [] {
-        if argument.shouldDisplay {
+        if argument.shouldDisplay, !inheritedArguments.contains(argument) {
           MDocMacro.ListItem(title: argument.manualPageDescription)
 
           let discussion = DiscussionText(
@@ -65,11 +74,17 @@ struct SinglePageDescription: MDocComponent {
         }
       }
 
+      let subcommandInheritedArguments = inheritedArguments.union(
+        command.arguments ?? [])
       for subcommand in command.subcommands ?? [] {
         MDocMacro.ListItem(
           title: MDocMacro.Emphasis(
             arguments: [subcommand.manualPageSubcommandLabel]))
-        SinglePageDescription(command: subcommand, root: false).core
+        SinglePageDescription(
+          command: subcommand,
+          root: false,
+          inheritedArguments: subcommandInheritedArguments
+        ).core
       }
     }
   }
