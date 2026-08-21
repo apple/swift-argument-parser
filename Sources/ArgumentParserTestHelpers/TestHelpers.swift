@@ -11,6 +11,7 @@
 
 import ArgumentParser
 import ArgumentParserToolInfo
+import Testing
 import XCTest
 
 @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
@@ -80,12 +81,20 @@ public func AssertResultFailure<T, U: Error>(
   _ expression: @autoclosure () -> Result<T, U>,
   _ message: @autoclosure () -> String = "",
   file: StaticString = #filePath,
-  line: UInt = #line
+  line: UInt = #line,
+  sourceLocation: SourceLocation = #_sourceLocation
 ) {
   switch expression() {
   case .success:
     let msg = message()
-    XCTFail(msg.isEmpty ? "Incorrectly succeeded" : msg, file: file, line: line)
+    if Test.current != nil {
+      Issue.record(
+        msg.isEmpty ? "Incorrectly succeeded" : "\(msg)",
+        sourceLocation: sourceLocation)
+    } else {
+      XCTFail(
+        msg.isEmpty ? "Incorrectly succeeded" : msg, file: file, line: line)
+    }
   case .failure:
     break
   }
@@ -94,63 +103,118 @@ public func AssertResultFailure<T, U: Error>(
 // swift-format-ignore: AlwaysUseLowerCamelCase
 public func AssertErrorMessage<A>(
   _ type: A.Type, _ arguments: [String], _ errorMessage: String,
-  file: StaticString = #filePath, line: UInt = #line
+  file: StaticString = #filePath,
+  line: UInt = #line,
+  sourceLocation: SourceLocation = #_sourceLocation
 ) where A: ParsableArguments {
+
   do {
     _ = try A.parse(arguments)
-    XCTFail("Parsing should have failed.", file: file, line: line)
+    if Test.current != nil {
+      Issue.record(
+        "Parsing should have failed.", sourceLocation: sourceLocation)
+    } else {
+      XCTFail("Parsing should have failed.", file: file, line: line)
+    }
   } catch {
     // We expect to hit this path, i.e. getting an error:
-    XCTAssertEqual(A.message(for: error), errorMessage, file: file, line: line)
+    if Test.current != nil {
+      #expect(
+        A.message(for: error) == errorMessage,
+        sourceLocation: sourceLocation
+      )
+    } else {
+      XCTAssertEqual(
+        A.message(for: error), errorMessage, file: file, line: line)
+    }
   }
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
 public func AssertFullErrorMessage<A>(
   _ type: A.Type, _ arguments: [String], _ errorMessage: String,
-  file: StaticString = #filePath, line: UInt = #line
+  file: StaticString = #filePath,
+  line: UInt = #line,
+  sourceLocation: SourceLocation = #_sourceLocation
 ) where A: ParsableArguments {
   do {
     _ = try A.parse(arguments)
-    XCTFail("Parsing should have failed.", file: (file), line: line)
+    if Test.current != nil {
+      Issue.record(
+        "Parsing should have failed.", sourceLocation: sourceLocation)
+    } else {
+      XCTFail("Parsing should have failed.", file: (file), line: line)
+    }
   } catch {
     // We expect to hit this path, i.e. getting an error:
-    XCTAssertEqual(
-      A.fullMessage(for: error), errorMessage, file: (file), line: line)
+    if Test.current != nil {
+      #expect(
+        A.fullMessage(for: error) == errorMessage,
+        sourceLocation: sourceLocation
+      )
+    } else {
+      XCTAssertEqual(
+        A.fullMessage(for: error), errorMessage, file: (file), line: line)
+    }
   }
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
 public func AssertParse<A>(
   _ type: A.Type, _ arguments: [String], file: StaticString = #filePath,
-  line: UInt = #line, closure: (A) throws -> Void
+  line: UInt = #line,
+  sourceLocation: SourceLocation = #_sourceLocation,
+  closure: (A) throws -> Void
 ) where A: ParsableArguments {
   do {
     let parsed = try type.parse(arguments)
     try closure(parsed)
   } catch {
     let message = type.message(for: error)
-    XCTFail("\"\(message)\" — \(error)", file: (file), line: line)
+    if Test.current != nil {
+      Issue.record(
+        "\"\(message)\" — \(error)",
+        sourceLocation: sourceLocation
+      )
+    } else {
+      XCTFail("\"\(message)\" — \(error)", file: (file), line: line)
+    }
   }
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
 public func AssertParseCommand<A: ParsableCommand>(
   _ rootCommand: ParsableCommand.Type, _ type: A.Type, _ arguments: [String],
-  file: StaticString = #filePath, line: UInt = #line,
+  file: StaticString = #filePath,
+  line: UInt = #line,
+  sourceLocation: SourceLocation = #_sourceLocation,
   closure: (A) throws -> Void
 ) {
   do {
     let command = try rootCommand.parseAsRoot(arguments)
     guard let aCommand = command as? A else {
-      XCTFail(
-        "Command is of unexpected type: \(command)", file: (file), line: line)
+      if Test.current != nil {
+        Issue.record(
+          "Command is of unexpected type: \(command)",
+          sourceLocation: sourceLocation
+        )
+      } else {
+        XCTFail(
+          "Command is of unexpected type: \(command)", file: (file), line: line)
+      }
       return
     }
     try closure(aCommand)
   } catch {
     let message = rootCommand.message(for: error)
-    XCTFail("\"\(message)\" — \(error)", file: file, line: line)
+    if Test.current != nil {
+      Issue.record(
+        "\"\(message)\" — \(error)",
+        sourceLocation: sourceLocation
+      )
+    } else {
+      XCTFail("\"\(message)\" — \(error)", file: file, line: line)
+    }
   }
 }
 
@@ -158,7 +222,8 @@ public func AssertParseCommand<A: ParsableCommand>(
 public func AssertParseCommandErrorMessage<A: ParsableCommand>(
   _ rootCommand: ParsableCommand.Type, _ type: A.Type, _ arguments: [String],
   _ errorMessage: String,
-  file: StaticString = #filePath, line: UInt = #line
+  file: StaticString = #filePath,
+  line: UInt = #line
 ) {
   do {
     let command = try rootCommand.parseAsRoot(arguments)
@@ -179,7 +244,8 @@ public func AssertEqualStrings(
   actual: String,
   expected: String,
   file: StaticString = #filePath,
-  line: UInt = #line
+  line: UInt = #line,
+  sourceLocation: SourceLocation = #_sourceLocation
 ) {
   // Normalize line endings to '\n'.
   let actual =
@@ -248,21 +314,27 @@ public func AssertEqualStrings(
       """
   }
 
-  XCTFail(
-    "Actual output does not match the expected output:\n\(stringComparison)",
-    file: file,
-    line: line)
+  if Test.current != nil {
+    Issue.record(
+      "Actual output does not match the expected output:\n\(stringComparison)",
+      sourceLocation: sourceLocation
+    )
+  } else {
+    XCTFail(
+      "Actual output does not match the expected output:\n\(stringComparison)",
+      file: file,
+      line: line)
+  }
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-public func AssertHelp<T: ParsableArguments>(
+public func requireHelp<T: ParsableArguments>(
   _ visibility: ArgumentVisibility,
   for _: T.Type,
   columns: Int? = 80,
   equals expected: String,
-  file: StaticString = #filePath,
-  line: UInt = #line
-) {
+  sourceLocation: SourceLocation = #_sourceLocation
+) throws {
   let flag: String
   let includeHidden: Bool
 
@@ -274,37 +346,53 @@ public func AssertHelp<T: ParsableArguments>(
     flag = "--help-hidden"
     includeHidden = true
   case .private:
-    XCTFail("Should not be called.", file: file, line: line)
+    Issue.record("Should not be called.", sourceLocation: sourceLocation)
     return
   default:
-    XCTFail("Unrecognized visibility.", file: file, line: line)
+    Issue.record("Uxnrecognized visibility.", sourceLocation: sourceLocation)
     return
   }
 
+  #if compiler(>=6.1)
+  let error = try #require(throws: (any Error).self) {
+    _ = try T.parse([flag])
+  }
+  #else
+  let error: any Error
   do {
     _ = try T.parse([flag])
-    XCTFail(file: file, line: line)
-  } catch {
-    let helpString = T.fullMessage(for: error, columns: columns)
-    AssertEqualStrings(
-      actual: helpString, expected: expected, file: file, line: line)
+    Issue.record(
+      "Expected T.parse to throw an error.",
+      sourceLocation: sourceLocation)
+    return
+  } catch let caught {
+    error = caught
   }
+  #endif
+  let errorFullMessage = T.fullMessage(for: error, columns: columns)
+  AssertEqualStrings(
+    actual: errorFullMessage,
+    expected: expected,
+    sourceLocation: sourceLocation
+  )
 
   let helpString = T.helpMessage(includeHidden: includeHidden, columns: columns)
   AssertEqualStrings(
-    actual: helpString, expected: expected, file: file, line: line)
+    actual: helpString,
+    expected: expected,
+    sourceLocation: sourceLocation
+  )
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-public func AssertHelp<T: ParsableCommand, U: ParsableCommand>(
+public func requireHelp<T: ParsableCommand, U: ParsableCommand>(
   _ visibility: ArgumentVisibility,
   for _: T.Type,
   root _: U.Type,
   columns: Int? = 80,
   equals expected: String,
-  file: StaticString = #filePath,
-  line: UInt = #line
-) {
+  sourceLocation: SourceLocation = #_sourceLocation
+) throws {
   let includeHidden: Bool
 
   switch visibility {
@@ -313,17 +401,17 @@ public func AssertHelp<T: ParsableCommand, U: ParsableCommand>(
   case .hidden:
     includeHidden = true
   case .private:
-    XCTFail("Should not be called.", file: file, line: line)
+    Issue.record("Should not be called.", sourceLocation: sourceLocation)
     return
   default:
-    XCTFail("Unrecognized visibility.", file: file, line: line)
+    Issue.record("Uxnrecognized visibility.", sourceLocation: sourceLocation)
     return
   }
 
   let helpString = U.helpMessage(
     for: T.self, includeHidden: includeHidden, columns: columns)
   AssertEqualStrings(
-    actual: helpString, expected: expected, file: file, line: line)
+    actual: helpString, expected: expected, sourceLocation: sourceLocation)
 }
 
 extension XCTest {

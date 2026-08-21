@@ -10,7 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 import ArgumentParserTestHelpers
-import XCTest
+import Testing
 
 @testable import ArgumentParser
 
@@ -65,8 +65,8 @@ extension HelpGenerationTests {
     }
   }
 
-  func testAtArgumentTransform_BareNoDefault() {
-    AssertHelp(
+  @Test func atArgumentTransform_BareNoDefault() async throws {
+    try requireHelp(
       .default,
       for: AtArgumentTransform.BareNoDefault.self,
       equals: """
@@ -81,8 +81,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtArgumentTransform_BareDefault() {
-    AssertHelp(
+  @Test func atArgumentTransform_BareDefault() async throws {
+    try requireHelp(
       .default,
       for: AtArgumentTransform.BareDefault.self,
       equals: """
@@ -97,8 +97,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtArgumentTransform_OptionalNoDefault() {
-    AssertHelp(
+  @Test func atArgumentTransform_OptionalNoDefault() async throws {
+    try requireHelp(
       .default,
       for: AtArgumentTransform.OptionalNoDefault.self,
       equals: """
@@ -113,8 +113,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtArgumentTransform_OptionalDefaultNil() {
-    AssertHelp(
+  @Test func atArgumentTransform_OptionalDefaultNil() async throws {
+    try requireHelp(
       .default,
       for: AtArgumentTransform.OptionalDefaultNil.self,
       equals: """
@@ -129,8 +129,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtArgumentTransform_OptionalDefault() {
-    AssertHelp(
+  @Test func atArgumentTransform_OptionalDefault() async throws {
+    try requireHelp(
       .default,
       for: AtArgumentTransform.OptionalDefault.self,
       equals: """
@@ -145,8 +145,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtArgumentTransform_ArrayNoDefault() {
-    AssertHelp(
+  @Test func atArgumentTransform_ArrayNoDefault() async throws {
+    try requireHelp(
       .default,
       for: AtArgumentTransform.ArrayNoDefault.self,
       equals: """
@@ -161,8 +161,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtArgumentTransform_ArrayDefaultEmpty() {
-    AssertHelp(
+  @Test func atArgumentTransform_ArrayDefaultEmpty() async throws {
+    try requireHelp(
       .default,
       for: AtArgumentTransform.ArrayDefaultEmpty.self,
       equals: """
@@ -177,8 +177,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtArgumentTransform_ArrayDefault() {
-    AssertHelp(
+  @Test func atArgumentTransform_ArrayDefault() async throws {
+    try requireHelp(
       .default,
       for: AtArgumentTransform.ArrayDefault.self,
       equals: """
@@ -248,8 +248,8 @@ extension HelpGenerationTests {
     }
   }
 
-  func testAtArgumentEBA_BareNoDefault() {
-    AssertHelp(
+  @Test func atArgumentEBA_BareNoDefault() async throws {
+    try requireHelp(
       .default,
       for: AtArgumentEBA.BareNoDefault.self,
       equals: """
@@ -264,8 +264,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtArgumentEBA_BareDefault() {
-    AssertHelp(
+  @Test func atArgumentEBA_BareDefault() async throws {
+    try requireHelp(
       .default,
       for: AtArgumentEBA.BareDefault.self,
       equals: """
@@ -280,8 +280,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtArgumentEBA_OptionalNoDefault() {
-    AssertHelp(
+  @Test func atArgumentEBA_OptionalNoDefault() async throws {
+    try requireHelp(
       .default,
       for: AtArgumentEBA.OptionalNoDefault.self,
       equals: """
@@ -296,8 +296,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtArgumentEBA_OptionalDefaultNil() {
-    AssertHelp(
+  @Test func atArgumentEBA_OptionalDefaultNil() async throws {
+    try requireHelp(
       .default,
       for: AtArgumentEBA.OptionalDefaultNil.self,
       equals: """
@@ -312,8 +312,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtArgumentEBA_ArrayNoDefault() {
-    AssertHelp(
+  @Test func atArgumentEBA_ArrayNoDefault() async throws {
+    try requireHelp(
       .default,
       for: AtArgumentEBA.ArrayNoDefault.self,
       equals: """
@@ -328,8 +328,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtArgumentEBA_ArrayDefaultEmpty() {
-    AssertHelp(
+  @Test func atArgumentEBA_ArrayDefaultEmpty() async throws {
+    try requireHelp(
       .default,
       for: AtArgumentEBA.ArrayDefaultEmpty.self,
       equals: """
@@ -344,8 +344,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtArgumentEBA_ArrayDefault() {
-    AssertHelp(
+  @Test func atArgumentEBA_ArrayDefault() async throws {
+    try requireHelp(
       .default,
       for: AtArgumentEBA.ArrayDefault.self,
       equals: """
@@ -414,8 +414,8 @@ extension HelpGenerationTests {
     }
   }
 
-  func testAtArgumentEBATransform_BareNoDefault() {
-    AssertHelp(
+  @Test func atArgumentEBATransform_BareNoDefault() async throws {
+    try requireHelp(
       .default,
       for: AtArgumentEBATransform.BareNoDefault.self,
       equals: """
@@ -430,8 +430,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtArgumentEBATransform_BareDefault() {
-    AssertHelp(
+  @Test func atArgumentEBATransform_BareDefault() async throws {
+    try requireHelp(
       .default,
       for: AtArgumentEBATransform.BareDefault.self,
       equals: """
@@ -446,8 +446,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtArgumentEBATransform_OptionalNoDefault() {
-    AssertHelp(
+  @Test func atArgumentEBATransform_OptionalNoDefault() async throws {
+    try requireHelp(
       .default,
       for: AtArgumentEBATransform.OptionalNoDefault.self,
       equals: """
@@ -462,8 +462,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtArgumentEBATransform_OptionalDefaultNil() {
-    AssertHelp(
+  @Test func atArgumentEBATransform_OptionalDefaultNil() async throws {
+    try requireHelp(
       .default,
       for: AtArgumentEBATransform.OptionalDefaultNil.self,
       equals: """
@@ -478,8 +478,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtArgumentEBATransform_OptionalDefault() {
-    AssertHelp(
+  @Test func atArgumentEBATransform_OptionalDefault() async throws {
+    try requireHelp(
       .default,
       for: AtArgumentEBATransform.OptionalDefault.self,
       equals: """
@@ -494,8 +494,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtArgumentEBATransform_ArrayNoDefault() {
-    AssertHelp(
+  @Test func atArgumentEBATransform_ArrayNoDefault() async throws {
+    try requireHelp(
       .default,
       for: AtArgumentEBATransform.ArrayNoDefault.self,
       equals: """
@@ -510,8 +510,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtArgumentEBATransform_ArrayDefaultEmpty() {
-    AssertHelp(
+  @Test func atArgumentEBATransform_ArrayDefaultEmpty() async throws {
+    try requireHelp(
       .default,
       for: AtArgumentEBATransform.ArrayDefaultEmpty.self,
       equals: """
@@ -526,8 +526,8 @@ extension HelpGenerationTests {
         """)
   }
 
-  func testAtArgumentEBATransform_ArrayDefault() {
-    AssertHelp(
+  @Test func atArgumentEBATransform_ArrayDefault() async throws {
+    try requireHelp(
       .default,
       for: AtArgumentEBATransform.ArrayDefault.self,
       equals: """

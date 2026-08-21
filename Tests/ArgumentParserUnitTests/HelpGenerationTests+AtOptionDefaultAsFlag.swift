@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2025 Apple Inc. and the Swift project authors
+// Copyright (c) 2025-2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -10,7 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 import ArgumentParserTestHelpers
-import XCTest
+import Testing
 
 @testable import ArgumentParser
 
@@ -36,8 +36,8 @@ extension HelpGenerationTests {
     var regular: String?
   }
 
-  func testDefaultAsFlagHelpOutput() {
-    AssertHelp(
+  @Test func defaultAsFlagHelpOutput() async throws {
+    try requireHelp(
       .default, for: BasicDefaultAsFlag.self,
       equals: """
         USAGE: basic_default_as_flag [--string-flag [<string-flag>]] [--number-flag [<number-flag>]] [--bool-flag [<bool-flag>]] [--transform-flag [<transform-flag>]] [--regular <regular>]
@@ -73,8 +73,8 @@ extension HelpGenerationTests {
     var shortOnly: String?
   }
 
-  func testDefaultAsFlagWithShortNames() {
-    AssertHelp(
+  @Test func defaultAsFlagWithShortNames() async throws {
+    try requireHelp(
       .default, for: DefaultAsFlagWithShortNames.self,
       equals: """
         USAGE: default_as_flag_with_short_names [--short-and-long [<short-and-long>]] [-o [<o>]]
@@ -102,8 +102,8 @@ extension HelpGenerationTests {
     var positional: String?
   }
 
-  func testMixedOptionTypes() {
-    AssertHelp(
+  @Test func mixedOptionTypes() async throws {
+    try requireHelp(
       .default, for: MixedOptionTypes.self,
       equals: """
         USAGE: mixed_option_types [--flag] [--default-as-flag [<default-as-flag>]] [--regular <regular>] [<positional>]

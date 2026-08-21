@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2025 Apple Inc. and the Swift project authors
+// Copyright (c) 2025-2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -11,7 +11,7 @@
 
 import ArgumentParserToolInfo
 import Foundation
-import XCTest
+import Testing
 
 extension DecodingError: Swift.CustomStringConvertible {
   public var description: String {
@@ -61,22 +61,18 @@ extension FileManager {
   }
 }
 
-final class ArgumentParserToolInfoTests: XCTestCase {
-  func test_examples() {
-    let examplesDirectory = URL(fileURLWithPath: #filePath)
-      .deletingLastPathComponent()
-      .appendingPathComponent("Examples")
-    let examples = FileManager.default.files(
-      inDirectory: examplesDirectory,
-      withPathExtension: "json")
+@Suite struct ArgumentParserToolInfoTests {
+  static let examplesDirectory = URL(fileURLWithPath: #filePath)
+    .deletingLastPathComponent()
+    .appendingPathComponent("Examples")
 
-    for example in examples {
-      do {
-        let data = try Data(contentsOf: example)
-        _ = try JSONDecoder().decode(ToolInfoV0.self, from: data)
-      } catch {
-        XCTFail("Failed to parse \(example.path): \(error)")
-      }
-    }
+  static let examples: [URL] = FileManager.default.files(
+    inDirectory: Self.examplesDirectory,
+    withPathExtension: "json")
+
+  @Test(arguments: examples)
+  func example(url: URL) throws {
+    let data = try Data(contentsOf: url)
+    _ = try JSONDecoder().decode(ToolInfoV0.self, from: data)
   }
 }

@@ -93,7 +93,7 @@ Your lucky numbers are:
 
 By default, options and flags derive the name that you use on the command line from the name of the property, such as `--count` and `--index`. Camel-case names are converted to lowercase with hyphen-separated words, like `--strip-whitespace`.
 
-You can override this default by specifying one or more name specifications in the `@Option` or `@Flag` initializers. This command demonstrates the four name specifications:
+You can override this default by providing a string with your required command-line spellings, or by specifying one or more name specifications in the `@Option` or `@Flag` initializers. This command demonstrates multiple name specifications:
 
 ```swift
 struct Example: ParsableCommand {
@@ -102,6 +102,9 @@ struct Example: ParsableCommand {
 
     @Flag(name: .short)
     var verbose = false
+
+    @Flag(name: "--jitter -j")
+    var includeJitter = false
 
     @Option(name: .customLong("count"))
     var iterationCount: Int
@@ -115,6 +118,13 @@ struct Example: ParsableCommand {
 
   ```
   % example --strip-whitespace -v
+  ```
+
+* Using a string literal lets you specify the ways you want a flag to be spelled. In this example, you can use either `-j` or `--jitter` to set the `includeJitter` property to `true`:
+
+  ```
+  % example --jitter
+  % example -j
   ```
 
 * Specifying `.customLong(_:)` or `.customShort(_:)` uses the given string or character as the long or short name for the property.

@@ -251,6 +251,24 @@ extension Flag where Value == Bool? {
       exclusivity: exclusivity,
       help: help)
   }
+
+  /// Surfaces a clearer diagnostic when a user declares a `Bool?` flag without
+  /// the required `inversion:` parameter.
+  ///
+  /// Without this overload, the compiler falls back to the
+  /// `Flag where Value == Int` initializer and reports a confusing
+  /// "types 'Bool?' and 'Int' be equivalent" error.
+  @available(
+    *, unavailable,
+    message:
+      "An optional 'Bool?' @Flag requires an 'inversion:' parameter, such as '.prefixedNo' or '.prefixedEnableDisable'."
+  )
+  public init(
+    name _name: NameSpecification = .long,
+    help: ArgumentHelp? = nil
+  ) {
+    fatalError("unavailable")
+  }
 }
 
 extension Flag where Value == Bool {

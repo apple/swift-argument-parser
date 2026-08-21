@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2020 Apple Inc. and the Swift project authors
+// Copyright (c) 2020-2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -10,7 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 import ArgumentParserTestHelpers
-import XCTest
+import Testing
 
 @testable import ArgumentParser
 
@@ -22,654 +22,720 @@ extension ArgumentParser.SplitArguments.InputIndex: Swift
   }
 }
 
-// swift-format-ignore: AlwaysUseLowerCamelCase
-private func AssertIndexEqual(
+private func expectIndexEqual(
   _ sut: SplitArguments, at index: Int, inputIndex: Int,
-  subIndex: SplitArguments.SubIndex, file: StaticString = #filePath,
-  line: UInt = #line
-) {
-  guard index < sut.elements.endIndex else {
-    XCTFail(
-      "Element index \(index) is out of range. sur only has \(sut.elements.count) elements.",
-      file: (file), line: line)
-    return
-  }
+  subIndex: SplitArguments.SubIndex,
+  sourceLocation: SourceLocation = #_sourceLocation
+) throws {
+  try #require(
+    index < sut.elements.endIndex,
+    "Element index \(index) is out of range. sut only has \(sut.elements.count) elements.",
+    sourceLocation: sourceLocation
+  )
+
   let splitIndex = sut.elements[index].index
   let expected = SplitArguments.Index(
     inputIndex: SplitArguments.InputIndex(rawValue: inputIndex),
-    subIndex: subIndex)
-  if splitIndex.inputIndex != expected.inputIndex {
-    XCTFail(
-      "inputIndex does not match: \(splitIndex.inputIndex.rawValue) != \(expected.inputIndex.rawValue)",
-      file: (file), line: line)
-  }
-  if splitIndex.subIndex != expected.subIndex {
-    XCTFail(
-      "inputIndex does not match: \(splitIndex.subIndex) != \(expected.subIndex)",
-      file: (file), line: line)
-  }
+    subIndex: subIndex
+  )
+  #expect(
+    splitIndex.inputIndex == expected.inputIndex,
+    "inputIndex does not match: \(splitIndex.inputIndex.rawValue) != \(expected.inputIndex.rawValue)",
+    sourceLocation: sourceLocation
+  )
+
+  #expect(
+    splitIndex.subIndex == expected.subIndex,
+    "subIndex does not match: \(splitIndex.subIndex) != \(expected.subIndex)",
+    sourceLocation: sourceLocation
+  )
 }
 
-// swift-format-ignore: AlwaysUseLowerCamelCase
-private func AssertElementEqual(
+private func expectElementEqual(
   _ sut: SplitArguments, at index: Int, _ element: SplitArguments.Element.Value,
-  file: StaticString = #filePath, line: UInt = #line
-) {
-  guard index < sut.elements.endIndex else {
-    XCTFail(
-      "Element index \(index) is out of range. sur only has \(sut.elements.count) elements.",
-      file: (file), line: line)
-    return
-  }
-  XCTAssertEqual(sut.elements[index].value, element, file: (file), line: line)
+  sourceLocation: SourceLocation = #_sourceLocation
+) throws {
+  try #require(
+    index < sut.elements.endIndex,
+    "Element index \(index) is out of range. sut only has \(sut.elements.count) elements.",
+    sourceLocation: sourceLocation
+  )
+  #expect(
+    sut.elements[index].value == element,
+    sourceLocation: sourceLocation
+  )
 }
 
-final class SplitArgumentTests: XCTestCase {
-  func testEmpty() throws {
+@Suite struct SplitArgumentTests {
+  @Test func empty() async throws {
     let sut = try SplitArguments(arguments: [])
-    XCTAssertEqual(sut.elements.count, 0)
-    XCTAssertEqual(sut.originalInput.count, 0)
+    #expect(sut.elements.count == 0)
+    #expect(sut.originalInput.count == 0)
   }
 
-  func testSingleValue() throws {
+  @Test func singleValue() async throws {
     let sut = try SplitArguments(arguments: ["abc"])
 
-    XCTAssertEqual(sut.elements.count, 1)
-    AssertIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
-    AssertElementEqual(sut, at: 0, .value("abc"))
+    #expect(sut.elements.count == 1)
+    try expectIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
+    try expectElementEqual(sut, at: 0, .value("abc"))
 
-    XCTAssertEqual(sut.originalInput.count, 1)
-    XCTAssertEqual(sut.originalInput, ["abc"])
+    #expect(sut.originalInput.count == 1)
+    #expect(sut.originalInput == ["abc"])
   }
 
-  func testSingleLongOption() throws {
+  @Test func singleLongOption() async throws {
     let sut = try SplitArguments(arguments: ["--abc"])
 
-    XCTAssertEqual(sut.elements.count, 1)
-    AssertIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
-    AssertElementEqual(sut, at: 0, .option(.name(.long("abc"))))
+    #expect(sut.elements.count == 1)
+    try expectIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
+    try expectElementEqual(sut, at: 0, .option(.name(.long("abc"))))
 
-    XCTAssertEqual(sut.originalInput.count, 1)
-    XCTAssertEqual(sut.originalInput, ["--abc"])
+    #expect(sut.originalInput.count == 1)
+    #expect(sut.originalInput == ["--abc"])
   }
 
-  func testSingleShortOption() throws {
+  @Test func singleShortOption() async throws {
     let sut = try SplitArguments(arguments: ["-a"])
 
-    XCTAssertEqual(sut.elements.count, 1)
-    AssertIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
-    AssertElementEqual(sut, at: 0, .option(.name(.short("a"))))
+    #expect(sut.elements.count == 1)
+    try expectIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
+    try expectElementEqual(sut, at: 0, .option(.name(.short("a"))))
 
-    XCTAssertEqual(sut.originalInput.count, 1)
-    XCTAssertEqual(sut.originalInput, ["-a"])
+    #expect(sut.originalInput.count == 1)
+    #expect(sut.originalInput == ["-a"])
   }
 
-  func testSingleLongOptionWithValue() throws {
+  @Test func singleLongOptionWithValue() async throws {
     let sut = try SplitArguments(arguments: ["--abc=def"])
 
-    XCTAssertEqual(sut.elements.count, 1)
-    AssertIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
-    AssertElementEqual(sut, at: 0, .option(.nameWithValue(.long("abc"), "def")))
+    #expect(sut.elements.count == 1)
+    try expectIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
+    try expectElementEqual(
+      sut, at: 0, .option(.nameWithValue(.long("abc"), "def"))
+    )
 
-    XCTAssertEqual(sut.originalInput.count, 1)
-    XCTAssertEqual(sut.originalInput, ["--abc=def"])
+    #expect(sut.originalInput.count == 1)
+    #expect(sut.originalInput == ["--abc=def"])
   }
 
-  func testMultipleShortOptionsCombined() throws {
+  @Test func multipleShortOptionsCombined() async throws {
     let sut = try SplitArguments(arguments: ["-abc"])
 
-    XCTAssertEqual(sut.elements.count, 4)
+    #expect(sut.elements.count == 4)
 
-    AssertIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
-    AssertElementEqual(sut, at: 0, .option(.name(.longWithSingleDash("abc"))))
+    try expectIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
+    try expectElementEqual(
+      sut, at: 0, .option(.name(.longWithSingleDash("abc")))
+    )
 
-    AssertIndexEqual(sut, at: 1, inputIndex: 0, subIndex: .sub(0))
-    AssertElementEqual(sut, at: 1, .option(.name(.short("a"))))
+    try expectIndexEqual(sut, at: 1, inputIndex: 0, subIndex: .sub(0))
+    try expectElementEqual(sut, at: 1, .option(.name(.short("a"))))
 
-    AssertIndexEqual(sut, at: 2, inputIndex: 0, subIndex: .sub(1))
-    AssertElementEqual(sut, at: 2, .option(.name(.short("b"))))
+    try expectIndexEqual(sut, at: 2, inputIndex: 0, subIndex: .sub(1))
+    try expectElementEqual(sut, at: 2, .option(.name(.short("b"))))
 
-    AssertIndexEqual(sut, at: 3, inputIndex: 0, subIndex: .sub(2))
-    AssertElementEqual(sut, at: 3, .option(.name(.short("c"))))
+    try expectIndexEqual(sut, at: 3, inputIndex: 0, subIndex: .sub(2))
+    try expectElementEqual(sut, at: 3, .option(.name(.short("c"))))
 
-    XCTAssertEqual(sut.originalInput.count, 1)
-    XCTAssertEqual(sut.originalInput, ["-abc"])
+    #expect(sut.originalInput.count == 1)
+    #expect(sut.originalInput == ["-abc"])
   }
 
-  func testSingleLongOptionWithValueAndSingleDash() throws {
+  @Test func singleLongOptionWithValueAndSingleDash() async throws {
     let sut = try SplitArguments(arguments: ["-abc=def"])
 
-    XCTAssertEqual(sut.elements.count, 1)
+    #expect(sut.elements.count == 1)
 
-    AssertIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
-    AssertElementEqual(
+    try expectIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
+    try expectElementEqual(
       sut, at: 0, .option(.nameWithValue(.longWithSingleDash("abc"), "def")))
 
-    XCTAssertEqual(sut.originalInput.count, 1)
-    XCTAssertEqual(sut.originalInput, ["-abc=def"])
+    #expect(sut.originalInput.count == 1)
+    #expect(sut.originalInput == ["-abc=def"])
   }
 }
 
-// swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension SplitArgumentTests {
-  func testMultipleValues() throws {
+  @Test func multipleValues() async throws {
     let sut = try SplitArguments(arguments: ["abc", "x", "1234"])
 
-    XCTAssertEqual(sut.elements.count, 3)
+    #expect(sut.elements.count == 3)
 
-    AssertIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
-    AssertElementEqual(sut, at: 0, .value("abc"))
+    try expectIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
+    try expectElementEqual(sut, at: 0, .value("abc"))
 
-    AssertIndexEqual(sut, at: 1, inputIndex: 1, subIndex: .complete)
-    AssertElementEqual(sut, at: 1, .value("x"))
+    try expectIndexEqual(sut, at: 1, inputIndex: 1, subIndex: .complete)
+    try expectElementEqual(sut, at: 1, .value("x"))
 
-    AssertIndexEqual(sut, at: 2, inputIndex: 2, subIndex: .complete)
-    AssertElementEqual(sut, at: 2, .value("1234"))
+    try expectIndexEqual(sut, at: 2, inputIndex: 2, subIndex: .complete)
+    try expectElementEqual(sut, at: 2, .value("1234"))
 
-    XCTAssertEqual(sut.originalInput.count, 3)
-    XCTAssertEqual(sut.originalInput, ["abc", "x", "1234"])
+    #expect(sut.originalInput.count == 3)
+    #expect(sut.originalInput == ["abc", "x", "1234"])
   }
 
-  func testMultipleLongOptions() throws {
+  @Test func multipleLongOptions() async throws {
     let sut = try SplitArguments(arguments: ["--d", "--1", "--abc-def"])
 
-    XCTAssertEqual(sut.elements.count, 3)
+    #expect(sut.elements.count == 3)
 
-    AssertIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
-    AssertElementEqual(sut, at: 0, .option(.name(.long("d"))))
+    try expectIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
+    try expectElementEqual(sut, at: 0, .option(.name(.long("d"))))
 
-    AssertIndexEqual(sut, at: 1, inputIndex: 1, subIndex: .complete)
-    AssertElementEqual(sut, at: 1, .option(.name(.long("1"))))
+    try expectIndexEqual(sut, at: 1, inputIndex: 1, subIndex: .complete)
+    try expectElementEqual(sut, at: 1, .option(.name(.long("1"))))
 
-    AssertIndexEqual(sut, at: 2, inputIndex: 2, subIndex: .complete)
-    AssertElementEqual(sut, at: 2, .option(.name(.long("abc-def"))))
+    try expectIndexEqual(sut, at: 2, inputIndex: 2, subIndex: .complete)
+    try expectElementEqual(sut, at: 2, .option(.name(.long("abc-def"))))
 
-    XCTAssertEqual(sut.originalInput.count, 3)
-    XCTAssertEqual(sut.originalInput, ["--d", "--1", "--abc-def"])
+    #expect(sut.originalInput.count == 3)
+    #expect(sut.originalInput == ["--d", "--1", "--abc-def"])
   }
 
-  func testMultipleShortOptions() throws {
+  @Test func multipleShortOptions() async throws {
     let sut = try SplitArguments(arguments: ["-x", "-y", "-z"])
 
-    XCTAssertEqual(sut.elements.count, 3)
+    #expect(sut.elements.count == 3)
 
-    AssertIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
-    AssertElementEqual(sut, at: 0, .option(.name(.short("x"))))
+    try expectIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
+    try expectElementEqual(sut, at: 0, .option(.name(.short("x"))))
 
-    AssertIndexEqual(sut, at: 1, inputIndex: 1, subIndex: .complete)
-    AssertElementEqual(sut, at: 1, .option(.name(.short("y"))))
+    try expectIndexEqual(sut, at: 1, inputIndex: 1, subIndex: .complete)
+    try expectElementEqual(sut, at: 1, .option(.name(.short("y"))))
 
-    AssertIndexEqual(sut, at: 2, inputIndex: 2, subIndex: .complete)
-    AssertElementEqual(sut, at: 2, .option(.name(.short("z"))))
+    try expectIndexEqual(sut, at: 2, inputIndex: 2, subIndex: .complete)
+    try expectElementEqual(sut, at: 2, .option(.name(.short("z"))))
 
-    XCTAssertEqual(sut.originalInput.count, 3)
-    XCTAssertEqual(sut.originalInput, ["-x", "-y", "-z"])
+    #expect(sut.originalInput.count == 3)
+    #expect(sut.originalInput == ["-x", "-y", "-z"])
   }
 
-  func testMultipleShortOptionsCombined_2() throws {
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  @Test func multipleShortOptionsCombined_2() async throws {
     let sut = try SplitArguments(arguments: ["-bc", "-fv", "-a"])
 
-    XCTAssertEqual(sut.elements.count, 7)
+    #expect(sut.elements.count == 7)
 
-    AssertIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
-    AssertElementEqual(sut, at: 0, .option(.name(.longWithSingleDash("bc"))))
+    try expectIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
+    try expectElementEqual(
+      sut, at: 0, .option(.name(.longWithSingleDash("bc")))
+    )
 
-    AssertIndexEqual(sut, at: 1, inputIndex: 0, subIndex: .sub(0))
-    AssertElementEqual(sut, at: 1, .option(.name(.short("b"))))
+    try expectIndexEqual(sut, at: 1, inputIndex: 0, subIndex: .sub(0))
+    try expectElementEqual(sut, at: 1, .option(.name(.short("b"))))
 
-    AssertIndexEqual(sut, at: 2, inputIndex: 0, subIndex: .sub(1))
-    AssertElementEqual(sut, at: 2, .option(.name(.short("c"))))
+    try expectIndexEqual(sut, at: 2, inputIndex: 0, subIndex: .sub(1))
+    try expectElementEqual(sut, at: 2, .option(.name(.short("c"))))
 
-    AssertIndexEqual(sut, at: 3, inputIndex: 1, subIndex: .complete)
-    AssertElementEqual(sut, at: 3, .option(.name(.longWithSingleDash("fv"))))
+    try expectIndexEqual(sut, at: 3, inputIndex: 1, subIndex: .complete)
+    try expectElementEqual(
+      sut, at: 3, .option(.name(.longWithSingleDash("fv")))
+    )
 
-    AssertIndexEqual(sut, at: 4, inputIndex: 1, subIndex: .sub(0))
-    AssertElementEqual(sut, at: 4, .option(.name(.short("f"))))
+    try expectIndexEqual(sut, at: 4, inputIndex: 1, subIndex: .sub(0))
+    try expectElementEqual(sut, at: 4, .option(.name(.short("f"))))
 
-    AssertIndexEqual(sut, at: 5, inputIndex: 1, subIndex: .sub(1))
-    AssertElementEqual(sut, at: 5, .option(.name(.short("v"))))
+    try expectIndexEqual(sut, at: 5, inputIndex: 1, subIndex: .sub(1))
+    try expectElementEqual(sut, at: 5, .option(.name(.short("v"))))
 
-    AssertIndexEqual(sut, at: 6, inputIndex: 2, subIndex: .complete)
-    AssertElementEqual(sut, at: 6, .option(.name(.short("a"))))
+    try expectIndexEqual(sut, at: 6, inputIndex: 2, subIndex: .complete)
+    try expectElementEqual(sut, at: 6, .option(.name(.short("a"))))
 
-    XCTAssertEqual(sut.originalInput.count, 3)
-    XCTAssertEqual(sut.originalInput, ["-bc", "-fv", "-a"])
+    #expect(sut.originalInput.count == 3)
+    #expect(sut.originalInput == ["-bc", "-fv", "-a"])
   }
 }
 
-// swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension SplitArgumentTests {
-  func testMixed_1() throws {
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  @Test func mixed_1() async throws {
     let sut = try SplitArguments(arguments: [
       "-x", "abc", "--foo", "1234", "-zz",
     ])
 
-    XCTAssertEqual(sut.elements.count, 7)
+    #expect(sut.elements.count == 7)
 
-    AssertIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
-    AssertElementEqual(sut, at: 0, .option(.name(.short("x"))))
+    try expectIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
+    try expectElementEqual(sut, at: 0, .option(.name(.short("x"))))
 
-    AssertIndexEqual(sut, at: 1, inputIndex: 1, subIndex: .complete)
-    AssertElementEqual(sut, at: 1, .value("abc"))
+    try expectIndexEqual(sut, at: 1, inputIndex: 1, subIndex: .complete)
+    try expectElementEqual(sut, at: 1, .value("abc"))
 
-    AssertIndexEqual(sut, at: 2, inputIndex: 2, subIndex: .complete)
-    AssertElementEqual(sut, at: 2, .option(.name(.long("foo"))))
+    try expectIndexEqual(sut, at: 2, inputIndex: 2, subIndex: .complete)
+    try expectElementEqual(sut, at: 2, .option(.name(.long("foo"))))
 
-    AssertIndexEqual(sut, at: 3, inputIndex: 3, subIndex: .complete)
-    AssertElementEqual(sut, at: 3, .value("1234"))
+    try expectIndexEqual(sut, at: 3, inputIndex: 3, subIndex: .complete)
+    try expectElementEqual(sut, at: 3, .value("1234"))
 
-    AssertIndexEqual(sut, at: 4, inputIndex: 4, subIndex: .complete)
-    AssertElementEqual(sut, at: 4, .option(.name(.longWithSingleDash("zz"))))
+    try expectIndexEqual(sut, at: 4, inputIndex: 4, subIndex: .complete)
+    try expectElementEqual(
+      sut, at: 4, .option(.name(.longWithSingleDash("zz")))
+    )
 
-    AssertIndexEqual(sut, at: 5, inputIndex: 4, subIndex: .sub(0))
-    AssertElementEqual(sut, at: 5, .option(.name(.short("z"))))
+    try expectIndexEqual(sut, at: 5, inputIndex: 4, subIndex: .sub(0))
+    try expectElementEqual(sut, at: 5, .option(.name(.short("z"))))
 
-    AssertIndexEqual(sut, at: 6, inputIndex: 4, subIndex: .sub(1))
-    AssertElementEqual(sut, at: 6, .option(.name(.short("z"))))
+    try expectIndexEqual(sut, at: 6, inputIndex: 4, subIndex: .sub(1))
+    try expectElementEqual(sut, at: 6, .option(.name(.short("z"))))
 
-    XCTAssertEqual(sut.originalInput.count, 5)
-    XCTAssertEqual(sut.originalInput, ["-x", "abc", "--foo", "1234", "-zz"])
+    #expect(sut.originalInput.count == 5)
+    #expect(sut.originalInput == ["-x", "abc", "--foo", "1234", "-zz"])
   }
 
-  func testMixed_2() throws {
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  @Test func mixed_2() async throws {
     let sut = try SplitArguments(arguments: [
       "1234", "-zz", "abc", "-x", "--foo",
     ])
 
-    XCTAssertEqual(sut.elements.count, 7)
+    #expect(sut.elements.count == 7)
 
-    AssertIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
-    AssertElementEqual(sut, at: 0, .value("1234"))
+    try expectIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
+    try expectElementEqual(sut, at: 0, .value("1234"))
 
-    AssertIndexEqual(sut, at: 1, inputIndex: 1, subIndex: .complete)
-    AssertElementEqual(sut, at: 1, .option(.name(.longWithSingleDash("zz"))))
+    try expectIndexEqual(sut, at: 1, inputIndex: 1, subIndex: .complete)
+    try expectElementEqual(
+      sut, at: 1, .option(.name(.longWithSingleDash("zz")))
+    )
 
-    AssertIndexEqual(sut, at: 2, inputIndex: 1, subIndex: .sub(0))
-    AssertElementEqual(sut, at: 2, .option(.name(.short("z"))))
+    try expectIndexEqual(sut, at: 2, inputIndex: 1, subIndex: .sub(0))
+    try expectElementEqual(sut, at: 2, .option(.name(.short("z"))))
 
-    AssertIndexEqual(sut, at: 3, inputIndex: 1, subIndex: .sub(1))
-    AssertElementEqual(sut, at: 3, .option(.name(.short("z"))))
+    try expectIndexEqual(sut, at: 3, inputIndex: 1, subIndex: .sub(1))
+    try expectElementEqual(sut, at: 3, .option(.name(.short("z"))))
 
-    AssertIndexEqual(sut, at: 4, inputIndex: 2, subIndex: .complete)
-    AssertElementEqual(sut, at: 4, .value("abc"))
+    try expectIndexEqual(sut, at: 4, inputIndex: 2, subIndex: .complete)
+    try expectElementEqual(sut, at: 4, .value("abc"))
 
-    AssertIndexEqual(sut, at: 5, inputIndex: 3, subIndex: .complete)
-    AssertElementEqual(sut, at: 5, .option(.name(.short("x"))))
+    try expectIndexEqual(sut, at: 5, inputIndex: 3, subIndex: .complete)
+    try expectElementEqual(sut, at: 5, .option(.name(.short("x"))))
 
-    AssertIndexEqual(sut, at: 6, inputIndex: 4, subIndex: .complete)
-    AssertElementEqual(sut, at: 6, .option(.name(.long("foo"))))
+    try expectIndexEqual(sut, at: 6, inputIndex: 4, subIndex: .complete)
+    try expectElementEqual(sut, at: 6, .option(.name(.long("foo"))))
 
-    XCTAssertEqual(sut.originalInput.count, 5)
-    XCTAssertEqual(sut.originalInput, ["1234", "-zz", "abc", "-x", "--foo"])
+    #expect(sut.originalInput.count == 5)
+    #expect(sut.originalInput == ["1234", "-zz", "abc", "-x", "--foo"])
   }
 
-  func testTerminator_1() throws {
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  @Test func terminator_1() async throws {
     let sut = try SplitArguments(arguments: ["--foo", "--", "--bar"])
 
-    XCTAssertEqual(sut.elements.count, 3)
+    #expect(sut.elements.count == 3)
 
-    AssertIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
-    AssertElementEqual(sut, at: 0, .option(.name(.long("foo"))))
+    try expectIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
+    try expectElementEqual(sut, at: 0, .option(.name(.long("foo"))))
 
-    AssertIndexEqual(sut, at: 1, inputIndex: 1, subIndex: .complete)
-    AssertElementEqual(sut, at: 1, .terminator)
+    try expectIndexEqual(sut, at: 1, inputIndex: 1, subIndex: .complete)
+    try expectElementEqual(sut, at: 1, .terminator)
 
-    AssertIndexEqual(sut, at: 2, inputIndex: 2, subIndex: .complete)
-    AssertElementEqual(sut, at: 2, .value("--bar"))
+    try expectIndexEqual(sut, at: 2, inputIndex: 2, subIndex: .complete)
+    try expectElementEqual(sut, at: 2, .value("--bar"))
 
-    XCTAssertEqual(sut.originalInput.count, 3)
-    XCTAssertEqual(sut.originalInput, ["--foo", "--", "--bar"])
+    #expect(sut.originalInput.count == 3)
+    #expect(sut.originalInput == ["--foo", "--", "--bar"])
   }
 
-  func testTerminator_2() throws {
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  @Test func terminator_2() async throws {
     let sut = try SplitArguments(arguments: ["--foo", "--", "bar"])
 
-    XCTAssertEqual(sut.elements.count, 3)
+    #expect(sut.elements.count == 3)
 
-    AssertIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
-    AssertElementEqual(sut, at: 0, .option(.name(.long("foo"))))
+    try expectIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
+    try expectElementEqual(sut, at: 0, .option(.name(.long("foo"))))
 
-    AssertIndexEqual(sut, at: 1, inputIndex: 1, subIndex: .complete)
-    AssertElementEqual(sut, at: 1, .terminator)
+    try expectIndexEqual(sut, at: 1, inputIndex: 1, subIndex: .complete)
+    try expectElementEqual(sut, at: 1, .terminator)
 
-    AssertIndexEqual(sut, at: 2, inputIndex: 2, subIndex: .complete)
-    AssertElementEqual(sut, at: 2, .value("bar"))
+    try expectIndexEqual(sut, at: 2, inputIndex: 2, subIndex: .complete)
+    try expectElementEqual(sut, at: 2, .value("bar"))
 
-    XCTAssertEqual(sut.originalInput.count, 3)
-    XCTAssertEqual(sut.originalInput, ["--foo", "--", "bar"])
+    #expect(sut.originalInput.count == 3)
+    #expect(sut.originalInput == ["--foo", "--", "bar"])
   }
 
-  func testTerminator_3() throws {
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  @Test func terminator_3() async throws {
     let sut = try SplitArguments(arguments: ["--foo", "--", "--bar=baz"])
 
-    XCTAssertEqual(sut.elements.count, 3)
+    #expect(sut.elements.count == 3)
 
-    AssertIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
-    AssertElementEqual(sut, at: 0, .option(.name(.long("foo"))))
+    try expectIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
+    try expectElementEqual(sut, at: 0, .option(.name(.long("foo"))))
 
-    AssertIndexEqual(sut, at: 1, inputIndex: 1, subIndex: .complete)
-    AssertElementEqual(sut, at: 1, .terminator)
+    try expectIndexEqual(sut, at: 1, inputIndex: 1, subIndex: .complete)
+    try expectElementEqual(sut, at: 1, .terminator)
 
-    AssertIndexEqual(sut, at: 2, inputIndex: 2, subIndex: .complete)
-    AssertElementEqual(sut, at: 2, .value("--bar=baz"))
+    try expectIndexEqual(sut, at: 2, inputIndex: 2, subIndex: .complete)
+    try expectElementEqual(sut, at: 2, .value("--bar=baz"))
 
-    XCTAssertEqual(sut.originalInput.count, 3)
-    XCTAssertEqual(sut.originalInput, ["--foo", "--", "--bar=baz"])
+    #expect(sut.originalInput.count == 3)
+    #expect(sut.originalInput == ["--foo", "--", "--bar=baz"])
   }
 
-  func testTerminatorAtTheEnd() throws {
+  @Test func terminatorAtTheEnd() async throws {
     let sut = try SplitArguments(arguments: ["--foo", "--"])
 
-    XCTAssertEqual(sut.elements.count, 2)
+    #expect(sut.elements.count == 2)
 
-    AssertIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
-    AssertElementEqual(sut, at: 0, .option(.name(.long("foo"))))
+    try expectIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
+    try expectElementEqual(sut, at: 0, .option(.name(.long("foo"))))
 
-    AssertIndexEqual(sut, at: 1, inputIndex: 1, subIndex: .complete)
-    AssertElementEqual(sut, at: 1, .terminator)
+    try expectIndexEqual(sut, at: 1, inputIndex: 1, subIndex: .complete)
+    try expectElementEqual(sut, at: 1, .terminator)
 
-    XCTAssertEqual(sut.originalInput.count, 2)
-    XCTAssertEqual(sut.originalInput, ["--foo", "--"])
+    #expect(sut.originalInput.count == 2)
+    #expect(sut.originalInput == ["--foo", "--"])
   }
 
-  func testTerminatorAtTheBeginning() throws {
+  @Test func terminatorAtTheBeginning() async throws {
     let sut = try SplitArguments(arguments: ["--", "--foo"])
 
-    XCTAssertEqual(sut.elements.count, 2)
+    #expect(sut.elements.count == 2)
 
-    AssertIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
-    AssertElementEqual(sut, at: 0, .terminator)
+    try expectIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
+    try expectElementEqual(sut, at: 0, .terminator)
 
-    AssertIndexEqual(sut, at: 1, inputIndex: 1, subIndex: .complete)
-    AssertElementEqual(sut, at: 1, .value("--foo"))
+    try expectIndexEqual(sut, at: 1, inputIndex: 1, subIndex: .complete)
+    try expectElementEqual(sut, at: 1, .value("--foo"))
 
-    XCTAssertEqual(sut.originalInput.count, 2)
-    XCTAssertEqual(sut.originalInput, ["--", "--foo"])
+    #expect(sut.originalInput.count == 2)
+    #expect(sut.originalInput == ["--", "--foo"])
   }
 }
 
 // MARK: - Removing Entries
 
-// swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension SplitArgumentTests {
-  func testRemovingValuesForLongNames() throws {
+  @Test func removingValuesForLongNames() async throws {
     var sut = try SplitArguments(arguments: ["--foo", "--bar"])
-    XCTAssertEqual(sut.elements.count, 2)
+    #expect(sut.elements.count == 2)
     sut.remove(at: SplitArguments.Index(inputIndex: 0, subIndex: .complete))
-    XCTAssertEqual(sut.elements.count, 1)
+    #expect(sut.elements.count == 1)
     sut.remove(at: SplitArguments.Index(inputIndex: 1, subIndex: .complete))
-    XCTAssertEqual(sut.elements.count, 0)
+    #expect(sut.elements.count == 0)
   }
 
-  func testRemovingValuesForLongNamesWithValue() throws {
+  @Test func removingValuesForLongNamesWithValue() async throws {
     var sut = try SplitArguments(arguments: ["--foo=A", "--bar=B"])
-    XCTAssertEqual(sut.elements.count, 2)
+    #expect(sut.elements.count == 2)
     sut.remove(at: SplitArguments.Index(inputIndex: 0, subIndex: .complete))
-    XCTAssertEqual(sut.elements.count, 1)
+    #expect(sut.elements.count == 1)
     sut.remove(at: SplitArguments.Index(inputIndex: 1, subIndex: .complete))
-    XCTAssertEqual(sut.elements.count, 0)
+    #expect(sut.elements.count == 0)
   }
 
-  func testRemovingValuesForShortNames() throws {
+  @Test func removingValuesForShortNames() async throws {
     var sut = try SplitArguments(arguments: ["-f", "-b"])
-    XCTAssertEqual(sut.elements.count, 2)
+    #expect(sut.elements.count == 2)
     sut.remove(at: SplitArguments.Index(inputIndex: 0, subIndex: .complete))
-    XCTAssertEqual(sut.elements.count, 1)
+    #expect(sut.elements.count == 1)
     sut.remove(at: SplitArguments.Index(inputIndex: 1, subIndex: .complete))
-    XCTAssertEqual(sut.elements.count, 0)
+    #expect(sut.elements.count == 0)
   }
 
-  func testRemovingValuesForCombinedShortNames() throws {
+  @Test func removingValuesForCombinedShortNames() async throws {
     let sut = try SplitArguments(arguments: ["-fb"])
 
-    XCTAssertEqual(sut.elements.count, 3)
-    AssertIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
-    AssertElementEqual(sut, at: 0, .option(.name(.longWithSingleDash("fb"))))
-    AssertIndexEqual(sut, at: 1, inputIndex: 0, subIndex: .sub(0))
-    AssertElementEqual(sut, at: 1, .option(.name(.short("f"))))
-    AssertIndexEqual(sut, at: 2, inputIndex: 0, subIndex: .sub(1))
-    AssertElementEqual(sut, at: 2, .option(.name(.short("b"))))
+    #expect(sut.elements.count == 3)
+    try expectIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
+    try expectElementEqual(
+      sut, at: 0, .option(.name(.longWithSingleDash("fb")))
+    )
+    try expectIndexEqual(sut, at: 1, inputIndex: 0, subIndex: .sub(0))
+    try expectElementEqual(sut, at: 1, .option(.name(.short("f"))))
+    try expectIndexEqual(sut, at: 2, inputIndex: 0, subIndex: .sub(1))
+    try expectElementEqual(sut, at: 2, .option(.name(.short("b"))))
 
     do {
       var sutB = sut
       sutB.remove(at: SplitArguments.Index(inputIndex: 0, subIndex: .complete))
 
-      XCTAssertEqual(sutB.elements.count, 0)
+      #expect(sutB.elements.count == 0)
     }
     do {
       var sutB = sut
       sutB.remove(at: SplitArguments.Index(inputIndex: 0, subIndex: .sub(0)))
 
-      XCTAssertEqual(sutB.elements.count, 1)
-      AssertIndexEqual(sutB, at: 2, inputIndex: 0, subIndex: .sub(1))
-      AssertElementEqual(sutB, at: 2, .option(.name(.short("b"))))
+      #expect(sutB.elements.count == 1)
+      try expectIndexEqual(sutB, at: 2, inputIndex: 0, subIndex: .sub(1))
+      try expectElementEqual(sutB, at: 2, .option(.name(.short("b"))))
     }
     do {
       var sutB = sut
       sutB.remove(at: SplitArguments.Index(inputIndex: 0, subIndex: .sub(1)))
 
-      XCTAssertEqual(sutB.elements.count, 1)
-      AssertIndexEqual(sutB, at: 2, inputIndex: 0, subIndex: .sub(0))
-      AssertElementEqual(sutB, at: 2, .option(.name(.short("f"))))
+      #expect(sutB.elements.count == 1)
+      try expectIndexEqual(sutB, at: 2, inputIndex: 0, subIndex: .sub(0))
+      try expectElementEqual(sutB, at: 2, .option(.name(.short("f"))))
     }
   }
 }
 
 // MARK: - Pop & Peek
 
-// swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension SplitArgumentTests {
-  func testPopNext() throws {
+  @Test func popNext() async throws {
     var sut = try SplitArguments(arguments: ["--foo", "bar"])
 
-    let a = try XCTUnwrap(sut.popNext())
-    XCTAssertEqual(
-      a.0,
-      .argumentIndex(SplitArguments.Index(inputIndex: 0, subIndex: .complete)))
-    XCTAssertEqual(a.1.value, .option(.name(.long("foo"))))
+    let popedValueA = sut.popNext()
+    let a = try #require(popedValueA)
+    #expect(
+      a.0
+        == .argumentIndex(
+          SplitArguments.Index(inputIndex: 0, subIndex: .complete)))
+    #expect(a.1.value == .option(.name(.long("foo"))))
 
-    let b = try XCTUnwrap(sut.popNext())
-    XCTAssertEqual(
-      b.0,
-      .argumentIndex(SplitArguments.Index(inputIndex: 1, subIndex: .complete)))
-    XCTAssertEqual(b.1.value, .value("bar"))
+    let popedValueB = sut.popNext()
+    let b = try #require(popedValueB)
+    #expect(
+      b.0
+        == .argumentIndex(
+          SplitArguments.Index(inputIndex: 1, subIndex: .complete)))
+    #expect(b.1.value == .value("bar"))
 
-    XCTAssertNil(sut.popNext())
+    #expect(sut.popNext() == nil)
   }
 
-  func testPeekNext() throws {
+  @Test func peekNext() async throws {
     let sut = try SplitArguments(arguments: ["--foo", "bar"])
 
-    let a = try XCTUnwrap(sut.peekNext())
-    XCTAssertEqual(
-      a.0,
-      .argumentIndex(SplitArguments.Index(inputIndex: 0, subIndex: .complete)))
-    XCTAssertEqual(a.1.value, .option(.name(.long("foo"))))
+    let a = try #require(sut.peekNext())
+    #expect(
+      a.0
+        == .argumentIndex(
+          SplitArguments.Index(inputIndex: 0, subIndex: .complete)))
+    #expect(a.1.value == .option(.name(.long("foo"))))
 
-    let b = try XCTUnwrap(sut.peekNext())
-    XCTAssertEqual(
-      b.0,
-      .argumentIndex(SplitArguments.Index(inputIndex: 0, subIndex: .complete)))
-    XCTAssertEqual(b.1.value, .option(.name(.long("foo"))))
+    let b = try #require(sut.peekNext())
+    #expect(
+      b.0
+        == .argumentIndex(
+          SplitArguments.Index(inputIndex: 0, subIndex: .complete)))
+    #expect(b.1.value == .option(.name(.long("foo"))))
   }
 
-  func testPeekNextWhenEmpty() throws {
+  @Test func peekNextWhenEmpty() async throws {
     let sut = try SplitArguments(arguments: [])
-    XCTAssertNil(sut.peekNext())
+    #expect(sut.peekNext() == nil)
   }
 
-  func testPopNextElementIfValueAfter_1() throws {
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  @Test func popNextElementIfValueAfter_1() async throws {
     var sut = try SplitArguments(arguments: ["--bar", "bar", "--foo", "foo"])
 
-    let value = try XCTUnwrap(
+    let optValue = sut.popNextElementIfValue(
+      after: .argumentIndex(
+        SplitArguments.Index(inputIndex: 0, subIndex: .complete)
+      )
+    )
+    let value = try #require(optValue)
+    #expect(
+      value.0
+        == .argumentIndex(
+          SplitArguments.Index(inputIndex: 1, subIndex: .complete)))
+    #expect(value.1 == "bar")
+  }
+
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  @Test func popNextElementIfValueAfter_2() async throws {
+    var sut = try SplitArguments(arguments: ["--bar", "bar", "--foo", "foo"])
+
+    let optValue = sut.popNextElementIfValue(
+      after: .argumentIndex(
+        SplitArguments.Index(inputIndex: 2, subIndex: .complete)
+      )
+    )
+    let value = try #require(optValue)
+    #expect(
+      value.0
+        == .argumentIndex(
+          SplitArguments.Index(inputIndex: 3, subIndex: .complete)))
+    #expect(value.1 == "foo")
+  }
+
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  @Test func popNextElementIfValueAfter_3() async throws {
+    var sut = try SplitArguments(arguments: ["--bar", "bar", "--foo", "foo"])
+    #expect(
       sut.popNextElementIfValue(
         after: .argumentIndex(
-          SplitArguments.Index(inputIndex: 0, subIndex: .complete))))
-    XCTAssertEqual(
-      value.0,
-      .argumentIndex(SplitArguments.Index(inputIndex: 1, subIndex: .complete)))
-    XCTAssertEqual(value.1, "bar")
+          SplitArguments.Index(inputIndex: 1, subIndex: .complete))) == nil)
   }
 
-  func testPopNextElementIfValueAfter_2() throws {
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  @Test func popNextValueAfter_1() async throws {
     var sut = try SplitArguments(arguments: ["--bar", "bar", "--foo", "foo"])
 
-    let value = try XCTUnwrap(
-      sut.popNextElementIfValue(
-        after: .argumentIndex(
-          SplitArguments.Index(inputIndex: 2, subIndex: .complete))))
-    XCTAssertEqual(
-      value.0,
-      .argumentIndex(SplitArguments.Index(inputIndex: 3, subIndex: .complete)))
-    XCTAssertEqual(value.1, "foo")
+    let optValueA = sut.popNextValue(
+      after: .argumentIndex(
+        SplitArguments.Index(inputIndex: 0, subIndex: .complete)
+      )
+    )
+    let valueA = try #require(optValueA)
+    #expect(
+      valueA.0
+        == .argumentIndex(
+          SplitArguments.Index(inputIndex: 1, subIndex: .complete)))
+    #expect(valueA.1 == "bar")
+
+    let optValueB = sut.popNextValue(
+      after: .argumentIndex(
+        SplitArguments.Index(inputIndex: 0, subIndex: .complete)
+      )
+    )
+    let valueB = try #require(optValueB)
+    #expect(
+      valueB.0
+        == .argumentIndex(
+          SplitArguments.Index(inputIndex: 3, subIndex: .complete)))
+    #expect(valueB.1 == "foo")
   }
 
-  func testPopNextElementIfValueAfter_3() throws {
-    var sut = try SplitArguments(arguments: ["--bar", "bar", "--foo", "foo"])
-    XCTAssertNil(
-      sut.popNextElementIfValue(
-        after: .argumentIndex(
-          SplitArguments.Index(inputIndex: 1, subIndex: .complete))))
-  }
-
-  func testPopNextValueAfter_1() throws {
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  @Test func popNextValueAfter_2() async throws {
     var sut = try SplitArguments(arguments: ["--bar", "bar", "--foo", "foo"])
 
-    let valueA = try XCTUnwrap(
+    let optValue = sut.popNextValue(
+      after: .argumentIndex(
+        SplitArguments.Index(inputIndex: 2, subIndex: .complete)
+      )
+    )
+    let value = try #require(optValue)
+    #expect(
+      value.0
+        == .argumentIndex(
+          SplitArguments.Index(inputIndex: 3, subIndex: .complete)))
+    #expect(value.1 == "foo")
+
+    #expect(
       sut.popNextValue(
         after: .argumentIndex(
-          SplitArguments.Index(inputIndex: 0, subIndex: .complete))))
-    XCTAssertEqual(
-      valueA.0,
-      .argumentIndex(SplitArguments.Index(inputIndex: 1, subIndex: .complete)))
-    XCTAssertEqual(valueA.1, "bar")
-
-    let valueB = try XCTUnwrap(
-      sut.popNextValue(
-        after: .argumentIndex(
-          SplitArguments.Index(inputIndex: 0, subIndex: .complete))))
-    XCTAssertEqual(
-      valueB.0,
-      .argumentIndex(SplitArguments.Index(inputIndex: 3, subIndex: .complete)))
-    XCTAssertEqual(valueB.1, "foo")
+          SplitArguments.Index(inputIndex: 2, subIndex: .complete))) == nil)
   }
 
-  func testPopNextValueAfter_2() throws {
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  @Test func popNextValueAfter_3() async throws {
     var sut = try SplitArguments(arguments: ["--bar", "bar", "--foo", "foo"])
 
-    let value = try XCTUnwrap(
+    #expect(
       sut.popNextValue(
         after: .argumentIndex(
-          SplitArguments.Index(inputIndex: 2, subIndex: .complete))))
-    XCTAssertEqual(
-      value.0,
-      .argumentIndex(SplitArguments.Index(inputIndex: 3, subIndex: .complete)))
-    XCTAssertEqual(value.1, "foo")
-
-    XCTAssertNil(
-      sut.popNextValue(
-        after: .argumentIndex(
-          SplitArguments.Index(inputIndex: 2, subIndex: .complete))))
+          SplitArguments.Index(inputIndex: 3, subIndex: .complete))) == nil)
   }
 
-  func testPopNextValueAfter_3() throws {
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  @Test func popNextElementAsValueAfter_1() async throws {
     var sut = try SplitArguments(arguments: ["--bar", "bar", "--foo", "foo"])
 
-    XCTAssertNil(
-      sut.popNextValue(
-        after: .argumentIndex(
-          SplitArguments.Index(inputIndex: 3, subIndex: .complete))))
+    let optValueA = sut.popNextElementAsValue(
+      after: .argumentIndex(
+        SplitArguments.Index(inputIndex: 0, subIndex: .complete)
+      )
+    )
+    let valueA = try #require(optValueA)
+    #expect(
+      valueA.0
+        == .argumentIndex(
+          SplitArguments.Index(inputIndex: 1, subIndex: .complete)))
+    #expect(valueA.1 == "bar")
+
+    let optValueB = sut.popNextElementAsValue(
+      after: .argumentIndex(
+        SplitArguments.Index(inputIndex: 0, subIndex: .complete)
+      )
+    )
+    let valueB = try #require(optValueB)
+    #expect(
+      valueB.0
+        == .argumentIndex(
+          SplitArguments.Index(inputIndex: 2, subIndex: .complete)))
+    #expect(valueB.1 == "--foo")
   }
 
-  func testPopNextElementAsValueAfter_1() throws {
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  @Test func popNextElementAsValueAfter_2() async throws {
     var sut = try SplitArguments(arguments: ["--bar", "bar", "--foo", "foo"])
 
-    let valueA = try XCTUnwrap(
+    #expect(
       sut.popNextElementAsValue(
         after: .argumentIndex(
-          SplitArguments.Index(inputIndex: 0, subIndex: .complete))))
-    XCTAssertEqual(
-      valueA.0,
-      .argumentIndex(SplitArguments.Index(inputIndex: 1, subIndex: .complete)))
-    XCTAssertEqual(valueA.1, "bar")
-
-    let valueB = try XCTUnwrap(
-      sut.popNextElementAsValue(
-        after: .argumentIndex(
-          SplitArguments.Index(inputIndex: 0, subIndex: .complete))))
-    XCTAssertEqual(
-      valueB.0,
-      .argumentIndex(SplitArguments.Index(inputIndex: 2, subIndex: .complete)))
-    XCTAssertEqual(valueB.1, "--foo")
+          SplitArguments.Index(inputIndex: 3, subIndex: .complete))) == nil)
   }
 
-  func testPopNextElementAsValueAfter_2() throws {
-    var sut = try SplitArguments(arguments: ["--bar", "bar", "--foo", "foo"])
-
-    XCTAssertNil(
-      sut.popNextElementAsValue(
-        after: .argumentIndex(
-          SplitArguments.Index(inputIndex: 3, subIndex: .complete))))
-  }
-
-  func testPopNextElementAsValueAfter_3() throws {
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  @Test func popNextElementAsValueAfter_3() async throws {
     var sut = try SplitArguments(arguments: ["--bar", "-bar"])
 
-    let value = try XCTUnwrap(
-      sut.popNextElementAsValue(
-        after: .argumentIndex(
-          SplitArguments.Index(inputIndex: 0, subIndex: .complete))))
-    XCTAssertEqual(
-      value.0,
-      .argumentIndex(SplitArguments.Index(inputIndex: 1, subIndex: .complete)))
-    XCTAssertEqual(value.1, "-bar")
+    let optValue = sut.popNextElementAsValue(
+      after: .argumentIndex(
+        SplitArguments.Index(inputIndex: 0, subIndex: .complete)
+      )
+    )
+    let value = try #require(optValue)
+    #expect(
+      value.0
+        == .argumentIndex(
+          SplitArguments.Index(inputIndex: 1, subIndex: .complete)))
+    #expect(value.1 == "-bar")
   }
 
-  func testPopNextElementIfValue() throws {
+  @Test func popNextElementIfValue() async throws {
     var sut = try SplitArguments(arguments: ["--bar", "bar", "--foo", "foo"])
 
-    _ = try XCTUnwrap(sut.popNext())
+    let popedValue = sut.popNext()
+    _ = try #require(popedValue)
 
-    let value = try XCTUnwrap(sut.popNextElementIfValue())
-    XCTAssertEqual(
-      value.0,
-      .argumentIndex(SplitArguments.Index(inputIndex: 1, subIndex: .complete)))
-    XCTAssertEqual(value.1, "bar")
+    let optValue2 = sut.popNextElementIfValue()
+    let value = try #require(optValue2)
+    #expect(
+      value.0
+        == .argumentIndex(
+          SplitArguments.Index(inputIndex: 1, subIndex: .complete)))
+    #expect(value.1 == "bar")
 
-    XCTAssertNil(sut.popNextElementIfValue())
+    #expect(sut.popNextElementIfValue() == nil)
   }
 
-  func testPopNextValue() throws {
+  @Test func popNextValue() async throws {
     var sut = try SplitArguments(arguments: ["--bar", "bar", "--foo", "foo"])
 
-    let valueA = try XCTUnwrap(sut.popNextValue())
-    XCTAssertEqual(
-      valueA.0, SplitArguments.Index(inputIndex: 1, subIndex: .complete))
-    XCTAssertEqual(valueA.1, "bar")
+    let optValueA = sut.popNextValue()
+    let valueA = try #require(optValueA)
+    #expect(
+      valueA.0 == SplitArguments.Index(inputIndex: 1, subIndex: .complete))
+    #expect(valueA.1 == "bar")
 
-    let valueB = try XCTUnwrap(sut.popNextValue())
-    XCTAssertEqual(
-      valueB.0, SplitArguments.Index(inputIndex: 3, subIndex: .complete))
-    XCTAssertEqual(valueB.1, "foo")
+    let optValueB = sut.popNextValue()
+    let valueB = try #require(optValueB)
+    #expect(
+      valueB.0 == SplitArguments.Index(inputIndex: 3, subIndex: .complete))
+    #expect(valueB.1 == "foo")
 
-    XCTAssertNil(sut.popNextElementIfValue())
+    #expect(sut.popNextElementIfValue() == nil)
   }
 
-  func testPeekNextValue() throws {
+  @Test func peekNextValue() async throws {
     let sut = try SplitArguments(arguments: ["--bar", "bar", "--foo", "foo"])
 
-    let valueA = try XCTUnwrap(sut.peekNextValue())
-    XCTAssertEqual(
-      valueA.0, SplitArguments.Index(inputIndex: 1, subIndex: .complete))
-    XCTAssertEqual(valueA.1, "bar")
+    let optValueA = sut.peekNextValue()
+    let valueA = try #require(optValueA)
+    #expect(
+      valueA.0 == SplitArguments.Index(inputIndex: 1, subIndex: .complete)
+    )
+    #expect(valueA.1 == "bar")
 
-    let valueB = try XCTUnwrap(sut.peekNextValue())
-    XCTAssertEqual(
-      valueB.0, SplitArguments.Index(inputIndex: 1, subIndex: .complete))
-    XCTAssertEqual(valueB.1, "bar")
+    let optValueB = sut.peekNextValue()
+    let valueB = try #require(optValueB)
+    #expect(
+      valueB.0 == SplitArguments.Index(inputIndex: 1, subIndex: .complete)
+    )
+    #expect(valueB.1 == "bar")
   }
 }

@@ -16,6 +16,10 @@ protocol GeneratePlugin: CommandPlugin {
   static var pluginName: String { get }
   static var executableName: String { get }
   static var artifactName: String { get }
+
+  static func outputDirectory(
+    context: PluginContext, target: SwiftSourceModuleTarget
+  ) -> URL
 }
 
 extension GeneratePlugin {
@@ -87,8 +91,8 @@ extension GeneratePlugin {
       print("Generating \(Self.artifactName) for \(executableName)...")
 
       // Create output directory.
-      let outputDirectory = target.directoryURL
-        .appendingPathComponent("\(target.name).docc")
+      let outputDirectory = Self.outputDirectory(
+        context: context, target: target)
       try outputDirectory.createOutputDirectory()
 
       // Create generation tool arguments.

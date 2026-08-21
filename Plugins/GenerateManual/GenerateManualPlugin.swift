@@ -9,9 +9,18 @@
 //
 //===----------------------------------------------------------------------===//
 
+import Foundation
+import PackagePlugin
+
 @main
 struct GenerateManualPlugin: GeneratePlugin {
   static let pluginName = "GenerateManual"
   static let executableName = "generate-manual"
   static let artifactName = "manual"
+
+  static func outputDirectory(
+    context: PluginContext, target: SwiftSourceModuleTarget
+  ) -> URL {
+    context.pluginWorkDirectoryURL.appendingPathComponent(target.name)
+  }
 }
