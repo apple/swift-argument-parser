@@ -17,7 +17,7 @@ import Testing
 
 @testable import ArgumentParser
 
-@Suite struct CountLinesExampleTests {
+@Suite(.serialized) struct CountLinesExampleTests {
   init() {
     Platform.Environment[.columns] = nil
   }
