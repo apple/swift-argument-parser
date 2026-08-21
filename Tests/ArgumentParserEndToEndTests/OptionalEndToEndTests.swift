@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2020 Apple Inc. and the Swift project authors
+// Copyright (c) 2020-2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -12,9 +12,8 @@
 import ArgumentParser
 import ArgumentParserTestHelpers
 import Testing
-import XCTest
 
-final class OptionalEndToEndTests: XCTestCase {}
+@Suite struct OptionalEndToEndTests {}
 
 // MARK: -
 
@@ -29,25 +28,27 @@ private struct Foo: ParsableArguments {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension OptionalEndToEndTests {
-  func testParsing_Optional() throws {
-    AssertParse(Foo.self, []) { foo in
-      XCTAssertNil(foo.name)
-      XCTAssertNil(foo.max)
+  @Test func parsing_Optional() throws {
+    expectParse(Foo.self, []) { foo in
+      #expect(foo.name == nil)
+      #expect(foo.max == nil)
     }
 
-    AssertParse(Foo.self, ["--name", "A"]) { foo in
-      XCTAssertEqual(foo.name?.rawValue, "A")
-      XCTAssertNil(foo.max)
+    expectParse(Foo.self, ["--name", "A"]) { foo in
+      let name = try #require(foo.name)
+      #expect(name.rawValue == "A")
+      #expect(foo.max == nil)
     }
 
-    AssertParse(Foo.self, ["--max", "3"]) { foo in
-      XCTAssertNil(foo.name)
-      XCTAssertEqual(foo.max, 3)
+    expectParse(Foo.self, ["--max", "3"]) { foo in
+      #expect(foo.name == nil)
+      #expect(foo.max == 3)
     }
 
-    AssertParse(Foo.self, ["--max", "3", "--name", "A"]) { foo in
-      XCTAssertEqual(foo.name?.rawValue, "A")
-      XCTAssertEqual(foo.max, 3)
+    expectParse(Foo.self, ["--max", "3", "--name", "A"]) { foo in
+      let name = try #require(foo.name)
+      #expect(name.rawValue == "A")
+      #expect(foo.max == 3)
     }
   }
 }
@@ -70,152 +71,160 @@ private struct Bar: ParsableArguments {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension OptionalEndToEndTests {
-  func testParsing_Optional_WithAllValues_1() {
-    AssertParse(Bar.self, ["--name", "A", "--format", "B", "--foo", "C", "D"]) {
+  @Test func parsing_Optional_WithAllValues_1() {
+    expectParse(Bar.self, ["--name", "A", "--format", "B", "--foo", "C", "D"]) {
       bar in
-      XCTAssertEqual(bar.name, "A")
-      XCTAssertEqual(bar.format, .B)
-      XCTAssertEqual(bar.foo, "C")
-      XCTAssertEqual(bar.bar, "D")
+      #expect(bar.name == "A")
+      #expect(bar.format == .B)
+      #expect(bar.foo == "C")
+      #expect(bar.bar == "D")
     }
   }
 
-  func testParsing_Optional_WithAllValues_2() {
-    AssertParse(Bar.self, ["D", "--format", "B", "--foo", "C", "--name", "A"]) {
+  @Test func parsing_Optional_WithAllValues_2() {
+    expectParse(Bar.self, ["D", "--format", "B", "--foo", "C", "--name", "A"]) {
       bar in
-      XCTAssertEqual(bar.name, "A")
-      XCTAssertEqual(bar.format, .B)
-      XCTAssertEqual(bar.foo, "C")
-      XCTAssertEqual(bar.bar, "D")
+      #expect(bar.name == "A")
+      #expect(bar.format == .B)
+      #expect(bar.foo == "C")
+      #expect(bar.bar == "D")
     }
   }
 
-  func testParsing_Optional_WithAllValues_3() {
-    AssertParse(Bar.self, ["--format", "B", "--foo", "C", "D", "--name", "A"]) {
+  @Test func parsing_Optional_WithAllValues_3() {
+    expectParse(Bar.self, ["--format", "B", "--foo", "C", "D", "--name", "A"]) {
       bar in
-      XCTAssertEqual(bar.name, "A")
-      XCTAssertEqual(bar.format, .B)
-      XCTAssertEqual(bar.foo, "C")
-      XCTAssertEqual(bar.bar, "D")
+      #expect(bar.name == "A")
+      #expect(bar.format == .B)
+      #expect(bar.foo == "C")
+      #expect(bar.bar == "D")
     }
   }
 
-  func testParsing_Optional_WithMissingValues_1() {
-    AssertParse(Bar.self, ["--format", "B", "--foo", "C", "D"]) { bar in
-      XCTAssertEqual(bar.name, nil)
-      XCTAssertEqual(bar.format, .B)
-      XCTAssertEqual(bar.foo, "C")
-      XCTAssertEqual(bar.bar, "D")
+  @Test func parsing_Optional_WithMissingValues_1() {
+    expectParse(Bar.self, ["--format", "B", "--foo", "C", "D"]) { bar in
+      #expect(bar.name == nil)
+      #expect(bar.format == .B)
+      #expect(bar.foo == "C")
+      #expect(bar.bar == "D")
     }
   }
 
-  func testParsing_Optional_WithMissingValues_2() {
-    AssertParse(Bar.self, ["D", "--format", "B", "--foo", "C"]) { bar in
-      XCTAssertEqual(bar.name, nil)
-      XCTAssertEqual(bar.format, .B)
-      XCTAssertEqual(bar.foo, "C")
-      XCTAssertEqual(bar.bar, "D")
+  @Test func parsing_Optional_WithMissingValues_2() {
+    expectParse(Bar.self, ["D", "--format", "B", "--foo", "C"]) { bar in
+      #expect(bar.name == nil)
+      #expect(bar.format == .B)
+      #expect(bar.foo == "C")
+      #expect(bar.bar == "D")
     }
   }
 
-  func testParsing_Optional_WithMissingValues_3() {
-    AssertParse(Bar.self, ["--format", "B", "--foo", "C", "D"]) { bar in
-      XCTAssertEqual(bar.name, nil)
-      XCTAssertEqual(bar.format, .B)
-      XCTAssertEqual(bar.foo, "C")
-      XCTAssertEqual(bar.bar, "D")
+  @Test func parsing_Optional_WithMissingValues_3() {
+    expectParse(Bar.self, ["--format", "B", "--foo", "C", "D"]) { bar in
+      #expect(bar.name == nil)
+      #expect(bar.format == .B)
+      #expect(bar.foo == "C")
+      #expect(bar.bar == "D")
     }
   }
 
-  func testParsing_Optional_WithMissingValues_4() {
-    AssertParse(Bar.self, ["--name", "A", "--format", "B", "--foo", "C"]) {
+  @Test func parsing_Optional_WithMissingValues_4() {
+    expectParse(Bar.self, ["--name", "A", "--format", "B", "--foo", "C"]) {
       bar in
-      XCTAssertEqual(bar.name, "A")
-      XCTAssertEqual(bar.format, .B)
-      XCTAssertEqual(bar.foo, "C")
-      XCTAssertEqual(bar.bar, nil)
+      #expect(bar.name == "A")
+      #expect(bar.format == .B)
+      #expect(bar.foo == "C")
+      #expect(bar.bar == nil)
     }
   }
 
-  func testParsing_Optional_WithMissingValues_5() {
-    AssertParse(Bar.self, ["--format", "B", "--foo", "C", "--name", "A"]) {
+  @Test func parsing_Optional_WithMissingValues_5() {
+    expectParse(Bar.self, ["--format", "B", "--foo", "C", "--name", "A"]) {
       bar in
-      XCTAssertEqual(bar.name, "A")
-      XCTAssertEqual(bar.format, .B)
-      XCTAssertEqual(bar.foo, "C")
-      XCTAssertEqual(bar.bar, nil)
+      #expect(bar.name == "A")
+      #expect(bar.format == .B)
+      #expect(bar.foo == "C")
+      #expect(bar.bar == nil)
     }
   }
 
-  func testParsing_Optional_WithMissingValues_6() {
-    AssertParse(Bar.self, ["--format", "B", "--foo", "C", "--name", "A"]) {
+  @Test func parsing_Optional_WithMissingValues_6() {
+    expectParse(Bar.self, ["--format", "B", "--foo", "C", "--name", "A"]) {
       bar in
-      XCTAssertEqual(bar.name, "A")
-      XCTAssertEqual(bar.format, .B)
-      XCTAssertEqual(bar.foo, "C")
-      XCTAssertEqual(bar.bar, nil)
+      #expect(bar.name == "A")
+      #expect(bar.format == .B)
+      #expect(bar.foo == "C")
+      #expect(bar.bar == nil)
     }
   }
 
-  func testParsing_Optional_WithMissingValues_7() {
-    AssertParse(Bar.self, ["--foo", "C"]) { bar in
-      XCTAssertEqual(bar.name, nil)
-      XCTAssertEqual(bar.format, nil)
-      XCTAssertEqual(bar.foo, "C")
-      XCTAssertEqual(bar.bar, nil)
+  @Test func parsing_Optional_WithMissingValues_7() {
+    expectParse(Bar.self, ["--foo", "C"]) { bar in
+      #expect(bar.name == nil)
+      #expect(bar.format == nil)
+      #expect(bar.foo == "C")
+      #expect(bar.bar == nil)
     }
   }
 
-  func testParsing_Optional_WithMissingValues_8() {
-    AssertParse(Bar.self, ["--format", "B", "--foo", "C"]) { bar in
-      XCTAssertEqual(bar.name, nil)
-      XCTAssertEqual(bar.format, .B)
-      XCTAssertEqual(bar.foo, "C")
-      XCTAssertEqual(bar.bar, nil)
+  @Test func parsing_Optional_WithMissingValues_8() {
+    expectParse(Bar.self, ["--format", "B", "--foo", "C"]) { bar in
+      #expect(bar.name == nil)
+      #expect(bar.format == .B)
+      #expect(bar.foo == "C")
+      #expect(bar.bar == nil)
     }
   }
 
-  func testParsing_Optional_WithMissingValues_9() {
-    AssertParse(Bar.self, ["--format", "B", "--foo", "C"]) { bar in
-      XCTAssertEqual(bar.name, nil)
-      XCTAssertEqual(bar.format, .B)
-      XCTAssertEqual(bar.foo, "C")
-      XCTAssertEqual(bar.bar, nil)
+  @Test func parsing_Optional_WithMissingValues_9() {
+    expectParse(Bar.self, ["--format", "B", "--foo", "C"]) { bar in
+      #expect(bar.name == nil)
+      #expect(bar.format == .B)
+      #expect(bar.foo == "C")
+      #expect(bar.bar == nil)
     }
   }
 
-  func testParsing_Optional_WithMissingValues_10() {
-    AssertParse(Bar.self, ["--format", "B", "--foo", "C"]) { bar in
-      XCTAssertEqual(bar.name, nil)
-      XCTAssertEqual(bar.format, .B)
-      XCTAssertEqual(bar.foo, "C")
-      XCTAssertEqual(bar.bar, nil)
+  @Test func parsing_Optional_WithMissingValues_10() {
+    expectParse(Bar.self, ["--format", "B", "--foo", "C"]) { bar in
+      #expect(bar.name == nil)
+      #expect(bar.format == .B)
+      #expect(bar.foo == "C")
+      #expect(bar.bar == nil)
     }
   }
 
-  func testParsing_Optional_WithMissingValues_11() {
-    AssertParse(Bar.self, ["--format", "B", "--foo", "C", "--name", "A"]) {
+  @Test func parsing_Optional_WithMissingValues_11() {
+    expectParse(Bar.self, ["--format", "B", "--foo", "C", "--name", "A"]) {
       bar in
-      XCTAssertEqual(bar.name, "A")
-      XCTAssertEqual(bar.format, .B)
-      XCTAssertEqual(bar.foo, "C")
-      XCTAssertEqual(bar.bar, nil)
+      #expect(bar.name == "A")
+      #expect(bar.format == .B)
+      #expect(bar.foo == "C")
+      #expect(bar.bar == nil)
     }
   }
 
-  func testParsing_Optional_Fails() throws {
-    XCTAssertThrowsError(try Bar.parse([]))
-    XCTAssertThrowsError(try Bar.parse(["--format", "ZZ", "--foo", "C"]))
-    XCTAssertThrowsError(try Bar.parse(["--fooz", "C"]))
-    XCTAssertThrowsError(try Bar.parse(["--nam", "A", "--foo", "C"]))
-    XCTAssertThrowsError(try Bar.parse(["--name"]))
-    XCTAssertThrowsError(try Bar.parse(["A"]))
-    XCTAssertThrowsError(try Bar.parse(["--name", "A", "D"]))
-    XCTAssertThrowsError(try Bar.parse(["--name", "A", "--foo"]))
-    XCTAssertThrowsError(try Bar.parse(["--name", "A", "--format", "B"]))
-    XCTAssertThrowsError(try Bar.parse(["--name", "A", "-f"]))
-    XCTAssertThrowsError(try Bar.parse(["D", "--name", "A"]))
-    XCTAssertThrowsError(try Bar.parse(["-f", "--name", "A"]))
+  @Test func parsing_Optional_Fails() throws {
+    #expect(throws: (any Error).self) { try Bar.parse([]) }
+    #expect(throws: (any Error).self) {
+      try Bar.parse(["--format", "ZZ", "--foo", "C"])
+    }
+    #expect(throws: (any Error).self) { try Bar.parse(["--fooz", "C"]) }
+    #expect(throws: (any Error).self) {
+      try Bar.parse(["--nam", "A", "--foo", "C"])
+    }
+    #expect(throws: (any Error).self) { try Bar.parse(["--name"]) }
+    #expect(throws: (any Error).self) { try Bar.parse(["A"]) }
+    #expect(throws: (any Error).self) { try Bar.parse(["--name", "A", "D"]) }
+    #expect(throws: (any Error).self) {
+      try Bar.parse(["--name", "A", "--foo"])
+    }
+    #expect(throws: (any Error).self) {
+      try Bar.parse(["--name", "A", "--format", "B"])
+    }
+    #expect(throws: (any Error).self) { try Bar.parse(["--name", "A", "-f"]) }
+    #expect(throws: (any Error).self) { try Bar.parse(["D", "--name", "A"]) }
+    #expect(throws: (any Error).self) { try Bar.parse(["-f", "--name", "A"]) }
   }
 }
 

@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2020 Apple Inc. and the Swift project authors
+// Copyright (c) 2020-2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -12,9 +12,8 @@
 import ArgumentParser
 import ArgumentParserTestHelpers
 import Testing
-import XCTest
 
-final class TransformEndToEndTests: XCTestCase {}
+@Suite struct TransformEndToEndTests {}
 
 private enum FooBarError: Error {
   case outOfBounds
@@ -73,21 +72,21 @@ extension TransformEndToEndTests {
 
   // MARK: Single Values
 
-  func testSingleOptionTransform() throws {
-    AssertParse(FooOption.self, ["--string", "42"]) { foo in
-      XCTAssertEqual(foo.string, 42)
+  @Test func singleOptionTransform() throws {
+    expectParse(FooOption.self, ["--string", "42"]) { foo in
+      #expect(foo.string == 42)
     }
   }
 
-  func testSingleOptionValidation_Fail_CustomErrorMessage() throws {
-    AssertFullErrorMessage(
+  @Test func singleOptionValidation_Fail_CustomErrorMessage() throws {
+    expectFullErrorMessage(
       FooOption.self, ["--string", "Forty Two"],
       "Error: The value 'Forty Two' is invalid for '--string <int_str>': Could not transform to an Int.\n"
         + FooOption.help + FooOption.usageString)
   }
 
-  func testSingleOptionValidation_Fail_DefaultErrorMessage() throws {
-    AssertFullErrorMessage(
+  @Test func singleOptionValidation_Fail_DefaultErrorMessage() throws {
+    expectFullErrorMessage(
       FooOption.self, ["--string", "4827"],
       "Error: The value '4827' is invalid for '--string <int_str>': outOfBounds\n"
         + FooOption.help + FooOption.usageString)
@@ -95,24 +94,24 @@ extension TransformEndToEndTests {
 
   // MARK: Arrays
 
-  func testOptionArrayTransform() throws {
-    AssertParse(
+  @Test func optionArrayTransform() throws {
+    expectParse(
       BarOption.self, ["--strings", "42", "--strings", "72", "--strings", "99"]
     ) { bar in
-      XCTAssertEqual(bar.strings, [42, 72, 99])
+      #expect(bar.strings == [42, 72, 99])
     }
   }
 
-  func testOptionArrayValidation_Fail_CustomErrorMessage() throws {
-    AssertFullErrorMessage(
+  @Test func optionArrayValidation_Fail_CustomErrorMessage() throws {
+    expectFullErrorMessage(
       BarOption.self,
       ["--strings", "Forty Two", "--strings", "72", "--strings", "99"],
       "Error: The value 'Forty Two' is invalid for '--strings <int_str>': Could not transform to an Int.\n"
         + BarOption.help + BarOption.usageString)
   }
 
-  func testOptionArrayValidation_Fail_DefaultErrorMessage() throws {
-    AssertFullErrorMessage(
+  @Test func optionArrayValidation_Fail_DefaultErrorMessage() throws {
+    expectFullErrorMessage(
       BarOption.self,
       ["--strings", "4827", "--strings", "72", "--strings", "99"],
       "Error: The value '4827' is invalid for '--strings <int_str>': outOfBounds\n"
@@ -162,21 +161,21 @@ extension TransformEndToEndTests {
 
   // MARK: Single Values
 
-  func testArgumentTransform() throws {
-    AssertParse(FooArgument.self, ["42"]) { foo in
-      XCTAssertEqual(foo.string, 42)
+  @Test func argumentTransform() throws {
+    expectParse(FooArgument.self, ["42"]) { foo in
+      #expect(foo.string == 42)
     }
   }
 
-  func testArgumentValidation_Fail_CustomErrorMessage() throws {
-    AssertFullErrorMessage(
+  @Test func argumentValidation_Fail_CustomErrorMessage() throws {
+    expectFullErrorMessage(
       FooArgument.self, ["Forty Two"],
       "Error: The value 'Forty Two' is invalid for '<int_str>': Could not transform to an Int.\n"
         + FooArgument.help + FooArgument.usageString)
   }
 
-  func testArgumentValidation_Fail_DefaultErrorMessage() throws {
-    AssertFullErrorMessage(
+  @Test func argumentValidation_Fail_DefaultErrorMessage() throws {
+    expectFullErrorMessage(
       FooArgument.self, ["4827"],
       "Error: The value '4827' is invalid for '<int_str>': outOfBounds\n"
         + FooArgument.help + FooArgument.usageString)
@@ -184,21 +183,21 @@ extension TransformEndToEndTests {
 
   // MARK: Arrays
 
-  func testArgumentArrayTransform() throws {
-    AssertParse(BarArgument.self, ["42", "72", "99"]) { bar in
-      XCTAssertEqual(bar.strings, [42, 72, 99])
+  @Test func argumentArrayTransform() throws {
+    expectParse(BarArgument.self, ["42", "72", "99"]) { bar in
+      #expect(bar.strings == [42, 72, 99])
     }
   }
 
-  func testArgumentArrayValidation_Fail_CustomErrorMessage() throws {
-    AssertFullErrorMessage(
+  @Test func argumentArrayValidation_Fail_CustomErrorMessage() throws {
+    expectFullErrorMessage(
       BarArgument.self, ["Forty Two", "72", "99"],
       "Error: The value 'Forty Two' is invalid for '<int_str>': Could not transform to an Int.\n"
         + BarArgument.help + BarArgument.usageString)
   }
 
-  func testArgumentArrayValidation_Fail_DefaultErrorMessage() throws {
-    AssertFullErrorMessage(
+  @Test func argumentArrayValidation_Fail_DefaultErrorMessage() throws {
+    expectFullErrorMessage(
       BarArgument.self, ["4827", "72", "99"],
       "Error: The value '4827' is invalid for '<int_str>': outOfBounds\n"
         + BarArgument.help + BarArgument.usageString)
