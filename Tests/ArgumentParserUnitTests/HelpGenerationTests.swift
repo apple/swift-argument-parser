@@ -16,7 +16,9 @@ import XCTest
 
 @testable import ArgumentParser
 
-@Suite struct HelpGenerationTests {
+@Suite(
+  .serialized
+) struct HelpGenerationTests {
 }
 
 extension Foundation.URL: ArgumentParser.ExpressibleByArgument {

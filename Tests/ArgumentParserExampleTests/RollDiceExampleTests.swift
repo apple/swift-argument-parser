@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2020 Apple Inc. and the Swift project authors
+// Copyright (c) 2020-2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -10,20 +10,20 @@
 //===----------------------------------------------------------------------===//
 
 import ArgumentParserTestHelpers
-import XCTest
+import Testing
 
 @testable import ArgumentParser
 
-final class RollDiceExampleTests: XCTestCase {
-  override func setUp() {
+@Suite struct RollDiceExampleTests {
+  init() {
     Platform.Environment[.columns] = nil
   }
 
-  func testRollDice() throws {
-    try AssertExecuteCommand(command: "roll --times 6")
+  @Test func rollDice() throws {
+    try requireExecuteCommand(command: "roll --times 6")
   }
 
-  func testRollDice_Help() throws {
+  @Test func rollDice_Help() throws {
     let helpText = """
       USAGE: roll [--times <n>] [--sides <m>] [--seed <seed>] [--verbose]
 
@@ -38,12 +38,12 @@ final class RollDiceExampleTests: XCTestCase {
 
       """
 
-    try AssertExecuteCommand(command: "roll -h", expected: helpText)
-    try AssertExecuteCommand(command: "roll --help", expected: helpText)
+    try requireExecuteCommand(command: "roll -h", expected: helpText)
+    try requireExecuteCommand(command: "roll --help", expected: helpText)
   }
 
-  func testRollDice_Fail() throws {
-    try AssertExecuteCommand(
+  @Test func rollDice_Fail() throws {
+    try requireExecuteCommand(
       command: "roll --times",
       expected: """
         Error: Missing value for '--times <n>'
@@ -54,7 +54,7 @@ final class RollDiceExampleTests: XCTestCase {
         """,
       exitCode: .validationFailure)
 
-    try AssertExecuteCommand(
+    try requireExecuteCommand(
       command: "roll --times ZZZ",
       expected: """
         Error: The value 'ZZZ' is invalid for '--times <n>'
