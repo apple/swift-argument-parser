@@ -789,6 +789,7 @@ extension SplitArgumentTests {
     #expect(sut.elements.count == 1)
     try expectIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
     try expectElementEqual(sut, at: 0, .option(.name(.long("out"))))
+  }
 }
 
 extension SplitArguments {

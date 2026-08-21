@@ -9,7 +9,11 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if canImport(FoundationEssentials)
+internal import FoundationEssentials
+#else
 internal import Foundation
+#endif
 
 /// Expands response file arguments (@file) into their constituent arguments.
 ///
@@ -75,13 +79,8 @@ internal struct ResponseFileExpander {
     var hasResponseFile = false
 
     for (argvIndex, argument) in arguments.enumerated() {
-      if isResponseFileArgument(argument) {
+      if let fileName = extractResponseFileName(argument) {
         hasResponseFile = true
-        guard let fileName = extractResponseFileName(argument) else {
-          result.append(
-            .init(value: argument, chain: [.argv(index: argvIndex)]))
-          continue
-        }
 
         // Check nesting depth
         if processingStack.count >= maxNestingDepth {
@@ -116,7 +115,6 @@ internal struct ResponseFileExpander {
   /// - Parameter argument: The argument to check
   /// - Returns: True if the argument starts with the response file prefix
   func isResponseFileArgument(_ argument: String) -> Bool {
-    guard argument.count > prefix.utf8.count else { return false }
     guard argument.hasPrefix("\(prefix)") else { return false }
 
     // Check for literal escaping ('<prefix><prefix>file' becomes '<prefix>file' literal)
@@ -125,7 +123,7 @@ internal struct ResponseFileExpander {
     }
 
     // Must have a filename after the prefix
-    let fileName = String(argument.dropFirst(prefix.utf8.count))
+    let fileName = String(argument.dropFirst(String(prefix).count))
     return !fileName.isEmpty
   }
 
@@ -134,7 +132,7 @@ internal struct ResponseFileExpander {
   /// - Returns: The filename portion, or nil if not a valid response file argument
   func extractResponseFileName(_ argument: String) -> String? {
     guard isResponseFileArgument(argument) else { return nil }
-    return String(argument.dropFirst(prefix.utf8.count))
+    return String(argument.dropFirst(String(prefix).count))
   }
 
   /// Parses the contents of a response file.
@@ -175,12 +173,7 @@ internal struct ResponseFileExpander {
         // Literal prefix escape: `@@file` -> `@file`, `++file` -> `+file`.
         result.append(
           .init(value: String(arg.dropFirst(1)), chain: tokenChain))
-      } else if isResponseFileArgument(arg) {
-        guard let fileName = extractResponseFileName(arg) else {
-          result.append(.init(value: arg, chain: tokenChain))
-          continue
-        }
-
+      } else if let fileName = extractResponseFileName(arg) {
         let resolvedURL = resolveFileURL(fileName, relativeTo: fileURL)
 
         if processingStack.contains(resolvedURL) {
@@ -240,7 +233,7 @@ internal struct ResponseFileExpander {
       case "#":
         if !inDoubleQuotes && !inSingleQuotes {
           // Found unquoted comment, stop processing
-          return result.trimmingCharacters(in: .whitespaces)
+          return result.trimmed()
         }
         result.append(char)
       default:
@@ -248,7 +241,7 @@ internal struct ResponseFileExpander {
       }
     }
 
-    return result.trimmingCharacters(in: .whitespaces)
+    return result.trimmed()
   }
 }
 
@@ -268,7 +261,7 @@ extension ResponseFileExpander {
         return "Response file not found: \(url.path)"
       case .readError(let url, let error):
         return
-          "Failed to read response file '\(url.path)': \(error.localizedDescription)"
+          "Failed to read response file '\(url.path)': \(error.describe())"
       case .malformedContent(let url, let message):
         return "Malformed content in response file '\(url.path)': \(message)"
       case .recursiveInclude(let url):
@@ -295,20 +288,15 @@ extension ResponseFileExpander {
     at fileURL: URL,
     parentChain: [InputOrigin.ResponseFileStep]
   ) throws -> [ExpandedArgument] {
-    // Check if file exists
-    guard FileManager.default.fileExists(atPath: fileURL.path) else {
-      throw ResponseFileError.fileNotFound(fileURL)
-    }
-
-    // Read file content
     let content: String
     do {
       content = try String(contentsOf: fileURL, encoding: .utf8)
+    } catch let error as CocoaError where error.code == .fileReadNoSuchFile {
+      throw ResponseFileError.fileNotFound(fileURL)
     } catch {
       throw ResponseFileError.readError(fileURL, error)
     }
 
-    // Parse and expand content
     return try parseFileContent(
       content, fileURL: fileURL, parentChain: parentChain)
   }
@@ -323,47 +311,10 @@ extension ResponseFileExpander {
     _ fileName: String,
     relativeTo parentURL: URL? = nil
   ) -> URL {
-    // If already absolute, use as-is
-    if Self.isAbsolutePath(fileName) {
-      return URL(fileURLWithPath: fileName)
-    }
-
-    // If we have a parent file, make relative to its directory
-    if let parentURL = parentURL {
-      return
-        parentURL
-        .deletingLastPathComponent()
-        .appendingPathComponent(fileName)
-    }
-
-    // Otherwise, relative to current working directory
-    return URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
-      .appendingPathComponent(fileName)
-  }
-
-  /// Returns `true` if `path` is an absolute filesystem path.
-  ///
-  /// On POSIX, that means it starts with `/`. On Windows, that includes
-  /// drive-rooted paths (`C:\...` / `C:/...`), UNC paths (`\\server\...`),
-  /// and drive-relative-absolute paths (starting with `\` or `/`).
-  fileprivate static func isAbsolutePath(_ path: String) -> Bool {
-    #if os(Windows)
-    if path.hasPrefix("/") || path.hasPrefix("\\") {
-      return true
-    }
-    // Drive-rooted: "C:\" or "C:/".
-    let chars = Array(path)
-    if chars.count >= 3,
-      chars[0].isLetter,
-      chars[1] == ":",
-      chars[2] == "\\" || chars[2] == "/"
-    {
-      return true
-    }
-    return false
-    #else
-    return path.hasPrefix("/")
-    #endif
+    URL(
+      fileURLWithPath: fileName,
+      relativeTo: parentURL?.deletingLastPathComponent()
+    ).absoluteURL
   }
 
   /// One token produced by `tokenizeContent`.

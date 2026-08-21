@@ -35,7 +35,7 @@ import Testing
 // MARK: - Test Commands
 
 private struct ErrorCommand: ParsableCommand {
-  static var responseFilePrefix: Character? { "@" }
+  static let configuration = CommandConfiguration(responseFilePrefix: "@")
   @Option var name: String
   @Option var count: Int = 1
   @Flag var verbose = false
