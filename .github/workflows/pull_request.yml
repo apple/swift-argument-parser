@@ -34,6 +34,9 @@ jobs:
       enable_macos_checks: true
       enable_wasm_sdk_build: true
       wasm_sdk_build_command: swift build --target ArgumentParser
+      # workaround for https://github.com/swiftlang/swift-package-manager/issues/10442
+      linux_pre_build_command: swift build --target generate-manual; swift build --target generate-docc-reference
+      macos_pre_build_command: swift build --target generate-manual; swift build --target generate-docc-reference
 
   cmake-build:
     name: CMake Build
