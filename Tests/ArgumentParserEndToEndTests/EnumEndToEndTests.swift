@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2020 Apple Inc. and the Swift project authors
+// Copyright (c) 2020-2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -12,9 +12,8 @@
 import ArgumentParser
 import ArgumentParserTestHelpers
 import Testing
-import XCTest
 
-final class EnumEndToEndTests: XCTestCase {}
+@Suite struct EnumEndToEndTests {}
 
 // MARK: -
 
@@ -31,26 +30,26 @@ private struct Bar: ParsableArguments {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension EnumEndToEndTests {
-  func testParsing_SingleOption() throws {
-    AssertParse(Bar.self, ["--index", "hello"]) { bar in
-      XCTAssertEqual(bar.index, Bar.Index.hello)
+  @Test func parsing_SingleOption() throws {
+    expectParse(Bar.self, ["--index", "hello"]) { bar in
+      #expect(bar.index == Bar.Index.hello)
     }
-    AssertParse(Bar.self, ["--index", "goodbye"]) { bar in
-      XCTAssertEqual(bar.index, Bar.Index.goodbye)
-    }
-  }
-
-  func testParsing_SingleOptionMultipleTimes() throws {
-    AssertParse(Bar.self, ["--index", "hello", "--index", "goodbye"]) { bar in
-      XCTAssertEqual(bar.index, Bar.Index.goodbye)
+    expectParse(Bar.self, ["--index", "goodbye"]) { bar in
+      #expect(bar.index == Bar.Index.goodbye)
     }
   }
 
-  func testParsing_SingleOption_Fails() throws {
-    XCTAssertThrowsError(try Bar.parse([]))
-    XCTAssertThrowsError(try Bar.parse(["--index"]))
-    XCTAssertThrowsError(try Bar.parse(["--index", "hell"]))
-    XCTAssertThrowsError(try Bar.parse(["--index", "helloo"]))
+  @Test func parsing_SingleOptionMultipleTimes() throws {
+    expectParse(Bar.self, ["--index", "hello", "--index", "goodbye"]) { bar in
+      #expect(bar.index == Bar.Index.goodbye)
+    }
+  }
+
+  @Test func parsing_SingleOption_Fails() throws {
+    #expect(throws: (any Error).self) { try Bar.parse([]) }
+    #expect(throws: (any Error).self) { try Bar.parse(["--index"]) }
+    #expect(throws: (any Error).self) { try Bar.parse(["--index", "hell"]) }
+    #expect(throws: (any Error).self) { try Bar.parse(["--index", "helloo"]) }
   }
 }
 
@@ -69,32 +68,40 @@ private struct Baz: ParsableArguments {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension EnumEndToEndTests {
-  func test_ParsingRawValue_Option() throws {
-    AssertParse(Baz.self, ["--mode", "generate-bash-script"]) { baz in
-      XCTAssertEqual(baz.modeOption, .generateBashScript)
-      XCTAssertNil(baz.modeArg)
+  @Test func parsingRawValue_Option() throws {
+    expectParse(Baz.self, ["--mode", "generate-bash-script"]) { baz in
+      #expect(baz.modeOption == .generateBashScript)
+      #expect(baz.modeArg == nil)
     }
-    AssertParse(Baz.self, ["--mode", "generateZshScript"]) { baz in
-      XCTAssertEqual(baz.modeOption, .generateZshScript)
-      XCTAssertNil(baz.modeArg)
-    }
-  }
-
-  func test_ParsingRawValue_Argument() throws {
-    AssertParse(Baz.self, ["generate-bash-script"]) { baz in
-      XCTAssertEqual(baz.modeArg, .generateBashScript)
-      XCTAssertNil(baz.modeOption)
-    }
-    AssertParse(Baz.self, ["generateZshScript"]) { baz in
-      XCTAssertEqual(baz.modeArg, .generateZshScript)
-      XCTAssertNil(baz.modeOption)
+    expectParse(Baz.self, ["--mode", "generateZshScript"]) { baz in
+      #expect(baz.modeOption == .generateZshScript)
+      #expect(baz.modeArg == nil)
     }
   }
 
-  func test_ParsingRawValue_Fails() throws {
-    XCTAssertThrowsError(try Baz.parse(["generateBashScript"]))
-    XCTAssertThrowsError(try Baz.parse(["--mode generateBashScript"]))
-    XCTAssertThrowsError(try Baz.parse(["generate-zsh-script"]))
-    XCTAssertThrowsError(try Baz.parse(["--mode generate-zsh-script"]))
+  @Test func parsingRawValue_Argument() throws {
+    expectParse(Baz.self, ["generate-bash-script"]) { baz in
+      #expect(baz.modeArg == .generateBashScript)
+      #expect(baz.modeOption == nil)
+    }
+    expectParse(Baz.self, ["generateZshScript"]) { baz in
+      #expect(baz.modeArg == .generateZshScript)
+      #expect(baz.modeOption == nil)
+    }
+  }
+
+  @Test func parsingRawValue_Fails() throws {
+    #expect(throws: (any Error).self) {
+      try Baz.parse(["generateBashScript"])
+    }
+    #expect(throws: (any Error).self) {
+      try Baz.parse(["--mode generateBashScript"])
+    }
+    #expect(throws: (any Error).self) {
+      try Baz.parse(["generate-zsh-script"])
+    }
+    #expect(throws: (any Error).self) {
+      try Baz.parse(["--mode generate-zsh-script"])
+    }
   }
 }

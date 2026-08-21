@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2020 Apple Inc. and the Swift project authors
+// Copyright (c) 2020-2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -10,9 +10,9 @@
 //===----------------------------------------------------------------------===//
 
 import ArgumentParser
-import XCTest
+import Testing
 
-final class AsyncCommandEndToEndTests: XCTestCase {}
+@Suite(.serialized) struct AsyncCommandEndToEndTests {}
 
 actor AsyncStatusCheck {
   struct Status: OptionSet {
@@ -55,17 +55,15 @@ struct AsyncCommand: AsyncParsableCommand {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension AsyncCommandEndToEndTests {
-  @MainActor
-  func testAsyncMain_root() async throws {
-    XCTAssertFalse(statusCheck.status.contains(.root))
+  @Test @MainActor func asyncMain_root() async throws {
+    #expect(!statusCheck.status.contains(.root))
     await AsyncCommand.main([])
-    XCTAssertTrue(statusCheck.status.contains(.root))
+    #expect(statusCheck.status.contains(.root))
   }
 
-  @MainActor
-  func testAsyncMain_sub() async throws {
-    XCTAssertFalse(statusCheck.status.contains(.sub))
+  @Test @MainActor func asyncMain_sub() async throws {
+    #expect(!statusCheck.status.contains(.sub))
     await AsyncCommand.main(["sub-command"])
-    XCTAssertTrue(statusCheck.status.contains(.sub))
+    #expect(statusCheck.status.contains(.sub))
   }
 }

@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2020 Apple Inc. and the Swift project authors
+// Copyright (c) 2020-2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -12,9 +12,8 @@
 import ArgumentParser
 import ArgumentParserTestHelpers
 import Testing
-import XCTest
 
-final class SingleValueParsingStrategyTests: XCTestCase {}
+@Suite struct SingleValueParsingStrategyTests {}
 
 // MARK: Scanning for Value
 
@@ -27,33 +26,33 @@ private struct Bar: ParsableArguments {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension SingleValueParsingStrategyTests {
-  func testParsing_scanningForValue_1() throws {
-    AssertParse(
+  @Test func parsing_scanningForValue_1() throws {
+    expectParse(
       Bar.self, ["--name", "Foo", "--format", "Bar", "--input", "Baz"]
     ) { bar in
-      XCTAssertEqual(bar.name, "Foo")
-      XCTAssertEqual(bar.format, "Bar")
-      XCTAssertEqual(bar.input, "Baz")
+      #expect(bar.name == "Foo")
+      #expect(bar.format == "Bar")
+      #expect(bar.input == "Baz")
     }
   }
 
-  func testParsing_scanningForValue_2() throws {
-    AssertParse(
+  @Test func parsing_scanningForValue_2() throws {
+    expectParse(
       Bar.self, ["--name", "--format", "Foo", "Bar", "--input", "Baz"]
     ) { bar in
-      XCTAssertEqual(bar.name, "Foo")
-      XCTAssertEqual(bar.format, "Bar")
-      XCTAssertEqual(bar.input, "Baz")
+      #expect(bar.name == "Foo")
+      #expect(bar.format == "Bar")
+      #expect(bar.input == "Baz")
     }
   }
 
-  func testParsing_scanningForValue_3() throws {
-    AssertParse(
+  @Test func parsing_scanningForValue_3() throws {
+    expectParse(
       Bar.self, ["--name", "--format", "--input", "Foo", "Bar", "Baz"]
     ) { bar in
-      XCTAssertEqual(bar.name, "Foo")
-      XCTAssertEqual(bar.format, "Bar")
-      XCTAssertEqual(bar.input, "Baz")
+      #expect(bar.name == "Foo")
+      #expect(bar.format == "Bar")
+      #expect(bar.input == "Baz")
     }
   }
 }
@@ -69,34 +68,34 @@ private struct Baz: ParsableArguments {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension SingleValueParsingStrategyTests {
-  func testParsing_unconditional_1() throws {
-    AssertParse(
+  @Test func parsing_unconditional_1() throws {
+    expectParse(
       Baz.self, ["--name", "Foo", "--format", "Bar", "--input", "Baz"]
     ) { bar in
-      XCTAssertEqual(bar.name, "Foo")
-      XCTAssertEqual(bar.format, "Bar")
-      XCTAssertEqual(bar.input, "Baz")
+      #expect(bar.name == "Foo")
+      #expect(bar.format == "Bar")
+      #expect(bar.input == "Baz")
     }
   }
 
-  func testParsing_unconditional_2() throws {
-    AssertParse(
+  @Test func parsing_unconditional_2() throws {
+    expectParse(
       Baz.self,
       ["--name", "--name", "--format", "--format", "--input", "--input"]
     ) { bar in
-      XCTAssertEqual(bar.name, "--name")
-      XCTAssertEqual(bar.format, "--format")
-      XCTAssertEqual(bar.input, "--input")
+      #expect(bar.name == "--name")
+      #expect(bar.format == "--format")
+      #expect(bar.input == "--input")
     }
   }
 
-  func testParsing_unconditional_3() throws {
-    AssertParse(
+  @Test func parsing_unconditional_3() throws {
+    expectParse(
       Baz.self, ["--name", "-Foo", "--format", "-Bar", "--input", "-Baz"]
     ) { bar in
-      XCTAssertEqual(bar.name, "-Foo")
-      XCTAssertEqual(bar.format, "-Bar")
-      XCTAssertEqual(bar.input, "-Baz")
+      #expect(bar.name == "-Foo")
+      #expect(bar.format == "-Bar")
+      #expect(bar.input == "-Baz")
     }
   }
 }
