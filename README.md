@@ -70,11 +70,11 @@ OPTIONS:
 
 ## Response Files
 
-Swift Argument Parser can expand response files, letting you store command-line arguments in text files. This is especially useful for commands with many arguments or for reusable configurations. Opt in on your root command by overriding the `responseFilePrefix` static property with the character that should introduce a response-file reference (commonly `@`):
+Swift Argument Parser can expand response files, letting you store command-line arguments in text files. This is especially useful for commands with many arguments or for reusable configurations. Opt in on your root command by setting the `responseFilePrefix` property in its `CommandConfiguration` to the character that should introduce a response-file reference (commonly `@`):
 
 ```swift
 struct Repeat: ParsableCommand {
-    static var responseFilePrefix: Character? { "@" }
+    static let configuration = CommandConfiguration(responseFilePrefix: "@")
     // ...
 }
 ```

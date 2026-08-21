@@ -10,8 +10,16 @@
 //===----------------------------------------------------------------------===//
 
 struct CommandError: Error {
+  /// The chain of command types that were resolved before the error was
+  /// raised, root first.
+  ///
+  /// Used by error rendering to prefix messages with
+  /// the fully-qualified command name.
   var commandStack: [ParsableCommand.Type]
+
+  /// The underlying parser error that terminated parsing.
   var parserError: ParserError
+
   /// Snapshot of the parser input metadata for source-location rendering.
   ///
   /// `nil` when the error was raised before `SplitArguments` was built
@@ -20,6 +28,7 @@ struct CommandError: Error {
 }
 
 struct HelpRequested: Error {
+  /// The visibility level of arguments to include in the rendered help text.
   var visibility: ArgumentVisibility
 }
 
@@ -29,7 +38,7 @@ struct CommandParser {
   var decodedArguments: [DecodedArguments] = []
 
   var responseFilePrefix: Character? {
-    self.currentNode.element.responseFilePrefix
+    self.currentNode.element.configuration.responseFilePrefix
   }
 
   var rootCommand: ParsableCommand.Type {
@@ -95,7 +104,6 @@ extension CommandParser {
     split: inout SplitArguments
   ) -> Tree<ParsableCommand.Type>? {
     guard let (origin, element) = split.peekNext(),
-      element.isValue,
       case .value(let value) = element.value,
       let subcommandNode = currentNode.firstChild(withName: value)
     else { return nil }

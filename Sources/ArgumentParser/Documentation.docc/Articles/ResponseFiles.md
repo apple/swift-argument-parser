@@ -12,19 +12,20 @@ Response files allow you to store command-line arguments in text files and refer
 - Avoiding command-line length limitations
 
 Swift Argument Parser response file support is opt-in per command. To
-enable it, override the `responseFilePrefix` static property on your
-root `ParsableCommand` (or `AsyncParsableCommand`) with the character
-that should introduce a response-file reference. The default value is
-`nil`, meaning response files are disabled and any argument that would
-otherwise look like `@file` is passed through as a literal value.
+enable it, set the `responseFilePrefix` property on the
+`CommandConfiguration` of your root `ParsableCommand` (or
+`AsyncParsableCommand`) to the character that should introduce a
+response-file reference. The default value is `nil`, meaning response
+files are disabled and any argument that would otherwise look like
+`@file` is passed through as a literal value.
 
-## Basic Usage
+### Basic Usage
 
 Enable response files by declaring a prefix on the root command:
 
 ```swift
 struct MyTool: ParsableCommand {
-    static var responseFilePrefix: Character? { "@" }
+    static let configuration = CommandConfiguration(responseFilePrefix: "@")
     // ...
 }
 ```
@@ -38,7 +39,7 @@ mycommand @args.txt --verbose
 
 This expands the contents of `args.txt` and includes them in the command-line arguments.
 
-### Customizing the Response File Prefix
+#### Customizing the Response File Prefix
 
 The `@` character is the most widely used convention (for example,
 `clang @args.txt`), but any single character works. If `@` conflicts
@@ -48,7 +49,7 @@ including subcommand parsing.
 
 ```swift
 struct MyTool: ParsableCommand {
-    static var responseFilePrefix: Character? { "+" }
+    static let configuration = CommandConfiguration(responseFilePrefix: "+")
     // ...
 }
 ```
@@ -60,11 +61,11 @@ prefix — `++value` inside a response file produces the literal `+value`,
 mirroring the, implied response file prefix, `@@` → `@` behavior
 described in [Literal At Signs](#literal-at-signs).
 
-### Response File Format
+#### Response File Format
 
 Response files support multiple formats:
 
-#### One Argument Per Line
+##### One Argument Per Line
 ```
 --input
 input.txt
@@ -73,21 +74,21 @@ output.txt
 --verbose
 ```
 
-#### Space-Separated Arguments
+##### Space-Separated Arguments
 ```
 --input input.txt --output output.txt --verbose
 ```
 
-#### Mixed Format
+##### Mixed Format
 ```
 --input input.txt
 --output output.txt
 --verbose --count 42
 ```
 
-## Advanced Features
+### Advanced Features
 
-### Quoted Arguments
+#### Quoted Arguments
 
 Response files support quoted arguments for values containing spaces, special
 characters, or characters that would otherwise be interpreted as part of the
@@ -99,7 +100,7 @@ response-file syntax (like `#` starting a comment).
 --path "/Users/username/My Documents/file.txt"
 ```
 
-#### Which quote style to use
+##### Which quote style to use
 
 Both double quotes (`"..."`) and single quotes (`'...'`) are supported, and
 they behave differently:
@@ -133,7 +134,7 @@ Examples:
 --label   'the "special" one'
 ```
 
-#### Recognized escape sequences (double quotes only)
+##### Recognized escape sequences (double quotes only)
 
 Inside double-quoted arguments, the following backslash escapes are
 recognized:
@@ -150,7 +151,7 @@ Any other `\x` sequence (for an unrecognized `x`) is preserved verbatim as
 `\x`, so accidental escape characters don't silently disappear. Backslashes
 inside single-quoted arguments are always literal.
 
-#### Whitespace handling
+##### Whitespace handling
 
 Whitespace inside a quoted value (of either style) is preserved and treated
 as part of the value — it does not split the argument. Outside of quotes,
@@ -162,7 +163,7 @@ runs of spaces and tabs separate arguments as usual.
 --tags  '  keep   the   spaces  '
 ```
 
-#### `@file` inside a quoted argument
+##### `@file` inside a quoted argument
 
 The response-file prefix is only interpreted when it starts an *unquoted*
 token. A quoted string that happens to begin with `@` is passed through as a
@@ -175,7 +176,7 @@ tokens):
 --pattern  '@daily'    # value is "@daily"; single quotes protect it too
 ```
 
-#### Common mistakes
+##### Common mistakes
 
 - **Unclosed quotes** are implicitly closed at end-of-file: whatever
   content follows the opening quote — including any intervening
@@ -189,7 +190,7 @@ tokens):
   four characters `a\nb`, not `a<newline>b`. Use double quotes if you want
   the newline.
 
-### Comments
+#### Comments
 
 Use `#` to add comments to response files:
 
@@ -200,7 +201,7 @@ Use `#` to add comments to response files:
 --output production.app  # Output directory
 ```
 
-### Equals Format
+#### Equals Format
 
 Arguments can use the equals format:
 
@@ -210,7 +211,7 @@ Arguments can use the equals format:
 --count=42
 ```
 
-### Nested Response Files
+#### Nested Response Files
 
 Response files can reference other response files:
 
@@ -233,33 +234,33 @@ Response files can reference other response files:
 --timeout 30
 ```
 
-## Error Handling
+### Error Handling
 
 Swift Argument Parser provides clear error messages for response file issues:
 
-### File Not Found
+#### File Not Found
 ```
 Error: Response file not found: args.txt
 ```
 
-### Malformed Content
+#### Malformed Content
 ```
 Error: Malformed content in response file 'args.txt': Line 3: Unclosed quote in argument
 ```
 
-### Recursive Inclusion
+#### Recursive Inclusion
 ```
 Error: Recursive response file inclusion detected: /path/to/recursive.txt
 ```
 
-### Maximum Nesting Depth
+#### Maximum Nesting Depth
 ```
 Error: Maximum nesting depth (32) exceeded for response files
 ```
 
-## Examples
+### Examples
 
-### Build Configuration
+#### Build Configuration
 
 Create different response files for different build configurations:
 
@@ -284,7 +285,7 @@ myBuild @debug.txt
 myBuild build @release.txt
 ```
 
-### Testing with Multiple Inputs
+#### Testing with Multiple Inputs
 
 ```bash
 # test-inputs.txt
@@ -300,7 +301,7 @@ myBuild build @release.txt
 myTest @test-inputs.txt
 ```
 
-### Database Migration
+#### Database Migration
 
 ```bash
 # migration.txt
@@ -315,7 +316,7 @@ myTest @test-inputs.txt
 migrate @migration.txt
 ```
 
-## Mixing Response Files with Command-Line Arguments
+### Mixing Response Files with Command-Line Arguments
 
 You can combine response files with regular command-line arguments:
 
@@ -330,7 +331,7 @@ Arguments are processed in order, so later arguments can override earlier ones:
 mycommand @base-config.txt --count 20  # Final count will be 20
 ```
 
-## Literal At Signs
+### Literal At Signs
 
 To use a literal `@` character in an argument, escape it with `@@`:
 
@@ -349,7 +350,7 @@ Inside a response file, you can also protect a leading `@` by wrapping the
 value in quotes — see [Quoted Arguments](#quoted-arguments) for details on
 how quoted tokens beginning with `@` are passed through verbatim.
 
-## Performance Considerations
+### Performance Considerations
 
 Response files are processed efficiently:
 

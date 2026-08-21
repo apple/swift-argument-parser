@@ -19,7 +19,7 @@ import Testing
 // MARK: - Test Commands
 
 private struct SimpleCommand: ParsableCommand {
-  static var responseFilePrefix: Character? { "@" }
+  static let configuration = CommandConfiguration(responseFilePrefix: "@")
 
   @Option var name: String
   @Option var count: Int = 1
@@ -27,7 +27,7 @@ private struct SimpleCommand: ParsableCommand {
 }
 
 private struct MultipleArgsCommand: ParsableCommand {
-  static var responseFilePrefix: Character? { "@" }
+  static let configuration = CommandConfiguration(responseFilePrefix: "@")
 
   @Option var input: String
   @Option var output: String
@@ -37,14 +37,14 @@ private struct MultipleArgsCommand: ParsableCommand {
 }
 
 private struct PositionalCommand: ParsableCommand {
-  static var responseFilePrefix: Character? { "@" }
+  static let configuration = CommandConfiguration(responseFilePrefix: "@")
 
   @Argument var files: [String] = []
   @Option var output: String?
 }
 
 private struct PlusPrefixCommand: ParsableCommand {
-  static var responseFilePrefix: Character? { "+" }
+  static let configuration = CommandConfiguration(responseFilePrefix: "+")
 
   @Option var name: String
   @Option var count: Int = 1
@@ -53,22 +53,22 @@ private struct PlusPrefixCommand: ParsableCommand {
 }
 
 private struct HashPrefixCommand: ParsableCommand {
-  static var responseFilePrefix: Character? { "#" }
+  static let configuration = CommandConfiguration(responseFilePrefix: "#")
 
   @Argument var files: [String] = []
 }
 
 private struct PlusPrefixSubcommandParent: ParsableCommand {
-  static var responseFilePrefix: Character? { "+" }
   static let configuration = CommandConfiguration(
-    subcommands: [SubcommandChild.self]
+    subcommands: [SubcommandChild.self],
+    responseFilePrefix: "+"
   )
 }
 
 private struct SubcommandParent: ParsableCommand {
-  static var responseFilePrefix: Character? { "@" }
   static let configuration = CommandConfiguration(
-    subcommands: [SubcommandChild.self]
+    subcommands: [SubcommandChild.self],
+    responseFilePrefix: "@"
   )
 
   @Flag var verbose: Bool = false
@@ -1310,6 +1310,34 @@ extension ResponseFileEndToEndTests {
     }
   }
 
+  @Test func inlineArgsAfterResponseFileWithTerminatorAreTreatedAsPositional()
+    async throws
+  {
+    // Response-file expansion is in-place, so tokens that appear on the
+    // command line after the `@file` reference land after the file's
+    // arguments in the flat stream. When the file itself ends by
+    // switching into positional-only mode with `--`, subsequent CLI
+    // tokens inherit that state and are captured as positional values,
+    // even if they look like options.
+    try await withTemporaryFile(
+      "terminator-first.txt",
+      content: """
+        --output
+        result.txt
+        --
+        file1.txt
+        """
+    ) { responseFile in
+      expectParse(
+        PositionalCommand.self,
+        ["@\(responseFile)", "--output", "ignored.txt"]
+      ) { command in
+        #expect(command.output == "result.txt")
+        #expect(command.files == ["file1.txt", "--output", "ignored.txt"])
+      }
+    }
+  }
+
   @Test func responseFileWithEqualsFormat() async throws {
     try await withTemporaryFile(
       "equals.txt",
@@ -1377,7 +1405,8 @@ extension ResponseFileEndToEndTests {
         """
     ) { responseFile in
       struct AsyncTestCommand: AsyncParsableCommand {
-        static var responseFilePrefix: Character? { "@" }
+        static let configuration = CommandConfiguration(
+          responseFilePrefix: "@")
 
         @Option var name: String
         @Option var count: Int
@@ -1404,10 +1433,10 @@ extension ResponseFileEndToEndTests {
         """
     ) { responseFile in
       struct AsyncParentCommand: AsyncParsableCommand {
-        static var responseFilePrefix: Character? { "@" }
         static let configuration = CommandConfiguration(
           commandName: "async-parent",
-          subcommands: [AsyncSubCommand.self]
+          subcommands: [AsyncSubCommand.self],
+          responseFilePrefix: "@"
         )
       }
 
@@ -1438,7 +1467,8 @@ extension ResponseFileEndToEndTests {
         """
     ) { responseFile in
       struct MixedAsyncCommand: AsyncParsableCommand {
-        static var responseFilePrefix: Character? { "@" }
+        static let configuration = CommandConfiguration(
+          responseFilePrefix: "@")
 
         @Option var input: String
         @Option var output: String = "default.txt"
@@ -1473,15 +1503,17 @@ extension ResponseFileEndToEndTests {
       )
     }
 
-    #expect(DefaultPrefixCommand.responseFilePrefix == nil)
-    #expect(DefaultPrefixSubcommandParent.responseFilePrefix == nil)
-    #expect(SubcommandChild.responseFilePrefix == nil)
+    #expect(DefaultPrefixCommand.configuration.responseFilePrefix == nil)
+    #expect(
+      DefaultPrefixSubcommandParent.configuration.responseFilePrefix == nil)
+    #expect(SubcommandChild.configuration.responseFilePrefix == nil)
   }
 
   @Test func commandCanOverrideResponseFilePrefix() {
-    #expect(PlusPrefixCommand.responseFilePrefix == "+")
-    #expect(HashPrefixCommand.responseFilePrefix == "#")
-    #expect(PlusPrefixSubcommandParent.responseFilePrefix == "+")
+    #expect(PlusPrefixCommand.configuration.responseFilePrefix == "+")
+    #expect(HashPrefixCommand.configuration.responseFilePrefix == "#")
+    #expect(
+      PlusPrefixSubcommandParent.configuration.responseFilePrefix == "+")
   }
 
   @Test func customPrefixExpandsResponseFile() async throws {
