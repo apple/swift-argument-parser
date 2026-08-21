@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2020 Apple Inc. and the Swift project authors
+// Copyright (c) 2020-2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -11,11 +11,10 @@
 
 import ArgumentParser
 import ArgumentParserTestHelpers
+import Foundation
 import Testing
-import XCTest
 
-final class RepeatingEndToEndTests: XCTestCase {
-}
+@Suite struct RepeatingEndToEndTests {}
 
 // MARK: -
 
@@ -26,20 +25,20 @@ private struct Bar: ParsableArguments {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension RepeatingEndToEndTests {
-  func testParsing_repeatingString() throws {
-    AssertParse(Bar.self, []) { bar in
-      XCTAssertTrue(bar.name.isEmpty)
+  @Test func parsing_repeatingString() throws {
+    expectParse(Bar.self, []) { bar in
+      #expect(bar.name.isEmpty)
     }
 
-    AssertParse(Bar.self, ["--name", "Bar"]) { bar in
-      XCTAssertEqual(bar.name.count, 1)
-      XCTAssertEqual(bar.name.first, "Bar")
+    expectParse(Bar.self, ["--name", "Bar"]) { bar in
+      #expect(bar.name.count == 1)
+      #expect(bar.name.first == "Bar")
     }
 
-    AssertParse(Bar.self, ["--name", "Bar", "--name", "Foo"]) { bar in
-      XCTAssertEqual(bar.name.count, 2)
-      XCTAssertEqual(bar.name.first, "Bar")
-      XCTAssertEqual(bar.name.last, "Foo")
+    expectParse(Bar.self, ["--name", "Bar", "--name", "Foo"]) { bar in
+      #expect(bar.name.count == 2)
+      #expect(bar.name.first == "Bar")
+      #expect(bar.name.last == "Foo")
     }
   }
 }
@@ -54,15 +53,15 @@ private struct Foo: ParsableArguments {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension RepeatingEndToEndTests {
-  func testParsing_incrementInteger() throws {
-    AssertParse(Foo.self, []) { options in
-      XCTAssertEqual(options.verbose, 0)
+  @Test func parsing_incrementInteger() throws {
+    expectParse(Foo.self, []) { options in
+      #expect(options.verbose == 0)
     }
-    AssertParse(Foo.self, ["--verbose"]) { options in
-      XCTAssertEqual(options.verbose, 1)
+    expectParse(Foo.self, ["--verbose"]) { options in
+      #expect(options.verbose == 1)
     }
-    AssertParse(Foo.self, ["--verbose", "--verbose"]) { options in
-      XCTAssertEqual(options.verbose, 2)
+    expectParse(Foo.self, ["--verbose", "--verbose"]) { options in
+      #expect(options.verbose == 2)
     }
   }
 }
@@ -77,64 +76,63 @@ private struct Baz: ParsableArguments {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension RepeatingEndToEndTests {
-  func testParsing_repeatingStringRemaining_1() {
-    AssertParse(Baz.self, []) { baz in
-      XCTAssertFalse(baz.verbose)
-      XCTAssertTrue(baz.names.isEmpty)
+  @Test func parsing_repeatingStringRemaining_1() {
+    expectParse(Baz.self, []) { baz in
+      #expect(!baz.verbose)
+      #expect(baz.names.isEmpty)
     }
   }
 
-  func testParsing_repeatingStringRemaining_2() {
-    AssertParse(Baz.self, ["--names"]) { baz in
-      XCTAssertFalse(baz.verbose)
-      XCTAssertTrue(baz.names.isEmpty)
+  @Test func parsing_repeatingStringRemaining_2() {
+    expectParse(Baz.self, ["--names"]) { baz in
+      #expect(!baz.verbose)
+      #expect(baz.names.isEmpty)
     }
   }
 
-  func testParsing_repeatingStringRemaining_3() {
-    AssertParse(Baz.self, ["--names", "one"]) { baz in
-      XCTAssertFalse(baz.verbose)
-      XCTAssertEqual(baz.names, ["one"])
+  @Test func parsing_repeatingStringRemaining_3() {
+    expectParse(Baz.self, ["--names", "one"]) { baz in
+      #expect(!baz.verbose)
+      #expect(baz.names == ["one"])
     }
   }
 
-  func testParsing_repeatingStringRemaining_4() {
-    AssertParse(Baz.self, ["--names", "one", "two"]) { baz in
-      XCTAssertFalse(baz.verbose)
-      XCTAssertEqual(baz.names, ["one", "two"])
+  @Test func parsing_repeatingStringRemaining_4() {
+    expectParse(Baz.self, ["--names", "one", "two"]) { baz in
+      #expect(!baz.verbose)
+      #expect(baz.names == ["one", "two"])
     }
   }
 
-  func testParsing_repeatingStringRemaining_5() {
-    AssertParse(Baz.self, ["--verbose", "--names", "one", "two"]) { baz in
-      XCTAssertTrue(baz.verbose)
-      XCTAssertEqual(baz.names, ["one", "two"])
+  @Test func parsing_repeatingStringRemaining_5() {
+    expectParse(Baz.self, ["--verbose", "--names", "one", "two"]) { baz in
+      #expect(baz.verbose)
+      #expect(baz.names == ["one", "two"])
     }
   }
 
-  func testParsing_repeatingStringRemaining_6() {
-    AssertParse(Baz.self, ["--names", "one", "two", "--verbose"]) { baz in
-      XCTAssertFalse(baz.verbose)
-      XCTAssertEqual(baz.names, ["one", "two", "--verbose"])
+  @Test func parsing_repeatingStringRemaining_6() {
+    expectParse(Baz.self, ["--names", "one", "two", "--verbose"]) { baz in
+      #expect(!baz.verbose)
+      #expect(baz.names == ["one", "two", "--verbose"])
     }
   }
 
-  func testParsing_repeatingStringRemaining_7() {
-    AssertParse(Baz.self, ["--verbose", "--names", "one", "two", "--verbose"]) {
+  @Test func parsing_repeatingStringRemaining_7() {
+    expectParse(Baz.self, ["--verbose", "--names", "one", "two", "--verbose"]) {
       baz in
-      XCTAssertTrue(baz.verbose)
-      XCTAssertEqual(baz.names, ["one", "two", "--verbose"])
+      #expect(baz.verbose)
+      #expect(baz.names == ["one", "two", "--verbose"])
     }
   }
 
-  func testParsing_repeatingStringRemaining_8() {
-    AssertParse(
+  @Test func parsing_repeatingStringRemaining_8() {
+    expectParse(
       Baz.self,
       ["--verbose", "--names", "one", "two", "--verbose", "--other", "three"]
     ) { baz in
-      XCTAssertTrue(baz.verbose)
-      XCTAssertEqual(
-        baz.names, ["one", "two", "--verbose", "--other", "three"])
+      #expect(baz.verbose)
+      #expect(baz.names == ["one", "two", "--verbose", "--other", "three"])
     }
   }
 }
@@ -156,13 +154,13 @@ private struct Inner: ParsableCommand {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension RepeatingEndToEndTests {
-  func testParsing_subcommandRemaining() {
-    AssertParseCommand(
+  @Test func parsing_subcommandRemaining() {
+    expectParseCommand(
       Outer.self, Inner.self,
       ["inner", "--verbose", "one", "two", "--", "three", "--other"]
     ) { inner in
-      XCTAssertTrue(inner.verbose)
-      XCTAssertEqual(inner.files, ["one", "two", "--", "three", "--other"])
+      #expect(inner.verbose)
+      #expect(inner.files == ["one", "two", "--", "three", "--other"])
     }
   }
 }
@@ -178,93 +176,101 @@ private struct Qux: ParsableArguments {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension RepeatingEndToEndTests {
-  func testParsing_repeatingStringUpToNext() throws {
-    AssertParse(Qux.self, []) { qux in
-      XCTAssertFalse(qux.verbose)
-      XCTAssertTrue(qux.names.isEmpty)
-      XCTAssertNil(qux.extra)
+  @Test func parsing_repeatingStringUpToNext() throws {
+    expectParse(Qux.self, []) { qux in
+      #expect(!qux.verbose)
+      #expect(qux.names.isEmpty)
+      #expect(qux.extra == nil)
     }
 
-    AssertParse(Qux.self, ["--names", "one"]) { qux in
-      XCTAssertFalse(qux.verbose)
-      XCTAssertEqual(qux.names, ["one"])
-      XCTAssertNil(qux.extra)
+    expectParse(Qux.self, ["--names", "one"]) { qux in
+      #expect(!qux.verbose)
+      #expect(qux.names == ["one"])
+      #expect(qux.extra == nil)
     }
 
-    AssertParse(
+    expectParse(
       Qux.self,
       [
         "--names", "one", "two", "--verbose", "--names", "three", "--names",
         "four",
       ]
     ) { qux in
-      XCTAssertTrue(qux.verbose)
-      XCTAssertEqual(qux.names, ["one", "two", "three", "four"])
-      XCTAssertNil(qux.extra)
+      #expect(qux.verbose)
+      #expect(qux.names == ["one", "two", "three", "four"])
+      #expect(qux.extra == nil)
     }
 
-    AssertParse(
+    expectParse(
       Qux.self,
       [
         "extra", "--names", "one", "--names", "two", "--verbose", "--names",
         "three", "four",
       ]
     ) { qux in
-      XCTAssertTrue(qux.verbose)
-      XCTAssertEqual(qux.names, ["one", "two", "three", "four"])
-      XCTAssertEqual(qux.extra, "extra")
+      #expect(qux.verbose)
+      #expect(qux.names == ["one", "two", "three", "four"])
+      #expect(qux.extra == "extra")
     }
 
-    AssertParse(Qux.self, ["--names", "one", "two"]) { qux in
-      XCTAssertFalse(qux.verbose)
-      XCTAssertEqual(qux.names, ["one", "two"])
-      XCTAssertNil(qux.extra)
+    expectParse(Qux.self, ["--names", "one", "two"]) { qux in
+      #expect(!qux.verbose)
+      #expect(qux.names == ["one", "two"])
+      #expect(qux.extra == nil)
     }
 
-    AssertParse(Qux.self, ["--names", "one", "two", "--verbose"]) { qux in
-      XCTAssertTrue(qux.verbose)
-      XCTAssertEqual(qux.names, ["one", "two"])
-      XCTAssertNil(qux.extra)
+    expectParse(Qux.self, ["--names", "one", "two", "--verbose"]) { qux in
+      #expect(qux.verbose)
+      #expect(qux.names == ["one", "two"])
+      #expect(qux.extra == nil)
     }
 
-    AssertParse(Qux.self, ["--names", "one", "two", "--verbose", "three"]) {
+    expectParse(Qux.self, ["--names", "one", "two", "--verbose", "three"]) {
       qux in
-      XCTAssertTrue(qux.verbose)
-      XCTAssertEqual(qux.names, ["one", "two"])
-      XCTAssertEqual(qux.extra, "three")
+      #expect(qux.verbose)
+      #expect(qux.names == ["one", "two"])
+      #expect(qux.extra == "three")
     }
 
-    AssertParse(Qux.self, ["--verbose", "--names", "one", "two"]) { qux in
-      XCTAssertTrue(qux.verbose)
-      XCTAssertEqual(qux.names, ["one", "two"])
-      XCTAssertNil(qux.extra)
+    expectParse(Qux.self, ["--verbose", "--names", "one", "two"]) { qux in
+      #expect(qux.verbose)
+      #expect(qux.names == ["one", "two"])
+      #expect(qux.extra == nil)
     }
 
-    AssertParse(Qux.self, ["--verbose", "--names=one"]) { qux in
-      XCTAssertTrue(qux.verbose)
-      XCTAssertEqual(qux.names, ["one"])
-      XCTAssertNil(qux.extra)
+    expectParse(Qux.self, ["--verbose", "--names=one"]) { qux in
+      #expect(qux.verbose)
+      #expect(qux.names == ["one"])
+      #expect(qux.extra == nil)
     }
 
-    AssertParse(Qux.self, ["--verbose", "--names=one", "two"]) { qux in
-      XCTAssertTrue(qux.verbose)
-      XCTAssertEqual(qux.names, ["one", "two"])
-      XCTAssertNil(qux.extra)
+    expectParse(Qux.self, ["--verbose", "--names=one", "two"]) { qux in
+      #expect(qux.verbose)
+      #expect(qux.names == ["one", "two"])
+      #expect(qux.extra == nil)
     }
 
-    AssertParse(Qux.self, ["--names=one", "--verbose", "two"]) { qux in
-      XCTAssertTrue(qux.verbose)
-      XCTAssertEqual(qux.names, ["one"])
-      XCTAssertEqual(qux.extra, "two")
+    expectParse(Qux.self, ["--names=one", "--verbose", "two"]) { qux in
+      #expect(qux.verbose)
+      #expect(qux.names == ["one"])
+      #expect(qux.extra == "two")
     }
   }
 
-  func testParsing_repeatingStringUpToNext_Fails() throws {
-    XCTAssertThrowsError(try Qux.parse(["--names", "one", "--other"]))
-    XCTAssertThrowsError(try Qux.parse(["--names", "one", "two", "--other"]))
-    XCTAssertThrowsError(try Qux.parse(["--names", "--other"]))
-    XCTAssertThrowsError(try Qux.parse(["--names", "--verbose"]))
-    XCTAssertThrowsError(try Qux.parse(["--names", "--verbose", "three"]))
+  @Test func parsing_repeatingStringUpToNext_Fails() throws {
+    #expect(throws: (any Error).self) {
+      try Qux.parse(["--names", "one", "--other"])
+    }
+    #expect(throws: (any Error).self) {
+      try Qux.parse(["--names", "one", "two", "--other"])
+    }
+    #expect(throws: (any Error).self) { try Qux.parse(["--names", "--other"]) }
+    #expect(throws: (any Error).self) {
+      try Qux.parse(["--names", "--verbose"])
+    }
+    #expect(throws: (any Error).self) {
+      try Qux.parse(["--names", "--verbose", "three"])
+    }
   }
 }
 
@@ -290,78 +296,81 @@ private struct Wobble: ParsableArguments {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension RepeatingEndToEndTests {
-  func testParsing_repeatingWithTransform() throws {
+  @Test func parsing_repeatingWithTransform() throws {
     let names = ["--names", "one", "--names", "two"]
     let moreNames = ["--more-names", "three", "four", "five"]
     let evenMoreNames = ["--even-more-names", "six", "--seven", "--eight"]
 
-    AssertParse(Wobble.self, []) { wobble in
-      XCTAssertTrue(wobble.names.isEmpty)
-      XCTAssertTrue(wobble.moreNames.isEmpty)
-      XCTAssertTrue(wobble.evenMoreNames.isEmpty)
+    expectParse(Wobble.self, []) { wobble in
+      #expect(wobble.names.isEmpty)
+      #expect(wobble.moreNames.isEmpty)
+      #expect(wobble.evenMoreNames.isEmpty)
     }
 
-    AssertParse(Wobble.self, names) { wobble in
-      XCTAssertEqual(wobble.names.map { $0.value }, ["one", "two"])
-      XCTAssertTrue(wobble.moreNames.isEmpty)
-      XCTAssertTrue(wobble.evenMoreNames.isEmpty)
+    expectParse(Wobble.self, names) { wobble in
+      #expect(wobble.names.map { $0.value } == ["one", "two"])
+      #expect(wobble.moreNames.isEmpty)
+      #expect(wobble.evenMoreNames.isEmpty)
     }
 
-    AssertParse(Wobble.self, moreNames) { wobble in
-      XCTAssertTrue(wobble.names.isEmpty)
-      XCTAssertEqual(
-        wobble.moreNames.map { $0.value }, ["three", "four", "five"])
-      XCTAssertTrue(wobble.evenMoreNames.isEmpty)
+    expectParse(Wobble.self, moreNames) { wobble in
+      #expect(wobble.names.isEmpty)
+      #expect(wobble.moreNames.map { $0.value } == ["three", "four", "five"])
+      #expect(wobble.evenMoreNames.isEmpty)
     }
 
-    AssertParse(Wobble.self, evenMoreNames) { wobble in
-      XCTAssertTrue(wobble.names.isEmpty)
-      XCTAssertTrue(wobble.moreNames.isEmpty)
-      XCTAssertEqual(
-        wobble.evenMoreNames.map { $0.value }, ["six", "--seven", "--eight"])
+    expectParse(Wobble.self, evenMoreNames) { wobble in
+      #expect(wobble.names.isEmpty)
+      #expect(wobble.moreNames.isEmpty)
+      #expect(
+        wobble.evenMoreNames.map { $0.value } == ["six", "--seven", "--eight"])
     }
 
-    AssertParse(Wobble.self, Array([names, moreNames, evenMoreNames].joined()))
+    expectParse(Wobble.self, Array([names, moreNames, evenMoreNames].joined()))
     { wobble in
-      XCTAssertEqual(wobble.names.map { $0.value }, ["one", "two"])
-      XCTAssertEqual(
-        wobble.moreNames.map { $0.value }, ["three", "four", "five"])
-      XCTAssertEqual(
-        wobble.evenMoreNames.map { $0.value }, ["six", "--seven", "--eight"])
+      #expect(wobble.names.map { $0.value } == ["one", "two"])
+      #expect(wobble.moreNames.map { $0.value } == ["three", "four", "five"])
+      #expect(
+        wobble.evenMoreNames.map { $0.value } == ["six", "--seven", "--eight"])
     }
 
-    AssertParse(Wobble.self, Array([moreNames, names, evenMoreNames].joined()))
+    expectParse(Wobble.self, Array([moreNames, names, evenMoreNames].joined()))
     { wobble in
-      XCTAssertEqual(wobble.names.map { $0.value }, ["one", "two"])
-      XCTAssertEqual(
-        wobble.moreNames.map { $0.value }, ["three", "four", "five"])
-      XCTAssertEqual(
-        wobble.evenMoreNames.map { $0.value }, ["six", "--seven", "--eight"])
+      #expect(wobble.names.map { $0.value } == ["one", "two"])
+      #expect(wobble.moreNames.map { $0.value } == ["three", "four", "five"])
+      #expect(
+        wobble.evenMoreNames.map { $0.value } == ["six", "--seven", "--eight"])
     }
 
-    AssertParse(Wobble.self, Array([moreNames, evenMoreNames, names].joined()))
+    expectParse(Wobble.self, Array([moreNames, evenMoreNames, names].joined()))
     { wobble in
-      XCTAssertTrue(wobble.names.isEmpty)
-      XCTAssertEqual(
-        wobble.moreNames.map { $0.value }, ["three", "four", "five"])
-      XCTAssertEqual(
-        wobble.evenMoreNames.map { $0.value },
-        ["six", "--seven", "--eight", "--names", "one", "--names", "two"])
+      #expect(wobble.names.isEmpty)
+      #expect(wobble.moreNames.map { $0.value } == ["three", "four", "five"])
+      #expect(
+        wobble.evenMoreNames.map { $0.value }
+          == ["six", "--seven", "--eight", "--names", "one", "--names", "two"])
     }
   }
 
-  func testParsing_repeatingWithTransform_Fails() throws {
-    XCTAssertThrowsError(try Wobble.parse(["--names", "one", "--other"]))
-    XCTAssertThrowsError(try Wobble.parse(["--more-names", "one", "--other"]))
+  @Test func parsing_repeatingWithTransform_Fails() throws {
+    #expect(throws: (any Error).self) {
+      try Wobble.parse(["--names", "one", "--other"])
+    }
+    #expect(throws: (any Error).self) {
+      try Wobble.parse(["--more-names", "one", "--other"])
+    }
 
-    XCTAssertThrowsError(
-      try Wobble.parse(["--names", "one", "--names", "bad"]))
-    XCTAssertThrowsError(
-      try Wobble.parse(["--more-names", "one", "two", "bad", "--names", "one"]))
-    XCTAssertThrowsError(
+    #expect(throws: (any Error).self) {
+      try Wobble.parse(["--names", "one", "--names", "bad"])
+    }
+    #expect(throws: (any Error).self) {
+      try Wobble.parse(["--more-names", "one", "two", "bad", "--names", "one"])
+    }
+    #expect(throws: (any Error).self) {
       try Wobble.parse([
         "--even-more-names", "one", "two", "--names", "one", "bad",
-      ]))
+      ])
+    }
   }
 }
 
@@ -375,23 +384,22 @@ private struct Weazle: ParsableArguments {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension RepeatingEndToEndTests {
-  func testParsing_repeatingArgument() throws {
-    AssertParse(Weazle.self, ["one", "two", "three", "--verbose"]) { weazle in
-      XCTAssertTrue(weazle.verbose)
-      XCTAssertEqual(weazle.names, ["one", "two", "three"])
+  @Test func parsing_repeatingArgument() throws {
+    expectParse(Weazle.self, ["one", "two", "three", "--verbose"]) { weazle in
+      #expect(weazle.verbose)
+      #expect(weazle.names == ["one", "two", "three"])
     }
 
-    AssertParse(Weazle.self, ["--verbose", "one", "two", "three"]) { weazle in
-      XCTAssertTrue(weazle.verbose)
-      XCTAssertEqual(weazle.names, ["one", "two", "three"])
+    expectParse(Weazle.self, ["--verbose", "one", "two", "three"]) { weazle in
+      #expect(weazle.verbose)
+      #expect(weazle.names == ["one", "two", "three"])
     }
 
-    AssertParse(
+    expectParse(
       Weazle.self, ["one", "two", "three", "--", "--other", "--verbose"]
     ) { weazle in
-      XCTAssertFalse(weazle.verbose)
-      XCTAssertEqual(
-        weazle.names, ["one", "two", "three", "--other", "--verbose"])
+      #expect(!weazle.verbose)
+      #expect(weazle.names == ["one", "two", "three", "--other", "--verbose"])
     }
   }
 }
@@ -418,18 +426,18 @@ private func time(_ body: () -> Void) -> TimeInterval {
 // https://github.com/apple/swift-argument-parser/issues/710
 extension RepeatingEndToEndTests {
   // A regression test against array parsing performance going non-linear.
-  func testParsing_repeatingPerformance() throws {
+  @Test func parsing_repeatingPerformance() throws {
     let timeFor20 = time {
-      AssertParse(PerformanceTest.self, argumentGenerator(100)) { test in
-        XCTAssertEqual(100, test.bundleIdentifiers.count)
+      expectParse(PerformanceTest.self, argumentGenerator(100)) { test in
+        #expect(test.bundleIdentifiers.count == 100)
       }
     }
     let timeFor40 = time {
-      AssertParse(PerformanceTest.self, argumentGenerator(200)) { test in
-        XCTAssertEqual(200, test.bundleIdentifiers.count)
+      expectParse(PerformanceTest.self, argumentGenerator(200)) { test in
+        #expect(test.bundleIdentifiers.count == 200)
       }
     }
 
-    XCTAssertLessThan(timeFor40, timeFor20 * 10)
+    #expect(timeFor40 < timeFor20 * 10)
   }
 }

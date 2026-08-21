@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2020 Apple Inc. and the Swift project authors
+// Copyright (c) 2020-2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -12,10 +12,8 @@
 import ArgumentParser
 import ArgumentParserTestHelpers
 import Testing
-import XCTest
 
-final class FlagsEndToEndTests: XCTestCase {
-}
+@Suite struct FlagsEndToEndTests {}
 
 // MARK: -
 
@@ -36,62 +34,62 @@ private struct Bar: ParsableArguments {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension FlagsEndToEndTests {
-  func testParsing_defaultValue() throws {
-    AssertParse(Bar.self, []) { options in
-      XCTAssertEqual(options.verbose, false)
-      XCTAssertEqual(options.extattr, false)
-      XCTAssertEqual(options.extattr2, nil)
+  @Test func parsing_defaultValue() throws {
+    expectParse(Bar.self, []) { options in
+      #expect(options.verbose == false)
+      #expect(options.extattr == false)
+      #expect(options.extattr2 == nil)
     }
   }
 
-  func testParsing_settingValue() throws {
-    AssertParse(Bar.self, ["--verbose"]) { options in
-      XCTAssertEqual(options.verbose, true)
-      XCTAssertEqual(options.extattr, false)
-      XCTAssertEqual(options.extattr2, nil)
+  @Test func parsing_settingValue() throws {
+    expectParse(Bar.self, ["--verbose"]) { options in
+      #expect(options.verbose == true)
+      #expect(options.extattr == false)
+      #expect(options.extattr2 == nil)
     }
 
-    AssertParse(Bar.self, ["--extattr"]) { options in
-      XCTAssertEqual(options.verbose, false)
-      XCTAssertEqual(options.extattr, true)
-      XCTAssertEqual(options.extattr2, nil)
+    expectParse(Bar.self, ["--extattr"]) { options in
+      #expect(options.verbose == false)
+      #expect(options.extattr == true)
+      #expect(options.extattr2 == nil)
     }
 
-    AssertParse(Bar.self, ["--extattr2"]) { options in
-      XCTAssertEqual(options.verbose, false)
-      XCTAssertEqual(options.extattr, false)
-      XCTAssertEqual(options.extattr2, .some(true))
+    expectParse(Bar.self, ["--extattr2"]) { options in
+      #expect(options.verbose == false)
+      #expect(options.extattr == false)
+      #expect(options.extattr2 == .some(true))
     }
   }
 
-  func testParsing_invert() throws {
-    AssertParse(Bar.self, ["--no-extattr"]) { options in
-      XCTAssertEqual(options.extattr, false)
+  @Test func parsing_invert() throws {
+    expectParse(Bar.self, ["--no-extattr"]) { options in
+      #expect(options.extattr == false)
     }
-    AssertParse(Bar.self, ["--extattr", "--no-extattr"]) { options in
-      XCTAssertEqual(options.extattr, false)
+    expectParse(Bar.self, ["--extattr", "--no-extattr"]) { options in
+      #expect(options.extattr == false)
     }
-    AssertParse(Bar.self, ["--extattr", "--no-extattr", "--no-extattr"]) {
+    expectParse(Bar.self, ["--extattr", "--no-extattr", "--no-extattr"]) {
       options in
-      XCTAssertEqual(options.extattr, false)
+      #expect(options.extattr == false)
     }
-    AssertParse(Bar.self, ["--no-extattr", "--no-extattr", "--extattr"]) {
+    expectParse(Bar.self, ["--no-extattr", "--no-extattr", "--extattr"]) {
       options in
-      XCTAssertEqual(options.extattr, true)
+      #expect(options.extattr == true)
     }
-    AssertParse(Bar.self, ["--extattr", "--no-extattr", "--extattr"]) {
+    expectParse(Bar.self, ["--extattr", "--no-extattr", "--extattr"]) {
       options in
-      XCTAssertEqual(options.extattr, true)
+      #expect(options.extattr == true)
     }
-    AssertParse(Bar.self, ["--enable-logging"]) { options in
-      XCTAssertEqual(options.logging, true)
+    expectParse(Bar.self, ["--enable-logging"]) { options in
+      #expect(options.logging == true)
     }
-    AssertParse(Bar.self, ["--no-extattr2", "--no-extattr2"]) { options in
-      XCTAssertEqual(options.extattr2, false)
+    expectParse(Bar.self, ["--no-extattr2", "--no-extattr2"]) { options in
+      #expect(options.extattr2 == false)
     }
-    AssertParse(Bar.self, ["--disable-logging", "--enable-logging"]) {
+    expectParse(Bar.self, ["--disable-logging", "--enable-logging"]) {
       options in
-      XCTAssertEqual(options.logging, false)
+      #expect(options.logging == false)
     }
   }
 }
@@ -110,49 +108,49 @@ private struct Foo: ParsableArguments {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension FlagsEndToEndTests {
-  func testParsingEnableDisable_defaultValue() throws {
-    AssertParse(Foo.self, ["--enable-required-element"]) { options in
-      XCTAssertEqual(options.index, false)
-      XCTAssertEqual(options.sandbox, true)
-      XCTAssertEqual(options.requiredElement, true)
-      XCTAssertNil(options.optional)
+  @Test func parsingEnableDisable_defaultValue() throws {
+    expectParse(Foo.self, ["--enable-required-element"]) { options in
+      #expect(options.index == false)
+      #expect(options.sandbox == true)
+      #expect(options.requiredElement == true)
+      #expect(options.optional == nil)
     }
   }
 
-  func testParsingEnableDisable_disableAll() throws {
-    AssertParse(
+  @Test func parsingEnableDisable_disableAll() throws {
+    expectParse(
       Foo.self,
       [
         "--disable-index", "--disable-sandbox", "--disable-required-element",
         "--disable-optional",
       ]
     ) { options in
-      XCTAssertEqual(options.index, false)
-      XCTAssertEqual(options.sandbox, false)
-      XCTAssertEqual(options.requiredElement, false)
-      XCTAssertEqual(options.optional, false)
+      #expect(options.index == false)
+      #expect(options.sandbox == false)
+      #expect(options.requiredElement == false)
+      #expect(options.optional == false)
     }
   }
 
-  func testParsingEnableDisable_enableAll() throws {
-    AssertParse(
+  @Test func parsingEnableDisable_enableAll() throws {
+    expectParse(
       Foo.self,
       [
         "--enable-index", "--enable-sandbox", "--enable-required-element",
         "--enable-optional",
       ]
     ) { options in
-      XCTAssertEqual(options.index, true)
-      XCTAssertEqual(options.sandbox, true)
-      XCTAssertEqual(options.requiredElement, true)
-      XCTAssertEqual(options.optional, true)
+      #expect(options.index == true)
+      #expect(options.sandbox == true)
+      #expect(options.requiredElement == true)
+      #expect(options.optional == true)
     }
   }
 
-  func testParsingEnableDisable_Fails() throws {
-    XCTAssertThrowsError(try Foo.parse([]))
-    XCTAssertThrowsError(try Foo.parse(["--disable-index"]))
-    XCTAssertThrowsError(try Foo.parse(["--disable-sandbox"]))
+  @Test func parsingEnableDisable_Fails() throws {
+    #expect(throws: (any Error).self) { try Foo.parse([]) }
+    #expect(throws: (any Error).self) { try Foo.parse(["--disable-index"]) }
+    #expect(throws: (any Error).self) { try Foo.parse(["--disable-sandbox"]) }
   }
 }
 
@@ -214,76 +212,73 @@ private struct Baz: ParsableArguments {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension FlagsEndToEndTests {
-  func testParsingCaseIterable_defaultValues() throws {
-    AssertParse(Baz.self, ["--pink"]) { options in
-      XCTAssertEqual(options.color, .pink)
-      XCTAssertEqual(options.size, .small)
-      XCTAssertEqual(options.shape, nil)
+  @Test func parsingCaseIterable_defaultValues() throws {
+    expectParse(Baz.self, ["--pink"]) { options in
+      #expect(options.color == .pink)
+      #expect(options.size == .small)
+      #expect(options.shape == nil)
     }
 
-    AssertParse(Baz.self, ["--pink", "--medium"]) { options in
-      XCTAssertEqual(options.color, .pink)
-      XCTAssertEqual(options.size, .medium)
-      XCTAssertEqual(options.shape, nil)
+    expectParse(Baz.self, ["--pink", "--medium"]) { options in
+      #expect(options.color == .pink)
+      #expect(options.size == .medium)
+      #expect(options.shape == nil)
     }
 
-    AssertParse(Baz.self, ["--pink", "--round"]) { options in
-      XCTAssertEqual(options.color, .pink)
-      XCTAssertEqual(options.size, .small)
-      XCTAssertEqual(options.shape, .round)
-    }
-  }
-
-  func testParsingCaseIterable_AllValues() throws {
-    AssertParse(Baz.self, ["--pink", "--small", "--round"]) { options in
-      XCTAssertEqual(options.color, .pink)
-      XCTAssertEqual(options.size, .small)
-      XCTAssertEqual(options.shape, .round)
-    }
-
-    AssertParse(Baz.self, ["--purple", "--medium", "--square"]) { options in
-      XCTAssertEqual(options.color, .purple)
-      XCTAssertEqual(options.size, .medium)
-      XCTAssertEqual(options.shape, .square)
-    }
-
-    AssertParse(Baz.self, ["--silver", "--large", "--oblong"]) { options in
-      XCTAssertEqual(options.color, .silver)
-      XCTAssertEqual(options.size, .large)
-      XCTAssertEqual(options.shape, .oblong)
+    expectParse(Baz.self, ["--pink", "--round"]) { options in
+      #expect(options.color == .pink)
+      #expect(options.size == .small)
+      #expect(options.shape == .round)
     }
   }
 
-  func testParsingCaseIterable_CustomName() throws {
-    AssertParse(Baz.self, ["--pink", "--extra-large"]) { options in
-      XCTAssertEqual(options.color, .pink)
-      XCTAssertEqual(options.size, .extraLarge)
-      XCTAssertEqual(options.shape, nil)
+  @Test func parsingCaseIterable_AllValues() throws {
+    expectParse(Baz.self, ["--pink", "--small", "--round"]) { options in
+      #expect(options.color == .pink)
+      #expect(options.size == .small)
+      #expect(options.shape == .round)
     }
 
-    AssertParse(Baz.self, ["--pink", "--huge"]) { options in
-      XCTAssertEqual(options.color, .pink)
-      XCTAssertEqual(options.size, .humongous)
-      XCTAssertEqual(options.shape, nil)
+    expectParse(Baz.self, ["--purple", "--medium", "--square"]) { options in
+      #expect(options.color == .purple)
+      #expect(options.size == .medium)
+      #expect(options.shape == .square)
     }
 
-    AssertParse(Baz.self, ["--pink", "--humongous"]) { options in
-      XCTAssertEqual(options.color, .pink)
-      XCTAssertEqual(options.size, .humongous)
-      XCTAssertEqual(options.shape, nil)
-    }
-
-    AssertParse(Baz.self, ["--pink", "--huge", "--humongous"]) { options in
-      XCTAssertEqual(options.color, .pink)
-      XCTAssertEqual(options.size, .humongous)
-      XCTAssertEqual(options.shape, nil)
+    expectParse(Baz.self, ["--silver", "--large", "--oblong"]) { options in
+      #expect(options.color == .silver)
+      #expect(options.size == .large)
+      #expect(options.shape == .oblong)
     }
   }
-}
 
-@Suite
-struct FlagsEndToEndTestsSWT {
-  @Test func testParsingCaseIterable_Help() async throws {
+  @Test func parsingCaseIterable_CustomName() throws {
+    expectParse(Baz.self, ["--pink", "--extra-large"]) { options in
+      #expect(options.color == .pink)
+      #expect(options.size == .extraLarge)
+      #expect(options.shape == nil)
+    }
+
+    expectParse(Baz.self, ["--pink", "--huge"]) { options in
+      #expect(options.color == .pink)
+      #expect(options.size == .humongous)
+      #expect(options.shape == nil)
+    }
+
+    expectParse(Baz.self, ["--pink", "--humongous"]) { options in
+      #expect(options.color == .pink)
+      #expect(options.size == .humongous)
+      #expect(options.shape == nil)
+    }
+
+    expectParse(Baz.self, ["--pink", "--huge", "--humongous"]) { options in
+      #expect(options.color == .pink)
+      #expect(options.size == .humongous)
+      #expect(options.shape == nil)
+    }
+  }
+
+  @Test func parsingCaseIterable_Help() async throws {
     try requireHelp(
       .default, for: Baz.self,
       equals: """
@@ -301,20 +296,27 @@ struct FlagsEndToEndTestsSWT {
 
         """)
   }
-}
 
-// swift-format-ignore: AlwaysUseLowerCamelCase
-extension FlagsEndToEndTests {
-  func testParsingCaseIterable_Fails() throws {
+  @Test func parsingCaseIterable_Fails() throws {
     // Missing color
-    XCTAssertThrowsError(try Baz.parse([]))
-    XCTAssertThrowsError(try Baz.parse(["--large", "--square"]))
+    #expect(throws: (any Error).self) { try Baz.parse([]) }
+    #expect(throws: (any Error).self) {
+      try Baz.parse(["--large", "--square"])
+    }
     // Repeating flags
-    XCTAssertThrowsError(try Baz.parse(["--pink", "--purple"]))
-    XCTAssertThrowsError(try Baz.parse(["--pink", "--small", "--large"]))
-    XCTAssertThrowsError(try Baz.parse(["--pink", "--round", "--square"]))
+    #expect(throws: (any Error).self) {
+      try Baz.parse(["--pink", "--purple"])
+    }
+    #expect(throws: (any Error).self) {
+      try Baz.parse(["--pink", "--small", "--large"])
+    }
+    #expect(throws: (any Error).self) {
+      try Baz.parse(["--pink", "--round", "--square"])
+    }
     // Case name instead of raw value
-    XCTAssertThrowsError(try Baz.parse(["--pink", "--extraLarge"]))
+    #expect(throws: (any Error).self) {
+      try Baz.parse(["--pink", "--extraLarge"])
+    }
   }
 }
 
@@ -329,33 +331,35 @@ private struct Qux: ParsableArguments {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension FlagsEndToEndTests {
-  func testParsingCaseIterableArray_Values() throws {
-    AssertParse(Qux.self, []) { options in
-      XCTAssertEqual(options.color, [])
-      XCTAssertEqual(options.size, [.small, .medium])
+  @Test func parsingCaseIterableArray_Values() throws {
+    expectParse(Qux.self, []) { options in
+      #expect(options.color == [])
+      #expect(options.size == [.small, .medium])
     }
-    AssertParse(Qux.self, ["--pink"]) { options in
-      XCTAssertEqual(options.color, [.pink])
-      XCTAssertEqual(options.size, [.small, .medium])
+    expectParse(Qux.self, ["--pink"]) { options in
+      #expect(options.color == [.pink])
+      #expect(options.size == [.small, .medium])
     }
-    AssertParse(Qux.self, ["--pink", "--purple", "--small"]) { options in
-      XCTAssertEqual(options.color, [.pink, .purple])
-      XCTAssertEqual(options.size, [.small])
+    expectParse(Qux.self, ["--pink", "--purple", "--small"]) { options in
+      #expect(options.color == [.pink, .purple])
+      #expect(options.size == [.small])
     }
-    AssertParse(Qux.self, ["--pink", "--small", "--purple", "--medium"]) {
+    expectParse(Qux.self, ["--pink", "--small", "--purple", "--medium"]) {
       options in
-      XCTAssertEqual(options.color, [.pink, .purple])
-      XCTAssertEqual(options.size, [.small, .medium])
+      #expect(options.color == [.pink, .purple])
+      #expect(options.size == [.small, .medium])
     }
-    AssertParse(Qux.self, ["--pink", "--pink", "--purple", "--pink"]) {
+    expectParse(Qux.self, ["--pink", "--pink", "--purple", "--pink"]) {
       options in
-      XCTAssertEqual(options.color, [.pink, .pink, .purple, .pink])
-      XCTAssertEqual(options.size, [.small, .medium])
+      #expect(options.color == [.pink, .pink, .purple, .pink])
+      #expect(options.size == [.small, .medium])
     }
   }
 
-  func testParsingCaseIterableArray_Fails() throws {
-    XCTAssertThrowsError(try Qux.parse(["--pink", "--small", "--bloop"]))
+  @Test func parsingCaseIterableArray_Fails() throws {
+    #expect(throws: (any Error).self) {
+      try Qux.parse(["--pink", "--small", "--bloop"])
+    }
   }
 }
 
@@ -373,20 +377,20 @@ private struct RepeatOK: ParsableArguments {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension FlagsEndToEndTests {
-  func testParsingCaseIterable_RepeatableFlags() throws {
-    AssertParse(RepeatOK.self, ["--pink", "--purple", "--square"]) { options in
-      XCTAssertEqual(options.color, .pink)
-      XCTAssertEqual(options.shape, .square)
+  @Test func parsingCaseIterable_RepeatableFlags() throws {
+    expectParse(RepeatOK.self, ["--pink", "--purple", "--square"]) { options in
+      #expect(options.color == .pink)
+      #expect(options.shape == .square)
     }
 
-    AssertParse(RepeatOK.self, ["--round", "--oblong", "--silver"]) { options in
-      XCTAssertEqual(options.color, .silver)
-      XCTAssertEqual(options.shape, .oblong)
+    expectParse(RepeatOK.self, ["--round", "--oblong", "--silver"]) { options in
+      #expect(options.color == .silver)
+      #expect(options.shape == .oblong)
     }
 
-    AssertParse(RepeatOK.self, ["--large", "--pink", "--round", "-l"]) {
+    expectParse(RepeatOK.self, ["--large", "--pink", "--round", "-l"]) {
       options in
-      XCTAssertEqual(options.size, .large)
+      #expect(options.size == .large)
     }
   }
 }

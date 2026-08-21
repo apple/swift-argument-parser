@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2020 Apple Inc. and the Swift project authors
+// Copyright (c) 2020-2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -12,9 +12,8 @@
 import ArgumentParser
 import ArgumentParserTestHelpers
 import Testing
-import XCTest
 
-final class NestedCommandEndToEndTests: XCTestCase {}
+@Suite struct NestedCommandEndToEndTests {}
 
 // MARK: Single value String
 
@@ -54,195 +53,229 @@ private struct Foo: ParsableCommand {
   }
 }
 
-// swift-format-ignore: AlwaysUseLowerCamelCase
-private func AssertParseFooCommand<A>(
-  _ type: A.Type, _ arguments: [String], file: StaticString = #filePath,
-  line: UInt = #line, closure: (A) throws -> Void
+private func expectParseFooCommand<A>(
+  _ type: A.Type, _ arguments: [String],
+  sourceLocation: SourceLocation = #_sourceLocation,
+  closure: (A) throws -> Void
 ) where A: ParsableCommand {
-  AssertParseCommand(
-    Foo.self, type, arguments, file: file, line: line, closure: closure)
+  expectParseCommand(
+    Foo.self, type, arguments, sourceLocation: sourceLocation, closure: closure)
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension NestedCommandEndToEndTests {
-  func testParsing_package() throws {
-    AssertParseFooCommand(Foo.Package.self, ["package"]) { package in
-      XCTAssertFalse(package.force)
+  @Test func parsing_package() throws {
+    expectParseFooCommand(Foo.Package.self, ["package"]) { package in
+      #expect(package.force == false)
     }
 
-    AssertParseFooCommand(Foo.Package.self, ["pkg"]) { package in
-      XCTAssertFalse(package.force)
+    expectParseFooCommand(Foo.Package.self, ["pkg"]) { package in
+      #expect(package.force == false)
     }
 
-    AssertParseFooCommand(Foo.Package.Clean.self, ["package", "clean"]) {
+    expectParseFooCommand(Foo.Package.Clean.self, ["package", "clean"]) {
       clean in
-      XCTAssertEqual(clean.foo.verbose, false)
-      XCTAssertEqual(clean.package.force, false)
+      #expect(clean.foo.verbose == false)
+      #expect(clean.package.force == false)
     }
 
-    AssertParseFooCommand(Foo.Package.Clean.self, ["pkg", "clean"]) { clean in
-      XCTAssertEqual(clean.foo.verbose, false)
-      XCTAssertEqual(clean.package.force, false)
+    expectParseFooCommand(Foo.Package.Clean.self, ["pkg", "clean"]) { clean in
+      #expect(clean.foo.verbose == false)
+      #expect(clean.package.force == false)
     }
 
-    AssertParseFooCommand(Foo.Package.Clean.self, ["package", "-f", "clean"]) {
+    expectParseFooCommand(Foo.Package.Clean.self, ["package", "-f", "clean"]) {
       clean in
-      XCTAssertEqual(clean.foo.verbose, false)
-      XCTAssertEqual(clean.package.force, true)
+      #expect(clean.foo.verbose == false)
+      #expect(clean.package.force == true)
     }
 
-    AssertParseFooCommand(Foo.Package.Clean.self, ["pkg", "-f", "clean"]) {
+    expectParseFooCommand(Foo.Package.Clean.self, ["pkg", "-f", "clean"]) {
       clean in
-      XCTAssertEqual(clean.foo.verbose, false)
-      XCTAssertEqual(clean.package.force, true)
+      #expect(clean.foo.verbose == false)
+      #expect(clean.package.force == true)
     }
 
-    AssertParseFooCommand(Foo.Package.Config.self, ["package", "-v", "config"])
+    expectParseFooCommand(Foo.Package.Config.self, ["package", "-v", "config"])
     { config in
-      XCTAssertEqual(config.foo.verbose, true)
-      XCTAssertEqual(config.package.force, false)
+      #expect(config.foo.verbose == true)
+      #expect(config.package.force == false)
     }
 
-    AssertParseFooCommand(Foo.Package.Config.self, ["pkg", "-v", "cfg"]) {
+    expectParseFooCommand(Foo.Package.Config.self, ["pkg", "-v", "cfg"]) {
       config in
-      XCTAssertEqual(config.foo.verbose, true)
-      XCTAssertEqual(config.package.force, false)
+      #expect(config.foo.verbose == true)
+      #expect(config.package.force == false)
     }
 
-    AssertParseFooCommand(Foo.Package.Config.self, ["package", "config", "-v"])
+    expectParseFooCommand(Foo.Package.Config.self, ["package", "config", "-v"])
     { config in
-      XCTAssertEqual(config.foo.verbose, true)
-      XCTAssertEqual(config.package.force, false)
+      #expect(config.foo.verbose == true)
+      #expect(config.package.force == false)
     }
 
-    AssertParseFooCommand(Foo.Package.Config.self, ["pkg", "cfg", "-v"]) {
+    expectParseFooCommand(Foo.Package.Config.self, ["pkg", "cfg", "-v"]) {
       config in
-      XCTAssertEqual(config.foo.verbose, true)
-      XCTAssertEqual(config.package.force, false)
+      #expect(config.foo.verbose == true)
+      #expect(config.package.force == false)
     }
 
-    AssertParseFooCommand(Foo.Package.Config.self, ["-v", "package", "config"])
+    expectParseFooCommand(Foo.Package.Config.self, ["-v", "package", "config"])
     { config in
-      XCTAssertEqual(config.foo.verbose, true)
-      XCTAssertEqual(config.package.force, false)
+      #expect(config.foo.verbose == true)
+      #expect(config.package.force == false)
     }
 
-    AssertParseFooCommand(Foo.Package.Config.self, ["-v", "pkg", "cfg"]) {
+    expectParseFooCommand(Foo.Package.Config.self, ["-v", "pkg", "cfg"]) {
       config in
-      XCTAssertEqual(config.foo.verbose, true)
-      XCTAssertEqual(config.package.force, false)
+      #expect(config.foo.verbose == true)
+      #expect(config.package.force == false)
     }
 
-    AssertParseFooCommand(Foo.Package.Config.self, ["package", "-f", "config"])
+    expectParseFooCommand(Foo.Package.Config.self, ["package", "-f", "config"])
     { config in
-      XCTAssertEqual(config.foo.verbose, false)
-      XCTAssertEqual(config.package.force, true)
+      #expect(config.foo.verbose == false)
+      #expect(config.package.force == true)
     }
 
-    AssertParseFooCommand(Foo.Package.Config.self, ["pkg", "-f", "cfg"]) {
+    expectParseFooCommand(Foo.Package.Config.self, ["pkg", "-f", "cfg"]) {
       config in
-      XCTAssertEqual(config.foo.verbose, false)
-      XCTAssertEqual(config.package.force, true)
+      #expect(config.foo.verbose == false)
+      #expect(config.package.force == true)
     }
 
-    AssertParseFooCommand(Foo.Package.Config.self, ["package", "config", "-f"])
+    expectParseFooCommand(Foo.Package.Config.self, ["package", "config", "-f"])
     { config in
-      XCTAssertEqual(config.foo.verbose, false)
-      XCTAssertEqual(config.package.force, true)
+      #expect(config.foo.verbose == false)
+      #expect(config.package.force == true)
     }
 
-    AssertParseFooCommand(Foo.Package.Config.self, ["pkg", "cfg", "-f"]) {
+    expectParseFooCommand(Foo.Package.Config.self, ["pkg", "cfg", "-f"]) {
       config in
-      XCTAssertEqual(config.foo.verbose, false)
-      XCTAssertEqual(config.package.force, true)
+      #expect(config.foo.verbose == false)
+      #expect(config.package.force == true)
     }
 
-    AssertParseFooCommand(
+    expectParseFooCommand(
       Foo.Package.Config.self, ["package", "-v", "config", "-f"]
     ) { config in
-      XCTAssertEqual(config.foo.verbose, true)
-      XCTAssertEqual(config.package.force, true)
+      #expect(config.foo.verbose == true)
+      #expect(config.package.force == true)
     }
 
-    AssertParseFooCommand(Foo.Package.Config.self, ["pkg", "-v", "cfg", "-f"]) {
+    expectParseFooCommand(Foo.Package.Config.self, ["pkg", "-v", "cfg", "-f"]) {
       config in
-      XCTAssertEqual(config.foo.verbose, true)
-      XCTAssertEqual(config.package.force, true)
+      #expect(config.foo.verbose == true)
+      #expect(config.package.force == true)
     }
 
-    AssertParseFooCommand(
+    expectParseFooCommand(
       Foo.Package.Config.self, ["package", "-f", "config", "-v"]
     ) { config in
-      XCTAssertEqual(config.foo.verbose, true)
-      XCTAssertEqual(config.package.force, true)
+      #expect(config.foo.verbose == true)
+      #expect(config.package.force == true)
     }
 
-    AssertParseFooCommand(Foo.Package.Config.self, ["pkg", "-f", "cfg", "-v"]) {
+    expectParseFooCommand(Foo.Package.Config.self, ["pkg", "-f", "cfg", "-v"]) {
       config in
-      XCTAssertEqual(config.foo.verbose, true)
-      XCTAssertEqual(config.package.force, true)
+      #expect(config.foo.verbose == true)
+      #expect(config.package.force == true)
     }
 
-    AssertParseFooCommand(
+    expectParseFooCommand(
       Foo.Package.Config.self, ["package", "-vf", "config"]
     ) { config in
-      XCTAssertEqual(config.foo.verbose, true)
-      XCTAssertEqual(config.package.force, true)
+      #expect(config.foo.verbose == true)
+      #expect(config.package.force == true)
     }
 
-    AssertParseFooCommand(Foo.Package.Config.self, ["pkg", "-vf", "cfg"]) {
+    expectParseFooCommand(Foo.Package.Config.self, ["pkg", "-vf", "cfg"]) {
       config in
-      XCTAssertEqual(config.foo.verbose, true)
-      XCTAssertEqual(config.package.force, true)
+      #expect(config.foo.verbose == true)
+      #expect(config.package.force == true)
     }
 
-    AssertParseFooCommand(
+    expectParseFooCommand(
       Foo.Package.Config.self, ["package", "-fv", "config"]
     ) { config in
-      XCTAssertEqual(config.foo.verbose, true)
-      XCTAssertEqual(config.package.force, true)
+      #expect(config.foo.verbose == true)
+      #expect(config.package.force == true)
     }
 
-    AssertParseFooCommand(Foo.Package.Config.self, ["pkg", "-fv", "cfg"]) {
+    expectParseFooCommand(Foo.Package.Config.self, ["pkg", "-fv", "cfg"]) {
       config in
-      XCTAssertEqual(config.foo.verbose, true)
-      XCTAssertEqual(config.package.force, true)
+      #expect(config.foo.verbose == true)
+      #expect(config.package.force == true)
     }
   }
 
-  func testParsing_build() throws {
-    AssertParseFooCommand(Foo.Build.self, ["build", "file"]) { build in
-      XCTAssertEqual(build.foo.verbose, false)
-      XCTAssertEqual(build.input, "file")
+  @Test func parsing_build() throws {
+    expectParseFooCommand(Foo.Build.self, ["build", "file"]) { build in
+      #expect(build.foo.verbose == false)
+      #expect(build.input == "file")
     }
   }
 
-  func testParsing_fails() throws {
-    XCTAssertThrowsError(try Foo.parseAsRoot(["clean", "package"]))
-    XCTAssertThrowsError(try Foo.parseAsRoot(["clean", "pkg"]))
-    XCTAssertThrowsError(try Foo.parseAsRoot(["config", "package"]))
-    XCTAssertThrowsError(try Foo.parseAsRoot(["cfg", "pkg"]))
-    XCTAssertThrowsError(try Foo.parseAsRoot(["package", "c"]))
-    XCTAssertThrowsError(try Foo.parseAsRoot(["pkg", "c"]))
-    XCTAssertThrowsError(try Foo.parseAsRoot(["package", "build"]))
-    XCTAssertThrowsError(try Foo.parseAsRoot(["pkg", "build"]))
-    XCTAssertThrowsError(try Foo.parseAsRoot(["package", "build", "clean"]))
-    XCTAssertThrowsError(try Foo.parseAsRoot(["pkg", "build", "clean"]))
-    XCTAssertThrowsError(try Foo.parseAsRoot(["package", "clean", "foo"]))
-    XCTAssertThrowsError(try Foo.parseAsRoot(["pkg", "clean", "foo"]))
-    XCTAssertThrowsError(try Foo.parseAsRoot(["package", "config", "bar"]))
-    XCTAssertThrowsError(try Foo.parseAsRoot(["pkg", "cfg", "bar"]))
-    XCTAssertThrowsError(try Foo.parseAsRoot(["package", "clean", "build"]))
-    XCTAssertThrowsError(try Foo.parseAsRoot(["pkg", "clean", "build"]))
-    XCTAssertThrowsError(try Foo.parseAsRoot(["build"]))
-    XCTAssertThrowsError(try Foo.parseAsRoot(["build", "-f"]))
-    XCTAssertThrowsError(try Foo.parseAsRoot(["build", "--build"]))
-    XCTAssertThrowsError(try Foo.parseAsRoot(["build", "--build", "12"]))
-    XCTAssertThrowsError(try Foo.parseAsRoot(["-f", "package", "clean"]))
-    XCTAssertThrowsError(try Foo.parseAsRoot(["-f", "pkg", "clean"]))
-    XCTAssertThrowsError(try Foo.parseAsRoot(["-f", "package", "config"]))
-    XCTAssertThrowsError(try Foo.parseAsRoot(["-f", "pkg", "config"]))
+  @Test func parsing_fails() throws {
+    #expect(throws: (any Error).self) {
+      try Foo.parseAsRoot(["clean", "package"])
+    }
+    #expect(throws: (any Error).self) { try Foo.parseAsRoot(["clean", "pkg"]) }
+    #expect(throws: (any Error).self) {
+      try Foo.parseAsRoot(["config", "package"])
+    }
+    #expect(throws: (any Error).self) { try Foo.parseAsRoot(["cfg", "pkg"]) }
+    #expect(throws: (any Error).self) { try Foo.parseAsRoot(["package", "c"]) }
+    #expect(throws: (any Error).self) { try Foo.parseAsRoot(["pkg", "c"]) }
+    #expect(throws: (any Error).self) {
+      try Foo.parseAsRoot(["package", "build"])
+    }
+    #expect(throws: (any Error).self) { try Foo.parseAsRoot(["pkg", "build"]) }
+    #expect(throws: (any Error).self) {
+      try Foo.parseAsRoot(["package", "build", "clean"])
+    }
+    #expect(throws: (any Error).self) {
+      try Foo.parseAsRoot(["pkg", "build", "clean"])
+    }
+    #expect(throws: (any Error).self) {
+      try Foo.parseAsRoot(["package", "clean", "foo"])
+    }
+    #expect(throws: (any Error).self) {
+      try Foo.parseAsRoot(["pkg", "clean", "foo"])
+    }
+    #expect(throws: (any Error).self) {
+      try Foo.parseAsRoot(["package", "config", "bar"])
+    }
+    #expect(throws: (any Error).self) {
+      try Foo.parseAsRoot(["pkg", "cfg", "bar"])
+    }
+    #expect(throws: (any Error).self) {
+      try Foo.parseAsRoot(["package", "clean", "build"])
+    }
+    #expect(throws: (any Error).self) {
+      try Foo.parseAsRoot(["pkg", "clean", "build"])
+    }
+    #expect(throws: (any Error).self) { try Foo.parseAsRoot(["build"]) }
+    #expect(throws: (any Error).self) { try Foo.parseAsRoot(["build", "-f"]) }
+    #expect(throws: (any Error).self) {
+      try Foo.parseAsRoot(["build", "--build"])
+    }
+    #expect(throws: (any Error).self) {
+      try Foo.parseAsRoot(["build", "--build", "12"])
+    }
+    #expect(throws: (any Error).self) {
+      try Foo.parseAsRoot(["-f", "package", "clean"])
+    }
+    #expect(throws: (any Error).self) {
+      try Foo.parseAsRoot(["-f", "pkg", "clean"])
+    }
+    #expect(throws: (any Error).self) {
+      try Foo.parseAsRoot(["-f", "package", "config"])
+    }
+    #expect(throws: (any Error).self) {
+      try Foo.parseAsRoot(["-f", "pkg", "config"])
+    }
   }
 }
 
@@ -273,29 +306,29 @@ private struct Super: ParsableCommand {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension NestedCommandEndToEndTests {
-  func testParsing_SharedOptions() throws {
-    AssertParseCommand(Super.self, Super.self, []) { sup in
-      XCTAssertNil(sup.options.firstName)
+  @Test func parsing_SharedOptions() throws {
+    expectParseCommand(Super.self, Super.self, []) { sup in
+      #expect(sup.options.firstName == nil)
     }
 
-    AssertParseCommand(Super.self, Super.self, ["--first-name", "Foo"]) { sup in
-      XCTAssertEqual("Foo", sup.options.firstName)
+    expectParseCommand(Super.self, Super.self, ["--first-name", "Foo"]) { sup in
+      #expect(sup.options.firstName == "Foo")
     }
 
-    AssertParseCommand(Super.self, Super.Sub1.self, ["sub1"]) { sub1 in
-      XCTAssertNil(sub1.options.firstName)
+    expectParseCommand(Super.self, Super.Sub1.self, ["sub1"]) { sub1 in
+      #expect(sub1.options.firstName == nil)
     }
 
-    AssertParseCommand(
+    expectParseCommand(
       Super.self, Super.Sub1.self, ["sub1", "--first-name", "Foo"]
     ) { sub1 in
-      XCTAssertEqual("Foo", sub1.options.firstName)
+      #expect(sub1.options.firstName == "Foo")
     }
 
-    AssertParseCommand(
+    expectParseCommand(
       Super.self, Super.Sub2.self, ["sub2", "--last-name", "Foo"]
     ) { sub2 in
-      XCTAssertEqual("Foo", sub2.options.lastName)
+      #expect(sub2.options.lastName == "Foo")
     }
   }
 }
