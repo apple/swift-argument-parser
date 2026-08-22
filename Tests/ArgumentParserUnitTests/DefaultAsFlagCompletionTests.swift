@@ -14,7 +14,11 @@ import Testing
 
 @testable import ArgumentParser
 
-@Suite struct DefaultAsFlagCompletionTests {
+extension SerializedTests {
+  @Suite struct DefaultAsFlagCompletionTests {}
+}
+
+extension SerializedTests.DefaultAsFlagCompletionTests {
   @Test func defaultAsFlagCompletion_Bash() throws {
     let script = try CompletionsGenerator(
       command: DefaultAsFlagCommand.self, shell: .bash
@@ -38,9 +42,6 @@ import Testing
     .generateCompletionScript()
     try expectSnapshot(actual: script, extension: "fish")
   }
-}
-
-extension DefaultAsFlagCompletionTests {
   struct DefaultAsFlagCommand: ParsableCommand {
     static let configuration = CommandConfiguration(
       commandName: "defaultasflag-test",
