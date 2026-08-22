@@ -27,7 +27,6 @@ private struct Foo: ParsableArguments {
   var max: Int = 3
 }
 
-// https://github.com/apple/swift-argument-parser/issues/710
 extension DefaultsEndToEndTests {
   // swift-format-ignore: AlwaysUseLowerCamelCase
   @Test func parsing_Defaults() throws {
@@ -72,7 +71,6 @@ private struct Bar: ParsableArguments {
   var bar: String?
 }
 
-// https://github.com/apple/swift-argument-parser/issues/710
 extension DefaultsEndToEndTests {
   // swift-format-ignore: AlwaysUseLowerCamelCase
   @Test func parsing_Optional_WithAllValues_1() {
@@ -239,7 +237,6 @@ extension DefaultsEndToEndTests {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 private struct Bar_NextInput: ParsableArguments {
   enum Format: String, ExpressibleByArgument {
     case A
@@ -257,7 +254,6 @@ private struct Bar_NextInput: ParsableArguments {
   var bar: String?
 }
 
-// https://github.com/apple/swift-argument-parser/issues/710
 extension DefaultsEndToEndTests {
   // swift-format-ignore: AlwaysUseLowerCamelCase
   @Test func parsing_Optional_WithOverlappingValues_1() {
@@ -319,7 +315,6 @@ private struct Baz: ParsableArguments {
   @Option var bool: Bool = false
 }
 
-// https://github.com/apple/swift-argument-parser/issues/710
 extension DefaultsEndToEndTests {
   // swift-format-ignore: AlwaysUseLowerCamelCase
   @Test func parsing_AllTypes_1() {
@@ -411,7 +406,6 @@ private struct Qux: ParsableArguments {
   var name: String = "quux"
 }
 
-// https://github.com/apple/swift-argument-parser/issues/710
 extension DefaultsEndToEndTests {
   // swift-format-ignore: AlwaysUseLowerCamelCase
   @Test func parsing_ArgumentDefaults() throws {
@@ -471,7 +465,6 @@ private struct OptionPropertyInitArguments_NoDefault_Transform:
   var transformedData: String
 }
 
-// https://github.com/apple/swift-argument-parser/issues/710
 extension DefaultsEndToEndTests {
   /// Tests that using default property initialization syntax parses the default value for the argument when nothing is provided from the command-line.
   // swift-format-ignore: AlwaysUseLowerCamelCase
@@ -578,7 +571,6 @@ private struct ArgumentPropertyInitArguments_NoDefault_Transform:
   var transformedData: String
 }
 
-// https://github.com/apple/swift-argument-parser/issues/710
 extension DefaultsEndToEndTests {
   /// Tests that using default property initialization syntax parses the default value for the argument when nothing is provided from the command-line.
   // swift-format-ignore: AlwaysUseLowerCamelCase
@@ -666,7 +658,6 @@ private struct Quux: ParsableArguments {
   var numbers: [Int] = [1, 2]
 }
 
-// https://github.com/apple/swift-argument-parser/issues/710
 extension DefaultsEndToEndTests {
   // swift-format-ignore: AlwaysUseLowerCamelCase
   @Test func parsing_ArrayDefaults() throws {
@@ -699,7 +690,6 @@ private struct FlagPropertyInitArguments_Bool_NoDefault: ParsableArguments {
   var data: Bool
 }
 
-// https://github.com/apple/swift-argument-parser/issues/710
 extension DefaultsEndToEndTests {
   /// Tests that using default property initialization syntax parses the default value for the argument when nothing is provided from the command-line.
   // swift-format-ignore: AlwaysUseLowerCamelCase
@@ -752,7 +742,6 @@ private struct FlagPropertyInitArguments_EnumerableFlag_NoDefault:
   var data: HasData
 }
 
-// https://github.com/apple/swift-argument-parser/issues/710
 extension DefaultsEndToEndTests {
   /// Tests that using default property initialization syntax parses the default value for the argument when nothing is provided from the command-line.
   // swift-format-ignore: AlwaysUseLowerCamelCase
@@ -813,7 +802,6 @@ private struct Main: ParsableCommand {
   }
 }
 
-// https://github.com/apple/swift-argument-parser/issues/710
 extension DefaultsEndToEndTests {
   // swift-format-ignore: AlwaysUseLowerCamelCase
   @Test func parsing_ArrayDefaults_Subcommands() {
@@ -864,7 +852,6 @@ private struct RequiredArray_Flag: ParsableArguments {
   var array: [HasData]
 }
 
-// https://github.com/apple/swift-argument-parser/issues/710
 extension DefaultsEndToEndTests {
   /// Tests that not providing an argument for a required array option produces an error.
   // swift-format-ignore: AlwaysUseLowerCamelCase
@@ -997,7 +984,6 @@ private struct OptionPropertyDeprecatedInit_NoDefault: ParsableArguments {
   var data: String = "test"
 }
 
-// https://github.com/apple/swift-argument-parser/issues/710
 extension DefaultsEndToEndTests {
   /// Tests that instances created using deprecated initializer with completion and help arguments swapped are constructed and parsed correctly.
   @available(*, deprecated)
@@ -1046,7 +1032,6 @@ extension DefaultsEndToEndTests {
   }
 }
 
-// https://github.com/apple/swift-argument-parser/issues/710
 extension DefaultsEndToEndTests {
   private struct UnderscoredOptional: ParsableCommand {
     @Option(name: .customLong("arg"))

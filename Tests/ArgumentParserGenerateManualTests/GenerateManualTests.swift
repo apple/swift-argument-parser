@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2024 Apple Inc. and the Swift project authors
+// Copyright (c) 2024-2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -10,59 +10,58 @@
 //===----------------------------------------------------------------------===//
 
 import ArgumentParserTestHelpers
-import XCTest
+import Testing
 
-final class GenerateManualTests: XCTestCase {
+@Suite struct GenerateManualTests {
   #if os(macOS)
-  func testCountLinesSinglePageManual() throws {
+  @Test func countLinesSinglePageManual() throws {
     guard #available(macOS 12, *) else { return }
-    try assertGenerateManual(multiPage: false, command: "count-lines")
+    try expectGenerateManual(multiPage: false, command: "count-lines")
   }
 
-  func testCountLinesMultiPageManual() throws {
+  @Test func countLinesMultiPageManual() throws {
     guard #available(macOS 12, *) else { return }
-    try assertGenerateManual(multiPage: true, command: "count-lines")
+    try expectGenerateManual(multiPage: true, command: "count-lines")
   }
   #endif
 
-  func testColorSinglePageManual() throws {
-    try assertGenerateManual(multiPage: false, command: "color")
+  @Test func colorSinglePageManual() throws {
+    try expectGenerateManual(multiPage: false, command: "color")
   }
 
-  func testColorMultiPageManual() throws {
-    try assertGenerateManual(multiPage: true, command: "color")
+  @Test func colorMultiPageManual() throws {
+    try expectGenerateManual(multiPage: true, command: "color")
   }
 
-  func testMathSinglePageManual() throws {
-    try assertGenerateManual(multiPage: false, command: "math")
+  @Test func mathSinglePageManual() throws {
+    try expectGenerateManual(multiPage: false, command: "math")
   }
 
-  func testMathMultiPageManual() throws {
-    try assertGenerateManual(multiPage: true, command: "math")
+  @Test func mathMultiPageManual() throws {
+    try expectGenerateManual(multiPage: true, command: "math")
   }
 
-  func testRepeatSinglePageManual() throws {
-    try assertGenerateManual(multiPage: false, command: "repeat")
+  @Test func repeatSinglePageManual() throws {
+    try expectGenerateManual(multiPage: false, command: "repeat")
   }
 
-  func testRepeatMultiPageManual() throws {
-    try assertGenerateManual(multiPage: true, command: "repeat")
+  @Test func repeatMultiPageManual() throws {
+    try expectGenerateManual(multiPage: true, command: "repeat")
   }
 
-  func testRollSinglePageManual() throws {
-    try assertGenerateManual(multiPage: false, command: "roll")
+  @Test func rollSinglePageManual() throws {
+    try expectGenerateManual(multiPage: false, command: "roll")
   }
 
-  func testRollMultiPageManual() throws {
-    try assertGenerateManual(multiPage: true, command: "roll")
+  @Test func rollMultiPageManual() throws {
+    try expectGenerateManual(multiPage: true, command: "roll")
   }
 
-  func testDefaultAsFlagSinglePageManual() throws {
-    try assertGenerateManual(multiPage: false, command: "default-as-flag")
+  @Test func defaultAsFlagSinglePageManual() throws {
+    try expectGenerateManual(multiPage: false, command: "default-as-flag")
   }
 
-  func testDefaultAsFlagMultiPageManual() throws {
-    try assertGenerateManual(multiPage: true, command: "default-as-flag")
+  @Test func defaultAsFlagMultiPageManual() throws {
+    try expectGenerateManual(multiPage: true, command: "default-as-flag")
   }
-
 }

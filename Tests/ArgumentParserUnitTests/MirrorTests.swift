@@ -27,7 +27,7 @@ import Testing
       (foo: nil, baz: "baz"),
       (foo: nil, baz: nil),
     ] as [(String?, String?)]
-  ) func testRealValue(foo: String?, baz: String?) async throws {
+  ) func realValue(foo: String?, baz: String?) async throws {
 
     func checkChildValue(_ child: Mirror.Child, expectedString: String?) {
       if let expectedString = expectedString {

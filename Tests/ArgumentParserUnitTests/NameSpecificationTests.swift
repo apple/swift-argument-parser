@@ -16,7 +16,6 @@ import Testing
 @Suite struct NameSpecificationTests {}
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension NameSpecificationTests {
   @Test func flagNames_withNoPrefix() {
     let key = InputKey(name: "index", parent: nil)
@@ -145,7 +144,6 @@ private func expectInvalid(
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension NameSpecificationTests {
   @Test func makeNames_short() {
     expectNames(nameSpecification: .short, key: "foo", makeNames: [.short("f")])

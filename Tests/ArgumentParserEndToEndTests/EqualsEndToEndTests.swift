@@ -24,7 +24,6 @@ private struct Foo: ParsableArguments {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension EqualsEndToEndTests {
   @Test func equals_withShortName() throws {
     expectParse(Foo.self, ["-n=Name", "-f=Format"]) { foo in
@@ -55,7 +54,6 @@ private struct Bar: ParsableArguments {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension EqualsEndToEndTests {
   @Test func equals_withShortAndLongName() throws {
     expectParse(Bar.self, ["-n=Name", "-f=Format"]) { bar in
@@ -73,7 +71,6 @@ private struct Baz: ParsableArguments {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension EqualsEndToEndTests {
   @Test func equals_withCustomShortName() throws {
     expectParse(Baz.self, ["-i=Name", "-t=Format"]) { baz in

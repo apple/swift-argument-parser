@@ -53,7 +53,6 @@ struct AsyncCommand: AsyncParsableCommand {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension AsyncCommandEndToEndTests {
   @Test @MainActor func asyncMain_root() async throws {
     #expect(!statusCheck.status.contains(.root))

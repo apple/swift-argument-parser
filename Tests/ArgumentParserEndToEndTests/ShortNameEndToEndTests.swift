@@ -29,7 +29,6 @@ private struct Bar: ParsableArguments {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension ShortNameEndToEndTests {
   @Test func parsing_withLongNames() throws {
     expectParse(Bar.self, ["foo"]) { options in
@@ -100,7 +99,6 @@ private struct Foo: ParsableArguments {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension ShortNameEndToEndTests {
   @Test func parsing_combinedShortNames() throws {
     expectParse(Foo.self, ["-nfc", "name", "file", "city"]) { options in

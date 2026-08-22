@@ -153,7 +153,6 @@ private struct Qux: ParsableCommand {
   var lastName: [Name] = []
 }
 
-// https://github.com/apple/swift-argument-parser/issues/710
 extension ParsingEndToEndTests.Arrays {
   // swift-format-ignore: AlwaysUseLowerCamelCase
   @Test func parsing_Array() throws {

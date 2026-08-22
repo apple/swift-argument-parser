@@ -22,7 +22,6 @@ private struct Bar: ParsableArguments {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension SimpleEndToEndTests {
   @Test func parsing_SingleOption() throws {
     expectParse(Bar.self, ["--name", "Bar"]) { bar in
@@ -69,7 +68,6 @@ private struct Foo: ParsableArguments {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension SimpleEndToEndTests {
   @Test func parsing_SingleOption_Int() throws {
     expectParse(Foo.self, ["--count", "42"]) { foo in
@@ -114,7 +112,6 @@ private struct Baz: ParsableArguments {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension SimpleEndToEndTests {
   @Test func parsing_TwoOptions_1() throws {
     expectParse(Baz.self, ["--name", "Bar", "--format", "Foo"]) { baz in

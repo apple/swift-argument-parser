@@ -29,7 +29,6 @@ private struct Foo: ParsableArguments {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension JoinedEndToEndTests {
   @Test func singleValueParsing() throws {
     expectParse(Foo.self, []) { foo in
@@ -104,7 +103,6 @@ private struct Bar: ParsableArguments {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension JoinedEndToEndTests {
   @Test func arrayValueParsing() throws {
     expectParse(Bar.self, []) { bar in
@@ -141,7 +139,6 @@ private struct Baz: ParsableArguments {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension JoinedEndToEndTests {
   @Test func arrayUpToNextParsing() throws {
     expectParse(Baz.self, []) { baz in
@@ -181,7 +178,6 @@ private struct Qux: ParsableArguments {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension JoinedEndToEndTests {
   @Test func arrayRemainingParsing() throws {
     expectParse(Qux.self, []) { qux in

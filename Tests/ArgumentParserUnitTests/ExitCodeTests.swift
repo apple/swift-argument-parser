@@ -19,7 +19,6 @@ import Testing
 // MARK: -
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension ExitCodeTests {
   struct A: ParsableArguments {}
   struct E: Error {}

@@ -303,3 +303,80 @@ public func expectDumpHelp(
     sourceLocation: sourceLocation
   )
 }
+
+public func expectGenerateManual(
+  multiPage: Bool,
+  command: String,
+  record: Bool = false,
+  test: String = #function,
+  filePath: StaticString = #filePath,
+  sourceLocation: SourceLocation = #_sourceLocation
+) throws {
+  #if os(Windows)
+  ""
+  #else
+  let commandURL = _debugURL.appendingPathComponent(command)
+  var command = [
+    "generate-manual", commandURL.path,
+    "--date", "1996-05-12",
+    "--section", "9",
+    "--authors", "Jane Appleseed",
+    "--authors", "<johnappleseed@apple.com>",
+    "--authors", "The Appleseeds<appleseeds@apple.com>",
+    "--output-directory", "-",
+  ]
+  if multiPage {
+    command.append("--multi-page")
+  }
+  let actual = try requireExecuteCommand(
+    command: command,
+    sourceLocation: sourceLocation)
+
+  try expectSnapshot(
+    actual: actual,
+    extension: "mdoc",
+    record: record,
+    test: test,
+    filePath: filePath,
+    sourceLocation: sourceLocation)
+  #endif
+}
+
+public func expectGeneratedReference(
+  command: String,
+  doccFlavored: Bool,
+  record: Bool = false,
+  test: String = #function,
+  filePath: StaticString = #filePath,
+  sourceLocation: SourceLocation = #_sourceLocation
+) throws {
+  #if os(Windows)
+  ""
+  #else
+  let commandURL = _debugURL.appendingPathComponent(command)
+  let command: [String]
+  if doccFlavored {
+    command = [
+      "generate-docc-reference", commandURL.path,
+      "--output-directory", "-",
+      "--style", "docc",
+    ]
+  } else {
+    command = [
+      "generate-docc-reference", commandURL.path,
+      "--output-directory", "-",
+    ]
+  }
+  let actual = try requireExecuteCommand(
+    command: command,
+    sourceLocation: sourceLocation)
+
+  try expectSnapshot(
+    actual: actual,
+    extension: "md",
+    record: record,
+    test: test,
+    filePath: filePath,
+    sourceLocation: sourceLocation)
+  #endif
+}

@@ -31,7 +31,6 @@ private struct Quizzo: ParsableArguments {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension UnparsedValuesEndToEndTests {
   @Test func parsing_TwoPlusUnparsed() throws {
     expectParse(Qux.self, ["--name", "Qux"]) { qux in
@@ -89,7 +88,6 @@ private struct Piyo: ParsableArguments {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension UnparsedValuesEndToEndTests {
   @Test func parsing_TwoPlusOptionalUnparsed() throws {
     expectParse(Hogeraa.self, []) { hogeraa in
@@ -170,7 +168,6 @@ private struct DefaultedArguments: ParsableArguments {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension UnparsedValuesEndToEndTests {
   @Test func unparsedNestedValues() {
     expectParse(Foo.self, []) { foo in
@@ -228,7 +225,6 @@ private struct Bazz: Decodable {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension UnparsedValuesEndToEndTests {
   @Test func unparsedNestedOptionalValue() {
     expectParse(Barr.self, []) { barr in
@@ -326,7 +322,6 @@ private struct Bamf: ParsableCommand {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension UnparsedValuesEndToEndTests {
   @Test func unparsedNestedDictionary() {
     expectParse(Bamf.self, []) { bamf in
@@ -355,7 +350,6 @@ private enum Qiqii: Codable, Equatable {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension UnparsedValuesEndToEndTests {
   @Test func unparsedEnumWithAssociatedValues() {
     expectParse(Qiqi.self, []) { qiqi in
@@ -381,7 +375,6 @@ private final class Vig: Toks {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension UnparsedValuesEndToEndTests {
   @Test func unparsedNestedInheritingClassType() {
     expectParse(Fry.self, []) { fry in

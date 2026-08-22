@@ -869,7 +869,6 @@ extension HelpGenerationTests {
   }
 }
 
-// https://github.com/apple/swift-argument-parser/issues/710
 extension HelpGenerationTests {
   struct NonCustomUsage: ParsableCommand {
     struct ExampleSubcommand: ParsableCommand {
@@ -1062,7 +1061,6 @@ extension HelpGenerationTests {
   }
 }
 
-// https://github.com/apple/swift-argument-parser/issues/710
 extension HelpGenerationTests {
   enum OptionValues: String, CaseIterable, ExpressibleByArgument {
     case blue

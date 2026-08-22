@@ -51,7 +51,6 @@ func getErrorText<T: ParsableCommand>(
   }
 }
 
-// https://github.com/apple/swift-argument-parser/issues/710
 extension HelpTests {
   @Test func globalHelp() throws {
     #expect(
