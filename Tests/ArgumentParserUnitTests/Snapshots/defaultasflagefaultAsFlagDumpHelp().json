@@ -1,0 +1,144 @@
+{
+  "command" : {
+    "abstract" : "A command with defaultAsFlag options for testing dump help.",
+    "arguments" : [
+      {
+        "defaultValue" : "\/usr\/bin",
+        "isOptional" : true,
+        "isRepeating" : false,
+        "kind" : "option",
+        "names" : [
+          {
+            "kind" : "long",
+            "name" : "binary-path"
+          }
+        ],
+        "parsingStrategy" : "scanningForValue",
+        "preferredName" : {
+          "kind" : "long",
+          "name" : "binary-path"
+        },
+        "shouldDisplay" : true,
+        "valueName" : "binary-path"
+      },
+      {
+        "defaultValue" : "42",
+        "isOptional" : true,
+        "isRepeating" : false,
+        "kind" : "option",
+        "names" : [
+          {
+            "kind" : "long",
+            "name" : "count"
+          }
+        ],
+        "parsingStrategy" : "scanningForValue",
+        "preferredName" : {
+          "kind" : "long",
+          "name" : "count"
+        },
+        "shouldDisplay" : true,
+        "valueName" : "count"
+      },
+      {
+        "defaultValue" : "true",
+        "isOptional" : true,
+        "isRepeating" : false,
+        "kind" : "option",
+        "names" : [
+          {
+            "kind" : "long",
+            "name" : "verbose"
+          }
+        ],
+        "parsingStrategy" : "scanningForValue",
+        "preferredName" : {
+          "kind" : "long",
+          "name" : "verbose"
+        },
+        "shouldDisplay" : true,
+        "valueName" : "verbose"
+      },
+      {
+        "isOptional" : false,
+        "isRepeating" : false,
+        "kind" : "positional",
+        "parsingStrategy" : "default",
+        "shouldDisplay" : true,
+        "valueName" : "input"
+      },
+      {
+        "abstract" : "Show help information.",
+        "isOptional" : true,
+        "isRepeating" : false,
+        "kind" : "flag",
+        "names" : [
+          {
+            "kind" : "short",
+            "name" : "h"
+          },
+          {
+            "kind" : "long",
+            "name" : "help"
+          }
+        ],
+        "parsingStrategy" : "default",
+        "preferredName" : {
+          "kind" : "long",
+          "name" : "help"
+        },
+        "shouldDisplay" : true,
+        "valueName" : "help"
+      }
+    ],
+    "commandName" : "default-as-flag-command",
+    "shouldDisplay" : true,
+    "subcommands" : [
+      {
+        "abstract" : "Show subcommand help information.",
+        "arguments" : [
+          {
+            "isOptional" : true,
+            "isRepeating" : true,
+            "kind" : "positional",
+            "parsingStrategy" : "default",
+            "shouldDisplay" : true,
+            "valueName" : "subcommands"
+          },
+          {
+            "isOptional" : true,
+            "isRepeating" : false,
+            "kind" : "flag",
+            "names" : [
+              {
+                "kind" : "short",
+                "name" : "h"
+              },
+              {
+                "kind" : "long",
+                "name" : "help"
+              },
+              {
+                "kind" : "longWithSingleDash",
+                "name" : "help"
+              }
+            ],
+            "parsingStrategy" : "default",
+            "preferredName" : {
+              "kind" : "long",
+              "name" : "help"
+            },
+            "shouldDisplay" : false,
+            "valueName" : "help"
+          }
+        ],
+        "commandName" : "help",
+        "shouldDisplay" : true,
+        "superCommands" : [
+          "default-as-flag-command"
+        ]
+      }
+    ]
+  },
+  "serializationVersion" : 0
+}

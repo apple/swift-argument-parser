@@ -2,18 +2,19 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2020 Apple Inc. and the Swift project authors
+// Copyright (c) 2020-2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
 //
 //===----------------------------------------------------------------------===//
 
-import XCTest
+import Foundation
+import Testing
 
 @testable import ArgumentParser
 
-final class ExitCodeTests: XCTestCase {}
+@Suite struct ExitCodeTests {}
 
 // MARK: -
 
@@ -26,56 +27,55 @@ extension ExitCodeTests {
     static let configuration = CommandConfiguration(version: "v1")
   }
 
-  func testExitCodes() {
-    XCTAssertEqual(ExitCode.failure, A.exitCode(for: E()))
-    XCTAssertEqual(
-      ExitCode.validationFailure, A.exitCode(for: ValidationError("")))
+  @Test func exitCodes() {
+    #expect(A.exitCode(for: E()) == ExitCode.failure)
+    #expect(A.exitCode(for: ValidationError("")) == ExitCode.validationFailure)
 
     do {
       _ = try A.parse(["-h"])
-      XCTFail("Didn't throw help request error.")
+      Issue.record("Didn't throw help request error.")
     } catch {
-      XCTAssertEqual(ExitCode.success, A.exitCode(for: error))
+      #expect(A.exitCode(for: error) == ExitCode.success)
     }
 
     do {
       _ = try A.parse(["--version"])
-      XCTFail("Didn't throw unrecognized --version error.")
+      Issue.record("Didn't throw unrecognized --version error.")
     } catch {
-      XCTAssertEqual(ExitCode.validationFailure, A.exitCode(for: error))
+      #expect(A.exitCode(for: error) == ExitCode.validationFailure)
     }
 
     do {
       _ = try C.parse(["--version"])
-      XCTFail("Didn't throw version request error.")
+      Issue.record("Didn't throw version request error.")
     } catch {
-      XCTAssertEqual(ExitCode.success, C.exitCode(for: error))
+      #expect(C.exitCode(for: error) == ExitCode.success)
     }
   }
 
-  func testExitCode_Success() {
-    XCTAssertFalse(A.exitCode(for: E()).isSuccess)
-    XCTAssertFalse(A.exitCode(for: ValidationError("")).isSuccess)
+  @Test func exitCode_Success() {
+    #expect(A.exitCode(for: E()).isSuccess == false)
+    #expect(A.exitCode(for: ValidationError("")).isSuccess == false)
 
     do {
       _ = try A.parse(["-h"])
-      XCTFail("Didn't throw help request error.")
+      Issue.record("Didn't throw help request error.")
     } catch {
-      XCTAssertTrue(A.exitCode(for: error).isSuccess)
+      #expect(A.exitCode(for: error).isSuccess)
     }
 
     do {
       _ = try A.parse(["--version"])
-      XCTFail("Didn't throw unrecognized --version error.")
+      Issue.record("Didn't throw unrecognized --version error.")
     } catch {
-      XCTAssertFalse(A.exitCode(for: error).isSuccess)
+      #expect(A.exitCode(for: error).isSuccess == false)
     }
 
     do {
       _ = try C.parse(["--version"])
-      XCTFail("Didn't throw version request error.")
+      Issue.record("Didn't throw version request error.")
     } catch {
-      XCTAssertTrue(C.exitCode(for: error).isSuccess)
+      #expect(C.exitCode(for: error).isSuccess)
     }
   }
 }
@@ -83,7 +83,7 @@ extension ExitCodeTests {
 // MARK: - NSError tests
 
 extension ExitCodeTests {
-  func testNSErrorIsHandled() {
+  @Test func nsErrorIsHandled() {
     struct NSErrorCommand: ParsableCommand {
       static let message =
         "The file “foo/bar” couldn’t be opened because there is no such file"
@@ -93,26 +93,26 @@ extension ExitCodeTests {
         code: 1,
         userInfo: [NSLocalizedDescriptionKey: Self.message])
     }
-    XCTAssertEqual(
-      NSErrorCommand.exitCode(for: NSErrorCommand.fileNotFoundNSError),
-      ExitCode(rawValue: 1))
+    #expect(
+      NSErrorCommand.exitCode(for: NSErrorCommand.fileNotFoundNSError)
+        == ExitCode(rawValue: 1))
 
     #if canImport(FoundationEssentials)
     let prefix = "Error Domain=TestError Code=1 \"(null)\""
     #if compiler(<6.1)
-    XCTAssertEqual(
-      NSErrorCommand.message(for: NSErrorCommand.fileNotFoundNSError),
-      "\(prefix)")
+    #expect(
+      NSErrorCommand.message(for: NSErrorCommand.fileNotFoundNSError)
+        == "\(prefix)")
     #else
-    XCTAssertEqual(
-      NSErrorCommand.message(for: NSErrorCommand.fileNotFoundNSError),
-      "\(prefix)UserInfo={NSLocalizedDescription=\(NSErrorCommand.message)}"
+    #expect(
+      NSErrorCommand.message(for: NSErrorCommand.fileNotFoundNSError)
+        == "\(prefix)UserInfo={NSLocalizedDescription=\(NSErrorCommand.message)}"
     )
     #endif
     #else
-    XCTAssertEqual(
-      NSErrorCommand.message(for: NSErrorCommand.fileNotFoundNSError),
-      NSErrorCommand.message)
+    #expect(
+      NSErrorCommand.message(for: NSErrorCommand.fileNotFoundNSError)
+        == NSErrorCommand.message)
     #endif
   }
 }

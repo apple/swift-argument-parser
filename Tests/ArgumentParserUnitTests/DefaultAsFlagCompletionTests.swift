@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2025 Apple Inc. and the Swift project authors
+// Copyright (c) 2025-2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -10,33 +10,33 @@
 //===----------------------------------------------------------------------===//
 
 import ArgumentParserTestHelpers
-import XCTest
+import Testing
 
 @testable import ArgumentParser
 
-final class DefaultAsFlagCompletionTests: XCTestCase {
-  func testDefaultAsFlagCompletion_Bash() throws {
+@Suite struct DefaultAsFlagCompletionTests {
+  @Test func defaultAsFlagCompletion_Bash() throws {
     let script = try CompletionsGenerator(
       command: DefaultAsFlagCommand.self, shell: .bash
     )
     .generateCompletionScript()
-    try assertSnapshot(actual: script, extension: "bash")
+    try expectSnapshot(actual: script, extension: "bash")
   }
 
-  func testDefaultAsFlagCompletion_Zsh() throws {
+  @Test func defaultAsFlagCompletion_Zsh() throws {
     let script = try CompletionsGenerator(
       command: DefaultAsFlagCommand.self, shell: .zsh
     )
     .generateCompletionScript()
-    try assertSnapshot(actual: script, extension: "zsh")
+    try expectSnapshot(actual: script, extension: "zsh")
   }
 
-  func testDefaultAsFlagCompletion_Fish() throws {
+  @Test func defaultAsFlagCompletion_Fish() throws {
     let script = try CompletionsGenerator(
       command: DefaultAsFlagCommand.self, shell: .fish
     )
     .generateCompletionScript()
-    try assertSnapshot(actual: script, extension: "fish")
+    try expectSnapshot(actual: script, extension: "fish")
   }
 }
 

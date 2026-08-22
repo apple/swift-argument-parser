@@ -10,6 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 import ArgumentParser
+import ArgumentParserToolInfo
 import Foundation
 import Testing
 
@@ -199,4 +200,106 @@ public func expectSnapshot(
       sourceLocation: sourceLocation)
     return expected
   }
+}
+
+public func expectJSONEqualFromString<T: Codable & Equatable>(
+  actual: String,
+  expected: String,
+  for type: T.Type,
+  sourceLocation: SourceLocation = #_sourceLocation
+) throws {
+  expectEqualStrings(
+    actual: actual,
+    expected: expected,
+    sourceLocation: sourceLocation
+  )
+
+  let actualJSONData = try #require(
+    actual.data(using: .utf8),
+    sourceLocation: sourceLocation
+  )
+  let actualDumpJSON = try JSONDecoder().decode(type, from: actualJSONData)
+
+  let expectedJSONData = try #require(
+    expected.data(using: .utf8),
+    sourceLocation: sourceLocation
+  )
+  let expectedDumpJSON = try JSONDecoder().decode(type, from: expectedJSONData)
+
+  #expect(
+    actualDumpJSON == expectedDumpJSON,
+    sourceLocation: sourceLocation
+  )
+}
+
+public func expectDumpHelp<T: ParsableArguments>(
+  type: T.Type,
+  record: Bool = false,
+  test: String = #function,
+  filePath: StaticString = #filePath,
+  sourceLocation: SourceLocation = #_sourceLocation
+) throws {
+  // TODO: migrate to the following API when the minimum Swift version supports it
+  ///
+  // let error = #expect(throws: (any Error).self) {
+  //     _ = try T.parse(["--experimental-dump-help"])
+  // }
+  // let actual = T.fullMessage(for: error)
+  let actual: String
+  do {
+    _ = try T.parse(["--experimental-dump-help"])
+    Issue.record(
+      "Expected T.parse to throw a help request.",
+      sourceLocation: sourceLocation)
+    return
+  } catch {
+    actual = T.fullMessage(for: error)
+  }
+
+  let apiOutput = T._dumpHelp()
+  expectEqualStrings(
+    actual: actual,
+    expected: apiOutput,
+    sourceLocation: sourceLocation
+  )
+
+  let expected = try expectSnapshot(
+    actual: actual,
+    extension: "json",
+    record: record,
+    test: test,
+    filePath: filePath,
+    sourceLocation: sourceLocation
+  )
+
+  guard let expected else { return }
+
+  try expectJSONEqualFromString(
+    actual: actual,
+    expected: expected,
+    for: ToolInfoV0.self,
+    sourceLocation: sourceLocation
+  )
+}
+
+public func expectDumpHelp(
+  command: String,
+  record: Bool = false,
+  test: String = #function,
+  filePath: StaticString = #filePath,
+  sourceLocation: SourceLocation = #_sourceLocation
+) throws {
+  let actual = try requireExecuteCommand(
+    command: command + " --experimental-dump-help",
+    expected: nil,
+    sourceLocation: sourceLocation
+  )
+  try expectSnapshot(
+    actual: actual,
+    extension: "json",
+    record: record,
+    test: test,
+    filePath: filePath,
+    sourceLocation: sourceLocation
+  )
 }

@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2020 Apple Inc. and the Swift project authors
+// Copyright (c) 2020-2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -10,37 +10,45 @@
 //===----------------------------------------------------------------------===//
 
 import ArgumentParserTestHelpers
-import XCTest
+import Testing
 
 @testable import ArgumentParser
 
-final class DumpHelpGenerationTests: XCTestCase {
-  public func testADumpHelp() throws {
-    try assertDumpHelp(type: A.self)
+@Suite struct DumpHelpGenerationTests {
+  @Test func aDumpHelp() throws {
+    try expectDumpHelp(type: A.self)
   }
 
-  public func testBDumpHelp() throws {
-    try assertDumpHelp(type: B.self)
+  @Test func bDumpHelp() throws {
+    try expectDumpHelp(type: B.self)
   }
 
-  public func testCDumpHelp() throws {
-    try assertDumpHelp(type: C.self)
+  @Test func cDumpHelp() throws {
+    try expectDumpHelp(type: C.self)
   }
 
-  func testMathDumpHelp() throws {
-    try assertDumpHelp(command: "math")
+  @Test(
+    .requiresProcessExecution
+  ) func mathDumpHelp() throws {
+    try expectDumpHelp(command: "math")
   }
 
-  func testMathAddDumpHelp() throws {
-    try assertDumpHelp(command: "math add")
+  @Test(
+    .requiresProcessExecution
+  ) func mathAddDumpHelp() throws {
+    try expectDumpHelp(command: "math add")
   }
 
-  func testMathMultiplyDumpHelp() throws {
-    try assertDumpHelp(command: "math multiply")
+  @Test(
+    .requiresProcessExecution
+  ) func mathMultiplyDumpHelp() throws {
+    try expectDumpHelp(command: "math multiply")
   }
 
-  func testMathStatsDumpHelp() throws {
-    try assertDumpHelp(command: "math stats")
+  @Test(
+    .requiresProcessExecution
+  ) func mathStatsDumpHelp() throws {
+    try expectDumpHelp(command: "math stats")
   }
 }
 

@@ -2,39 +2,37 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2020 Apple Inc. and the Swift project authors
+// Copyright (c) 2020-2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
 //
 //===----------------------------------------------------------------------===//
 
-import XCTest
+import Testing
 
 @testable import ArgumentParser
 
-final class UsageGenerationTests: XCTestCase {
-}
+@Suite struct UsageGenerationTests {}
 
-func _testSynopsis<T: ParsableArguments>(
+private func expectSynopsis<T: ParsableArguments>(
   _ type: T.Type,
   visibility: ArgumentVisibility = .default,
   expected: String,
-  file: StaticString = #filePath,
-  line: UInt = #line
+  sourceLocation: SourceLocation = #_sourceLocation
 ) {
   let help = UsageGenerator(
     toolName: "example", parsable: T(), visibility: visibility, parent: nil)
-  XCTAssertEqual(help.synopsis, expected, file: file, line: line)
+  #expect(help.synopsis == expected, sourceLocation: sourceLocation)
 }
 
 // MARK: -
 
 extension UsageGenerationTests {
-  func testNameSynopsis() {
-    XCTAssertEqual(Name.long("foo").synopsisString, "--foo")
-    XCTAssertEqual(Name.short("f").synopsisString, "-f")
-    XCTAssertEqual(Name.longWithSingleDash("foo").synopsisString, "-foo")
+  @Test func nameSynopsis() {
+    #expect(Name.long("foo").synopsisString == "--foo")
+    #expect(Name.short("f").synopsisString == "-f")
+    #expect(Name.longWithSingleDash("foo").synopsisString == "-foo")
   }
 }
 
@@ -44,8 +42,8 @@ extension UsageGenerationTests {
     @Option() var title: String
   }
 
-  func testSynopsis() {
-    _testSynopsis(
+  @Test func synopsis() {
+    expectSynopsis(
       A.self, expected: "example --first-name <first-name> --title <title>")
   }
 
@@ -54,9 +52,10 @@ extension UsageGenerationTests {
     @Option() var title: String?
   }
 
-  func testSynopsisWithOptional() {
-    _testSynopsis(
-      B.self, expected: "example [--first-name <first-name>] [--title <title>]")
+  @Test func synopsisWithOptional() {
+    expectSynopsis(
+      B.self, expected: "example [--first-name <first-name>] [--title <title>]"
+    )
   }
 
   struct C: ParsableArguments {
@@ -64,8 +63,8 @@ extension UsageGenerationTests {
     @Flag() var verbose: Int
   }
 
-  func testFlagSynopsis() {
-    _testSynopsis(C.self, expected: "example [--log] [--verbose ...]")
+  @Test func flagSynopsis() {
+    expectSynopsis(C.self, expected: "example [--log] [--verbose ...]")
   }
 
   struct D: ParsableArguments {
@@ -73,8 +72,8 @@ extension UsageGenerationTests {
     @Argument() var title: String?
   }
 
-  func testPositionalSynopsis() {
-    _testSynopsis(D.self, expected: "example <first-name> [<title>]")
+  @Test func positionalSynopsis() {
+    expectSynopsis(D.self, expected: "example <first-name> [<title>]")
   }
 
   struct E: ParsableArguments {
@@ -88,8 +87,8 @@ extension UsageGenerationTests {
     var arg: String = "no-arg"
   }
 
-  func testSynopsisWithDefaults() {
-    _testSynopsis(
+  @Test func synopsisWithDefaults() {
+    expectSynopsis(
       E.self, expected: "example [--name <name>] [--count <count>] [<arg>]")
   }
 
@@ -98,8 +97,8 @@ extension UsageGenerationTests {
     @Argument() var nameCounts: [Int] = []
   }
 
-  func testSynopsisWithRepeats() {
-    _testSynopsis(
+  @Test func synopsisWithRepeats() {
+    expectSynopsis(
       F.self, expected: "example [--name <name> ...] [<name-counts> ...]")
   }
 
@@ -111,8 +110,8 @@ extension UsageGenerationTests {
     var homePath: String
   }
 
-  func testSynopsisWithCustomization() {
-    _testSynopsis(
+  @Test func synopsisWithCustomization() {
+    expectSynopsis(
       G.self, expected: "example [--file-path <path>] <user-home-path>")
   }
 
@@ -121,9 +120,9 @@ extension UsageGenerationTests {
     @Argument(help: .hidden) var title: String?
   }
 
-  func testSynopsisWithHidden() {
-    _testSynopsis(H.self, expected: "example")
-    _testSynopsis(
+  @Test func synopsisWithHidden() {
+    expectSynopsis(H.self, expected: "example")
+    expectSynopsis(
       H.self, visibility: .hidden,
       expected: "example [--first-name <first-name>] [<title>]")
   }
@@ -149,8 +148,8 @@ extension UsageGenerationTests {
     var color: Color = .red
   }
 
-  func testSynopsisWithDefaultValueAndTransform() {
-    _testSynopsis(I.self, expected: "example [--color <color>]")
+  @Test func synopsisWithDefaultValueAndTransform() {
+    expectSynopsis(I.self, expected: "example [--color <color>]")
   }
 
   struct J: ParsableArguments {
@@ -159,8 +158,8 @@ extension UsageGenerationTests {
     @Option(transform: { _ in Foo() }) var opt: Foo?
   }
 
-  func testSynopsisWithTransform() {
-    _testSynopsis(J.self, expected: "example --req <req> [--opt <opt>]")
+  @Test func synopsisWithTransform() {
+    expectSynopsis(J.self, expected: "example --req <req> [--opt <opt>]")
   }
 
   struct K: ParsableArguments {
@@ -173,8 +172,8 @@ extension UsageGenerationTests {
     var time: String?
   }
 
-  func testSynopsisWithMultipleCustomNames() {
-    _testSynopsis(K.self, expected: "example [--remote <remote>]")
+  @Test func synopsisWithMultipleCustomNames() {
+    expectSynopsis(K.self, expected: "example [--remote <remote>]")
   }
 
   struct L: ParsableArguments {
@@ -187,8 +186,8 @@ extension UsageGenerationTests {
     var time: String?
   }
 
-  func testSynopsisWithSingleDashLongNameFirst() {
-    _testSynopsis(L.self, expected: "example [-remote <remote>]")
+  @Test func synopsisWithSingleDashLongNameFirst() {
+    expectSynopsis(L.self, expected: "example [-remote <remote>]")
   }
 
   struct M: ParsableArguments {
@@ -219,8 +218,8 @@ extension UsageGenerationTests {
     @Argument var output: String?
   }
 
-  func testSynopsisWithTooManyOptions() {
-    _testSynopsis(
+  @Test func synopsisWithTooManyOptions() {
+    expectSynopsis(
       M.self,
       expected: "example [<options>] --option <option> <input> [<output>]")
   }
@@ -232,9 +231,9 @@ extension UsageGenerationTests {
     var decode = false
   }
 
-  func testNonwrappedValues() {
-    _testSynopsis(N.self, expected: "example [--a] [--b]")
-    _testSynopsis(N.self, visibility: .hidden, expected: "example [--a] [--b]")
+  @Test func nonwrappedValues() {
+    expectSynopsis(N.self, expected: "example [--a] [--b]")
+    expectSynopsis(N.self, visibility: .hidden, expected: "example [--a] [--b]")
   }
 
   struct O: ParsableArguments {
@@ -242,7 +241,7 @@ extension UsageGenerationTests {
     @Argument(parsing: .postTerminator) var b: [String] = []
   }
 
-  func testSynopsisWithPostTerminatorParsingStrategy() {
-    _testSynopsis(O.self, expected: "example <a> -- [<b> ...]")
+  @Test func synopsisWithPostTerminatorParsingStrategy() {
+    expectSynopsis(O.self, expected: "example <a> -- [<b> ...]")
   }
 }
