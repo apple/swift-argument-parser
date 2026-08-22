@@ -28,23 +28,45 @@ public func expectResultFailure<T, U: Error>(
   _ message: @autoclosure () -> String = "",
   sourceLocation: SourceLocation = #_sourceLocation
 ) {
-  AssertResultFailure(expression(), message(), sourceLocation: sourceLocation)
+  switch expression() {
+  case .success:
+    let msg = message()
+    Issue.record(
+      msg.isEmpty ? "Incorrectly succeeded" : "\(msg)",
+      sourceLocation: sourceLocation)
+  case .failure:
+    break
+  }
 }
 
 public func expectErrorMessage<A: ParsableArguments>(
   _ type: A.Type, _ arguments: [String], _ errorMessage: String,
   sourceLocation: SourceLocation = #_sourceLocation
 ) {
-  AssertErrorMessage(
-    type, arguments, errorMessage, sourceLocation: sourceLocation)
+  do {
+    _ = try A.parse(arguments)
+    Issue.record(
+      "Parsing should have failed.", sourceLocation: sourceLocation)
+  } catch {
+    #expect(
+      A.message(for: error) == errorMessage,
+      sourceLocation: sourceLocation)
+  }
 }
 
 public func expectFullErrorMessage<A: ParsableArguments>(
   _ type: A.Type, _ arguments: [String], _ errorMessage: String,
   sourceLocation: SourceLocation = #_sourceLocation
 ) {
-  AssertFullErrorMessage(
-    type, arguments, errorMessage, sourceLocation: sourceLocation)
+  do {
+    _ = try A.parse(arguments)
+    Issue.record(
+      "Parsing should have failed.", sourceLocation: sourceLocation)
+  } catch {
+    #expect(
+      A.fullMessage(for: error) == errorMessage,
+      sourceLocation: sourceLocation)
+  }
 }
 
 public func expectParse<A: ParsableArguments>(
@@ -52,8 +74,14 @@ public func expectParse<A: ParsableArguments>(
   sourceLocation: SourceLocation = #_sourceLocation,
   closure: (A) throws -> Void
 ) {
-  AssertParse(type, arguments, sourceLocation: sourceLocation) {
-    try closure($0)
+  do {
+    let parsed = try type.parse(arguments)
+    try closure(parsed)
+  } catch {
+    let message = type.message(for: error)
+    Issue.record(
+      "\"\(message)\" — \(error)",
+      sourceLocation: sourceLocation)
   }
 }
 
@@ -62,10 +90,20 @@ public func expectParseCommand<A: ParsableCommand>(
   sourceLocation: SourceLocation = #_sourceLocation,
   closure: (A) throws -> Void
 ) {
-  AssertParseCommand(
-    rootCommand, type, arguments, sourceLocation: sourceLocation
-  ) {
-    try closure($0)
+  do {
+    let command = try rootCommand.parseAsRoot(arguments)
+    guard let aCommand = command as? A else {
+      Issue.record(
+        "Command is of unexpected type: \(command)",
+        sourceLocation: sourceLocation)
+      return
+    }
+    try closure(aCommand)
+  } catch {
+    let message = rootCommand.message(for: error)
+    Issue.record(
+      "\"\(message)\" — \(error)",
+      sourceLocation: sourceLocation)
   }
 }
 
@@ -74,8 +112,73 @@ public func expectEqualStrings(
   expected: String,
   sourceLocation: SourceLocation = #_sourceLocation
 ) {
-  AssertEqualStrings(
-    actual: actual, expected: expected, sourceLocation: sourceLocation)
+  // Normalize line endings to '\n'.
+  let actual =
+    actual
+    .replacingOccurrences(of: "\r\n", with: "\n")
+    .replacingOccurrences(of: "\r", with: "\n")
+  let expected =
+    expected
+    .replacingOccurrences(of: "\r\n", with: "\n")
+    .replacingOccurrences(of: "\r", with: "\n")
+
+  // If the input strings are equal, early exit.
+  guard actual != expected else { return }
+
+  let stringComparison: String
+
+  // If collectionDifference is available, use it to make a nicer error message.
+  if #available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *) {
+    let actualLines = actual.components(separatedBy: .newlines)
+    let expectedLines = expected.components(separatedBy: .newlines)
+
+    let difference = actualLines.difference(from: expectedLines)
+
+    var result = ""
+
+    var insertions: [Int: String] = [:]
+    var removals: [Int: String] = [:]
+
+    for change in difference {
+      switch change {
+      case .insert(let offset, let element, _):
+        insertions[offset] = element
+      case .remove(let offset, let element, _):
+        removals[offset] = element
+      }
+    }
+
+    var expectedLine = 0
+    var actualLine = 0
+
+    while expectedLine < expectedLines.count || actualLine < actualLines.count {
+      if let removal = removals[expectedLine] {
+        result += "–\(removal)\n"
+        expectedLine += 1
+      } else if let insertion = insertions[actualLine] {
+        result += "+\(insertion)\n"
+        actualLine += 1
+      } else {
+        result += " \(expectedLines[expectedLine])\n"
+        expectedLine += 1
+        actualLine += 1
+      }
+    }
+
+    stringComparison = result
+  } else {
+    stringComparison = """
+      Expected:
+      \(expected)
+
+      Actual:
+      \(actual)
+      """
+  }
+
+  Issue.record(
+    "Actual output does not match the expected output:\n\(stringComparison)",
+    sourceLocation: sourceLocation)
 }
 
 @discardableResult
@@ -379,4 +482,91 @@ public func expectGeneratedReference(
     filePath: filePath,
     sourceLocation: sourceLocation)
   #endif
+}
+
+// swift-format-ignore: AlwaysUseLowerCamelCase
+public func requireHelp<T: ParsableArguments>(
+  _ visibility: ArgumentVisibility,
+  for _: T.Type,
+  columns: Int? = 80,
+  equals expected: String,
+  sourceLocation: SourceLocation = #_sourceLocation
+) throws {
+  let flag: String
+  let includeHidden: Bool
+
+  switch visibility {
+  case .default:
+    flag = "--help"
+    includeHidden = false
+  case .hidden:
+    flag = "--help-hidden"
+    includeHidden = true
+  case .private:
+    Issue.record("Should not be called.", sourceLocation: sourceLocation)
+    return
+  default:
+    Issue.record("Uxnrecognized visibility.", sourceLocation: sourceLocation)
+    return
+  }
+
+  #if compiler(>=6.1)
+  let error = try #require(throws: (any Error).self) {
+    _ = try T.parse([flag])
+  }
+  #else
+  let error: any Error
+  do {
+    _ = try T.parse([flag])
+    Issue.record(
+      "Expected T.parse to throw an error.",
+      sourceLocation: sourceLocation)
+    return
+  } catch let caught {
+    error = caught
+  }
+  #endif
+  let errorFullMessage = T.fullMessage(for: error, columns: columns)
+  expectEqualStrings(
+    actual: errorFullMessage,
+    expected: expected,
+    sourceLocation: sourceLocation
+  )
+
+  let helpString = T.helpMessage(includeHidden: includeHidden, columns: columns)
+  expectEqualStrings(
+    actual: helpString,
+    expected: expected,
+    sourceLocation: sourceLocation
+  )
+}
+
+// swift-format-ignore: AlwaysUseLowerCamelCase
+public func requireHelp<T: ParsableCommand, U: ParsableCommand>(
+  _ visibility: ArgumentVisibility,
+  for _: T.Type,
+  root _: U.Type,
+  columns: Int? = 80,
+  equals expected: String,
+  sourceLocation: SourceLocation = #_sourceLocation
+) throws {
+  let includeHidden: Bool
+
+  switch visibility {
+  case .default:
+    includeHidden = false
+  case .hidden:
+    includeHidden = true
+  case .private:
+    Issue.record("Should not be called.", sourceLocation: sourceLocation)
+    return
+  default:
+    Issue.record("Uxnrecognized visibility.", sourceLocation: sourceLocation)
+    return
+  }
+
+  let helpString = U.helpMessage(
+    for: T.self, includeHidden: includeHidden, columns: columns)
+  expectEqualStrings(
+    actual: helpString, expected: expected, sourceLocation: sourceLocation)
 }

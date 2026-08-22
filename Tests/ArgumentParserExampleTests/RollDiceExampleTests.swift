@@ -14,7 +14,9 @@ import Testing
 
 @testable import ArgumentParser
 
-@Suite(.serialized) struct RollDiceExampleTests {
+@Suite(
+  .serialized
+) struct RollDiceExampleTests {
   init() {
     Platform.Environment[.columns] = nil
   }
