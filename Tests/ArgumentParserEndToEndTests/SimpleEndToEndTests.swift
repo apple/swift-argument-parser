@@ -49,6 +49,24 @@ extension SimpleEndToEndTests {
   }
 }
 
+// MARK: Empty option value
+
+private struct Qux: ParsableArguments {
+  @Option() var output: String
+  @Argument() var file: String
+}
+
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// https://github.com/apple/swift-argument-parser/issues/710
+extension SimpleEndToEndTests {
+  func testParsing_EmptyOptionValue() throws {
+    AssertParse(Qux.self, ["--output=", "file.txt"]) { qux in
+      XCTAssertEqual(qux.output, "")
+      XCTAssertEqual(qux.file, "file.txt")
+    }
+  }
+}
+
 // MARK: Single value Int
 
 private struct Foo: ParsableArguments {

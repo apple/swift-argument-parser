@@ -25,7 +25,7 @@ enum ParsedArgument: Equatable, CustomStringConvertible {
     )
     let name = Name(baseName)
     self =
-      value.isEmpty
+      indexOfEqualSign == str.endIndex
       ? .name(name)
       : .nameWithValue(name, String(value))
   }
