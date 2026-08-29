@@ -739,3 +739,58 @@ extension SplitArgumentTests {
     #expect(valueB.1 == "bar")
   }
 }
+
+// MARK: - Long option with empty value (issue #958)
+
+// https://github.com/apple/swift-argument-parser/issues/958
+extension SplitArgumentTests {
+  /// `--opt=` must parse as `.nameWithValue(.long("opt"), "")`.
+  /// Before the fix it collapsed to `.name(.long("opt"))` and silently
+  /// consumed the next positional token as the option value.
+  @Test func longOptionWithEmptyValue() async throws {
+    let sut = try SplitArguments(arguments: ["--out="])
+
+    #expect(sut.elements.count == 1)
+    try expectIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
+    try expectElementEqual(
+      sut, at: 0, .option(.nameWithValue(.long("out"), ""))
+    )
+
+    #expect(sut.originalInput.count == 1)
+    #expect(sut.originalInput == ["--out="])
+  }
+
+  /// Short option: `-o=` already produced `.nameWithValue`; verify it still does.
+  @Test func shortOptionWithEmptyValue() async throws {
+    let sut = try SplitArguments(arguments: ["-o="])
+
+    #expect(sut.elements.count == 1)
+    try expectIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
+    try expectElementEqual(
+      sut, at: 0, .option(.nameWithValue(.short("o"), ""))
+    )
+
+    #expect(sut.originalInput.count == 1)
+    #expect(sut.originalInput == ["-o="])
+  }
+
+  /// `--opt=value` (non-empty) must still work as before.
+  @Test func longOptionWithNonEmptyValueUnchanged() async throws {
+    let sut = try SplitArguments(arguments: ["--out=file.txt"])
+
+    #expect(sut.elements.count == 1)
+    try expectIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
+    try expectElementEqual(
+      sut, at: 0, .option(.nameWithValue(.long("out"), "file.txt"))
+    )
+  }
+
+  /// `--opt` (no `=` at all) must still produce a bare `.name`.
+  @Test func longOptionWithoutEqualsSign() async throws {
+    let sut = try SplitArguments(arguments: ["--out"])
+
+    #expect(sut.elements.count == 1)
+    try expectIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
+    try expectElementEqual(sut, at: 0, .option(.name(.long("out"))))
+  }
+}
