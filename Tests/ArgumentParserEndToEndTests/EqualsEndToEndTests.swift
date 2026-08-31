@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2020 Apple Inc. and the Swift project authors
+// Copyright (c) 2020-2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -12,9 +12,8 @@
 import ArgumentParser
 import ArgumentParserTestHelpers
 import Testing
-import XCTest
 
-final class EqualsEndToEndTests: XCTestCase {}
+@Suite struct EqualsEndToEndTests {}
 
 // MARK: .short name
 
@@ -27,24 +26,24 @@ private struct Foo: ParsableArguments {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension EqualsEndToEndTests {
-  func testEquals_withShortName() throws {
-    AssertParse(Foo.self, ["-n=Name", "-f=Format"]) { foo in
-      XCTAssertEqual(foo.toggle, false)
-      XCTAssertEqual(foo.name, "Name")
-      XCTAssertEqual(foo.format, "Format")
+  @Test func equals_withShortName() throws {
+    expectParse(Foo.self, ["-n=Name", "-f=Format"]) { foo in
+      #expect(foo.toggle == false)
+      #expect(foo.name == "Name")
+      #expect(foo.format == "Format")
     }
   }
 
-  func testEquals_withCombinedShortName_1() throws {
-    AssertParse(Foo.self, ["-tf", "Format"]) { foo in
-      XCTAssertEqual(foo.toggle, true)
-      XCTAssertEqual(foo.name, nil)
-      XCTAssertEqual(foo.format, "Format")
+  @Test func equals_withCombinedShortName_1() throws {
+    expectParse(Foo.self, ["-tf", "Format"]) { foo in
+      #expect(foo.toggle == true)
+      #expect(foo.name == nil)
+      #expect(foo.format == "Format")
     }
   }
 
-  func testEquals_withCombinedShortName_2() throws {
-    XCTAssertThrowsError(try Foo.parse(["-tf=Format"]))
+  @Test func equals_withCombinedShortName_2() throws {
+    #expect(throws: (any Error).self) { try Foo.parse(["-tf=Format"]) }
   }
 }
 
@@ -58,10 +57,10 @@ private struct Bar: ParsableArguments {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension EqualsEndToEndTests {
-  func testEquals_withShortAndLongName() throws {
-    AssertParse(Bar.self, ["-n=Name", "-f=Format"]) { bar in
-      XCTAssertEqual(bar.name, "Name")
-      XCTAssertEqual(bar.format, "Format")
+  @Test func equals_withShortAndLongName() throws {
+    expectParse(Bar.self, ["-n=Name", "-f=Format"]) { bar in
+      #expect(bar.name == "Name")
+      #expect(bar.format == "Format")
     }
   }
 }
@@ -76,10 +75,10 @@ private struct Baz: ParsableArguments {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension EqualsEndToEndTests {
-  func testEquals_withCustomShortName() throws {
-    AssertParse(Baz.self, ["-i=Name", "-t=Format"]) { baz in
-      XCTAssertEqual(baz.name, "Name")
-      XCTAssertEqual(baz.format, "Format")
+  @Test func equals_withCustomShortName() throws {
+    expectParse(Baz.self, ["-i=Name", "-t=Format"]) { baz in
+      #expect(baz.name == "Name")
+      #expect(baz.format == "Format")
     }
   }
 }
