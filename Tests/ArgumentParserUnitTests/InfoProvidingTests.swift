@@ -52,7 +52,7 @@ extension InfoProvidingTests {
       signal(SIGUSR1, SIG_IGN)
       #elseif os(Windows)
       // As with Linux, Windows generates SIGBREAK by default.
-      SetConsoleCtrlHandler({ $0 == CTRL_BREAK_EVENT }, true)
+      SetConsoleCtrlHandler({ WindowsBool($0 == CTRL_BREAK_EVENT) }, true)
       #endif
 
       try await withThrowingDiscardingTaskGroup { taskGroup in
