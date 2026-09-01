@@ -72,7 +72,7 @@ extension InfoProvidingTests {
             #elseif os(Windows)
             GenerateConsoleCtrlEvent(DWORD(CTRL_BREAK_EVENT), 0)
             #endif
-            await Task.yield()
+            try await Task.sleep(nanoseconds: 100_000_000)
           }
         }
       }
