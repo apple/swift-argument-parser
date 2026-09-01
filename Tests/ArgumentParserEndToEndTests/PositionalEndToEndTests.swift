@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2020 Apple Inc. and the Swift project authors
+// Copyright (c) 2020-2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -12,10 +12,8 @@
 import ArgumentParser
 import ArgumentParserTestHelpers
 import Testing
-import XCTest
 
-final class PositionalEndToEndTests: XCTestCase {
-}
+@Suite struct PositionalEndToEndTests {}
 
 // MARK: Single value String
 
@@ -26,31 +24,31 @@ private struct Bar: ParsableArguments {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension PositionalEndToEndTests {
-  func testParsing_SinglePositional() throws {
-    AssertParse(Bar.self, ["Bar"]) { bar in
-      XCTAssertEqual(bar.name, "Bar")
+  @Test func parsing_SinglePositional() throws {
+    expectParse(Bar.self, ["Bar"]) { bar in
+      #expect(bar.name == "Bar")
     }
-    AssertParse(Bar.self, ["Bar-"]) { bar in
-      XCTAssertEqual(bar.name, "Bar-")
+    expectParse(Bar.self, ["Bar-"]) { bar in
+      #expect(bar.name == "Bar-")
     }
-    AssertParse(Bar.self, ["Bar--"]) { bar in
-      XCTAssertEqual(bar.name, "Bar--")
+    expectParse(Bar.self, ["Bar--"]) { bar in
+      #expect(bar.name == "Bar--")
     }
-    AssertParse(Bar.self, ["--", "-Bar"]) { bar in
-      XCTAssertEqual(bar.name, "-Bar")
+    expectParse(Bar.self, ["--", "-Bar"]) { bar in
+      #expect(bar.name == "-Bar")
     }
-    AssertParse(Bar.self, ["--", "--Bar"]) { bar in
-      XCTAssertEqual(bar.name, "--Bar")
+    expectParse(Bar.self, ["--", "--Bar"]) { bar in
+      #expect(bar.name == "--Bar")
     }
-    AssertParse(Bar.self, ["--", "--"]) { bar in
-      XCTAssertEqual(bar.name, "--")
+    expectParse(Bar.self, ["--", "--"]) { bar in
+      #expect(bar.name == "--")
     }
   }
 
-  func testParsing_SinglePositional_Fails() throws {
-    XCTAssertThrowsError(try Bar.parse([]))
-    XCTAssertThrowsError(try Bar.parse(["--name"]))
-    XCTAssertThrowsError(try Bar.parse(["Foo", "Bar"]))
+  @Test func parsing_SinglePositional_Fails() throws {
+    #expect(throws: (any Error).self) { try Bar.parse([]) }
+    #expect(throws: (any Error).self) { try Bar.parse(["--name"]) }
+    #expect(throws: (any Error).self) { try Bar.parse(["Foo", "Bar"]) }
   }
 }
 
@@ -64,36 +62,42 @@ private struct Baz: ParsableArguments {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension PositionalEndToEndTests {
-  func testParsing_TwoPositional() throws {
-    AssertParse(Baz.self, ["Bar", "Foo"]) { baz in
-      XCTAssertEqual(baz.name, "Bar")
-      XCTAssertEqual(baz.format, "Foo")
+  @Test func parsing_TwoPositional() throws {
+    expectParse(Baz.self, ["Bar", "Foo"]) { baz in
+      #expect(baz.name == "Bar")
+      #expect(baz.format == "Foo")
     }
-    AssertParse(Baz.self, ["", "Foo"]) { baz in
-      XCTAssertEqual(baz.name, "")
-      XCTAssertEqual(baz.format, "Foo")
+    expectParse(Baz.self, ["", "Foo"]) { baz in
+      #expect(baz.name == "")
+      #expect(baz.format == "Foo")
     }
-    AssertParse(Baz.self, ["Bar", ""]) { baz in
-      XCTAssertEqual(baz.name, "Bar")
-      XCTAssertEqual(baz.format, "")
+    expectParse(Baz.self, ["Bar", ""]) { baz in
+      #expect(baz.name == "Bar")
+      #expect(baz.format == "")
     }
-    AssertParse(Baz.self, ["--", "--b", "--f"]) { baz in
-      XCTAssertEqual(baz.name, "--b")
-      XCTAssertEqual(baz.format, "--f")
+    expectParse(Baz.self, ["--", "--b", "--f"]) { baz in
+      #expect(baz.name == "--b")
+      #expect(baz.format == "--f")
     }
-    AssertParse(Baz.self, ["b", "--", "--f"]) { baz in
-      XCTAssertEqual(baz.name, "b")
-      XCTAssertEqual(baz.format, "--f")
+    expectParse(Baz.self, ["b", "--", "--f"]) { baz in
+      #expect(baz.name == "b")
+      #expect(baz.format == "--f")
     }
   }
 
-  func testParsing_TwoPositional_Fails() throws {
-    XCTAssertThrowsError(try Baz.parse(["Bar", "Foo", "Baz"]))
-    XCTAssertThrowsError(try Baz.parse(["Bar"]))
-    XCTAssertThrowsError(try Baz.parse([]))
-    XCTAssertThrowsError(try Baz.parse(["--name", "Bar", "Foo"]))
-    XCTAssertThrowsError(try Baz.parse(["Bar", "--name", "Foo"]))
-    XCTAssertThrowsError(try Baz.parse(["Bar", "Foo", "--name"]))
+  @Test func parsing_TwoPositional_Fails() throws {
+    #expect(throws: (any Error).self) { try Baz.parse(["Bar", "Foo", "Baz"]) }
+    #expect(throws: (any Error).self) { try Baz.parse(["Bar"]) }
+    #expect(throws: (any Error).self) { try Baz.parse([]) }
+    #expect(throws: (any Error).self) {
+      try Baz.parse(["--name", "Bar", "Foo"])
+    }
+    #expect(throws: (any Error).self) {
+      try Baz.parse(["Bar", "--name", "Foo"])
+    }
+    #expect(throws: (any Error).self) {
+      try Baz.parse(["Bar", "Foo", "--name"])
+    }
   }
 }
 
@@ -106,33 +110,39 @@ private struct Qux: ParsableArguments {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension PositionalEndToEndTests {
-  func testParsing_MultiplePositional() throws {
-    AssertParse(Qux.self, []) { qux in
-      XCTAssertEqual(qux.names, [])
+  @Test func parsing_MultiplePositional() throws {
+    expectParse(Qux.self, []) { qux in
+      #expect(qux.names == [])
     }
-    AssertParse(Qux.self, ["Bar"]) { qux in
-      XCTAssertEqual(qux.names, ["Bar"])
+    expectParse(Qux.self, ["Bar"]) { qux in
+      #expect(qux.names == ["Bar"])
     }
-    AssertParse(Qux.self, ["Bar", "Foo"]) { qux in
-      XCTAssertEqual(qux.names, ["Bar", "Foo"])
+    expectParse(Qux.self, ["Bar", "Foo"]) { qux in
+      #expect(qux.names == ["Bar", "Foo"])
     }
-    AssertParse(Qux.self, ["Bar", "Foo", "Baz"]) { qux in
-      XCTAssertEqual(qux.names, ["Bar", "Foo", "Baz"])
+    expectParse(Qux.self, ["Bar", "Foo", "Baz"]) { qux in
+      #expect(qux.names == ["Bar", "Foo", "Baz"])
     }
 
-    AssertParse(Qux.self, ["--", "--b", "--f"]) { qux in
-      XCTAssertEqual(qux.names, ["--b", "--f"])
+    expectParse(Qux.self, ["--", "--b", "--f"]) { qux in
+      #expect(qux.names == ["--b", "--f"])
     }
-    AssertParse(Qux.self, ["b", "--", "--f"]) { qux in
-      XCTAssertEqual(qux.names, ["b", "--f"])
+    expectParse(Qux.self, ["b", "--", "--f"]) { qux in
+      #expect(qux.names == ["b", "--f"])
     }
   }
 
-  func testParsing_MultiplePositional_Fails() throws {
+  @Test func parsing_MultiplePositional_Fails() throws {
     // TODO: Allow zero-argument arrays?
-    XCTAssertThrowsError(try Qux.parse(["--name", "Bar", "Foo"]))
-    XCTAssertThrowsError(try Qux.parse(["Bar", "--name", "Foo"]))
-    XCTAssertThrowsError(try Qux.parse(["Bar", "Foo", "--name"]))
+    #expect(throws: (any Error).self) {
+      try Qux.parse(["--name", "Bar", "Foo"])
+    }
+    #expect(throws: (any Error).self) {
+      try Qux.parse(["Bar", "--name", "Foo"])
+    }
+    #expect(throws: (any Error).self) {
+      try Qux.parse(["Bar", "Foo", "--name"])
+    }
   }
 }
 
@@ -146,43 +156,49 @@ private struct Wobble: ParsableArguments {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension PositionalEndToEndTests {
-  func testParsing_SingleAndMultiplePositional() throws {
-    AssertParse(Wobble.self, ["5"]) { wobble in
-      XCTAssertEqual(wobble.count, 5)
-      XCTAssertEqual(wobble.names, [])
+  @Test func parsing_SingleAndMultiplePositional() throws {
+    expectParse(Wobble.self, ["5"]) { wobble in
+      #expect(wobble.count == 5)
+      #expect(wobble.names == [])
     }
-    AssertParse(Wobble.self, ["5", "Bar"]) { wobble in
-      XCTAssertEqual(wobble.count, 5)
-      XCTAssertEqual(wobble.names, ["Bar"])
+    expectParse(Wobble.self, ["5", "Bar"]) { wobble in
+      #expect(wobble.count == 5)
+      #expect(wobble.names == ["Bar"])
     }
-    AssertParse(Wobble.self, ["5", "Bar", "Foo"]) { wobble in
-      XCTAssertEqual(wobble.count, 5)
-      XCTAssertEqual(wobble.names, ["Bar", "Foo"])
+    expectParse(Wobble.self, ["5", "Bar", "Foo"]) { wobble in
+      #expect(wobble.count == 5)
+      #expect(wobble.names == ["Bar", "Foo"])
     }
-    AssertParse(Wobble.self, ["5", "Bar", "Foo", "Baz"]) { wobble in
-      XCTAssertEqual(wobble.count, 5)
-      XCTAssertEqual(wobble.names, ["Bar", "Foo", "Baz"])
+    expectParse(Wobble.self, ["5", "Bar", "Foo", "Baz"]) { wobble in
+      #expect(wobble.count == 5)
+      #expect(wobble.names == ["Bar", "Foo", "Baz"])
     }
 
-    AssertParse(Wobble.self, ["5", "--", "--b", "--f"]) { wobble in
-      XCTAssertEqual(wobble.count, 5)
-      XCTAssertEqual(wobble.names, ["--b", "--f"])
+    expectParse(Wobble.self, ["5", "--", "--b", "--f"]) { wobble in
+      #expect(wobble.count == 5)
+      #expect(wobble.names == ["--b", "--f"])
     }
-    AssertParse(Wobble.self, ["--", "5", "--b", "--f"]) { wobble in
-      XCTAssertEqual(wobble.count, 5)
-      XCTAssertEqual(wobble.names, ["--b", "--f"])
+    expectParse(Wobble.self, ["--", "5", "--b", "--f"]) { wobble in
+      #expect(wobble.count == 5)
+      #expect(wobble.names == ["--b", "--f"])
     }
-    AssertParse(Wobble.self, ["5", "b", "--", "--f"]) { wobble in
-      XCTAssertEqual(wobble.count, 5)
-      XCTAssertEqual(wobble.names, ["b", "--f"])
+    expectParse(Wobble.self, ["5", "b", "--", "--f"]) { wobble in
+      #expect(wobble.count == 5)
+      #expect(wobble.names == ["b", "--f"])
     }
   }
 
-  func testParsing_SingleAndMultiplePositional_Fails() throws {
-    XCTAssertThrowsError(try Wobble.parse([]))
-    XCTAssertThrowsError(try Wobble.parse(["--name", "Bar", "Foo"]))
-    XCTAssertThrowsError(try Wobble.parse(["Bar", "--name", "Foo"]))
-    XCTAssertThrowsError(try Wobble.parse(["Bar", "Foo", "--name"]))
+  @Test func parsing_SingleAndMultiplePositional_Fails() throws {
+    #expect(throws: (any Error).self) { try Wobble.parse([]) }
+    #expect(throws: (any Error).self) {
+      try Wobble.parse(["--name", "Bar", "Foo"])
+    }
+    #expect(throws: (any Error).self) {
+      try Wobble.parse(["Bar", "--name", "Foo"])
+    }
+    #expect(throws: (any Error).self) {
+      try Wobble.parse(["Bar", "Foo", "--name"])
+    }
   }
 }
 
@@ -195,31 +211,31 @@ private struct Flob: ParsableArguments {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension PositionalEndToEndTests {
-  func testParsing_MultipleParsedPositional() throws {
-    AssertParse(Flob.self, []) { flob in
-      XCTAssertEqual(flob.counts, [])
+  @Test func parsing_MultipleParsedPositional() throws {
+    expectParse(Flob.self, []) { flob in
+      #expect(flob.counts == [])
     }
-    AssertParse(Flob.self, ["5"]) { flob in
-      XCTAssertEqual(flob.counts, [5])
+    expectParse(Flob.self, ["5"]) { flob in
+      #expect(flob.counts == [5])
     }
-    AssertParse(Flob.self, ["5", "6"]) { flob in
-      XCTAssertEqual(flob.counts, [5, 6])
+    expectParse(Flob.self, ["5", "6"]) { flob in
+      #expect(flob.counts == [5, 6])
     }
 
-    AssertParse(Flob.self, ["5", "--", "6"]) { flob in
-      XCTAssertEqual(flob.counts, [5, 6])
+    expectParse(Flob.self, ["5", "--", "6"]) { flob in
+      #expect(flob.counts == [5, 6])
     }
-    AssertParse(Flob.self, ["--", "5", "6"]) { flob in
-      XCTAssertEqual(flob.counts, [5, 6])
+    expectParse(Flob.self, ["--", "5", "6"]) { flob in
+      #expect(flob.counts == [5, 6])
     }
-    AssertParse(Flob.self, ["5", "6", "--"]) { flob in
-      XCTAssertEqual(flob.counts, [5, 6])
+    expectParse(Flob.self, ["5", "6", "--"]) { flob in
+      #expect(flob.counts == [5, 6])
     }
   }
 
-  func testParsing_MultipleParsedPositional_Fails() throws {
-    XCTAssertThrowsError(try Flob.parse(["a"]))
-    XCTAssertThrowsError(try Flob.parse(["5", "6", "a"]))
+  @Test func parsing_MultipleParsedPositional_Fails() throws {
+    #expect(throws: (any Error).self) { try Flob.parse(["a"]) }
+    #expect(throws: (any Error).self) { try Flob.parse(["5", "6", "a"]) }
   }
 }
 
@@ -236,9 +252,9 @@ extension PositionalEndToEndTests {
   // This test results in a fatal error when run, so it can't be enabled
   // or CI will prevent integration. Delete `disabled_` to verify the trap
   // locally.
-  func disabled_testParsing_BadlyFormedPositional() throws {
-    AssertParse(BadlyFormed.self, []) { _ in
-      XCTFail("This should never execute")
+  func disabled_parsing_BadlyFormedPositional() throws {
+    expectParse(BadlyFormed.self, []) { _ in
+      Issue.record("This should never execute")
     }
   }
 }
@@ -262,13 +278,13 @@ extension PositionalEndToEndTests {
     @Argument var range: Range<Int>
   }
 
-  func testParseCustomRangeConformance() throws {
-    AssertParse(HasRange.self, ["0:4"]) { args in
-      XCTAssertEqual(args.range, 0..<4)
+  @Test func parseCustomRangeConformance() throws {
+    expectParse(HasRange.self, ["0:4"]) { args in
+      #expect(args.range == 0..<4)
     }
 
-    XCTAssertThrowsError(try HasRange.parse([]))
-    XCTAssertThrowsError(try HasRange.parse(["1"]))
-    XCTAssertThrowsError(try HasRange.parse(["1:0"]))
+    #expect(throws: (any Error).self) { try HasRange.parse([]) }
+    #expect(throws: (any Error).self) { try HasRange.parse(["1"]) }
+    #expect(throws: (any Error).self) { try HasRange.parse(["1:0"]) }
   }
 }

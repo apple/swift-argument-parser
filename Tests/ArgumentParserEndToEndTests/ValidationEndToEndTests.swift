@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2020 Apple Inc. and the Swift project authors
+// Copyright (c) 2020-2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -11,11 +11,10 @@
 
 import ArgumentParser
 import ArgumentParserTestHelpers
+import Foundation
 import Testing
-import XCTest
 
-final class ValidationEndToEndTests: XCTestCase {
-}
+@Suite struct ValidationEndToEndTests {}
 
 private enum UserValidationError: LocalizedError {
   case userValidationError
@@ -103,26 +102,26 @@ private struct Foo: ParsableArguments {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension ValidationEndToEndTests {
-  func testValidation() throws {
-    AssertParse(Foo.self, ["Joe"]) { foo in
-      XCTAssertEqual(foo.names, ["Joe"])
-      XCTAssertNil(foo.count)
+  @Test func validation() throws {
+    expectParse(Foo.self, ["Joe"]) { foo in
+      #expect(foo.names == ["Joe"])
+      #expect(foo.count == nil)
     }
 
-    AssertParse(Foo.self, ["Joe", "Moe", "--count", "2"]) { foo in
-      XCTAssertEqual(foo.names, ["Joe", "Moe"])
-      XCTAssertEqual(foo.count, 2)
+    expectParse(Foo.self, ["Joe", "Moe", "--count", "2"]) { foo in
+      #expect(foo.names == ["Joe", "Moe"])
+      #expect(foo.count == 2)
     }
   }
 
-  func testValidation_Version() throws {
-    AssertErrorMessage(Foo.self, ["--version"], "0.0.1")
-    AssertFullErrorMessage(Foo.self, ["--version"], "0.0.1")
+  @Test func validation_Version() throws {
+    expectErrorMessage(Foo.self, ["--version"], "0.0.1")
+    expectFullErrorMessage(Foo.self, ["--version"], "0.0.1")
   }
 
-  func testValidation_Fails() throws {
-    AssertErrorMessage(Foo.self, [], "Must specify at least one name.")
-    AssertFullErrorMessage(
+  @Test func validation_Fails() throws {
+    expectErrorMessage(Foo.self, [], "Must specify at least one name.")
+    expectFullErrorMessage(
       Foo.self, [],
       """
       Error: Must specify at least one name.
@@ -131,12 +130,12 @@ extension ValidationEndToEndTests {
 
       """)
 
-    AssertErrorMessage(
+    expectErrorMessage(
       Foo.self, ["--count", "3", "Joe"],
       """
       Number of names (1) doesn't match count (3).
       """)
-    AssertFullErrorMessage(
+    expectFullErrorMessage(
       Foo.self, ["--count", "3", "Joe"],
       """
       Error: Number of names (1) doesn't match count (3).
@@ -144,19 +143,19 @@ extension ValidationEndToEndTests {
       """)
   }
 
-  func testCustomErrorValidation() {
+  @Test func customErrorValidation() {
     // verify that error description is printed if available via LocalizedError
-    AssertErrorMessage(
+    expectErrorMessage(
       Foo.self, ["--throw", "Joe"],
       UserValidationError.userValidationError.errorDescription!)
   }
 
-  func testEmptyErrorValidation() {
-    AssertErrorMessage(Foo.self, ["--show-usage-only", "Joe"], "")
-    AssertFullErrorMessage(
+  @Test func emptyErrorValidation() {
+    expectErrorMessage(Foo.self, ["--show-usage-only", "Joe"], "")
+    expectFullErrorMessage(
       Foo.self, ["--show-usage-only", "Joe"], Foo.usageString)
-    AssertFullErrorMessage(Foo.self, ["--fail-validation-silently", "Joe"], "")
-    AssertFullErrorMessage(Foo.self, ["--fail-silently", "Joe"], "")
+    expectFullErrorMessage(Foo.self, ["--fail-validation-silently", "Joe"], "")
+    expectFullErrorMessage(Foo.self, ["--fail-silently", "Joe"], "")
   }
 }
 
@@ -174,12 +173,12 @@ private struct FooCommand: ParsableCommand {
   }
 
   func run() throws {
-    XCTAssertEqual(foo, bar)
+    #expect(foo == bar)
   }
 }
 
 extension ValidationEndToEndTests {
-  func testMutationsPreserved() throws {
+  @Test func mutationsPreserved() throws {
     var foo = try FooCommand.parseAsRoot(["--foo"])
     try foo.run()
   }

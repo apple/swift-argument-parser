@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2020 Apple Inc. and the Swift project authors
+// Copyright (c) 2020-2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -12,11 +12,16 @@
 import ArgumentParser
 import ArgumentParserTestHelpers
 import Testing
-import XCTest
 
-final class OptionGroupEndToEndTests: XCTestCase {}
+@Suite struct OptionGroupEndToEndTests {}
 
-private struct Inner: TestableParsableArguments {
+private enum ValidationConfirmations {
+  @TaskLocal static var inner: Confirmation?
+  @TaskLocal static var outer: Confirmation?
+  @TaskLocal static var command: Confirmation?
+}
+
+private struct Inner: ParsableArguments {
   @Flag(name: [.short, .long])
   var extraVerbiage: Bool = false
   @Option
@@ -24,17 +29,12 @@ private struct Inner: TestableParsableArguments {
   @Argument()
   var name: String
 
-  let didValidateExpectation = XCTestExpectation(
-    singleExpectation: "inner validated")
-
-  private enum CodingKeys: CodingKey {
-    case extraVerbiage
-    case size
-    case name
+  mutating func validate() throws {
+    ValidationConfirmations.inner?()
   }
 }
 
-private struct Outer: TestableParsableArguments {
+private struct Outer: ParsableArguments {
   @Flag
   var verbose: Bool = false
   @Argument()
@@ -44,87 +44,86 @@ private struct Outer: TestableParsableArguments {
   @Argument()
   var after: String
 
-  let didValidateExpectation = XCTestExpectation(
-    singleExpectation: "outer validated")
-
-  private enum CodingKeys: CodingKey {
-    case verbose
-    case before
-    case inner
-    case after
+  mutating func validate() throws {
+    ValidationConfirmations.outer?()
   }
 }
 
-private struct Command: TestableParsableCommand {
+private struct Command: ParsableCommand {
   static let configuration = CommandConfiguration(commandName: "testCommand")
 
   @OptionGroup()
   var outer: Outer
 
-  let didValidateExpectation = XCTestExpectation(
-    singleExpectation: "Command validated")
-  let didRunExpectation = XCTestExpectation(singleExpectation: "Command ran")
-
-  private enum CodingKeys: CodingKey {
-    case outer
+  mutating func validate() throws {
+    ValidationConfirmations.command?()
   }
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension OptionGroupEndToEndTests {
-  func testOptionGroup_Defaults() throws {
-    AssertParse(Outer.self, ["prefix", "name", "postfix"]) { options in
-      XCTAssertEqual(options.verbose, false)
-      XCTAssertEqual(options.before, "prefix")
-      XCTAssertEqual(options.after, "postfix")
+  @Test func optionGroup_Defaults() throws {
+    expectParse(Outer.self, ["prefix", "name", "postfix"]) { options in
+      #expect(options.verbose == false)
+      #expect(options.before == "prefix")
+      #expect(options.after == "postfix")
 
-      XCTAssertEqual(options.inner.extraVerbiage, false)
-      XCTAssertEqual(options.inner.size, 0)
-      XCTAssertEqual(options.inner.name, "name")
+      #expect(options.inner.extraVerbiage == false)
+      #expect(options.inner.size == 0)
+      #expect(options.inner.name == "name")
     }
 
-    AssertParse(
+    expectParse(
       Outer.self,
       [
         "prefix", "--extra-verbiage", "name", "postfix", "--verbose", "--size",
         "5",
       ]
     ) { options in
-      XCTAssertEqual(options.verbose, true)
-      XCTAssertEqual(options.before, "prefix")
-      XCTAssertEqual(options.after, "postfix")
+      #expect(options.verbose == true)
+      #expect(options.before == "prefix")
+      #expect(options.after == "postfix")
 
-      XCTAssertEqual(options.inner.extraVerbiage, true)
-      XCTAssertEqual(options.inner.size, 5)
-      XCTAssertEqual(options.inner.name, "name")
+      #expect(options.inner.extraVerbiage == true)
+      #expect(options.inner.size == 5)
+      #expect(options.inner.name == "name")
     }
   }
 
-  func testOptionGroup_isValidated() {
-    // Parse the command, this should cause validation to be once each on
+  @Test func optionGroup_isValidated() async throws {
+    // Parse the command, this should cause validation to be called once each
+    // on:
     // - command.outer.inner
     // - command.outer
     // - command
-    AssertParseCommand(
-      Command.self, Command.self, ["prefix", "name", "postfix"]
-    ) { command in
-      wait(
-        for: [
-          command.didValidateExpectation, command.outer.didValidateExpectation,
-          command.outer.inner.didValidateExpectation,
-        ], timeout: 0.1)
+    await confirmation("Command validated") { commandValidated in
+      await confirmation("Outer validated") { outerValidated in
+        await confirmation("Inner validated") { innerValidated in
+          ValidationConfirmations.$command.withValue(commandValidated) {
+            ValidationConfirmations.$outer.withValue(outerValidated) {
+              ValidationConfirmations.$inner.withValue(innerValidated) {
+                expectParseCommand(
+                  Command.self, Command.self, ["prefix", "name", "postfix"]
+                ) { _ in }
+              }
+            }
+          }
+        }
+      }
     }
   }
 
-  func testOptionGroup_Fails() throws {
-    XCTAssertThrowsError(try Outer.parse([]))
-    XCTAssertThrowsError(try Outer.parse(["prefix"]))
-    XCTAssertThrowsError(try Outer.parse(["prefix", "name"]))
-    XCTAssertThrowsError(
-      try Outer.parse(["prefix", "name", "postfix", "extra"]))
-    XCTAssertThrowsError(
-      try Outer.parse(["prefix", "name", "postfix", "--size", "a"]))
+  @Test func optionGroup_Fails() throws {
+    #expect(throws: (any Error).self) { try Outer.parse([]) }
+    #expect(throws: (any Error).self) { try Outer.parse(["prefix"]) }
+    #expect(throws: (any Error).self) { try Outer.parse(["prefix", "name"]) }
+    #expect(throws: (any Error).self) {
+      try Outer.parse(["prefix", "name", "postfix", "extra"])
+    }
+    #expect(throws: (any Error).self) {
+      try Outer.parse(["prefix", "name", "postfix", "--size", "a"])
+    }
   }
 }
 
@@ -151,57 +150,57 @@ private struct DuplicatedFlagGroupLongCommand: ParsableCommand {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension OptionGroupEndToEndTests {
-  func testUniqueNamesForDuplicatedFlag_NoFlags() throws {
-    AssertParse(DuplicatedFlagGroupCustomCommand.self, []) { command in
-      XCTAssertFalse(command.duplicated)
-      XCTAssertFalse(command.option.duplicated)
+  @Test func uniqueNamesForDuplicatedFlag_NoFlags() throws {
+    expectParse(DuplicatedFlagGroupCustomCommand.self, []) { command in
+      #expect(!command.duplicated)
+      #expect(!command.option.duplicated)
     }
-    AssertParse(DuplicatedFlagGroupLongCommand.self, []) { command in
-      XCTAssertFalse(command.duplicated)
-      XCTAssertFalse(command.option.duplicated)
-    }
-  }
-
-  func testUniqueNamesForDuplicatedFlag_RootOnly() throws {
-    AssertParse(DuplicatedFlagGroupCustomCommand.self, ["--duplicated"]) {
-      command in
-      XCTAssertTrue(command.duplicated)
-      XCTAssertFalse(command.option.duplicated)
-    }
-    AssertParse(DuplicatedFlagGroupLongCommand.self, ["--duplicated"]) {
-      command in
-      XCTAssertFalse(command.duplicated)
-      XCTAssertTrue(command.option.duplicated)
+    expectParse(DuplicatedFlagGroupLongCommand.self, []) { command in
+      #expect(!command.duplicated)
+      #expect(!command.option.duplicated)
     }
   }
 
-  func testUniqueNamesForDuplicatedFlag_OptionOnly() throws {
-    AssertParse(DuplicatedFlagGroupCustomCommand.self, ["--duplicated-option"])
+  @Test func uniqueNamesForDuplicatedFlag_RootOnly() throws {
+    expectParse(DuplicatedFlagGroupCustomCommand.self, ["--duplicated"]) {
+      command in
+      #expect(command.duplicated)
+      #expect(!command.option.duplicated)
+    }
+    expectParse(DuplicatedFlagGroupLongCommand.self, ["--duplicated"]) {
+      command in
+      #expect(!command.duplicated)
+      #expect(command.option.duplicated)
+    }
+  }
+
+  @Test func uniqueNamesForDuplicatedFlag_OptionOnly() throws {
+    expectParse(DuplicatedFlagGroupCustomCommand.self, ["--duplicated-option"])
     { command in
-      XCTAssertFalse(command.duplicated)
-      XCTAssertTrue(command.option.duplicated)
+      #expect(!command.duplicated)
+      #expect(command.option.duplicated)
     }
-    AssertParse(DuplicatedFlagGroupLongCommand.self, ["--duplicated-option"]) {
+    expectParse(DuplicatedFlagGroupLongCommand.self, ["--duplicated-option"]) {
       command in
-      XCTAssertTrue(command.duplicated)
-      XCTAssertFalse(command.option.duplicated)
+      #expect(command.duplicated)
+      #expect(!command.option.duplicated)
     }
   }
 
-  func testUniqueNamesForDuplicatedFlag_RootAndOption() throws {
-    AssertParse(
+  @Test func uniqueNamesForDuplicatedFlag_RootAndOption() throws {
+    expectParse(
       DuplicatedFlagGroupCustomCommand.self,
       ["--duplicated", "--duplicated-option"]
     ) { command in
-      XCTAssertTrue(command.duplicated)
-      XCTAssertTrue(command.option.duplicated)
+      #expect(command.duplicated)
+      #expect(command.option.duplicated)
     }
-    AssertParse(
+    expectParse(
       DuplicatedFlagGroupLongCommand.self,
       ["--duplicated", "--duplicated-option"]
     ) { command in
-      XCTAssertTrue(command.duplicated)
-      XCTAssertTrue(command.option.duplicated)
+      #expect(command.duplicated)
+      #expect(command.option.duplicated)
     }
   }
 }
