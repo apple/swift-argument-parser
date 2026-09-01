@@ -46,7 +46,7 @@ struct InfoProvider: AsyncParsableCommand, InfoProvidingParsableCommand {
   }
 
   @MainActor
-  func provideInfo() {
+  static func provideInfo() {
     let timeRunning = Date().timeIntervalSince(info.start)
     print("Running for \(timeRunning) seconds.")
 

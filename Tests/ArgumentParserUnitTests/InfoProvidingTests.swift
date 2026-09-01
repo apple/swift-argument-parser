@@ -18,15 +18,15 @@ import Testing
 import WinSDK
 #endif
 
+let seedValue = "c6466b3a7881998f6bef30616fcd1769"
+
 @Suite struct InfoProvidingTests {
   struct SeedCommand: ParsableCommand, InfoProvidingParsableCommand {
-    @Argument var seedValue: String
-
     func run() {
       Thread.sleep(forTimeInterval: 1.0)
     }
 
-    func provideInfo() {
+    static func provideInfo() {
       print("\(seedValue)")
       Self.exit()
     }
@@ -34,8 +34,6 @@ import WinSDK
 }
 
 extension InfoProvidingTests {
-  static let seedValue = "c6466b3a7881998f6bef30616fcd1769"
-
   #if compiler(>=6.2)
   @Test func siginfoHandled() async throws {
     #if os(macOS) || os(FreeBSD) || os(OpenBSD) || os(Linux) || os(Android) || os(Windows)
@@ -55,7 +53,7 @@ extension InfoProvidingTests {
 
       try await withThrowingDiscardingTaskGroup { taskGroup in
         taskGroup.addTask {
-          SeedCommand.main([Self.seedValue])
+          SeedCommand.main([])
         }
         taskGroup.addTask {
           // The main function is running asynchronously in another task, so we
@@ -76,7 +74,7 @@ extension InfoProvidingTests {
       }
     }
 
-    #expect(results.standardOutputContent.contains(Self.seedValue.utf8))
+    #expect(results.standardOutputContent.contains(seedValue.utf8))
     #else
     try Test.cancel("Exit tests are unsupported on this platform")
     #endif

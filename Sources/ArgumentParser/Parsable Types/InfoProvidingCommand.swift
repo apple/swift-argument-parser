@@ -44,9 +44,9 @@ public protocol InfoProvidingParsableCommand: Sendable, ParsableCommand {
   ///   If ``AsyncParsableCommand/run()`` never yields, the Swift runtime may
   ///   not be able to schedule calls to this function and it will appear to the
   ///   user as if it is not implemented.
-  nonisolated(nonsending) func provideInfo() async
+  nonisolated(nonsending) static func provideInfo() async
   #else
-  func provideInfo() async
+  static func provideInfo() async
   #endif
 }
 
@@ -59,14 +59,14 @@ extension SIGINFOHandler {
       #if compiler(>=6.3)
       if #available(macOS 26, iOS 26, watchOS 26, tvOS 26, visionOS 26, *) {
         _ = Task.immediate {
-          await command.provideInfo()
+          await T.provideInfo()
         }
         return
       }
       #endif
 
       _ = Task {
-        await command.provideInfo()
+        await T.provideInfo()
       }
     }
   }
