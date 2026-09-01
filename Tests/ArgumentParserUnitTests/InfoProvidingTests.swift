@@ -50,6 +50,9 @@ extension InfoProvidingTests {
       // raise SIGUSR1 after the real signal handler has been set up, so ensure
       // we're ignoring it instead until that happens.
       signal(SIGUSR1, SIG_IGN)
+      #elseif os(Windows)
+      // As with Linux, Windows generates SIGBREAK by default.
+      SetConsoleCtrlHandler({ $0 == CTRL_BREAK_EVENT }, true)
       #endif
 
       try await withThrowingDiscardingTaskGroup { taskGroup in
