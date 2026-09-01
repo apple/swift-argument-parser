@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2021 Apple Inc. and the Swift project authors
+// Copyright (c) 2021-2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -12,9 +12,8 @@
 import ArgumentParser
 import ArgumentParserTestHelpers
 import Testing
-import XCTest
 
-final class UnparsedValuesEndToEndTests: XCTestCase {}
+@Suite struct UnparsedValuesEndToEndTests {}
 
 // MARK: Two values + unparsed variable
 
@@ -34,30 +33,34 @@ private struct Quizzo: ParsableArguments {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension UnparsedValuesEndToEndTests {
-  func testParsing_TwoPlusUnparsed() throws {
-    AssertParse(Qux.self, ["--name", "Qux"]) { qux in
-      XCTAssertEqual(qux.name, "Qux")
-      XCTAssertFalse(qux.verbose)
-      XCTAssertEqual(qux.count, 0)
+  @Test func parsing_TwoPlusUnparsed() throws {
+    expectParse(Qux.self, ["--name", "Qux"]) { qux in
+      #expect(qux.name == "Qux")
+      #expect(qux.verbose == false)
+      #expect(qux.count == 0)
     }
-    AssertParse(Qux.self, ["--name", "Qux", "--verbose"]) { qux in
-      XCTAssertEqual(qux.name, "Qux")
-      XCTAssertTrue(qux.verbose)
-      XCTAssertEqual(qux.count, 0)
+    expectParse(Qux.self, ["--name", "Qux", "--verbose"]) { qux in
+      #expect(qux.name == "Qux")
+      #expect(qux.verbose)
+      #expect(qux.count == 0)
     }
 
-    AssertParse(Quizzo.self, ["--name", "Qux", "--verbose"]) { quizzo in
-      XCTAssertEqual(quizzo.name, "Qux")
-      XCTAssertTrue(quizzo.verbose)
-      XCTAssertEqual(quizzo.count, 0)
+    expectParse(Quizzo.self, ["--name", "Qux", "--verbose"]) { quizzo in
+      #expect(quizzo.name == "Qux")
+      #expect(quizzo.verbose)
+      #expect(quizzo.count == 0)
     }
   }
 
-  func testParsing_TwoPlusUnparsed_Fails() throws {
-    XCTAssertThrowsError(try Qux.parse([]))
-    XCTAssertThrowsError(try Qux.parse(["--name"]))
-    XCTAssertThrowsError(try Qux.parse(["--name", "Qux", "--count"]))
-    XCTAssertThrowsError(try Qux.parse(["--name", "Qux", "--count", "2"]))
+  @Test func parsing_TwoPlusUnparsed_Fails() throws {
+    #expect(throws: (any Error).self) { try Qux.parse([]) }
+    #expect(throws: (any Error).self) { try Qux.parse(["--name"]) }
+    #expect(throws: (any Error).self) {
+      try Qux.parse(["--name", "Qux", "--count"])
+    }
+    #expect(throws: (any Error).self) {
+      try Qux.parse(["--name", "Qux", "--count", "2"])
+    }
   }
 }
 
@@ -88,52 +91,57 @@ private struct Piyo: ParsableArguments {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension UnparsedValuesEndToEndTests {
-  func testParsing_TwoPlusOptionalUnparsed() throws {
-    AssertParse(Hogeraa.self, []) { hogeraa in
-      XCTAssertEqual(hogeraa.fullName, "Full Name")
+  @Test func parsing_TwoPlusOptionalUnparsed() throws {
+    expectParse(Hogeraa.self, []) { hogeraa in
+      #expect(hogeraa.fullName == "Full Name")
     }
 
-    AssertParse(Hogera.self, ["--first-name", "Hogera"]) { hogera in
-      XCTAssertEqual(hogera.firstName, "Hogera")
-      XCTAssertFalse(hogera.hasLastName)
-      XCTAssertNil(hogera.fullName)
+    expectParse(Hogera.self, ["--first-name", "Hogera"]) { hogera in
+      #expect(hogera.firstName == "Hogera")
+      #expect(hogera.hasLastName == false)
+      #expect(hogera.fullName == nil)
     }
-    AssertParse(Hogera.self, ["--first-name", "Hogera", "--has-last-name"]) {
+    expectParse(Hogera.self, ["--first-name", "Hogera", "--has-last-name"]) {
       hogera in
-      XCTAssertEqual(hogera.firstName, "Hogera")
-      XCTAssertTrue(hogera.hasLastName)
-      XCTAssertEqual(hogera.fullName, "Hogera LastName")
+      #expect(hogera.firstName == "Hogera")
+      #expect(hogera.hasLastName)
+      #expect(hogera.fullName == "Hogera LastName")
     }
 
-    AssertParse(Piyo.self, ["--first-name", "Hogera"]) { piyo in
-      XCTAssertEqual(piyo.firstName, "Hogera")
-      XCTAssertFalse(piyo.hasLastName)
-      XCTAssertEqual(piyo.fullName, "Hogera")
+    expectParse(Piyo.self, ["--first-name", "Hogera"]) { piyo in
+      #expect(piyo.firstName == "Hogera")
+      #expect(piyo.hasLastName == false)
+      #expect(piyo.fullName == "Hogera")
     }
-    AssertParse(Piyo.self, ["--first-name", "Hogera", "--has-last-name"]) {
+    expectParse(Piyo.self, ["--first-name", "Hogera", "--has-last-name"]) {
       piyo in
-      XCTAssertEqual(piyo.firstName, "Hogera")
-      XCTAssertTrue(piyo.hasLastName)
-      XCTAssertEqual(piyo.fullName, "Hogera LastName")
+      #expect(piyo.firstName == "Hogera")
+      #expect(piyo.hasLastName)
+      #expect(piyo.fullName == "Hogera LastName")
     }
   }
 
-  func testParsing_TwoPlusOptionalUnparsed_Fails() throws {
-    XCTAssertThrowsError(try Hogeraa.parse(["--full-name"]))
-    XCTAssertThrowsError(try Hogeraa.parse(["--full-name", "Hogera Piyo"]))
-    XCTAssertThrowsError(try Hogera.parse([]))
-    XCTAssertThrowsError(try Hogera.parse(["--first-name"]))
-    XCTAssertThrowsError(
-      try Hogera.parse(["--first-name", "Hogera", "--full-name"]))
-    XCTAssertThrowsError(
+  @Test func parsing_TwoPlusOptionalUnparsed_Fails() throws {
+    #expect(throws: (any Error).self) { try Hogeraa.parse(["--full-name"]) }
+    #expect(throws: (any Error).self) {
+      try Hogeraa.parse(["--full-name", "Hogera Piyo"])
+    }
+    #expect(throws: (any Error).self) { try Hogera.parse([]) }
+    #expect(throws: (any Error).self) { try Hogera.parse(["--first-name"]) }
+    #expect(throws: (any Error).self) {
+      try Hogera.parse(["--first-name", "Hogera", "--full-name"])
+    }
+    #expect(throws: (any Error).self) {
       try Hogera.parse(["--first-name", "Hogera", "--full-name", "Hogera Piyo"])
-    )
-    XCTAssertThrowsError(try Piyo.parse([]))
-    XCTAssertThrowsError(try Piyo.parse(["--first-name"]))
-    XCTAssertThrowsError(
-      try Piyo.parse(["--first-name", "Hogera", "--full-name"]))
-    XCTAssertThrowsError(
-      try Piyo.parse(["--first-name", "Hogera", "--full-name", "Hogera Piyo"]))
+    }
+    #expect(throws: (any Error).self) { try Piyo.parse([]) }
+    #expect(throws: (any Error).self) { try Piyo.parse(["--first-name"]) }
+    #expect(throws: (any Error).self) {
+      try Piyo.parse(["--first-name", "Hogera", "--full-name"])
+    }
+    #expect(throws: (any Error).self) {
+      try Piyo.parse(["--first-name", "Hogera", "--full-name", "Hogera Piyo"])
+    }
   }
 }
 
@@ -164,30 +172,30 @@ private struct DefaultedArguments: ParsableArguments {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension UnparsedValuesEndToEndTests {
-  func testUnparsedNestedValues() {
-    AssertParse(Foo.self, []) { foo in
-      XCTAssertFalse(foo.foo)
-      XCTAssertNil(foo.opt.title)
-      XCTAssertNil(foo.opt.edition)
-      XCTAssertEqual(1, foo.def.one)
-      XCTAssertEqual(2, foo.def.two)
+  @Test func unparsedNestedValues() {
+    expectParse(Foo.self, []) { foo in
+      #expect(foo.foo == false)
+      #expect(foo.opt.title == nil)
+      #expect(foo.opt.edition == nil)
+      #expect(foo.def.one == 1)
+      #expect(foo.def.two == 2)
     }
 
-    AssertParse(
+    expectParse(
       Foo.self,
       ["--foo", "--edition", "5", "Hello", "--one", "2", "--two", "1"]
     ) { foo in
-      XCTAssertTrue(foo.foo)
-      XCTAssertEqual("Hello", foo.opt.title)
-      XCTAssertEqual(5, foo.opt.edition)
-      XCTAssertEqual(2, foo.def.one)
-      XCTAssertEqual(1, foo.def.two)
+      #expect(foo.foo)
+      #expect(foo.opt.title == "Hello")
+      #expect(foo.opt.edition == 5)
+      #expect(foo.def.one == 2)
+      #expect(foo.def.two == 1)
     }
   }
 
-  func testUnparsedNestedValues_Fails() {
-    XCTAssertThrowsError(try Foo.parse(["--edition", "aaa"]))
-    XCTAssertThrowsError(try Foo.parse(["--one", "aaa"]))
+  @Test func unparsedNestedValues_Fails() {
+    #expect(throws: (any Error).self) { try Foo.parse(["--edition", "aaa"]) }
+    #expect(throws: (any Error).self) { try Foo.parse(["--one", "aaa"]) }
   }
 }
 
@@ -222,61 +230,90 @@ private struct Bazz: Decodable {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension UnparsedValuesEndToEndTests {
-  func testUnparsedNestedOptionalValue() {
-    AssertParse(Barr.self, []) { barr in
-      XCTAssertNotNil(barr.baz)
-      XCTAssertEqual(barr.baz?.age, 105)
-      XCTAssertEqual(barr.baz?.name, "Some Name")
+  @Test func unparsedNestedOptionalValue() {
+    expectParse(Barr.self, []) { barr in
+      let baz = try #require(barr.baz)
+
+      #expect(baz.age == 105)
+      #expect(baz.name == "Some Name")
     }
 
-    AssertParse(Bar.self, []) { bar in
-      XCTAssertFalse(bar.bar)
-      XCTAssertNil(bar.baz)
-      XCTAssertNil(bar.baz?.age)
-      XCTAssertNil(bar.baz?.name)
-      XCTAssertNil(bar.bazz)
-      XCTAssertNil(bar.bazz?.age)
-      XCTAssertNil(bar.bazz?.name)
+    expectParse(Bar.self, []) { bar in
+      #expect(bar.bar == false)
+      #expect(bar.baz == nil)
+      #expect(bar.baz?.age == nil)
+      #expect(bar.baz?.name == nil)
+      #expect(bar.bazz == nil)
+      #expect(bar.bazz?.age == nil)
+      #expect(bar.bazz?.name == nil)
     }
 
-    AssertParse(Bar.self, ["--bar"]) { bar in
-      XCTAssertTrue(bar.bar)
-      XCTAssertNotNil(bar.baz)
-      XCTAssertEqual(bar.baz?.name, "Some")
-      XCTAssertEqual(bar.baz?.age, 100)
-      XCTAssertNotNil(bar.bazz)
-      XCTAssertEqual(bar.bazz?.name, "Other")
-      XCTAssertEqual(bar.bazz?.age, 101)
+    expectParse(Bar.self, ["--bar"]) { bar in
+      #expect(bar.bar)
+      let baz = try #require(bar.baz)
+      #expect(baz.name == "Some")
+      #expect(baz.age == 100)
+      let bazz = try #require(bar.bazz)
+      #expect(bazz.name == "Other")
+      #expect(bazz.age == 101)
     }
   }
 
-  func testUnparsedNestedOptionalValue_Fails() {
-    XCTAssertThrowsError(try Bar.parse(["--baz", "xyz"]))
-    XCTAssertThrowsError(try Bar.parse(["--bazz", "xyz"]))
-    XCTAssertThrowsError(try Bar.parse(["--name", "None"]))
-    XCTAssertThrowsError(try Bar.parse(["--age", "123"]))
-    XCTAssertThrowsError(try Bar.parse(["--bar", "--name", "None"]))
-    XCTAssertThrowsError(try Bar.parse(["--bar", "--age", "123"]))
-    XCTAssertThrowsError(try Bar.parse(["--bar", "--baz"]))
-    XCTAssertThrowsError(try Bar.parse(["--bar", "--baz", "xyz"]))
-    XCTAssertThrowsError(try Bar.parse(["--bar", "--baz", "--name", "None"]))
-    XCTAssertThrowsError(try Bar.parse(["--bar", "--baz", "xyz", "--name"]))
-    XCTAssertThrowsError(
-      try Bar.parse(["--bar", "--baz", "xyz", "--name", "None"]))
-    XCTAssertThrowsError(try Bar.parse(["--bar", "--baz", "--age", "None"]))
-    XCTAssertThrowsError(try Bar.parse(["--bar", "--baz", "xyz", "--age"]))
-    XCTAssertThrowsError(
-      try Bar.parse(["--bar", "--baz", "xyz", "--age", "None"]))
-    XCTAssertThrowsError(try Bar.parse(["--bar", "--bazz"]))
-    XCTAssertThrowsError(try Bar.parse(["--bar", "--bazz", "xyz"]))
-    XCTAssertThrowsError(try Bar.parse(["--bar", "--bazz", "--name", "None"]))
-    XCTAssertThrowsError(try Bar.parse(["--bar", "--bazz", "xyz", "--name"]))
-    XCTAssertThrowsError(
-      try Bar.parse(["--bar", "--bazz", "xyz", "--name", "None"]))
-    XCTAssertThrowsError(try Bar.parse(["--bar", "--bazz", "--age", "None"]))
-    XCTAssertThrowsError(try Bar.parse(["--bar", "--bazz", "xyz", "--age"]))
-    XCTAssertThrowsError(
-      try Bar.parse(["--bar", "--bazz", "xyz", "--age", "None"]))
+  @Test func unparsedNestedOptionalValue_Fails() {
+    #expect(throws: (any Error).self) { try Bar.parse(["--baz", "xyz"]) }
+    #expect(throws: (any Error).self) { try Bar.parse(["--bazz", "xyz"]) }
+    #expect(throws: (any Error).self) { try Bar.parse(["--name", "None"]) }
+    #expect(throws: (any Error).self) { try Bar.parse(["--age", "123"]) }
+    #expect(throws: (any Error).self) {
+      try Bar.parse(["--bar", "--name", "None"])
+    }
+    #expect(throws: (any Error).self) {
+      try Bar.parse(["--bar", "--age", "123"])
+    }
+    #expect(throws: (any Error).self) { try Bar.parse(["--bar", "--baz"]) }
+    #expect(throws: (any Error).self) {
+      try Bar.parse(["--bar", "--baz", "xyz"])
+    }
+    #expect(throws: (any Error).self) {
+      try Bar.parse(["--bar", "--baz", "--name", "None"])
+    }
+    #expect(throws: (any Error).self) {
+      try Bar.parse(["--bar", "--baz", "xyz", "--name"])
+    }
+    #expect(throws: (any Error).self) {
+      try Bar.parse(["--bar", "--baz", "xyz", "--name", "None"])
+    }
+    #expect(throws: (any Error).self) {
+      try Bar.parse(["--bar", "--baz", "--age", "None"])
+    }
+    #expect(throws: (any Error).self) {
+      try Bar.parse(["--bar", "--baz", "xyz", "--age"])
+    }
+    #expect(throws: (any Error).self) {
+      try Bar.parse(["--bar", "--baz", "xyz", "--age", "None"])
+    }
+    #expect(throws: (any Error).self) { try Bar.parse(["--bar", "--bazz"]) }
+    #expect(throws: (any Error).self) {
+      try Bar.parse(["--bar", "--bazz", "xyz"])
+    }
+    #expect(throws: (any Error).self) {
+      try Bar.parse(["--bar", "--bazz", "--name", "None"])
+    }
+    #expect(throws: (any Error).self) {
+      try Bar.parse(["--bar", "--bazz", "xyz", "--name"])
+    }
+    #expect(throws: (any Error).self) {
+      try Bar.parse(["--bar", "--bazz", "xyz", "--name", "None"])
+    }
+    #expect(throws: (any Error).self) {
+      try Bar.parse(["--bar", "--bazz", "--age", "None"])
+    }
+    #expect(throws: (any Error).self) {
+      try Bar.parse(["--bar", "--bazz", "xyz", "--age"])
+    }
+    #expect(throws: (any Error).self) {
+      try Bar.parse(["--bar", "--bazz", "xyz", "--age", "None"])
+    }
   }
 }
 
@@ -291,11 +328,11 @@ private struct Bamf: ParsableCommand {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension UnparsedValuesEndToEndTests {
-  func testUnparsedNestedDictionary() {
-    AssertParse(Bamf.self, []) { bamf in
-      XCTAssertFalse(bamf.bamph)
-      XCTAssertEqual(bamf.bop, [:])
-      XCTAssertEqual(bamf.bopp, [:])
+  @Test func unparsedNestedDictionary() {
+    expectParse(Bamf.self, []) { bamf in
+      #expect(bamf.bamph == false)
+      #expect(bamf.bop == [:])
+      #expect(bamf.bopp == [:])
     }
   }
 }
@@ -320,10 +357,10 @@ private enum Qiqii: Codable, Equatable {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension UnparsedValuesEndToEndTests {
-  func testUnparsedEnumWithAssociatedValues() {
-    AssertParse(Qiqi.self, []) { qiqi in
-      XCTAssertFalse(qiqi.qiqiqi)
-      XCTAssertEqual(qiqi.qiqii, .q(""))
+  @Test func unparsedEnumWithAssociatedValues() {
+    expectParse(Qiqi.self, []) { qiqi in
+      #expect(qiqi.qiqiqi == false)
+      #expect(qiqi.qiqii == .q(""))
     }
   }
 }
@@ -346,11 +383,11 @@ private final class Vig: Toks {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension UnparsedValuesEndToEndTests {
-  func testUnparsedNestedInheritingClassType() {
-    AssertParse(Fry.self, []) { fry in
-      XCTAssertFalse(fry.c)
-      XCTAssertEqual(fry.toksVig.a, "hello")
-      XCTAssertEqual(fry.toksVig.b, "world")
+  @Test func unparsedNestedInheritingClassType() {
+    expectParse(Fry.self, []) { fry in
+      #expect(fry.c == false)
+      #expect(fry.toksVig.a == "hello")
+      #expect(fry.toksVig.b == "world")
     }
   }
 }

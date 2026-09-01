@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2020 Apple Inc. and the Swift project authors
+// Copyright (c) 2020-2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -12,12 +12,10 @@
 import ArgumentParserTestHelpers
 import ArgumentParserToolInfo
 import Testing
-import XCTest
 
 @testable import ArgumentParser
 
-final class DefaultSubcommandEndToEndTests: XCTestCase {
-}
+@Suite struct DefaultSubcommandEndToEndTests {}
 
 // MARK: -
 
@@ -40,37 +38,39 @@ private struct Foo: ParsableCommand {}
 private struct Bar: ParsableCommand {}
 
 extension DefaultSubcommandEndToEndTests {
-  func testDefaultSubcommand() {
-    AssertParseCommand(Main.self, Default.self, []) { def in
-      XCTAssertEqual(.foo, def.mode)
+  @Test func defaultSubcommand() {
+    expectParseCommand(Main.self, Default.self, []) { def in
+      #expect(def.mode == .foo)
     }
 
-    AssertParseCommand(Main.self, Default.self, ["--mode=bar"]) { def in
-      XCTAssertEqual(.bar, def.mode)
+    expectParseCommand(Main.self, Default.self, ["--mode=bar"]) { def in
+      #expect(def.mode == .bar)
     }
 
-    AssertParseCommand(Main.self, Default.self, ["--mode", "bar"]) { def in
-      XCTAssertEqual(.bar, def.mode)
+    expectParseCommand(Main.self, Default.self, ["--mode", "bar"]) { def in
+      #expect(def.mode == .bar)
     }
 
-    AssertParseCommand(Main.self, Default.self, ["--mode", "baz"]) { def in
-      XCTAssertEqual(.baz, def.mode)
+    expectParseCommand(Main.self, Default.self, ["--mode", "baz"]) { def in
+      #expect(def.mode == .baz)
     }
   }
 
-  func testNonDefaultSubcommand() {
-    AssertParseCommand(Main.self, Foo.self, ["foo"]) { _ in }
-    AssertParseCommand(Main.self, Bar.self, ["bar"]) { _ in }
+  @Test func nonDefaultSubcommand() {
+    expectParseCommand(Main.self, Foo.self, ["foo"]) { _ in }
+    expectParseCommand(Main.self, Bar.self, ["bar"]) { _ in }
 
-    AssertParseCommand(Main.self, Default.self, ["default", "--mode", "bar"]) {
+    expectParseCommand(Main.self, Default.self, ["default", "--mode", "bar"]) {
       def in
-      XCTAssertEqual(.bar, def.mode)
+      #expect(def.mode == .bar)
     }
   }
 
-  func testParsingFailure() {
-    XCTAssertThrowsError(try Main.parseAsRoot(["--mode", "qux"]))
-    XCTAssertThrowsError(try Main.parseAsRoot(["qux"]))
+  @Test func parsingFailure() {
+    #expect(throws: (any Error).self) {
+      try Main.parseAsRoot(["--mode", "qux"])
+    }
+    #expect(throws: (any Error).self) { try Main.parseAsRoot(["qux"]) }
   }
 }
 
@@ -124,183 +124,187 @@ extension DefaultSubcommandEndToEndTests {
     @ParentCommand var notMyParent: Other
   }
 
-  func testAccessToParent() throws {
-    AssertParseCommand(
+  @Test func accessToParent() throws {
+    expectParseCommand(
       MyCommand.self, Child.self, ["--verbose", "--foo=bar", "child"]
     ) { child in
-      XCTAssertEqual(child.parent.foo, "bar")
-      XCTAssertEqual(child.parent.options.verbose, true)
+      #expect(child.parent.foo == "bar")
+      #expect(child.parent.options.verbose == true)
     }
   }
 
-  func testNotMyParent() {
-    AssertParseCommandErrorMessage(
-      MyCommand.self, BadParent.self, ["--verbose", "bad-parent"],
-      "Command 'Other' is not a parent of the current command.")
+  @Test func notMyParent() {
+    // migrate to `#expect(throws:expression)`
+    #expect {
+      _ = try MyCommand.parseAsRoot(["--verbose", "bad-parent"])
+    } throws: { error in
+      let message = MyCommand.message(for: error)
+      return message
+        == "Command 'Other' is not a parent of the current command."
+    }
+    // do {
+    //   _ = try MyCommand.parseAsRoot(["--verbose", "bad-parent"])
+    //   Issue.record("Parsing should have failed.")
+    // } catch {
+    //   let message = MyCommand.message(for: error)
+    //   #expect(
+    //     message == "Command 'Other' is not a parent of the current command.")
+    // }
   }
 
-  func testNotLeakingParentOptions() throws {
+  @Test func notLeakingParentOptions() throws {
     // Verify that the help for the child command doesn't leak the parent command's options in the help
     let childHelp = MyCommand.message(for: CleanExit.helpRequest(Child.self))
-    XCTAssertEqual(
-      childHelp,
-      """
-      USAGE: my-command child
+    #expect(
+      childHelp == """
+        USAGE: my-command child
 
-      OPTIONS:
-        -h, --help              Show help information.
+        OPTIONS:
+          -h, --help              Show help information.
 
-      """)
+        """)
 
     // Now check that the foo option doesn't leak into the JSON dump
     let toolInfo = ToolInfoV0(commandStack: [MyCommand.self.asCommand])
 
-    let arguments = toolInfo.command.arguments
-    guard let arguments else {
-      XCTFail(
-        "MyCommand is expected to have a top-level command arguments in its tool info"
-      )
-      return
-    }
+    let arguments = try #require(
+      toolInfo.command.arguments,
+      "MyCommand is expected to have a top-level command arguments in its tool info"
+    )
 
-    let subcommands = toolInfo.command.subcommands
-    guard let subcommands else {
-      XCTFail(
-        "MyCommand is expected to have a top-level command arguments in its tool info"
-      )
-      return
-    }
+    let subcommands = try #require(
+      toolInfo.command.subcommands,
+      "MyCommand is expected to have a top-level command arguments in its tool info"
+    )
 
     // The foo option is present int he parent
-    XCTAssertNotNil(arguments.first { $0.valueName == "foo" })
+    #expect(arguments.first { $0.valueName == "foo" } != nil)
 
-    let childInfo = subcommands.first { cmd in
-      cmd.commandName == "child"
-    }
+    let childInfo = try #require(
+      subcommands.first { cmd in
+        cmd.commandName == "child"
+      },
+      "The child subcommand is expected to be present in the tool info")
 
-    guard let childInfo else {
-      XCTFail("The child subcommand is expected to be present in the tool info")
-      return
-    }
-
-    guard let childArguments = childInfo.arguments else {
-      XCTFail(
-        "The child subcommand is expected to have arguments in the tool info")
-      return
-    }
+    let childArguments = try #require(
+      childInfo.arguments,
+      "The child subcommand is expected to have arguments in the tool info")
 
     // It's not there in the child subcommand
-    XCTAssertNil(childArguments.first { $0.valueName == "foo" })
+    #expect(childArguments.first { $0.valueName == "foo" } == nil)
   }
 
-  func testRemainingDefaultImplicit() throws {
-    AssertParseCommand(MyCommand.self, Plugin.self, ["my-plugin"]) { plugin in
-      XCTAssertEqual(plugin.pluginName, "my-plugin")
-      XCTAssertEqual(plugin.pluginArguments, [])
-      XCTAssertEqual(plugin.options.verbose, false)
+  @Test func remainingDefaultImplicit() throws {
+    expectParseCommand(MyCommand.self, Plugin.self, ["my-plugin"]) { plugin in
+      #expect(plugin.pluginName == "my-plugin")
+      #expect(plugin.pluginArguments == [])
+      #expect(plugin.options.verbose == false)
     }
-    AssertParseCommand(MyCommand.self, Plugin.self, ["my-plugin", "--verbose"])
+    expectParseCommand(MyCommand.self, Plugin.self, ["my-plugin", "--verbose"])
     { plugin in
-      XCTAssertEqual(plugin.pluginName, "my-plugin")
-      XCTAssertEqual(plugin.pluginArguments, ["--verbose"])
-      XCTAssertEqual(plugin.options.verbose, false)
+      #expect(plugin.pluginName == "my-plugin")
+      #expect(plugin.pluginArguments == ["--verbose"])
+      #expect(plugin.options.verbose == false)
     }
-    AssertParseCommand(
+    expectParseCommand(
       MyCommand.self, Plugin.self, ["--verbose", "my-plugin", "--verbose"]
     ) { plugin in
-      XCTAssertEqual(plugin.pluginName, "my-plugin")
-      XCTAssertEqual(plugin.pluginArguments, ["--verbose"])
-      XCTAssertEqual(plugin.options.verbose, true)
+      #expect(plugin.pluginName == "my-plugin")
+      #expect(plugin.pluginArguments == ["--verbose"])
+      #expect(plugin.options.verbose == true)
     }
-    AssertParseCommand(MyCommand.self, Plugin.self, ["my-plugin", "--help"]) {
+    expectParseCommand(MyCommand.self, Plugin.self, ["my-plugin", "--help"]) {
       plugin in
-      XCTAssertEqual(plugin.pluginName, "my-plugin")
-      XCTAssertEqual(plugin.pluginArguments, ["--help"])
-      XCTAssertEqual(plugin.options.verbose, false)
+      #expect(plugin.pluginName == "my-plugin")
+      #expect(plugin.pluginArguments == ["--help"])
+      #expect(plugin.options.verbose == false)
     }
   }
 
-  func testRemainingDefaultExplicit() throws {
-    AssertParseCommand(MyCommand.self, Plugin.self, ["plugin", "my-plugin"]) {
+  @Test func remainingDefaultExplicit() throws {
+    expectParseCommand(MyCommand.self, Plugin.self, ["plugin", "my-plugin"]) {
       plugin in
-      XCTAssertEqual(plugin.pluginName, "my-plugin")
-      XCTAssertEqual(plugin.pluginArguments, [])
-      XCTAssertEqual(plugin.options.verbose, false)
+      #expect(plugin.pluginName == "my-plugin")
+      #expect(plugin.pluginArguments == [])
+      #expect(plugin.options.verbose == false)
     }
-    AssertParseCommand(
+    expectParseCommand(
       MyCommand.self, Plugin.self, ["plugin", "my-plugin", "--verbose"]
     ) { plugin in
-      XCTAssertEqual(plugin.pluginName, "my-plugin")
-      XCTAssertEqual(plugin.pluginArguments, ["--verbose"])
-      XCTAssertEqual(plugin.options.verbose, false)
+      #expect(plugin.pluginName == "my-plugin")
+      #expect(plugin.pluginArguments == ["--verbose"])
+      #expect(plugin.options.verbose == false)
     }
-    AssertParseCommand(
+    expectParseCommand(
       MyCommand.self, Plugin.self,
       ["--verbose", "plugin", "my-plugin", "--verbose"]
     ) { plugin in
-      XCTAssertEqual(plugin.pluginName, "my-plugin")
-      XCTAssertEqual(plugin.pluginArguments, ["--verbose"])
-      XCTAssertEqual(plugin.options.verbose, true)
+      #expect(plugin.pluginName == "my-plugin")
+      #expect(plugin.pluginArguments == ["--verbose"])
+      #expect(plugin.options.verbose == true)
     }
-    AssertParseCommand(
+    expectParseCommand(
       MyCommand.self, Plugin.self,
       ["--verbose", "plugin", "my-plugin", "--help"]
     ) { plugin in
-      XCTAssertEqual(plugin.pluginName, "my-plugin")
-      XCTAssertEqual(plugin.pluginArguments, ["--help"])
-      XCTAssertEqual(plugin.options.verbose, true)
+      #expect(plugin.pluginName == "my-plugin")
+      #expect(plugin.pluginArguments == ["--help"])
+      #expect(plugin.options.verbose == true)
     }
   }
 
-  func testRemainingNonDefault() throws {
-    AssertParseCommand(
+  @Test func remainingNonDefault() throws {
+    expectParseCommand(
       MyCommand.self, NonDefault.self, ["non-default", "my-plugin"]
     ) { nondef in
-      XCTAssertEqual(nondef.pluginName, "my-plugin")
-      XCTAssertEqual(nondef.pluginArguments, [])
-      XCTAssertEqual(nondef.options.verbose, false)
+      #expect(nondef.pluginName == "my-plugin")
+      #expect(nondef.pluginArguments == [])
+      #expect(nondef.options.verbose == false)
     }
-    AssertParseCommand(
+    expectParseCommand(
       MyCommand.self, NonDefault.self,
       ["non-default", "my-plugin", "--verbose"]
     ) { nondef in
-      XCTAssertEqual(nondef.pluginName, "my-plugin")
-      XCTAssertEqual(nondef.pluginArguments, ["--verbose"])
-      XCTAssertEqual(nondef.options.verbose, false)
+      #expect(nondef.pluginName == "my-plugin")
+      #expect(nondef.pluginArguments == ["--verbose"])
+      #expect(nondef.options.verbose == false)
     }
-    AssertParseCommand(
+    expectParseCommand(
       MyCommand.self, NonDefault.self,
       ["--verbose", "non-default", "my-plugin", "--verbose"]
     ) { nondef in
-      XCTAssertEqual(nondef.pluginName, "my-plugin")
-      XCTAssertEqual(nondef.pluginArguments, ["--verbose"])
-      XCTAssertEqual(nondef.options.verbose, true)
+      #expect(nondef.pluginName == "my-plugin")
+      #expect(nondef.pluginArguments == ["--verbose"])
+      #expect(nondef.options.verbose == true)
     }
-    AssertParseCommand(
+    expectParseCommand(
       MyCommand.self, NonDefault.self,
       ["--verbose", "non-default", "my-plugin", "--help"]
     ) { nondef in
-      XCTAssertEqual(nondef.pluginName, "my-plugin")
-      XCTAssertEqual(nondef.pluginArguments, ["--help"])
-      XCTAssertEqual(nondef.options.verbose, true)
+      #expect(nondef.pluginName == "my-plugin")
+      #expect(nondef.pluginArguments == ["--help"])
+      #expect(nondef.options.verbose == true)
     }
   }
 
-  func testRemainingDefaultOther() throws {
-    AssertParseCommand(MyCommand.self, Other.self, ["other"]) { other in
-      XCTAssertEqual(other.options.verbose, false)
+  @Test func remainingDefaultOther() throws {
+    expectParseCommand(MyCommand.self, Other.self, ["other"]) { other in
+      #expect(other.options.verbose == false)
     }
-    AssertParseCommand(MyCommand.self, Other.self, ["other", "--verbose"]) {
+    expectParseCommand(MyCommand.self, Other.self, ["other", "--verbose"]) {
       other in
-      XCTAssertEqual(other.options.verbose, true)
+      #expect(other.options.verbose == true)
     }
   }
 
-  func testRemainingDefaultFailure() {
-    XCTAssertThrowsError(try MyCommand.parseAsRoot([]))
-    XCTAssertThrowsError(try MyCommand.parseAsRoot(["--verbose"]))
-    XCTAssertThrowsError(
-      try MyCommand.parseAsRoot(["plugin", "--verbose", "my-plugin"]))
+  @Test func remainingDefaultFailure() {
+    #expect(throws: (any Error).self) { try MyCommand.parseAsRoot([]) }
+    #expect(throws: (any Error).self) {
+      try MyCommand.parseAsRoot(["--verbose"])
+    }
+    #expect(throws: (any Error).self) {
+      try MyCommand.parseAsRoot(["plugin", "--verbose", "my-plugin"])
+    }
   }
 }
 
@@ -319,14 +323,14 @@ extension DefaultSubcommandEndToEndTests {
   }
 
   // Test fix for https://github.com/apple/swift-package-manager/issues/7218
-  func testHelpWithPassthroughDefault() throws {
-    AssertParseCommand(
+  @Test func helpWithPassthroughDefault() throws {
+    expectParseCommand(
       RootWithPassthroughDefault.self, HelpCommand.self, ["-h"]
     ) { _ in }
-    AssertParseCommand(
+    expectParseCommand(
       RootWithPassthroughDefault.self, HelpCommand.self, ["-help"]
     ) { _ in }
-    AssertParseCommand(
+    expectParseCommand(
       RootWithPassthroughDefault.self, HelpCommand.self, ["--help"]
     ) { _ in }
   }
@@ -354,24 +358,24 @@ extension DefaultSubcommandEndToEndTests {
   }
 
   // Test fix for https://github.com/apple/swift-argument-parser/issues/865
-  func testHelpWithNestedDefaultSubcommand() throws {
-    AssertParseCommand(
+  @Test func helpWithNestedDefaultSubcommand() throws {
+    expectParseCommand(
       NestedDefaultSubcommandHelp.self, HelpCommand.self, ["--help"]
     ) { command in
-      XCTAssert(command.commandStack.count == 1)
-      XCTAssert(
+      #expect(command.commandStack.count == 1)
+      #expect(
         type(of: command.commandStack[0])
           == NestedDefaultSubcommandHelp.Type.self)
     }
 
-    AssertParseCommand(
+    expectParseCommand(
       NestedDefaultSubcommandHelp.self, HelpCommand.self, ["nested", "--help"]
     ) { command in
-      XCTAssert(command.commandStack.count == 2)
-      XCTAssert(
+      #expect(command.commandStack.count == 2)
+      #expect(
         type(of: command.commandStack[0])
           == NestedDefaultSubcommandHelp.Type.self)
-      XCTAssert(
+      #expect(
         type(of: command.commandStack[1])
           == NestedDefaultSubcommandHelp.Nested.Type.self)
     }

@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2022 Apple Inc. and the Swift project authors
+// Copyright (c) 2022-2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -11,7 +11,6 @@
 
 import ArgumentParserTestHelpers
 import Testing
-import XCTest
 
 @testable import ArgumentParser
 
@@ -33,48 +32,49 @@ private struct AllUnrecognizedArgs: ParsableCommand {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension RepeatingEndToEndTests {
-  func testParsing_repeatingAllUnrecognized() throws {
-    AssertParse(AllUnrecognizedArgs.self, []) { cmd in
-      XCTAssertFalse(cmd.verbose)
-      XCTAssertFalse(cmd.hoopla)
-      XCTAssertEqual(cmd.names, [])
+  @Test func parsing_repeatingAllUnrecognized() throws {
+    expectParse(AllUnrecognizedArgs.self, []) { cmd in
+      #expect(cmd.verbose == false)
+      #expect(cmd.hoopla == false)
+      #expect(cmd.names == [])
     }
-    AssertParse(
+    expectParse(
       AllUnrecognizedArgs.self,
       ["foo", "--verbose", "-fi", "bar", "-z", "--other"]
     ) { cmd in
-      XCTAssertTrue(cmd.verbose)
-      XCTAssertTrue(cmd.useFiles)
-      XCTAssertTrue(cmd.useStandardInput)
-      XCTAssertFalse(cmd.hoopla)
-      XCTAssertEqual(cmd.names, ["foo", "bar", "-z", "--other"])
+      #expect(cmd.verbose)
+      #expect(cmd.useFiles)
+      #expect(cmd.useStandardInput)
+      #expect(cmd.hoopla == false)
+      #expect(cmd.names == ["foo", "bar", "-z", "--other"])
     }
   }
 
-  func testParsing_repeatingAllUnrecognized_Builtin() throws {
-    AssertParse(
+  @Test func parsing_repeatingAllUnrecognized_Builtin() throws {
+    expectParse(
       AllUnrecognizedArgs.self, ["foo", "--verbose", "bar", "-z", "-h"]
     ) { cmd in
-      XCTAssertTrue(cmd.verbose)
-      XCTAssertFalse(cmd.useFiles)
-      XCTAssertFalse(cmd.useStandardInput)
-      XCTAssertTrue(cmd.hoopla)
-      XCTAssertEqual(cmd.names, ["foo", "bar", "-z"])
+      #expect(cmd.verbose)
+      #expect(cmd.useFiles == false)
+      #expect(cmd.useStandardInput == false)
+      #expect(cmd.hoopla)
+      #expect(cmd.names == ["foo", "bar", "-z"])
     }
 
-    AssertParseCommand(
+    expectParseCommand(
       AllUnrecognizedArgs.self, HelpCommand.self,
       ["foo", "--verbose", "bar", "-z", "--help"]
     ) { cmd in
       // No need to test HelpCommand properties
     }
-    XCTAssertThrowsError(
-      try AllUnrecognizedArgs.parse(["foo", "--verbose", "--version"]))
+    #expect(throws: (any Error).self) {
+      try AllUnrecognizedArgs.parse(["foo", "--verbose", "--version"])
+    }
   }
 
-  func testParsing_repeatingAllUnrecognized_Fails() throws {
+  @Test func parsing_repeatingAllUnrecognized_Fails() throws {
     // Only partially matches the `-fib` argument
-    XCTAssertThrowsError(try PassthroughArgs.parse(["-fib"]))
+    #expect(throws: (any Error).self) { try PassthroughArgs.parse(["-fib"]) }
   }
 }
 
@@ -96,31 +96,32 @@ private struct AllUnrecognizedRoot: ParsableCommand {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension RepeatingEndToEndTests {
-  func testParsing_repeatingAllUnrecognized_Nested() throws {
-    AssertParseCommand(
+  @Test func parsing_repeatingAllUnrecognized_Nested() throws {
+    expectParseCommand(
       AllUnrecognizedRoot.self, AllUnrecognizedRoot.Child.self,
       ["child"]
     ) { cmd in
-      XCTAssertFalse(cmd.root.verbose)
-      XCTAssertFalse(cmd.includeExtras)
-      XCTAssertEqual(cmd.config, "debug")
-      XCTAssertEqual(cmd.extras, [])
+      #expect(cmd.root.verbose == false)
+      #expect(cmd.includeExtras == false)
+      #expect(cmd.config == "debug")
+      #expect(cmd.extras == [])
     }
-    AssertParseCommand(
+    expectParseCommand(
       AllUnrecognizedRoot.self, AllUnrecognizedRoot.Child.self,
       ["child", "--verbose", "--other", "one", "two", "--config", "prod"]
     ) { cmd in
-      XCTAssertTrue(cmd.root.verbose)
-      XCTAssertFalse(cmd.includeExtras)
-      XCTAssertEqual(cmd.config, "prod")
-      XCTAssertEqual(cmd.extras, ["--other", "one", "two"])
+      #expect(cmd.root.verbose)
+      #expect(cmd.includeExtras == false)
+      #expect(cmd.config == "prod")
+      #expect(cmd.extras == ["--other", "one", "two"])
     }
   }
 
-  func testParsing_repeatingAllUnrecognized_Nested_Fails() throws {
+  @Test func parsing_repeatingAllUnrecognized_Nested_Fails() throws {
     // Extra arguments need to make it to the child
-    XCTAssertThrowsError(
-      try AllUnrecognizedRoot.parse(["--verbose", "--other"]))
+    #expect(throws: (any Error).self) {
+      try AllUnrecognizedRoot.parse(["--verbose", "--other"])
+    }
   }
 }
 
@@ -138,43 +139,46 @@ private struct PostTerminatorArgs: ParsableArguments {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension RepeatingEndToEndTests {
-  func testParsing_repeatingPostTerminator() throws {
-    AssertParse(PostTerminatorArgs.self, []) { cmd in
-      XCTAssertNil(cmd.title)
-      XCTAssertEqual(cmd.names, [])
+  @Test func parsing_repeatingPostTerminator() throws {
+    expectParse(PostTerminatorArgs.self, []) { cmd in
+      #expect(cmd.title == nil)
+      #expect(cmd.names == [])
     }
-    AssertParse(PostTerminatorArgs.self, ["--", "-fi"]) { cmd in
-      XCTAssertNil(cmd.title)
-      XCTAssertEqual(cmd.names, ["-fi"])
+    expectParse(PostTerminatorArgs.self, ["--", "-fi"]) { cmd in
+      #expect(cmd.title == nil)
+      #expect(cmd.names == ["-fi"])
     }
-    AssertParse(PostTerminatorArgs.self, ["-fi", "--", "-fi", "--"]) { cmd in
-      XCTAssertTrue(cmd.useFiles)
-      XCTAssertTrue(cmd.useStandardInput)
-      XCTAssertNil(cmd.title)
-      XCTAssertEqual(cmd.names, ["-fi", "--"])
+    expectParse(PostTerminatorArgs.self, ["-fi", "--", "-fi", "--"]) { cmd in
+      #expect(cmd.useFiles)
+      #expect(cmd.useStandardInput)
+      #expect(cmd.title == nil)
+      #expect(cmd.names == ["-fi", "--"])
     }
-    AssertParse(PostTerminatorArgs.self, ["-fi", "title", "--", "title"]) {
+    expectParse(PostTerminatorArgs.self, ["-fi", "title", "--", "title"]) {
       cmd in
-      XCTAssertTrue(cmd.useFiles)
-      XCTAssertTrue(cmd.useStandardInput)
-      XCTAssertEqual(cmd.title, "title")
-      XCTAssertEqual(cmd.names, ["title"])
+      #expect(cmd.useFiles)
+      #expect(cmd.useStandardInput)
+      #expect(cmd.title == "title")
+      #expect(cmd.names == ["title"])
     }
-    AssertParse(
+    expectParse(
       PostTerminatorArgs.self, ["--config", "config", "--", "--config", "post"]
     ) { cmd in
-      XCTAssertEqual(cmd.config, "config")
-      XCTAssertNil(cmd.title)
-      XCTAssertEqual(cmd.names, ["--config", "post"])
+      #expect(cmd.config == "config")
+      #expect(cmd.title == nil)
+      #expect(cmd.names == ["--config", "post"])
     }
   }
 
-  func testParsing_repeatingPostTerminator_Fails() throws {
+  @Test func parsing_repeatingPostTerminator_Fails() throws {
     // Only partially matches the `-fib` argument
-    XCTAssertThrowsError(try PostTerminatorArgs.parse(["-fib"]))
+    #expect(throws: (any Error).self) {
+      try PostTerminatorArgs.parse(["-fib"])
+    }
     // The post-terminator input can't provide the option's value
-    XCTAssertThrowsError(
-      try PostTerminatorArgs.parse(["--config", "--", "config"]))
+    #expect(throws: (any Error).self) {
+      try PostTerminatorArgs.parse(["--config", "--", "config"])
+    }
   }
 }
 
@@ -191,122 +195,121 @@ private struct PassthroughArgs: ParsableCommand {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension RepeatingEndToEndTests {
-  func testParsing_repeatingCaptureForPassthrough() throws {
-    AssertParse(PassthroughArgs.self, []) { cmd in
-      XCTAssertFalse(cmd.verbose)
-      XCTAssertEqual(cmd.names, [])
+  @Test func parsing_repeatingCaptureForPassthrough() throws {
+    expectParse(PassthroughArgs.self, []) { cmd in
+      #expect(cmd.verbose == false)
+      #expect(cmd.names == [])
     }
 
-    AssertParse(PassthroughArgs.self, ["--other"]) { cmd in
-      XCTAssertFalse(cmd.verbose)
-      XCTAssertEqual(cmd.names, ["--other"])
+    expectParse(PassthroughArgs.self, ["--other"]) { cmd in
+      #expect(cmd.verbose == false)
+      #expect(cmd.names == ["--other"])
     }
 
-    AssertParse(PassthroughArgs.self, ["--verbose", "one", "two", "three"]) {
+    expectParse(PassthroughArgs.self, ["--verbose", "one", "two", "three"]) {
       cmd in
-      XCTAssertTrue(cmd.verbose)
-      XCTAssertEqual(cmd.names, ["one", "two", "three"])
+      #expect(cmd.verbose)
+      #expect(cmd.names == ["one", "two", "three"])
     }
 
-    AssertParse(
+    expectParse(
       PassthroughArgs.self, ["one", "two", "three", "--other", "--verbose"]
     ) { cmd in
-      XCTAssertFalse(cmd.verbose)
-      XCTAssertEqual(
-        cmd.names, ["one", "two", "three", "--other", "--verbose"])
+      #expect(cmd.verbose == false)
+      #expect(cmd.names == ["one", "two", "three", "--other", "--verbose"])
     }
 
-    AssertParse(
+    expectParse(
       PassthroughArgs.self, ["--verbose", "--other", "one", "two", "three"]
     ) { cmd in
-      XCTAssertTrue(cmd.verbose)
-      XCTAssertEqual(cmd.names, ["--other", "one", "two", "three"])
+      #expect(cmd.verbose)
+      #expect(cmd.names == ["--other", "one", "two", "three"])
     }
 
-    AssertParse(
+    expectParse(
       PassthroughArgs.self,
       ["--verbose", "--other", "one", "--", "two", "three"]
     ) { cmd in
-      XCTAssertTrue(cmd.verbose)
-      XCTAssertEqual(cmd.names, ["--other", "one", "--", "two", "three"])
+      #expect(cmd.verbose)
+      #expect(cmd.names == ["--other", "one", "--", "two", "three"])
     }
 
-    AssertParse(
+    expectParse(
       PassthroughArgs.self,
       ["--other", "one", "--", "two", "three", "--verbose"]
     ) { cmd in
-      XCTAssertFalse(cmd.verbose)
-      XCTAssertEqual(
-        cmd.names, ["--other", "one", "--", "two", "three", "--verbose"])
+      #expect(cmd.verbose == false)
+      #expect(
+        cmd.names == ["--other", "one", "--", "two", "three", "--verbose"])
     }
 
-    AssertParse(
+    expectParse(
       PassthroughArgs.self,
       ["--", "--verbose", "--other", "one", "two", "three"]
     ) { cmd in
-      XCTAssertFalse(cmd.verbose)
-      XCTAssertEqual(
-        cmd.names, ["--", "--verbose", "--other", "one", "two", "three"])
+      #expect(cmd.verbose == false)
+      #expect(
+        cmd.names == ["--", "--verbose", "--other", "one", "two", "three"])
     }
 
-    AssertParse(PassthroughArgs.self, ["-one", "-two", "three"]) { cmd in
-      XCTAssertFalse(cmd.verbose)
-      XCTAssertFalse(cmd.useFiles)
-      XCTAssertFalse(cmd.useStandardInput)
-      XCTAssertEqual(cmd.names, ["-one", "-two", "three"])
+    expectParse(PassthroughArgs.self, ["-one", "-two", "three"]) { cmd in
+      #expect(cmd.verbose == false)
+      #expect(cmd.useFiles == false)
+      #expect(cmd.useStandardInput == false)
+      #expect(cmd.names == ["-one", "-two", "three"])
     }
 
-    AssertParse(
+    expectParse(
       PassthroughArgs.self,
       ["--config", "release", "one", "two", "--config", "debug"]
     ) { cmd in
-      XCTAssertEqual(cmd.config, "release")
-      XCTAssertEqual(cmd.names, ["one", "two", "--config", "debug"])
+      #expect(cmd.config == "release")
+      #expect(cmd.names == ["one", "two", "--config", "debug"])
     }
 
-    AssertParse(
+    expectParse(
       PassthroughArgs.self,
       ["--config", "release", "--config", "debug", "one", "two"]
     ) { cmd in
-      XCTAssertEqual(cmd.config, "debug")
-      XCTAssertEqual(cmd.names, ["one", "two"])
+      #expect(cmd.config == "debug")
+      #expect(cmd.names == ["one", "two"])
     }
 
-    AssertParse(PassthroughArgs.self, ["-if", "-one", "-two", "three"]) { cmd in
-      XCTAssertFalse(cmd.verbose)
-      XCTAssertTrue(cmd.useFiles)
-      XCTAssertTrue(cmd.useStandardInput)
-      XCTAssertEqual(cmd.names, ["-one", "-two", "three"])
+    expectParse(PassthroughArgs.self, ["-if", "-one", "-two", "three"]) { cmd in
+      #expect(cmd.verbose == false)
+      #expect(cmd.useFiles)
+      #expect(cmd.useStandardInput)
+      #expect(cmd.names == ["-one", "-two", "three"])
     }
 
-    AssertParse(PassthroughArgs.self, ["-one", "-two", "-three", "-if"]) {
+    expectParse(PassthroughArgs.self, ["-one", "-two", "-three", "-if"]) {
       cmd in
-      XCTAssertFalse(cmd.verbose)
-      XCTAssertFalse(cmd.useFiles)
-      XCTAssertFalse(cmd.useStandardInput)
-      XCTAssertEqual(cmd.names, ["-one", "-two", "-three", "-if"])
+      #expect(cmd.verbose == false)
+      #expect(cmd.useFiles == false)
+      #expect(cmd.useStandardInput == false)
+      #expect(cmd.names == ["-one", "-two", "-three", "-if"])
     }
 
-    AssertParse(
+    expectParse(
       PassthroughArgs.self, ["-one", "-two", "-three", "-if", "--help"]
     ) { cmd in
-      XCTAssertFalse(cmd.verbose)
-      XCTAssertFalse(cmd.useFiles)
-      XCTAssertFalse(cmd.useStandardInput)
-      XCTAssertEqual(cmd.names, ["-one", "-two", "-three", "-if", "--help"])
+      #expect(cmd.verbose == false)
+      #expect(cmd.useFiles == false)
+      #expect(cmd.useStandardInput == false)
+      #expect(cmd.names == ["-one", "-two", "-three", "-if", "--help"])
     }
 
-    AssertParse(PassthroughArgs.self, ["-one", "-two", "-three", "-if", "-h"]) {
+    expectParse(PassthroughArgs.self, ["-one", "-two", "-three", "-if", "-h"]) {
       cmd in
-      XCTAssertFalse(cmd.verbose)
-      XCTAssertFalse(cmd.useFiles)
-      XCTAssertFalse(cmd.useStandardInput)
-      XCTAssertEqual(cmd.names, ["-one", "-two", "-three", "-if", "-h"])
+      #expect(cmd.verbose == false)
+      #expect(cmd.useFiles == false)
+      #expect(cmd.useStandardInput == false)
+      #expect(cmd.names == ["-one", "-two", "-three", "-if", "-h"])
     }
   }
 
-  func testParsing_repeatingCaptureForPassthrough_Fails() throws {
+  @Test func parsing_repeatingCaptureForPassthrough_Fails() throws {
     // Only partially matches the `-fib` argument
-    XCTAssertThrowsError(try PassthroughArgs.parse(["-fib"]))
+    #expect(throws: (any Error).self) { try PassthroughArgs.parse(["-fib"]) }
   }
 }
