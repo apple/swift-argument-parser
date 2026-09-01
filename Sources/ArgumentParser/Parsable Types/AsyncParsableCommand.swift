@@ -67,8 +67,7 @@ extension AsyncParsableCommand {
       var command = try await asyncParseAsRoot(arguments)
 
       var siginfoHandler: SIGINFOHandler?
-      if let command = command as? any InfoProvidingParsableCommand
-      {
+      if let command = command as? any InfoProvidingParsableCommand {
         siginfoHandler = SIGINFOHandler(for: command)
       }
       siginfoHandler?.register()

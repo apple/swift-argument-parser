@@ -56,7 +56,8 @@ public protocol InfoProvidingParsableCommand: Sendable, ParsableCommand {
 extension SIGINFOHandler {
   convenience init<T>(for command: T) where T: InfoProvidingParsableCommand {
     self.init {
-      guard #available(macOS 26, iOS 26, watchOS 26, tvOS 26, visionOS 26, *) else {
+      guard #available(macOS 26, iOS 26, watchOS 26, tvOS 26, visionOS 26, *)
+      else {
         _ = Task {
           await command.provideInfo()
         }

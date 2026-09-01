@@ -12,11 +12,11 @@
 import Foundation
 import Testing
 
+@testable import ArgumentParser
+
 #if os(Windows)
 import WinSDK
 #endif
-
-@testable import ArgumentParser
 
 @Suite struct InfoProvidingTests {
   struct SeedCommand: InfoProvidingParsableCommand {
@@ -65,7 +65,7 @@ extension InfoProvidingTests {
             #if os(macOS) || os(FreeBSD) || os(OpenBSD)
             raise(SIGINFO)
             #elseif os(Linux) || os(Android)
-            kill(getpid(), SIGUSR1) // ignore-unacceptable-language
+            kill(getpid(), SIGUSR1)  // ignore-unacceptable-language
             #elseif os(Windows)
             GenerateConsoleCtrlEvent(CTRL_BREAK_EVENT, 0)
             #endif
