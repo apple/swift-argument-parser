@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2020 Apple Inc. and the Swift project authors
+// Copyright (c) 2020-2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -11,7 +11,6 @@
 
 import ArgumentParserTestHelpers
 import Testing
-import XCTest
 
 @testable import ArgumentParser
 
@@ -32,11 +31,12 @@ private func candidatesAsync(prefix: String) async -> [String] {
   candidates(prefix: prefix)
 }
 
-final class CompletionScriptTests: XCTestCase {}
+extension SerializedTests {
+  struct CompletionScriptTests {}
+}
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
-extension CompletionScriptTests {
+extension SerializedTests.CompletionScriptTests {
   struct Path: ExpressibleByArgument {
     var path: String
 
@@ -111,51 +111,51 @@ extension CompletionScriptTests {
     }
   }
 
-  func testBase_Zsh() throws {
+  @Test func base_Zsh() throws {
     let script1 = try CompletionsGenerator(command: Base.self, shell: .zsh)
       .generateCompletionScript()
-    try assertSnapshot(actual: script1, extension: "zsh")
+    try expectSnapshot(actual: script1, extension: "zsh")
 
     let script2 = try CompletionsGenerator(command: Base.self, shellName: "zsh")
       .generateCompletionScript()
-    try assertSnapshot(actual: script2, extension: "zsh")
+    try expectSnapshot(actual: script2, extension: "zsh")
 
     let script3 = Base.completionScript(for: .zsh)
-    try assertSnapshot(actual: script3, extension: "zsh")
+    try expectSnapshot(actual: script3, extension: "zsh")
   }
 
-  func testBase_Bash() throws {
+  @Test func base_Bash() throws {
     let script1 = try CompletionsGenerator(command: Base.self, shell: .bash)
       .generateCompletionScript()
-    try assertSnapshot(actual: script1, extension: "bash")
+    try expectSnapshot(actual: script1, extension: "bash")
 
     let script2 = try CompletionsGenerator(
       command: Base.self, shellName: "bash"
     )
     .generateCompletionScript()
-    try assertSnapshot(actual: script2, extension: "bash")
+    try expectSnapshot(actual: script2, extension: "bash")
 
     let script3 = Base.completionScript(for: .bash)
-    try assertSnapshot(actual: script3, extension: "bash")
+    try expectSnapshot(actual: script3, extension: "bash")
   }
 
-  func testBase_Fish() throws {
+  @Test func base_Fish() throws {
     let script1 = try CompletionsGenerator(command: Base.self, shell: .fish)
       .generateCompletionScript()
-    try assertSnapshot(actual: script1, extension: "fish")
+    try expectSnapshot(actual: script1, extension: "fish")
 
     let script2 = try CompletionsGenerator(
       command: Base.self, shellName: "fish"
     )
     .generateCompletionScript()
-    try assertSnapshot(actual: script2, extension: "fish")
+    try expectSnapshot(actual: script2, extension: "fish")
 
     let script3 = Base.completionScript(for: .fish)
-    try assertSnapshot(actual: script3, extension: "fish")
+    try expectSnapshot(actual: script3, extension: "fish")
   }
 }
 
-extension CompletionScriptTests {
+extension SerializedTests.CompletionScriptTests {
   struct Custom: ParsableCommand {
     @Option(
       name: .shortAndLong,
@@ -187,12 +187,11 @@ extension CompletionScriptTests {
     var five: String
   }
 
-  func assertCustomCompletion(
+  func expectCustomCompletion(
     _ arg: String,
     shell: CompletionShell,
     prefix: String = "",
-    file: StaticString = #filePath,
-    line: UInt = #line,
+    sourceLocation: SourceLocation = #_sourceLocation,
     command: any ParsableCommand.Type = Custom.self
   ) async throws {
     #if !os(Windows) && !os(WASI)
@@ -204,80 +203,76 @@ extension CompletionScriptTests {
       } else {
         _ = try command.parse(["---completion", "--", arg, "0", "0"])
       }
-      XCTFail("Didn't error as expected", file: file, line: line)
+      Issue.record("Didn't error as expected", sourceLocation: sourceLocation)
     } catch let error as CommandError {
       guard case .completionScriptCustomResponse(let output) = error.parserError
       else {
         throw error
       }
-      AssertEqualStrings(
+      expectEqualStrings(
         actual: output,
         expected: shell.format(completions: [
           "\(prefix)1_\(shell.rawValue)",
           "\(prefix)2_\(shell.rawValue)",
           "\(prefix)3_\(shell.rawValue)",
         ]),
-        file: file,
-        line: line)
+        sourceLocation: sourceLocation)
     }
     #endif
   }
 
-  func assertCustomCompletions(
+  func expectCustomCompletions(
     shell: CompletionShell,
-    file: StaticString = #filePath,
-    line: UInt = #line
+    sourceLocation: SourceLocation = #_sourceLocation
   ) async throws {
     #if !os(Windows) && !os(WASI)
-    try await assertCustomCompletion(
-      "-o", shell: shell, prefix: "e", file: file, line: line)
-    try await assertCustomCompletion(
-      "--one", shell: shell, prefix: "e", file: file, line: line)
-    try await assertCustomCompletion(
-      "two", shell: shell, prefix: "f", file: file, line: line)
-    try await assertCustomCompletion(
-      "-z", shell: shell, prefix: "g", file: file, line: line)
-    try await assertCustomCompletion(
-      "nested.four", shell: shell, prefix: "h", file: file, line: line)
-    try await assertCustomCompletion(
-      "five", shell: shell, prefix: "j", file: file, line: line,
+    try await expectCustomCompletion(
+      "-o", shell: shell, prefix: "e", sourceLocation: sourceLocation)
+    try await expectCustomCompletion(
+      "--one", shell: shell, prefix: "e", sourceLocation: sourceLocation)
+    try await expectCustomCompletion(
+      "two", shell: shell, prefix: "f", sourceLocation: sourceLocation)
+    try await expectCustomCompletion(
+      "-z", shell: shell, prefix: "g", sourceLocation: sourceLocation)
+    try await expectCustomCompletion(
+      "nested.four", shell: shell, prefix: "h", sourceLocation: sourceLocation)
+    try await expectCustomCompletion(
+      "five", shell: shell, prefix: "j", sourceLocation: sourceLocation,
       command: CustomAsync.self
     )
 
     do {
-      try await assertCustomCompletion(
+      try await expectCustomCompletion(
         "--bad",
         shell: shell,
-        file: file,
-        line: line
+        sourceLocation: sourceLocation
       )
-      XCTFail("Didn't error as expected", file: file, line: line)
+      Issue.record("Didn't error as expected", sourceLocation: sourceLocation)
     } catch {
       // Expected
     }
     do {
-      try await assertCustomCompletion(
+      try await expectCustomCompletion(
         "four",
         shell: shell,
-        file: file,
-        line: line
+        sourceLocation: sourceLocation
       )
-      XCTFail("Didn't error as expected", file: file, line: line)
+      Issue.record("Didn't error as expected", sourceLocation: sourceLocation)
     } catch {
       // Expected
     }
     #endif
   }
 
-  func testBashCustomCompletions() async throws {
-    try await assertCustomCompletions(shell: .bash)
+  @Test func bashCustomCompletions() async throws {
+    try await expectCustomCompletions(shell: .bash)
   }
 
-  func testFishCustomCompletions() async throws {
-    try await assertCustomCompletions(shell: .fish)
+  @Test func fishCustomCompletions() async throws {
+    try await expectCustomCompletions(shell: .fish)
   }
 
-  func testZshCustomCompletions() async throws {
-    try await assertCustomCompletions(shell: .zsh)
+  @Test func zshCustomCompletions() async throws {
+    try await expectCustomCompletions(shell: .zsh)
   }
 }

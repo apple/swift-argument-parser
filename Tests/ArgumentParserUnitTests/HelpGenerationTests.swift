@@ -12,7 +12,6 @@
 import ArgumentParserTestHelpers
 import Foundation
 import Testing
-import XCTest
 
 @testable import ArgumentParser
 
@@ -915,7 +914,7 @@ extension HelpGenerationTests {
   }
 
   // swift-format-ignore: AlwaysUseLowerCamelCase
-  @Test func test_usageCustomization_helpMessage() async throws {
+  @Test func usageCustomization_helpMessage() async throws {
     expectEqualStrings(
       actual: NonCustomUsage.helpMessage(columns: 80),
       expected: """
@@ -992,7 +991,7 @@ extension HelpGenerationTests {
   }
 
   // swift-format-ignore: AlwaysUseLowerCamelCase
-  @Test func test_usageCustomization_fullMessage() async throws {
+  @Test func usageCustomization_fullMessage() async throws {
     expectEqualStrings(
       actual: NonCustomUsage.fullMessage(for: ValidationError("Test")),
       expected: """
@@ -1028,7 +1027,7 @@ extension HelpGenerationTests {
   }
 
   // swift-format-ignore: AlwaysUseLowerCamelCase
-  @Test func test_usageCustomization_usageString() async throws {
+  @Test func usageCustomization_usageString() async throws {
     expectEqualStrings(
       actual: NonCustomUsage.usageString(),
       expected: """
