@@ -14,7 +14,7 @@ import Testing
 
 @testable import ArgumentParser
 
-@Suite struct RepeatExampleTests {
+@Suite(.serialized) struct RepeatExampleTests {
   init() {
     Platform.Environment[.columns] = nil
   }

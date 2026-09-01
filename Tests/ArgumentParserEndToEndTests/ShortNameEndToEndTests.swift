@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2020 Apple Inc. and the Swift project authors
+// Copyright (c) 2020-2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -12,10 +12,8 @@
 import ArgumentParser
 import ArgumentParserTestHelpers
 import Testing
-import XCTest
 
-final class ShortNameEndToEndTests: XCTestCase {
-}
+@Suite struct ShortNameEndToEndTests {}
 
 // MARK: -
 
@@ -33,57 +31,57 @@ private struct Bar: ParsableArguments {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension ShortNameEndToEndTests {
-  func testParsing_withLongNames() throws {
-    AssertParse(Bar.self, ["foo"]) { options in
-      XCTAssertEqual(options.verbose, false)
-      XCTAssertNil(options.file)
-      XCTAssertEqual(options.name, "foo")
+  @Test func parsing_withLongNames() throws {
+    expectParse(Bar.self, ["foo"]) { options in
+      #expect(options.verbose == false)
+      #expect(options.file == nil)
+      #expect(options.name == "foo")
     }
 
-    AssertParse(Bar.self, ["--verbose", "--file", "myfile", "foo"]) { options in
-      XCTAssertEqual(options.verbose, true)
-      XCTAssertEqual(options.file, "myfile")
-      XCTAssertEqual(options.name, "foo")
-    }
-  }
-
-  func testParsing_simple() throws {
-    AssertParse(Bar.self, ["-v", "foo"]) { options in
-      XCTAssertEqual(options.verbose, true)
-      XCTAssertNil(options.file)
-      XCTAssertEqual(options.name, "foo")
-    }
-
-    AssertParse(Bar.self, ["-f", "myfile", "foo"]) { options in
-      XCTAssertEqual(options.verbose, false)
-      XCTAssertEqual(options.file, "myfile")
-      XCTAssertEqual(options.name, "foo")
-    }
-
-    AssertParse(Bar.self, ["-v", "-f", "myfile", "foo"]) { options in
-      XCTAssertEqual(options.verbose, true)
-      XCTAssertEqual(options.file, "myfile")
-      XCTAssertEqual(options.name, "foo")
+    expectParse(Bar.self, ["--verbose", "--file", "myfile", "foo"]) { options in
+      #expect(options.verbose == true)
+      #expect(options.file == "myfile")
+      #expect(options.name == "foo")
     }
   }
 
-  func testParsing_combined() throws {
-    AssertParse(Bar.self, ["-vf", "myfile", "foo"]) { options in
-      XCTAssertEqual(options.verbose, true)
-      XCTAssertEqual(options.file, "myfile")
-      XCTAssertEqual(options.name, "foo")
+  @Test func parsing_simple() throws {
+    expectParse(Bar.self, ["-v", "foo"]) { options in
+      #expect(options.verbose == true)
+      #expect(options.file == nil)
+      #expect(options.name == "foo")
     }
 
-    AssertParse(Bar.self, ["-fv", "myfile", "foo"]) { options in
-      XCTAssertEqual(options.verbose, true)
-      XCTAssertEqual(options.file, "myfile")
-      XCTAssertEqual(options.name, "foo")
+    expectParse(Bar.self, ["-f", "myfile", "foo"]) { options in
+      #expect(options.verbose == false)
+      #expect(options.file == "myfile")
+      #expect(options.name == "foo")
     }
 
-    AssertParse(Bar.self, ["foo", "-fv", "myfile"]) { options in
-      XCTAssertEqual(options.verbose, true)
-      XCTAssertEqual(options.file, "myfile")
-      XCTAssertEqual(options.name, "foo")
+    expectParse(Bar.self, ["-v", "-f", "myfile", "foo"]) { options in
+      #expect(options.verbose == true)
+      #expect(options.file == "myfile")
+      #expect(options.name == "foo")
+    }
+  }
+
+  @Test func parsing_combined() throws {
+    expectParse(Bar.self, ["-vf", "myfile", "foo"]) { options in
+      #expect(options.verbose == true)
+      #expect(options.file == "myfile")
+      #expect(options.name == "foo")
+    }
+
+    expectParse(Bar.self, ["-fv", "myfile", "foo"]) { options in
+      #expect(options.verbose == true)
+      #expect(options.file == "myfile")
+      #expect(options.name == "foo")
+    }
+
+    expectParse(Bar.self, ["foo", "-fv", "myfile"]) { options in
+      #expect(options.verbose == true)
+      #expect(options.file == "myfile")
+      #expect(options.name == "foo")
     }
   }
 }
@@ -104,41 +102,41 @@ private struct Foo: ParsableArguments {
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
 extension ShortNameEndToEndTests {
-  func testParsing_combinedShortNames() throws {
-    AssertParse(Foo.self, ["-nfc", "name", "file", "city"]) { options in
-      XCTAssertEqual(options.name, "name")
-      XCTAssertEqual(options.file, "file")
-      XCTAssertEqual(options.city, "city")
+  @Test func parsing_combinedShortNames() throws {
+    expectParse(Foo.self, ["-nfc", "name", "file", "city"]) { options in
+      #expect(options.name == "name")
+      #expect(options.file == "file")
+      #expect(options.city == "city")
     }
 
-    AssertParse(Foo.self, ["-ncf", "name", "city", "file"]) { options in
-      XCTAssertEqual(options.name, "name")
-      XCTAssertEqual(options.file, "file")
-      XCTAssertEqual(options.city, "city")
+    expectParse(Foo.self, ["-ncf", "name", "city", "file"]) { options in
+      #expect(options.name == "name")
+      #expect(options.file == "file")
+      #expect(options.city == "city")
     }
 
-    AssertParse(Foo.self, ["-fnc", "file", "name", "city"]) { options in
-      XCTAssertEqual(options.name, "name")
-      XCTAssertEqual(options.file, "file")
-      XCTAssertEqual(options.city, "city")
+    expectParse(Foo.self, ["-fnc", "file", "name", "city"]) { options in
+      #expect(options.name == "name")
+      #expect(options.file == "file")
+      #expect(options.city == "city")
     }
 
-    AssertParse(Foo.self, ["-fcn", "file", "city", "name"]) { options in
-      XCTAssertEqual(options.name, "name")
-      XCTAssertEqual(options.file, "file")
-      XCTAssertEqual(options.city, "city")
+    expectParse(Foo.self, ["-fcn", "file", "city", "name"]) { options in
+      #expect(options.name == "name")
+      #expect(options.file == "file")
+      #expect(options.city == "city")
     }
 
-    AssertParse(Foo.self, ["-cnf", "city", "name", "file"]) { options in
-      XCTAssertEqual(options.name, "name")
-      XCTAssertEqual(options.file, "file")
-      XCTAssertEqual(options.city, "city")
+    expectParse(Foo.self, ["-cnf", "city", "name", "file"]) { options in
+      #expect(options.name == "name")
+      #expect(options.file == "file")
+      #expect(options.city == "city")
     }
 
-    AssertParse(Foo.self, ["-cfn", "city", "file", "name"]) { options in
-      XCTAssertEqual(options.name, "name")
-      XCTAssertEqual(options.file, "file")
-      XCTAssertEqual(options.city, "city")
+    expectParse(Foo.self, ["-cfn", "city", "file", "name"]) { options in
+      #expect(options.name == "name")
+      #expect(options.file == "file")
+      #expect(options.city == "city")
     }
   }
 }
