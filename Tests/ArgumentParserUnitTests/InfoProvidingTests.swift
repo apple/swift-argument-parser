@@ -19,13 +19,11 @@ import WinSDK
 #endif
 
 @Suite struct InfoProvidingTests {
-  struct SeedCommand: AsyncParsableCommand, InfoProvidingParsableCommand {
+  struct SeedCommand: ParsableCommand, InfoProvidingParsableCommand {
     @Argument var seedValue: String
 
-    func run() async {
-      while !Task.isCancelled {
-        try? await Task.sleep(nanoseconds: 1_000_000_000)
-      }
+    func run() {
+      Thread.sleep(forTimeInterval: 1.0)
     }
 
     func provideInfo() {
@@ -57,7 +55,7 @@ extension InfoProvidingTests {
 
       try await withThrowingDiscardingTaskGroup { taskGroup in
         taskGroup.addTask {
-          await SeedCommand.main([Self.seedValue])
+          SeedCommand.main([Self.seedValue])
         }
         taskGroup.addTask {
           // The main function is running asynchronously in another task, so we
@@ -72,7 +70,7 @@ extension InfoProvidingTests {
             #elseif os(Windows)
             GenerateConsoleCtrlEvent(DWORD(CTRL_BREAK_EVENT), 0)
             #endif
-            try await Task.sleep(nanoseconds: 100_000_000)
+            try await Task.yield()
           }
         }
       }
