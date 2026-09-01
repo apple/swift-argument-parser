@@ -20,6 +20,7 @@ add_library(ArgumentParser
   "Parsable Types/CommandConfiguration.swift"
   "Parsable Types/EnumerableFlag.swift"
   "Parsable Types/ExpressibleByArgument.swift"
+  "Parsable Types/InfoProvidingCommand.swift"
   "Parsable Types/ParsableArguments.swift"
   "Parsable Types/ParsableCommand.swift"
 
@@ -46,6 +47,7 @@ add_library(ArgumentParser
   Utilities/Foundation.swift
   Utilities/Platform.swift
   Utilities/SequenceExtensions.swift
+  Utilities/SIGINFOHandler.swift
   Utilities/StringExtensions.swift
   Utilities/SwiftExtensions.swift
   Utilities/Tree.swift
