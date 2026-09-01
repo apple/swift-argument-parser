@@ -58,13 +58,13 @@ extension SIGINFOHandler {
     self.init {
       guard #available(macOS 26, iOS 26, watchOS 26, tvOS 26, visionOS 26, *)
       else {
-        _ = Task {
+        _ = Task.detached {
           await command.provideInfo()
         }
         return
       }
       #if compiler(>=6.3)
-      _ = Task.immediate {
+      _ = Task.immediateDetached {
         await command.provideInfo()
       }
       #endif
