@@ -10,7 +10,17 @@
 //===----------------------------------------------------------------------===//
 
 import ArgumentParser
+import Foundation
 import Testing
+
+private final class _BundleMarker {}
+
+private var _debugURL: URL {
+  let bundleURL = Bundle(for: _BundleMarker.self).bundleURL
+  return bundleURL.lastPathComponent.hasSuffix("xctest")
+    ? bundleURL.deletingLastPathComponent()
+    : bundleURL
+}
 
 public func expectResultFailure<T, U: Error>(
   _ expression: @autoclosure () -> Result<T, U>,
@@ -65,4 +75,128 @@ public func expectEqualStrings(
 ) {
   AssertEqualStrings(
     actual: actual, expected: expected, sourceLocation: sourceLocation)
+}
+
+@discardableResult
+public func requireExecuteCommand(
+  command: String,
+  expected: String? = nil,
+  exitCode: ExitCode = .success,
+  environment: [String: String] = [:],
+  sourceLocation: SourceLocation = #_sourceLocation
+) throws -> String {
+  try requireExecuteCommand(
+    command: command.split(separator: " ").map(String.init),
+    expected: expected,
+    exitCode: exitCode,
+    environment: environment,
+    sourceLocation: sourceLocation)
+}
+
+@discardableResult
+public func requireExecuteCommand(
+  command: [String],
+  expected: String? = nil,
+  exitCode: ExitCode = .success,
+  environment: [String: String] = [:],
+  sourceLocation: SourceLocation = #_sourceLocation
+) throws -> String {
+  #if os(Windows)
+  return ""
+  #elseif !canImport(Darwin) || os(macOS)
+  let arguments = Array(command.dropFirst())
+  let commandName = String(command.first!)
+  let commandURL = _debugURL.appendingPathComponent(commandName)
+  _ = try #require(
+    try commandURL.checkResourceIsReachable(),
+    "No executable at '\(commandURL.standardizedFileURL.path)'.",
+    sourceLocation: sourceLocation
+  )
+
+  let process = Process()
+  process.executableURL = commandURL
+  process.arguments = arguments
+
+  let output = Pipe()
+  process.standardOutput = output
+  let error = Pipe()
+  process.standardError = error
+
+  if !environment.isEmpty {
+    if let existingEnvironment = process.environment {
+      process.environment =
+        existingEnvironment.merging(environment) { (_, new) in new }
+    } else {
+      process.environment = environment
+    }
+  }
+
+  try #require(
+    try? process.run(),
+    "Couldn't run command process.",
+    sourceLocation: sourceLocation
+  )
+  process.waitUntilExit()
+
+  let outputData = output.fileHandleForReading.readDataToEndOfFile()
+  let outputActual = String(data: outputData, encoding: .utf8)!
+
+  let errorData = error.fileHandleForReading.readDataToEndOfFile()
+  let errorActual = String(data: errorData, encoding: .utf8)!
+
+  if let expected = expected {
+    expectEqualStrings(
+      actual: errorActual + outputActual,
+      expected: expected,
+      sourceLocation: sourceLocation)
+  }
+
+  #expect(
+    process.terminationStatus == exitCode.rawValue,
+    sourceLocation: sourceLocation)
+  return outputActual
+  #else
+  return ""
+  #endif
+}
+
+@discardableResult
+public func expectSnapshot(
+  actual: String,
+  extension: String,
+  record: Bool = false,
+  test: String = #function,
+  filePath: StaticString = #filePath,
+  sourceLocation: SourceLocation = #_sourceLocation
+) throws -> String? {
+  let snapshotDirectoryURL = URL(fileURLWithPath: "\(filePath)")
+    .deletingLastPathComponent()
+    .appendingPathComponent("Snapshots")
+  let snapshotFileURL =
+    snapshotDirectoryURL
+    .appendingPathComponent("\(test).\(`extension`)")
+
+  let snapshotExists = FileManager.default.fileExists(
+    atPath: snapshotFileURL.path)
+  let recordEnvironment =
+    ProcessInfo.processInfo.environment["RECORD_SNAPSHOTS"] != nil
+
+  if record || recordEnvironment || !snapshotExists {
+    let recordedValue = actual
+    try FileManager.default.createDirectory(
+      at: snapshotDirectoryURL,
+      withIntermediateDirectories: true,
+      attributes: nil)
+    try recordedValue.write(
+      to: snapshotFileURL, atomically: true, encoding: .utf8)
+    Issue.record("Recorded new baseline", sourceLocation: sourceLocation)
+    return nil
+  } else {
+    let expected = try String(contentsOf: snapshotFileURL, encoding: .utf8)
+    expectEqualStrings(
+      actual: actual,
+      expected: expected,
+      sourceLocation: sourceLocation)
+    return expected
+  }
 }
