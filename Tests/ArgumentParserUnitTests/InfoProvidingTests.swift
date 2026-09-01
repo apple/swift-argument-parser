@@ -67,7 +67,7 @@ extension InfoProvidingTests {
             #elseif os(Linux) || os(Android)
             kill(getpid(), SIGUSR1)  // ignore-unacceptable-language
             #elseif os(Windows)
-            GenerateConsoleCtrlEvent(CTRL_BREAK_EVENT, 0)
+            GenerateConsoleCtrlEvent(DWORD(CTRL_BREAK_EVENT), 0)
             #endif
           }
         }
