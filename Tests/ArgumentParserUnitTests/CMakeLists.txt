@@ -6,6 +6,7 @@ add_library(UnitTests
   HelpGenerationTests+AtOption.swift
   HelpGenerationTests+GroupName.swift
   HelpGenerationTests+HelpBanner.swift
+  InfoProvidingTests.swift
   NameSpecificationTests.swift
   SerializedCompletionSuites.swift
   SplitArgumentTests.swift
