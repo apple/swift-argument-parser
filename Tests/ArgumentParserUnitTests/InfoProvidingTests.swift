@@ -12,6 +12,10 @@
 import Foundation
 import Testing
 
+#if os(Windows)
+import WinSDK
+#endif
+
 @testable import ArgumentParser
 
 @Suite struct InfoProvidingTests {
