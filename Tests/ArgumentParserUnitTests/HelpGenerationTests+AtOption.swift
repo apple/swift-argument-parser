@@ -18,7 +18,6 @@ import Testing
 // valid combinations of @Option.
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension HelpGenerationTests {
   enum AtOptionTransform {
     // Not ExpressibleByArgument
@@ -171,7 +170,6 @@ extension HelpGenerationTests {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension HelpGenerationTests {
   enum AtOptionEBA {
     // ExpressibleByArgument
@@ -317,7 +315,6 @@ extension HelpGenerationTests {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension HelpGenerationTests {
   enum AtOptionEBATransform {
     // ExpressibleByArgument with Transform

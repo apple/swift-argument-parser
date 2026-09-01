@@ -63,7 +63,6 @@ private func expectParseFooCommand<A>(
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension NestedCommandEndToEndTests {
   @Test func parsing_package() throws {
     expectParseFooCommand(Foo.Package.self, ["package"]) { package in
@@ -304,7 +303,6 @@ private struct Super: ParsableCommand {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension NestedCommandEndToEndTests {
   @Test func parsing_SharedOptions() throws {
     expectParseCommand(Super.self, Super.self, []) { sup in

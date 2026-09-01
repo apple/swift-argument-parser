@@ -26,7 +26,6 @@ private struct Bar: ParsableArguments {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension RawRepresentableEndToEndTests {
   @Test func parsing_SingleOption() throws {
     expectParse(Bar.self, ["--identifier", "123"]) { bar in

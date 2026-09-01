@@ -29,7 +29,6 @@ private struct Bar: ParsableArguments {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension LongNameWithSingleDashEndToEndTests {
   @Test func parsing_empty() throws {
     expectParse(Bar.self, []) { options in
@@ -109,7 +108,6 @@ extension LongNameWithSingleDashEndToEndTests {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension LongNameWithSingleDashEndToEndTests {
   private struct Issue327: ParsableCommand {
     @Option(

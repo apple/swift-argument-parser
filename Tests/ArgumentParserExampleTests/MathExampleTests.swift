@@ -213,7 +213,6 @@ import Testing
 // MARK: - Completion Script
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension MathExampleTests {
   @Test(
     .requiresProcessExecution

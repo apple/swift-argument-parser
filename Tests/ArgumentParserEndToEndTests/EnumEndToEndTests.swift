@@ -28,7 +28,6 @@ private struct Bar: ParsableArguments {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension EnumEndToEndTests {
   @Test func parsing_SingleOption() throws {
     expectParse(Bar.self, ["--index", "hello"]) { bar in
@@ -66,7 +65,6 @@ private struct Baz: ParsableArguments {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension EnumEndToEndTests {
   @Test func parsingRawValue_Option() throws {
     expectParse(Baz.self, ["--mode", "generate-bash-script"]) { baz in

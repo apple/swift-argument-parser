@@ -15,14 +15,14 @@ import Testing
 
 @Suite struct SequenceExtensionTests {
 
-  @Test func testUniquing() {
+  @Test func uniquing() {
     #expect([] == (0..<0).uniquing())
     #expect([0, 1, 2, 3, 4] == (0..<5).uniquing())
     #expect([0, 1, 2, 3, 4] == [0, 1, 2, 3, 4, 0, 1, 2, 3, 4].uniquing())
     #expect([0, 1, 2, 3, 4] == [0, 1, 2, 3, 4, 4, 3, 2, 1, 0].uniquing())
   }
 
-  @Test func testUniquingAdjacentElements() {
+  @Test func uniquingAdjacentElements() {
     #expect([] == (0..<0).uniquingAdjacentElements())
     #expect([0, 1, 2, 3, 4] == (0..<5).uniquingAdjacentElements())
     #expect(

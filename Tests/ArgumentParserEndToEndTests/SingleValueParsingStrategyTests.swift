@@ -24,7 +24,6 @@ private struct Bar: ParsableArguments {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension SingleValueParsingStrategyTests {
   @Test func parsing_scanningForValue_1() throws {
     expectParse(
@@ -66,7 +65,6 @@ private struct Baz: ParsableArguments {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension SingleValueParsingStrategyTests {
   @Test func parsing_unconditional_1() throws {
     expectParse(

@@ -26,7 +26,6 @@ private struct Foo: ParsableArguments {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension OptionalEndToEndTests {
   @Test func parsing_Optional() throws {
     expectParse(Foo.self, []) { foo in
@@ -69,7 +68,6 @@ private struct Bar: ParsableArguments {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension OptionalEndToEndTests {
   @Test func parsing_Optional_WithAllValues_1() {
     expectParse(Bar.self, ["--name", "A", "--format", "B", "--foo", "C", "D"]) {
@@ -229,7 +227,6 @@ extension OptionalEndToEndTests {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension OptionalEndToEndTests {
   // Compilation test: https://github.com/apple/swift-argument-parser/issues/618
   private struct Command: ParsableCommand {

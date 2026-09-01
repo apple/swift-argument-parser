@@ -20,7 +20,6 @@ import Testing
   }
 }
 
-// https://github.com/apple/swift-argument-parser/issues/710
 extension Tests {
   @Test func parsing() throws {
     expectParseCommand(Package.self, Package.Clean.self, ["clean"]) { clean in

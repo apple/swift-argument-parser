@@ -67,7 +67,6 @@ private struct BarOption: Convert, ParsableCommand {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension TransformEndToEndTests {
 
   // MARK: Single Values
@@ -156,7 +155,6 @@ private struct BarArgument: Convert, ParsableCommand {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension TransformEndToEndTests {
 
   // MARK: Single Values

@@ -32,7 +32,6 @@ private struct Bar: ParsableArguments {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension FlagsEndToEndTests {
   @Test func parsing_defaultValue() throws {
     expectParse(Bar.self, []) { options in
@@ -106,7 +105,6 @@ private struct Foo: ParsableArguments {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension FlagsEndToEndTests {
   @Test func parsingEnableDisable_defaultValue() throws {
     expectParse(Foo.self, ["--enable-required-element"]) { options in
@@ -210,7 +208,6 @@ private struct Baz: ParsableArguments {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension FlagsEndToEndTests {
   @Test func parsingCaseIterable_defaultValues() throws {
     expectParse(Baz.self, ["--pink"]) { options in
@@ -329,7 +326,6 @@ private struct Qux: ParsableArguments {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension FlagsEndToEndTests {
   @Test func parsingCaseIterableArray_Values() throws {
     expectParse(Qux.self, []) { options in
@@ -375,7 +371,6 @@ private struct RepeatOK: ParsableArguments {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension FlagsEndToEndTests {
   @Test func parsingCaseIterable_RepeatableFlags() throws {
     expectParse(RepeatOK.self, ["--pink", "--purple", "--square"]) { options in

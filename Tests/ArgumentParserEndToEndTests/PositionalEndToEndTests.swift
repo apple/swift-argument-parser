@@ -22,7 +22,6 @@ private struct Bar: ParsableArguments {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension PositionalEndToEndTests {
   @Test func parsing_SinglePositional() throws {
     expectParse(Bar.self, ["Bar"]) { bar in
@@ -60,7 +59,6 @@ private struct Baz: ParsableArguments {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension PositionalEndToEndTests {
   @Test func parsing_TwoPositional() throws {
     expectParse(Baz.self, ["Bar", "Foo"]) { baz in
@@ -108,7 +106,6 @@ private struct Qux: ParsableArguments {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension PositionalEndToEndTests {
   @Test func parsing_MultiplePositional() throws {
     expectParse(Qux.self, []) { qux in
@@ -154,7 +151,6 @@ private struct Wobble: ParsableArguments {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension PositionalEndToEndTests {
   @Test func parsing_SingleAndMultiplePositional() throws {
     expectParse(Wobble.self, ["5"]) { wobble in
@@ -209,7 +205,6 @@ private struct Flob: ParsableArguments {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension PositionalEndToEndTests {
   @Test func parsing_MultipleParsedPositional() throws {
     expectParse(Flob.self, []) { flob in
@@ -247,7 +242,6 @@ private struct BadlyFormed: ParsableArguments {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension PositionalEndToEndTests {
   // This test results in a fatal error when run, so it can't be enabled
   // or CI will prevent integration. Delete `disabled_` to verify the trap

@@ -61,7 +61,6 @@ private struct Command: ParsableCommand {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension OptionGroupEndToEndTests {
   @Test func optionGroup_Defaults() throws {
     expectParse(Outer.self, ["prefix", "name", "postfix"]) { options in
@@ -148,7 +147,6 @@ private struct DuplicatedFlagGroupLongCommand: ParsableCommand {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension OptionGroupEndToEndTests {
   @Test func uniqueNamesForDuplicatedFlag_NoFlags() throws {
     expectParse(DuplicatedFlagGroupCustomCommand.self, []) { command in

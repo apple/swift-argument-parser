@@ -156,7 +156,6 @@ private func expectElementEqual(
   }
 }
 
-// https://github.com/apple/swift-argument-parser/issues/710
 extension SplitArgumentTests {
   @Test func multipleValues() async throws {
     let sut = try SplitArguments(arguments: ["abc", "x", "1234"])
@@ -248,7 +247,6 @@ extension SplitArgumentTests {
   }
 }
 
-// https://github.com/apple/swift-argument-parser/issues/710
 extension SplitArgumentTests {
   // swift-format-ignore: AlwaysUseLowerCamelCase
   @Test func mixed_1() async throws {
@@ -410,7 +408,6 @@ extension SplitArgumentTests {
 
 // MARK: - Removing Entries
 
-// https://github.com/apple/swift-argument-parser/issues/710
 extension SplitArgumentTests {
   @Test func removingValuesForLongNames() async throws {
     var sut = try SplitArguments(arguments: ["--foo", "--bar"])
@@ -479,7 +476,6 @@ extension SplitArgumentTests {
 
 // MARK: - Pop & Peek
 
-// https://github.com/apple/swift-argument-parser/issues/710
 extension SplitArgumentTests {
   @Test func popNext() async throws {
     var sut = try SplitArguments(arguments: ["--foo", "bar"])

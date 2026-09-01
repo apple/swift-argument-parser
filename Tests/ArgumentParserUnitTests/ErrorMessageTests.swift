@@ -30,7 +30,6 @@ private struct Bar: ParsableArguments {
   @Option(name: [.short, .long]) var format: String
 }
 
-// https://github.com/apple/swift-argument-parser/issues/710
 extension ErrorMessageTests {
   static let barCases: [ErrorCase] = [
     ErrorCase(
@@ -255,7 +254,6 @@ private struct Qwz: ParsableArguments {
   @Option(name: [.customLong("title", withSingleDash: true)]) var title: String?
 }
 
-// https://github.com/apple/swift-argument-parser/issues/710
 extension ErrorMessageTests {
   static let qwzCases: [ErrorCase] = [
     ErrorCase(

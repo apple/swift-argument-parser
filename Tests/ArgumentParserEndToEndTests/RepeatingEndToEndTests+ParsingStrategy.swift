@@ -30,7 +30,6 @@ private struct AllUnrecognizedArgs: ParsableCommand {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension RepeatingEndToEndTests {
   @Test func parsing_repeatingAllUnrecognized() throws {
     expectParse(AllUnrecognizedArgs.self, []) { cmd in
@@ -94,7 +93,6 @@ private struct AllUnrecognizedRoot: ParsableCommand {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension RepeatingEndToEndTests {
   @Test func parsing_repeatingAllUnrecognized_Nested() throws {
     expectParseCommand(
@@ -137,7 +135,6 @@ private struct PostTerminatorArgs: ParsableArguments {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension RepeatingEndToEndTests {
   @Test func parsing_repeatingPostTerminator() throws {
     expectParse(PostTerminatorArgs.self, []) { cmd in
@@ -193,7 +190,6 @@ private struct PassthroughArgs: ParsableCommand {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension RepeatingEndToEndTests {
   @Test func parsing_repeatingCaptureForPassthrough() throws {
     expectParse(PassthroughArgs.self, []) { cmd in
