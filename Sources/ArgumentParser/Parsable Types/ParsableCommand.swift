@@ -160,7 +160,7 @@ extension ParsableCommand {
       var command = try parseAsRoot(arguments)
 
       var siginfoHandler: SIGINFOHandler?
-      if #available(macOS 26, iOS 26, watchOS 26, tvOS 26, visionOS 26, *),
+      if #available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *),
         let command = command as? any InfoProvidingParsableCommand
       {
         siginfoHandler = SIGINFOHandler(for: command)

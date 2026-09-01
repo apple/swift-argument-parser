@@ -26,7 +26,7 @@
 ///
 /// On platforms that do not support providing information, conformance to this
 /// protocol has no effect.
-@available(macOS 26, iOS 26, watchOS 26, tvOS 26, visionOS 26, *)
+@available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
 public protocol InfoProvidingParsableCommand: Sendable, ParsableCommand {
   #if compiler(>=6.2)
   /// Provide information about the state of the process and about the
@@ -52,16 +52,18 @@ public protocol InfoProvidingParsableCommand: Sendable, ParsableCommand {
 
 // MARK: -
 
-@available(macOS 26, iOS 26, watchOS 26, tvOS 26, visionOS 26, *)
+@available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *)
 extension SIGINFOHandler {
   convenience init<T>(for command: T) where T: InfoProvidingParsableCommand {
     self.init {
+      guard #available(macOS 26, iOS 26, watchOS 26, tvOS 26, visionOS 26, *) else {
+        _ = Task {
+          await command.provideInfo()
+        }
+        return
+      }
       #if compiler(>=6.3)
       _ = Task.immediate {
-        await command.provideInfo()
-      }
-      #else
-      _ = Task {
         await command.provideInfo()
       }
       #endif

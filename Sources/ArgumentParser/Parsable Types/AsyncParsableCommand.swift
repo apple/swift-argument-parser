@@ -67,8 +67,7 @@ extension AsyncParsableCommand {
       var command = try await asyncParseAsRoot(arguments)
 
       var siginfoHandler: SIGINFOHandler?
-      if #available(macOS 26, iOS 26, watchOS 26, tvOS 26, visionOS 26, *),
-        let command = command as? any InfoProvidingParsableCommand
+      if let command = command as? any InfoProvidingParsableCommand
       {
         siginfoHandler = SIGINFOHandler(for: command)
       }
