@@ -19,12 +19,12 @@ import WinSDK
 #endif
 
 @Suite struct InfoProvidingTests {
-  struct SeedCommand: InfoProvidingParsableCommand {
+  struct SeedCommand: AsyncParsableCommand, InfoProvidingParsableCommand {
     @Argument var seedValue: String
 
-    func run() {
-      while true {
-        Thread.sleep(forTimeInterval: 1.0)
+    func run() async {
+      while !Task.isCancelled {
+        try? await Task.sleep(nanoseconds: 1_000_000_000)
       }
     }
 
@@ -57,14 +57,14 @@ extension InfoProvidingTests {
 
       try await withThrowingDiscardingTaskGroup { taskGroup in
         taskGroup.addTask {
-          SeedCommand.main([Self.seedValue])
+          await SeedCommand.main([Self.seedValue])
         }
         taskGroup.addTask {
           // The main function is running asynchronously in another task, so we
           // can't really predict when it will have set up the signal handler
           // without plumbing through an invasive hook/callback. Instead, just
           // spam ourselves with the signal.
-          while true {
+          while !Task.isCancelled {
             #if os(macOS) || os(FreeBSD) || os(OpenBSD)
             raise(SIGINFO)
             #elseif os(Linux) || os(Android)
@@ -72,6 +72,7 @@ extension InfoProvidingTests {
             #elseif os(Windows)
             GenerateConsoleCtrlEvent(DWORD(CTRL_BREAK_EVENT), 0)
             #endif
+            await Task.yield()
           }
         }
       }
