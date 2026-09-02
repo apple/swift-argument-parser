@@ -104,7 +104,7 @@ extension CommandInfoV0 {
       case '\(commandName)'
           \(parseSubcommandFunctionName) \(positionalArgumentCountArguments) \(
             completableArguments
-            .compactMap(\.optionSpec)
+            .compactMap { $0.argument.optionSpec }
             .map { "'\($0.fishEscapeForSingleQuotedString())'" }
             .joined(separator: separator)
           )\(
@@ -128,7 +128,8 @@ extension CommandInfoV0 {
     var positionalComparison = "-eq"
     let argumentCompletions =
       completableArguments
-      .compactMap { arg in
+      .compactMap { completionArgument in
+        let arg = completionArgument.argument
         if arg.kind == .positional {
           guard positionalComparison == "-eq" else {
             return nil as String?
@@ -152,7 +153,7 @@ extension CommandInfoV0 {
               \(shouldOfferCompletionsForFlagsOrOptionsFunctionName) "\(commandContext.joined(separator: separator))"\
               \((arg.isRepeating ? [] : arg.names ?? []).map { " \($0.name)" }.sorted().joined())
               """
-          )' \(argumentSegments(arg).joined(separator: separator))
+          )' \(argumentSegments(completionArgument).joined(separator: separator))
           """
       }
 
@@ -169,14 +170,18 @@ extension CommandInfoV0 {
       + subcommands.flatMap(\.completions)
   }
 
-  private var completableArguments: [ArgumentInfoV0] {
-    (arguments ?? []).filter { arg in
-      arg.shouldDisplay
-        && (arg.completionKind != nil || arg.names?.isEmpty == false)
+  private var completableArguments: [CompletionArgument] {
+    completionArguments.filter { completionArgument in
+      completionArgument.argument.shouldDisplay
+        && (completionArgument.argument.completionKind != nil
+          || completionArgument.argument.names?.isEmpty == false)
     }
   }
 
-  private func argumentSegments(_ arg: ArgumentInfoV0) -> [String] {
+  private func argumentSegments(
+    _ completionArgument: CompletionArgument
+  ) -> [String] {
+    let arg = completionArgument.argument
     var results: [String] = []
     if let names = arg.names, !names.isEmpty {
       results += names.map(\.asCompleteArgument)
@@ -226,21 +231,23 @@ extension CommandInfoV0 {
       case .custom, .customAsync:
         """
         -\(r)fka '(\
-        \(customCompletionFunctionName) \(arg.commonCustomCompletionCall(command: self)) \
+        \(customCompletionFunctionName) \(arg.commonCustomCompletionCall(command: completionArgument.command)) \
         (count (\(tokensFunctionName) -pc)) (\(tokensFunctionName) -tC)\
         )'
         """
       case .customDeprecated:
-        "-\(r)fka '(\(customCompletionFunctionName) \(arg.commonCustomCompletionCall(command: self)))'"
+        "-\(r)fka '(\(customCompletionFunctionName) \(arg.commonCustomCompletionCall(command: completionArgument.command)))'"
       }
     completions.map { results.append($0) }
     return results
   }
 
   var positionalArgumentCountArguments: String {
-    let positionalArguments = positionalArguments
+    let positionalArguments = completionArguments.filter {
+      $0.argument.kind == .positional
+    }
     return """
-      \(positionalArguments.contains(where: { $0.isRepeating }) ? "-r " : "")\(positionalArguments.count)
+      \(positionalArguments.contains(where: { $0.argument.isRepeating }) ? "-r " : "")\(positionalArguments.count)
       """
   }
 

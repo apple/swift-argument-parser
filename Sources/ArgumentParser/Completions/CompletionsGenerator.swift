@@ -219,6 +219,11 @@ extension String {
 }
 
 extension CommandInfoV0 {
+  struct CompletionArgument {
+    var argument: ArgumentInfoV0
+    var command: CommandInfoV0
+  }
+
   var commandContext: [String] {
     (superCommands ?? []) + [commandName]
   }
@@ -229,6 +234,39 @@ extension CommandInfoV0 {
 
   var positionalArguments: [ArgumentInfoV0] {
     (arguments ?? []).filter { $0.kind == .positional }
+  }
+
+  var completionArguments: [CompletionArgument] {
+    var result = (arguments ?? []).map {
+      CompletionArgument(argument: $0, command: self)
+    }
+    var names = Set(result.flatMap { $0.argument.names ?? [] })
+
+    guard
+      let defaultSubcommand,
+      let defaultCommand = subcommands?.first(where: {
+        $0.commandName == defaultSubcommand
+      })
+    else { return result }
+
+    for var completionArgument in defaultCommand.completionArguments {
+      guard let argumentNames = completionArgument.argument.names else {
+        continue
+      }
+
+      let uniqueNames = argumentNames.filter { names.insert($0).inserted }
+      guard !uniqueNames.isEmpty else { continue }
+
+      completionArgument.argument.names = uniqueNames
+      if let preferredName = completionArgument.argument.preferredName,
+        !uniqueNames.contains(preferredName)
+      {
+        completionArgument.argument.preferredName = uniqueNames.first
+      }
+      result.append(completionArgument)
+    }
+
+    return result
   }
 
   var completionFunctionName: String {
