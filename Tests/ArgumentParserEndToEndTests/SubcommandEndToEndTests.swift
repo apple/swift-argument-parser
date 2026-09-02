@@ -12,7 +12,6 @@
 import ArgumentParser
 import ArgumentParserTestHelpers
 import Testing
-import XCTest
 
 @Suite struct SubcommandEndToEndTests {}
 
@@ -209,9 +208,8 @@ extension BaseCommand {
 }
 
 extension BaseCommand.SubCommand {
-  struct SubSubCommand: ParsableCommand, TestableParsableArguments {
-    let didValidateExpectation = XCTestExpectation(
-      singleExpectation: "did validate subcommand")
+  struct SubSubCommand: ParsableCommand, TestableSwiftTestingParsableArguments {
+    let didValidateExpectation = TestExpectation()
 
     static let configuration = CommandConfiguration(
       commandName: "subsub"
@@ -228,17 +226,17 @@ extension BaseCommand.SubCommand {
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
-final class SubcommandEndToEndTestsXCTest: XCTestCase {
-  func testValidate_subcommands() {
+extension SubcommandEndToEndTests {
+  @Test func validate_subcommands() throws {
     // provide a value to base-flag that will throw
-    AssertErrorMessage(
+    expectErrorMessage(
       BaseCommand.self,
       ["--base-flag", "foo", "sub", "--sub-flag", "foo", "subsub"],
       "baseCommandFailure"
     )
 
     // provide a value to sub-flag that will throw
-    AssertErrorMessage(
+    expectErrorMessage(
       BaseCommand.self,
       [
         "--base-flag", BaseCommand.baseFlagValue, "sub", "--sub-flag", "foo",
@@ -248,7 +246,7 @@ final class SubcommandEndToEndTestsXCTest: XCTestCase {
     )
 
     // provide a valid command and make sure both validates succeed
-    AssertParseCommand(
+    expectParseCommand(
       BaseCommand.self,
       BaseCommand.SubCommand.SubSubCommand.self,
       [
@@ -256,11 +254,11 @@ final class SubcommandEndToEndTestsXCTest: XCTestCase {
         BaseCommand.SubCommand.subFlagValue, "subsub", "--sub-sub-flag",
       ]
     ) { cmd in
-      XCTAssertTrue(cmd.subSubFlag)
+      #expect(cmd.subSubFlag)
 
       // make sure that the instance of SubSubCommand provided
       // had its validate method called, not just that any instance of SubSubCommand was validated
-      wait(for: [cmd.didValidateExpectation], timeout: 0.1)
+      #expect(cmd.didValidateExpectation.fulfilled)
     }
   }
 }
