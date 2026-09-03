@@ -241,12 +241,16 @@ _base-test_escaped-command() {
     repeating_flags=()
     non_repeating_flags=(-h --help)
     repeating_options=()
-    non_repeating_options=(--o:n[e)
+    non_repeating_options=(--o:n[e --three)
     __base-test_offer_flags_options 1
 
     # Offer option value completions
     case "${prev}" in
     '--o:n[e')
+        return
+        ;;
+    '--three')
+        __base-test_add_completions -W ''\'''$'\n''\'$'\n''a b'
         return
         ;;
     esac
