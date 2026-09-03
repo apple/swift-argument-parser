@@ -119,6 +119,19 @@ private func expectElementEqual(
     #expect(sut.originalInput == ["--abc=def"])
   }
 
+  @Test func singleLongOptionWithEmptyValue() async throws {
+    let sut = try SplitArguments(arguments: ["--abc="])
+
+    #expect(sut.elements.count == 1)
+    try expectIndexEqual(sut, at: 0, inputIndex: 0, subIndex: .complete)
+    try expectElementEqual(
+      sut, at: 0, .option(.nameWithValue(.long("abc"), ""))
+    )
+
+    #expect(sut.originalInput.count == 1)
+    #expect(sut.originalInput == ["--abc="])
+  }
+
   @Test func multipleShortOptionsCombined() async throws {
     let sut = try SplitArguments(arguments: ["-abc"])
 
