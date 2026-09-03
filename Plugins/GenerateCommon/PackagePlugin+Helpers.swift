@@ -32,6 +32,12 @@ extension ArgumentExtractor {
       return .release
     }
   }
+
+  mutating func rejectPluginManagedOptions() throws {
+    if !extractOption(named: "output-directory").isEmpty {
+      throw GeneratePluginError.pluginManagedOption("--output-directory")
+    }
+  }
 }
 
 extension URL {
