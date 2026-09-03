@@ -198,7 +198,13 @@ extension CommandInfoV0 {
           String?.none
         }
       case .list(let list):
-        "-\(r)fka '\(list.joined(separator: separator))'"
+        """
+        -\(r)fka '\(
+          list
+          .map { "\\'\($0.fishEscapeForSingleQuotedString(iterationCount: 2))\\'" }
+          .joined(separator: separator)
+        )'
+        """
       case .file(let extensions):
         switch extensions.count {
         case 0:

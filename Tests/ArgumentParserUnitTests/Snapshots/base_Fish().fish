@@ -25,7 +25,7 @@ function __base-test_parse_tokens -S
         case 'sub-command'
             __base-test_parse_subcommand 0 'h/help'
         case 'escaped-command'
-            __base-test_parse_subcommand 1 'o:n[e=' 'h/help'
+            __base-test_parse_subcommand 1 'o:n[e=' 'three=' 'h/help'
         case 'help'
             __base-test_parse_subcommand -r 1 
         end
@@ -82,11 +82,11 @@ end
 
 complete -c 'base-test' -f
 complete -c 'base-test' -n '__base-test_should_offer_completions_for_flags_or_options "base-test" name' -l 'name' -d 'The user\'s name.' -rfka ''
-complete -c 'base-test' -n '__base-test_should_offer_completions_for_flags_or_options "base-test" kind' -l 'kind' -rfka 'one two custom-three'
-complete -c 'base-test' -n '__base-test_should_offer_completions_for_flags_or_options "base-test" other-kind' -l 'other-kind' -rfka 'b1_fish b2_fish b3_fish'
+complete -c 'base-test' -n '__base-test_should_offer_completions_for_flags_or_options "base-test" kind' -l 'kind' -rfka '\'one\' \'two\' \'custom-three\''
+complete -c 'base-test' -n '__base-test_should_offer_completions_for_flags_or_options "base-test" other-kind' -l 'other-kind' -rfka '\'b1_fish\' \'b2_fish\' \'b3_fish\''
 complete -c 'base-test' -n '__base-test_should_offer_completions_for_flags_or_options "base-test" path1' -l 'path1' -rF
 complete -c 'base-test' -n '__base-test_should_offer_completions_for_flags_or_options "base-test" path2' -l 'path2' -rF
-complete -c 'base-test' -n '__base-test_should_offer_completions_for_flags_or_options "base-test" path3' -l 'path3' -rfka 'c1_fish c2_fish c3_fish'
+complete -c 'base-test' -n '__base-test_should_offer_completions_for_flags_or_options "base-test" path3' -l 'path3' -rfka '\'c1_fish\' \'c2_fish\' \'c3_fish\''
 complete -c 'base-test' -n '__base-test_should_offer_completions_for_flags_or_options "base-test" one' -l 'one'
 complete -c 'base-test' -n '__base-test_should_offer_completions_for_flags_or_options "base-test" two' -l 'two'
 complete -c 'base-test' -n '__base-test_should_offer_completions_for_flags_or_options "base-test" custom-three' -l 'custom-three'
@@ -102,4 +102,5 @@ complete -c 'base-test' -n '__base-test_should_offer_completions_for_positional 
 complete -c 'base-test' -n '__base-test_should_offer_completions_for_flags_or_options "base-test sub-command" h help' -s 'h' -l 'help' -d 'Show help information.'
 complete -c 'base-test' -n '__base-test_should_offer_completions_for_flags_or_options "base-test escaped-command" o:n[e' -l 'o:n[e' -d 'Escaped chars: \'[]\\.' -rfka ''
 complete -c 'base-test' -n '__base-test_should_offer_completions_for_positional "base-test escaped-command" -eq 1' -fka '(__base-test_custom_completion ---completion escaped-command -- positional@0 (count (__base-test_tokens -pc)) (__base-test_tokens -tC))'
+complete -c 'base-test' -n '__base-test_should_offer_completions_for_flags_or_options "base-test escaped-command" three' -l 'three' -rfka '\'\\\'\' \'\\\\\' \'a b\''
 complete -c 'base-test' -n '__base-test_should_offer_completions_for_flags_or_options "base-test escaped-command" h help' -s 'h' -l 'help' -d 'Show help information.'
