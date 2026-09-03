@@ -735,3 +735,9 @@ extension SplitArgumentTests {
     #expect(valueB.1 == "bar")
   }
 }
+
+extension SplitArguments {
+  init(arguments: [String]) throws {
+    try self.init(arguments: arguments, responseFilePrefix: "@")
+  }
+}

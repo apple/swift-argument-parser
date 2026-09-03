@@ -4,7 +4,7 @@
 
 ### Creating a Configuration
 
-- ``init(commandName:abstract:usage:discussion:helpBanner:version:shouldDisplay:subcommands:groupedSubcommands:defaultSubcommand:helpNames:aliases:)``
+- ``init(commandName:abstract:usage:discussion:helpBanner:version:shouldDisplay:subcommands:groupedSubcommands:defaultSubcommand:helpNames:aliases:responseFilePrefix:)``
 
 ### Customizing the Help Screen
 
