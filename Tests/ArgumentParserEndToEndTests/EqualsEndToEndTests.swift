@@ -92,15 +92,16 @@ private struct LongOptionWithFile: ParsableArguments {
 }
 
 private struct LongOptionWithOptionalString: ParsableArguments {
-  @Option(name: .long) var name: String?
+  @Option(name: [.short, .long]) var name: String?
   @Argument var file: String
 }
 
 // https://github.com/apple/swift-argument-parser/issues/958
 extension EqualsEndToEndTests {
   /// `--out=` must accept an explicit empty-string value.
+  ///
   /// The following positional `file.txt` must remain a positional argument.
-  func testLongOptionEmptyValue_doesNotConsumePositional() throws {
+  func testLongOptionEmptyValueDoesNotConsumePositional() throws {
     AssertParse(LongOptionWithFile.self, ["--out=", "file.txt"]) { parsed in
       XCTAssertEqual(parsed.out, "")
       XCTAssertEqual(parsed.file, "file.txt")
@@ -108,7 +109,7 @@ extension EqualsEndToEndTests {
   }
 
   /// `--out=value` (non-empty) must behave as before.
-  func testLongOptionNonEmptyValue_unchanged() throws {
+  func testLongOptionNonEmptyValueUnchanged() throws {
     AssertParse(LongOptionWithFile.self, ["--out=output.txt", "file.txt"]) { parsed in
       XCTAssertEqual(parsed.out, "output.txt")
       XCTAssertEqual(parsed.file, "file.txt")
@@ -116,7 +117,7 @@ extension EqualsEndToEndTests {
   }
 
   /// `--out` (no `=`) followed by value token must still work.
-  func testLongOptionSeparateValue_unchanged() throws {
+  func testLongOptionSeparateValueUnchanged() throws {
     AssertParse(LongOptionWithFile.self, ["--out", "output.txt", "file.txt"]) { parsed in
       XCTAssertEqual(parsed.out, "output.txt")
       XCTAssertEqual(parsed.file, "file.txt")
@@ -124,7 +125,7 @@ extension EqualsEndToEndTests {
   }
 
   /// Short option `-o=` must similarly keep its existing empty-value behaviour.
-  func testShortOptionEmptyValue_consistent() throws {
+  func testShortOptionEmptyValueConsistent() throws {
     AssertParse(LongOptionWithOptionalString.self, ["-n=", "file.txt"]) { parsed in
       XCTAssertEqual(parsed.name, "")
       XCTAssertEqual(parsed.file, "file.txt")

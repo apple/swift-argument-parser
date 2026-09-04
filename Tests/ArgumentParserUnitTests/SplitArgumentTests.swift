@@ -745,6 +745,7 @@ extension SplitArgumentTests {
 // https://github.com/apple/swift-argument-parser/issues/958
 extension SplitArgumentTests {
   /// `--opt=` must parse as `.nameWithValue(.long("opt"), "")`.
+  ///
   /// Before the fix it collapsed to `.name(.long("opt"))` and silently
   /// consumed the next positional token as the option value.
   @Test func longOptionWithEmptyValue() async throws {
