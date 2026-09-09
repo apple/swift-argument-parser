@@ -2,19 +2,18 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2020 Apple Inc. and the Swift project authors
+// Copyright (c) 2020-2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
 //
 //===----------------------------------------------------------------------===//
 
-import XCTest
+import Testing
 
 @testable import ArgumentParser
 
-final class TreeTests: XCTestCase {
-}
+@Suite struct TreeTests {}
 
 // MARK: -
 
@@ -32,28 +31,26 @@ func generateTree() -> Tree<Int> {
 }
 
 extension TreeTests {
-  func testHierarchy() {
+  @Test func hierarchy() {
     let tree = generateTree()
-    XCTAssertEqual(tree.element, 1)
-    XCTAssertEqual(tree.children.map { $0.element }, [11, 12, 13])
-    XCTAssertEqual(
-      tree.children.flatMap { $0.children.map { $0.element } },
-      [111, 112, 113, 121, 122, 123, 131, 132, 133])
+    #expect(tree.element == 1)
+    #expect(tree.children.map { $0.element } == [11, 12, 13])
+    #expect(
+      tree.children.flatMap { $0.children.map { $0.element } }
+        == [111, 112, 113, 121, 122, 123, 131, 132, 133])
   }
 
-  func testSearch() {
+  @Test func search() {
     let tree = generateTree()
-    XCTAssertEqual(
-      tree.path(toFirstWhere: { $0 == 1 }).map { $0.element },
-      [1])
-    XCTAssertEqual(
-      tree.path(toFirstWhere: { $0 == 13 }).map { $0.element },
-      [1, 13])
-    XCTAssertEqual(
-      tree.path(toFirstWhere: { $0 == 133 }).map { $0.element },
-      [1, 13, 133])
+    #expect(
+      tree.path(toFirstWhere: { $0 == 1 }).map { $0.element } == [1])
+    #expect(
+      tree.path(toFirstWhere: { $0 == 13 }).map { $0.element } == [1, 13])
+    #expect(
+      tree.path(toFirstWhere: { $0 == 133 }).map { $0.element }
+        == [1, 13, 133])
 
-    XCTAssertTrue(tree.path(toFirstWhere: { $0 < 0 }).isEmpty)
+    #expect(tree.path(toFirstWhere: { $0 < 0 }).isEmpty)
   }
 }
 
@@ -89,13 +86,17 @@ extension TreeTests {
     }
   }
 
-  func testInitializationWithRecursiveSubcommand() {
-    XCTAssertThrowsError(try Tree(root: A.asCommand))
-    XCTAssertThrowsError(try Tree(root: Root.asCommand))
+  @Test func initializationWithRecursiveSubcommand() {
+    #expect(throws: (any Error).self) { try Tree(root: A.asCommand) }
+    #expect(throws: (any Error).self) { try Tree(root: Root.asCommand) }
   }
 
-  func testInitializationWithMatchingAliases() {
-    XCTAssertThrowsError(try Tree(root: RootWithNamedNestedSub.asCommand))
-    XCTAssertThrowsError(try Tree(root: RootWithNestedSub.asCommand))
+  @Test func initializationWithMatchingAliases() {
+    #expect(throws: (any Error).self) {
+      try Tree(root: RootWithNamedNestedSub.asCommand)
+    }
+    #expect(throws: (any Error).self) {
+      try Tree(root: RootWithNestedSub.asCommand)
+    }
   }
 }

@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2020 Apple Inc. and the Swift project authors
+// Copyright (c) 2020-2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -11,11 +11,11 @@
 
 import ArgumentParser
 import ArgumentParserTestHelpers
-import XCTest
+import Testing
 
 // The goal of this test class is to validate source compatibility. By running
 // this class's tests, all property wrapper initializers should be called.
-final class SourceCompatEndToEndTests: XCTestCase {}
+@Suite struct SourceCompatEndToEndTests {}
 
 // MARK: - Property Wrapper Initializers
 
@@ -225,7 +225,7 @@ struct AllFlags: ParsableArguments {
 }
 
 extension SourceCompatEndToEndTests {
-  func testParsingAll() throws {
+  @Test func parsingAll() throws {
     // This is just checking building the argument definitions, not the actual
     // validation or usage of these definitions, which would fail.
     _ = AlmostAllArguments()

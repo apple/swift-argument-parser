@@ -16,8 +16,16 @@ struct Name: MDocComponent {
   var command: CommandInfoV0
 
   var body: MDocComponent {
+    let names = [command.manualPageName] + (command.aliases ?? [])
     Section(title: "name") {
-      MDocMacro.DocumentName(name: command.manualPageName)
+      for (index, name) in names.enumerated() {
+        if index < names.count - 1 {
+          MDocMacro.DocumentName(name: name)
+            .withUnsafeChildren(nodes: [","])
+        } else {
+          MDocMacro.DocumentName(name: name)
+        }
+      }
       if let abstract = command.abstract {
         MDocMacro.DocumentDescription(description: abstract)
       }

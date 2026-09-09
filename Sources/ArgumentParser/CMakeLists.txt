@@ -49,7 +49,8 @@ add_library(ArgumentParser
   Utilities/StringExtensions.swift
   Utilities/SwiftExtensions.swift
   Utilities/Tree.swift
-  
+
+  Validators/AsyncCompletionsValidator.swift
   Validators/CodingKeyValidator.swift
   Validators/NonsenseFlagsValidator.swift
   Validators/ParsableArgumentsValidation.swift

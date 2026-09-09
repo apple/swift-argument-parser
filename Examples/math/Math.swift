@@ -35,7 +35,7 @@ struct Math: ParsableCommand {
 
 struct Options: ParsableArguments {
   @Flag(
-    name: [.customLong("hex-output"), .customShort("x")],
+    name: "--hex-output -x",
     help: "Use hexadecimal notation for the result.")
   var hexadecimalOutput = false
 

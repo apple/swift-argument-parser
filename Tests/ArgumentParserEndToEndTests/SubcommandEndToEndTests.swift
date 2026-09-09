@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2020 Apple Inc. and the Swift project authors
+// Copyright (c) 2020-2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -11,10 +11,10 @@
 
 import ArgumentParser
 import ArgumentParserTestHelpers
+import Testing
 import XCTest
 
-final class SubcommandEndToEndTests: XCTestCase {
-}
+@Suite struct SubcommandEndToEndTests {}
 
 // MARK: Single value String
 
@@ -42,43 +42,42 @@ private struct CommandB: ParsableCommand {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension SubcommandEndToEndTests {
-  func testParsing_SubCommand() throws {
-    AssertParseCommand(
+  @Test func parsing_SubCommand() throws {
+    expectParseCommand(
       Foo.self, CommandA.self, ["--name", "Foo", "a", "--bar", "42"]
     ) { a in
-      XCTAssertEqual(a.bar, 42)
-      XCTAssertEqual(a.foo.name, "Foo")
+      #expect(a.bar == 42)
+      #expect(a.foo.name == "Foo")
     }
 
-    AssertParseCommand(
+    expectParseCommand(
       Foo.self, CommandB.self, ["--name", "A", "b", "--baz", "abc"]
     ) { b in
-      XCTAssertEqual(b.baz, "abc")
-      XCTAssertEqual(b.foo.name, "A")
+      #expect(b.baz == "abc")
+      #expect(b.foo.name == "A")
     }
   }
 
-  func testParsing_SubCommand_manual() throws {
-    AssertParseCommand(
+  @Test func parsing_SubCommand_manual() throws {
+    expectParseCommand(
       Foo.self, CommandA.self, ["--name", "Foo", "a", "--bar", "42"]
     ) { a in
-      XCTAssertEqual(a.bar, 42)
-      XCTAssertEqual(a.foo.name, "Foo")
+      #expect(a.bar == 42)
+      #expect(a.foo.name == "Foo")
     }
 
-    AssertParseCommand(Foo.self, Foo.self, ["--name", "Foo"]) { foo in
-      XCTAssertEqual(foo.name, "Foo")
+    expectParseCommand(Foo.self, Foo.self, ["--name", "Foo"]) { foo in
+      #expect(foo.name == "Foo")
     }
   }
 
-  func testParsing_SubCommand_help() throws {
+  @Test func parsing_SubCommand_help() throws {
     let helpFoo = Foo.message(for: CleanExit.helpRequest())
     let helpA = Foo.message(for: CleanExit.helpRequest(CommandA.self))
     let helpB = Foo.message(for: CleanExit.helpRequest(CommandB.self))
 
-    AssertEqualStrings(
+    expectEqualStrings(
       actual: helpFoo,
       expected: """
         USAGE: foo --name <name> <subcommand>
@@ -93,7 +92,7 @@ extension SubcommandEndToEndTests {
 
           See 'foo help <subcommand>' for detailed help.
         """)
-    AssertEqualStrings(
+    expectEqualStrings(
       actual: helpA,
       expected: """
         USAGE: foo a --name <name> --bar <bar>
@@ -104,7 +103,7 @@ extension SubcommandEndToEndTests {
           -h, --help              Show help information.
 
         """)
-    AssertEqualStrings(
+    expectEqualStrings(
       actual: helpB,
       expected: """
         USAGE: foo b --name <name> --baz <baz>
@@ -117,13 +116,13 @@ extension SubcommandEndToEndTests {
         """)
   }
 
-  func testParsing_SubCommand_fails() throws {
-    XCTAssertThrowsError(
-      try Foo.parse(["--name", "Foo", "a", "--baz", "42"]),
-      "'baz' is not an option for the 'a' subcommand.")
-    XCTAssertThrowsError(
-      try Foo.parse(["--name", "Foo", "b", "--bar", "42"]),
-      "'bar' is not an option for the 'b' subcommand.")
+  @Test func parsing_SubCommand_fails() throws {
+    #expect(throws: (any Error).self) {
+      try Foo.parse(["--name", "Foo", "a", "--baz", "42"])
+    }
+    #expect(throws: (any Error).self) {
+      try Foo.parse(["--name", "Foo", "b", "--bar", "42"])
+    }
   }
 }
 
@@ -145,23 +144,22 @@ private struct Math: ParsableCommand {
   var didRun = false
 
   mutating func run() {
-    XCTAssertEqual(operation, .multiply)
-    XCTAssertTrue(verbose)
-    XCTAssertEqual(operands, [5, 11])
+    #expect(operation == .multiply)
+    #expect(verbose)
+    #expect(operands == [5, 11])
     didRun = true
   }
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
-// https://github.com/apple/swift-argument-parser/issues/710
 extension SubcommandEndToEndTests {
-  func testParsing_SingleCommand() throws {
+  @Test func parsing_SingleCommand() throws {
     var mathCommand =
       try Math.parseAsRoot(["--operation", "multiply", "-v", "5", "11"])
       as! Math
-    XCTAssertFalse(mathCommand.didRun)
+    #expect(!mathCommand.didRun)
     mathCommand.run()
-    XCTAssertTrue(mathCommand.didRun)
+    #expect(mathCommand.didRun)
   }
 }
 
@@ -230,7 +228,7 @@ extension BaseCommand.SubCommand {
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
 // https://github.com/apple/swift-argument-parser/issues/710
-extension SubcommandEndToEndTests {
+final class SubcommandEndToEndTestsXCTest: XCTestCase {
   func testValidate_subcommands() {
     // provide a value to base-flag that will throw
     AssertErrorMessage(
@@ -284,14 +282,14 @@ private struct A: ParsableCommand {
 }
 
 extension SubcommandEndToEndTests {
-  func testParsingVersionFlags() throws {
-    AssertErrorMessage(A.self, ["--version"], "1.0.0")
-    AssertErrorMessage(A.self, ["no-version-flag", "--version"], "1.0.0")
+  @Test func parsingVersionFlags() throws {
+    expectErrorMessage(A.self, ["--version"], "1.0.0")
+    expectErrorMessage(A.self, ["no-version-flag", "--version"], "1.0.0")
 
-    AssertParseCommand(
+    expectParseCommand(
       A.self, A.HasVersionFlag.self, ["has-version-flag", "--version"]
     ) { cmd in
-      XCTAssertTrue(cmd.version)
+      #expect(cmd.version)
     }
   }
 }

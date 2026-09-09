@@ -9,9 +9,18 @@
 //
 //===----------------------------------------------------------------------===//
 
+import Foundation
+import PackagePlugin
+
 @main
 struct GenerateDoccReferencePlugin: GeneratePlugin {
   static let pluginName = "GenerateDoccReference"
   static let executableName = "generate-docc-reference"
   static let artifactName = "docc reference"
+
+  static func outputDirectory(
+    context: PluginContext, target: SwiftSourceModuleTarget
+  ) -> URL {
+    target.directoryURL.appendingPathComponent("\(target.name).docc")
+  }
 }

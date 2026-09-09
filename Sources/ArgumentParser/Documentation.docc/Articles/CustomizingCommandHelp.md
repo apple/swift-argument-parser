@@ -59,6 +59,67 @@ hello!
 ...
 ```
 
+### Adding a Banner Inherited by Subcommands
+
+An abstract and discussion describe a single command. To show information that applies to your whole tool — a copyright notice, for example — pass `helpBanner` to the root command's ``CommandConfiguration``. The banner appears above the overview, and every subcommand inherits it.
+
+```swift
+struct Nodectl: ParsableCommand {
+    static let configuration = CommandConfiguration(
+        abstract: "Manage nodes and collect diagnostics.",
+        helpBanner: "Acme Corp. Copyright 1234",
+        subcommands: [Probe.self])
+
+    struct Probe: ParsableCommand {
+        static let configuration = CommandConfiguration(
+            abstract: "Probe nodes for health and topology.")
+    }
+}
+```
+
+The banner is shown for the root command and for the subcommand, without being declared twice:
+
+```
+% nodectl --help
+Acme Corp. Copyright 1234
+
+OVERVIEW: Manage nodes and collect diagnostics.
+
+USAGE: nodectl <subcommand>
+
+OPTIONS:
+  -h, --help              Show help information.
+
+SUBCOMMANDS:
+  probe                   Probe nodes for health and topology.
+
+  See 'nodectl help <subcommand>' for detailed help.
+
+% nodectl probe --help
+Acme Corp. Copyright 1234
+
+OVERVIEW: Probe nodes for health and topology.
+
+USAGE: nodectl probe
+
+OPTIONS:
+  -h, --help              Show help information.
+```
+
+Inheritance follows the same rule as `helpNames`: a command with no `helpBanner` of its own uses the banner of its closest ancestor that declares one. A subcommand can declare a different banner to replace the inherited one, or declare the empty string to suppress it:
+
+```swift
+struct Internal: ParsableCommand {
+    static let configuration = CommandConfiguration(
+        abstract: "An internal command with no banner.",
+        helpBanner: "")
+}
+```
+
+Unlike `abstract` and `discussion`, a banner is printed verbatim and is never wrapped to the width of the terminal, so multi-line banners and ASCII art render exactly as written. If you want a long single-line banner to wrap, insert the line breaks yourself.
+
+Banners appear wherever the help screen is shown — for the help flags, the `help` subcommand, and when a user runs a command that only groups subcommands. They do not appear in the short usage message printed when a user passes invalid arguments.
+
 ### Modifying the Help Flag Names
 
 Users can see the help screen for a command by passing either the `-h` or the `--help` flag, by default. If you need to use one of those flags for another purpose, you can provide alternative names when configuring a root command.

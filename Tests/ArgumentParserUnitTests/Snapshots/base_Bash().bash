@@ -1,6 +1,6 @@
 #!/bin/bash
 
-__defaultasflag-test_cursor_index_in_current_word() {
+__base-test_cursor_index_in_current_word() {
     local remaining="${COMP_LINE}"
 
     local word
@@ -35,7 +35,7 @@ __defaultasflag-test_cursor_index_in_current_word() {
 # - non_repeating_options: remove options for this (sub)command that are already on the command line
 # - positional_number: set to the current positional number
 # - unparsed_words: remove all flags, options, and option values for this (sub)command
-__defaultasflag-test_offer_flags_options() {
+__base-test_offer_flags_options() {
     local -ir positional_count="${1}"
     positional_number=0
 
@@ -85,10 +85,10 @@ __defaultasflag-test_offer_flags_options() {
                     fi
                 done
                 if "${not_found}"; then
-                    for index in "${!non_repeating_flags[@]}"; do
-                        if [[ "${non_repeating_flags[${index}]}" = "${word}" ]]; then
-                            unset "non_repeating_flags[${index}]"
-                            non_repeating_flags=("${non_repeating_flags[@]}")
+                    for index in "${!non_repeating_options[@]}"; do
+                        if [[ "${non_repeating_options[${index}]}" = "${word}" ]]; then
+                            unset "non_repeating_options[${index}]"
+                            non_repeating_options=("${non_repeating_options[@]}")
                             break
                         fi
                     done
@@ -127,14 +127,14 @@ __defaultasflag-test_offer_flags_options() {
     fi
 }
 
-__defaultasflag-test_add_completions() {
+__base-test_add_completions() {
     local completion
     while IFS='' read -r completion; do
         COMPREPLY+=("${completion}")
     done < <(IFS=$'\n' compgen "${@}" -- "${cur}")
 }
 
-__defaultasflag-test_custom_complete() {
+__base-test_custom_complete() {
     if [[ -n "${cur}" || -z ${COMP_WORDS[${COMP_CWORD}]} || "${COMP_LINE:${COMP_POINT}:1}" != ' ' ]]; then
         local -ar words=("${COMP_WORDS[@]}")
     else
@@ -144,7 +144,7 @@ __defaultasflag-test_custom_complete() {
     "${COMP_WORDS[0]}" "${@}" "${words[@]}"
 }
 
-_defaultasflag-test() {
+_base-test() {
     local state
     state="$(shopt -p;shopt -po)"
     trap "${state//$'\n'/;}" RETURN
@@ -162,26 +162,41 @@ _defaultasflag-test() {
     local -i positional_number
     local -a unparsed_words=("${COMP_WORDS[@]:1:${COMP_CWORD}}")
 
-    local -a repeating_flags=()
-    local -a non_repeating_flags=(--help -h --help)
-    local -a repeating_options=()
-    local -a non_repeating_options=(--bin-path --count --verbose --log-level)
-    __defaultasflag-test_offer_flags_options 1
+    local -a repeating_flags=(--kind-counter)
+    local -a non_repeating_flags=(--one --two --custom-three -h --help)
+    local -a repeating_options=(--rep1 -r --rep2)
+    local -a non_repeating_options=(--name --kind --other-kind --path1 --path2 --path3)
+    __base-test_offer_flags_options 2
 
     # Offer option value completions
     case "${prev}" in
-    '--bin-path')
-        __defaultasflag-test_add_completions -d
+    '--name')
         return
         ;;
-    '--count')
+    '--kind')
+        __base-test_add_completions -W 'one'$'\n''two'$'\n''custom-three'
         return
         ;;
-    '--verbose')
+    '--other-kind')
+        __base-test_add_completions -W 'b1_bash'$'\n''b2_bash'$'\n''b3_bash'
         return
         ;;
-    '--log-level')
-        __defaultasflag-test_add_completions -W 'DEBUG'$'\n''INFO'$'\n''WARN'$'\n''ERROR'
+    '--path1')
+        __base-test_add_completions -f
+        return
+        ;;
+    '--path2')
+        __base-test_add_completions -f
+        return
+        ;;
+    '--path3')
+        __base-test_add_completions -W 'c1_bash'$'\n''c2_bash'$'\n''c3_bash'
+        return
+        ;;
+    '--rep1')
+        return
+        ;;
+    '-r'|'--rep2')
         return
         ;;
     esac
@@ -189,7 +204,11 @@ _defaultasflag-test() {
     # Offer positional completions
     case "${positional_number}" in
     1)
-        __defaultasflag-test_add_completions -f
+        __base-test_add_completions -W "$(__base-test_custom_complete ---completion -- positional@0 "${COMP_CWORD}" "$(__base-test_cursor_index_in_current_word)")"
+        return
+        ;;
+    2)
+        __base-test_add_completions -W "$(__base-test_custom_complete ---completion -- positional@1 "${COMP_CWORD}" "$(__base-test_cursor_index_in_current_word)")"
         return
         ;;
     esac
@@ -199,19 +218,50 @@ _defaultasflag-test() {
     unset 'unparsed_words[0]'
     unparsed_words=("${unparsed_words[@]}")
     case "${subcommand}" in
-    help)
+    sub-command|escaped-command|help)
         # Offer subcommand argument completions
-        "_defaultasflag-test_${subcommand}"
+        "_base-test_${subcommand}"
         ;;
     *)
         # Offer subcommand completions
-        COMPREPLY+=($(compgen -W 'help' -- "${cur}"))
+        COMPREPLY+=($(compgen -W 'sub-command escaped-command help' -- "${cur}"))
         ;;
     esac
 }
 
-_defaultasflag-test_help() {
+_base-test_sub-command() {
+    repeating_flags=()
+    non_repeating_flags=(-h --help)
+    repeating_options=()
+    non_repeating_options=()
+    __base-test_offer_flags_options 0
+}
+
+_base-test_escaped-command() {
+    repeating_flags=()
+    non_repeating_flags=(-h --help)
+    repeating_options=()
+    non_repeating_options=(--o:n[e)
+    __base-test_offer_flags_options 1
+
+    # Offer option value completions
+    case "${prev}" in
+    '--o:n[e')
+        return
+        ;;
+    esac
+
+    # Offer positional completions
+    case "${positional_number}" in
+    1)
+        __base-test_add_completions -W "$(__base-test_custom_complete ---completion escaped-command -- positional@0 "${COMP_CWORD}" "$(__base-test_cursor_index_in_current_word)")"
+        return
+        ;;
+    esac
+}
+
+_base-test_help() {
     :
 }
 
-complete -o filenames -F _defaultasflag-test defaultasflag-test
+complete -o filenames -F _base-test base-test

@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2024 Apple Inc. and the Swift project authors
+// Copyright (c) 2024-2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -10,46 +10,46 @@
 //===----------------------------------------------------------------------===//
 
 import ArgumentParserTestHelpers
-import XCTest
+import Testing
 
-final class GenerateDoccReferenceTests: XCTestCase {
+@Suite struct GenerateDoccReferenceTests {
   #if os(macOS)
-  func testCountLinesMarkdownReference() throws {
+  @Test func countLinesMarkdownReference() throws {
     guard #available(macOS 12, *) else { return }
-    try assertGeneratedReference(command: "count-lines", doccFlavored: false)
+    try expectGeneratedReference(command: "count-lines", doccFlavored: false)
   }
 
-  func testCountLinesDoccReference() throws {
+  @Test func countLinesDoccReference() throws {
     guard #available(macOS 12, *) else { return }
-    try assertGeneratedReference(command: "count-lines", doccFlavored: true)
+    try expectGeneratedReference(command: "count-lines", doccFlavored: true)
   }
   #endif
 
-  func testColorMarkdownReference() throws {
-    try assertGeneratedReference(command: "color", doccFlavored: false)
+  @Test func colorMarkdownReference() throws {
+    try expectGeneratedReference(command: "color", doccFlavored: false)
   }
-  func testColorDoccReference() throws {
-    try assertGeneratedReference(command: "color", doccFlavored: true)
-  }
-
-  func testMathMarkdownReference() throws {
-    try assertGeneratedReference(command: "math", doccFlavored: false)
-  }
-  func testMathDoccReference() throws {
-    try assertGeneratedReference(command: "math", doccFlavored: true)
+  @Test func colorDoccReference() throws {
+    try expectGeneratedReference(command: "color", doccFlavored: true)
   }
 
-  func testRepeatMarkdownReference() throws {
-    try assertGeneratedReference(command: "repeat", doccFlavored: false)
+  @Test func mathMarkdownReference() throws {
+    try expectGeneratedReference(command: "math", doccFlavored: false)
   }
-  func testRepeatDoccReference() throws {
-    try assertGeneratedReference(command: "repeat", doccFlavored: true)
+  @Test func mathDoccReference() throws {
+    try expectGeneratedReference(command: "math", doccFlavored: true)
   }
 
-  func testRollMarkdownReference() throws {
-    try assertGeneratedReference(command: "roll", doccFlavored: false)
+  @Test func repeatMarkdownReference() throws {
+    try expectGeneratedReference(command: "repeat", doccFlavored: false)
   }
-  func testRollDoccReference() throws {
-    try assertGeneratedReference(command: "roll", doccFlavored: true)
+  @Test func repeatDoccReference() throws {
+    try expectGeneratedReference(command: "repeat", doccFlavored: true)
+  }
+
+  @Test func rollMarkdownReference() throws {
+    try expectGeneratedReference(command: "roll", doccFlavored: false)
+  }
+  @Test func rollDoccReference() throws {
+    try expectGeneratedReference(command: "roll", doccFlavored: true)
   }
 }

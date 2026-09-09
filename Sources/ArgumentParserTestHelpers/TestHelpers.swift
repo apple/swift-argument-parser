@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2020 Apple Inc. and the Swift project authors
+// Copyright (c) 2020-2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -44,17 +44,28 @@ where ChangeElement: Equatable {
 }
 
 // extensions to the ParsableArguments protocol to facilitate XCTestExpectation support
+@available(
+  *, deprecated,
+  message:
+    "Migrate to Swift Testing and use `TestableSwiftTestingParsableArguments` with `TestExpectation` instead."
+)
 public protocol TestableParsableArguments: ParsableArguments {
   var didValidateExpectation: XCTestExpectation { get }
 }
 
 extension TestableParsableArguments {
+  @available(*, deprecated)
   public mutating func validate() throws {
     didValidateExpectation.fulfill()
   }
 }
 
 // extensions to the ParsableCommand protocol to facilitate XCTestExpectation support
+@available(
+  *, deprecated,
+  message:
+    "Migrate to Swift Testing and use `TestableSwiftTestingParsableCommand` with `TestExpectation` instead."
+)
 public protocol TestableParsableCommand: ParsableCommand,
   TestableParsableArguments
 {
@@ -62,12 +73,18 @@ public protocol TestableParsableCommand: ParsableCommand,
 }
 
 extension TestableParsableCommand {
+  @available(*, deprecated)
   public mutating func run() throws {
     didRunExpectation.fulfill()
   }
 }
 
 extension XCTestExpectation {
+  @available(
+    *, deprecated,
+    message:
+      "Migrate to Swift Testing and use `TestExpectation` from `ArgumentParserTestHelpers` instead."
+  )
   public convenience init(singleExpectation description: String) {
     self.init(description: description)
     expectedFulfillmentCount = 1
@@ -76,6 +93,10 @@ extension XCTestExpectation {
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
+@available(
+  *, deprecated,
+  message: "Migrate to Swift Testing and use `expectResultFailure` instead."
+)
 public func AssertResultFailure<T, U: Error>(
   _ expression: @autoclosure () -> Result<T, U>,
   _ message: @autoclosure () -> String = "",
@@ -85,30 +106,43 @@ public func AssertResultFailure<T, U: Error>(
   switch expression() {
   case .success:
     let msg = message()
-    XCTFail(msg.isEmpty ? "Incorrectly succeeded" : msg, file: file, line: line)
+    XCTFail(
+      msg.isEmpty ? "Incorrectly succeeded" : msg, file: file, line: line)
   case .failure:
     break
   }
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
+@available(
+  *, deprecated,
+  message: "Migrate to Swift Testing and use `expectErrorMessage` instead."
+)
 public func AssertErrorMessage<A>(
   _ type: A.Type, _ arguments: [String], _ errorMessage: String,
-  file: StaticString = #filePath, line: UInt = #line
+  file: StaticString = #filePath,
+  line: UInt = #line
 ) where A: ParsableArguments {
+
   do {
     _ = try A.parse(arguments)
     XCTFail("Parsing should have failed.", file: file, line: line)
   } catch {
     // We expect to hit this path, i.e. getting an error:
-    XCTAssertEqual(A.message(for: error), errorMessage, file: file, line: line)
+    XCTAssertEqual(
+      A.message(for: error), errorMessage, file: file, line: line)
   }
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
+@available(
+  *, deprecated,
+  message: "Migrate to Swift Testing and use `expectFullErrorMessage` instead."
+)
 public func AssertFullErrorMessage<A>(
   _ type: A.Type, _ arguments: [String], _ errorMessage: String,
-  file: StaticString = #filePath, line: UInt = #line
+  file: StaticString = #filePath,
+  line: UInt = #line
 ) where A: ParsableArguments {
   do {
     _ = try A.parse(arguments)
@@ -121,9 +155,14 @@ public func AssertFullErrorMessage<A>(
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
+@available(
+  *, deprecated,
+  message: "Migrate to Swift Testing and use `expectParse` instead."
+)
 public func AssertParse<A>(
   _ type: A.Type, _ arguments: [String], file: StaticString = #filePath,
-  line: UInt = #line, closure: (A) throws -> Void
+  line: UInt = #line,
+  closure: (A) throws -> Void
 ) where A: ParsableArguments {
   do {
     let parsed = try type.parse(arguments)
@@ -135,9 +174,14 @@ public func AssertParse<A>(
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
+@available(
+  *, deprecated,
+  message: "Migrate to Swift Testing and use `expectParseCommand` instead."
+)
 public func AssertParseCommand<A: ParsableCommand>(
   _ rootCommand: ParsableCommand.Type, _ type: A.Type, _ arguments: [String],
-  file: StaticString = #filePath, line: UInt = #line,
+  file: StaticString = #filePath,
+  line: UInt = #line,
   closure: (A) throws -> Void
 ) {
   do {
@@ -155,10 +199,16 @@ public func AssertParseCommand<A: ParsableCommand>(
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
+@available(
+  *, deprecated,
+  message:
+    "Migrate to Swift Testing. There is no direct replacement; inline the parse-and-check-message logic using `#expect` and `Issue.record`."
+)
 public func AssertParseCommandErrorMessage<A: ParsableCommand>(
   _ rootCommand: ParsableCommand.Type, _ type: A.Type, _ arguments: [String],
   _ errorMessage: String,
-  file: StaticString = #filePath, line: UInt = #line
+  file: StaticString = #filePath,
+  line: UInt = #line
 ) {
   do {
     let command = try rootCommand.parseAsRoot(arguments)
@@ -175,6 +225,10 @@ public func AssertParseCommandErrorMessage<A: ParsableCommand>(
 }
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
+@available(
+  *, deprecated,
+  message: "Migrate to Swift Testing and use `expectEqualStrings` instead."
+)
 public func AssertEqualStrings(
   actual: String,
   expected: String,
@@ -251,82 +305,16 @@ public func AssertEqualStrings(
   XCTFail(
     "Actual output does not match the expected output:\n\(stringComparison)",
     file: file,
-    line: line)
-}
-
-// swift-format-ignore: AlwaysUseLowerCamelCase
-public func AssertHelp<T: ParsableArguments>(
-  _ visibility: ArgumentVisibility,
-  for _: T.Type,
-  columns: Int? = 80,
-  equals expected: String,
-  file: StaticString = #filePath,
-  line: UInt = #line
-) {
-  let flag: String
-  let includeHidden: Bool
-
-  switch visibility {
-  case .default:
-    flag = "--help"
-    includeHidden = false
-  case .hidden:
-    flag = "--help-hidden"
-    includeHidden = true
-  case .private:
-    XCTFail("Should not be called.", file: file, line: line)
-    return
-  default:
-    XCTFail("Unrecognized visibility.", file: file, line: line)
-    return
-  }
-
-  do {
-    _ = try T.parse([flag])
-    XCTFail(file: file, line: line)
-  } catch {
-    let helpString = T.fullMessage(for: error, columns: columns)
-    AssertEqualStrings(
-      actual: helpString, expected: expected, file: file, line: line)
-  }
-
-  let helpString = T.helpMessage(includeHidden: includeHidden, columns: columns)
-  AssertEqualStrings(
-    actual: helpString, expected: expected, file: file, line: line)
-}
-
-// swift-format-ignore: AlwaysUseLowerCamelCase
-public func AssertHelp<T: ParsableCommand, U: ParsableCommand>(
-  _ visibility: ArgumentVisibility,
-  for _: T.Type,
-  root _: U.Type,
-  columns: Int? = 80,
-  equals expected: String,
-  file: StaticString = #filePath,
-  line: UInt = #line
-) {
-  let includeHidden: Bool
-
-  switch visibility {
-  case .default:
-    includeHidden = false
-  case .hidden:
-    includeHidden = true
-  case .private:
-    XCTFail("Should not be called.", file: file, line: line)
-    return
-  default:
-    XCTFail("Unrecognized visibility.", file: file, line: line)
-    return
-  }
-
-  let helpString = U.helpMessage(
-    for: T.self, includeHidden: includeHidden, columns: columns)
-  AssertEqualStrings(
-    actual: helpString, expected: expected, file: file, line: line)
+    line: line
+  )
 }
 
 extension XCTest {
+  @available(
+    *, deprecated,
+    message:
+      "Migrate to Swift Testing. `debugURL` has no direct public replacement; the Swift Testing helpers derive it internally."
+  )
   public var debugURL: URL {
     let bundleURL = Bundle(for: type(of: self)).bundleURL
     return bundleURL.lastPathComponent.hasSuffix("xctest")
@@ -335,6 +323,10 @@ extension XCTest {
   }
 
   // swift-format-ignore: AlwaysUseLowerCamelCase
+  @available(
+    *, deprecated,
+    message: "Migrate to Swift Testing and use `requireExecuteCommand` instead."
+  )
   @discardableResult
   public func AssertExecuteCommand(
     command: String,
@@ -344,7 +336,7 @@ extension XCTest {
     line: UInt = #line,
     environment: [String: String] = [:]
   ) throws -> String {
-    try AssertExecuteCommand(
+    try _AssertExecuteCommand(
       command: command.split(separator: " ").map(String.init),
       expected: expected,
       exitCode: exitCode,
@@ -355,8 +347,35 @@ extension XCTest {
   }
 
   // swift-format-ignore: AlwaysUseLowerCamelCase
+  @available(
+    *, deprecated,
+    message: "Migrate to Swift Testing and use `requireExecuteCommand` instead."
+  )
   @discardableResult
   public func AssertExecuteCommand(
+    command: [String],
+    expected: String? = nil,
+    exitCode: ExitCode = .success,
+    file: StaticString = #filePath,
+    line: UInt = #line,
+    environment: [String: String] = [:]
+  ) throws -> String {
+    try _AssertExecuteCommand(
+      command: command,
+      expected: expected,
+      exitCode: exitCode,
+      file: file,
+      line: line,
+      environment: environment
+    )
+  }
+
+  // Internal non-deprecated helper so the two `AssertExecuteCommand`
+  // overloads (and other deprecated helpers below) can share the
+  // implementation without themselves emitting deprecation warnings on
+  // internal calls.
+  @discardableResult
+  fileprivate func _AssertExecuteCommand(
     command: [String],
     expected: String? = nil,
     exitCode: ExitCode = .success,
@@ -370,7 +389,7 @@ extension XCTest {
 
     let arguments = Array(command.dropFirst())
     let commandName = String(command.first!)
-    let commandURL = debugURL.appendingPathComponent(commandName)
+    let commandURL = _debugBundleURL.appendingPathComponent(commandName)
     guard (try? commandURL.checkResourceIsReachable()) ?? false else {
       XCTFail(
         "No executable at '\(commandURL.standardizedFileURL.path)'.",
@@ -410,7 +429,7 @@ extension XCTest {
     let errorActual = String(data: errorData, encoding: .utf8)!
 
     if let expected = expected {
-      AssertEqualStrings(
+      _assertEqualStrings(
         actual: errorActual + outputActual,
         expected: expected,
         file: file,
@@ -425,12 +444,24 @@ extension XCTest {
     return outputActual
   }
 
+  fileprivate var _debugBundleURL: URL {
+    let bundleURL = Bundle(for: type(of: self)).bundleURL
+    return bundleURL.lastPathComponent.hasSuffix("xctest")
+      ? bundleURL.deletingLastPathComponent()
+      : bundleURL
+  }
+
   // swift-format-ignore: AlwaysUseLowerCamelCase
+  @available(
+    *, deprecated,
+    message:
+      "Migrate to Swift Testing and use `expectJSONEqualFromString` instead."
+  )
   public func AssertJSONEqualFromString<T: Codable & Equatable>(
     actual: String, expected: String, for type: T.Type,
     file: StaticString = #filePath, line: UInt = #line
   ) throws {
-    AssertEqualStrings(
+    _assertEqualStrings(
       actual: actual,
       expected: expected,
       file: file,
@@ -448,12 +479,105 @@ extension XCTest {
     )
     XCTAssertEqual(actualDumpJSON, expectedDumpJSON)
   }
+
+  // Non-deprecated implementation of the string-equality assertion so the
+  // other helper methods in this file can call it without emitting
+  // deprecation warnings on their internal call sites.
+  fileprivate func _assertEqualStrings(
+    actual: String,
+    expected: String,
+    file: StaticString = #filePath,
+    line: UInt = #line
+  ) {
+    let actual =
+      actual
+      .replacingOccurrences(of: "\r\n", with: "\n")
+      .replacingOccurrences(of: "\r", with: "\n")
+    let expected =
+      expected
+      .replacingOccurrences(of: "\r\n", with: "\n")
+      .replacingOccurrences(of: "\r", with: "\n")
+
+    guard actual != expected else { return }
+
+    let stringComparison: String
+    if #available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *) {
+      let actualLines = actual.components(separatedBy: .newlines)
+      let expectedLines = expected.components(separatedBy: .newlines)
+      let difference = actualLines.difference(from: expectedLines)
+
+      var insertions: [Int: String] = [:]
+      var removals: [Int: String] = [:]
+      for change in difference {
+        switch change {
+        case .insert(let offset, let element, _):
+          insertions[offset] = element
+        case .remove(let offset, let element, _):
+          removals[offset] = element
+        }
+      }
+
+      var result = ""
+      var expectedLine = 0
+      var actualLine = 0
+      while expectedLine < expectedLines.count || actualLine < actualLines.count
+      {
+        if let removal = removals[expectedLine] {
+          result += "–\(removal)\n"
+          expectedLine += 1
+        } else if let insertion = insertions[actualLine] {
+          result += "+\(insertion)\n"
+          actualLine += 1
+        } else {
+          result += " \(expectedLines[expectedLine])\n"
+          expectedLine += 1
+          actualLine += 1
+        }
+      }
+      stringComparison = result
+    } else {
+      stringComparison = """
+        Expected:
+        \(expected)
+
+        Actual:
+        \(actual)
+        """
+    }
+
+    XCTFail(
+      "Actual output does not match the expected output:\n\(stringComparison)",
+      file: file,
+      line: line)
+  }
 }
 
 // MARK: - Snapshot testing
 extension XCTest {
+  @available(
+    *, deprecated,
+    message: "Migrate to Swift Testing and use `expectSnapshot` instead."
+  )
   @discardableResult
   public func assertSnapshot(
+    actual: String,
+    extension: String,
+    record: Bool = false,
+    test: StaticString = #function,
+    file: StaticString = #filePath,
+    line: UInt = #line
+  ) throws -> String? {
+    try _assertSnapshot(
+      actual: actual,
+      extension: `extension`,
+      record: record,
+      test: test,
+      file: file,
+      line: line)
+  }
+
+  @discardableResult
+  fileprivate func _assertSnapshot(
     actual: String,
     extension: String,
     record: Bool = false,
@@ -485,7 +609,7 @@ extension XCTest {
       return nil
     } else {
       let expected = try String(contentsOf: snapshotFileURL, encoding: .utf8)
-      AssertEqualStrings(
+      _assertEqualStrings(
         actual: actual,
         expected: expected,
         file: file,
@@ -494,6 +618,10 @@ extension XCTest {
     }
   }
 
+  @available(
+    *, deprecated,
+    message: "Migrate to Swift Testing and use `expectGenerateManual` instead."
+  )
   public func assertGenerateManual(
     multiPage: Bool,
     command: String,
@@ -506,7 +634,7 @@ extension XCTest {
     throw XCTSkip("Unsupported on this platform")
     #endif
 
-    let commandURL = debugURL.appendingPathComponent(command)
+    let commandURL = _debugBundleURL.appendingPathComponent(command)
     var command = [
       "generate-manual", commandURL.path,
       "--date", "1996-05-12",
@@ -519,12 +647,12 @@ extension XCTest {
     if multiPage {
       command.append("--multi-page")
     }
-    let actual = try AssertExecuteCommand(
+    let actual = try _AssertExecuteCommand(
       command: command,
       file: file,
       line: line)
 
-    try self.assertSnapshot(
+    try _assertSnapshot(
       actual: actual,
       extension: "mdoc",
       record: record,
@@ -533,6 +661,11 @@ extension XCTest {
       line: line)
   }
 
+  @available(
+    *, deprecated,
+    message:
+      "Migrate to Swift Testing and use `expectGeneratedReference` instead."
+  )
   public func assertGeneratedReference(
     command: String,
     doccFlavored: Bool,
@@ -545,7 +678,7 @@ extension XCTest {
     throw XCTSkip("Unsupported on this platform")
     #endif
 
-    let commandURL = debugURL.appendingPathComponent(command)
+    let commandURL = _debugBundleURL.appendingPathComponent(command)
     let command: [String]
     if doccFlavored {
       command = [
@@ -559,12 +692,12 @@ extension XCTest {
         "--output-directory", "-",
       ]
     }
-    let actual = try AssertExecuteCommand(
+    let actual = try _AssertExecuteCommand(
       command: command,
       file: file,
       line: line)
 
-    try self.assertSnapshot(
+    try _assertSnapshot(
       actual: actual,
       extension: "md",
       record: record,
@@ -573,6 +706,10 @@ extension XCTest {
       line: line)
   }
 
+  @available(
+    *, deprecated,
+    message: "Migrate to Swift Testing and use `expectDumpHelp(type:)` instead."
+  )
   public func assertDumpHelp<T: ParsableArguments>(
     type: T.Type,
     record: Bool = false,
@@ -590,9 +727,9 @@ extension XCTest {
     }
 
     let apiOutput = T._dumpHelp()
-    AssertEqualStrings(actual: actual, expected: apiOutput)
+    _assertEqualStrings(actual: actual, expected: apiOutput)
 
-    let expected = try self.assertSnapshot(
+    let expected = try _assertSnapshot(
       actual: actual,
       extension: "json",
       record: record,
@@ -602,14 +739,31 @@ extension XCTest {
 
     guard let expected else { return }
 
-    try AssertJSONEqualFromString(
+    _assertEqualStrings(
       actual: actual,
       expected: expected,
-      for: ToolInfoV0.self,
       file: file,
       line: line)
+
+    let actualJSONData = try XCTUnwrap(
+      actual.data(using: .utf8), file: file, line: line)
+    let actualDumpJSON = try XCTUnwrap(
+      JSONDecoder().decode(ToolInfoV0.self, from: actualJSONData),
+      file: file, line: line)
+
+    let expectedJSONData = try XCTUnwrap(
+      expected.data(using: .utf8), file: file, line: line)
+    let expectedDumpJSON = try XCTUnwrap(
+      JSONDecoder().decode(ToolInfoV0.self, from: expectedJSONData),
+      file: file, line: line)
+    XCTAssertEqual(actualDumpJSON, expectedDumpJSON)
   }
 
+  @available(
+    *, deprecated,
+    message:
+      "Migrate to Swift Testing and use `expectDumpHelp(command:)` instead."
+  )
   public func assertDumpHelp(
     command: String,
     record: Bool = false,
@@ -617,12 +771,13 @@ extension XCTest {
     file: StaticString = #filePath,
     line: UInt = #line
   ) throws {
-    let actual = try AssertExecuteCommand(
-      command: command + " --experimental-dump-help",
+    let actual = try _AssertExecuteCommand(
+      command: (command + " --experimental-dump-help").split(separator: " ")
+        .map(String.init),
       expected: nil,
       file: file,
       line: line)
-    try self.assertSnapshot(
+    try _assertSnapshot(
       actual: actual,
       extension: "json",
       record: record,
