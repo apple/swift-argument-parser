@@ -163,7 +163,7 @@ _defaultasflag-test() {
     local -a unparsed_words=("${COMP_WORDS[@]:1:${COMP_CWORD}}")
 
     local -a repeating_flags=()
-    local -a non_repeating_flags=(--help -h --help)
+    local -a non_repeating_flags=(--help -h)
     local -a repeating_options=()
     local -a non_repeating_options=(--bin-path --count --verbose --log-level)
     __defaultasflag-test_offer_flags_options 1

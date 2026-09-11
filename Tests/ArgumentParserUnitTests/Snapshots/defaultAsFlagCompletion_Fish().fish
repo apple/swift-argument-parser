@@ -20,7 +20,7 @@ function __defaultasflag-test_parse_tokens -S
     set -l unparsed_tokens (__defaultasflag-test_tokens -pc)
     switch $unparsed_tokens[1]
     case 'defaultasflag-test'
-        __defaultasflag-test_parse_subcommand 1 'bin-path=' 'count=' 'verbose=' 'log-level=' 'help' 'h/help'
+        __defaultasflag-test_parse_subcommand 1 'bin-path=' 'count=' 'verbose=' 'log-level=' 'help' 'h'
         switch $unparsed_tokens[1]
         case 'help'
             __defaultasflag-test_parse_subcommand -r 1 
@@ -83,5 +83,5 @@ complete -c 'defaultasflag-test' -n '__defaultasflag-test_should_offer_completio
 complete -c 'defaultasflag-test' -n '__defaultasflag-test_should_offer_completions_for_flags_or_options "defaultasflag-test" log-level' -l 'log-level' -rfka 'DEBUG INFO WARN ERROR'
 complete -c 'defaultasflag-test' -n '__defaultasflag-test_should_offer_completions_for_flags_or_options "defaultasflag-test" help' -l 'help'
 complete -c 'defaultasflag-test' -n '__defaultasflag-test_should_offer_completions_for_positional "defaultasflag-test" -eq 1' -F
-complete -c 'defaultasflag-test' -n '__defaultasflag-test_should_offer_completions_for_flags_or_options "defaultasflag-test" h help' -s 'h' -l 'help' -d 'Show help information.'
+complete -c 'defaultasflag-test' -n '__defaultasflag-test_should_offer_completions_for_flags_or_options "defaultasflag-test" h' -s 'h' -d 'Show help information.'
 complete -c 'defaultasflag-test' -n '__defaultasflag-test_should_offer_completions_for_positional "defaultasflag-test" -eq 2' -fa 'help' -d 'Show subcommand help information.'

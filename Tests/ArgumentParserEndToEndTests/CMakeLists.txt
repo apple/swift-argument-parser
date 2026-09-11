@@ -4,6 +4,7 @@ add_library(EndToEndTests
   DefaultsEndToEndTests.swift
   EnumEndToEndTests.swift
   FlagsEndToEndTests.swift
+  HelpNameCollisionEndToEndTests.swift
   JoinedEndToEndTests.swift
   LongNameWithShortDashEndToEndTests.swift
   NestedCommandEndToEndTests.swift
