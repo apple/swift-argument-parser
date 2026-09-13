@@ -264,7 +264,7 @@ extension ParsableArguments {
 
   /// Returns the usage text for this type.
   ///
-  /// - Parameters includeHidden: Include hidden help information in the
+  /// - Parameter includeHidden: Include hidden help information in the
   ///   generated message.
   /// - Returns: The usage text for this type.
   public static func usageString(
