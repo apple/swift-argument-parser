@@ -97,34 +97,37 @@ extension EqualsEndToEndTests {
   /// `--out=` must accept an explicit empty-string value.
   ///
   /// The following positional `file.txt` must remain a positional argument.
-  func testLongOptionEmptyValueDoesNotConsumePositional() throws {
-    AssertParse(LongOptionWithFile.self, ["--out=", "file.txt"]) { parsed in
-      XCTAssertEqual(parsed.out, "")
-      XCTAssertEqual(parsed.file, "file.txt")
+  @Test func longOptionEmptyValueDoesNotConsumePositional() throws {
+    expectParse(LongOptionWithFile.self, ["--out=", "file.txt"]) { parsed in
+      #expect(parsed.out == "")
+      #expect(parsed.file == "file.txt")
     }
   }
 
   /// `--out=value` (non-empty) must behave as before.
-  func testLongOptionNonEmptyValueUnchanged() throws {
-    AssertParse(LongOptionWithFile.self, ["--out=output.txt", "file.txt"]) { parsed in
-      XCTAssertEqual(parsed.out, "output.txt")
-      XCTAssertEqual(parsed.file, "file.txt")
+  @Test func longOptionNonEmptyValueUnchanged() throws {
+    expectParse(LongOptionWithFile.self, ["--out=output.txt", "file.txt"]) {
+      parsed in
+      #expect(parsed.out == "output.txt")
+      #expect(parsed.file == "file.txt")
     }
   }
 
   /// `--out` (no `=`) followed by value token must still work.
-  func testLongOptionSeparateValueUnchanged() throws {
-    AssertParse(LongOptionWithFile.self, ["--out", "output.txt", "file.txt"]) { parsed in
-      XCTAssertEqual(parsed.out, "output.txt")
-      XCTAssertEqual(parsed.file, "file.txt")
+  @Test func longOptionSeparateValueUnchanged() throws {
+    expectParse(LongOptionWithFile.self, ["--out", "output.txt", "file.txt"]) {
+      parsed in
+      #expect(parsed.out == "output.txt")
+      #expect(parsed.file == "file.txt")
     }
   }
 
   /// Short option `-o=` must similarly keep its existing empty-value behaviour.
-  func testShortOptionEmptyValueConsistent() throws {
-    AssertParse(LongOptionWithOptionalString.self, ["-n=", "file.txt"]) { parsed in
-      XCTAssertEqual(parsed.name, "")
-      XCTAssertEqual(parsed.file, "file.txt")
+  @Test func shortOptionEmptyValueConsistent() throws {
+    expectParse(LongOptionWithOptionalString.self, ["-n=", "file.txt"]) {
+      parsed in
+      #expect(parsed.name == "")
+      #expect(parsed.file == "file.txt")
     }
   }
 }
