@@ -108,6 +108,9 @@ extension SerializedTests.CompletionScriptTests {
 
       @Argument(completion: .custom { _, _, _ in candidates(prefix: "i") })
       var two: String
+
+      @Option(completion: .list([#"'"#, #"\"#, "a b"]))
+      var three: String
     }
   }
 
