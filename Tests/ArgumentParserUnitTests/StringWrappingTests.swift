@@ -42,6 +42,16 @@ let jsonSample = """
 // MARK: -
 
 @Suite struct StringWrappingTests {
+  @Test(arguments: ["Nextline.", "Next line."])
+  func longWordBeforeLineBreak(_ nextLine: String) {
+    let url = "https://example.com/a-long-unbroken-documentation-url"
+    let text = "\(url)\n\(nextLine)"
+
+    #expect(
+      text.wrapped(to: 40, wrappingIndent: 8)
+        == "        \(url)\n        \(nextLine)")
+  }
+
   @Test func short() {
     #expect(
       shortSample.wrapped(to: 40) == """

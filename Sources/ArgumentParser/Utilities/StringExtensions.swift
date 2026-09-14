@@ -37,9 +37,11 @@ extension StringProtocol where SubSequence == Substring {
       } else if let lastSpace = nextChunk.lastIndex(of: " ") {
         result.append(self[currentIndex..<lastSpace])
         currentIndex = index(after: lastSpace)
-      } else if let nextSpace = self[currentIndex...].firstIndex(of: " ") {
-        result.append(self[currentIndex..<nextSpace])
-        currentIndex = index(after: nextSpace)
+      } else if let nextBreak = self[currentIndex...].firstIndex(where: {
+        $0 == " " || $0 == "\n"
+      }) {
+        result.append(self[currentIndex..<nextBreak])
+        currentIndex = index(after: nextBreak)
       } else {
         result.append(self[currentIndex...])
         break
