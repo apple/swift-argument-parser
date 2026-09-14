@@ -79,3 +79,55 @@ extension EqualsEndToEndTests {
     }
   }
 }
+
+// MARK: Long option with empty value (issue #958)
+
+private struct LongOptionWithFile: ParsableArguments {
+  @Option(name: .long) var out: String
+  @Argument var file: String
+}
+
+private struct LongOptionWithOptionalString: ParsableArguments {
+  @Option(name: [.short, .long]) var name: String?
+  @Argument var file: String
+}
+
+// https://github.com/apple/swift-argument-parser/issues/958
+extension EqualsEndToEndTests {
+  /// `--out=` must accept an explicit empty-string value.
+  ///
+  /// The following positional `file.txt` must remain a positional argument.
+  @Test func longOptionEmptyValueDoesNotConsumePositional() throws {
+    expectParse(LongOptionWithFile.self, ["--out=", "file.txt"]) { parsed in
+      #expect(parsed.out == "")
+      #expect(parsed.file == "file.txt")
+    }
+  }
+
+  /// `--out=value` (non-empty) must behave as before.
+  @Test func longOptionNonEmptyValueUnchanged() throws {
+    expectParse(LongOptionWithFile.self, ["--out=output.txt", "file.txt"]) {
+      parsed in
+      #expect(parsed.out == "output.txt")
+      #expect(parsed.file == "file.txt")
+    }
+  }
+
+  /// `--out` (no `=`) followed by value token must still work.
+  @Test func longOptionSeparateValueUnchanged() throws {
+    expectParse(LongOptionWithFile.self, ["--out", "output.txt", "file.txt"]) {
+      parsed in
+      #expect(parsed.out == "output.txt")
+      #expect(parsed.file == "file.txt")
+    }
+  }
+
+  /// Short option `-o=` must similarly keep its existing empty-value behaviour.
+  @Test func shortOptionEmptyValueConsistent() throws {
+    expectParse(LongOptionWithOptionalString.self, ["-n=", "file.txt"]) {
+      parsed in
+      #expect(parsed.name == "")
+      #expect(parsed.file == "file.txt")
+    }
+  }
+}
