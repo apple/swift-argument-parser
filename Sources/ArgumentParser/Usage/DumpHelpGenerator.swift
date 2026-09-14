@@ -23,7 +23,11 @@ internal struct DumpHelpGenerator {
   }
 
   func rendered() -> String {
+    #if ArgumentParserFoundation
     JSONEncoder.encode(self.toolInfo)
+    #else
+    "(cannot dump help to JSON without Foundation)"
+    #endif
   }
 }
 
