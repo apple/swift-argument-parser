@@ -20,7 +20,7 @@ function __math_parse_tokens -S
     set -l unparsed_tokens (__math_tokens -pc)
     switch $unparsed_tokens[1]
     case 'math'
-        __math_parse_subcommand 0 'version' 'h/help'
+        __math_parse_subcommand 0 'version' 'h/help' 'x/hex-output'
         switch $unparsed_tokens[1]
         case 'add'
             __math_parse_subcommand -r 1 'x/hex-output' 'version' 'h/help'
@@ -93,6 +93,7 @@ end
 complete -c 'math' -f
 complete -c 'math' -n '__math_should_offer_completions_for_flags_or_options "math" version' -l 'version' -d 'Show the version.'
 complete -c 'math' -n '__math_should_offer_completions_for_flags_or_options "math" h help' -s 'h' -l 'help' -d 'Show help information.'
+complete -c 'math' -n '__math_should_offer_completions_for_flags_or_options "math" hex-output x' -l 'hex-output' -s 'x' -d 'Use hexadecimal notation for the result.'
 complete -c 'math' -n '__math_should_offer_completions_for_positional "math" -eq 1' -fa 'add' -d 'Print the sum of the values.'
 complete -c 'math' -n '__math_should_offer_completions_for_positional "math" -eq 1' -fa 'multiply' -d 'Print the product of the values.'
 complete -c 'math' -n '__math_should_offer_completions_for_positional "math" -eq 1' -fa 'stats' -d 'Calculate descriptive statistics.'

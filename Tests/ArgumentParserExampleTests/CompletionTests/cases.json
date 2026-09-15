@@ -1,0 +1,18 @@
+[
+  {
+    "line": "math --hex-o<TAB>",
+    "expected": "math --hex-output"
+  },
+  {
+    "line": "math --hex-o<TAB> 1",
+    "expected": {
+      "bash": "math --hex-output 1",
+      "zsh": "math --hex-output  1",
+      "fish": "math --hex-output 1"
+    }
+  },
+  {
+    "line": "math stats average --kind med<TAB>",
+    "expected": "math stats average --kind median"
+  }
+]
