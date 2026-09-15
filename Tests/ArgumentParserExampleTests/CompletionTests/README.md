@@ -4,15 +4,26 @@ These fixtures use the `ParsableCommand` hierarchy in `Examples/math/Math.swift`
 `Math` defaults to `Math.Add`, whose option group defines `--hex-output`.
 `Math.Statistics.Average` supplies the nested `--kind` value completion control.
 
-Build the example and run with Python 3 and bash, zsh and fish installed:
+Run the fixtures through Swift Testing:
 
 ```sh
-swift build --product math
-python3 Tests/CompletionTests/test_completions.py --bin-dir "$(swift build --show-bin-path)"
+swift test --filter CompletionExampleTests
 ```
 
-Use `--shell bash` (repeatable) to run a subset. Missing requested shells fail
-explicitly. The runner has no Python package dependencies and is for POSIX hosts.
+`CompletionExampleTests` registers each shell/fixture pair as a separate test.
+It runs installed bash, zsh and fish shells on macOS and Linux; Python 3 is
+required for the PTY driver. The suite is disabled if Python 3 is unavailable.
+Install all three shells to exercise all nine cases. The Python driver uses only
+the standard library, and its output is included in Swift Testing failures.
+
+To run the driver directly after building the math example:
+
+```sh
+python3 Tests/ArgumentParserExampleTests/CompletionTests/test_completions.py --bin-dir "$(swift build --show-bin-path)"
+```
+
+Use `--shell bash` (repeatable) to run a subset, and `--case 0` to run one fixture.
+Missing explicitly requested shells fail.
 
 Each row in `cases.json` gives the command line, the Tab/cursor location, and the
 expected resulting line. The runner generates the completion script using the

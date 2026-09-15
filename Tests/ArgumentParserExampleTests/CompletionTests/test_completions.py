@@ -1,13 +1,19 @@
 #!/usr/bin/env python3
-# Copyright (c) 2026 Apple Inc. and the Swift project authors
-# Licensed under Apache License v2.0 with Runtime Library Exception.
-# See https://swift.org/LICENSE.txt for license information.
+##===----------------------------------------------------------------------===##
+##
+## This source file is part of the Swift Argument Parser open source project
+##
+## Copyright (c) 2026 Apple Inc. and the Swift project authors
+## Licensed under Apache License v2.0 with Runtime Library Exception
+##
+## See https://swift.org/LICENSE.txt for license information
+##
+##===----------------------------------------------------------------------===##
 """Exercise generated completions in real shell line editors; Python stdlib only."""
 
 import argparse
 import json
 import os
-from pathlib import Path
 import pty
 import select
 import shlex
@@ -16,6 +22,7 @@ import signal
 import subprocess
 import tempfile
 import time
+from pathlib import Path
 
 
 def complete(shell, executable, script, case, directory):
@@ -50,16 +57,19 @@ def complete(shell, executable, script, case, directory):
         raise AssertionError(f'{shell}: timeout\n{transcript.decode(errors="replace")}')
 
     try:
+        quoted_script = shlex.quote(str(script))
         if shell == "bash":
-            setup = f"""PS1=''; bind 'set editing-mode emacs'; source {shlex.quote(str(script))}
+            setup = f"""PS1=''; bind 'set editing-mode emacs'; source {quoted_script}
 bind '"\\C-g": "\\C-aprintf %s \\"\\C-e\\" > line\\n"'
 """
         elif shell == "zsh":
-            setup = f"""PS1=''; autoload -Uz compinit; compinit -D; bindkey -e; source {shlex.quote(str(script))}
-_capture_line() {{ print -rn -- "$BUFFER" > line; }}; zle -N _capture_line; bindkey '^G' _capture_line
+            setup = f"""PS1=''; autoload -Uz compinit; compinit -D; bindkey -e
+source {quoted_script}
+_capture_line() {{ print -rn -- "$BUFFER" > line; }}
+zle -N _capture_line; bindkey '^G' _capture_line
 """
         else:
-            setup = f"""function fish_prompt; end; source {shlex.quote(str(script))}
+            setup = f"""function fish_prompt; end; source {quoted_script}
 bind \\cg 'printf "%s" (commandline) > line'
 """
         os.write(terminal, (setup + "touch ready\n").encode())
@@ -85,15 +95,19 @@ bind \\cg 'printf "%s" (commandline) > line'
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--bin-dir", required=True, type=Path)
+    parser.add_argument("--case", type=int, choices=range(3))
     parser.add_argument("--shell", choices=["bash", "zsh", "fish"], action="append")
     args = parser.parse_args()
     executable = args.bin_dir.resolve() / "math"
     cases = json.loads(Path(__file__).with_name("cases.json").read_text())
+    if args.case is not None:
+        cases = [cases[args.case]]
     shells = args.shell or ["bash", "zsh", "fish"]
     for shell in shells:
         if shutil.which(shell) is None:
             parser.error(
-                f"{shell} is required; install it or select available shells with --shell"
+                f"{shell} is required; install it or select available shells "
+                "with --shell"
             )
     count = 0
     failures = 0
