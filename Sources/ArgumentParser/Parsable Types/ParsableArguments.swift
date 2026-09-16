@@ -101,12 +101,7 @@ extension ParsableArguments {
       throw ParserError.helpRequested(visibility: helpCommand.visibility)
     case let result as _WrappedParsableCommand<Self>:
       return result.options
-    case var result as Self:
-      do {
-        try result.validate()
-      } catch {
-        throw ParserError.userValidationError(error)
-      }
+    case let result as Self:
       return result
     default:
       // TODO: this should be a "wrong command" message
