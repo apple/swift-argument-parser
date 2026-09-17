@@ -156,6 +156,73 @@ extension SerializedTests.CompletionScriptTests {
 }
 
 extension SerializedTests.CompletionScriptTests {
+  struct DefaultSubcommandRoot: ParsableCommand {
+    static let configuration = CommandConfiguration(
+      commandName: "default-completion",
+      subcommands: [Default.self, Other.self],
+      defaultSubcommand: Default.self)
+
+    @Flag var rootFlag = false
+
+    struct Default: ParsableCommand {
+      @Option(completion: .list(["one", "two"]))
+      var defaultOption: String
+
+      @Option(completion: .custom { _, _, _ in [] })
+      var customOption: String
+    }
+
+    struct Other: ParsableCommand {}
+  }
+
+  @Test func defaultSubcommandBashCompletions() throws {
+    let script = try CompletionsGenerator(
+      command: DefaultSubcommandRoot.self,
+      shell: .bash
+    ).generateCompletionScript()
+    let childFunction = try #require(
+      script.range(of: "_default-completion_default() {")
+    )
+    let rootFunction = script[..<childFunction.lowerBound]
+
+    #expect(rootFunction.contains("--default-option"))
+    #expect(
+      rootFunction.contains("---completion default -- --custom-option"))
+  }
+
+  @Test func defaultSubcommandZshCompletions() throws {
+    let script = try CompletionsGenerator(
+      command: DefaultSubcommandRoot.self,
+      shell: .zsh
+    ).generateCompletionScript()
+    let childFunction = try #require(
+      script.range(of: "_default-completion_default() {")
+    )
+    let rootFunction = script[..<childFunction.lowerBound]
+
+    #expect(rootFunction.contains("--default-option"))
+    #expect(
+      rootFunction.contains("---completion default -- --custom-option"))
+  }
+
+  @Test func defaultSubcommandFishCompletions() throws {
+    let script = try CompletionsGenerator(
+      command: DefaultSubcommandRoot.self,
+      shell: .fish
+    ).generateCompletionScript()
+
+    #expect(
+      script.contains(
+        "flags_or_options \"default-completion\" default-option' -l 'default-option'"
+      )
+    )
+    #expect(
+      script.contains(
+        "flags_or_options \"default-completion\" custom-option' -l 'custom-option' -rfka '(__default-completion_custom_completion ---completion default -- --custom-option"
+      )
+    )
+  }
+
   struct Custom: ParsableCommand {
     @Option(
       name: .shortAndLong,
