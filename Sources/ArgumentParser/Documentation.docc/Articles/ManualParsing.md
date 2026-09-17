@@ -103,3 +103,62 @@ howdy
 howdy
 hi
 ```
+
+### Creating Instances for Testing
+
+The parsing methods above let you exercise a command by passing it an array of inputs. To test the logic inside a command's `validate()` or `run()` method, though, it's often simpler to create an instance directly — with the property values you want — and skip parsing entirely.
+
+The catch is that you can't read a value from a property that hasn't been parsed. A command's `@Argument`, `@Option`, and `@Flag` properties only hold a value once they've been decoded from the command line or given a default, so creating an instance with the implicit initializer and then reading an un-parsed property traps at runtime:
+
+```swift
+struct Repeat: ParsableCommand {
+    @Argument var phrase: String
+    @Option var count: Int = 1
+
+    mutating func run() {
+        for _ in 0..<count { print(phrase) }
+    }
+}
+```
+
+```swift
+var command = Repeat()
+print(command.phrase)   // 'phrase' was never parsed
+```
+
+```
+Can't read a value from a parsable argument definition.
+
+This error indicates that a property declared with an `@Argument`,
+`@Option`, `@Flag`, or `@OptionGroup` property wrapper was neither
+initialized to a value nor decoded from command-line arguments.
+
+To get a valid value, either call one of the static parsing methods
+(`parse`, `parseAsRoot`, or `main`) or define an initializer that
+initializes _every_ property of your parsable type.
+```
+
+As the error suggests, the fix is to add an initializer that gives every property a value. Declare it in an *extension*, and assign each property directly instead of delegating to `self.init()`. Using an extension preserves the initializer `ArgumentParser` synthesizes for parsing, and assigning each property directly stores a value you can read back:
+
+```swift
+extension Repeat {
+    init(phrase: String, count: Int = 1) {
+        self.phrase = phrase
+        self.count = count
+    }
+}
+```
+
+With the initializer in place, you can build an instance and call its methods directly in a test, without involving the command line:
+
+```swift
+func testRepeat() throws {
+    var command = Repeat(phrase: "hello", count: 2)
+    XCTAssertEqual(command.count, 2)
+    command.run()
+}
+```
+
+Parsing continues to work as before, because the new initializer lives in an extension and doesn't replace the one the parser uses. See <doc:Validation> for more about a command's `validate()` method.
+
+> Note: If the parsable type is part of a library, mark the initializer `public` so that test targets in other modules can use it.
