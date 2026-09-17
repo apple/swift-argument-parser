@@ -7,6 +7,8 @@ roll [--times=<n>] [--sides=<m>] [--seed=<seed>] [--verbose]
   [--help]
 ```
 
+## Options
+
 - term **--times=\<n\>**:
 
 *Rolls the dice <n> times.*
@@ -41,6 +43,8 @@ Show subcommand help information.
 ```
 roll help [<subcommands>...]
 ```
+
+### Arguments
 
 - term **subcommands**:
 
