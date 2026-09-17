@@ -276,3 +276,63 @@ extension SerializedTests.CompletionScriptTests {
     try await expectCustomCompletions(shell: .zsh)
   }
 }
+
+// MARK: - Hidden and private visibility
+
+extension SerializedTests.CompletionScriptTests {
+  struct Visibility: ParsableCommand {
+    static let configuration = CommandConfiguration(
+      commandName: "visibility-test")
+
+    @Flag(help: ArgumentHelp("Hidden flag.", visibility: .hidden))
+    var hiddenFlag = false
+
+    @Flag(help: ArgumentHelp("Private flag.", visibility: .private))
+    var privateFlag = false
+
+    @Option(
+      help: ArgumentHelp("Hidden option.", visibility: .hidden),
+      completion: .list(["hidden-option-value"]))
+    var hiddenOption: String?
+
+    @Option(
+      help: ArgumentHelp("Private option.", visibility: .private),
+      completion: .list(["private-option-value"]))
+    var privateOption: String?
+  }
+
+  @Test(arguments: [CompletionShell.bash, .zsh, .fish])
+  func hiddenAndPrivateVisibility(shell: CompletionShell) throws {
+    let script = try CompletionsGenerator(command: Visibility.self, shell: shell)
+      .generateCompletionScript()
+
+    let hiddenFlagName: String
+    let hiddenOptionName: String
+    let privateFlagName: String
+    let privateOptionName: String
+    switch shell {
+    case .bash, .zsh:
+      hiddenFlagName = "--hidden-flag"
+      hiddenOptionName = "--hidden-option"
+      privateFlagName = "--private-flag"
+      privateOptionName = "--private-option"
+    case .fish:
+      hiddenFlagName = "hidden-flag"
+      hiddenOptionName = "hidden-option"
+      privateFlagName = "private-flag"
+      privateOptionName = "private-option"
+    default:
+      hiddenFlagName = "--hidden-flag"
+      hiddenOptionName = "--hidden-option"
+      privateFlagName = "--private-flag"
+      privateOptionName = "--private-option"
+    }
+
+    #expect(script.contains(hiddenFlagName))
+    #expect(script.contains(hiddenOptionName))
+    #expect(script.contains("hidden-option-value"))
+    #expect(!script.contains(privateFlagName))
+    #expect(!script.contains(privateOptionName))
+    #expect(!script.contains("private-option-value"))
+  }
+}
