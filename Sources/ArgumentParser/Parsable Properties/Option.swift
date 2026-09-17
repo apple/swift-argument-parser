@@ -468,6 +468,51 @@ extension Option {
   ///   - transform: A closure that converts a string into this property's
   ///     type, or else throws an error.
   @preconcurrency
+  public init(
+    wrappedValue: Value,
+    name: NameSpecification = .long,
+    parsing parsingStrategy: SingleValueParsingStrategy = .next,
+    help: ArgumentHelp? = nil,
+    completion: CompletionKind? = nil,
+    transform: @Sendable @escaping (_ name: String, _ value: String) throws -> Value
+  ) {
+    self.init(
+      _parsedValue: .init { key in
+        let arg = ArgumentDefinition(
+          container: Bare<Value>.self,
+          key: key,
+          kind: .name(key: key, specification: name),
+          help: help,
+          parsingStrategy: parsingStrategy.base,
+          transform: transform,
+          initial: wrappedValue,
+          completion: completion)
+
+        return ArgumentSet(arg)
+      })
+  }
+
+  /// Creates a required property that reads its value from a labeled option,
+  /// parsing with the given closure.
+  ///
+  /// This initializer is used when you declare an `@Option`-attributed property
+  /// with a transform closure and without a default value:
+  ///
+  /// ```swift
+  /// @Option(transform: { $0.first ?? " " })
+  /// var char: Character
+  /// ```
+  ///
+  /// - Parameters:
+  ///   - name: A specification for what names are allowed for this option.
+  ///   - parsingStrategy: The behavior to use when looking for this option's
+  ///     value.
+  ///   - help: Information about how to use this option.
+  ///   - completion: The type of command-line completion provided for this
+  ///     option.
+  ///   - transform: A closure that converts a string into this property's
+  ///     type, or else throws an error.
+  @preconcurrency
   @_disfavoredOverload
   public init(
     name: NameSpecification = .long,
@@ -475,6 +520,30 @@ extension Option {
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
     transform: @Sendable @escaping (String) throws -> Value
+  ) {
+    self.init(
+      _parsedValue: .init { key in
+        let arg = ArgumentDefinition(
+          container: Bare<Value>.self,
+          key: key,
+          kind: .name(key: key, specification: name),
+          help: help,
+          parsingStrategy: parsingStrategy.base,
+          transform: transform,
+          initial: nil,
+          completion: completion)
+
+        return ArgumentSet(arg)
+      })
+  }
+
+  @preconcurrency
+  public init(
+    name: NameSpecification = .long,
+    parsing parsingStrategy: SingleValueParsingStrategy = .next,
+    help: ArgumentHelp? = nil,
+    completion: CompletionKind? = nil,
+    transform: @Sendable @escaping (_ name: String, _ value: String) throws -> Value
   ) {
     self.init(
       _parsedValue: .init { key in
@@ -1173,6 +1242,31 @@ extension Option {
       })
   }
 
+  @preconcurrency
+  public init<T>(
+    wrappedValue: [T],
+    name: NameSpecification = .long,
+    parsing parsingStrategy: ArrayParsingStrategy = .singleValue,
+    help: ArgumentHelp? = nil,
+    completion: CompletionKind? = nil,
+    transform: @Sendable @escaping (_ name: String, _ value: String) throws -> T
+  ) where Value == [T] {
+    self.init(
+      _parsedValue: .init { key in
+        let arg = ArgumentDefinition(
+          container: Array<T>.self,
+          key: key,
+          kind: .name(key: key, specification: name),
+          help: help,
+          parsingStrategy: parsingStrategy.base,
+          transform: transform,
+          initial: wrappedValue,
+          completion: completion)
+
+        return ArgumentSet(arg)
+      })
+  }
+
   /// Creates a required array property that reads its values from zero or
   /// more labeled options, parsing each element with the given closure.
   ///
@@ -1200,6 +1294,30 @@ extension Option {
     help: ArgumentHelp? = nil,
     completion: CompletionKind? = nil,
     transform: @Sendable @escaping (String) throws -> T
+  ) where Value == [T] {
+    self.init(
+      _parsedValue: .init { key in
+        let arg = ArgumentDefinition(
+          container: Array<T>.self,
+          key: key,
+          kind: .name(key: key, specification: name),
+          help: help,
+          parsingStrategy: parsingStrategy.base,
+          transform: transform,
+          initial: nil,
+          completion: completion)
+
+        return ArgumentSet(arg)
+      })
+  }
+
+  @preconcurrency
+  public init<T>(
+    name: NameSpecification = .long,
+    parsing parsingStrategy: ArrayParsingStrategy = .singleValue,
+    help: ArgumentHelp? = nil,
+    completion: CompletionKind? = nil,
+    transform: @Sendable @escaping (_ name: String, _ value: String) throws -> T
   ) where Value == [T] {
     self.init(
       _parsedValue: .init { key in
