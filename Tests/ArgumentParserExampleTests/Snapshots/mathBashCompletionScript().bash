@@ -249,13 +249,16 @@ _math_stats_stdev() {
 
 _math_stats_quantiles() {
     repeating_flags=()
-    non_repeating_flags=(--version -h --help)
+    non_repeating_flags=(--test-success-exit-code --test-failure-exit-code --test-validation-exit-code --version -h --help)
     repeating_options=()
-    non_repeating_options=(--file --directory --shell --custom --custom-deprecated)
+    non_repeating_options=(--test-custom-exit-code --file --directory --shell --custom --custom-deprecated)
     __math_offer_flags_options -1
 
     # Offer option value completions
     case "${prev}" in
+    '--test-custom-exit-code')
+        return
+        ;;
     '--file')
         __math_add_completions -o plusdirs -fX '!*.@(txt|md)'
         return

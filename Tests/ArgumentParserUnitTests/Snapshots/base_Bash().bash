@@ -163,7 +163,7 @@ _base-test() {
     local -a unparsed_words=("${COMP_WORDS[@]:1:${COMP_CWORD}}")
 
     local -a repeating_flags=(--kind-counter)
-    local -a non_repeating_flags=(--one --two --custom-three -h --help)
+    local -a non_repeating_flags=(--verbose --one --two --custom-three -h --help)
     local -a repeating_options=(--rep1 -r --rep2)
     local -a non_repeating_options=(--name --kind --other-kind --path1 --path2 --path3)
     __base-test_offer_flags_options 2
