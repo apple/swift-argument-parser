@@ -82,7 +82,7 @@ enum MessageInfo {
     var usage = HelpGenerator(commandStack: commandStack, visibility: .default)
       .usageMessage()
 
-    let commandNames = commandStack.map { $0._commandName }.joined(
+    let commandNames = commandStack.invocationCommandNames.joined(
       separator: " ")
     if let helpName = commandStack.getPrimaryHelpName() {
       if !usage.isEmpty {
