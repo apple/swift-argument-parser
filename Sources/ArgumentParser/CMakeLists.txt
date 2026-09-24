@@ -55,7 +55,8 @@ add_library(ArgumentParser
   Validators/NonsenseFlagsValidator.swift
   Validators/ParsableArgumentsValidation.swift
   Validators/PositionalArgumentsValidator.swift
-  Validators/UniqueNamesValidator.swift)
+  Validators/UniqueNamesValidator.swift
+  Validators/UniqueSubcommandNamesValidator.swift)
 # NOTE: workaround for CMake not setting up include flags yet
 set_target_properties(ArgumentParser PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_Swift_MODULE_DIRECTORY})
