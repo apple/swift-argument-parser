@@ -65,6 +65,16 @@ extension AsyncParsableCommand {
   public static func main(_ arguments: [String]?) async {
     do {
       var command = try await asyncParseAsRoot(arguments)
+
+      var siginfoHandler: SIGINFOHandler?
+      if let command = command as? any InfoProvidingParsableCommand {
+        siginfoHandler = SIGINFOHandler(for: command)
+      }
+      siginfoHandler?.register()
+      defer {
+        siginfoHandler?.unregister()
+      }
+
       if var asyncCommand = command as? AsyncParsableCommand {
         try await asyncCommand.run()
       } else {
