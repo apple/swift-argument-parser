@@ -559,6 +559,84 @@ import Testing
         DuplicatedFirstLettersLongNames.self, parent: nil) == nil)
   }
 
+  // MARK: UniqueSubcommandNamesValidator tests
+  fileprivate struct SubcommandFoo: ParsableCommand {
+    static let configuration = CommandConfiguration(commandName: "foo")
+  }
+
+  fileprivate struct SubcommandAlsoFoo: ParsableCommand {
+    static let configuration = CommandConfiguration(commandName: "foo")
+  }
+
+  fileprivate struct SubcommandBar: ParsableCommand {
+    static let configuration = CommandConfiguration(
+      commandName: "bar", aliases: ["b"])
+  }
+
+  fileprivate struct SubcommandAliasedFoo: ParsableCommand {
+    static let configuration = CommandConfiguration(
+      commandName: "baz", aliases: ["foo", "b"])
+  }
+
+  fileprivate struct UniqueSubcommands: ParsableCommand {
+    static let configuration = CommandConfiguration(
+      subcommands: [SubcommandFoo.self, SubcommandBar.self])
+  }
+
+  fileprivate struct DuplicateSubcommandNames: ParsableCommand {
+    static let configuration = CommandConfiguration(
+      subcommands: [SubcommandFoo.self, SubcommandAlsoFoo.self])
+  }
+
+  fileprivate struct DuplicateGroupedSubcommandNames: ParsableCommand {
+    static let configuration = CommandConfiguration(
+      subcommands: [SubcommandFoo.self],
+      groupedSubcommands: [
+        CommandGroup(name: "Group", subcommands: [SubcommandAlsoFoo.self])
+      ])
+  }
+
+  fileprivate struct DuplicateSubcommandAliases: ParsableCommand {
+    static let configuration = CommandConfiguration(
+      subcommands: [
+        SubcommandFoo.self, SubcommandBar.self, SubcommandAliasedFoo.self,
+      ])
+  }
+
+  @Test func uniqueSubcommandNamesValidation_NoViolation() throws {
+    #expect(
+      UniqueSubcommandNamesValidator.validate(
+        UniqueSubcommands.self, parent: nil) == nil)
+    #expect(
+      UniqueSubcommandNamesValidator.validate(
+        DifferentNames.self, parent: nil) == nil)
+  }
+
+  @Test func uniqueSubcommandNamesValidation_DuplicateNames() throws {
+    for command in [
+      DuplicateSubcommandNames.self, DuplicateGroupedSubcommandNames.self,
+    ] as [ParsableCommand.Type] {
+      let error =
+        UniqueSubcommandNamesValidator.validate(command, parent: nil)
+        as? UniqueSubcommandNamesValidator.Error
+      #expect(
+        error?.description
+          == "Multiple (2) subcommands are named or aliased \"foo\".")
+    }
+  }
+
+  @Test func uniqueSubcommandNamesValidation_DuplicateAliases() throws {
+    let error =
+      UniqueSubcommandNamesValidator.validate(
+        DuplicateSubcommandAliases.self, parent: nil)
+      as? UniqueSubcommandNamesValidator.Error
+    #expect(
+      error?.description == """
+        Multiple (2) subcommands are named or aliased "foo".
+        Multiple (2) subcommands are named or aliased "b".
+        """)
+  }
+
   fileprivate struct HasOneNonsenseFlag: ParsableCommand {
     enum ExampleEnum: String, EnumerableFlag {
       case first
