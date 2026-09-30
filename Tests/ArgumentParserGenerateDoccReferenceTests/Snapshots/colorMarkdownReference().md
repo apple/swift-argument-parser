@@ -25,7 +25,7 @@ This is optional.
 
 ## color.help
 
-Show subcommand help information.
+Show help information.
 
 ```
 color help [<subcommands>...]
