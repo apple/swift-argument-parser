@@ -174,11 +174,11 @@ _base-test() {
         return
         ;;
     '--kind')
-        __base-test_add_completions -W 'one'$'\n''two'$'\n''custom-three'
+        __base-test_add_completions -W ''\''one'\'''$'\n'''\''two'\'''$'\n'''\''custom-three'\'''
         return
         ;;
     '--other-kind')
-        __base-test_add_completions -W 'b1_bash'$'\n''b2_bash'$'\n''b3_bash'
+        __base-test_add_completions -W ''\''b1_bash'\'''$'\n'''\''b2_bash'\'''$'\n'''\''b3_bash'\'''
         return
         ;;
     '--path1')
@@ -190,7 +190,7 @@ _base-test() {
         return
         ;;
     '--path3')
-        __base-test_add_completions -W 'c1_bash'$'\n''c2_bash'$'\n''c3_bash'
+        __base-test_add_completions -W ''\''c1_bash'\'''$'\n'''\''c2_bash'\'''$'\n'''\''c3_bash'\'''
         return
         ;;
     '--rep1')

@@ -354,9 +354,15 @@ extension CommandInfoV0 {
         """
 
     case .list(let list):
+      // compgen -W parses the word list again, so preserve each candidate's
+      // literal contents through both the script and word-list parsing.
+      let words = list.map {
+        "'\($0.shellEscapeForSingleQuotedString())'"
+          .shellEscapeForSingleQuotedString()
+      }.joined(separator: "'$'\\n''")
       return """
         \(addCompletionsFunctionName) -W\
-         '\(list.map { $0.shellEscapeForSingleQuotedString() }.joined(separator: "'$'\\n''"))'
+         '\(words)'
 
         """
 
