@@ -13,6 +13,7 @@ extension ParsableArguments {
   static func _validate(parent: InputKey?) throws {
     let validators: [ParsableArgumentsValidator.Type] = [
       PositionalArgumentsValidator.self,
+      OptionalPositionalArgumentsValidator.self,
       CodingKeyValidator.self,
       UniqueNamesValidator.self,
       NonsenseFlagsValidator.self,
