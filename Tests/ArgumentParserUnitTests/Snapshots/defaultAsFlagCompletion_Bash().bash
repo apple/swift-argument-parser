@@ -181,7 +181,7 @@ _defaultasflag-test() {
         return
         ;;
     '--log-level')
-        __defaultasflag-test_add_completions -W 'DEBUG'$'\n''INFO'$'\n''WARN'$'\n''ERROR'
+        __defaultasflag-test_add_completions -W ''\''DEBUG'\'''$'\n'''\''INFO'\'''$'\n'''\''WARN'\'''$'\n'''\''ERROR'\'''
         return
         ;;
     esac
