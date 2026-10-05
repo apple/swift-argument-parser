@@ -55,20 +55,55 @@ extension UsageGenerator {
       // If there are between 1 and 12 options left, print them, otherwise print
       // a simplified usage string.
       if !options.isEmpty, options.count <= 12 {
-        let synopsis =
-          options
-          .map { $0.synopsis }
-          .joined(separator: " ")
-        return "\(toolName) [<options>] \(synopsis)"
+        return "\(toolName) [<options>] \(options.groupedSynopsis)"
       }
       return "\(toolName) <options>"
     default:
-      let synopsis =
-        options
-        .map { $0.synopsis }
-        .joined(separator: " ")
-      return "\(toolName) \(synopsis)"
+      return "\(toolName) \(options.groupedSynopsis)"
     }
+  }
+}
+
+extension Array where Element == ArgumentDefinition {
+  /// The usage synopses of these arguments, joined into a single string.
+  ///
+  /// Runs of consecutive mutually exclusive arguments that belong to the
+  /// same flag group render as one alternation, e.g. `[--a | --b | --c]`.
+  fileprivate var groupedSynopsis: String {
+    var parts: [String] = []
+    var index = startIndex
+    while index < endIndex {
+      let arg = self[index]
+      if arg.help.isMutuallyExclusive {
+        let groupEnd =
+          self[index...].firstIndex(where: {
+            !$0.help.isMutuallyExclusive || $0.help.keys != arg.help.keys
+          }) ?? endIndex
+        parts.append(
+          ArgumentDefinition.exclusiveGroupSynopsis(
+            for: self[index..<groupEnd]))
+        index = groupEnd
+      } else {
+        parts.append(arg.synopsis)
+        index = self.index(after: index)
+      }
+    }
+    return parts.joined(separator: " ")
+  }
+}
+
+extension ArgumentDefinition {
+  /// The usage synopsis for a run of mutually exclusive arguments from one
+  /// flag group, joined as alternatives: `[--a | --b | --c]`.
+  fileprivate static func exclusiveGroupSynopsis(
+    for group: ArraySlice<ArgumentDefinition>
+  ) -> String {
+    let joined = group.map { $0.unadornedSynopsis }.joined(separator: " | ")
+    // Optionality is uniform across a group, so one bracket pair suffices.
+    if group.allSatisfy({ $0.help.options.contains(.isOptional) }) {
+      return "[\(joined)]"
+    }
+    return joined
   }
 }
 
