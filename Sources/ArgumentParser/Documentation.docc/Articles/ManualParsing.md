@@ -69,6 +69,8 @@ do {
     Math.exit(withError: error)
 }
 ```
+The result of `parseAsRoot()` can also be the built-in help command, such as when the user passes `--help` or invokes the `help` subcommand. This command isn't one of the subcommand types you define. Calling `run()` in the `default` case and handling errors with `Math.exit(withError:)`, as shown above, preserves the built-in help behavior.
+
 Our new logic intercepts the command between validation and running, and outputs an additional message:
 
 ```
