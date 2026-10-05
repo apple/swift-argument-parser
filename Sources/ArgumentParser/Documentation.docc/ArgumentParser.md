@@ -49,6 +49,7 @@ and then either calls your `run()` method or exits with a useful message.
 
 ### Essentials
 
+- <doc:UsingArgumentParserTools>
 - <doc:GettingStarted>
 - ``ParsableCommand``
 - ``AsyncParsableCommand``
