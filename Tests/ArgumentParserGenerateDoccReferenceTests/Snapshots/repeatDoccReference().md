@@ -29,7 +29,7 @@ repeat [--count=<count>] [--include-counter] <phrase>
 
 ## repeat.help
 
-Show subcommand help information.
+Show help information.
 
 ```
 repeat help [<subcommands>...]

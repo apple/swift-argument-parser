@@ -68,7 +68,7 @@ _base-test() {
         local -ar subcommands=(
             'sub-command:'
             'escaped-command:'
-            'help:Show subcommand help information.'
+            'help:Show help information.'
         )
         _describe -V subcommand subcommands && ret=0
         ;;

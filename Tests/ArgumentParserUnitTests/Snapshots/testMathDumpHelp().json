@@ -731,7 +731,7 @@
         ]
       },
       {
-        "abstract" : "Show subcommand help information.",
+        "abstract" : "Show help information.",
         "arguments" : [
           {
             "isOptional" : true,
