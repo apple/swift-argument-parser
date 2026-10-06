@@ -9,14 +9,17 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if ArgumentParserFoundation
 #if canImport(FoundationEssentials)
 internal import FoundationEssentials
 #else
 internal import Foundation
 #endif
+#endif
 
 extension Error {
   func describe() -> String {
+    #if ArgumentParserFoundation
     if let description = (self as? LocalizedError)?.errorDescription {
       return description
     } else {
@@ -30,9 +33,13 @@ extension Error {
       }
       #endif
     }
+    #else
+    return String(describing: self)
+    #endif
   }
 }
 
+#if ArgumentParserFoundation
 enum JSONEncoder {
   static func encode<T: Encodable>(_ value: T) -> String {
     #if canImport(FoundationEssentials)
@@ -46,3 +53,4 @@ enum JSONEncoder {
     return String(data: encoded, encoding: .utf8) ?? ""
   }
 }
+#endif
