@@ -1540,4 +1540,12 @@ extension HelpGenerationTests {
 
         """)
   }
+
+    func testHelpNamesConsistencyForSingleDashLongNames() throws {
+        let hiddenSingleDash = NameSpecification.longWithSingleDash.makeHelpNames(visibility: .hidden)
+        XCTAssertEqual(hiddenSingleDash, [.longWithSingleDash("help-hidden")])
+
+        let hiddenDoubleDash = NameSpecification.long.makeHelpNames(visibility: .hidden)
+        XCTAssertEqual(hiddenDoubleDash, [.long("help-hidden")])
+    }
 }
