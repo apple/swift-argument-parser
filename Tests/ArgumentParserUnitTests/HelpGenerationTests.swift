@@ -1,4 +1,4 @@
-//===----------------------------------------------------------------------===//
+﻿//===----------------------------------------------------------------------===//
 //
 // This source file is part of the Swift Argument Parser open source project
 //
@@ -1548,4 +1548,12 @@ extension HelpGenerationTests {
         let hiddenDoubleDash = NameSpecification.long.makeHelpNames(visibility: .hidden)
         XCTAssertEqual(hiddenDoubleDash, [.long("help-hidden")])
     }
+
+  func testHelpNamesConsistencyForSingleDashLongNames() throws {
+    let hiddenSingleDash = NameSpecification.longWithSingleDash.makeHelpNames(visibility: .hidden)
+    XCTAssertEqual(hiddenSingleDash, [.longWithSingleDash("help-hidden")])
+
+    let hiddenDoubleDash = NameSpecification.long.makeHelpNames(visibility: .hidden)
+    XCTAssertEqual(hiddenDoubleDash, [.long("help-hidden")])
+  }
 }
