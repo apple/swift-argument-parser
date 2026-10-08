@@ -50,6 +50,7 @@ _base-test() {
         '--path1:path1:_files'
         '--path2:path2:_files'
         '--path3:path3:{__base-test_complete "${___path3[@]}"}'
+        '--verbose'
         '--one'
         '--two'
         '--custom-three'

@@ -124,11 +124,20 @@ struct CompletionsGenerator {
     CompletionShell._requesting.withLock { $0 = shell }
     switch shell {
     case .zsh:
-      return ToolInfoV0(commandStack: [command]).zshCompletionScript
+      return ToolInfoV0(
+        commandStack: [command],
+        includeHiddenArguments: true
+      ).zshCompletionScript
     case .bash:
-      return ToolInfoV0(commandStack: [command]).bashCompletionScript
+      return ToolInfoV0(
+        commandStack: [command],
+        includeHiddenArguments: true
+      ).bashCompletionScript
     case .fish:
-      return ToolInfoV0(commandStack: [command]).fishCompletionScript
+      return ToolInfoV0(
+        commandStack: [command],
+        includeHiddenArguments: true
+      ).fishCompletionScript
     default:
       fatalError("Invalid CompletionShell: \(shell)")
     }
