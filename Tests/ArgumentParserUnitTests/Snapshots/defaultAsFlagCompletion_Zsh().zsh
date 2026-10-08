@@ -48,7 +48,7 @@ _defaultasflag-test() {
         '--log-level:log-level:{__defaultasflag-test_complete "${___log_level[@]}"}'
         '--help'
         ':input:_files'
-        '(-h --help)'{-h,--help}'[Show help information.]'
+        '-h[Show help information.]'
         '(-): :->command'
         '(-)*:: :->arg'
     )

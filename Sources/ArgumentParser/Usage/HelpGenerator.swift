@@ -466,13 +466,24 @@ extension BidirectionalCollection where Element == ParsableCommand.Type {
   ///
   /// If the command stack contains no custom help names, returns the default
   /// help names.
+  ///
+  /// Help names that collide with a name declared by one of the last command's
+  /// own arguments are omitted, so that a user-declared name always wins over
+  /// the built-in help flag.
   func getHelpNames(visibility: ArgumentVisibility) -> [Name] {
-    self.lazy.reversed().compactMap { $0.configuration.helpNames }
+    let helpNames =
+      self.lazy.reversed().compactMap { $0.configuration.helpNames }
       .first
       .map { $0.generateHelpNames(visibility: visibility) }
       ?? CommandConfiguration
       .defaultHelpNames
       .generateHelpNames(visibility: visibility)
+
+    guard let command = self.last else { return helpNames }
+    let declaredNames = ArgumentSet(
+      command, visibility: .private, parent: nil
+    ).namePositions
+    return helpNames.filter { declaredNames[$0.nameToMatch] == nil }
   }
 
   func getPrimaryHelpName() -> Name? {
