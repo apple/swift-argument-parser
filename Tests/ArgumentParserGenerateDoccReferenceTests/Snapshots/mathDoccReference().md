@@ -8,6 +8,8 @@ A utility for performing maths.
 math [--version] [--help]
 ```
 
+## Options
+
 - term **--version**:
 
 *Show the version.*
@@ -26,14 +28,18 @@ Print the sum of the values.
 math add [--hex-output] [<values>...] [--version] [--help]
 ```
 
-- term **--hex-output**:
-
-*Use hexadecimal notation for the result.*
-
+### Arguments
 
 - term **values**:
 
 *A group of integers to operate on.*
+
+
+### Options
+
+- term **--hex-output**:
+
+*Use hexadecimal notation for the result.*
 
 
 - term **--version**:
@@ -57,14 +63,18 @@ math multiply [--hex-output] [<values>...] [--version]
   [--help]
 ```
 
-- term **--hex-output**:
-
-*Use hexadecimal notation for the result.*
-
+### Arguments
 
 - term **values**:
 
 *A group of integers to operate on.*
+
+
+### Options
+
+- term **--hex-output**:
+
+*Use hexadecimal notation for the result.*
 
 
 - term **--version**:
@@ -87,6 +97,8 @@ Calculate descriptive statistics.
 math stats [--version] [--help]
 ```
 
+### Options
+
 - term **--version**:
 
 *Show the version.*
@@ -106,14 +118,18 @@ math stats average [--kind=<kind>] [<values>...] [--version]
   [--help]
 ```
 
-- term **--kind=\<kind\>**:
-
-*The kind of average to provide.*
-
+#### Arguments
 
 - term **values**:
 
 *A group of floating-point values to operate on.*
+
+
+#### Options
+
+- term **--kind=\<kind\>**:
+
+*The kind of average to provide.*
 
 
 - term **--version**:
@@ -136,10 +152,14 @@ Print the standard deviation of the values.
 math stats stdev [<values>...] [--version] [--help]
 ```
 
+#### Arguments
+
 - term **values**:
 
 *A group of floating-point values to operate on.*
 
+
+#### Options
 
 - term **--version**:
 
@@ -166,6 +186,8 @@ math stats quantiles [<one-of-four>] [<custom-arg>]
   [--help]
 ```
 
+#### Arguments
+
 - term **one-of-four**:
 
 
@@ -179,6 +201,8 @@ math stats quantiles [<one-of-four>] [<custom-arg>]
 
 *A group of floating-point values to operate on.*
 
+
+#### Options
 
 - term **--file=\<file\>**:
 
@@ -217,8 +241,12 @@ Show subcommand help information.
 math help [<subcommands>...] [--version]
 ```
 
+### Arguments
+
 - term **subcommands**:
 
+
+### Options
 
 - term **--version**:
 
