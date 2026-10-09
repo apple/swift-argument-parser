@@ -96,9 +96,11 @@ _base-test_sub-command() {
 
 _base-test_escaped-command() {
     local -i ret=1
+    local -ar ___three=(''\''' '\' 'a b')
     local -ar arg_specs=(
         '--o\:n\[e[Escaped chars\: '\''\[\]\\.]:path\[\:options\]:'
         ':two:{__base-test_custom_complete ---completion escaped-command -- positional@0 "${current_word_index}" "$(__base-test_cursor_index_in_current_word)"}'
+        '--three:three:{__base-test_complete "${___three[@]}"}'
         '(-h --help)'{-h,--help}'[Show help information.]'
     )
     _arguments -w -s -S : "${arg_specs[@]}" && ret=0
