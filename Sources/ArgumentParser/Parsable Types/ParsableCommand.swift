@@ -158,6 +158,18 @@ extension ParsableCommand {
 
     do {
       var command = try parseAsRoot(arguments)
+
+      var siginfoHandler: SIGINFOHandler?
+      if #available(macOS 10.15, macCatalyst 13, iOS 13, tvOS 13, watchOS 6, *),
+        let command = command as? any InfoProvidingParsableCommand
+      {
+        siginfoHandler = SIGINFOHandler(for: command)
+      }
+      siginfoHandler?.register()
+      defer {
+        siginfoHandler?.unregister()
+      }
+
       try command.run()
     } catch {
       exit(withError: error)

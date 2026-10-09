@@ -83,6 +83,11 @@ var package = Package(
       dependencies: ["ArgumentParser"],
       path: "Examples/default-as-flag"
     ),
+    .executableTarget(
+      name: "info-provider",
+      dependencies: ["ArgumentParser"],
+      path: "Examples/info-provider"
+    ),
 
     // Tools
     .executableTarget(
