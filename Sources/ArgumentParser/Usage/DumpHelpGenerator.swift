@@ -67,7 +67,7 @@ extension CommandInfoV0 {
     }
 
     let defaultSubcommand = command.configuration.defaultSubcommand?
-      .configuration.commandName
+      ._commandName
     let subcommands = command.configuration.subcommands
       .map { subcommand -> CommandInfoV0 in
         var commandStack = commandStack

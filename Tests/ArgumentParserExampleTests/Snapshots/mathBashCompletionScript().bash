@@ -163,7 +163,7 @@ _math() {
     local -a unparsed_words=("${COMP_WORDS[@]:1:${COMP_CWORD}}")
 
     local -a repeating_flags=()
-    local -a non_repeating_flags=(--version -h --help)
+    local -a non_repeating_flags=(--version -h --help --hex-output -x)
     local -a repeating_options=()
     local -a non_repeating_options=()
     __math_offer_flags_options 0
