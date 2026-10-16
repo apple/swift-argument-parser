@@ -1672,3 +1672,93 @@ extension ResponseFileEndToEndTests {
     }
   }
 }
+
+// MARK: - Performance
+
+// A response file is the practical way to get an argument list large
+// enough to expose an O(n^2) hot path in parsing — the command line
+// itself is capped well below that by the OS. These tests compare the
+// time taken to parse a 10x larger response file against a smaller
+// baseline: a linear (or n log n) implementation takes roughly 10x
+// longer, while a quadratic one takes roughly 100x longer. The
+// threshold is set well above the linear expectation to avoid flaking
+// on noisy/slow CI machines while still catching a true quadratic
+// blowup.
+extension ResponseFileEndToEndTests {
+
+  @Suite(
+    .tags(
+      .performance,
+    ),
+  )
+  struct PerformanceTests {
+    private struct RepeatedOptionCommand: ParsableCommand {
+      static let configuration = CommandConfiguration(responseFilePrefix: "@")
+
+      @Option var tag: [String] = []
+    }
+
+    private func responseFileParseDuration<Command: ParsableCommand>(
+      _: Command.Type,
+      content: String,
+      fileName: String
+    ) async throws -> Duration {
+      try await withTemporaryFile(fileName, content: content) { responseFile in
+        let clock = ContinuousClock()
+        let start = clock.now
+        _ = try Command.parse(["@\(responseFile)"])
+        return clock.now - start
+      }
+    }
+
+    @Test() func repeatedOptionParsingScalesLinearlyWithResponseFileSize()
+      async throws
+    {
+      func content(count: Int) -> String {
+        (0..<count).map { "--tag\nvalue\($0)\n" }.joined()
+      }
+
+      let small = try await responseFileParseDuration(
+        RepeatedOptionCommand.self, content: content(count: 2_000),
+        fileName: "repeated-option-small.txt")
+      let large = try await responseFileParseDuration(
+        RepeatedOptionCommand.self, content: content(count: 20_000),
+        fileName: "repeated-option-large.txt")
+
+      #expect(
+        large < small * 30,
+        """
+        Parsing time scaled super-linearly with input size: \(small) for \
+        2,000 repeated options vs \(large) for 20,000. A 10x increase in \
+        input should cost roughly 10x the time, not ~100x, which would \
+        indicate an O(n^2) hot path.
+        """
+      )
+    }
+
+    @Test() func positionalArgumentParsingScalesLinearlyWithResponseFileSize()
+      async throws
+    {
+      func content(count: Int) -> String {
+        (0..<count).map { "file\($0).txt\n" }.joined()
+      }
+
+      let small = try await responseFileParseDuration(
+        PositionalCommand.self, content: content(count: 2_000),
+        fileName: "positional-small.txt")
+      let large = try await responseFileParseDuration(
+        PositionalCommand.self, content: content(count: 20_000),
+        fileName: "positional-large.txt")
+
+      #expect(
+        large < small * 30,
+        """
+        Parsing time scaled super-linearly with input size: \(small) for \
+        2,000 positional arguments vs \(large) for 20,000. A 10x increase \
+        in input should cost roughly 10x the time, not ~100x, which would \
+        indicate an O(n^2) hot path.
+        """
+      )
+    }
+  }
+}

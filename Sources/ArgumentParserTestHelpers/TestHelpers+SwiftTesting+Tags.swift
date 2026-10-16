@@ -11,23 +11,6 @@
 
 import Testing
 
-/// A Swift Testing trait that disables a test on platforms where launching a
-/// subprocess via `Foundation.Process` is not supported.
-///
-/// Apply with `@Test(.requiresProcessExecution)` to tests whose bodies
-/// (transitively) call `requireExecuteCommand`, `expectDumpHelp(command:)`,
-/// `expectGenerateManual`, or `expectGeneratedReference` *and* also compare
-/// the output against a fixed expectation (e.g. via `expectSnapshot`). On
-/// unsupported platforms these helpers return an empty string rather than
-/// throwing, so a downstream snapshot comparison would fail spuriously; the
-/// trait suppresses the test entirely instead.
-extension Trait where Self == Testing.ConditionTrait {
-  public static var requiresProcessExecution: Self {
-    #if os(Windows) || (canImport(Darwin) && !os(macOS))
-    return .disabled(
-      "Process execution is not supported on this platform.")
-    #else
-    return .enabled(if: true)
-    #endif
-  }
+extension Tag {
+  @Tag public static var performance: Self
 }

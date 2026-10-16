@@ -427,14 +427,22 @@ extension SplitArguments {
       case .argumentIndex(let targetIndex) = targetOrigin
     else { return false }
 
-    // Check if there's a terminator between current position and target position
-    let terminatorIndex = elements.firstIndex { element in
-      element.isTerminator
+    // `elements` is sorted by input index, so we can stop scanning once
+    // we reach `targetIndex` instead of scanning all remaining elements
+    // to confirm the absence of a terminator. Without this, a call site
+    // like `popNextElementIfValue(after:)` — invoked once per option —
+    // would cost O(remaining elements) even when there's no terminator
+    // anywhere, turning n options into an O(n^2) parse.
+    for element in elements {
+      guard element.index.inputIndex < targetIndex.inputIndex else { break }
+      if element.isTerminator
         && element.index.inputIndex > currentIndex.inputIndex
-        && element.index.inputIndex < targetIndex.inputIndex
+      {
+        return true
+      }
     }
 
-    return terminatorIndex != nil
+    return false
   }
 
   /// Pops the next `.value` after the given index.
@@ -623,10 +631,15 @@ extension SplitArguments {
   }
 
   mutating func removeAll(in origin: InputOrigin) {
-    // swift-format-ignore: ReplaceForEachWithForLoop
-    // does not conform to collection.
-    origin.forEach {
-      remove(at: $0)
+    // `remove(at:)` scans forward from `firstUnused` and relies on
+    // positions arriving in ascending order to stay O(1) per call.
+    // `origin`'s underlying storage is a `Set`, so iterating it directly
+    // (via `forEach`) visits elements in arbitrary hash order, which
+    // forces most calls into an O(n) scan — turning n removals into an
+    // O(n^2) operation. `elements` returns the same positions sorted
+    // ascending, restoring the fast path.
+    for element in origin.elements {
+      remove(at: element)
     }
   }
 
