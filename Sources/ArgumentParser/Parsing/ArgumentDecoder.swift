@@ -29,9 +29,13 @@ struct DecodedArguments {
 
 /// A decoder that decodes from parsed command-line arguments.
 final class ArgumentDecoder: Decoder {
-  init(values: ParsedValues, previouslyDecoded: [DecodedArguments] = []) {
+  init(
+    values: ParsedValues, previouslyDecoded: [DecodedArguments] = [],
+    allowsOptionGroupOverrides: Bool = true
+  ) {
     self.values = values
     self.previouslyDecoded = previouslyDecoded
+    self.allowsOptionGroupOverrides = allowsOptionGroupOverrides
     self.usedOrigins = InputOrigin()
   }
 
@@ -39,6 +43,7 @@ final class ArgumentDecoder: Decoder {
   var usedOrigins: InputOrigin
   var nextCommandIndex = 0
   var previouslyDecoded: [DecodedArguments] = []
+  let allowsOptionGroupOverrides: Bool
 
   var codingPath: [CodingKey] = []
 
@@ -217,8 +222,14 @@ struct SingleValueDecoder: Decoder {
   }
 
   func saveValue<T: ParsableArguments>(_ value: T, type: T.Type = T.self) {
-    underlying.previouslyDecoded.append(
-      DecodedArguments(type: type, value: value))
+    if let index = underlying.previouslyDecoded.firstIndex(where: {
+      $0.type == type
+    }) {
+      underlying.previouslyDecoded[index].value = value
+    } else {
+      underlying.previouslyDecoded.append(
+        DecodedArguments(type: type, value: value))
+    }
   }
 
   struct SingleValueContainer: SingleValueDecodingContainer {
