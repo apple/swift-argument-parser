@@ -215,7 +215,9 @@ extension CommandParser {
     // Decode the values from ParsedValues into the ParsableCommand:
     let decoder = ArgumentDecoder(
       values: values,
-      previouslyDecoded: decodedArguments
+      previouslyDecoded: decodedArguments,
+      allowsOptionGroupOverrides:
+        !currentNode.element.includesPassthroughArguments
     )
     var decodedResult: ParsableCommand
     do {
@@ -232,6 +234,13 @@ extension CommandParser {
     split.removeAll(in: decoder.usedOrigins)
 
     // Save the decoded results to add to the next command.
+    for previous in decoder.previouslyDecoded {
+      if let index = decodedArguments.firstIndex(where: {
+        $0.type == previous.type
+      }) {
+        decodedArguments[index].value = previous.value
+      }
+    }
     let newDecodedValues = decoder.previouslyDecoded
       .filter { prev in
         !decodedArguments.contains(where: { $0.type == prev.type })
