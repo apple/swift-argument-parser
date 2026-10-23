@@ -23,6 +23,38 @@ private var _debugURL: URL {
     : bundleURL
 }
 
+public final class TestExpectation {
+  public private(set) var fulfilled = false
+
+  public init() {}
+
+  public func fulfill() {
+    fulfilled = true
+  }
+}
+
+public protocol TestableSwiftTestingParsableArguments: ParsableArguments {
+  var didValidateExpectation: TestExpectation { get }
+}
+
+extension TestableSwiftTestingParsableArguments {
+  public mutating func validate() throws {
+    didValidateExpectation.fulfill()
+  }
+}
+
+public protocol TestableSwiftTestingParsableCommand: ParsableCommand,
+  TestableSwiftTestingParsableArguments
+{
+  var didRunExpectation: TestExpectation { get }
+}
+
+extension TestableSwiftTestingParsableCommand {
+  public mutating func run() throws {
+    didRunExpectation.fulfill()
+  }
+}
+
 public func expectResultFailure<T, U: Error>(
   _ expression: @autoclosure () -> Result<T, U>,
   _ message: @autoclosure () -> String = "",

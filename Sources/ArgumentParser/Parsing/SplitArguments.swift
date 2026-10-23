@@ -20,14 +20,19 @@ enum ParsedArgument: Equatable, CustomStringConvertible {
 
   init<S: StringProtocol>(_ str: S) where S.SubSequence == Substring {
     let indexOfEqualSign = str.firstIndex(of: "=") ?? str.endIndex
+    let hasEqualSign = indexOfEqualSign != str.endIndex
     let (baseName, value) = (
       str[..<indexOfEqualSign], str[indexOfEqualSign...].dropFirst()
     )
     let name = Name(baseName)
+    // Treat the presence of '=' as authoritative: `--opt=` should produce
+    // `.nameWithValue(.long("opt"), "")`, preserving the user's explicit
+    // empty-string intent and leaving the following token positional.
+    // This matches the existing behaviour for short options (`-o=`).
     self =
-      value.isEmpty
-      ? .name(name)
-      : .nameWithValue(name, String(value))
+      hasEqualSign || !value.isEmpty
+      ? .nameWithValue(name, String(value))
+      : .name(name)
   }
 
   /// An array of short arguments and their indices in the original base

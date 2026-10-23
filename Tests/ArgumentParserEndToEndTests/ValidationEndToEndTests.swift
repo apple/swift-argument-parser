@@ -182,3 +182,34 @@ extension ValidationEndToEndTests {
     try foo.run()
   }
 }
+
+private struct ValidateCountingArguments: ParsableArguments {
+  var validateCallCount = 0
+
+  mutating func validate() throws {
+    validateCallCount += 1
+  }
+}
+
+private struct ValidateCountingCommand: ParsableCommand {
+  var validateCallCount = 0
+
+  mutating func validate() throws {
+    validateCallCount += 1
+  }
+}
+
+extension ValidationEndToEndTests {
+  @Test
+  func validateCalledOnlyOnceViaParse() throws {
+    let parsedArguments = try ValidateCountingArguments.parse([])
+    #expect(parsedArguments.validateCallCount == 1)
+
+    let parsedCommand = try ValidateCountingCommand.parse([])
+    #expect(parsedCommand.validateCallCount == 1)
+
+    let parsedAsRootCommand =
+      try ValidateCountingCommand.parseAsRoot([]) as! ValidateCountingCommand
+    #expect(parsedAsRootCommand.validateCallCount == 1)
+  }
+}
