@@ -211,4 +211,24 @@ let jsonSample = """
       "\na\n\nb\n".hangingIndentingEachLine(by: 10)
         == "\n          a\n\n          b\n")
   }
+
+  @Test(arguments: [4, 10, .min])
+  func indentAtLeastAsWideAsColumns(_ columns: Int) {
+    #expect(
+      "one two three".wrapped(to: columns, wrappingIndent: 10) == """
+                  one
+                  two
+                  three
+        """)
+  }
+
+  @Test(arguments: [0, -5])
+  func nonPositiveColumns(_ columns: Int) {
+    #expect(
+      "one two three".wrapped(to: columns) == """
+        one
+        two
+        three
+        """)
+  }
 }
