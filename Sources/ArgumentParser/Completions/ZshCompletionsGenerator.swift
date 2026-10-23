@@ -61,7 +61,9 @@ extension CommandInfoV0 {
     let functionName = completionFunctionName
 
     var repeatingPositionalIndicator = ""
-    let argumentSpecsAndSetupScripts = (arguments ?? []).compactMap { arg in
+    let argumentSpecsAndSetupScripts = completionArguments.compactMap {
+      completionArgument in
+      let arg = completionArgument.argument
       guard arg.shouldDisplay else {
         return nil as (argumentSpec: String, setupScript: String?)?
       }
@@ -98,7 +100,8 @@ extension CommandInfoV0 {
 
       switch arg.kind {
       case .option, .positional:
-        let (argumentAction, setupScript) = argumentActionAndSetupScript(arg)
+        let (argumentAction, setupScript) = argumentActionAndSetupScript(
+          completionArgument)
         return (
           "'\(line):\(arg.valueName?.zshEscapeForSingleQuotedOptionSpec() ?? ""):\(argumentAction)'",
           setupScript
@@ -185,8 +188,9 @@ extension CommandInfoV0 {
 
   /// Returns the zsh "action" for an argument completion string.
   private func argumentActionAndSetupScript(
-    _ arg: ArgumentInfoV0
+    _ completionArgument: CompletionArgument
   ) -> (argumentAction: String, setupScript: String?) {
+    let arg = completionArgument.argument
     switch arg.completionKind {
     case .none:
       return ("", nil)
@@ -218,13 +222,13 @@ extension CommandInfoV0 {
 
     case .custom, .customAsync:
       return (
-        "{\(customCompleteFunctionName) \(arg.commonCustomCompletionCall(command: self)) \"${current_word_index}\" \"$(\(cursorIndexInCurrentWordFunctionName))\"}",
+        "{\(customCompleteFunctionName) \(arg.commonCustomCompletionCall(command: completionArgument.command)) \"${current_word_index}\" \"$(\(cursorIndexInCurrentWordFunctionName))\"}",
         nil
       )
 
     case .customDeprecated:
       return (
-        "{\(customCompleteFunctionName) \(arg.commonCustomCompletionCall(command: self))}",
+        "{\(customCompleteFunctionName) \(arg.commonCustomCompletionCall(command: completionArgument.command))}",
         nil
       )
     }

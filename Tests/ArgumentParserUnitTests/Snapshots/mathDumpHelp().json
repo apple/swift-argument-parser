@@ -46,6 +46,7 @@
       }
     ],
     "commandName" : "math",
+    "defaultSubcommand" : "add",
     "shouldDisplay" : true,
     "subcommands" : [
       {
