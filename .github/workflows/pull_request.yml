@@ -37,6 +37,7 @@ jobs:
       # workaround for https://github.com/swiftlang/swift-package-manager/issues/10442
       linux_pre_build_command: swift build --target generate-manual; swift build --target generate-docc-reference
       macos_pre_build_command: swift build --target generate-manual; swift build --target generate-docc-reference
+      windows_pre_build_command: swift build --target generate-manual; swift build --target generate-docc-reference
 
   cmake-build:
     name: CMake Build

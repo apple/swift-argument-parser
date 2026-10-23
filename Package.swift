@@ -106,11 +106,11 @@ var package = Package(
       resources: [.copy("CountLinesTest.txt")]),
     .testTarget(
       name: "ArgumentParserGenerateDoccReferenceTests",
-      dependencies: ["ArgumentParserTestHelpers"],
+      dependencies: ["ArgumentParserTestHelpers", "generate-docc-reference"],
       exclude: ["Snapshots"]),
     .testTarget(
       name: "ArgumentParserGenerateManualTests",
-      dependencies: ["ArgumentParserTestHelpers"],
+      dependencies: ["ArgumentParserTestHelpers", "generate-manual"],
       exclude: ["Snapshots"]),
     .testTarget(
       name: "ArgumentParserPackageManagerTests",
