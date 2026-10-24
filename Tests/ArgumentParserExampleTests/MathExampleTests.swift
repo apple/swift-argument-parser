@@ -31,7 +31,7 @@ import Testing
     let helpText = """
       OVERVIEW: A utility for performing maths.
 
-      USAGE: math <subcommand>
+      USAGE: math [(-h | --help) [<subcommand>] | --version | <subcommand> *…]
 
       OPTIONS:
         --version               Show the version.
@@ -39,6 +39,7 @@ import Testing
 
       SUBCOMMANDS:
         add (default)           Print the sum of the values.
+        help                    Show help information.
         multiply, mul           Print the product of the values.
         stats                   Calculate descriptive statistics.
 

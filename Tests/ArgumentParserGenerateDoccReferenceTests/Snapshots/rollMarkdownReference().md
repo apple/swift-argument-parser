@@ -35,7 +35,7 @@ Use this option to override the default value of a six-sided die.
 
 ## roll.help
 
-Show subcommand help information.
+Show help information.
 
 ```
 roll help [<subcommands>...]

@@ -297,7 +297,7 @@ extension HelpGenerationTests {
     try requireHelp(
       .default, for: ParentWithGroups.self,
       equals: """
-        USAGE: parent-with-groups [--verbose] [--oversharing] [<name>] [--existing-user] <subcommand>
+        USAGE: parent-with-groups [--verbose] [--oversharing] [<name>] [--existing-user] (-h | --help) [<subcommand>] | <subcommand> *…
 
         ARGUMENTS:
           <name>                  example
@@ -312,6 +312,7 @@ extension HelpGenerationTests {
 
         SUBCOMMANDS:
           child-with-groups
+          help                    Show help information.
 
           See 'parent-with-groups help <subcommand>' for detailed help.
         """)
@@ -319,7 +320,7 @@ extension HelpGenerationTests {
     try requireHelp(
       .hidden, for: ParentWithGroups.self,
       equals: """
-        USAGE: parent-with-groups [--verbose] [--oversharing] [<name>] <title> [--existing-user] <subcommand>
+        USAGE: parent-with-groups [--verbose] [--oversharing] [<name>] <title> [--existing-user] --help-hidden [<subcommand>] | <subcommand> *…
 
         ARGUMENTS:
           <name>                  example
@@ -335,6 +336,7 @@ extension HelpGenerationTests {
 
         SUBCOMMANDS:
           child-with-groups
+          help                    Show help information.
 
           See 'parent-with-groups help <subcommand>' for detailed help.
         """)

@@ -56,7 +56,7 @@ _defaultasflag-test() {
     case "${state}" in
     command)
         local -ar subcommands=(
-            'help:Show subcommand help information.'
+            'help:Show help information.'
         )
         _describe -V subcommand subcommands && ret=0
         ;;

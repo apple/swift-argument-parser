@@ -344,13 +344,14 @@ extension HelpGenerationTests {
     try requireHelp(
       .default, for: H.self,
       equals: """
-        USAGE: h <subcommand>
+        USAGE: h (-h | --help) [<subcommand>] | <subcommand> *…
 
         OPTIONS:
           -h, --help              Show help information.
 
         SUBCOMMANDS:
           command-with-very-long-name
+          help                    Show help information.
           short-command           Test short command name.
           another-command-with-very-long-name
                                   Test long command name.
@@ -479,12 +480,13 @@ extension HelpGenerationTests {
     try requireHelp(
       .default, for: N.self,
       equals: """
-        USAGE: n <subcommand>
+        USAGE: n [(-h | --help) [<subcommand>] | <subcommand> *…]
 
         OPTIONS:
           -h, --help              Show help information.
 
         SUBCOMMANDS:
+          help                    Show help information.
           m (default)
 
           See 'n help <subcommand>' for detailed help.
@@ -589,12 +591,13 @@ extension HelpGenerationTests {
     try requireHelp(
       .default, for: WithSubgroups.self,
       equals: """
-        USAGE: subgroupings <subcommand>
+        USAGE: subgroupings (-h | --help) [<subcommand>] | <subcommand> *…
 
         OPTIONS:
           -h, --help              Show help information.
 
         SUBCOMMANDS:
+          help                    Show help information.
           m
 
         BROKEN SUBCOMMANDS:
@@ -628,10 +631,13 @@ extension HelpGenerationTests {
     try requireHelp(
       .default, for: OnlySubgroups.self,
       equals: """
-        USAGE: subgroupings <subcommand>
+        USAGE: subgroupings (-h | --help) [<subcommand>] | <subcommand> *…
 
         OPTIONS:
           -h, --help              Show help information.
+
+        SUBCOMMANDS:
+          help                    Show help information.
 
         BROKEN SUBCOMMANDS:
           foo                     Perform some foo
@@ -917,7 +923,7 @@ extension HelpGenerationTests {
     expectEqualStrings(
       actual: NonCustomUsage.helpMessage(columns: 80),
       expected: """
-        USAGE: non-custom-usage <file> [--verbose-mode] <subcommand>
+        USAGE: non-custom-usage <file> [--verbose-mode] (-h | --help) [<subcommand>] | <subcommand> *…
 
         ARGUMENTS:
           <file>
@@ -928,6 +934,7 @@ extension HelpGenerationTests {
 
         SUBCOMMANDS:
           example-subcommand
+          help                    Show help information.
 
           See 'non-custom-usage help <subcommand>' for detailed help.
         """)
@@ -995,7 +1002,7 @@ extension HelpGenerationTests {
       actual: NonCustomUsage.fullMessage(for: ValidationError("Test")),
       expected: """
         Error: Test
-        Usage: non-custom-usage <file> [--verbose-mode] <subcommand>
+        Usage: non-custom-usage <file> [--verbose-mode] (-h | --help) [<subcommand>] | <subcommand> *…
           See 'non-custom-usage --help' for more information.
         """)
 
@@ -1030,7 +1037,7 @@ extension HelpGenerationTests {
     expectEqualStrings(
       actual: NonCustomUsage.usageString(),
       expected: """
-        non-custom-usage <file> [--verbose-mode] <subcommand>
+        non-custom-usage <file> [--verbose-mode] (-h | --help) [<subcommand>] | <subcommand> *…
         """)
 
     expectEqualStrings(
@@ -1538,6 +1545,35 @@ extension HelpGenerationTests {
           --num <num>             (default: 0)
           -h, --help              Show help information.
 
+        """)
+  }
+
+  struct VersionWithSubcommands: ParsableCommand {
+    struct Sub: ParsableCommand {
+      static let configuration = CommandConfiguration(abstract: "A subcommand.")
+    }
+
+    static let configuration = CommandConfiguration(
+      version: "1.0.0",
+      subcommands: [Sub.self]
+    )
+  }
+
+  func helpWithVersionAndSubcommands() async throws {
+    try requireHelp(
+      .default, for: VersionWithSubcommands.self,
+      equals: """
+        USAGE: version-with-subcommands (-h | --help) [<subcommand>] | --version | <subcommand> *…
+
+        OPTIONS:
+          -h, --help              Show help information.
+          --version               Show the version.
+
+        SUBCOMMANDS:
+          help                    Show help information.
+          sub                     A subcommand.
+
+          See 'version-with-subcommands help <subcommand>' for detailed help.
         """)
   }
 }

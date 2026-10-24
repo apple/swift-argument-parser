@@ -158,8 +158,6 @@ internal struct HelpGenerator {
     guard let root = commandStack.first, let currentCommand = commandStack.last
     else { fatalError() }
 
-    let currentArgSet = ArgumentSet(
-      currentCommand, visibility: visibility, parent: nil)
     self.commandStack = commandStack
 
     // Build the tool name and subcommand name from the command configuration
@@ -171,15 +169,50 @@ internal struct HelpGenerator {
     if let usage = currentCommand.configuration.usage {
       self.usage = usage
     } else {
-      var usage = UsageGenerator(
-        toolName: toolName, definition: [currentArgSet]
-      )
-      .synopsis
-      if !currentCommand.configuration.subcommands.isEmpty {
-        if usage.last != " " { usage += " " }
-        usage += "<subcommand>"
+      let hasSubcommands = !currentCommand.configuration.subcommands.isEmpty
+
+      if hasSubcommands {
+        var modes: [String] = []
+
+        let helpNames = commandStack.getHelpNames(visibility: visibility)
+        if !helpNames.isEmpty {
+          let formattedHelpNames =
+            helpNames
+            .map(\.synopsisString)
+            .joined(separator: " | ")
+
+          let helpGroup =
+            helpNames.count > 1 ? "(\(formattedHelpNames))" : formattedHelpNames
+          modes.append("\(helpGroup) [<subcommand>]")
+        }
+
+        if commandStack.versionArgumentDefinition() != nil {
+          modes.append("--version")
+        }
+
+        let isOptional = currentCommand.configuration.defaultSubcommand != nil
+
+        let subcommandTerm = "<subcommand>"
+        modes.append("\(subcommandTerm) *…")
+
+        let currentArgSet = ArgumentSet(
+          currentCommand, visibility: visibility, parent: nil)
+        let baseSynopsis = UsageGenerator(
+          toolName: toolName, definition: [currentArgSet]
+        ).synopsis
+
+        let modesString = modes.joined(separator: " | ")
+        self.usage =
+          isOptional
+          ? "\(baseSynopsis) [\(modesString)]"
+          : "\(baseSynopsis) \(modesString)"
+      } else {
+        let currentArgSet = ArgumentSet(
+          currentCommand, visibility: visibility, parent: nil)
+        self.usage =
+          UsageGenerator(toolName: toolName, definition: [currentArgSet])
+          .synopsis
       }
-      self.usage = usage
     }
 
     self.helpBanner = commandStack.getHelpBanner() ?? ""
@@ -328,12 +361,28 @@ internal struct HelpGenerator {
     // All of the subcommand sections.
     var subcommands: [Section] = []
 
+    var ungroupedSubcommands = configuration.ungroupedSubcommands
+
+    if !configuration.subcommands.isEmpty
+      && !configuration.subcommands.contains(where: {
+        $0._commandName == "help"
+      })
+    {
+      if let index = ungroupedSubcommands.firstIndex(where: {
+        $0._commandName > "help"
+      }) {
+        ungroupedSubcommands.insert(HelpCommand.self, at: index)
+      } else {
+        ungroupedSubcommands.append(HelpCommand.self)
+      }
+    }
+
     // Add section for the ungrouped subcommands, if there are any.
-    if !configuration.ungroupedSubcommands.isEmpty {
+    if !ungroupedSubcommands.isEmpty {
       subcommands.append(
         subcommandSection(
           header: .subcommands,
-          subcommands: configuration.ungroupedSubcommands
+          subcommands: ungroupedSubcommands
         )
       )
     }

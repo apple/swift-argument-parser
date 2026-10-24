@@ -211,7 +211,7 @@ math stats quantiles [<one-of-four>] [<custom-arg>]
 
 ## math.help
 
-Show subcommand help information.
+Show help information.
 
 ```
 math help [<subcommands>...] [--version]
