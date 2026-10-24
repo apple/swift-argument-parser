@@ -83,6 +83,11 @@ var package = Package(
       dependencies: ["ArgumentParser"],
       path: "Examples/default-as-flag"
     ),
+    .executableTarget(
+      name: "name-varieties",
+      dependencies: ["ArgumentParser"],
+      path: "Examples/name-varieties"
+    ),
 
     // Tools
     .executableTarget(
