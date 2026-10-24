@@ -77,34 +77,67 @@ extension CommandInfoV0 {
       result += "\(discussion)\n\n"
     }
 
-    if let args = self.arguments {
-      for arg in args {
-        guard arg.shouldDisplay else {
-          continue
-        }
-
-        switch markdownStyle {
-        case .docc:
-          result += "- term **\(arg.identity())**:\n\n"
-        case .github:
-          result += "**\(arg.identity()):**\n\n"
-        }
-
-        if let abstract = arg.abstract {
-          result += "*\(abstract)*\n\n"
-        }
-        if let discussion = arg.discussion {
-          result += discussion + "\n\n"
-        }
-        result += "\n"
-      }
-    }
+    result += self.argumentListMarkdown(
+      path: path, markdownStyle: markdownStyle)
 
     for subcommand in self.subcommands ?? [] {
       result +=
         subcommand.toMarkdown(
           path + [self.commandName], markdownStyle: markdownStyle) + "\n\n"
     }
+
+    return result
+  }
+
+  /// Emits grouped argument documentation matching command-line help ordering:
+  /// Arguments, then custom section titles (definition order), then Options.
+  fileprivate func argumentListMarkdown(
+    path: [String],
+    markdownStyle: OutputStyle
+  ) -> String {
+    guard let args = self.arguments else {
+      return ""
+    }
+    let displayed = args.filter(\.shouldDisplay)
+    guard !displayed.isEmpty else {
+      return ""
+    }
+
+    var positional: [ArgumentInfoV0] = []
+    var titled: [String: [ArgumentInfoV0]] = [:]
+    var sectionOrder: [String] = []
+    var options: [ArgumentInfoV0] = []
+
+    for arg in displayed {
+      if let title = arg.sectionTitle, !title.isEmpty {
+        if !titled.keys.contains(title) {
+          sectionOrder.append(title)
+        }
+        titled[title, default: []].append(arg)
+      } else if arg.kind == .positional {
+        positional.append(arg)
+      } else {
+        options.append(arg)
+      }
+    }
+
+    var result = ""
+    let headingLevel = path.count + 2
+    let headingPrefix = String(repeating: "#", count: headingLevel)
+
+    func appendSection(title: String, arguments: [ArgumentInfoV0]) {
+      guard !arguments.isEmpty else { return }
+      result += "\(headingPrefix) \(title)\n\n"
+      for arg in arguments {
+        result += arg.markdownTermBody(markdownStyle: markdownStyle)
+      }
+    }
+
+    appendSection(title: "Arguments", arguments: positional)
+    for title in sectionOrder {
+      appendSection(title: title, arguments: titled[title] ?? [])
+    }
+    appendSection(title: "Options", arguments: options)
 
     return result
   }
@@ -208,5 +241,23 @@ extension ArgumentInfoV0 {
       inner = "--\(names.joined(separator: "|"))"
     }
     return inner
+  }
+
+  fileprivate func markdownTermBody(markdownStyle: OutputStyle) -> String {
+    var result = ""
+    switch markdownStyle {
+    case .docc:
+      result += "- term **\(identity())**:\n\n"
+    case .github:
+      result += "**\(identity()):**\n\n"
+    }
+    if let abstract = self.abstract {
+      result += "*\(abstract)*\n\n"
+    }
+    if let discussion = self.discussion {
+      result += discussion + "\n\n"
+    }
+    result += "\n"
+    return result
   }
 }

@@ -8,6 +8,8 @@ A utility for performing maths.
 math [--version] [--help]
 ```
 
+## Options
+
 **--version:**
 
 *Show the version.*
@@ -26,14 +28,18 @@ Print the sum of the values.
 math add [--hex-output] [<values>...] [--version] [--help]
 ```
 
-**--hex-output:**
-
-*Use hexadecimal notation for the result.*
-
+### Arguments
 
 **values:**
 
 *A group of integers to operate on.*
+
+
+### Options
+
+**--hex-output:**
+
+*Use hexadecimal notation for the result.*
 
 
 **--version:**
@@ -56,14 +62,18 @@ Print the product of the values.
 math multiply [--hex-output] [<values>...] [--version] [--help]
 ```
 
-**--hex-output:**
-
-*Use hexadecimal notation for the result.*
-
+### Arguments
 
 **values:**
 
 *A group of integers to operate on.*
+
+
+### Options
+
+**--hex-output:**
+
+*Use hexadecimal notation for the result.*
 
 
 **--version:**
@@ -86,6 +96,8 @@ Calculate descriptive statistics.
 math stats [--version] [--help]
 ```
 
+### Options
+
 **--version:**
 
 *Show the version.*
@@ -104,14 +116,18 @@ Print the average of the values.
 math stats average [--kind=<kind>] [<values>...] [--version] [--help]
 ```
 
-**--kind=\<kind\>:**
-
-*The kind of average to provide.*
-
+#### Arguments
 
 **values:**
 
 *A group of floating-point values to operate on.*
+
+
+#### Options
+
+**--kind=\<kind\>:**
+
+*The kind of average to provide.*
 
 
 **--version:**
@@ -134,10 +150,14 @@ Print the standard deviation of the values.
 math stats stdev [<values>...] [--version] [--help]
 ```
 
+#### Arguments
+
 **values:**
 
 *A group of floating-point values to operate on.*
 
+
+#### Options
 
 **--version:**
 
@@ -162,6 +182,8 @@ math stats quantiles [<one-of-four>] [<custom-arg>] [<custom-deprecated-arg>]
   [--help]
 ```
 
+#### Arguments
+
 **one-of-four:**
 
 
@@ -175,6 +197,8 @@ math stats quantiles [<one-of-four>] [<custom-arg>] [<custom-deprecated-arg>]
 
 *A group of floating-point values to operate on.*
 
+
+#### Options
 
 **--file=\<file\>:**
 
@@ -213,8 +237,12 @@ Show subcommand help information.
 math help [<subcommands>...] [--version]
 ```
 
+### Arguments
+
 **subcommands:**
 
+
+### Options
 
 **--version:**
 
