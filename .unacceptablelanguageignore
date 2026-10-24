@@ -1,2 +1,5 @@
 # Ignore this file which references the "master" branch of another repo
 Tools/generate-manual/MDoc/MDocMacro.swift
+
+# POSIX process cleanup uses the os.kill API.
+Tests/ArgumentParserExampleTests/CompletionTests/test_completions.py
