@@ -48,6 +48,11 @@ extension AsyncParsableCommand {
   public static func asyncParseAsRoot(
     _ arguments: [String]? = nil
   ) async throws -> ParsableCommand {
+    if arguments == nil {
+      _invokedCommandName =
+        _invokedCommandName
+        ?? _executableName(fromInvokedPath: CommandLine._staticArguments[0])
+    }
     var parser = CommandParser(self)
     let arguments = arguments ?? Array(CommandLine._staticArguments.dropFirst())
     return try await parser.parse(arguments: arguments)
