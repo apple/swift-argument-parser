@@ -34,6 +34,22 @@ struct CompletionExampleTests {
       }
   }
 
+  @Test
+  func pythonEnabled() throws {
+    if !Self.isExecutableAvailable("python3") {
+      print("Skipping interactive completion tests: python3 not available.")
+    }
+  }
+
+  @Test(arguments: Shell.allCases)
+  func shellAvailable(shell: Shell) throws {
+    if !Self.isExecutableAvailable(shell.rawValue) {
+      print(
+        "Skipping interactive completion tests for '\(shell.rawValue)': not available."
+      )
+    }
+  }
+
   @Test(
     .enabled(if: isExecutableAvailable("python3")),
     arguments: Shell.available, 0..<3
