@@ -24,6 +24,12 @@ struct Repeat: ParsableCommand {
     @Option(help: "The number of times to repeat 'phrase'.")
     var count: Int? = nil
 
+    mutating func validate() throws {
+        if let count, count < 0 {
+            throw ValidationError("Count must be zero or greater.")
+        }
+    }
+
     mutating func run() throws {
         let repeatCount = count ?? 2
         for _ in 0..<repeatCount {
