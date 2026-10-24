@@ -1451,6 +1451,16 @@ extension HelpGenerationTests {
     var argument: String?
   }
 
+  @Test(arguments: [0, 1, 20, 26])
+  func narrowColumnsKeepHelpText(_ columns: Int) {
+    let help = WideHelp.helpMessage(columns: columns)
+    let words = help.split(whereSeparator: \.isWhitespace).joined(
+      separator: " ")
+    #expect(
+      words.contains("54 characters of help, so as to wrap when columns < 80"))
+    #expect(words.contains("Show help information."))
+  }
+
   @Test func columnsEnvironmentOverride() async throws {
     #if !(os(Windows) || os(WASI))
     defer { Platform.Environment[.columns] = nil }
