@@ -121,6 +121,28 @@ extension HelpGenerationTests {
         """)
   }
 
+  struct LongURLDiscussion: ParsableArguments {
+    @Option(
+      help: ArgumentHelp(
+        "A path.",
+        discussion: """
+          https://example.com/a-long-unbroken-documentation-url
+          Next line.
+          """))
+    var path: String?
+  }
+
+  @Test func helpWithLongURLDiscussion() {
+    let help = LongURLDiscussion.helpMessage(columns: 40)
+
+    #expect(
+      help.contains(
+        """
+                https://example.com/a-long-unbroken-documentation-url
+                Next line.
+        """))
+  }
+
   struct Issue27: ParsableArguments {
     @Option
     var two: String = "42"
