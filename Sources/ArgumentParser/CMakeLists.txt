@@ -53,6 +53,7 @@ add_library(ArgumentParser
   Validators/AsyncCompletionsValidator.swift
   Validators/CodingKeyValidator.swift
   Validators/NonsenseFlagsValidator.swift
+  Validators/OptionalPositionalArgumentsValidator.swift
   Validators/ParsableArgumentsValidation.swift
   Validators/PositionalArgumentsValidator.swift
   Validators/UniqueNamesValidator.swift)
