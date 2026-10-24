@@ -93,13 +93,24 @@ extension Tree where Element == ParsableCommand.Type {
 
   convenience init(root command: ParsableCommand.Type) throws {
     self.init(command)
+    var subcommandNames: Set<String> = []
     for subcommand in command.configuration.subcommands {
       if subcommand == command {
         throw InitializationError.recursiveSubcommand(subcommand)
       }
       // We don't allow an alias that has the same name as the command itself.
-      if subcommand.configuration.aliases.contains(subcommand._commandName) {
+      let subcommandName = subcommand._commandName
+      if subcommand.configuration.aliases.contains(subcommandName) {
         throw InitializationError.aliasMatchingCommand(subcommand)
+      }
+      // Subcommands must have unique names and aliases so that each name
+      // unambiguously selects a single subcommand.
+      guard subcommandNames.insert(subcommandName).inserted else {
+        throw InitializationError.duplicateSubcommand(subcommand)
+      }
+      for alias in subcommand.configuration.aliases
+      where !subcommandNames.insert(alias).inserted {
+        throw InitializationError.duplicateSubcommand(subcommand)
       }
       try addChild(Tree(root: subcommand))
     }
@@ -108,5 +119,6 @@ extension Tree where Element == ParsableCommand.Type {
   enum InitializationError: Error {
     case recursiveSubcommand(ParsableCommand.Type)
     case aliasMatchingCommand(ParsableCommand.Type)
+    case duplicateSubcommand(ParsableCommand.Type)
   }
 }

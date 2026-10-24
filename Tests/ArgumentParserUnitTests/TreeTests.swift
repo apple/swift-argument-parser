@@ -86,6 +86,48 @@ extension TreeTests {
     }
   }
 
+  struct RootWithDuplicateSubcommands: ParsableCommand {
+    static let configuration = CommandConfiguration(subcommands: [
+      FirstDuplicate.self, SecondDuplicate.self
+    ])
+
+    struct FirstDuplicate: ParsableCommand {
+      static let configuration = CommandConfiguration(commandName: "duplicate")
+    }
+    struct SecondDuplicate: ParsableCommand {
+      static let configuration = CommandConfiguration(commandName: "duplicate")
+    }
+  }
+
+  struct RootWithAliasedSubcommands: ParsableCommand {
+    static let configuration = CommandConfiguration(subcommands: [
+      Original.self, Other.self
+    ])
+
+    struct Original: ParsableCommand {
+      static let configuration = CommandConfiguration(
+        commandName: "original", aliases: ["shared"])
+    }
+    struct Other: ParsableCommand {
+      static let configuration = CommandConfiguration(
+        commandName: "other", aliases: ["shared"])
+    }
+  }
+
+  struct RootWithDistinctSubcommands: ParsableCommand {
+    static let configuration = CommandConfiguration(subcommands: [
+      Unique.self, Aliased.self
+    ])
+
+    struct Unique: ParsableCommand {
+      static let configuration = CommandConfiguration(commandName: "unique")
+    }
+    struct Aliased: ParsableCommand {
+      static let configuration = CommandConfiguration(
+        commandName: "aliased", aliases: ["alias"])
+    }
+  }
+
   @Test func initializationWithRecursiveSubcommand() {
     #expect(throws: (any Error).self) { try Tree(root: A.asCommand) }
     #expect(throws: (any Error).self) { try Tree(root: Root.asCommand) }
@@ -97,6 +139,24 @@ extension TreeTests {
     }
     #expect(throws: (any Error).self) {
       try Tree(root: RootWithNestedSub.asCommand)
+    }
+  }
+
+  @Test func initializationWithDuplicateSubcommands() {
+    #expect(throws: (any Error).self) {
+      try Tree(root: RootWithDuplicateSubcommands.asCommand)
+    }
+  }
+
+  @Test func initializationWithConflictingAliases() {
+    #expect(throws: (any Error).self) {
+      try Tree(root: RootWithAliasedSubcommands.asCommand)
+    }
+  }
+
+  @Test func initializationWithDistinctSubcommandsSucceeds() {
+    #expect(throws: Never.self) {
+      try Tree(root: RootWithDistinctSubcommands.asCommand)
     }
   }
 }
