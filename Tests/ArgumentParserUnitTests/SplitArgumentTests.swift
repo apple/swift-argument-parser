@@ -791,3 +791,9 @@ extension SplitArgumentTests {
     try expectElementEqual(sut, at: 0, .option(.name(.long("out"))))
   }
 }
+
+extension SplitArguments {
+  init(arguments: [String]) throws {
+    try self.init(arguments: arguments, responseFilePrefix: "@")
+  }
+}

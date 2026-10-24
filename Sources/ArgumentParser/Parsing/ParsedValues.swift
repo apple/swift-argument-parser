@@ -75,9 +75,15 @@ extension ParsedValues {
     closure: (inout [A]) -> Void
   ) {
     var e =
-      element(forKey: key)
+      elements.removeValue(forKey: key)
       ?? Element(key: key, value: initial, inputOrigin: InputOrigin())
     var v = (e.value as? [A]) ?? initial
+    // Drop the Element's own reference to the array buffer before
+    // mutating `v` in place. Otherwise `v` is never uniquely referenced,
+    // so `closure`'s append forces a full copy of the array every time
+    // instead of amortized O(1) growth — turning parsing of n repeated
+    // values into an O(n^2) operation.
+    e.value = nil
     // The first time a value is parsed from command line, empty array of any default values.
     if e.shouldClearArrayIfParsed {
       v.removeAll()
