@@ -22,12 +22,18 @@ struct Repeat: ParsableCommand {
   @Argument(help: "The phrase to repeat.")
   var phrase: String
 
+  mutating func validate() throws {
+    if let count, count < 0 {
+      throw ValidationError("Count must be zero or greater.")
+    }
+  }
+
   mutating func run() throws {
     let repeatCount = count ?? 2
 
-    for i in 1...repeatCount {
+    for i in 0..<repeatCount {
       if includeCounter {
-        print("\(i): \(phrase)")
+        print("\(i + 1): \(phrase)")
       } else {
         print(phrase)
       }

@@ -55,6 +55,34 @@ import Testing
         """)
   }
 
+  @Test(arguments: [false, true])
+  func repeat_ZeroCount(includeCounter: Bool) throws {
+    var arguments = ["repeat", "hello", "--count", "0"]
+    if includeCounter {
+      arguments.append("--include-counter")
+    }
+    try requireExecuteCommand(command: arguments, expected: "")
+  }
+
+  @Test(arguments: [-1, Int.min])
+  func repeat_NegativeCount(count: Int) throws {
+    try requireExecuteCommand(
+      command: ["repeat", "hello", "--count=\(count)"],
+      expected: """
+        Error: Count must be zero or greater.
+        Usage: repeat [--count <count>] [--include-counter] <phrase>
+          See 'repeat --help' for more information.
+
+        """,
+      exitCode: .validationFailure)
+  }
+
+  @Test func repeat_OneCountWithCounter() throws {
+    try requireExecuteCommand(
+      command: "repeat hello --count 1 --include-counter",
+      expected: "1: hello\n")
+  }
+
   @Test func repeat_Help() throws {
     let helpText = """
       USAGE: repeat [--count <count>] [--include-counter] <phrase>
