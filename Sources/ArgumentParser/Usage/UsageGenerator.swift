@@ -9,6 +9,12 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if canImport(FoundationEssentials)
+internal import FoundationEssentials
+#else
+internal import Foundation
+#endif
+
 struct UsageGenerator {
   var toolName: String
   var definition: ArgumentSet
@@ -138,18 +144,31 @@ extension ArgumentSet {
   ///
   /// If no descriptive help message can be generated, `nil` will be returned.
   ///
-  /// - Parameter error: the parse error that occurred.
+  /// - Parameters:
+  ///   - error: The parse error that occurred.
+  ///   - formattingContext: Snapshot of parser input metadata used to
+  ///     render the source-location block. Pass `nil` when the gete (contains
+  ///     response file) cannot be evaluated (e.g., the error was raised before
+  ///     `SplitArguments` existed).
   /// - Returns: An error description.
-  func errorDescription(error: Swift.Error) -> String? {
+  func errorDescription(
+    error: Swift.Error,
+    formattingContext: InputOrigin.FormattingContext? = nil
+  ) -> String? {
     switch error {
     case let parserError as ParserError:
-      return ErrorMessageGenerator(arguments: self, error: parserError)
-        .makeErrorMessage()
+      return ErrorMessageGenerator(
+        arguments: self,
+        error: parserError,
+        formattingContext: formattingContext
+      ).makeErrorMessage()
     case let commandError as CommandError:
       return ErrorMessageGenerator(
-        arguments: self, error: commandError.parserError
-      )
-      .makeErrorMessage()
+        arguments: self,
+        error: commandError.parserError,
+        formattingContext: commandError.formattingContext
+          ?? formattingContext
+      ).makeErrorMessage()
     default:
       return nil
     }
@@ -174,6 +193,17 @@ extension ArgumentSet {
 struct ErrorMessageGenerator {
   var arguments: ArgumentSet
   var error: ParserError
+  var formattingContext: InputOrigin.FormattingContext?
+
+  init(
+    arguments: ArgumentSet,
+    error: ParserError,
+    formattingContext: InputOrigin.FormattingContext? = nil
+  ) {
+    self.arguments = arguments
+    self.error = error
+    self.formattingContext = formattingContext
+  }
 }
 
 extension ErrorMessageGenerator {
@@ -232,6 +262,18 @@ extension ErrorMessageGenerator {
       }
     case .notParentCommand(let parent):
       return "Command '\(parent)' is not a parent of the current command."
+
+    // Response file error cases
+    case .responseFileNotFound(let url):
+      return "Response file not found: \(url.path)"
+    case .responseFileReadError(let path, let error):
+      return "Failed to read response file '\(path)': \(error.describe())"
+    case .responseFileMalformedContent(let path, let message):
+      return "Malformed content in response file '\(path)': \(message)"
+    case .responseFileRecursiveInclude(let path):
+      return "Recursive response file inclusion detected: \(path)"
+    case .responseFileMaxNestingDepthExceeded(let depth):
+      return "Maximum nesting depth (\(depth)) exceeded for response files"
     }
   }
 
@@ -247,6 +289,48 @@ extension ErrorMessageGenerator {
       return noValueHelpMessage(key: k)
     default:
       return nil
+    }
+  }
+}
+
+extension ErrorMessageGenerator {
+  /// Renders the multi-line source location block for a single origin
+  /// element, returning `""` when the response-file gate is inactive
+  /// or no chain is recorded for the element.
+  func formatLocation(for element: InputOrigin.Element) -> String {
+    guard let ctx = formattingContext, ctx.hasResponseFile,
+      let chain = ctx.responseFileChain(for: element)
+    else { return "" }
+    return "\n" + formatChain(chain)
+  }
+
+  /// Renders location blocks for every element in an `InputOrigin` that has a recorded chain.
+  ///
+  /// Returns `""` when the gate is inactive.
+  func formatLocation(for origin: InputOrigin) -> String {
+    guard let ctx = formattingContext, ctx.hasResponseFile else { return "" }
+    var blocks: [String] = []
+    for element in origin.elements {
+      if let chain = ctx.responseFileChain(for: element) {
+        blocks.append(formatChain(chain))
+      }
+    }
+    return blocks.isEmpty ? "" : "\n" + blocks.joined(separator: "\n")
+  }
+
+  private func formatChain(_ chain: [InputOrigin.ResponseFileStep]) -> String {
+    guard let first = chain.first else { return "" }
+    var lines = ["  at \(formatStep(first))"]
+    for step in chain.dropFirst() {
+      lines.append("  included from \(formatStep(step))")
+    }
+    return lines.joined(separator: "\n")
+  }
+
+  private func formatStep(_ step: InputOrigin.ResponseFileStep) -> String {
+    switch step {
+    case .file(let path, let line): return "\(path):\(line)"
+    case .argv(let index): return "argv[\(index)]"
     }
   }
 }
@@ -295,8 +379,9 @@ extension ErrorMessageGenerator {
   }
 
   func unknownOptionMessage(origin: InputOrigin.Element, name: Name) -> String {
+    let suffix = formatLocation(for: origin)
     if case .short = name {
-      return "Unknown option '\(name.synopsisString)'"
+      return "Unknown option '\(name.synopsisString)'" + suffix
     }
 
     // An empirically derived magic number
@@ -325,16 +410,19 @@ extension ErrorMessageGenerator {
     if let suggestion = suggestion {
       return
         "Unknown option '\(name.synopsisString)'. Did you mean '\(suggestion.synopsisString)'?"
+        + suffix
     }
-    return "Unknown option '\(name.synopsisString)'"
+    return "Unknown option '\(name.synopsisString)'" + suffix
   }
 
   func missingValueForOptionMessage(origin: InputOrigin, name: Name) -> String {
+    let base: String
     if let valueName = valueName(for: name) {
-      return "Missing value for '\(name.synopsisString) <\(valueName)>'"
+      base = "Missing value for '\(name.synopsisString) <\(valueName)>'"
     } else {
-      return "Missing value for '\(name.synopsisString)'"
+      base = "Missing value for '\(name.synopsisString)'"
     }
+    return base + formatLocation(for: origin)
   }
 
   func missingValueOrUnknownCompositeOptionMessage(
@@ -342,6 +430,8 @@ extension ErrorMessageGenerator {
     shortName: Name,
     compositeName: Name
   ) -> String {
+    // The component messages already append their own location suffixes
+    // (one per origin element). The composite message just joins them.
     let unknownOptionMessage = unknownOptionMessage(
       origin: origin.firstElement,
       name: compositeName)
@@ -358,21 +448,29 @@ extension ErrorMessageGenerator {
     origin: InputOrigin.Element, name: Name, value: String
   ) -> String? {
     "The option '\(name.synopsisString)' does not take any value, but '\(value)' was specified."
+      + formatLocation(for: origin)
   }
 
   func unexpectedExtraValuesMessage(values: [(InputOrigin, String)]) -> String?
   {
+    let base: String
     switch values.count {
     case 0:
       return nil
     case 1:
       // swift-format-ignore: NeverForceUnwrap
       // We know that `values` is not empty.
-      return "Unexpected argument '\(values.first!.1)'"
+      base = "Unexpected argument '\(values.first!.1)'"
     default:
       let v = values.map { $0.1 }.joined(separator: "', '")
-      return "\(values.count) unexpected arguments: '\(v)'"
+      base = "\(values.count) unexpected arguments: '\(v)'"
     }
+    // Append a location block for each value's origin.
+    var combined = base
+    for (origin, _) in values {
+      combined += formatLocation(for: origin)
+    }
+    return combined
   }
 
   func duplicateExclusiveValues(
@@ -401,6 +499,8 @@ extension ErrorMessageGenerator {
     //TODO: review this message once environment values are supported.
     return
       "Value to be set with \(dupeString) had already been set with \(origString)"
+      + formatLocation(for: previous)
+      + formatLocation(for: duplicate)
   }
 
   func noValueMessage(key: InputKey) -> String? {
@@ -480,18 +580,21 @@ extension ErrorMessageGenerator {
       customErrorMessage = argumentValue?.formattedValueList ?? ""
     }
 
+    let base: String
     switch (name, valueName) {
     case (let n?, let v?):
-      return
+      base =
         "The value '\(value)' is invalid for '\(n.synopsisString) <\(v)>'\(customErrorMessage)"
     case (_, let v?):
-      return "The value '\(value)' is invalid for '<\(v)>'\(customErrorMessage)"
+      base =
+        "The value '\(value)' is invalid for '<\(v)>'\(customErrorMessage)"
     case (let n?, _):
-      return
+      base =
         "The value '\(value)' is invalid for '\(n.synopsisString)'\(customErrorMessage)"
     case (nil, nil):
-      return "The value '\(value)' is invalid.\(customErrorMessage)"
+      base = "The value '\(value)' is invalid.\(customErrorMessage)"
     }
+    return base + formatLocation(for: origin)
   }
 }
 

@@ -9,6 +9,12 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if canImport(FoundationEssentials)
+internal import FoundationEssentials
+#else
+internal import Foundation
+#endif
+
 /// Gets thrown while parsing and will be handled by the error output generation.
 enum ParserError: Error {
   case helpRequested(visibility: ArgumentVisibility)
@@ -39,6 +45,13 @@ enum ParserError: Error {
   case userValidationError(Error)
   case noArguments(Error)
   case notParentCommand(String)
+
+  // Response file errors
+  case responseFileNotFound(URL)
+  case responseFileReadError(URL, Error)
+  case responseFileMalformedContent(URL, String)
+  case responseFileRecursiveInclude(URL)
+  case responseFileMaxNestingDepthExceeded(Int)
 }
 
 /// These are errors used internally to the parsing, and will not be exposed to the help generation.

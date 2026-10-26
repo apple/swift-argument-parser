@@ -94,6 +94,31 @@ public struct CommandConfiguration: Sendable {
   /// or `commandName` itself if provided.
   public var aliases: [String]
 
+  /// The character used to introduce a response file argument for this
+  /// command.
+  ///
+  /// A command-line argument whose first character matches this prefix is
+  /// treated as a reference to a file whose contents should be expanded
+  /// in place. The default is `nil`, meaning response file expansion is
+  /// disabled.
+  ///
+  /// Set this on a root command to opt in to response file expansion
+  /// with the given character (for example, `"@"` matches the widely
+  /// used convention `mycommand @args.txt`). The root command's prefix
+  /// determines the prefix used for the entire invocation, including
+  /// subcommand parsing.
+  ///
+  ///     struct MyTool: ParsableCommand {
+  ///       static let configuration = CommandConfiguration(
+  ///         responseFilePrefix: "+")
+  ///       // ...
+  ///     }
+  ///
+  /// With the above configuration, `mytool +args.txt` expands `args.txt`
+  /// as a response file, while `mytool @foo` is treated as a literal
+  /// argument.
+  public var responseFilePrefix: Character?
+
   /// Creates the configuration for a command.
   ///
   /// - Parameters:
@@ -129,6 +154,10 @@ public struct CommandConfiguration: Sendable {
   ///   - aliases: An array of aliases for the command's name. All of the aliases
   ///     MUST not match the actual command name, whether that be the derived name
   ///     if `commandName` is not provided, or `commandName` itself if provided.
+  ///   - responseFilePrefix: The character that introduces a response-file
+  ///     argument on the command line, or `nil` to disable response-file
+  ///     expansion. The default is `nil`. Set this on a root command to opt
+  ///     in to expansion (for example, `"@"` for `mytool @args.txt`).
   public init(
     commandName: String? = nil,
     abstract: String = "",
@@ -141,7 +170,8 @@ public struct CommandConfiguration: Sendable {
     groupedSubcommands: [CommandGroup] = [],
     defaultSubcommand: ParsableCommand.Type? = nil,
     helpNames: NameSpecification? = nil,
-    aliases: [String] = []
+    aliases: [String] = [],
+    responseFilePrefix: Character? = nil
   ) {
     self.commandName = commandName
     self.abstract = abstract
@@ -155,6 +185,7 @@ public struct CommandConfiguration: Sendable {
     self.defaultSubcommand = defaultSubcommand
     self.helpNames = helpNames
     self.aliases = aliases
+    self.responseFilePrefix = responseFilePrefix
   }
 
   /// Creates the configuration for a command with a "super-command"
@@ -172,7 +203,8 @@ public struct CommandConfiguration: Sendable {
     groupedSubcommands: [CommandGroup] = [],
     defaultSubcommand: ParsableCommand.Type? = nil,
     helpNames: NameSpecification? = nil,
-    aliases: [String] = []
+    aliases: [String] = [],
+    responseFilePrefix: Character? = nil
   ) {
     self.commandName = commandName
     self._superCommandName = _superCommandName
@@ -187,6 +219,7 @@ public struct CommandConfiguration: Sendable {
     self.defaultSubcommand = defaultSubcommand
     self.helpNames = helpNames
     self.aliases = aliases
+    self.responseFilePrefix = responseFilePrefix
   }
 }
 
