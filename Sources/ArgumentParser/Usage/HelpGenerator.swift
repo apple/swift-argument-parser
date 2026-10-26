@@ -237,7 +237,12 @@ internal struct HelpGenerator {
       case (false, true):
         switch arg.update {
         case .nullary, .unary:
-          allAndDefaultValues = "(default: \(defaultValue))"
+          // The default of a mutually exclusive flag is one of the group's
+          // own flags, so naming it again adds nothing.
+          allAndDefaultValues =
+            arg.help.isMutuallyExclusive
+            ? "(default)"
+            : "(default: \(defaultValue))"
         case .optionalUnary:
           allAndDefaultValues = "(default as flag: \(defaultValue))"
         }

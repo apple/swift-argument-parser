@@ -279,11 +279,11 @@ extension FlagsEndToEndTests {
     try requireHelp(
       .default, for: Baz.self,
       equals: """
-        USAGE: baz --pink --purple --silver [--small] [--medium] [--large] [--extra-large] [--humongous] [--round] [--square] [--oblong]
+        USAGE: baz --pink | --purple | --silver [--small | --medium | --large | --extra-large | --humongous] [--round | --square | --oblong]
 
         OPTIONS:
           --pink/--purple/--silver
-          -s, --small             A smallish size. (default: --small)
+          -s, --small             A smallish size. (default)
           -m, --medium            Not too big, not too small.
           -l, --large             The size to use.
           --extra-large           The size to use.
