@@ -98,7 +98,7 @@ complete -c 'base-test' -n '__base-test_should_offer_completions_for_positional 
 complete -c 'base-test' -n '__base-test_should_offer_completions_for_flags_or_options "base-test" h help' -s 'h' -l 'help' -d 'Show help information.'
 complete -c 'base-test' -n '__base-test_should_offer_completions_for_positional "base-test" -eq 3' -fa 'sub-command' -d ''
 complete -c 'base-test' -n '__base-test_should_offer_completions_for_positional "base-test" -eq 3' -fa 'escaped-command' -d ''
-complete -c 'base-test' -n '__base-test_should_offer_completions_for_positional "base-test" -eq 3' -fa 'help' -d 'Show subcommand help information.'
+complete -c 'base-test' -n '__base-test_should_offer_completions_for_positional "base-test" -eq 3' -fa 'help' -d 'Show help information.'
 complete -c 'base-test' -n '__base-test_should_offer_completions_for_flags_or_options "base-test sub-command" h help' -s 'h' -l 'help' -d 'Show help information.'
 complete -c 'base-test' -n '__base-test_should_offer_completions_for_flags_or_options "base-test escaped-command" o:n[e' -l 'o:n[e' -d 'Escaped chars: \'[]\\.' -rfka ''
 complete -c 'base-test' -n '__base-test_should_offer_completions_for_positional "base-test escaped-command" -eq 1' -fka '(__base-test_custom_completion ---completion escaped-command -- positional@0 (count (__base-test_tokens -pc)) (__base-test_tokens -tC))'

@@ -53,7 +53,7 @@ _math() {
             'add:Print the sum of the values.'
             'multiply:Print the product of the values.'
             'stats:Calculate descriptive statistics.'
-            'help:Show subcommand help information.'
+            'help:Show help information.'
         )
         _describe -V subcommand subcommands && ret=0
         ;;

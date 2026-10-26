@@ -79,7 +79,7 @@ extension SubcommandEndToEndTests {
     expectEqualStrings(
       actual: helpFoo,
       expected: """
-        USAGE: foo --name <name> <subcommand>
+        USAGE: foo --name <name> (-h | --help) [<subcommand>] | <subcommand> *…
 
         OPTIONS:
           --name <name>
@@ -88,6 +88,7 @@ extension SubcommandEndToEndTests {
         SUBCOMMANDS:
           a
           b
+          help                    Show help information.
 
           See 'foo help <subcommand>' for detailed help.
         """)

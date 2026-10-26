@@ -63,12 +63,13 @@ extension HelpGenerationTests {
 
         OVERVIEW: Does root things.
 
-        USAGE: root <subcommand>
+        USAGE: root (-h | --help) [<subcommand>] | <subcommand> *…
 
         OPTIONS:
           -h, --help              Show help information.
 
         SUBCOMMANDS:
+          help                    Show help information.
           inherits                Inherits the banner.
           overrides               Overrides the banner.
           suppresses              Suppresses the banner.
@@ -101,12 +102,13 @@ extension HelpGenerationTests {
 
         OVERVIEW: Overrides the banner.
 
-        USAGE: root overrides <subcommand>
+        USAGE: root overrides (-h | --help) [<subcommand>] | <subcommand> *…
 
         OPTIONS:
           -h, --help              Show help information.
 
         SUBCOMMANDS:
+          help                    Show help information.
           nested                  Inherits the banner from its nearest ancestor.
 
           See 'root help overrides <subcommand>' for detailed help.
