@@ -1,4 +1,4 @@
-// swift-tools-version:6.0
+// swift-tools-version:6.1
 //===----------------------------------------------------------------------===//
 //
 // This source file is part of the Swift Argument Parser open source project
@@ -24,6 +24,10 @@ var package = Package(
     .plugin(
       name: "GenerateManual",
       targets: ["GenerateManual"]),
+  ],
+  traits: [
+    "ArgumentParserFoundation",
+    .default(enabledTraits: ["ArgumentParserFoundation"])
   ],
   dependencies: [],
   targets: [
