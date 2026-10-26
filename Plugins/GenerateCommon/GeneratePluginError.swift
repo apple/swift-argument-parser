@@ -14,6 +14,7 @@ import PackagePlugin
 
 enum GeneratePluginError: Error {
   case unknownBuildConfiguration(String)
+  case pluginManagedOption(String)
   case buildFailed(String)
   case createOutputDirectoryFailed(Error)
   case subprocessFailedNonZeroExit(URL, Int32)
@@ -25,6 +26,9 @@ extension GeneratePluginError: CustomStringConvertible {
     switch self {
     case .unknownBuildConfiguration(let configuration):
       return "Build failed: Unknown build configuration '\(configuration)'."
+    case .pluginManagedOption(let option):
+      return
+        "The GeneratePlugin plugin manages '\(option)' for each target; do not pass it manually."
     case .buildFailed(let logText):
       return "Build failed: \(logText)."
     case .createOutputDirectoryFailed(let error):
