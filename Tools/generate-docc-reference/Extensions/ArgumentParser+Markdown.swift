@@ -149,17 +149,10 @@ extension ArgumentInfoV0 {
       return ""
     }
 
-    let names: [String]
-
-    if let myNames = self.names {
-      names = myNames.filter { $0.kind == .long }.map(\.name)
-    } else if let preferred = self.preferredName {
-      names = [preferred.name]
-    } else if let value = self.valueName {
-      names = [value]
-    } else {
+    guard let displayNames = self.displayNames() else {
       return ""
     }
+    let (dashes, names) = displayNames
 
     // TODO: default values, short, etc.
 
@@ -168,9 +161,10 @@ extension ArgumentInfoV0 {
     case .positional:
       inner = "<\(names.joined(separator: "|"))>"
     case .option:
-      inner = "--\(names.joined(separator: "|"))=<\(self.valueName ?? "")>"
+      inner =
+        "\(dashes)\(names.joined(separator: "|"))=<\(self.valueName ?? "")>"
     case .flag:
-      inner = "--\(names.joined(separator: "|"))"
+      inner = "\(dashes)\(names.joined(separator: "|"))"
     }
 
     if self.isRepeating {
@@ -185,16 +179,10 @@ extension ArgumentInfoV0 {
   }
 
   public func identity() -> String {
-    let names: [String]
-    if let myNames = self.names {
-      names = myNames.filter { $0.kind == .long }.map(\.name)
-    } else if let preferred = self.preferredName {
-      names = [preferred.name]
-    } else if let value = self.valueName {
-      names = [value]
-    } else {
+    guard let displayNames = self.displayNames() else {
       return ""
     }
+    let (dashes, names) = displayNames
 
     // TODO: default values, values, short, etc.
 
@@ -203,10 +191,34 @@ extension ArgumentInfoV0 {
     case .positional:
       inner = "\(names.joined(separator: "|"))"
     case .option:
-      inner = "--\(names.joined(separator: "|"))=\\<\(self.valueName ?? "")\\>"
+      inner =
+        "\(dashes)\(names.joined(separator: "|"))=\\<\(self.valueName ?? "")\\>"
     case .flag:
-      inner = "--\(names.joined(separator: "|"))"
+      inner = "\(dashes)\(names.joined(separator: "|"))"
     }
     return inner
+  }
+
+  /// Returns the names used to identify the argument, along with the dashes
+  /// to print before them when the argument is a flag or an option.
+  ///
+  /// Long names are preferred. An argument that has no long name, such as
+  /// one declared with only a short name, is identified by its preferred
+  /// name instead.
+  private func displayNames() -> (dashes: String, names: [String])? {
+    if let myNames = self.names {
+      let longNames = myNames.filter { $0.kind == .long }
+      guard longNames.isEmpty, let name = self.preferredName ?? myNames.first
+      else {
+        return ("--", longNames.map(\.name))
+      }
+      return (name.kind == .long ? "--" : "-", [name.name])
+    } else if let preferred = self.preferredName {
+      return ("--", [preferred.name])
+    } else if let value = self.valueName {
+      return ("--", [value])
+    } else {
+      return nil
+    }
   }
 }
