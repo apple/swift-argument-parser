@@ -419,17 +419,17 @@ private func time(_ body: () -> Void) -> TimeInterval {
 extension RepeatingEndToEndTests {
   // A regression test against array parsing performance going non-linear.
   @Test func parsing_repeatingPerformance() throws {
-    let timeFor20 = time {
+    let timeFor100 = time {
       expectParse(PerformanceTest.self, argumentGenerator(100)) { test in
         #expect(test.bundleIdentifiers.count == 100)
       }
     }
-    let timeFor40 = time {
+    let timeFor200 = time {
       expectParse(PerformanceTest.self, argumentGenerator(200)) { test in
         #expect(test.bundleIdentifiers.count == 200)
       }
     }
 
-    #expect(timeFor40 < timeFor20 * 10)
+    #expect(timeFor200 < timeFor100 * 10)
   }
 }
