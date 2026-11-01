@@ -9,9 +9,10 @@
 //
 //===----------------------------------------------------------------------===//
 
-import ArgumentParser
 import ArgumentParserTestHelpers
 import Testing
+
+@testable import ArgumentParser
 
 @Suite struct ShortNameEndToEndTests {}
 
@@ -135,6 +136,115 @@ extension ShortNameEndToEndTests {
       #expect(options.name == "name")
       #expect(options.file == "file")
       #expect(options.city == "city")
+    }
+  }
+}
+
+// MARK: - Built-in help names inside short option packs
+
+private struct PackedHelp: ParsableCommand {
+  @Flag(name: .short) var verbose = false
+  @Option(name: .short) var output: String?
+  @Argument var input: String
+}
+
+private struct PackedCustomHelp: ParsableCommand {
+  static let configuration = CommandConfiguration(
+    helpNames: [.customShort("?")])
+
+  @Flag(name: .short) var verbose = false
+}
+
+private struct PackedValidatedHelp: ParsableCommand {
+  @Flag(name: .short) var verbose = false
+
+  func validate() throws {
+    throw ValidationError("Always invalid.")
+  }
+}
+
+private struct PackedHelpRoot: ParsableCommand {
+  static let configuration = CommandConfiguration(
+    subcommands: [Child.self], defaultSubcommand: Child.self)
+
+  struct Child: ParsableCommand {
+    @Flag(name: .short) var verbose = false
+  }
+}
+
+// swift-format-ignore: AlwaysUseLowerCamelCase
+extension ShortNameEndToEndTests {
+  @Test func packContainingHelpName_withUnknownName_isUnknownOption() throws {
+    // Each of these contains an `h`, but none of them asks for help.
+    expectErrorMessage(
+      PackedHelp.self, ["-path", "input"], "Unknown option '-path'")
+    expectErrorMessage(
+      PackedHelp.self, ["-hey", "input"], "Unknown option '-hey'")
+    expectErrorMessage(
+      PackedHelp.self, ["-vzh", "input"], "Unknown option '-z'")
+
+    // Without a value for `<input>` the missing argument is reported, just as
+    // it is for the same input without an `h`.
+    expectErrorMessage(
+      PackedHelp.self, ["- [a](https://b)"],
+      "Missing expected argument '<input>'")
+    expectErrorMessage(
+      PackedHelp.self, ["- [a](ftp://b)"],
+      "Missing expected argument '<input>'")
+
+    expectErrorMessage(
+      PackedCustomHelp.self, ["-z?"], "Unknown option '-z?'")
+  }
+
+  @Test func packContainingHelpName_withUnknownName_defaultSubcommand() throws {
+    expectErrorMessage(
+      PackedHelpRoot.self, ["-path"], "Unknown option '-path'")
+    expectErrorMessage(
+      PackedHelpRoot.self, ["child", "-path"], "Unknown option '-path'")
+  }
+
+  @Test func helpName_alone_requestsHelp() throws {
+    for arguments in [["-h"], ["--help"], ["-help"], ["input", "-h"]] {
+      expectParseCommand(PackedHelp.self, HelpCommand.self, arguments) { _ in }
+    }
+    expectParseCommand(PackedCustomHelp.self, HelpCommand.self, ["-?"]) { _ in }
+  }
+
+  @Test func packContainingHelpName_withKnownNames_requestsHelp() throws {
+    // `<input>` is missing here, so these are reached through the check that
+    // runs after decoding fails, when `-v` hasn't been removed from the input.
+    expectParseCommand(PackedHelp.self, HelpCommand.self, ["-vh"]) { _ in }
+    expectParseCommand(PackedHelp.self, HelpCommand.self, ["-hv"]) { _ in }
+    expectParseCommand(PackedHelp.self, HelpCommand.self, ["-hh"]) { _ in }
+
+    // With decoding successful, `-v` has been consumed by this point.
+    expectParseCommand(
+      PackedHelp.self, HelpCommand.self, ["-vh", "input"]
+    ) { _ in }
+    expectParseCommand(
+      PackedHelp.self, HelpCommand.self, ["-ho", "file", "input"]
+    ) { _ in }
+
+    expectParseCommand(
+      PackedCustomHelp.self, HelpCommand.self, ["-v?"]
+    ) { _ in }
+    expectParseCommand(
+      PackedValidatedHelp.self, HelpCommand.self, ["-vh"]
+    ) { _ in }
+
+    // `-v` belongs to the default subcommand, not to the root.
+    expectParseCommand(PackedHelpRoot.self, HelpCommand.self, ["-vh"]) { _ in }
+    expectParseCommand(
+      PackedHelpRoot.self, HelpCommand.self, ["child", "-vh"]
+    ) { _ in }
+  }
+
+  @Test func helpNameAsValue_isNotHelp() throws {
+    expectParse(PackedHelp.self, ["--", "-path"]) { options in
+      #expect(options.input == "-path")
+    }
+    expectParse(PackedHelp.self, ["-o=-path", "input"]) { options in
+      #expect(options.output == "-path")
     }
   }
 }
