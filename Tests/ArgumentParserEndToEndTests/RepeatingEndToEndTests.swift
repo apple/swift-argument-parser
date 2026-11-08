@@ -81,9 +81,8 @@ extension RepeatingEndToEndTests {
   }
 
   @Test func parsing_repeatingStringRemaining_2() {
-    expectParse(Baz.self, ["--names"]) { baz in
-      #expect(!baz.verbose)
-      #expect(baz.names.isEmpty)
+    #expect(throws: (any Error).self) {
+      try Baz.parse(["--names"])
     }
   }
 
