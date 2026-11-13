@@ -163,7 +163,7 @@ internal struct HelpGenerator {
     self.commandStack = commandStack
 
     // Build the tool name and subcommand name from the command configuration
-    var toolName = commandStack.map { $0._commandName }.joined(separator: " ")
+    var toolName = commandStack.invocationCommandNames.joined(separator: " ")
     if let superName = root.configuration._superCommandName {
       toolName = "\(superName) \(toolName)"
     }
@@ -399,7 +399,7 @@ internal struct HelpGenerator {
 
     var helpSubcommandMessage = ""
     if includesSubcommands {
-      var names = commandStack.map { $0._commandName }
+      var names = commandStack.invocationCommandNames
       // swift-format-ignore: NeverForceUnwrap
       // We must have a non-empty command stack to have gotten this far.
       if let superName = commandStack.first!.configuration._superCommandName {
