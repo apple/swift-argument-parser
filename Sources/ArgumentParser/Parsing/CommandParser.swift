@@ -60,6 +60,14 @@ struct CommandParser {
         The command \"\(command)\" can't have an alias with the same name \
         as the command itself.
         """.wrapped(to: 70))
+    } catch Tree<ParsableCommand.Type>.InitializationError
+      .duplicateSubcommand(let command)
+    {
+      configurationFailure(
+        """
+        The command \"\(command)\" can't be used as a subcommand more than \
+        once.
+        """.wrapped(to: 70))
     } catch {
       fatalError("Unexpected error: \(error).")
     }
