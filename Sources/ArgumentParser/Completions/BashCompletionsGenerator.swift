@@ -22,7 +22,7 @@ extension CommandInfoV0 {
     """
     #!/bin/bash
 
-    \(cursorIndexInCurrentWordFunctionName)() {
+    \(cursorIndexInCurrentWordFunctionName.shellEscapeForVariableName())() {
         local remaining="${COMP_LINE}"
 
         local word
@@ -167,13 +167,16 @@ extension CommandInfoV0 {
     }
 
     \(completionFunctions)\
-    complete -o filenames -F \(completionFunctionName) \(commandName)
+    complete -o filenames -F \(completionFunctionName.shellEscapeForVariableName()) \(commandName)
     """
   }
 
   /// Generates a Bash completion function.
   private var completionFunctions: String {
-    let functionName = completionFunctionName
+    // Bash function names may not contain hyphens, so they are replaced with
+    // underscores. (Subcommand names themselves are unaffected: they are only
+    // used as matched values in `case` statements, never as identifiers.)
+    let functionName = completionFunctionName.shellEscapeForVariableName()
 
     let subcommands = (subcommands ?? []).filter(\.shouldDisplay)
 
@@ -300,7 +303,7 @@ extension CommandInfoV0 {
             case "${subcommand}" in
             \(subcommands.map(\.commandName).joined(separator: "|")))
                 # Offer subcommand argument completions
-                "\(functionName)_${subcommand}"
+                "\(functionName)_${subcommand//-/_}"
                 ;;
             *)
                 # Offer subcommand completions
@@ -384,20 +387,25 @@ extension CommandInfoV0 {
     }
   }
 
+  // Bash function names may not contain hyphens, so helper and per-command
+  // function names replace hyphens with underscores. Subcommand names are
+  // unaffected: they are only matched as values in `case` statements, never
+  // used as identifiers.
+
   private var cursorIndexInCurrentWordFunctionName: String {
-    "\(completionFunctionPrefix)_cursor_index_in_current_word"
+    "\(completionFunctionPrefix)_cursor_index_in_current_word".shellEscapeForVariableName()
   }
 
   private var offerFlagsOptionsFunctionName: String {
-    "\(completionFunctionPrefix)_offer_flags_options"
+    "\(completionFunctionPrefix)_offer_flags_options".shellEscapeForVariableName()
   }
 
   private var addCompletionsFunctionName: String {
-    "\(completionFunctionPrefix)_add_completions"
+    "\(completionFunctionPrefix)_add_completions".shellEscapeForVariableName()
   }
 
   private var customCompleteFunctionName: String {
-    "\(completionFunctionPrefix)_custom_complete"
+    "\(completionFunctionPrefix)_custom_complete".shellEscapeForVariableName()
   }
 }
 
