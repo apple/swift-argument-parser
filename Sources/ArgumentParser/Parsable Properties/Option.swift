@@ -1035,8 +1035,8 @@ extension Option {
   /// - Parameters:
   ///   - wrappedValue: A default value to use for this property, provided
   ///     implicitly by the compiler during property wrapper initialization.
-  ///     If this initial value is non-empty, elements passed from the command
-  ///     line are appended to the original contents.
+  ///     If this initial value is non-empty, any elements passed from the
+  ///     command line replace the entire default value.
   ///   - name: A specification for what names are allowed for this option.
   ///   - parsingStrategy: The behavior to use when parsing the elements for
   ///     this option.
@@ -1138,8 +1138,8 @@ extension Option {
   /// - Parameters:
   ///   - wrappedValue: A default value to use for this property, provided
   ///     implicitly by the compiler during property wrapper initialization.
-  ///     If this initial value is non-empty, elements passed from the command
-  ///     line are appended to the original contents.
+  ///     If this initial value is non-empty, any elements passed from the
+  ///     command line replace the entire default value.
   ///   - name: A specification for what names are allowed for this option.
   ///   - parsingStrategy: The behavior to use when parsing the elements for
   ///     this option.
