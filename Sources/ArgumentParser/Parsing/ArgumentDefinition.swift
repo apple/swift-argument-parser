@@ -55,6 +55,9 @@ struct ArgumentDefinition {
     var keys: [InputKey]
     var allValueStrings: [String]
     var isComposite: Bool
+    /// Whether this argument belongs to a mutually exclusive flag group, such as
+    /// an `EnumerableFlag` with `.exclusive` exclusivity.
+    var isMutuallyExclusive: Bool
     var abstract: String
     var discussion: ArgumentDiscussion?
     var valueName: String
@@ -67,13 +70,15 @@ struct ArgumentDefinition {
       help: ArgumentHelp?,
       defaultValue: String?,
       key: InputKey,
-      isComposite: Bool
+      isComposite: Bool,
+      isMutuallyExclusive: Bool = false
     ) {
       self.options = options
       self.defaultValue = defaultValue
       self.keys = [key]
       self.allValueStrings = allValueStrings
       self.isComposite = isComposite
+      self.isMutuallyExclusive = isMutuallyExclusive
       self.abstract = help?.abstract ?? ""
       self.discussion = .init(help?.discussion, help?.argumentType)
       self.valueName = help?.valueName ?? ""

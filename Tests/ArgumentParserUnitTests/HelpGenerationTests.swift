@@ -219,7 +219,7 @@ extension HelpGenerationTests {
     try requireHelp(
       .default, for: D.self,
       equals: """
-        USAGE: d [<occupation>] [--name <name>] [--age <age>] [--logging <logging>] [--lucky <numbers> ...] [--optional] [--required] [--degree <degree>] [--directory <directory>] [--manual <manual>] [--unspecial <unspecial>] [--special <special>]
+        USAGE: d [<occupation>] [--name <name>] [--age <age>] [--logging <logging>] [--lucky <numbers> ...] [--optional | --required] [--degree <degree>] [--directory <directory>] [--manual <manual>] [--unspecial <unspecial>] [--special <special>]
 
         ARGUMENTS:
           <occupation>            Your occupation. (default: --)
@@ -229,7 +229,7 @@ extension HelpGenerationTests {
           --age <age>             Your age. (default: 20)
           --logging <logging>     Whether logging is enabled. (default: false)
           --lucky <numbers>       Your lucky numbers. (default: 7, 14)
-          --optional/--required   Vegan diet. (default: --optional)
+          --optional/--required   Vegan diet. (default)
           --degree <degree>       Your degree.
           --directory <directory> Directory. (default: /path/to/file)
           --manual <manual>       Manual Option. (default: default-value)
@@ -272,11 +272,46 @@ extension HelpGenerationTests {
     var flag: Bool = false
   }
 
+  // Regression test for https://github.com/apple/swift-argument-parser/issues/831
+  struct Issue831: ParsableCommand {
+    @Flag(help: "group text")
+    var e = E.a
+
+    enum E: String, EnumerableFlag {
+      case a
+      case b
+      case c
+
+      static func help(for value: E) -> ArgumentHelp? {
+        switch value {
+        case .a: "1"
+        case .b: "2"
+        case .c: "3"
+        }
+      }
+    }
+  }
+
+  @Test func helpWithMutuallyExclusiveFlagAlternation() async throws {
+    try requireHelp(
+      .default, for: Issue831.self,
+      equals: """
+        USAGE: issue831 [--a | --b | --c]
+
+        OPTIONS:
+          --a                     1 (default)
+          --b                     2
+          --c                     3
+          -h, --help              Show help information.
+
+        """)
+  }
+
   @Test func helpWithMutuallyExclusiveFlags() async throws {
     try requireHelp(
       .default, for: E.self,
       equals: """
-        USAGE: e --stats --count --list
+        USAGE: e --stats | --count | --list
 
         OPTIONS:
           -s, --stats/-c, --count/-l, --list
@@ -288,10 +323,10 @@ extension HelpGenerationTests {
     try requireHelp(
       .default, for: F.self,
       equals: """
-        USAGE: f [-s] [-c] [-l]
+        USAGE: f [-s | -c | -l]
 
         OPTIONS:
-          -s/-c/-l                Change the program output (default: -l)
+          -s/-c/-l                Change the program output (default)
           -h, --help              Show help information.
 
         """)
