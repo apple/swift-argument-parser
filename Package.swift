@@ -110,7 +110,7 @@ var package = Package(
       exclude: ["Snapshots"]),
     .testTarget(
       name: "ArgumentParserGenerateManualTests",
-      dependencies: ["ArgumentParserTestHelpers"],
+      dependencies: ["ArgumentParserTestHelpers", "generate-manual"],
       exclude: ["Snapshots"]),
     .testTarget(
       name: "ArgumentParserPackageManagerTests",
