@@ -123,6 +123,69 @@ extension RepeatingEndToEndTests {
   }
 }
 
+private struct AllUnrecognizedSupercommand: ParsableCommand {
+  static var configuration: CommandConfiguration {
+    .init(subcommands: [ListStations.self])
+  }
+
+  @Argument(parsing: .allUnrecognized) var additionalOptions: [String] = []
+
+  struct ListStations: ParsableCommand {
+    static var configuration: CommandConfiguration {
+      .init(commandName: "list")
+    }
+
+    @Argument(parsing: .allUnrecognized) var additionalOptions: [String] = []
+  }
+}
+
+// swift-format-ignore: AlwaysUseLowerCamelCase
+extension RepeatingEndToEndTests {
+  @Test func parsing_repeatingAllUnrecognized_SubcommandDispatch() throws {
+    // A subcommand name is recognized input, not unrecognized input, so the
+    // parent's `.allUnrecognized` argument must not swallow it (see #796).
+    expectParseCommand(
+      AllUnrecognizedSupercommand.self,
+      AllUnrecognizedSupercommand.ListStations.self,
+      ["list", "1"]
+    ) { cmd in
+      #expect(cmd.additionalOptions == ["1"])
+    }
+    expectParseCommand(
+      AllUnrecognizedSupercommand.self,
+      AllUnrecognizedSupercommand.ListStations.self,
+      ["list"]
+    ) { cmd in
+      #expect(cmd.additionalOptions == [])
+    }
+    // Values before the subcommand name stay with the parent, not the child.
+    expectParseCommand(
+      AllUnrecognizedSupercommand.self,
+      AllUnrecognizedSupercommand.ListStations.self,
+      ["foo", "list", "1"]
+    ) { cmd in
+      #expect(cmd.additionalOptions == ["1"])
+    }
+    // With no subcommand, the parent still captures everything.
+    expectParse(AllUnrecognizedSupercommand.self, ["foo", "bar"]) { cmd in
+      #expect(cmd.additionalOptions == ["foo", "bar"])
+    }
+    // Values after the `--` terminator are literal data, never a subcommand.
+    expectParse(AllUnrecognizedSupercommand.self, ["--", "list"]) { cmd in
+      #expect(cmd.additionalOptions == ["--", "list"])
+    }
+    // Help for the subcommand, not the parent.
+    expectParseCommand(
+      AllUnrecognizedSupercommand.self, HelpCommand.self,
+      ["list", "--help"]
+    ) { _ in }
+    expectParseCommand(
+      AllUnrecognizedSupercommand.self, HelpCommand.self,
+      ["help", "list"]
+    ) { _ in }
+  }
+}
+
 // MARK: - postTerminator
 
 private struct PostTerminatorArgs: ParsableArguments {
