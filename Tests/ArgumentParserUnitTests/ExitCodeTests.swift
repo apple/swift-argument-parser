@@ -115,3 +115,27 @@ extension ExitCodeTests {
     #endif
   }
 }
+
+// MARK: - Exit status
+
+extension ExitCodeTests {
+  @Test func exitStatusKeepsCodesInRange() {
+    for code: Int32 in [0, 1, 2, 64, 70, 127, 255] {
+      #expect(Platform.exitStatus(for: code) == code)
+    }
+  }
+
+  @Test func exitStatusOutOfRange() {
+    #if canImport(CRT)
+    for code: Int32 in [-256, -1, 256, 512, 70000, .max, .min] {
+      #expect(Platform.exitStatus(for: code) == code)
+    }
+    #else
+    // Only the low 8 bits of these would reach the parent process, which
+    // would turn a failure such as `256` into a successful exit.
+    for code: Int32 in [-256, -1, 256, 512, 70000, .max, .min] {
+      #expect(Platform.exitStatus(for: code) == 255)
+    }
+    #endif
+  }
+}
