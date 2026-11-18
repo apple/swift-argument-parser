@@ -203,7 +203,17 @@ extension CommandParser {
   ) throws -> ParsableCommand {
     // Parse the arguments, ignoring anything unexpected
     var parser = LenientParser(currentNode.element, split)
-    let values = try parser.parse()
+    let values: ParsedValues
+    do {
+      values = try parser.parse()
+    } catch let error as ParserError {
+      // Honor built-in flags before reporting a value conversion failure,
+      // just as we do for decoding and validation failures.
+      if case .unableToParseValue = error {
+        try checkForBuiltInFlags(split)
+      }
+      throw error
+    }
 
     if currentNode.element.includesAllUnrecognizedArgument {
       // If this command includes an all-unrecognized argument, any built-in
