@@ -395,10 +395,12 @@ struct LenientParser {
       try argument.initial(origin, &result)
 
       // Use an attached value if it exists...
+      var foundAttachedValue = false
       if let value = parsed.value {
         // This was `--foo=bar` style:
         try update(origin, parsed.name, value, &result)
         usedOrigins.formUnion(origin)
+        foundAttachedValue = true
       } else if argument.allowsJoinedValue,
         let (origin2, value) = inputArguments.extractJoinedElement(
           at: originElement)
@@ -408,6 +410,21 @@ struct LenientParser {
         try update(origins, parsed.name, String(value), &result)
         usedOrigins.formUnion(origins)
         inputArguments.removeAll(in: usedOrigins)
+        foundAttachedValue = true
+      }
+
+      // Fix incorrect error message
+      // for @Option array without values
+      guard
+        inputArguments.peekNextElement(after: originElement) != nil
+      else {
+        // No independent values to be found, which is an error if there was
+        // no `--foo=bar`-style value already found.
+        if foundAttachedValue {
+          break
+        } else {
+          throw errorForMissingValue(originElement, parsed)
+        }
       }
 
       // ...and then consume the rest of the arguments

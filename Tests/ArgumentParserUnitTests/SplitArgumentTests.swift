@@ -734,6 +734,41 @@ extension SplitArgumentTests {
     )
     #expect(valueB.1 == "bar")
   }
+
+  @Test func peekNextElement() throws {
+    var sut = try SplitArguments(arguments: ["--foo", "bar", "-baz", "qux"])
+
+    // To test peekNextElement(after:) we need an index...
+    let optStartIndex = sut.popNext()
+    let (startIndex, _) = try #require(optStartIndex)
+
+    let (indexA, valueA) = try #require(sut.peekNextElement(after: startIndex))
+    #expect(
+      indexA
+        == .argumentIndex(
+          SplitArguments.Index(inputIndex: 1, subIndex: .complete))
+    )
+    #expect(valueA.value.valueString == "bar")
+
+    let (indexB, valueB) = try #require(sut.peekNextElement(after: indexA))
+    #expect(
+      indexB
+        == .argumentIndex(
+          SplitArguments.Index(inputIndex: 2, subIndex: .complete))
+    )
+    #expect(valueB.value == .option(.name(.longWithSingleDash("baz"))))
+
+    let (indexC, valueC) = try #require(sut.peekNextElement(after: indexB))
+    #expect(
+      indexC
+        == .argumentIndex(
+          SplitArguments.Index(inputIndex: 3, subIndex: .complete))
+    )
+    #expect(valueC.value.valueString == "qux")
+
+    // There are no elements left.
+    #expect(sut.peekNextElement(after: indexC) == nil)
+  }
 }
 
 // MARK: - Long option with empty value (issue #958)

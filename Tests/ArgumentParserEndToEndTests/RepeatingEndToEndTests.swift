@@ -81,9 +81,8 @@ extension RepeatingEndToEndTests {
   }
 
   @Test func parsing_repeatingStringRemaining_2() {
-    expectParse(Baz.self, ["--names"]) { baz in
-      #expect(!baz.verbose)
-      #expect(baz.names.isEmpty)
+    #expect(throws: (any Error).self) {
+      try Baz.parse(["--names"])
     }
   }
 
@@ -130,6 +129,27 @@ extension RepeatingEndToEndTests {
     ) { baz in
       #expect(baz.verbose)
       #expect(baz.names == ["one", "two", "--verbose", "--other", "three"])
+    }
+  }
+
+  @Test func parsing_repeatingStringRemaining_9() {
+    expectParse(Baz.self, ["--verbose", "--names=one"]) { baz in
+      #expect(baz.verbose)
+      #expect(baz.names == ["one"])
+    }
+  }
+
+  @Test func parsing_repeatingStringRemaining_10() {
+    expectParse(Baz.self, ["--verbose", "--names=one", "two"]) { baz in
+      #expect(baz.verbose)
+      #expect(baz.names == ["one", "two"])
+    }
+  }
+
+  @Test func parsing_repeatingStringRemaining_11() {
+    expectParse(Baz.self, ["--names=one", "--verbose", "two"]) { baz in
+      #expect(!baz.verbose)
+      #expect(baz.names == ["one", "--verbose", "two"])
     }
   }
 }

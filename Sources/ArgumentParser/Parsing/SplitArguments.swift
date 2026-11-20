@@ -489,6 +489,22 @@ extension SplitArguments {
     return (e.index, e.value.valueString!)
   }
 
+  func peekNextElement(after origin: InputOrigin.Element) -> (
+    InputOrigin.Element, Element
+  )? {
+    guard let start = position(after: origin) else { return nil }
+    // Elements are sorted by their `InputIndex`. Find the first `InputIndex`
+    // after `origin`:
+    guard
+      let elementIndex = elements[start...].firstIndex(where: {
+        $0.index.subIndex == .complete
+      })
+    else { return nil }
+
+    let matchedArgument = elements[elementIndex]
+    return (.argumentIndex(matchedArgument.index), matchedArgument)
+  }
+
   /// Removes the first element in `elements`.
   mutating func removeFirst() {
     firstUnused += 1
