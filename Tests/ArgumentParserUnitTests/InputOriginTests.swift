@@ -17,7 +17,7 @@ import Testing
 
 extension InputOriginTests {
 
-  struct IsDefaultTestData: CustomTestStringConvertible {
+  struct IsDefaultTestData: CustomTestStringConvertible, @unchecked Sendable {
     let id: String
     let elements: [InputOrigin.Element]
     let expectedIsDefaultValue: Bool

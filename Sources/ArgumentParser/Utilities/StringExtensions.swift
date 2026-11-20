@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Argument Parser open source project
 //
-// Copyright (c) 2020 Apple Inc. and the Swift project authors
+// Copyright (c) 2020-2026 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -254,6 +254,25 @@ extension StringProtocol where SubSequence == Substring {
 
   var nonEmpty: Self? {
     isEmpty ? nil : self
+  }
+
+  /// Returns a new string with leading and trailing whitespace removed.
+  ///
+  /// A character is considered whitespace when `Character.isWhitespace` is
+  /// `true`, which covers spaces, tabs, and newline-family characters.
+  ///
+  /// Examples:
+  ///
+  ///     "  hello  ".trimmed()
+  ///     // "hello"
+  ///     "\n\tvalue\n".trimmed()
+  ///     // "value"
+  func trimmed() -> String {
+    let head = self.drop(while: \.isWhitespace)
+    guard let tail = head.lastIndex(where: { !$0.isWhitespace }) else {
+      return ""
+    }
+    return String(head[...tail])
   }
 }
 

@@ -8,6 +8,7 @@ add_library(UnitTests
   HelpGenerationTests+HelpBanner.swift
   NameSpecificationTests.swift
   SerializedCompletionSuites.swift
+  ResponseFileExpanderTests.swift
   SplitArgumentTests.swift
   StringSnakeCaseTests.swift
   StringWrappingTests.swift

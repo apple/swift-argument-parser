@@ -1,4 +1,5 @@
 add_library(ArgumentParserTestHelpers
+  TemporaryFileFixture.swift
   TestHelpers.swift
   TestHelpers+SwiftTesting.swift)
 set_target_properties(ArgumentParserTestHelpers PROPERTIES
