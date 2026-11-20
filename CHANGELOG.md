@@ -10,6 +10,10 @@ Add new items at the end of the relevant section under **Unreleased**.
 
 - `CommandConfiguration` now accepts a `helpBanner`, a string printed verbatim above the overview on a command's help screen and inherited by its subcommands unless they provide their own banner or the empty string.
 
+### Fixes
+
+- Exit codes outside of `0...255`, such as `ExitCode(256)`, now exit with status `255` instead of having all but their low 8 bits dropped, which could make a failure exit with status `0`. Windows is unaffected. ([#1009])
+
 ---
 
 ## [1.8.2] - 2026-06-04
@@ -1300,6 +1304,7 @@ This changelog's format is based on [Keep a Changelog](https://keepachangelog.co
 [#910]: https://github.com/apple/swift-argument-parser/pull/910
 [#911]: https://github.com/apple/swift-argument-parser/pull/911
 [#913]: https://github.com/apple/swift-argument-parser/pull/913
+[#1009]: https://github.com/apple/swift-argument-parser/pull/1009
 
 <!-- Link references for contributors -->
 

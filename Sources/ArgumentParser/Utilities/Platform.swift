@@ -166,8 +166,23 @@ extension Platform {
 // MARK: Exit function
 
 extension Platform {
+  /// Returns the exit status to report for the given exit code.
+  ///
+  /// Except on Windows, only the low 8 bits of an exit status reach the
+  /// parent process, so codes such as `256` or `-256` would be seen as `0`,
+  /// that is, as success. Codes outside of `0...255` are reported as `255`
+  /// instead.
+  static func exitStatus(for code: Int32) -> Int32 {
+    #if canImport(CRT)
+    return code
+    #else
+    return (0...255).contains(code) ? code : 255
+    #endif
+  }
+
   /// Complete execution with the given exit code.
   static func exit(_ code: Int32) -> Never {
+    let code = exitStatus(for: code)
     #if canImport(Glibc)
     Glibc.exit(code)
     #elseif canImport(Musl)
