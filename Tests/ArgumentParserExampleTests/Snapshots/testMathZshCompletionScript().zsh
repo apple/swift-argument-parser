@@ -43,6 +43,7 @@ _math() {
     local -ar arg_specs=(
         '--version[Show the version.]'
         '(-h --help)'{-h,--help}'[Show help information.]'
+        '(--hex-output -x)'{--hex-output,-x}'[Use hexadecimal notation for the result.]'
         '(-): :->command'
         '(-)*:: :->arg'
     )

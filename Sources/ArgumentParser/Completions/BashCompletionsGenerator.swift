@@ -209,22 +209,23 @@ extension CommandInfoV0 {
       declareTopLevelArray = ""
     }
 
-    let positionalArguments = positionalArguments
+    let arguments = completionArguments
+    let positionalArguments = arguments.filter {
+      $0.argument.kind == .positional
+    }
 
-    let arguments = arguments ?? []
-
-    let flags = arguments.filter { $0.kind == .flag }
-    let options = arguments.filter { $0.kind == .option }
+    let flags = arguments.filter { $0.argument.kind == .flag }
+    let options = arguments.filter { $0.argument.kind == .option }
     if !flags.flatMap(\.completionWords).isEmpty
       || !options.flatMap(\.completionWords).isEmpty
     {
       result += """
-            \(declareTopLevelArray)repeating_flags=(\(flags.filter(\.isRepeating).flatMap(\.completionWords).joined(separator: " ")))
-            \(declareTopLevelArray)non_repeating_flags=(\(flags.filter { !$0.isRepeating }.flatMap(\.completionWords).joined(separator: " ")))
-            \(declareTopLevelArray)repeating_options=(\(options.filter(\.isRepeating).flatMap(\.completionWords).joined(separator: " ")))
-            \(declareTopLevelArray)non_repeating_options=(\(options.filter { !$0.isRepeating }.flatMap(\.completionWords).joined(separator: " ")))
+            \(declareTopLevelArray)repeating_flags=(\(flags.filter(\.argument.isRepeating).flatMap(\.completionWords).joined(separator: " ")))
+            \(declareTopLevelArray)non_repeating_flags=(\(flags.filter { !$0.argument.isRepeating }.flatMap(\.completionWords).joined(separator: " ")))
+            \(declareTopLevelArray)repeating_options=(\(options.filter(\.argument.isRepeating).flatMap(\.completionWords).joined(separator: " ")))
+            \(declareTopLevelArray)non_repeating_options=(\(options.filter { !$0.argument.isRepeating }.flatMap(\.completionWords).joined(separator: " ")))
             \(offerFlagsOptionsFunctionName) \
-        \(positionalArguments.contains { $0.isRepeating } ? -1 : positionalArguments.count)
+        \(positionalArguments.contains { $0.argument.isRepeating } ? -1 : positionalArguments.count)
 
         """
     }
@@ -233,7 +234,7 @@ extension CommandInfoV0 {
     // If there aren't any, skip the case block altogether.
     let optionHandlers =
       options.compactMap { arg in
-        guard arg.kind != .flag else { return nil }
+        guard arg.argument.kind != .flag else { return nil }
         let words = arg.completionWords
         guard !words.isEmpty else { return nil }
         return """
@@ -263,7 +264,7 @@ extension CommandInfoV0 {
           return nil as String?
         }
 
-        if arg.isRepeating {
+        if arg.argument.isRepeating {
           encounteredRepeatingPositional = true
         }
 
@@ -327,7 +328,10 @@ extension CommandInfoV0 {
   }
 
   /// Returns the completions that can follow the given argument's `--name`.
-  private func valueCompletion(_ arg: ArgumentInfoV0) -> String {
+  private func valueCompletion(_ completionArgument: CompletionArgument)
+    -> String
+  {
+    let arg = completionArgument.argument
     switch arg.completionKind {
     case .none:
       return ""
@@ -369,7 +373,7 @@ extension CommandInfoV0 {
     case .custom, .customAsync:
       return """
         \(addCompletionsFunctionName) -W\
-         "$(\(customCompleteFunctionName) \(arg.commonCustomCompletionCall(command: self))\
+         "$(\(customCompleteFunctionName) \(arg.commonCustomCompletionCall(command: completionArgument.command))\
          "${COMP_CWORD}"\
          "$(\(cursorIndexInCurrentWordFunctionName))")"
 
@@ -378,7 +382,7 @@ extension CommandInfoV0 {
     case .customDeprecated:
       return """
         \(addCompletionsFunctionName) -W\
-         "$(\(customCompleteFunctionName) \(arg.commonCustomCompletionCall(command: self)))"
+         "$(\(customCompleteFunctionName) \(arg.commonCustomCompletionCall(command: completionArgument.command)))"
 
         """
     }
@@ -401,11 +405,11 @@ extension CommandInfoV0 {
   }
 }
 
-extension ArgumentInfoV0 {
+extension CommandInfoV0.CompletionArgument {
   /// Returns the different completion names for this argument.
   fileprivate var completionWords: [String] {
-    shouldDisplay
-      ? (names ?? []).map { $0.commonCompletionSynopsisString() }
+    argument.shouldDisplay
+      ? (argument.names ?? []).map { $0.commonCompletionSynopsisString() }
       : []
   }
 }
