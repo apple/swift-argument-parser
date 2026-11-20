@@ -141,6 +141,43 @@ extension CommandInfoV0 {
 }
 
 extension ArgumentInfoV0 {
+  /// Returns the argument's names rendered with their dashes as they would be
+  /// typed on the command line, ordered with long names first and falling
+  /// back to any available name.
+  fileprivate var renderedNames: [NameInfoV0] {
+    if let myNames = self.names, !myNames.isEmpty {
+      // Prefer long names to preserve the behavior expected by existing
+      // tools, but don't drop short or single-dash-long names when there
+      // is no long name to show.
+      let longNames = myNames.filter { $0.kind == .long }
+      return longNames.isEmpty ? myNames : longNames
+    } else if let preferred = self.preferredName {
+      return [preferred]
+    } else if let value = self.valueName {
+      return [NameInfoV0(kind: .long, name: value)]
+    } else {
+      return []
+    }
+  }
+
+  /// Renders a single name with the dash prefix matching its kind.
+  fileprivate func renderedName(_ name: NameInfoV0) -> String {
+    switch name.kind {
+    case .long:
+      return "--\(name.name)"
+    case .short, .longWithSingleDash:
+      return "-\(name.name)"
+    }
+  }
+
+  /// Returns the argument's names, formatted with their dashes where
+  /// appropriate, joined with the given separator.
+  fileprivate func joinedNames(separator: String) -> String {
+    self.renderedNames
+      .map(self.renderedName)
+      .joined(separator: separator)
+  }
+
   /// Returns a string that describes the use of the argument.
   ///
   /// If `shouldDisplay` is `false`, an empty string is returned.
@@ -149,28 +186,19 @@ extension ArgumentInfoV0 {
       return ""
     }
 
-    let names: [String]
-
-    if let myNames = self.names {
-      names = myNames.filter { $0.kind == .long }.map(\.name)
-    } else if let preferred = self.preferredName {
-      names = [preferred.name]
-    } else if let value = self.valueName {
-      names = [value]
-    } else {
+    let names = self.renderedNames
+    if names.isEmpty {
       return ""
     }
-
-    // TODO: default values, short, etc.
 
     var inner: String
     switch self.kind {
     case .positional:
-      inner = "<\(names.joined(separator: "|"))>"
+      inner = "<\(names.map(\.name).joined(separator: "|"))>"
     case .option:
-      inner = "--\(names.joined(separator: "|"))=<\(self.valueName ?? "")>"
+      inner = "\(self.joinedNames(separator: "|"))=<\(self.valueName ?? "")>"
     case .flag:
-      inner = "--\(names.joined(separator: "|"))"
+      inner = self.joinedNames(separator: "|")
     }
 
     if self.isRepeating {
@@ -185,27 +213,19 @@ extension ArgumentInfoV0 {
   }
 
   public func identity() -> String {
-    let names: [String]
-    if let myNames = self.names {
-      names = myNames.filter { $0.kind == .long }.map(\.name)
-    } else if let preferred = self.preferredName {
-      names = [preferred.name]
-    } else if let value = self.valueName {
-      names = [value]
-    } else {
+    let names = self.renderedNames
+    if names.isEmpty {
       return ""
     }
-
-    // TODO: default values, values, short, etc.
 
     let inner: String
     switch self.kind {
     case .positional:
-      inner = "\(names.joined(separator: "|"))"
+      inner = names.map(\.name).joined(separator: "|")
     case .option:
-      inner = "--\(names.joined(separator: "|"))=\\<\(self.valueName ?? "")\\>"
+      inner = "\(self.joinedNames(separator: "|"))=\\<\(self.valueName ?? "")\\>"
     case .flag:
-      inner = "--\(names.joined(separator: "|"))"
+      inner = self.joinedNames(separator: "|")
     }
     return inner
   }

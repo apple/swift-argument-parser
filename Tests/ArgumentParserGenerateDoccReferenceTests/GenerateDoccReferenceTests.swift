@@ -52,4 +52,11 @@ import Testing
   @Test func rollDoccReference() throws {
     try expectGeneratedReference(command: "roll", doccFlavored: true)
   }
+
+  @Test func nameVarietiesMarkdownReference() throws {
+    try expectGeneratedReference(command: "name-varieties", doccFlavored: false)
+  }
+  @Test func nameVarietiesDoccReference() throws {
+    try expectGeneratedReference(command: "name-varieties", doccFlavored: true)
+  }
 }
