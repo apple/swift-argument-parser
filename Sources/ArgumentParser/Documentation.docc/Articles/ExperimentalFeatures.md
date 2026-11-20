@@ -13,7 +13,10 @@ If you have any feedback on experimental features, please [open a GitHub issue][
 | Name | Description | related PRs | Version |
 | ------------- | ------------- | ------------- | ------------- |
 | `--experimental-dump-help`  | Dumps command/argument/help information as JSON | [#310][] [#335][] | 0.5.0 or newer |
+| `--experimental-dump-arguments-source-location`  | Dumps the parsed argument tree with each value's source location (file:line for response-file args, `argv[N]` for command-line args). Accepts `=text` (default) or `=json`. | [#909][] | Unreleased |
+
 
 [#310]: https://github.com/apple/swift-argument-parser/pull/310
 [#335]: https://github.com/apple/swift-argument-parser/pull/335
-[issue]: https://github.com/apple/swift-argument-parser/issues/new/choose 
+[issue]: https://github.com/apple/swift-argument-parser/issues/new/choose
+[#909]: https://github.com/apple/swift-argument-parser/pull/909

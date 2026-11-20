@@ -227,9 +227,91 @@ extension InputOrigin.ResponseFileStep: Comparable {
   }
 }
 
-// MARK: - Response File Chain
+// MARK: - Codable
 
-extension InputOrigin.Element {
+extension InputOrigin.ResponseFileStep: Codable {
+  private enum CodingKeys: String, CodingKey {
+    case path, line, argvIndex
+  }
+  /// Sentinel `path` value that indicates an argv step (as opposed to
+  /// a real filesystem path).
+  private static let argvPathSentinel = "argv"
+
+  func encode(to encoder: Encoder) throws {
+    var c = encoder.container(keyedBy: CodingKeys.self)
+    switch self {
+    case .file(let path, let line):
+      try c.encode(path, forKey: .path)
+      try c.encode(line, forKey: .line)
+    case .argv(let index):
+      try c.encode(Self.argvPathSentinel, forKey: .path)
+      try c.encode(index, forKey: .argvIndex)
+    }
+  }
+
+  init(from decoder: Decoder) throws {
+    let c = try decoder.container(keyedBy: CodingKeys.self)
+    let path = try c.decode(String.self, forKey: .path)
+    if path == Self.argvPathSentinel {
+      let index = try c.decode(Int.self, forKey: .argvIndex)
+      self = .argv(index: index)
+    } else {
+      let line = try c.decode(Int.self, forKey: .line)
+      self = .file(path: path, line: line)
+    }
+  }
+}
+
+extension InputOrigin.Element: Codable {
+  private enum CodingKeys: String, CodingKey {
+    case kind, argvIndex, chain
+  }
+  private enum Kind: String, Codable {
+    case `default`
+    case commandLine
+    case responseFile
+  }
+
+  func encode(to encoder: Encoder) throws {
+    var c = encoder.container(keyedBy: CodingKeys.self)
+    switch self {
+    case .defaultValue:
+      try c.encode(Kind.default, forKey: .kind)
+
+    case .argumentIndex(let idx):
+      try c.encode(Kind.commandLine, forKey: .kind)
+      try c.encode(idx.inputIndex.rawValue, forKey: .argvIndex)
+
+    case .responseFile:
+      try c.encode(Kind.responseFile, forKey: .kind)
+      try c.encode(chainAsSteps(), forKey: .chain)
+    }
+  }
+
+  init(from decoder: Decoder) throws {
+    let c = try decoder.container(keyedBy: CodingKeys.self)
+    let kind = try c.decode(Kind.self, forKey: .kind)
+    switch kind {
+    case .default:
+      self = .defaultValue
+    case .commandLine:
+      let raw = try c.decode(Int.self, forKey: .argvIndex)
+      let index = SplitArguments.Index(
+        inputIndex: SplitArguments.InputIndex(rawValue: raw))
+      self = .argumentIndex(index)
+    case .responseFile:
+      let steps = try c.decode(
+        [InputOrigin.ResponseFileStep].self, forKey: .chain)
+      guard !steps.isEmpty else {
+        throw DecodingError.dataCorruptedError(
+          forKey: .chain,
+          in: c,
+          debugDescription: "responseFile chain must be non-empty")
+      }
+      self = Self.rebuild(fromSteps: steps)
+    }
+  }
+
   /// Walks the linked `.responseFile` list and produces a flat array of
   /// steps from innermost to outermost.
   ///
@@ -248,5 +330,35 @@ extension InputOrigin.Element {
       steps.append(.argv(index: idx.inputIndex.rawValue))
     }
     return steps
+  }
+
+  /// Inverse of `chainAsSteps()`: folds a flat step array into a nested
+  /// `.responseFile(step:referencedFrom:)` linked list.
+  fileprivate static func rebuild(
+    fromSteps steps: [InputOrigin.ResponseFileStep]
+  ) -> InputOrigin.Element {
+    // The last step is expected to be `.argv(_)` — the argv terminator.
+    // Any file steps before it become nested `.responseFile` wrappers.
+    var iterator = steps.makeIterator()
+    var reversed: [InputOrigin.ResponseFileStep] = []
+    while let step = iterator.next() { reversed.append(step) }
+
+    let terminator: InputOrigin.Element
+    if let last = reversed.last, case .argv(let idx) = last {
+      terminator = .argumentIndex(
+        SplitArguments.Index(
+          inputIndex: SplitArguments.InputIndex(rawValue: idx)))
+      reversed.removeLast()
+    } else {
+      // Malformed chain (no argv terminator). Best effort: use
+      // `.defaultValue` as the terminator so decoding succeeds.
+      terminator = .defaultValue
+    }
+
+    var current = terminator
+    for step in reversed.reversed() {
+      current = .responseFile(step: step, referencedFrom: current)
+    }
+    return current
   }
 }

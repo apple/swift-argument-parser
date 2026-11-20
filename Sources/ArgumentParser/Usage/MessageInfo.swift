@@ -39,6 +39,12 @@ enum MessageInfo {
           text: DumpHelpGenerator(commandStack: e.commandStack).rendered())
         return
 
+      case .dumpArgumentsSourceLocationRequested(let text):
+        // The parser pre-renders the dump text so that `MessageInfo` doesn't
+        // need access to the parsed-value tree itself.
+        self = .help(text: text)
+        return
+
       case .versionRequested:
         let versionString =
           commandStack
