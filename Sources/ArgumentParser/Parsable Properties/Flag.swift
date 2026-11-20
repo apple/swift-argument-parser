@@ -458,7 +458,8 @@ extension Flag where Value: EnumerableFlag {
             help: helpForCase,
             defaultValue: defaultValueString,
             key: key,
-            isComposite: !hasCustomCaseHelp)
+            isComposite: !hasCustomCaseHelp,
+            isMutuallyExclusive: exclusivity.base == .exclusive)
 
           return ArgumentDefinition.flag(
             name: name,
@@ -564,7 +565,8 @@ extension Flag {
             help: helpForCase,
             defaultValue: nil,
             key: parentKey,
-            isComposite: !hasCustomCaseHelp)
+            isComposite: !hasCustomCaseHelp,
+            isMutuallyExclusive: exclusivity.base == .exclusive)
 
           return ArgumentDefinition.flag(
             name: name, key: parentKey, caseKey: caseKey, help: help,
