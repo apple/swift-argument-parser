@@ -43,11 +43,11 @@ extension HelpGenerationTests {
   }
 
   fileprivate struct ArgsAndFlags: ParsableArguments {
-    @Argument(help: "example")
-    var name: String?
-
     @Argument(help: .init("example", visibility: .hidden))
     var title: String
+
+    @Argument(help: "example")
+    var name: String?
 
     @Flag(help: "example")
     var existingUser: Bool = false
@@ -103,11 +103,11 @@ extension HelpGenerationTests {
     try requireHelp(
       .hidden, for: AllVisible.self,
       equals: """
-        USAGE: all-visible [--verbose] [--oversharing] [--name <name>] --age <age> [--experimental] --prefix <prefix> [<name>] <title> [--existing-user]
+        USAGE: all-visible [--verbose] [--oversharing] [--name <name>] --age <age> [--experimental] --prefix <prefix> <title> [<name>] [--existing-user]
 
         ARGUMENTS:
-          <name>                  example
           <title>                 example
+          <name>                  example
 
         FLAGS GROUP:
           --verbose               example
@@ -166,7 +166,7 @@ extension HelpGenerationTests {
     try requireHelp(
       .hidden, for: Combined.self,
       equals: """
-        USAGE: combined [--verbose] [--oversharing] [--name <name>] --age <age> [--experimental] --prefix <prefix> [<name>] <title> [--existing-user]
+        USAGE: combined [--verbose] [--oversharing] [--name <name>] --age <age> [--experimental] --prefix <prefix> <title> [<name>] [--existing-user]
 
         EXTRAS:
           --verbose               example
@@ -177,8 +177,8 @@ extension HelpGenerationTests {
         OTHERS:
           --experimental          example
           --prefix <prefix>       example
-          <name>                  example
           <title>                 example
+          <name>                  example
           --existing-user         example
 
         OPTIONS:
@@ -319,11 +319,11 @@ extension HelpGenerationTests {
     try requireHelp(
       .hidden, for: ParentWithGroups.self,
       equals: """
-        USAGE: parent-with-groups [--verbose] [--oversharing] [<name>] <title> [--existing-user] <subcommand>
+        USAGE: parent-with-groups [--verbose] [--oversharing] <title> [<name>] [--existing-user] <subcommand>
 
         ARGUMENTS:
-          <name>                  example
           <title>                 example
+          <name>                  example
 
         EXTRAS:
           --verbose               example
@@ -366,11 +366,11 @@ extension HelpGenerationTests {
       .hidden, for: ParentWithGroups.ChildWithGroups.self,
       root: ParentWithGroups.self,
       equals: """
-        USAGE: parent-with-groups child-with-groups [--verbose] [--oversharing] [--name <name>] --age <age> [<name>] <title> [--existing-user]
+        USAGE: parent-with-groups child-with-groups [--verbose] [--oversharing] [--name <name>] --age <age> <title> [<name>] [--existing-user]
 
         ARGUMENTS:
-          <name>                  example
           <title>                 example
+          <name>                  example
 
         CHILD EXTRAS:
           --verbose               example

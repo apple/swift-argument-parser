@@ -361,6 +361,58 @@ import Testing
     }
   }
 
+  @Test func requiredPositionalArgumentAfterOptionalIsInvalid() throws {
+    struct Arguments: ParsableArguments {
+      @Argument var first: String?
+      @Argument var second: String
+    }
+
+    #expect(throws: ParsableArgumentsValidationError.self) {
+      try Arguments._validate(parent: nil)
+    }
+  }
+
+  @Test func requiredPositionalArgumentAfterDefaultIsInvalid() throws {
+    struct Arguments: ParsableArguments {
+      @Argument var first: String = "default"
+      @Argument var second: String
+    }
+
+    #expect(throws: ParsableArgumentsValidationError.self) {
+      try Arguments._validate(parent: nil)
+    }
+  }
+
+  @Test func requiredPositionalArgumentAfterOptionalGroupIsInvalid() throws {
+    struct Options: ParsableArguments {
+      @Argument var first: String?
+    }
+
+    struct Arguments: ParsableArguments {
+      @OptionGroup var options: Options
+      @Argument var second: String
+    }
+
+    #expect(throws: ParsableArgumentsValidationError.self) {
+      try Arguments._validate(parent: nil)
+    }
+  }
+
+  @Test func optionalPositionalArgumentsAfterRequiredAreValid() throws {
+    struct Arguments: ParsableArguments {
+      @Option var unrelated: String?
+      @Argument var first: String
+      @Argument var second: String?
+      @Argument var third: String = "default"
+    }
+
+    try Arguments._validate(parent: nil)
+    let arguments = try Arguments.parse(["value"])
+    #expect(arguments.first == "value")
+    #expect(arguments.second == nil)
+    #expect(arguments.third == "default")
+  }
+
   // MARK: UniqueNamesValidator tests
   fileprivate static let unexpectedErrorMessage =
     "Expected error of type `UniqueNamesValidator.Error`, but got something else."
