@@ -62,6 +62,9 @@ extension String {
   func escapedTextLine() -> String {
     var escaped = ""
     var atBeginning = true
+    // Each newline in a multi-line string starts a new text input line in the
+    // output, so the rule for dots and apostrophes applies after it, too.
+    var atLineBeginning = true
 
     // TODO: maybe drop `where character.isASCII` clause
     for character in self where character.isASCII {
@@ -75,7 +78,7 @@ extension String {
 
       // dots and apostrophes at the beginning of text lines:
       // If a text input line needs to begin with a dot (`.`) or apostrophe (`'`), prepend a zero-width space (`\&`) to prevent the line from being mistaken for a macro line. Never use the escape sequence `\.` in any context.
-      case (".", true), ("'", true):
+      case (".", _) where atLineBeginning, ("'", _) where atLineBeginning:
         escaped += #"\&"#
         escaped.append(character)
         atBeginning = false
@@ -90,6 +93,7 @@ extension String {
         escaped.append(character)
         atBeginning = false
       }
+      atLineBeginning = atBeginning || character.isNewline
     }
 
     return escaped
