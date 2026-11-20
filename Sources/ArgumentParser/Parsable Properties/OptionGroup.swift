@@ -48,15 +48,32 @@ public struct OptionGroup<Value: ParsableArguments>: Decodable, ParsedWrapper {
   }
 
   public init(from _decoder: Decoder) throws {
-    if let d = _decoder as? SingleValueDecoder,
-      let value = try? d.previousValue(Value.self)
-    {
-      self.init(_parsedValue: .value(value))
+    if let d = _decoder as? SingleValueDecoder {
+      let previousValue = try? d.previousValue(Value.self)
+      if let previousValue, !d.underlying.allowsOptionGroupOverrides {
+        self.init(_parsedValue: .value(previousValue))
+      } else {
+        let previousOrigins = d.underlying.usedOrigins
+        do {
+          try self.init(_decoder: _decoder)
+        } catch {
+          guard
+            let previousValue,
+            d.underlying.usedOrigins == previousOrigins
+          else { throw error }
+          self.init(_parsedValue: .value(previousValue))
+        }
+
+        if d.underlying.usedOrigins != previousOrigins {
+          d.saveValue(wrappedValue)
+        } else if let previousValue {
+          self = OptionGroup(_parsedValue: .value(previousValue))
+        } else {
+          d.saveValue(wrappedValue)
+        }
+      }
     } else {
       try self.init(_decoder: _decoder)
-      if let d = _decoder as? SingleValueDecoder {
-        d.saveValue(wrappedValue)
-      }
     }
 
     do {

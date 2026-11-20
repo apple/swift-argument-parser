@@ -337,6 +337,46 @@ extension DefaultSubcommandEndToEndTests {
 }
 
 extension DefaultSubcommandEndToEndTests {
+  struct RootWithSharedOptionAndPassthroughDefault: ParsableCommand {
+    static let configuration = CommandConfiguration(
+      subcommands: [Image.self, PassthroughPlugin.self],
+      defaultSubcommand: PassthroughPlugin.self
+    )
+
+    @OptionGroup var global: SharedDebugOption
+  }
+
+  struct SharedDebugOption: ParsableArguments {
+    @Flag var debug = false
+  }
+
+  struct Image: ParsableCommand {
+    static let configuration = CommandConfiguration(subcommands: [Tag.self])
+
+    @OptionGroup var global: SharedDebugOption
+
+    struct Tag: ParsableCommand {
+      @OptionGroup var global: SharedDebugOption
+      @Argument var name: String
+    }
+  }
+
+  struct PassthroughPlugin: ParsableCommand {
+    @Argument(parsing: .captureForPassthrough) var arguments: [String] = []
+  }
+
+  @Test func sharedOptionAfterNestedPositionalArgument() {
+    expectParseCommand(
+      RootWithSharedOptionAndPassthroughDefault.self,
+      Image.Tag.self,
+      ["image", "tag", "item", "--debug"]
+    ) { tag in
+      #expect(tag.global.debug)
+    }
+  }
+}
+
+extension DefaultSubcommandEndToEndTests {
   struct NestedDefaultSubcommandHelp: ParsableCommand {
     static let configuration = CommandConfiguration(
       subcommands: [Default.self, Nested.self],
