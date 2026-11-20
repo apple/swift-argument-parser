@@ -52,6 +52,12 @@ extension GeneratePlugin {
       return
     }
 
+    // The plugin computes a distinct output directory for every eligible
+    // product. Reject a manually supplied directory instead of forwarding it
+    // to every tool invocation, where the last duplicate option would silently
+    // override each per-target path.
+    try extractor.rejectPluginManagedOptions()
+
     // Extract configuration argument before making it to the
     // "generate-docc-reference" tool.
     let configuration = try extractor.configuration()
