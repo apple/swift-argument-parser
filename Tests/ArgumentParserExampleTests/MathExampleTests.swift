@@ -167,6 +167,17 @@ import Testing
       expected: "1.5.0-alpha\n")
   }
 
+  @Test(
+    .requiresProcessExecution,
+    arguments: [
+      "math --version add", "math --version add 1 2",
+      "math add --version", "math add 1 2 --version", "math --version 1 2",
+    ]
+  )
+  func versionBeforeDefaultSubcommand(command: String) throws {
+    try requireExecuteCommand(command: command, expected: "1.0.0\n")
+  }
+
   @Test func math_ExitCodes() throws {
     try requireExecuteCommand(
       command: "math stats quantiles --test-success-exit-code",
