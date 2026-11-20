@@ -347,7 +347,7 @@ struct Example: ParsableCommand {
     var export: String?
 
     func run() {
-        print("Export: \(format ?? "<don't export>")")
+        print("Export: \(export ?? "<don't export>")")
     }
 }
 ```
@@ -356,12 +356,12 @@ struct Example: ParsableCommand {
 ```
 % example                    # export = nil
 % example --export           # export = "json"
-% example --export yaml      # format = "yaml"
+% example --export yaml      # export = "yaml"
 ```
 
 The `defaultAsFlag` parameter creates a hybrid that supports both patterns:
-- **Flag behavior**: `--export` (sets format to "json")
-- **Option behavior**: `--export yaml` (sets format to "yaml")
+- **Flag behavior**: `--export` (sets export to "json")
+- **Option behavior**: `--export yaml` (sets export to "yaml")
 - **No usage**: `export` remains `nil`
 
 #### Type requirements
