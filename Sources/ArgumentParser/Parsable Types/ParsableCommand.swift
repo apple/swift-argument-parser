@@ -49,6 +49,77 @@ extension ParsableCommand {
   }
 }
 
+/// The name of the actual executable running the current process, as
+/// captured only when the top-level `parseAsRoot()`/`main()` entry point
+/// used the real command-line arguments (rather than an explicit
+/// `arguments` array, as tests and other library-internal help/usage
+/// generation do). `nil` everywhere else, including throughout the test
+/// suite, so that behavior there stays exactly as before.
+///
+/// This is deliberately not read from `CommandLine.arguments` directly at
+/// the many places that build a display name for the root command --
+/// `CommandLine.arguments[0]` reflects whatever process is *currently*
+/// running (which, under `swift test` or when a host application embeds
+/// this library, is unrelated to the command-line tool being described),
+/// not necessarily the tool whose help/usage text is being generated.
+///
+// swift-format-ignore: AlwaysUseLowerCamelCase
+// (matches the existing `_commandName`/`_superCommandName` naming used for
+// this kind of internal-use-only state elsewhere in this file.)
+nonisolated(unsafe) var _invokedCommandName: String?
+
+extension Array where Element == ParsableCommand.Type {
+  /// The command names to display when telling the user how to invoke the
+  /// tool, e.g. in the `USAGE:` line or a `See '<name> help'` hint.
+  ///
+  /// This is `_commandName` for every command in the stack, except that the
+  /// root command's name is replaced with `_invokedCommandName`, when set
+  /// and the root command hasn't set an explicit `commandName` in its
+  /// `configuration`. Without this substitution, the displayed name is
+  /// derived from the root command's Swift type name, which can silently
+  /// drift from the executable's actual name -- for example when the type
+  /// is renamed, or when the product name in `Package.swift` differs from
+  /// the type name.
+  var invocationCommandNames: [String] {
+    invocationCommandNames(invokedAs: _invokedCommandName)
+  }
+
+  /// The `invocationCommandNames` computation, with the substituted name
+  /// taken as a parameter instead of read from the shared
+  /// `_invokedCommandName`. Split out so tests can exercise the
+  /// substitution logic with an arbitrary value of their own, without
+  /// mutating process-global state that's also visible to unrelated tests
+  /// running concurrently.
+  func invocationCommandNames(invokedAs invokedName: String?) -> [String] {
+    var names = self.map { $0._commandName }
+    guard let root = self.first, root.configuration.commandName == nil,
+      let invokedName, !invokedName.isEmpty
+    else {
+      return names
+    }
+    names[0] = invokedName
+    return names
+  }
+}
+
+/// Computes the last path component of `path`, with a Windows `.exe`
+/// extension stripped, for use as a display name for the invoked
+/// executable. Accepts both `/` and `\` as path separators so that a
+/// `CommandLine.arguments[0]` value copied across platforms (or produced
+/// by a non-native shell) is still handled reasonably.
+func _executableName(fromInvokedPath path: String) -> String? {
+  guard !path.isEmpty else { return nil }
+  let lastSeparator = path.lastIndex(where: { $0 == "/" || $0 == "\\" })
+  var name =
+    lastSeparator.map { String(path[path.index(after: $0)...]) } ?? path
+  #if os(Windows)
+    if name.lowercased().hasSuffix(".exe") {
+      name = String(name.dropLast(4))
+    }
+  #endif
+  return name.isEmpty ? nil : name
+}
+
 // MARK: - API
 
 extension ParsableCommand {
@@ -63,6 +134,11 @@ extension ParsableCommand {
   public static func parseAsRoot(
     _ arguments: [String]? = nil
   ) throws -> ParsableCommand {
+    if arguments == nil {
+      _invokedCommandName =
+        _invokedCommandName
+        ?? _executableName(fromInvokedPath: CommandLine._staticArguments[0])
+    }
     var parser = CommandParser(self)
     let arguments = arguments ?? Array(CommandLine._staticArguments.dropFirst())
     return try parser.parse(arguments: arguments)
