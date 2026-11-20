@@ -526,6 +526,23 @@ struct LenientParser {
     }
   }
 
+  /// Returns `true` if the element is a value matching a subcommand name
+  /// (or alias) of the current command, including the built-in `help`
+  /// subcommand.
+  func isSubcommandName(_ element: SplitArguments.Element) -> Bool {
+    guard element.isValue,
+      let value = element.value.valueString
+    else { return false }
+    if subcommands.contains(where: {
+      $0._commandName == value || $0.configuration.aliases.contains(value)
+    }) {
+      return true
+    }
+    // The built-in `help` subcommand is added to the command tree whenever
+    // the command has subcommands.
+    return !subcommands.isEmpty && value == HelpCommand._commandName
+  }
+
   mutating func parsePositionalValues(
     from unusedInput: SplitArguments,
     into result: inout ParsedValues
@@ -608,16 +625,29 @@ struct LenientParser {
     }),
       case .unary(let update) = allUnrecognizedArg.update
     {
-      result.capturedUnrecognizedArguments = SplitArguments(
-        _elements: Array(argumentStack),
-        originalInput: [])
-      while let arg = argumentStack.popFirst() {
+      // Stop collecting at a value that names a subcommand: a subcommand
+      // name is recognized input, not unrecognized input, so it must be
+      // left for subcommand dispatch (see issue #796). Values after the
+      // `--` terminator are literal data, never subcommand names.
+      var capturedElements: [SplitArguments.Element] = []
+      var afterTerminator = false
+      while let arg = argumentStack.first {
+        if arg.isTerminator {
+          afterTerminator = true
+        } else if !afterTerminator, isSubcommandName(arg) {
+          break
+        }
+        argumentStack.removeFirst()
+        capturedElements.append(arg)
         let origin: InputOrigin.Element = .argumentIndex(arg.index)
         // swift-format-ignore: NeverForceUnwrap
         // FIXME: I dont actually know why this is safe
         let value = unusedInput.originalInput(at: origin)!
         try update([origin], nil, value, &result)
       }
+      result.capturedUnrecognizedArguments = SplitArguments(
+        _elements: capturedElements,
+        originalInput: [])
     }
   }
 
