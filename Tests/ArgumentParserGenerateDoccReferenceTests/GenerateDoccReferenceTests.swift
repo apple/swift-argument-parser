@@ -52,4 +52,13 @@ import Testing
   @Test func rollDoccReference() throws {
     try expectGeneratedReference(command: "roll", doccFlavored: true)
   }
+
+  @Test func defaultAsFlagMarkdownReference() throws {
+    try expectGeneratedReference(
+      command: "default-as-flag", doccFlavored: false)
+  }
+  @Test func defaultAsFlagDoccReference() throws {
+    try expectGeneratedReference(
+      command: "default-as-flag", doccFlavored: true)
+  }
 }

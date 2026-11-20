@@ -40,6 +40,9 @@ struct DefaultAsFlag: ParsableCommand {
   @Option(name: .shortAndLong, help: "A regular option for comparison.")
   var regular: String?
 
+  @Flag(name: .short, help: "A flag with only a short name.")
+  var verbose = false
+
   @Argument
   var additionalArgs: [String] = []
 
@@ -49,6 +52,7 @@ struct DefaultAsFlag: ParsableCommand {
     print("Bool flag: \(boolFlag?.description ?? "nil")")
     print("Transform flag: \(transformFlag?.description ?? "nil")")
     print("Regular option: \(regular?.description ?? "nil")")
+    print("Verbose: \(verbose)")
     print("Additional args: \(additionalArgs)")
   }
 }
