@@ -125,10 +125,18 @@ extension CommandParser {
       }
     }
 
+    // A help name only counts as part of a short option pack if the rest of
+    // the pack is valid for the current command.
+    let isRecognized = { (argument: ParsedArgument) in
+      ArgumentSet(currentNode.element, visibility: .private, parent: nil)
+        .first(matching: argument) != nil
+    }
+
     // Look for help flags
     guard
       !split.contains(
-        anyOf: self.commandStack.getHelpNames(visibility: .default)
+        anyOf: self.commandStack.getHelpNames(visibility: .default),
+        isRecognized: isRecognized
       )
     else {
       throw HelpRequested(visibility: .default)
@@ -137,7 +145,8 @@ extension CommandParser {
     // Look for help-hidden flags
     guard
       !split.contains(
-        anyOf: self.commandStack.getHelpNames(visibility: .hidden)
+        anyOf: self.commandStack.getHelpNames(visibility: .hidden),
+        isRecognized: isRecognized
       )
     else {
       throw HelpRequested(visibility: .hidden)
@@ -677,14 +686,45 @@ extension SplitArguments {
     }
   }
 
-  func contains(anyOf names: [Name]) -> Bool {
-    self.elements.contains {
-      switch $0.value {
-      case .option(.name(let name)),
-        .option(.nameWithValue(let name, _)):
-        return names.contains(name)
-      default:
+  /// Returns whether the input requests one of the given names.
+  ///
+  /// Any single-dash input is split into a pack of short names, so a match
+  /// from a pack only counts when the input can really be read that way: `-vh`
+  /// includes `-h` if `-v` is recognized, but `-path` doesn't include `-h`.
+  ///
+  /// - Parameters:
+  ///   - names: The names to look for.
+  ///   - isRecognized: A closure that returns whether another member of a pack
+  ///     is valid for the current command.
+  /// - Returns: `true` if the input requests any of `names`.
+  func contains(
+    anyOf names: [Name],
+    isRecognized: (ParsedArgument) -> Bool
+  ) -> Bool {
+    self.elements.contains { element in
+      guard case .option(let parsed) = element.value,
+        names.contains(parsed.name)
+      else {
         return false
+      }
+      guard element.index.subIndex != .complete else {
+        return true
+      }
+
+      // A long name that's been written with a single dash, like `-help`.
+      let input = originalInput[element.index.inputIndex.rawValue]
+      if names.contains(.long(String(input.dropFirst()))) {
+        return true
+      }
+
+      return self.elements.allSatisfy { other in
+        guard other.index.inputIndex == element.index.inputIndex,
+          other.index.subIndex != .complete,
+          case .option(let member) = other.value
+        else {
+          return true
+        }
+        return names.contains(member.name) || isRecognized(member)
       }
     }
   }
