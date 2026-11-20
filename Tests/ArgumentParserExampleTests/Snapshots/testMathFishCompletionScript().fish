@@ -96,7 +96,7 @@ complete -c 'math' -n '__math_should_offer_completions_for_flags_or_options "mat
 complete -c 'math' -n '__math_should_offer_completions_for_positional "math" -eq 1' -fa 'add' -d 'Print the sum of the values.'
 complete -c 'math' -n '__math_should_offer_completions_for_positional "math" -eq 1' -fa 'multiply' -d 'Print the product of the values.'
 complete -c 'math' -n '__math_should_offer_completions_for_positional "math" -eq 1' -fa 'stats' -d 'Calculate descriptive statistics.'
-complete -c 'math' -n '__math_should_offer_completions_for_positional "math" -eq 1' -fa 'help' -d 'Show subcommand help information.'
+complete -c 'math' -n '__math_should_offer_completions_for_positional "math" -eq 1' -fa 'help' -d 'Show help information.'
 complete -c 'math' -n '__math_should_offer_completions_for_flags_or_options "math add" hex-output x' -l 'hex-output' -s 'x' -d 'Use hexadecimal notation for the result.'
 complete -c 'math' -n '__math_should_offer_completions_for_flags_or_options "math add" version' -l 'version' -d 'Show the version.'
 complete -c 'math' -n '__math_should_offer_completions_for_flags_or_options "math add" h help' -s 'h' -l 'help' -d 'Show help information.'

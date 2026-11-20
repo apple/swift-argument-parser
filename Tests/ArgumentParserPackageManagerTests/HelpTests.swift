@@ -55,7 +55,7 @@ extension HelpTests {
   @Test func globalHelp() throws {
     #expect(
       getErrorText(Package.self, ["help"]) == """
-        USAGE: package <subcommand>
+        USAGE: package (-h | --help) [<subcommand>] | <subcommand> *…
 
         OPTIONS:
           -h, --help              Show help information.
@@ -65,15 +65,17 @@ extension HelpTests {
           config
           describe
           generate-xcodeproj
+          help                    Show help information.
 
           See 'package help <subcommand>' for detailed help.
-        """)
+        """
+    )
   }
 
   @Test func globalHelp_messageForCleanExit_helpRequest() throws {
     #expect(
       Package.message(for: CleanExit.helpRequest()) == """
-        USAGE: package <subcommand>
+        USAGE: package (-h | --help) [<subcommand>] | <subcommand> *…
 
         OPTIONS:
           -h, --help              Show help information.
@@ -83,6 +85,7 @@ extension HelpTests {
           config
           describe
           generate-xcodeproj
+          help                    Show help information.
 
           See 'package help <subcommand>' for detailed help.
         """
@@ -100,13 +103,14 @@ extension HelpTests {
   @Test func configHelp() throws {
     #expect(
       getErrorText(Package.self, ["help", "config"], screenWidth: 80) == """
-        USAGE: package config <subcommand>
+        USAGE: package config (-h | --help) [<subcommand>] | <subcommand> *…
 
         OPTIONS:
           -h, --help              Show help information.
 
         SUBCOMMANDS:
           get-mirror
+          help                    Show help information.
           set-mirror
           unset-mirror
 
