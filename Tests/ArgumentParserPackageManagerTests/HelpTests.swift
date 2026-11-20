@@ -199,6 +199,12 @@ struct CustomHelp: ParsableCommand {
   )
 }
 
+struct SingleDashCustomHelp: ParsableCommand {
+  static let configuration = CommandConfiguration(
+    helpNames: [.customLong("show-help", withSingleDash: true)]
+  )
+}
+
 extension HelpTests {
   @Test func customHelpNames() {
     let helpNames = [CustomHelp.self].getHelpNames(visibility: .default)
@@ -213,6 +219,15 @@ extension HelpTests {
       Usage: custom-help
         See 'custom-help --show-help' for more information.
       """)
+  }
+
+  @Test func singleDashCustomHelpNamesUseVisibilityBase() {
+    let helpNames = [SingleDashCustomHelp.self].getHelpNames(
+      visibility: .default)
+    #expect(helpNames == [.longWithSingleDash("show-help")])
+    let helpHiddenNames = [SingleDashCustomHelp.self].getHelpNames(
+      visibility: .hidden)
+    #expect(helpHiddenNames == [.longWithSingleDash("show-help-hidden")])
   }
 }
 
