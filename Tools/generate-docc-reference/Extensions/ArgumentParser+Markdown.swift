@@ -149,28 +149,16 @@ extension ArgumentInfoV0 {
       return ""
     }
 
-    let names: [String]
-
-    if let myNames = self.names {
-      names = myNames.filter { $0.kind == .long }.map(\.name)
-    } else if let preferred = self.preferredName {
-      names = [preferred.name]
-    } else if let value = self.valueName {
-      names = [value]
-    } else {
-      return ""
-    }
-
-    // TODO: default values, short, etc.
+    guard let flagName = self.displayedName() else { return "" }
 
     var inner: String
     switch self.kind {
     case .positional:
-      inner = "<\(names.joined(separator: "|"))>"
+      inner = "<\(flagName)>"
     case .option:
-      inner = "--\(names.joined(separator: "|"))=<\(self.valueName ?? "")>"
+      inner = "\(flagName)=<\(self.valueName ?? "")>"
     case .flag:
-      inner = "--\(names.joined(separator: "|"))"
+      inner = flagName
     }
 
     if self.isRepeating {
@@ -185,28 +173,43 @@ extension ArgumentInfoV0 {
   }
 
   public func identity() -> String {
-    let names: [String]
-    if let myNames = self.names {
-      names = myNames.filter { $0.kind == .long }.map(\.name)
-    } else if let preferred = self.preferredName {
-      names = [preferred.name]
-    } else if let value = self.valueName {
-      names = [value]
-    } else {
-      return ""
-    }
+    guard let flagName = self.displayedName() else { return "" }
 
-    // TODO: default values, values, short, etc.
-
-    let inner: String
     switch self.kind {
     case .positional:
-      inner = "\(names.joined(separator: "|"))"
+      return flagName
     case .option:
-      inner = "--\(names.joined(separator: "|"))=\\<\(self.valueName ?? "")\\>"
+      return "\(flagName)=\\<\(self.valueName ?? "")\\>"
     case .flag:
-      inner = "--\(names.joined(separator: "|"))"
+      return flagName
     }
-    return inner
+  }
+
+  /// The name(s) of the argument as a user would type them, or `nil` if the
+  /// argument has nothing to display.
+  ///
+  /// Long names are joined with `|` after a single `--` prefix. If there are
+  /// no long names, a single available name (the preferred one when possible)
+  /// is rendered with the prefix that matches its kind.
+  private func displayedName() -> String? {
+    let longNames = (self.names ?? []).filter { $0.kind == .long }.map(\.name)
+    if !longNames.isEmpty {
+      let joined = longNames.joined(separator: "|")
+      return self.kind == .positional ? joined : "--\(joined)"
+    }
+
+    let fallback = self.preferredName ?? self.names?.first
+    if let fallback {
+      if self.kind == .positional { return fallback.name }
+      switch fallback.kind {
+      case .long: return "--\(fallback.name)"
+      case .short, .longWithSingleDash: return "-\(fallback.name)"
+      }
+    }
+
+    if let value = self.valueName {
+      return self.kind == .positional ? value : "--\(value)"
+    }
+    return nil
   }
 }
