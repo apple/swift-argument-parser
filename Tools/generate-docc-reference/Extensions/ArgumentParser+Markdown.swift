@@ -126,14 +126,15 @@ extension CommandInfoV0 {
     var currentLength = startlength
     for arg in args where arg.shouldDisplay {
       let nextUsage = arg.usage()
-      if currentLength + arg.usage().count > wraplength {
+      let additionalLength = 1 + nextUsage.count  // Include the separating space.
+      if currentLength + additionalLength > wraplength {
         // the next usage() string exceeds the max width, wrap it.
         multilineString.append("\n  \(nextUsage)")
         currentLength = nextUsage.count + 2  // prepend spacing length of 2
       } else {
         // the next usage() string doesn't exceed the max width
         multilineString.append(" \(nextUsage)")
-        currentLength += nextUsage.count + 1
+        currentLength += additionalLength
       }
     }
     return multilineString
